@@ -11,11 +11,11 @@ import org.openlca.app.editors.graphical.figures.GridPos;
 import org.openlca.app.editors.graphical.figures.IOPaneFigure;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
-import org.openlca.app.editors.graphical.model.GraphComponent;
+import org.openlca.app.tools.graphics.model.Component;
 
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
-import static org.openlca.app.editors.graphical.model.GraphComponent.CHILDREN_PROP;
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
 
@@ -37,8 +37,8 @@ public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
-		if (GraphComponent.SIZE_PROP.equals(prop)
-			|| GraphComponent.LOCATION_PROP.equals(prop)) {
+		if (Component.SIZE_PROP.equals(prop)
+			|| Component.LOCATION_PROP.equals(prop)) {
 			refreshVisuals();
 		} else if (CHILDREN_PROP.equals(prop)) {
 			setLabelSizes(evt);

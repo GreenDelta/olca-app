@@ -8,7 +8,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
@@ -21,7 +21,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 
 	private final GraphEditor editor;
 	private Node node;
-	private final Set<Link> connections = new HashSet<>();
+	private final Set<GraphLink> connections = new HashSet<>();
 	private final Set<Node> nodes = new HashSet<>();
 	private final Set<ProcessLink> links = new HashSet<>();
 	private final Set<Long> processIds = new HashSet<>();
@@ -45,7 +45,9 @@ public class RemoveSupplyChainAction extends SelectionAction {
 			for (var node : editor.getModel().getChildren())
 				if (refId != node.descriptor.id) {
 					nodes.add(node);
-					connections.addAll(node.getAllLinks());
+					var links = node.getAllLinks().stream()
+							.map(GraphLink.class::cast).toList();
+					connections.addAll(links);
 				}
 			processIds.addAll(system.processes);
 			processIds.remove(refId);
@@ -75,7 +77,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 				.getConnectionLinks(processId);
 		for (ProcessLink link : incomingLinks) {
 			if (node != null) {
-				Link l = node.getLink(link);
+				GraphLink l = node.getLink(link);
 				if (l != null)
 					connections.add(l);
 				else
@@ -124,7 +126,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 		public void execute() {
 			Graph graph = node.getGraph();
 			ProductSystem system = graph.getProductSystem();
-			for (Link link : connections) {
+			for (GraphLink link : connections) {
 				link.disconnect();
 				links.add(link.processLink);
 			}
@@ -161,7 +163,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 				graph.getProductSystem().processLinks.add(link);
 				graph.linkSearch.put(link);
 			}
-			for (Link link : connections) {
+			for (GraphLink link : connections) {
 				graph.getProductSystem().processLinks.add(link.processLink);
 				graph.linkSearch.put(link.processLink);
 				link.reconnect();

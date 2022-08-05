@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.tools.graphics.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -12,7 +12,7 @@ import java.beans.PropertyChangeSupport;
  * <li>property-change support (used to notify edit parts of model changes),</li>
  * </ul>
  */
-abstract public class GraphElement {
+abstract public class Element {
 
 	protected PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 

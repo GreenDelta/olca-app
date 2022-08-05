@@ -31,7 +31,7 @@ public class PlusMinusButton extends Clickable {
 		PlusMinusFigure(Node node, int side) {
 			this.node = node;
 			this.side = side;
-			var theme = node.getConfig().getTheme();
+			var theme = node.getGraph().getConfig().getTheme();
 			var box = Theme.Box.of(node);
 			setBackgroundColor(theme.boxBackgroundColor(box));
 		}
@@ -44,7 +44,7 @@ public class PlusMinusButton extends Clickable {
 		public void paintFigure(Graphics g) {
 			g.setAntialias(SWT.ON);
 
-			var theme = node.getConfig().getTheme();
+			var theme = node.getGraph().getConfig().getTheme();
 			var box = Theme.Box.of(node);
 
 			setEnabled(node.isButtonEnabled(side));

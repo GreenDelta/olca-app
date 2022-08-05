@@ -9,7 +9,7 @@ import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.core.model.ProcessLink;
 
@@ -55,7 +55,7 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 		cc.setLabel(M.RemoveConnections.toLowerCase());
 
 		var parts = getSelectedObjects();
-		List<Link> links = new ArrayList<>();
+		List<GraphLink> links = new ArrayList<>();
 
 		for (Object o : parts) {
 			if (!(o instanceof NodeEditPart nodeEditPart))
@@ -70,11 +70,13 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 			List<ProcessLink> processLinks = linkSearch.getLinks(node.descriptor.id);
 			for (ProcessLink link : processLinks)
 				linkSearch.remove(link);
-			for (var link : node.getAllLinks()) {
-				if (!links.contains(link)) {
-					links.add(link);
-					var linkEditPart = (EditPart) viewer.getEditPartRegistry().get(link);
-					cc.add(linkEditPart.getCommand(new GroupRequest(REQ_DELETE)));
+			for (var l : node.getAllLinks()) {
+				if (l instanceof GraphLink link) {
+					if (!links.contains(link)) {
+						links.add(link);
+						var linkEditPart = (EditPart) viewer.getEditPartRegistry().get(link);
+						cc.add(linkEditPart.getCommand(new GroupRequest(REQ_DELETE)));
+					}
 				}
 			}
 		}

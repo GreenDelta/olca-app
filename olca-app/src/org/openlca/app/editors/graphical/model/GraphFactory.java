@@ -5,7 +5,6 @@ import java.util.*;
 import com.google.gson.JsonArray;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
@@ -13,12 +12,11 @@ import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
-import static org.openlca.app.editors.graphical.model.GraphComponent.INPUT_PROP;
-import static org.openlca.app.editors.graphical.model.GraphComponent.OUTPUT_PROP;
+import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
+import static org.openlca.app.editors.graphical.model.Node.OUTPUT_PROP;
 import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
 import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
 
@@ -40,7 +38,7 @@ public class GraphFactory {
 		if (descriptor == null || descriptor.type == null)
 			return null;
 
-		var node = applyInfo(new Node(descriptor, editor), info);
+		var node = applyInfo(new Node(descriptor), info);
 
 		// A Node (MinMaxGraphComponent) `minimized` attribute is by default true.
 		if (!node.isMinimized()) {
@@ -72,8 +70,8 @@ public class GraphFactory {
 
 	public HashMap<String, IOPane> createIOPanes(RootDescriptor descriptor) {
 		var panes = new HashMap<String, IOPane>();
-		panes.put(INPUT_PROP, new IOPane(editor, true));
-		panes.put(OUTPUT_PROP, new IOPane(editor, false));
+		panes.put(INPUT_PROP, new IOPane(true));
+		panes.put(OUTPUT_PROP, new IOPane(false));
 
 		var exchanges = getExchanges(descriptor);
 
@@ -96,7 +94,7 @@ public class GraphFactory {
 			})
 			.forEach(e -> {
 				var key = e.isInput ? INPUT_PROP : OUTPUT_PROP;
-				panes.get(key).addChild(new ExchangeItem(editor, e));
+				panes.get(key).addChild(new ExchangeItem(e));
 			});
 
 		return panes;
@@ -188,7 +186,7 @@ public class GraphFactory {
 				: null;
 			if (inNode == null)
 				continue;
-			new Link(pLink, outNode, inNode);
+			new GraphLink(pLink, outNode, inNode);
 		}
 	}
 

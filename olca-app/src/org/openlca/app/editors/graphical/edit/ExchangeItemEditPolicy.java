@@ -11,7 +11,7 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
 import org.openlca.app.editors.graphical.model.commands.ReconnectLinkCommand;
 
@@ -20,7 +20,7 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 	@Override
 	protected Connection createDummyConnection(Request req) {
 		var con = (PolylineConnection) super.createDummyConnection(req);
-		var editor = ((ExchangeItem) getHost().getModel()).editor;
+		var editor = ((ExchangeItem) getHost().getModel()).getGraph().getEditor();
 		con.setForegroundColor(editor.config.getTheme().linkColor());
 		if (!(req instanceof CreateConnectionRequest)) {
 			con.setTargetDecoration(new PolygonDecoration());
@@ -80,7 +80,7 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Command getReconnectSourceCommand(ReconnectRequest request) {
-		Link link = (Link) request.getConnectionEditPart().getModel();
+		GraphLink link = (GraphLink) request.getConnectionEditPart().getModel();
 		ExchangeItem toConnect = (ExchangeItem) request.getTarget().getModel();
 		ExchangeItem other = link.getTargetNode().getInput(link.processLink);
 		if (!toConnect.matches(other))
@@ -90,7 +90,7 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
-		Link link = (Link) request.getConnectionEditPart().getModel();
+		GraphLink link = (GraphLink) request.getConnectionEditPart().getModel();
 		ExchangeItem toConnect = (ExchangeItem) request.getTarget().getModel();
 		ExchangeItem other = link.getSourceNode().getOutput(link.processLink);
 		if (!toConnect.matches(other))

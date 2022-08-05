@@ -5,7 +5,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
@@ -26,7 +26,7 @@ public class ExpandCommand extends Command {
 
 	public ExpandCommand(Node host, int side) {
 		this.host = host;
-		this.editor = host.editor;
+		this.editor = host.getGraph().getEditor();
 		this.graph = host.getGraph();
 		this.side = side;
 		setLabel(M.Expand);
@@ -55,7 +55,10 @@ public class ExpandCommand extends Command {
 		var oldLinks = side == INPUT
 			? host.getAllTargetConnections()
 			: host.getAllSourceConnections();
-		var oldPLinks = oldLinks.stream().map(l -> l.processLink).toList();
+		var oldPLinks = oldLinks.stream()
+				.map(GraphLink.class::cast)
+				.map(l -> l.processLink)
+				.toList();
 
 		for (ProcessLink pLink : links) {
 			FlowType type = graph.flows.type(pLink.flowId);
@@ -80,7 +83,7 @@ public class ExpandCommand extends Command {
 			} else {
 				continue;
 			}
-			new Link(pLink, outNode, inNode);
+			new GraphLink(pLink, outNode, inNode);
 			// Update the node's expanded state on the other side in case of loops.
 			graph.getNode(otherID).updateIsExpanded(side == INPUT ? OUTPUT : INPUT);
 		}

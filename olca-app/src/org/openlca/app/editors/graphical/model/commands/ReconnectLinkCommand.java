@@ -3,20 +3,18 @@ package org.openlca.app.editors.graphical.model.commands;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
-import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProductSystem;
 
 public class ReconnectLinkCommand extends Command {
 
 	private final Node sourceNode;
 	private final ExchangeItem targetItem;
-	private final Link oldLink;
-	private Link link;
+	private final GraphLink oldLink;
+	private GraphLink link;
 
-	public ReconnectLinkCommand(Node sourceNode, ExchangeItem targetItem, Link oldLink) {
+	public ReconnectLinkCommand(Node sourceNode, ExchangeItem targetItem, GraphLink oldLink) {
 		this.sourceNode = sourceNode;
 		this.targetItem = targetItem;
 		this.oldLink = oldLink;

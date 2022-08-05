@@ -1,17 +1,11 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.draw2d.geometry.Dimension;
-import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.tools.graphics.model.Component;
 
-import java.util.ArrayList;
-
-public abstract class MinMaxGraphComponent extends GraphComponent {
+public abstract class MinMaxComponent extends Component {
 
 	private boolean minimized = true;
-
-	MinMaxGraphComponent(GraphEditor editor) {
-		super(editor);
-	}
 
 	public boolean isMinimized() {
 		return minimized;
@@ -37,9 +31,15 @@ public abstract class MinMaxGraphComponent extends GraphComponent {
 	public abstract void addChildren();
 
 	public void reconnectLinks() {
-		for (Link link : getAllLinks()) {
+		for (var link : getAllLinks()) {
 			link.reconnect(link.getSource(), link.getTarget());
 		}
+	}
+
+	public Graph getGraph() {
+		if (this instanceof Node)
+			return (Graph) getParent();
+		else return null;
 	}
 
 }

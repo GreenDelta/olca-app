@@ -4,7 +4,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
@@ -24,7 +24,7 @@ public class MassCreationCommand extends Command {
 	// for undoing
 	private final Map<Node, Rectangle> oldConstraints = new HashMap<>();
 	private final List<Node> createdNodes = new ArrayList<>();
-	private final List<Link> createdLinks = new ArrayList<>();
+	private final List<GraphLink> createdLinks = new ArrayList<>();
 
 	public static MassCreationCommand nextTier(List<RootDescriptor> toCreate,
 			List<ProcessLink> newConnections, Graph model) {
@@ -89,7 +89,7 @@ public class MassCreationCommand extends Command {
 		var inNode = graph.getNode(
 				isWaste ? newLink.providerId
 						: newLink.processId);
-		var link = new Link(newLink, outNode, inNode);
+		var link = new GraphLink(newLink, outNode, inNode);
 
 		createdLinks.add(link);
 	}
@@ -101,7 +101,7 @@ public class MassCreationCommand extends Command {
 
 	@Override
 	public void undo() {
-		for (Link link : createdLinks)
+		for (GraphLink link : createdLinks)
 			unlink(link);
 		for (Node node : createdNodes)
 			removeNode(node);
@@ -122,7 +122,7 @@ public class MassCreationCommand extends Command {
 		graph.removeChild(node);
 	}
 
-	private void unlink(Link link) {
+	private void unlink(GraphLink link) {
 		ProductSystem system = graph.getProductSystem();
 		system.processLinks.remove(link.processLink);
 		graph.linkSearch.remove(link.processLink);

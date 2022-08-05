@@ -31,7 +31,7 @@ public class DeleteExchangeCommand extends Command {
 
 
 	/** Holds a copy of all the links of the child and sub-child. */
-	private List<Link> links;
+	private List<GraphLink> links;
 	/** True, if child was removed from its parent. */
 	private boolean wasRemoved;
 	private final IDatabase db = Database.get();
@@ -78,7 +78,7 @@ public class DeleteExchangeCommand extends Command {
 	@Override
 	public void execute() {
 		// store a copy of incoming & outgoing links before proceeding
-		links = child.getAllLinks();
+		links = child.getAllLinks().stream().map(GraphLink.class::cast).toList();
 		redo();
 	}
 
@@ -123,7 +123,7 @@ public class DeleteExchangeCommand extends Command {
 			removeConnections(links);
 		}
 
-		child.editor.setDirty();
+		child.getGraph().getEditor().setDirty();
 	}
 
 	private Exchange getExchange() {
@@ -142,14 +142,14 @@ public class DeleteExchangeCommand extends Command {
 	 * @param links
 	 *            a non-null List of links
 	 */
-	private void addConnections(List<Link> links) {
-		for (Link link : links) {
+	private void addConnections(List<GraphLink> links) {
+		for (GraphLink link : links) {
 			link.reconnect();
 		}
 	}
 
-	private void removeConnections(List<Link> links) {
-		for (Link link : links) {
+	private void removeConnections(List<GraphLink> links) {
+		for (GraphLink link : links) {
 			link.disconnect();
 		}
 	}
@@ -162,7 +162,7 @@ public class DeleteExchangeCommand extends Command {
 
 		addConnections(links);
 
-		node.editor.setDirty();
+		node.getGraph().getEditor().setDirty();
 	}
 
 }

@@ -6,17 +6,17 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 
 public class DeleteLinkCommand extends Command {
 
-	private final List<Link> links;
+	private final List<GraphLink> links;
 
-	public DeleteLinkCommand(Link link) {
+	public DeleteLinkCommand(GraphLink link) {
 		this(Collections.singletonList(link));
 	}
 
-	public DeleteLinkCommand(List<Link> links) {
+	public DeleteLinkCommand(List<GraphLink> links) {
 		this.links = links;
 	}
 
@@ -35,7 +35,7 @@ public class DeleteLinkCommand extends Command {
 		if (links.isEmpty())
 			return;
 		Graph graph = links.get(0).getSourceNode().getGraph();
-		for (Link link : links) {
+		for (GraphLink link : links) {
 			graph.getProductSystem().processLinks.remove(link.processLink);
 			graph.linkSearch.remove(link.processLink);
 			link.disconnect();
@@ -58,7 +58,7 @@ public class DeleteLinkCommand extends Command {
 		if (links.isEmpty())
 			return;
 		Graph graph = links.get(0).getSourceNode().getGraph();
-		for (Link link : links) {
+		for (GraphLink link : links) {
 			graph.getProductSystem().processLinks.add(link.processLink);
 			graph.linkSearch.put(link.processLink);
 			link.reconnect();

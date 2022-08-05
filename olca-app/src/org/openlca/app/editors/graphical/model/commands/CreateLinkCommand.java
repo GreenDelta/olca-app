@@ -4,7 +4,7 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Link;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
@@ -19,7 +19,7 @@ public class CreateLinkCommand extends Command {
 	public ExchangeItem source, target;
 	public boolean startedFromSource;
 	private ProcessLink processLink;
-	private Link link;
+	private GraphLink link;
 
 	public CreateLinkCommand(long flowId) {
 		this.flowId = flowId;
@@ -42,7 +42,7 @@ public class CreateLinkCommand extends Command {
 		processLink = getProcessLink();
 		system.processLinks.add(processLink);
 		graph.linkSearch.put(processLink);
-		link = new Link(processLink, source, target);
+		link = new GraphLink(processLink, source, target);
 		link.getTargetNode().updateIsExpanded(INPUT);
 		link.getSourceNode().updateIsExpanded(OUTPUT);
 

@@ -4,7 +4,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.model.MinMaxGraphComponent;
+import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.editors.graphical.model.commands.MinMaxCommand;
@@ -23,16 +23,16 @@ public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 	@Override
 	public Command getCommand(Request request) {
 		if (REQ_OPEN.equals(request.getType())) {
-			var child = (MinMaxGraphComponent) getHost().getModel();
+			var child = (MinMaxComponent) getHost().getModel();
 			return getOpenCommand(child.isMinimized() ? MAXIMIZE : MINIMIZE);
 		}
 		if (REQ_MIN.equals(request.getType())) {
-			var child = (MinMaxGraphComponent) getHost().getModel();
+			var child = (MinMaxComponent) getHost().getModel();
 			if (!child.isMinimized())
 				return getMinMaxCommand(MINIMIZE);
 		}
 		if (REQ_MAX.equals(request.getType())) {
-			var child = (MinMaxGraphComponent) getHost().getModel();
+			var child = (MinMaxComponent) getHost().getModel();
 			if (child.isMinimized())
 				return getMinMaxCommand(MAXIMIZE);
 		}
@@ -41,7 +41,7 @@ public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 
 	private Command getMinMaxCommand(int type) {
 		var childEditPart = getHost();
-		var child = (MinMaxGraphComponent) childEditPart.getModel();
+		var child = (MinMaxComponent) childEditPart.getModel();
 		var command = new MinMaxCommand(type);
 		command.setChild(child);
 		return command;
@@ -49,7 +49,7 @@ public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 
 	private Command getOpenCommand(int type) {
 		var childEditPart = getHost();
-		var child = (MinMaxGraphComponent) childEditPart.getModel();
+		var child = (MinMaxComponent) childEditPart.getModel();
 
 		var cc = new CompoundCommand();
 		cc.setLabel(M.Open);

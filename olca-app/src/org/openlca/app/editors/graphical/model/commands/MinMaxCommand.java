@@ -5,22 +5,21 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.edit.AbstractComponentEditPart;
-import org.openlca.app.editors.graphical.model.MinMaxGraphComponent;
-import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.editors.graphical.model.MinMaxComponent;
 
 public class MinMaxCommand extends Command {
 
 	public static final int MINIMIZE = 1;
 	public static final int MAXIMIZE = 2;
 	private final int type;
-	private MinMaxGraphComponent child;
+	private MinMaxComponent child;
 
 	public MinMaxCommand(int type) {
 		super(type == MINIMIZE ? M.Minimize : M.Maximize);
 		this.type = type;
 	}
 
-	public void setChild(MinMaxGraphComponent child) {
+	public void setChild(MinMaxComponent child) {
 		this.child = child;
 	}
 
@@ -57,7 +56,7 @@ public class MinMaxCommand extends Command {
 			child.removeAllChildren();
 
 		// Update the EditPart.
-		var viewer = (GraphicalViewer) child.editor
+		var viewer = (GraphicalViewer) child.getGraph().getEditor()
 			.getAdapter(GraphicalViewer.class);
 		var registry = viewer.getEditPartRegistry();
 		var childEditPart = (EditPart) registry.get(child);
@@ -65,7 +64,7 @@ public class MinMaxCommand extends Command {
 			.getParent();
 		parentEditPart.resetChildEditPart(childEditPart);
 
-		child.editor.setDirty();
+		child.getGraph().getEditor().setDirty();
 	}
 
 	public void undo() {

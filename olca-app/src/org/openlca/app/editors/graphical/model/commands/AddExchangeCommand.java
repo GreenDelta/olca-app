@@ -31,14 +31,9 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
-import java.util.Objects;
-
-import static org.openlca.app.editors.graphical.model.GraphComponent.INPUT_PROP;
-import static org.openlca.app.editors.graphical.model.GraphComponent.OUTPUT_PROP;
 import static org.openlca.app.editors.graphical.model.commands.EditExchangeDialog.open;
 
 public class AddExchangeCommand extends Command {
@@ -51,7 +46,7 @@ public class AddExchangeCommand extends Command {
 	public AddExchangeCommand(IOPane pane, boolean forInput) {
 		this.pane = pane;
 		this.forInput = forInput;
-		this.editor = pane.editor;
+		this.editor = pane.getGraph().getEditor();
 	}
 
 	@Override
@@ -99,7 +94,7 @@ public class AddExchangeCommand extends Command {
 		// elementary flow.
 		// Note that we need to do this, before we create the IOPane in order to
 		// avoid recreation of that node later.
-		var editor = node.editor;
+		var editor = node.getGraph().getEditor();
 		if (flow.flowType == FlowType.ELEMENTARY_FLOW)
 			editor.config.setShowElementaryFlows(true);
 
@@ -111,7 +106,7 @@ public class AddExchangeCommand extends Command {
 			.orElse(null);
 		var ioPane = forInput ? node.getInputIOPane() : node.getOutputIOPane();
 		if (updatedExchange != null)
-			ioPane.addChild(new ExchangeItem(editor, updatedExchange));
+			ioPane.addChild(new ExchangeItem(updatedExchange));
 
 		editor.setDirty();
 	}

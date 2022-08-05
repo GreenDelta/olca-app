@@ -13,7 +13,7 @@ import org.openlca.app.editors.graphical.figures.GridPos;
 import org.openlca.app.editors.graphical.figures.MaximizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.MinimizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.NodeFigure;
-import org.openlca.app.editors.graphical.model.GraphComponent;
+import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 
@@ -30,8 +30,8 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
-		if (GraphComponent.SIZE_PROP.equals(prop)
-			|| GraphComponent.LOCATION_PROP.equals(prop)
+		if (Component.SIZE_PROP.equals(prop)
+			|| Component.LOCATION_PROP.equals(prop)
 		  || Node.EXPANDED_PROP.equals(prop))
 			refreshVisuals();
 		else super.propertyChange(evt);
@@ -111,7 +111,7 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 		}
 
 		@Override
-		protected List<? extends GraphComponent> getModelChildren() {
+		protected List<? extends Component> getModelChildren() {
 			return Collections.emptyList();
 		}
 

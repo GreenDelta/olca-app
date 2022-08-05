@@ -10,8 +10,7 @@ import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
-import org.openlca.app.editors.graphical.model.Link;
-import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.DeleteLinkCommand;
 
 public class LinkEditPart extends AbstractConnectionEditPart
@@ -51,7 +50,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 				var link = getModel();
 				var provider = link.provider();
 				var theme = provider != null
-					? provider.editor.config.getTheme()
+					? provider.getGraph().getEditor().config.getTheme()
 					: null;
 				if (theme != null) {
 					setForegroundColor(theme.linkColor());
@@ -79,8 +78,8 @@ public class LinkEditPart extends AbstractConnectionEditPart
 			});
 	}
 
-	public Link getModel() {
-		return (Link) super.getModel();
+	public GraphLink getModel() {
+		return (GraphLink) super.getModel();
 	}
 
 	@Override

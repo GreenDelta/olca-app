@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.model;
+package org.openlca.app.tools.graphics.model;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -8,8 +8,7 @@ import java.util.Objects;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.SWT;
-import org.openlca.app.editors.graphical.GraphConfig;
-import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.model.Node;
 
 /**
  * Abstract prototype of a model component.
@@ -19,34 +18,25 @@ import org.openlca.app.editors.graphical.GraphEditor;
 	 * <ul>
 	 * <li>management of size and location,</li>
 	 * <li>support for adding and removing children,</li>
-	 * <li>methods for connections with other <code>GraphComponents</code>,</li>
+	 * <li>methods for connections with other <code>Components</code>,</li>
  */
-abstract public class GraphComponent extends GraphElement {
+abstract public class Component extends Element {
 
 	public static final String
 		CHILDREN_PROP = "children",
 		TARGET_CONNECTIONS_PROP = "targets",
 		SOURCE_CONNECTIONS_PROP = "sources",
 		SIZE_PROP = "size",
-		LOCATION_PROP = "location",
-		INPUT_PROP = "input",
-		OUTPUT_PROP = "output";
+		LOCATION_PROP = "location";
 
-	public final GraphEditor editor;
-
-	protected List<GraphComponent> children = new ArrayList<>();
-	private GraphComponent parent;
+	protected List<Component> children = new ArrayList<>();
+	private Component parent;
 
 	private final List<Link> sourceConnections = new ArrayList<>();
 	private final List<Link> targetConnections = new ArrayList<>();
 
 	protected Point location;
 	protected Dimension size = new Dimension(SWT.DEFAULT, SWT.DEFAULT);
-
-	GraphComponent(GraphEditor editor) {
-		this.editor = editor;
-	}
-
 
 	public Point getLocation() {
 		return location;
@@ -70,11 +60,11 @@ abstract public class GraphComponent extends GraphElement {
 		firePropertyChange(SIZE_PROP, null, size);
 	}
 
-	public void addChild(GraphComponent child) {
+	public void addChild(Component child) {
 		addChild(child, -1);
 	}
 
-	public void addChild(GraphComponent child, int index) {
+	public void addChild(Component child, int index) {
 		if (index >= 0)
 			children.add(index, child);
 		else
@@ -88,16 +78,12 @@ abstract public class GraphComponent extends GraphElement {
 		for (var child : children) addChild(child);
 	}
 
-	public void setParent(GraphComponent parent) {
+	public void setParent(Component parent) {
 		this.parent = parent;
 	}
 
-	public GraphComponent getParent() {
+	public Component getParent() {
 		return parent;
-	}
-
-	public GraphConfig getConfig() {
-		return editor.config;
 	}
 
 	/**
@@ -107,7 +93,7 @@ abstract public class GraphComponent extends GraphElement {
 	 *            a non-null component instance;
 	 * @return true, if the component was removed, false otherwise
 	 */
-	public boolean removeChild(GraphComponent child) {
+	public boolean removeChild(Component child) {
 		if (child != null && children.remove(child)) {
 			firePropertyChange(CHILDREN_PROP, child, null);
 			return true;
@@ -120,11 +106,11 @@ abstract public class GraphComponent extends GraphElement {
 		for (var child : children) removeChild(child);
 	}
 
-	public List<? extends GraphComponent> getChildren() {
+	public List<? extends Component> getChildren() {
 		return children;
 	}
 
-	void addConnection(Link link) {
+	public void addConnection(Link link) {
 		if (link == null)
 			return;
 		if (link.getTarget() == this && !targetConnections.contains(link)) {
@@ -136,7 +122,7 @@ abstract public class GraphComponent extends GraphElement {
 		}
 	}
 
-	void removeConnection(Link link) {
+	public void removeConnection(Link link) {
 		if (link == null) {
 			return;
 		}

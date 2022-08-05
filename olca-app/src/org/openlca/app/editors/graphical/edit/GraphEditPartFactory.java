@@ -31,7 +31,7 @@ public class GraphEditPartFactory implements EditPartFactory {
 			return new IOPaneEditPart();
 		else if (model instanceof ExchangeItem)
 			return new ExchangeEditPart();
-		else if (model instanceof Link)
+		else if (model instanceof GraphLink)
 			return new LinkEditPart();
 		else return null;
 	}

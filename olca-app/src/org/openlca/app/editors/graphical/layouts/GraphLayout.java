@@ -11,6 +11,7 @@ import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.figures.NodeFigure;
 import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Labels;
 
@@ -365,14 +366,16 @@ public class GraphLayout extends FreeformLayout {
 			var children = new ArrayList<Node>();
 
 			// Create the list of children of parent.
-			for (var link : links) {
-				var child = side == INPUT
-					? link.getSourceNode()
-					: link.getTargetNode();
-				// Check if this child has not been already added by a neighbor, an
-				// ancestor or the root of the subtree itself.
-				if (!mapNodeToVertex.containsKey(child) && !children.contains(child))
-					children.add(child);
+			for (var l : links) {
+				if (l instanceof GraphLink link) {
+					var child = side == INPUT
+							? link.getSourceNode()
+							: link.getTargetNode();
+					// Check if this child has not been already added by a neighbor, an
+					// ancestor or the root of the subtree itself.
+					if (!mapNodeToVertex.containsKey(child) && !children.contains(child))
+						children.add(child);
+				}
 			}
 
 			if (!children.isEmpty())
@@ -557,15 +560,17 @@ public class GraphLayout extends FreeformLayout {
 			var links = side == INPUT
 				? vertex.node.getAllSourceConnections()
 				: vertex.node.getAllTargetConnections();
-			for (var link : links) {
-				if (link.isCloseLoop())
-					continue;
+			for (var l : links) {
+				if (l instanceof GraphLink link) {
+					if (link.isCloseLoop())
+						continue;
 
-				var otherNode = (side == INPUT)
-					? link.getTargetNode()
-					: link.getSourceNode();
-				if (!mapNodeToVertex.containsKey(otherNode)) {
-					return true;
+					var otherNode = (side == INPUT)
+							? link.getTargetNode()
+							: link.getSourceNode();
+					if (!mapNodeToVertex.containsKey(otherNode)) {
+						return true;
+					}
 				}
 			}
 			return false;

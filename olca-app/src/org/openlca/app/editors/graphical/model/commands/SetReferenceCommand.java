@@ -55,7 +55,7 @@ public class SetReferenceCommand extends Command {
 			return;
 
 		update(child, oldRefExchange);
-		child.editor.setDirty();
+		child.getGraph().getEditor().setDirty();
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class SetReferenceCommand extends Command {
 		var oldExchange = getExchange(process, oldRefExchangeItem);
 		update(oldRefExchangeItem, oldExchange);
 
-		child.editor.setDirty();
+		child.getGraph().getEditor().setDirty();
 	}
 
 	private void update(ExchangeItem newRefExchangeItem, Exchange oldRefExchange) {
@@ -85,10 +85,10 @@ public class SetReferenceCommand extends Command {
 
 		if (oldRefExchange != null)
 			updateExchangeItem(node, descriptor, node.getRefExchangeItem(),
-				new ExchangeItem(node.editor, oldRefExchange));
+				new ExchangeItem(oldRefExchange));
 
 		updateExchangeItem(node, descriptor, newRefExchangeItem,
-			new ExchangeItem(node.editor, newRefExchange));
+			new ExchangeItem(newRefExchange));
 	}
 
 	private Exchange getExchange(Process process, ExchangeItem item) {

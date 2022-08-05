@@ -23,8 +23,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.edit.GraphRoot;
-import org.openlca.app.editors.graphical.zoom.GraphZoomManager;
+import org.openlca.app.tools.graphics.edit.RootEditPart;
+import org.openlca.app.tools.graphics.zoom.ZoomManager;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -36,7 +36,7 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 	private IFigure figure;
 	private Viewport port;
 	private MiniView window;
-	private GraphZoomManager zoomManager;
+	private ZoomManager zoomManager;
 
 	public OpenMiniatureViewAction(GraphEditor part) {
 		super(part);
@@ -56,7 +56,7 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 	}
 
 	private void update(Viewport port, IFigure figure, Control control,
-											GraphZoomManager zoomManager) {
+											ZoomManager zoomManager) {
 		this.port = port;
 		this.figure = figure;
 		this.control = control;
@@ -166,8 +166,8 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 		return (Viewport) getRootEditPart().getFigure();
 	}
 
-	private GraphRoot getRootEditPart() {
+	private RootEditPart getRootEditPart() {
 		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
-		return (GraphRoot) viewer.getRootEditPart();
+		return (RootEditPart) viewer.getRootEditPart();
 	}
 }
