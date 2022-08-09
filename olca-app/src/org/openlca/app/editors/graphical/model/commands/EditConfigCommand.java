@@ -14,7 +14,6 @@ import org.openlca.jsonld.Json;
 
 public class EditConfigCommand extends Command {
 
-	private final Graph graph;
 	private final GraphEditor editor;
 	private final GraphicalViewer viewer;
 	private final GraphConfig oldConfig;
@@ -31,7 +30,6 @@ public class EditConfigCommand extends Command {
 		if (graph == null) {
 			throw new IllegalArgumentException();
 		}
-		this.graph = graph;
 		this.editor = graph.editor;
 		this.viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
 		this.oldGraph = graph;
