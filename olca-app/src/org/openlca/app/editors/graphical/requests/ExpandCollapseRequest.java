@@ -3,9 +3,9 @@ package org.openlca.app.editors.graphical.requests;
 import org.eclipse.gef.Request;
 import org.openlca.app.editors.graphical.model.Node;
 
-import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
-import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class ExpandCollapseRequest extends Request {
 

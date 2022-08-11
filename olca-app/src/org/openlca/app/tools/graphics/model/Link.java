@@ -49,4 +49,17 @@ public class Link extends Element {
 	public Component getSource() {
 		return source;
 	}
+
+	public Component getSourceNode() {
+		return source;
+	}
+
+	public Component getTargetNode() {
+		return target;
+	}
+
+	public boolean isCloseLoop() {
+		return getSourceNode() == getTargetNode();
+	}
+
 }

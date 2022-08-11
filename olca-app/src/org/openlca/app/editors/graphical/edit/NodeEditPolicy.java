@@ -1,5 +1,8 @@
 package org.openlca.app.editors.graphical.edit;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -8,13 +11,9 @@ import org.openlca.app.editors.graphical.model.commands.CollapseCommand;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-
-import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
-import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class NodeEditPolicy extends MinMaxComponentEditPolicy {
 

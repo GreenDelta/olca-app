@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+
 public class BuildNextTierAction extends Action implements IBuildAction {
 
 	private final FlowDao flowDao;
@@ -65,7 +67,7 @@ public class BuildNextTierAction extends Action implements IBuildAction {
 			collectFor(node, providers, newConnections);
 		Command command = MassCreationCommand.nextTier(providers, newConnections, graph);
 		for (Node node : nodes)
-			command = command.chain(new ExpandCommand(node, Node.Side.INPUT));
+			command = command.chain(new ExpandCommand(node, INPUT));
 		var stack = (CommandStack) graph.editor.getAdapter(CommandStack.class);
 		stack.execute(command);
 		graph.editor.setDirty();

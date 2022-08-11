@@ -1,11 +1,10 @@
 package org.openlca.app.editors.graphical.edit;
 
 import org.eclipse.draw2d.*;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.editors.graphical.GraphConfig;
-import org.openlca.app.editors.graphical.layouts.GraphLayout;
+import org.openlca.app.editors.graphical.layouts.Layout;
 import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.model.Graph;
 
@@ -70,7 +69,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 
 		var f = new FreeformLayer();
 		f.setBorder(new MarginBorder(8000));
-		f.setLayoutManager(new GraphLayout(this));
+		f.setLayoutManager(new Layout(this));
 		return f;
 	}
 

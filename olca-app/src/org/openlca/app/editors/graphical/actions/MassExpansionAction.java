@@ -13,6 +13,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 /**
  * <p>
@@ -77,8 +79,8 @@ public class MassExpansionAction extends StackAction {
 
 		else if (type == EXPAND) {
 			for (var node : editor.getModel().getChildren()) {
-				if (!node.isExpanded(Node.Side.INPUT)
-					|| !node.isExpanded(Node.Side.OUTPUT)) {
+				if (!node.isExpanded(INPUT)
+					|| !node.isExpanded(OUTPUT)) {
 					var editPart = (EditPart) viewer.getEditPartRegistry().get(node);
 					var request = new ExpandCollapseRequest(node, REQ_EXPAND);
 					if (editPart != null)

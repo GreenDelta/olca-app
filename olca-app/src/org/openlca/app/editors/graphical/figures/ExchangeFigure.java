@@ -10,6 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -17,7 +18,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.descriptors.Descriptor;
 
-public class ExchangeFigure extends Figure {
+public class ExchangeFigure extends ComponentFigure {
 
 	private static final Integer UNIT_ACCURACY = 2;
 	private final Theme theme;
@@ -30,6 +31,7 @@ public class ExchangeFigure extends Figure {
 	private IOPaneFigure paneFigure;
 
 	public ExchangeFigure(ExchangeItem exchangeItem) {
+		super(exchangeItem);
 		this.exchangeItem = exchangeItem;
 		this.exchange = exchangeItem.exchange;
 		this.theme = exchangeItem.getGraph().getConfig().getTheme();

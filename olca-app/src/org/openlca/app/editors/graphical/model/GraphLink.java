@@ -106,10 +106,6 @@ public class GraphLink extends Link {
 		return source;
 	}
 
-	public boolean isCloseLoop() {
-		return getSourceNode() == getTargetNode();
-	}
-
 	public String toString() {
 		return "Link(" + getSource() + " -> " + getTarget() + ")";
 	}
