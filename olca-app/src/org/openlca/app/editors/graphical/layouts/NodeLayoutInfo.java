@@ -4,7 +4,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.editors.graphical.model.Node;
 
-import static org.openlca.app.editors.graphical.layouts.GraphLayout.DEFAULT_LOCATION;
+import static org.openlca.app.tools.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
 
 public class NodeLayoutInfo {
 

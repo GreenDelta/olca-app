@@ -8,12 +8,13 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.themes.Theme;
+import org.openlca.app.tools.graphics.figures.ComponentFigure;
 
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
 import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
 
-public class IOPaneFigure extends Figure {
+public class IOPaneFigure extends ComponentFigure {
 
 	private final Figure contentPane = new Figure();
 	private final IOPane pane;
@@ -22,6 +23,7 @@ public class IOPaneFigure extends Figure {
 	private Dimension unitLabelSize;
 
 	public IOPaneFigure(IOPane pane) {
+		super(pane);
 		this.pane = pane;
 		var theme = pane.getGraph().getConfig().getTheme();
 		var box = Theme.Box.of(pane.getNode());

@@ -181,4 +181,8 @@ abstract public class Component extends Element {
 		return new ArrayList<>(links);
 	}
 
+	public String getLabel() {
+		return "";
+	}
+
 }

@@ -6,12 +6,13 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.util.Labels;
 
-import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
-import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
-public class NodeFigure extends Figure {
+public class NodeFigure extends ComponentFigure {
 
 	public final Node node;
 	public final static Dimension HEADER_ARC_SIZE = new Dimension(15, 15);
@@ -19,6 +20,7 @@ public class NodeFigure extends Figure {
 	public final PlusMinusButton outputExpandButton;
 
 	public NodeFigure(Node node) {
+		super(node);
 		this.node = node;
 		inputExpandButton = new PlusMinusButton(node, INPUT);
 		outputExpandButton = new PlusMinusButton(node, OUTPUT);

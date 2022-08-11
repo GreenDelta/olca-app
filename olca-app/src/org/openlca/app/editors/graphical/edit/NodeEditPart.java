@@ -17,8 +17,8 @@ import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 
-import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
-import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 

@@ -11,12 +11,12 @@ import org.openlca.app.editors.graphical.model.commands.MinMaxCommand;
 
 import java.util.Arrays;
 
-import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
-import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MAX;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MIN;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 

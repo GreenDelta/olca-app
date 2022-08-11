@@ -8,8 +8,6 @@ import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.util.Colors;
 
-import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
-
 public class PlusMinusButton extends Clickable {
 
 	public final PlusMinusFigure icon;

@@ -17,8 +17,8 @@ import org.openlca.util.Strings;
 
 import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
 import static org.openlca.app.editors.graphical.model.Node.OUTPUT_PROP;
-import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
-import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 /**
  * This class provides methods to initialize the model objects before drawing

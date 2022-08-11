@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.openlca.app.editors.graphical.layouts.GraphLayout.DEFAULT_LOCATION;
-import static org.openlca.app.editors.graphical.model.Node.Side.INPUT;
-import static org.openlca.app.editors.graphical.model.Node.Side.OUTPUT;
+import static org.openlca.app.tools.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 /**
  * A {@link Node} represents a unit process, a library process, a result
@@ -166,13 +166,13 @@ public class Node extends MinMaxComponent {
 	}
 
 	public boolean isExpanded(int side) {
-		var bitPosition = side == Side.INPUT ? 1 : 2;
+		var bitPosition = side == INPUT ? 1 : 2;
 		return ((isExpanded >> bitPosition) & 1) == 1;
 	}
 
 	public void setExpanded(int side, boolean value) {
 		var oldIsExpanded = isExpanded;
-		var bitPosition = side == Side.INPUT ? 1 : 2;
+		var bitPosition = side == INPUT ? 1 : 2;
 		if (value)
 			isExpanded |= 1 << bitPosition;
 		else
@@ -364,18 +364,17 @@ public class Node extends MinMaxComponent {
 		return null;
 	}
 
+	@Override
+	public String getLabel() {
+		return Labels.name(descriptor);
+	}
 
-	public String toString() {
+		public String toString() {
 		var editable = isEditable() ? "E-" : "";
 		var prefix = isMinimized() ? M.Minimize : M.Maximize;
 		var name = Labels.name(descriptor);
 		return editable + "Node[" + prefix + "]("
 			+ name.substring(0, Math.min(name.length(), 20)) + ")";
-	}
-
-	public record Side() {
-		public static int INPUT = 1;
-		public static int OUTPUT = 2;
 	}
 
 }
