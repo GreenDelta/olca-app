@@ -7,12 +7,17 @@ import org.openlca.app.editors.graphical.themes.Themes;
 import org.openlca.core.model.Copyable;
 import org.openlca.jsonld.Json;
 
+import java.util.Objects;
+
 public class GraphConfig extends Element implements Copyable<GraphConfig> {
 
 	public static final String CONFIG_PROP = "config";
+	public static final String ROUTER_NULL = "Straight line";
+	public static final String ROUTER_CURVE = "Curve";
+	public static final String ROUTER_MANHATTAN = "Manhattan";
 
 	private boolean showElementaryFlows = false;
-	private boolean isRouted = true;
+	private String connectionRouter = ROUTER_CURVE;
 	private boolean isNodeEditingEnabled = false;
 	private Theme theme = Themes.getDefault();
 
@@ -46,7 +51,7 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		other.showElementaryFlows = showElementaryFlows;
 		other.isNodeEditingEnabled = isNodeEditingEnabled;
 		other.theme = theme;
-		other.isRouted = isRouted;
+		other.connectionRouter = connectionRouter;
 		other.firePropertyChange(CONFIG_PROP, null, this);
 	}
 
@@ -56,7 +61,7 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		clone.showElementaryFlows = showElementaryFlows;
 		clone.isNodeEditingEnabled = isNodeEditingEnabled;
 		clone.theme = theme;
-		clone.isRouted = isRouted;
+		clone.connectionRouter = connectionRouter;
 		return clone;
 	}
 
@@ -66,7 +71,7 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		return showElementaryFlows == other.showElementaryFlows
 			&& isNodeEditingEnabled == other.isNodeEditingEnabled
 			&& theme.equals(other.theme)
-			&& isRouted == other.isRouted;
+			&& connectionRouter == other.connectionRouter;
 	}
 
 	public static GraphConfig fromJson(JsonObject obj) {
@@ -75,8 +80,8 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 			return config;
 		config.showElementaryFlows = Json.getBool(
 			obj, "showElementaryFlows", false);
-		config.isRouted = Json.getBool(
-			obj, "isRouted", true);
+		config.connectionRouter = Json.getString(
+			obj, "connectionRouter");
 		config.isNodeEditingEnabled = Json.getBool(
 			obj, "isNodeEditingEnabled", false);
 		var themeID = Json.getString(obj, "theme");
@@ -87,7 +92,7 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 	public JsonObject toJson() {
 		var obj = new JsonObject();
 		obj.addProperty("showElementaryFlows", showElementaryFlows);
-		obj.addProperty("isRouted", isRouted);
+		obj.addProperty("connectionRouter", connectionRouter);
 		obj.addProperty("isNodeEditingEnabled", isNodeEditingEnabled);
 		obj.addProperty("theme", getTheme().file());
 		return obj;
@@ -100,10 +105,10 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		firePropertyChange(CONFIG_PROP, null, this);
 	}
 
-	public void setRouted(boolean routed) {
-		if (routed == this.isRouted)
+	public void setConnectionRouter(String router) {
+		if (Objects.equals(router, this.connectionRouter))
 			return;
-		isRouted = routed;
+		connectionRouter = router;
 		firePropertyChange(CONFIG_PROP, null, this);
 	}
 
@@ -118,8 +123,8 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		return showElementaryFlows;
 	}
 
-	public boolean isRouted() {
-		return isRouted;
+	public String connectionRouter() {
+		return connectionRouter;
 	}
 
 	public boolean isNodeEditingEnabled() {
