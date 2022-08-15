@@ -18,7 +18,7 @@ public class CurvedConnectionRouter extends BendpointConnectionRouter {
 	private static final PrecisionPoint END_POINT = new PrecisionPoint();
 	private static final PrecisionPoint CTRL1 = new PrecisionPoint();
 	private static final PrecisionPoint CTRL2 = new PrecisionPoint();
-	private static final int OFFSET = 20;
+	private static int offset = 20;
 
 	private final int orientation;
 
@@ -59,11 +59,11 @@ public class CurvedConnectionRouter extends BendpointConnectionRouter {
 
 	private void setControlPoints() {
 		if (orientation == HORIZONTAL) {
-			CTRL1.setLocation(START_POINT.x + OFFSET, START_POINT.y);
-			CTRL2.setLocation(END_POINT.x - OFFSET, END_POINT.y);
+			CTRL1.setLocation(START_POINT.x + offset, START_POINT.y);
+			CTRL2.setLocation(END_POINT.x - offset, END_POINT.y);
 		} else {
-			CTRL1.setLocation(START_POINT.x, START_POINT.y + OFFSET);
-			CTRL2.setLocation(END_POINT.x, END_POINT.y - OFFSET);
+			CTRL1.setLocation(START_POINT.x, START_POINT.y + offset);
+			CTRL2.setLocation(END_POINT.x, END_POINT.y - offset);
 		}
 
 	}
@@ -74,6 +74,10 @@ public class CurvedConnectionRouter extends BendpointConnectionRouter {
 		pathIterator.currentSegment(coordinates);
 		point.setPreciseLocation(coordinates[0], coordinates[1]);
 		return point;
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
 
 }
