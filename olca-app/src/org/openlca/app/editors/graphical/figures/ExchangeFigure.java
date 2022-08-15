@@ -20,7 +20,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 
 public class ExchangeFigure extends ComponentFigure {
 
-	private static final Integer UNIT_ACCURACY = 2;
+	private static final Integer SIGNIF_NUMBER = 2;
 	private final Theme theme;
 	public ExchangeItem exchangeItem;
 	private final Exchange exchange;
@@ -76,7 +76,7 @@ public class ExchangeFigure extends ComponentFigure {
 		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
-		amountLabel = new Label(Numbers.format(exchange.amount, UNIT_ACCURACY));
+		amountLabel = new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
 		amountLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		amountLabel.setLabelAlignment(PositionConstants.RIGHT);
 		add(amountLabel);
@@ -144,7 +144,7 @@ public class ExchangeFigure extends ComponentFigure {
 	}
 
 	public static Dimension getPreferredAmountLabelSize(ExchangeItem item) {
-		var amountText = Numbers.format(item.exchange.amount, UNIT_ACCURACY);
+		var amountText = Numbers.format(item.exchange.amount, SIGNIF_NUMBER);
 		var amount = new Label(amountText);
 		return amount.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
 	}
