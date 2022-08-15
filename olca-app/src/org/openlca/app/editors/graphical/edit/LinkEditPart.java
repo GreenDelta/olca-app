@@ -13,6 +13,8 @@ import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.DeleteLinkCommand;
 
+import static org.eclipse.swt.SWT.ON;
+
 public class LinkEditPart extends AbstractConnectionEditPart
 	implements PropertyChangeListener {
 
