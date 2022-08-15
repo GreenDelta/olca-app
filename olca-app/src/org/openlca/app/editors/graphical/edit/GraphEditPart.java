@@ -11,6 +11,7 @@ import org.openlca.app.editors.graphical.model.Graph;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
+import static org.eclipse.draw2d.PositionConstants.WEST;
 import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
 
 /**
@@ -69,7 +70,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 
 		var f = new FreeformLayer();
 		f.setBorder(new MarginBorder(8000));
-		f.setLayoutManager(new Layout(this));
+		f.setLayoutManager(new Layout(this, WEST));
 		return f;
 	}
 
