@@ -19,7 +19,7 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.CreateNodeCommand;
 import org.openlca.app.editors.graphical.model.commands.EditConfigCommand;
-import org.openlca.app.editors.graphical.model.commands.LayoutCommand;
+import org.openlca.app.editors.graphical.model.commands.GraphLayoutCommand;
 import org.openlca.app.editors.graphical.model.commands.NodeSetConstraintCommand;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -33,7 +33,7 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 	@Override
 	public Command getCommand(Request request) {
 		if (REQ_LAYOUT.equals(request.getType()))
-			return new LayoutCommand((Graph) getHost().getModel());
+			return new GraphLayoutCommand((Graph) getHost().getModel());
 		if (REQ_CREATE.equals(request.getType()))
 			return getCreateCommand((GraphRequest) request);
 		if (REQ_EDIT_CONFIG.equals(request.getType()))
