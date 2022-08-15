@@ -5,12 +5,13 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.layouts.Layout;
-import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.tools.graphics.layouts.CurvedConnectionRouter;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
+import static org.eclipse.draw2d.PositionConstants.HORIZONTAL;
 import static org.eclipse.draw2d.PositionConstants.WEST;
 import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
 
@@ -87,7 +88,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 	protected void refreshVisuals() {
 		var cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
 		var connectionRouter = getModel().getConfig().isRouted()
-					? new TreeConnectionRouter()
+					? new CurvedConnectionRouter(HORIZONTAL)
 					: ConnectionRouter.NULL;
 		cLayer.setConnectionRouter(connectionRouter);
 		super.refreshVisuals();
