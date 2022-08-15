@@ -12,7 +12,7 @@ import static org.eclipse.draw2d.PositionConstants.HORIZONTAL;
 
 public class CurvedConnectionRouter extends BendpointConnectionRouter {
 
-	private static final double FLATNESS = 0.5;
+	private static final double FLATNESS = 0.0001;
 
 	private static final PrecisionPoint START_POINT = new PrecisionPoint();
 	private static final PrecisionPoint END_POINT = new PrecisionPoint();
