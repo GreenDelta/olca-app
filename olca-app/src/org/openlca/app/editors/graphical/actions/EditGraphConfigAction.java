@@ -1,8 +1,10 @@
 package org.openlca.app.editors.graphical.actions;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
@@ -23,6 +25,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 
+import static org.openlca.app.editors.graphical.GraphConfig.*;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 public class EditGraphConfigAction extends WorkbenchPartAction {
@@ -85,14 +88,12 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			var tk = managedForm.getToolkit();
 			var body = UI.formBody(managedForm.getForm(), tk);
 			UI.gridLayout(body, 2);
+
+			// Theme
 			themeCombo(tk, body);
 
 			// routed check
-			UI.filler(body, tk);
-			var routed = tk.createButton(body, "Routed connections", SWT.CHECK);
-			routed.setSelection(config.isRouted());
-			Controls.onSelect(routed,
-					e -> config.setRouted(routed.getSelection()));
+			connectionRoutersCombo(tk, body);
 
 			// show elementary flows
 			UI.filler(body, tk);
@@ -110,6 +111,28 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			Controls.onSelect(isNodeEditingEnabled,
 				e -> config.setNodeEditingEnabled(
 					isNodeEditingEnabled.getSelection()));
+		}
+
+		private void connectionRoutersCombo(FormToolkit tk, Composite comp) {
+			var combo = UI.formCombo(comp, tk, "Connection router");
+			UI.gridData(combo, true, false);
+			var connectionRouters = new String[]{
+				ROUTER_NULL,
+				ROUTER_MANHATTAN,
+				ROUTER_CURVE
+			};
+			for (var router : connectionRouters) {
+				System.out.println(router);
+				combo.add(router);
+			}
+			System.out.println(config.connectionRouter());
+			System.out.println(ArrayUtils.indexOf(connectionRouters, config.connectionRouter()));
+			combo.select(
+					ArrayUtils.indexOf(connectionRouters, config.connectionRouter()));
+			Controls.onSelect(combo, e -> {
+				var router = connectionRouters[combo.getSelectionIndex()];
+				config.setConnectionRouter(router);
+			});
 		}
 
 		private void themeCombo(FormToolkit tk, Composite comp) {
@@ -135,9 +158,9 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		@Override
 		protected Point getInitialSize() {
 			var shell = getShell().getDisplay().getBounds();
-			int width = shell.x > 0 && shell.x < 600
+			int width = shell.x > 0 && shell.x < 700
 					? shell.x
-					: 600;
+					: 700;
 			int height = shell.y > 0 && shell.y < 350
 					? shell.y
 					: 350;

@@ -49,6 +49,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 		var figure = new PolylineConnection() {
 			@Override
 			public void paint(Graphics g) {
+				setAntialias(ON);
 				var link = getModel();
 				var provider = link.provider();
 				var theme = provider != null

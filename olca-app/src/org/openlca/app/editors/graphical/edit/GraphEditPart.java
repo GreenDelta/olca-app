@@ -5,6 +5,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.layouts.Layout;
+import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.tools.graphics.layouts.CurvedConnectionRouter;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import static org.eclipse.draw2d.PositionConstants.HORIZONTAL;
 import static org.eclipse.draw2d.PositionConstants.WEST;
 import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
+import static org.openlca.app.editors.graphical.GraphConfig.*;
 
 /**
  * EditPart for the GraphModel instance.
@@ -87,9 +89,15 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 	@Override
 	protected void refreshVisuals() {
 		var cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
-		var connectionRouter = getModel().getConfig().isRouted()
-					? new CurvedConnectionRouter(HORIZONTAL)
-					: ConnectionRouter.NULL;
+
+		var connectionRouter = getModel().getConfig().connectionRouter() == null
+				? ConnectionRouter.NULL
+				: switch (getModel().getConfig().connectionRouter()) {
+			case ROUTER_CURVE -> new CurvedConnectionRouter(HORIZONTAL);
+			case ROUTER_MANHATTAN -> new TreeConnectionRouter();
+			default -> ConnectionRouter.NULL;
+		};
+
 		cLayer.setConnectionRouter(connectionRouter);
 		super.refreshVisuals();
 	}
