@@ -5,7 +5,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 import java.util.Objects;
 
@@ -35,13 +34,8 @@ public class ExchangeItem extends Component {
 		var parent = getNode();
 		if (parent == null)
 			return false;
-		if (parent.descriptor instanceof ProcessDescriptor p) {
-			return p.quantitativeReference != null
-				&& p.quantitativeReference == exchange.id;
-		}
-		// TODO: product systems and results ...
-
-		return false;
+		return parent.getRefFlow() != null
+				&& parent.getRefFlow().equals(exchange.flow);
 	}
 
 	public Graph getGraph() {

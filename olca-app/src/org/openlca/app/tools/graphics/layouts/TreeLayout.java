@@ -9,8 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
+import static org.eclipse.draw2d.PositionConstants.*;
 
 
 /**
@@ -51,10 +50,10 @@ import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
  */
 public class TreeLayout {
 
-	private final int side;
-	private final double DISTANCE_SIBLING = 16;
-	private final double DISTANCE_SUBTREE = 32;
-	private final double DISTANCE_LEVEL = 64;
+	/**
+	 * Direction of the graph NORTH, SOUTH, EAST OR WEST.
+	 * */
+	private final int direction;
 
 	/**
 	 * The reference node of the tree (to differentiate with the root of a
@@ -70,6 +69,7 @@ public class TreeLayout {
 	private final List<Double> levelSizes;
 	private final List<Double> mistletoeSizes;
 	private final GraphLayout manager;
+	private final boolean forInputs;
 	/**
 	 * The maximum depth of the tree (set to zero if there is only an apex
 	 * node).
@@ -77,9 +77,11 @@ public class TreeLayout {
 	private int maxDepth = 0;
 	private List<Double> levels;
 
-	TreeLayout(GraphLayout manager, int side, Component apex) {
+	TreeLayout(GraphLayout manager, int direction, Component apex,
+		boolean forInputs) {
 		this.manager = manager;
-		this.side = side;
+		this.direction = direction;
+		this.forInputs = forInputs;
 		apexVertex = createApexVertex(apex);
 		createTree(apexVertex, 0);
 		levelSizes = new ArrayList<>(Collections.nCopies(maxDepth + 2, 0.0));
@@ -181,7 +183,7 @@ public class TreeLayout {
 		for (int i = 1; i <= maxDepth; ++i)
 			levels.set(i, levels.get(i - 1)
 					+ (levelSizes.get(i + 1) + levelSizes.get(i)) / 2
-					+ DISTANCE_LEVEL
+					+ manager.distanceLevel
 					+ mistletoeSizes.get(i + 1));
 		return levels.get(levels.size() - 1);
 	}
@@ -210,14 +212,14 @@ public class TreeLayout {
 	 *
 	 */
 	private void createTree(Vertex parent, int depth) {
-		var links = side == INPUT
+		var links = forInputs
 				? parent.node.getAllTargetConnections()
 				: parent.node.getAllSourceConnections();
 		var children = new ArrayList<Component>();
 
 		// Create the list of children of parent.
 		for (var link : links) {
-			var child = side == INPUT
+			var child = forInputs
 					? link.getSourceNode()
 					: link.getTargetNode();
 			// Check if this child has not been already added by a neighbor, an
@@ -229,7 +231,7 @@ public class TreeLayout {
 		if (!children.isEmpty())
 			maxDepth = Math.max(maxDepth, depth + 1);
 
-		children.sort(Comparator.comparing(Component::getLabel));
+		children.sort(Comparator.comparing(Component::getComparisonLabel));
 
 		// Create the vertices of the children.
 		for (var child : children) {
@@ -248,8 +250,9 @@ public class TreeLayout {
 
 			// Check if this vertex is a mistletoe.
 			if (isMistletoe(childVertex)) {
-				var otherSide = side == INPUT ? OUTPUT : INPUT;
-				childVertex.mistletoe = new TreeLayout(manager, otherSide, child);
+				var otherSide = manager.oppositeOf(direction);
+				childVertex.mistletoe =
+						new TreeLayout(manager, otherSide, child, !forInputs);
 			}
 
 			manager.mapNodeToVertex.put(child, childVertex);
@@ -364,9 +367,16 @@ public class TreeLayout {
 
 	private void secondWalk(Vertex vertex, Vertex parent, double modifierSum,
 													int depth) {
-		var x = (int) (apexVertex.endLocation.x
-				+ Math.round(levels.get(depth)) * (side == OUTPUT ? 1 : -1));
-		var y = (int) (apexVertex.endLocation.y + vertex.prelim + modifierSum);
+		var x = (direction & (WEST | EAST)) != 0
+				? (int) (apexVertex.endLocation.x
+				+ Math.round(levels.get(depth))
+				* ((direction & SOUTH_EAST) != 0 ? 1 : -1))
+				: (int) (apexVertex.endLocation.x + vertex.prelim + modifierSum);
+		var y = (direction & (WEST | EAST)) != 0
+				? (int) (apexVertex.endLocation.y + vertex.prelim + modifierSum)
+				: (int) (apexVertex.endLocation.y
+				+ Math.round(levels.get(depth))
+				* ((direction & SOUTH_EAST) != 0 ? 1 : -1));
 		var location = new Point(x, y);
 		vertex.setLocation(location, parent);
 
@@ -394,9 +404,13 @@ public class TreeLayout {
 	}
 
 	private double spacingOf(Vertex left, Vertex right, boolean areSiblings) {
-		var neighborSeparation = areSiblings ? DISTANCE_SIBLING : DISTANCE_SUBTREE;
-		var heightsMean = (left.size.height + right.size.height) / 2;
-		return neighborSeparation + heightsMean;
+		var neighborSeparation = areSiblings
+				? manager.distanceSibling :
+				manager.distanceSubtree;
+		var lengthsMean = (direction & (NORTH | SOUTH)) != 0
+				? (left.size.width + right.size.width) / 2
+				: (left.size.height + right.size.height) / 2;
+		return neighborSeparation + lengthsMean;
 	}
 
 	private Vertex ancestor(Vertex topInsideVertex, Vertex vertex, Vertex ancestor) {
@@ -407,14 +421,14 @@ public class TreeLayout {
 	}
 
 	private boolean isMistletoe(Vertex vertex) {
-		var links = side == INPUT
+		var links = forInputs
 				? vertex.node.getAllSourceConnections()
 				: vertex.node.getAllTargetConnections();
 		for (var link : links) {
 			if (link.isCloseLoop())
 				continue;
 
-			var otherNode = (side == INPUT)
+			var otherNode = forInputs
 					? link.getTargetNode()
 					: link.getSourceNode();
 			if (!manager.mapNodeToVertex.containsKey(otherNode)) {
@@ -425,7 +439,9 @@ public class TreeLayout {
 	}
 
 	private void updateLevelSizes(int depth, Vertex vertex) {
-		double d = vertex.size.width();
+		double d = (direction & (WEST | EAST)) != 0
+				? vertex.size.width()
+				: vertex.size.height();
 		levelSizes.set(depth, Math.max(levelSizes.get(depth), d));
 	}
 

@@ -3,12 +3,13 @@ package org.openlca.app.editors.graphical.model;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.Exchange;
-import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.*;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
+import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 import java.util.ArrayList;
@@ -365,11 +366,29 @@ public class Node extends MinMaxComponent {
 	}
 
 	@Override
-	public String getLabel() {
-		return Labels.name(descriptor);
+	public String getComparisonLabel() {
+		return Labels.name(getRefFlow());
 	}
 
-		public String toString() {
+	Flow getRefFlow() {
+		var db = Database.get();
+
+		if (descriptor instanceof ProcessDescriptor) {
+			var process = db.get(Process.class, descriptor.id);
+			return process.quantitativeReference.flow;
+		}
+		else if (descriptor instanceof ResultDescriptor) {
+			var result = db.get(Result.class, descriptor.id);
+			return result.referenceFlow.flow;
+		}
+		else if (descriptor instanceof ProductSystemDescriptor) {
+			var productSystem = db.get(ProductSystem.class, descriptor.id);
+			return productSystem.referenceExchange.flow;
+		}
+		else return null;
+	}
+
+	public String toString() {
 		var editable = isEditable() ? "E-" : "";
 		var prefix = isMinimized() ? M.Minimize : M.Maximize;
 		var name = Labels.name(descriptor);

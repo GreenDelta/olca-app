@@ -12,8 +12,7 @@ import org.openlca.app.tools.graphics.model.Component;
 
 import java.util.*;
 
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
+import static org.eclipse.draw2d.PositionConstants.*;
 
 public abstract class GraphLayout extends FreeformLayout implements LayoutInterface {
 
@@ -23,10 +22,19 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 	public static final Point DEFAULT_LOCATION =
 			new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
+	private final int inputDirection;
+	double distanceSibling = 16;
+	double distanceSubtree = 32;
+	double distanceLevel = 64;
+
 	private Map<Figure, Point> mapFigureToLocation = new HashMap<>();
 	/** A map keeping track of nodes laid out by the TreeLayout. */
 	final Map<Component, Vertex> mapNodeToVertex = new HashMap<>();
 	private IFigure parentFigure;
+
+	public GraphLayout(int inputDirection) {
+		this.inputDirection = inputDirection;
+	}
 
 	@Override
 	public void layout(IFigure parent) {
@@ -98,11 +106,14 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 	}
 
 	private void layoutAsTree() {
-		var inputLayout = new TreeLayout(this, INPUT, getReferenceNode());
+		var inputLayout =
+				new TreeLayout(this, inputDirection, getReferenceNode(), true);
 		if (inputLayout.apexVertex == null)
 			return;
 		inputLayout.run();
-		var outputLayout = new TreeLayout(this, OUTPUT, getReferenceNode());
+		var outputDirection = oppositeOf(inputDirection);
+		var outputLayout =
+				new TreeLayout(this, outputDirection, getReferenceNode(), false);
 		if (outputLayout.apexVertex == null)
 			return;
 		outputLayout.run();
@@ -121,8 +132,10 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 
 	private void layoutRestAsStack() {
 		var stackFigures = getStackFigures();
-		if (!stackFigures.isEmpty())
-			new StackLayout(this, stackFigures, getReferenceFigure()).run();
+		if (!stackFigures.isEmpty()) {
+			var dir = (inputDirection & (EAST | WEST)) != 0 ? SOUTH : EAST;
+			new StackLayout(this, stackFigures, getReferenceFigure(), dir).run();
+		}
 	}
 
 	private List<ComponentFigure> getStackFigures() {
@@ -135,12 +148,37 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 			}
 		}
 		stackFigures.sort(
-				Comparator.comparing(figure -> figure.getComponent().getLabel()));
+				Comparator.comparing(
+						figure -> figure.getComponent().getComparisonLabel()));
 		return stackFigures;
 	}
 
 	protected IFigure getParentFigure() {
 		return parentFigure;
+	}
+
+
+	int oppositeOf(int direction) {
+		return switch (direction) {
+			case NORTH -> SOUTH;
+			case SOUTH -> NORTH;
+			case EAST -> WEST;
+			case WEST -> EAST;
+			default -> 0;
+		};
+	}
+
+
+	public void setDistanceSibling(int distance) {
+		distanceSibling = distance;
+	}
+
+	public void setDistanceSubtree(int distance) {
+		distanceSubtree= distance;
+	}
+
+	public void setDistanceLevel(int distance) {
+		distanceLevel = distance;
 	}
 
 }

@@ -115,7 +115,7 @@ public class Vertex {
 	}
 
 	public String toString() {
-		return node.getLabel();
+		return node.getComparisonLabel();
 	}
 
 }
