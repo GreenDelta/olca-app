@@ -14,6 +14,8 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 
+import static org.eclipse.draw2d.PositionConstants.EAST;
+
 
 /**
  * A {@link Graph} renders a system of unit processes, library
@@ -22,6 +24,7 @@ import org.openlca.core.model.ProductSystem;
  */
 public class Graph extends Component {
 
+	public static final int ORIENTATION = EAST;
 	private double zoom = 1.0;
 
 	public final GraphEditor editor;

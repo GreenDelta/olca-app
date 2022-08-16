@@ -13,8 +13,8 @@ public class Layout extends GraphLayout {
 
 	private final Graph graph;
 
-	public Layout(GraphEditPart graphEditPart, int inputDirection) {
-		super(inputDirection);
+	public Layout(GraphEditPart graphEditPart, int orientation) {
+		super(orientation);
 		this.graph = graphEditPart.getModel();
 	}
 
