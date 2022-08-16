@@ -53,7 +53,7 @@ public class TreeLayout {
 	/**
 	 * Direction of the graph NORTH, SOUTH, EAST OR WEST.
 	 * */
-	private final int direction;
+	private final int orientation;
 
 	/**
 	 * The reference node of the tree (to differentiate with the root of a
@@ -77,10 +77,10 @@ public class TreeLayout {
 	private int maxDepth = 0;
 	private List<Double> levels;
 
-	TreeLayout(GraphLayout manager, int direction, Component apex,
-		boolean forInputs) {
+	TreeLayout(GraphLayout manager, int orientation, Component apex,
+						 boolean forInputs) {
 		this.manager = manager;
-		this.direction = direction;
+		this.orientation = orientation;
 		this.forInputs = forInputs;
 		apexVertex = createApexVertex(apex);
 		createTree(apexVertex, 0);
@@ -249,11 +249,9 @@ public class TreeLayout {
 						manager.mapNodeToVertex.get(children.get(index - 1)));
 
 			// Check if this vertex is a mistletoe.
-			if (isMistletoe(childVertex)) {
-				var otherSide = manager.oppositeOf(direction);
+			if (isMistletoe(childVertex))
 				childVertex.mistletoe =
-						new TreeLayout(manager, otherSide, child, !forInputs);
-			}
+						new TreeLayout(manager, orientation, child, !forInputs);
 
 			manager.mapNodeToVertex.put(child, childVertex);
 			parent.addChild(childVertex);
@@ -367,16 +365,17 @@ public class TreeLayout {
 
 	private void secondWalk(Vertex vertex, Vertex parent, double modifierSum,
 													int depth) {
-		var x = (direction & (WEST | EAST)) != 0
+		var levelSign = ((orientation & NORTH_WEST) != 0 && forInputs)
+				|| ((orientation & SOUTH_EAST) != 0 && !forInputs)
+				? 1 : -1;
+		var x = (orientation & (WEST | EAST)) != 0
 				? (int) (apexVertex.endLocation.x
-				+ Math.round(levels.get(depth))
-				* ((direction & SOUTH_EAST) != 0 ? 1 : -1))
+				+ Math.round(levels.get(depth)) * levelSign)
 				: (int) (apexVertex.endLocation.x + vertex.prelim + modifierSum);
-		var y = (direction & (WEST | EAST)) != 0
+		var y = (orientation & (WEST | EAST)) != 0
 				? (int) (apexVertex.endLocation.y + vertex.prelim + modifierSum)
 				: (int) (apexVertex.endLocation.y
-				+ Math.round(levels.get(depth))
-				* ((direction & SOUTH_EAST) != 0 ? 1 : -1));
+				+ Math.round(levels.get(depth)) * levelSign);
 		var location = new Point(x, y);
 		vertex.setLocation(location, parent);
 
@@ -407,7 +406,7 @@ public class TreeLayout {
 		var neighborSeparation = areSiblings
 				? manager.distanceSibling :
 				manager.distanceSubtree;
-		var lengthsMean = (direction & (NORTH | SOUTH)) != 0
+		var lengthsMean = (orientation & (NORTH | SOUTH)) != 0
 				? (left.size.width + right.size.width) / 2
 				: (left.size.height + right.size.height) / 2;
 		return neighborSeparation + lengthsMean;
@@ -439,7 +438,7 @@ public class TreeLayout {
 	}
 
 	private void updateLevelSizes(int depth, Vertex vertex) {
-		double d = (direction & (WEST | EAST)) != 0
+		double d = (orientation & (WEST | EAST)) != 0
 				? vertex.size.width()
 				: vertex.size.height();
 		levelSizes.set(depth, Math.max(levelSizes.get(depth), d));

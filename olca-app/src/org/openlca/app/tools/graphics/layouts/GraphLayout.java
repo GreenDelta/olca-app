@@ -22,7 +22,7 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 	public static final Point DEFAULT_LOCATION =
 			new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
-	private final int inputDirection;
+	private final int orientation;
 	double distanceSibling = 16;
 	double distanceSubtree = 32;
 	double distanceLevel = 64;
@@ -32,8 +32,8 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 	final Map<Component, Vertex> mapNodeToVertex = new HashMap<>();
 	private IFigure parentFigure;
 
-	public GraphLayout(int inputDirection) {
-		this.inputDirection = inputDirection;
+	public GraphLayout(int orientation) {
+		this.orientation = orientation;
 	}
 
 	@Override
@@ -107,13 +107,12 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 
 	private void layoutAsTree() {
 		var inputLayout =
-				new TreeLayout(this, inputDirection, getReferenceNode(), true);
+				new TreeLayout(this, orientation, getReferenceNode(), true);
 		if (inputLayout.apexVertex == null)
 			return;
 		inputLayout.run();
-		var outputDirection = oppositeOf(inputDirection);
 		var outputLayout =
-				new TreeLayout(this, outputDirection, getReferenceNode(), false);
+				new TreeLayout(this, orientation, getReferenceNode(), false);
 		if (outputLayout.apexVertex == null)
 			return;
 		outputLayout.run();
@@ -133,7 +132,7 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 	private void layoutRestAsStack() {
 		var stackFigures = getStackFigures();
 		if (!stackFigures.isEmpty()) {
-			var dir = (inputDirection & (EAST | WEST)) != 0 ? SOUTH : EAST;
+			var dir = (orientation & (EAST | WEST)) != 0 ? SOUTH : EAST;
 			new StackLayout(this, stackFigures, getReferenceFigure(), dir).run();
 		}
 	}
@@ -156,18 +155,6 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 	protected IFigure getParentFigure() {
 		return parentFigure;
 	}
-
-
-	int oppositeOf(int direction) {
-		return switch (direction) {
-			case NORTH -> SOUTH;
-			case SOUTH -> NORTH;
-			case EAST -> WEST;
-			case WEST -> EAST;
-			default -> 0;
-		};
-	}
-
 
 	public void setDistanceSibling(int distance) {
 		distanceSibling = distance;

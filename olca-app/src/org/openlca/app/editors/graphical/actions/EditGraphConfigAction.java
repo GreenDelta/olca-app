@@ -122,11 +122,8 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 				ROUTER_CURVE
 			};
 			for (var router : connectionRouters) {
-				System.out.println(router);
 				combo.add(router);
 			}
-			System.out.println(config.connectionRouter());
-			System.out.println(ArrayUtils.indexOf(connectionRouters, config.connectionRouter()));
 			combo.select(
 					ArrayUtils.indexOf(connectionRouters, config.connectionRouter()));
 			Controls.onSelect(combo, e -> {
