@@ -46,7 +46,6 @@ import org.openlca.io.CategoryPair as CategoryPair
 import org.openlca.io.CategoryPath as CategoryPath
 import org.openlca.core.io.CategorySync as CategorySync
 import org.openlca.core.database.usage.CategoryUseSearch as CategoryUseSearch
-import org.openlca.proto.io.output.CategoryWriter as CategoryWriter
 import org.openlca.io.xls.results.CellWriter as CellWriter
 import org.openlca.io.simapro.csv.Compartment as Compartment
 import org.openlca.text.CompartmentStemmer as CompartmentStemmer
@@ -137,6 +136,7 @@ import org.openlca.core.model.EpdProduct as EpdProduct
 import org.openlca.io.openepd.EpdQuantity as EpdQuantity
 import org.openlca.jsonld.input.EpdReader as EpdReader
 import org.openlca.io.openepd.EpdScopeValue as EpdScopeValue
+import org.openlca.proto.io.output.EpdWriter as EpdWriter
 import org.openlca.io.xls.Excel as Excel
 import org.openlca.io.xls.process.output.ExcelExport as ExcelExport
 import org.openlca.io.xls.process.input.ExcelImport as ExcelImport
@@ -424,6 +424,7 @@ import org.openlca.core.results.providers.ResultModelProvider as ResultModelProv
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
 import org.openlca.jsonld.input.ResultReader as ResultReader
 import org.openlca.core.database.usage.ResultUsageSearch as ResultUsageSearch
+import org.openlca.proto.io.output.ResultWriter as ResultWriter
 import org.openlca.util.Results as Results
 import org.openlca.core.model.RiskLevel as RiskLevel
 import org.openlca.core.model.descriptors.RootDescriptor as RootDescriptor
