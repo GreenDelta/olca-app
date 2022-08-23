@@ -25,8 +25,8 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.MappingFileDao;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.MappingFile;
-import org.openlca.io.maps.FlowMap;
 import org.openlca.util.Strings;
 
 public class MappingTool extends SimpleFormEditor {

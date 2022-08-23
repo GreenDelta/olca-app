@@ -1,7 +1,7 @@
 package org.openlca.app.tools.mapping.generator;
 
+import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.FlowType;
-import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
 
 record Score(

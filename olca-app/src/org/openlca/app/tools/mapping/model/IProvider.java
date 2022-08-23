@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.openlca.core.database.IDatabase;
-import org.openlca.io.maps.FlowRef;
+import org.openlca.core.io.maps.FlowRef;
 
 /**
  * Provides flow data from an underlying data source and implements

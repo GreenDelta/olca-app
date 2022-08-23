@@ -18,7 +18,7 @@ import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
-import org.openlca.io.maps.FlowMap;
+import org.openlca.core.io.maps.FlowMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

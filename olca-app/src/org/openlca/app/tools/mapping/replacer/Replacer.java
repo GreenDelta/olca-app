@@ -16,11 +16,11 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.io.maps.FlowMapEntry;
+import org.openlca.core.io.maps.FlowRef;
+import org.openlca.core.io.maps.MappingStatus;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
-import org.openlca.io.maps.FlowMapEntry;
-import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.MappingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

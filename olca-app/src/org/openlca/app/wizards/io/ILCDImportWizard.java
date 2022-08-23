@@ -13,10 +13,10 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.ilcd.io.ZipStore;
 import org.openlca.io.ilcd.ILCDImport;
 import org.openlca.io.ilcd.input.ImportConfig;
-import org.openlca.io.maps.FlowMap;
 
 public class ILCDImportWizard extends Wizard implements IImportWizard {
 

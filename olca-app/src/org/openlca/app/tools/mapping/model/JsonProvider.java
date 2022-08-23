@@ -9,10 +9,10 @@ import java.util.stream.Stream;
 
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.io.maps.FlowMap;
+import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
-import org.openlca.io.maps.FlowMap;
-import org.openlca.io.maps.FlowRef;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
 import org.slf4j.Logger;

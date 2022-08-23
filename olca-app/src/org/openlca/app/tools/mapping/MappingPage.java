@@ -27,8 +27,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.io.maps.FlowMapEntry;
-import org.openlca.io.maps.FlowRef;
+import org.openlca.core.io.maps.FlowMapEntry;
+import org.openlca.core.io.maps.FlowRef;
 
 class MappingPage extends FormPage {
 

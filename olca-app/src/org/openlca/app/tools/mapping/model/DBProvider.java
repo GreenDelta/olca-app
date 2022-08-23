@@ -13,6 +13,8 @@ import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.io.maps.FlowRef;
+import org.openlca.core.io.maps.MappingStatus;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -20,8 +22,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.MappingStatus;
 import org.openlca.util.Categories;
 
 public class DBProvider implements IProvider {

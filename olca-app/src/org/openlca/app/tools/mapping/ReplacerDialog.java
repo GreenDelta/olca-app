@@ -16,9 +16,9 @@ import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.io.maps.FlowMap;
 
 class ReplacerDialog extends FormDialog {
 

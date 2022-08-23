@@ -6,13 +6,13 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Set;
 
+import org.openlca.core.io.maps.FlowMapEntry;
+import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
-import org.openlca.io.maps.FlowMapEntry;
-import org.openlca.io.maps.FlowRef;
 import org.openlca.util.Strings;
 
 /**

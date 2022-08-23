@@ -4,13 +4,13 @@ import java.sql.ResultSet;
 import java.util.Map;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.io.maps.FlowMapEntry;
+import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.matrix.cache.ConversionTable;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Unit;
-import org.openlca.io.maps.FlowMapEntry;
-import org.openlca.io.maps.FlowRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

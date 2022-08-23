@@ -42,7 +42,7 @@ import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.core.database.MappingFileDao;
-import org.openlca.io.maps.FlowMap;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.util.Strings;
 
 /**
@@ -208,7 +208,7 @@ public class FileImportPage extends WizardPage {
 		fileBtn.setText("From file");
 		Controls.onSelect(fileBtn, e -> {
 			var file = FileChooser.open("*.csv");
-			if (file == null) 
+			if (file == null)
 				return;
 			var oldItems = combo.getItems();
 			var nextItems = Arrays.copyOf(oldItems, oldItems.length + 1);

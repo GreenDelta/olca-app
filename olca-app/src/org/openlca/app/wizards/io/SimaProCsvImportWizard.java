@@ -30,7 +30,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.io.maps.FlowMap;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.io.simapro.csv.input.SimaProCsvImport;
 
 public class SimaProCsvImportWizard extends Wizard implements IImportWizard {

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -26,7 +27,6 @@ import org.openlca.ilcd.util.Flows;
 import org.openlca.ilcd.util.UnitGroups;
 import org.openlca.io.ilcd.input.FlowImport;
 import org.openlca.io.ilcd.input.ImportConfig;
-import org.openlca.io.maps.FlowRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

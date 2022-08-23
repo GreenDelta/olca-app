@@ -29,13 +29,13 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.io.maps.FlowMapEntry;
+import org.openlca.core.io.maps.FlowRef;
+import org.openlca.core.io.maps.MappingStatus;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.io.maps.FlowMapEntry;
-import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.MappingStatus;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 

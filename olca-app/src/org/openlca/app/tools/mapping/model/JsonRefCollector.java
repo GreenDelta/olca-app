@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.UnitDescriptor;
-import org.openlca.io.maps.FlowRef;
 import org.openlca.jsonld.Json;
 import org.python.jline.internal.InputStreamReader;
 import org.slf4j.Logger;

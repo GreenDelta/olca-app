@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.io.maps.FlowMap;
 
 /**
  * Configuration of the flow replacement when a flow mapping is applied.

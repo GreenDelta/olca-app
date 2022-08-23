@@ -10,11 +10,11 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.UnitDescriptor;
-import org.openlca.io.maps.FlowRef;
 import org.openlca.simapro.csv.CsvDataSet;
 import org.openlca.simapro.csv.SimaProCsv;
 import org.openlca.simapro.csv.enums.ElementaryFlowType;

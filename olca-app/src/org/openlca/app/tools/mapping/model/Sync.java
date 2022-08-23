@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.openlca.core.io.maps.FlowRef;
+import org.openlca.core.io.maps.MappingStatus;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.io.maps.FlowRef;
-import org.openlca.io.maps.MappingStatus;
 import org.openlca.util.Strings;
 
 final class Sync {

@@ -10,8 +10,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.io.HSCSim;
-import org.openlca.io.maps.FlowMap;
 import org.slf4j.LoggerFactory;
 
 /**

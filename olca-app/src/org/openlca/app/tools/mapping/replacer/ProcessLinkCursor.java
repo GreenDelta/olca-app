@@ -3,8 +3,8 @@ package org.openlca.app.tools.mapping.replacer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.openlca.core.io.maps.FlowMapEntry;
 import org.openlca.core.model.ModelType;
-import org.openlca.io.maps.FlowMapEntry;
 
 class ProcessLinkCursor extends UpdatableCursor {
 

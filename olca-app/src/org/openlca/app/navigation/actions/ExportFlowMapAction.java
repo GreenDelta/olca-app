@@ -11,7 +11,7 @@ import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.MappingFileDao;
-import org.openlca.io.maps.FlowMap;
+import org.openlca.core.io.maps.FlowMap;
 
 public class ExportFlowMapAction extends Action implements INavigationAction {
 
