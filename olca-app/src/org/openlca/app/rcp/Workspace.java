@@ -20,6 +20,10 @@ public class Workspace {
 
 	private static final DataDir dir = init();
 
+	public static DataDir dataDir() {
+		return dir;
+	}
+
 	/**
 	 * Get the workspace directory. Returns null if the workspace was not yet
 	 * initialized.

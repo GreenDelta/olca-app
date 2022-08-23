@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -112,7 +113,8 @@ public class IpcDialog extends FormDialog {
 					"Start server ...",
 					() -> {
 						if (grpc) {
-							grpcServer = new org.openlca.proto.io.server.Server(db, port);
+							grpcServer = new org.openlca.proto.io.server.Server(
+									db, Workspace.dataDir(), port);
 							new Thread(() -> grpcServer.start()).start();
 						} else {
 							server = new Server(port)
