@@ -69,7 +69,7 @@ public class ModelSelector extends FormDialog {
 	}
 
 	public static RootDescriptor select(ModelType type) {
-		if (type == null || !type.isRoot())
+		if (type == null)
 			return null;
 		var dialog = new ModelSelector(type);
 		return dialog.open() == OK
@@ -78,7 +78,7 @@ public class ModelSelector extends FormDialog {
 	}
 
 	public static List<RootDescriptor> multiSelect(ModelType type) {
-		if (type == null || !type.isRoot())
+		if (type == null)
 			return Collections.emptyList();
 		var dialog = new ModelSelector(type);
 		dialog.forMultiple = true;

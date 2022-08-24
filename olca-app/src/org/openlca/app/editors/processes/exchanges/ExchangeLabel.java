@@ -47,7 +47,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			case 0 -> e.flow == null
 				? Images.get(ModelType.FLOW)
 				: Images.get(e.flow);
-			// case 3 -> Images.get(ModelType.UNIT); TODO unit icon
+			case 3 -> Images.get(ModelType.UNIT_GROUP);
 			case 6 -> getAvoidedCheck(e);
 			case 7 -> {
 				if (e.defaultProviderId == 0)

@@ -15,7 +15,9 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.RefEntity;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Source;
+import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -42,7 +44,12 @@ public class Images {
 			return get(process.processType);
 		if (entity instanceof Flow flow)
 			return get(flow.flowType);
-		return get(ModelType.forModelClass(entity.getClass()));
+		if (entity instanceof Unit)
+			return get(ModelType.UNIT_GROUP);
+		if (entity instanceof RootEntity re) {
+			return get(ModelType.of(re));
+		}
+		return null;
 	}
 
 	public static Image get(Descriptor d) {
@@ -175,21 +182,16 @@ public class Images {
 			: ImageManager.get(icon);
 	}
 
-	public static Image getForCategory(ModelType type, Overlay overlay) {
-		ModelIcon icon = Images.categoryIcon(type);
-		if (icon == null)
-			return null;
-		if (overlay == null)
-			return ImageManager.get(icon);
-		return ImageManager.get(icon, overlay);
-	}
-
 	public static ImageDescriptor descriptor(RefEntity entity) {
-		if (entity instanceof Process)
-			return descriptor(((Process) entity).processType);
-		if (entity instanceof Flow)
-			return descriptor(((Flow) entity).flowType);
-		return descriptor(ModelType.forModelClass(entity.getClass()));
+		if (entity instanceof Process p)
+			return descriptor(p.processType);
+		if (entity instanceof Flow f)
+			return descriptor(f.flowType);
+		if (entity instanceof RootEntity re)
+			return descriptor(ModelType.of(re));
+		if (entity instanceof Unit)
+			return descriptor(ModelType.UNIT_GROUP);
+		return null;
 	}
 
 	public static ImageDescriptor descriptor(Descriptor d) {

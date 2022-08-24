@@ -37,7 +37,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		page = ModelSelectionPage.forFile("zip", ModelType.rootTypes());
+		page = ModelSelectionPage.forFile("zip", ModelType.values());
 		addPage(page);
 	}
 

@@ -54,16 +54,15 @@ class ProjectVariantSection extends LabelProvider implements TableSection {
 		return switch (col) {
 			case 0 -> Images.get(ModelType.PROJECT);
 			case 1 -> Images.get(ModelType.PRODUCT_SYSTEM);
-			// case 4 -> Images.get(ModelType.UNIT); TODO: unit icon
+			case 4 -> Images.get(ModelType.UNIT_GROUP);
 			default -> null;
 		};
 	}
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (!(obj instanceof ProjectVariant))
+		if (!(obj instanceof ProjectVariant variant))
 			return null;
-		var variant = (ProjectVariant) obj;
 		return switch (col) {
 			case 0 -> variant.name;
 			case 1 -> Labels.name(variant.productSystem);

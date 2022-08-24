@@ -38,8 +38,6 @@ class OpenUsageAction extends Action implements INavigationAction {
 		var d = e.getContent();
 		if (d == null || d.type == null)
 			return false;
-		if (!d.type.isRoot())
-			return false;
 		descriptor = d;
 		return true;
 	}

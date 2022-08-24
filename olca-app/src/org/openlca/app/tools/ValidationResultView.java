@@ -84,9 +84,7 @@ public class ValidationResultView extends SimpleFormEditor {
 				if (!(e instanceof Item item))
 					return;
 				if (item.model() instanceof RootDescriptor d) {
-					if (d.type != null
-						&& d.type != ModelType.CATEGORY
-						&& d.type.isRoot()) {
+					if (d.type != null && d.type != ModelType.CATEGORY) {
 						App.open((RootDescriptor) item.model());
 					}
 				}

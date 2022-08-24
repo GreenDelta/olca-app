@@ -79,8 +79,6 @@ class MountLibraryDialog extends FormDialog {
 	private static TypeRefIdMap<String> getCurrentTags() {
 		var tags = new TypeRefIdMap<String>();
 		for (var type : ModelType.values()) {
-			if (!type.isRoot())
-				continue;
 			Database.get().getDescriptors(type.getModelClass()).forEach(d -> {
 				if (!Strings.nullOrEmpty(d.library)) {
 					tags.put(type, d.refId, d.library);
@@ -95,8 +93,6 @@ class MountLibraryDialog extends FormDialog {
 			return;
 		var pathBuilder = Categories.pathsOf(Database.get());
 		for (var type : ModelType.values()) {
-			if (!type.isRoot())
-				continue;
 			Daos.root(Database.get(), type).getDescriptors().forEach(d -> {
 				if (!Strings.nullOrEmpty(d.library) && !previousTags.contains(type, d.refId)) {
 					Repository.get().workspaceIds.invalidate(pathBuilder, d);

@@ -5,13 +5,12 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
-import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 
 /**
  * The navigation tree-filter for the ILCD network export. Allows the selection
  * of processes and product systems.
- * 
+ * <p>
  * TODO: see filters in navigation package
  */
 public class NavigationTreeFilter extends ViewerFilter {
@@ -24,26 +23,25 @@ public class NavigationTreeFilter extends ViewerFilter {
 	}
 
 	private boolean select(INavigationElement<?> element) {
-		if (element instanceof CategoryElement)
-			return validCategory((CategoryElement) element);
-		if (element instanceof ModelElement)
-			return validModel((ModelElement) element);
+		if (element instanceof CategoryElement ce)
+			return validCategory(ce);
+		if (element instanceof ModelElement me)
+			return validModel(me);
 		return hasModelChilds(element);
 	}
 
 	private boolean validCategory(CategoryElement e) {
-		Category c = e.getContent();
-		if (c == null || c.modelType == null)
+		var category = e.getContent();
+		if (category == null || category.modelType == null)
 			return false;
-		ModelType type = c.modelType;
-		return (type.isOneOf(
-				ModelType.PROCESS, ModelType.PRODUCT_SYSTEM))
-				&& hasModelChilds(e);
+		var type = category.modelType;
+		return hasModelChilds(e) && (
+				type == ModelType.PROCESS || type == ModelType.PRODUCT_SYSTEM);
 	}
 
 	private boolean validModel(ModelElement element) {
-		var model = element.getContent();
-		return model.type.isOneOf(ModelType.PROCESS, ModelType.PRODUCT_SYSTEM);
+		var type = element.getContent().type;
+		return type == ModelType.PROCESS || type == ModelType.PRODUCT_SYSTEM;
 	}
 
 	private boolean hasModelChilds(INavigationElement<?> element) {

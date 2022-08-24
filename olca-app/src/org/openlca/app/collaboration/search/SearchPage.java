@@ -145,7 +145,7 @@ class SearchPage extends FormPage {
 			}
 		};
 		viewer.setNullable(true);
-		viewer.setInput(ModelType.rootTypes());
+		viewer.setInput(ModelType.values());
 		viewer.select(query.type);
 		viewer.addSelectionChangedListener(type -> {
 			query.type = type;

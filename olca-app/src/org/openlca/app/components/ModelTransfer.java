@@ -24,7 +24,6 @@ import org.openlca.core.model.descriptors.FlowPropertyDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.model.descriptors.LocationDescriptor;
-import org.openlca.core.model.descriptors.NwSetDescriptor;
 import org.openlca.core.model.descriptors.ParameterDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
@@ -33,7 +32,6 @@ import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
 import org.openlca.core.model.descriptors.SourceDescriptor;
-import org.openlca.core.model.descriptors.UnitDescriptor;
 import org.openlca.core.model.descriptors.UnitGroupDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,9 +189,7 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			case SOCIAL_INDICATOR -> gson.fromJson(e, SocialIndicatorDescriptor.class);
 			case SOURCE -> gson.fromJson(e, SourceDescriptor.class);
 			case UNIT_GROUP -> gson.fromJson(e, UnitGroupDescriptor.class);
-			default -> type.isRoot()
-				? gson.fromJson(e, RootDescriptor.class)
-				: gson.fromJson(e, Descriptor.class);
+			default -> gson.fromJson(e, Descriptor.class);
 		};
 	}
 

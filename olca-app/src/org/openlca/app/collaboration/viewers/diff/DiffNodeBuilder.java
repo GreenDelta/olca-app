@@ -40,8 +40,6 @@ public class DiffNodeBuilder {
 	private void build(TriDiff diff) {
 		if (nodes.containsKey(getKey(diff)))
 			return;
-		if (!diff.type.isRoot())
-			return;
 		if (diff.noAction())
 			return;
 		createNode(diff);
