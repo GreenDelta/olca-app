@@ -112,7 +112,7 @@ public class FlowPropertyTable extends SimpleFormEditor {
 			return switch (col) {
 				case 0 -> Images.get(ModelType.FLOW_PROPERTY);
 				case 2 -> Images.get(property.category);
-				case 3 -> Images.get(ModelType.UNIT);
+				// case 3 -> Images.get(ModelType.UNIT); TODO unit icon
 				default -> null;
 			};
 		}

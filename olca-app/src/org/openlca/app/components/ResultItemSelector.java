@@ -138,7 +138,7 @@ public class ResultItemSelector {
 
 	private void render(Composite comp, FormToolkit tk) {
 		var initType = getType(initialSelection);
-		if (initType != ModelType.UNKNOWN)
+		if (initType != null)
 			selectedType = initType;
 		if (flows != null && !flows.isEmpty())
 			initFlowCombo(tk, comp);
@@ -241,7 +241,7 @@ public class ResultItemSelector {
 		else if (o instanceof CostResultDescriptor)
 			return ModelType.CURRENCY;
 		else
-			return ModelType.UNKNOWN;
+			return null;
 	}
 
 	public interface SelectionHandler {

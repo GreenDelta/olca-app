@@ -107,7 +107,7 @@ public class FlowTable extends SimpleFormEditor {
 			return switch (col) {
 				case 0 -> Images.get(flow.flowType);
 				case 2 -> Images.get(flow.category);
-				case 3 -> Images.get(ModelType.UNIT);
+				// case 3 -> Images.get(ModelType.UNIT); TODO unit icon
 				case 4 -> Images.get(ModelType.FLOW_PROPERTY);
 				default -> null;
 			};

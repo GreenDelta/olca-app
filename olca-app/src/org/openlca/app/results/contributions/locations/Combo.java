@@ -119,7 +119,7 @@ class Combo {
 
 	private void render(Composite comp, FormToolkit tk) {
 		ModelType initType = getType(initialSelection);
-		if (initType != ModelType.UNKNOWN)
+		if (initType != null)
 			selectedType = initType;
 		if (flows != null && !flows.isEmpty())
 			initFlowCombo(tk, comp);
@@ -224,7 +224,7 @@ class Combo {
 		else if (o instanceof CostResultDescriptor)
 			return ModelType.CURRENCY;
 		else
-			return ModelType.UNKNOWN;
+			return null;
 	}
 
 	/**

@@ -93,7 +93,7 @@ class TotalImpactSection extends LabelProvider implements TableSection {
 		var row = (Row) obj;
 		return switch (col) {
 			case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
-			case 1 -> Images.get(ModelType.UNIT);
+			// case 1 -> Images.get(ModelType.UNIT); TODO unit icon
 			default -> image.get(row.shareOf(col));
 		};
 	}

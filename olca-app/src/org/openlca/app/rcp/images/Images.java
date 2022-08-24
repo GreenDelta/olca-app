@@ -334,7 +334,7 @@ public class Images {
 			case LOCATION -> ModelIcon.LOCATION;
 			case PARAMETER -> ModelIcon.PARAMETER;
 			case CURRENCY -> ModelIcon.CURRENCY;
-			case UNIT_GROUP, UNIT -> ModelIcon.UNIT_GROUP;
+			case UNIT_GROUP -> ModelIcon.UNIT_GROUP;
 			case DQ_SYSTEM -> ModelIcon.DQ_SYSTEM;
 			default -> null;
 		};

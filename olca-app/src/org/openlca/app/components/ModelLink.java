@@ -35,7 +35,7 @@ public class ModelLink<T extends RootEntity> {
 	private ModelLink(Class<T> type) {
 		this.db = Objects.requireNonNull(Database.get());
 		this.type = Objects.requireNonNull(type);
-		var modelType = ModelType.UNKNOWN;
+		ModelType modelType = null;
 		for (var mt : ModelType.values()) {
 			if (type.equals(mt.getModelClass())) {
 				modelType = mt;

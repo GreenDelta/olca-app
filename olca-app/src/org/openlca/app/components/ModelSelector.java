@@ -155,10 +155,6 @@ public class ModelSelector extends FormDialog {
 			case IMPACT_CATEGORY -> forMultiple ? M.ImpactCategories : M.ImpactCategory;
 			case LOCATION -> forMultiple ? M.Locations : M.Location;
 			case PARAMETER -> forMultiple ? M.Parameters : M.Parameter;
-			case NW_SET -> forMultiple
-				? M.NormalizationWeightingSets
-				: M.NormalizationWeighting;
-			case UNIT -> forMultiple ? M.Units : M.Unit;
 			default -> "unknown?";
 		};
 	}

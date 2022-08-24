@@ -54,7 +54,7 @@ class ProjectVariantSection extends LabelProvider implements TableSection {
 		return switch (col) {
 			case 0 -> Images.get(ModelType.PROJECT);
 			case 1 -> Images.get(ModelType.PRODUCT_SYSTEM);
-			case 4 -> Images.get(ModelType.UNIT);
+			// case 4 -> Images.get(ModelType.UNIT); TODO: unit icon
 			default -> null;
 		};
 	}

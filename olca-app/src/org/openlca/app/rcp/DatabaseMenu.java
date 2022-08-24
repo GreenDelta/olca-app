@@ -75,7 +75,7 @@ class DatabaseMenu implements IMenuListener {
 		contents.add(Actions.create(M.FlowProperties,
 			Images.descriptor(ModelType.FLOW_PROPERTY), FlowPropertyTable::show));
 		contents.add(Actions.create(M.Units,
-			Images.descriptor(ModelType.UNIT), UnitTable::show));
+			Images.descriptor(ModelType.UNIT_GROUP), UnitTable::show));
 		contents.add(Actions.create(M.Currencies,
 			Images.descriptor(ModelType.CURRENCY), CurrencyTable::show));
 

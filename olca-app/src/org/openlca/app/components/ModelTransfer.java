@@ -183,7 +183,6 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			case IMPACT_CATEGORY -> gson.fromJson(e, ImpactDescriptor.class);
 			case IMPACT_METHOD -> gson.fromJson(e, ImpactMethodDescriptor.class);
 			case LOCATION -> gson.fromJson(e, LocationDescriptor.class);
-			case NW_SET -> gson.fromJson(e, NwSetDescriptor.class);
 			case PARAMETER -> gson.fromJson(e, ParameterDescriptor.class);
 			case PROCESS -> gson.fromJson(e, ProcessDescriptor.class);
 			case PRODUCT_SYSTEM -> gson.fromJson(e, ProductSystemDescriptor.class);
@@ -191,7 +190,6 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			case RESULT -> gson.fromJson(e, ResultDescriptor.class);
 			case SOCIAL_INDICATOR -> gson.fromJson(e, SocialIndicatorDescriptor.class);
 			case SOURCE -> gson.fromJson(e, SourceDescriptor.class);
-			case UNIT -> gson.fromJson(e, UnitDescriptor.class);
 			case UNIT_GROUP -> gson.fromJson(e, UnitGroupDescriptor.class);
 			default -> type.isRoot()
 				? gson.fromJson(e, RootDescriptor.class)

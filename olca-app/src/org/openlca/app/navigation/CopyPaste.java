@@ -88,13 +88,13 @@ public class CopyPaste {
 	}
 
 	private static ModelType getModelType(INavigationElement<?> e) {
-		if (e instanceof ModelElement)
-			return ((ModelElement) e).getContent().type;
-		if (e instanceof CategoryElement)
-			return ((CategoryElement) e).getContent().modelType;
-		if (e instanceof ModelTypeElement)
-			return ((ModelTypeElement) e).getContent();
-		return ModelType.UNKNOWN;
+		if (e instanceof ModelElement me)
+			return me.getContent().type;
+		if (e instanceof CategoryElement ce)
+			return ce.getContent().modelType;
+		if (e instanceof ModelTypeElement mte)
+			return mte.getContent();
+		return null;
 	}
 
 	private static void initialize(Action action, INavigationElement<?>[] elements) {

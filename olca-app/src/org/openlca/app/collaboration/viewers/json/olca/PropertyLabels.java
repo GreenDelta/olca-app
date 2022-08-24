@@ -125,7 +125,7 @@ class PropertyLabels {
 		var type = ModelType.UNIT_GROUP;
 		putBasicLabels(type);
 		put(type, "defaultFlowProperty", M.DefaultFlowProperty, ModelType.FLOW_PROPERTY);
-		put(type, "units", M.Units, ModelType.UNIT);
+		put(type, "units", M.Units);
 		putUnitLabels(type, "units");
 	}
 
@@ -150,7 +150,7 @@ class PropertyLabels {
 		put(type, "evaluationScheme", M.EvaluationSchema);
 		put(type, "activityVariable", M.ActivityVariable);
 		put(type, "activityQuantity", M.ActivityQuantity, ModelType.FLOW_PROPERTY);
-		put(type, "activityUnit", M.ActivityUnit, ModelType.UNIT);
+		put(type, "activityUnit", M.ActivityUnit);
 	}
 
 	private static void putFlowLabels() {
@@ -226,7 +226,7 @@ class PropertyLabels {
 	private static void putExchangeLabels(ModelType type, String path) {
 		put(type, path + ".flow", M.Flow, ModelType.FLOW);
 		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
-		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".unit", M.Unit);
 		put(type, path + ".amount", M.Amount);
 		put(type, path + ".amountFormula", "Amount formula");
 		put(type, path + ".isQuantitativeReference", M.QuantitativeReference);
@@ -316,7 +316,7 @@ class PropertyLabels {
 	private static void putImpactFactorLabels(ModelType type, String path) {
 		put(type, path + ".flow", M.Flow, ModelType.FLOW);
 		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
-		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".unit", M.Unit);
 		put(type, path + ".formula", M.Formula);
 		put(type, path + ".value", M.Value);
 		put(type, path + ".location", M.Location, ModelType.LOCATION);
@@ -342,7 +342,7 @@ class PropertyLabels {
 		put(type, "refProcess", M.Process, ModelType.PROCESS);
 		put(type, "refExchange", M.Product, ModelType.FLOW);
 		put(type, "targetFlowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
-		put(type, "targetUnit", M.Unit, ModelType.UNIT);
+		put(type, "targetUnit", M.Unit);
 		put(type, "targetAmount", M.TargetAmount);
 		put(type, "processes", M.Processes, ModelType.PROCESS);
 		put(type, "processLinks", M.ProcessLinks);
@@ -382,7 +382,7 @@ class PropertyLabels {
 		put(type, path + ".name", M.Name);
 		put(type, path + ".productSystem", M.ProductSystem, ModelType.PRODUCT_SYSTEM);
 		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
-		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".unit", M.Unit);
 		put(type, path + ".amount", M.Amount);
 		put(type, path + ".allocationMethod", M.AllocationMethod);
 		put(type, path + ".description", M.Description);
@@ -437,7 +437,7 @@ class PropertyLabels {
 	private static void putFlowResultLabels(ModelType type, String path) {
 		put(type, path + ".flow", M.Flow, ModelType.FLOW);
 		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
-		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".unit", M.Unit);
 		put(type, path + ".location", M.Flow, ModelType.LOCATION);
 		put(type, path + ".amount", M.Amount);
 		put(type, path + ".description", M.Description);		
@@ -460,7 +460,7 @@ class PropertyLabels {
 	private static void putEpdProduct(ModelType type, String path) {
 		put(type, path + ".flow", M.Flow, ModelType.FLOW);
 		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
-		put(type, path + ".unit", M.Unit, ModelType.UNIT);
+		put(type, path + ".unit", M.Unit);
 		put(type, path + ".amount", M.Amount);
 	}
 	

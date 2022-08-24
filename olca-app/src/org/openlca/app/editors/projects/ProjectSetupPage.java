@@ -339,7 +339,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 					? Icon.CHECK_FALSE.get()
 					: Icon.CHECK_TRUE.get();
 				case 4 -> Images.get(FlowType.PRODUCT_FLOW);
-				case 6 -> Images.get(ModelType.UNIT);
+				// case 6 -> Images.get(ModelType.UNIT); TODO: unit icon
 				case 8 -> Images.get(editor.getComments(), CommentPaths.get(v));
 				default -> null;
 			};

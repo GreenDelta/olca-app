@@ -303,7 +303,7 @@ public class Json {
 		if (type == null)
 			return null;
 		for (var mType : ModelType.values())
-			if (mType != ModelType.UNKNOWN && mType.getModelClass().getSimpleName().equals(type.getAsString()))
+			if (mType.getModelClass().getSimpleName().equals(type.getAsString()))
 				return mType;
 		return null;
 	}
