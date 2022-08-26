@@ -12,6 +12,7 @@ import org.openlca.app.editors.graphical_legacy.model.ProductSystemNode;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Result;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.jsonld.Json;
 import org.slf4j.Logger;
@@ -123,8 +124,9 @@ public final class GraphFile {
 			if (db == null)
 				return null;
 			for (var c : List.of(Process.class, ProductSystem.class, Result.class)) {
-				if (db.getDescriptor(c, refId) instanceof RootDescriptor d)
-					return d;
+				Descriptor d = db.getDescriptor(c, refId);
+				if (d instanceof RootDescriptor r)
+					return r;
 			}
 			return null;
 		};

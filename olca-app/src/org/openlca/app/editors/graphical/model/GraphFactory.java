@@ -12,6 +12,7 @@ import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
@@ -292,8 +293,9 @@ public class GraphFactory {
 		if (db == null)
 			return null;
 		for (var c : List.of(Process.class, ProductSystem.class, Result.class)) {
-			if (db.getDescriptor(c, id) instanceof RootDescriptor d)
-				return d;
+			Descriptor d = db.getDescriptor(c, id);
+			if (d instanceof RootDescriptor r)
+				return r;
 		}
 		return null;
 	}
@@ -303,8 +305,9 @@ public class GraphFactory {
 		if (db == null)
 			return null;
 		for (var c : List.of(Process.class, ProductSystem.class, Result.class)) {
-			if (db.getDescriptor(c, refId) instanceof RootDescriptor d)
-				return d;
+			Descriptor d = db.getDescriptor(c, refId);
+			if (d instanceof RootDescriptor r)
+				return r;
 		}
 		return null;
 	}
