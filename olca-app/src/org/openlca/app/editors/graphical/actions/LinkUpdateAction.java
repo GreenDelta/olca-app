@@ -1,5 +1,9 @@
 package org.openlca.app.editors.graphical.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.window.Window;
@@ -15,13 +19,14 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.util.*;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.Question;
+import org.openlca.app.util.UI;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.ProcessType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class LinkUpdateAction extends WorkbenchPartAction {
 
@@ -31,6 +36,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		super(part);
 		editor = part;
 		setId(ActionIds.LINK_UPDATE);
+		setImageDescriptor(Icon.UPDATE.descriptor());
 		setText(NLS.bind(M.Update, M.ProcessLinks));
 	}
 

@@ -161,8 +161,8 @@ import org.openlca.core.database.FlowDao as FlowDao
 import org.openlca.core.model.descriptors.FlowDescriptor as FlowDescriptor
 import org.openlca.io.ilcd.output.FlowExport as FlowExport
 import org.openlca.io.ilcd.input.FlowImport as FlowImport
-import org.openlca.io.maps.FlowMap as FlowMap
-import org.openlca.io.maps.FlowMapEntry as FlowMapEntry
+import org.openlca.core.io.maps.FlowMap as FlowMap
+import org.openlca.core.io.maps.FlowMapEntry as FlowMapEntry
 import org.openlca.core.model.FlowProperty as FlowProperty
 import org.openlca.core.database.FlowPropertyDao as FlowPropertyDao
 import org.openlca.core.model.descriptors.FlowPropertyDescriptor as FlowPropertyDescriptor
@@ -175,7 +175,7 @@ import org.openlca.core.model.FlowPropertyType as FlowPropertyType
 import org.openlca.core.database.usage.FlowPropertyUseSearch as FlowPropertyUseSearch
 import org.openlca.proto.io.output.FlowPropertyWriter as FlowPropertyWriter
 import org.openlca.jsonld.input.FlowReader as FlowReader
-import org.openlca.io.maps.FlowRef as FlowRef
+import org.openlca.core.io.maps.FlowRef as FlowRef
 import org.openlca.core.model.FlowResult as FlowResult
 import org.openlca.io.maps.FlowSync as FlowSync
 import org.openlca.core.matrix.cache.FlowTable as FlowTable
@@ -232,6 +232,7 @@ import org.openlca.core.io.ImportLog as ImportLog
 import org.openlca.proto.io.input.ImportStatus as ImportStatus
 import org.openlca.proto.io.input.In as In
 import org.openlca.proto.io.InMemoryProtoStore as InMemoryProtoStore
+import org.openlca.core.model.store.InMemoryStore as InMemoryStore
 import org.openlca.core.matrix.IndexedMatrix as IndexedMatrix
 import org.openlca.io.openepd.io.IndicatorMapping as IndicatorMapping
 import org.openlca.io.xls.results.InfoSheet as InfoSheet
@@ -293,7 +294,7 @@ import org.openlca.io.openepd.io.MappedExportResult as MappedExportResult
 import org.openlca.core.model.MappingFile as MappingFile
 import org.openlca.core.database.MappingFileDao as MappingFileDao
 import org.openlca.io.openepd.io.MappingModel as MappingModel
-import org.openlca.io.maps.MappingStatus as MappingStatus
+import org.openlca.core.io.maps.MappingStatus as MappingStatus
 import org.openlca.io.maps.Maps as Maps
 import org.openlca.core.matrix.io.MarketFormatWriter as MarketFormatWriter
 import org.openlca.io.ecospold2.input.MarketProcessCleanUp as MarketProcessCleanUp
