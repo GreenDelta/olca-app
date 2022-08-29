@@ -100,6 +100,7 @@ import org.openlca.core.model.Direction as Direction
 import org.openlca.util.Dirs as Dirs
 import org.openlca.io.DisplayValues as DisplayValues
 import org.openlca.util.Doubles as Doubles
+import org.openlca.core.math.data_quality.DqiData as DqiData
 import org.openlca.io.ecospold1.input.ES1KeyGen as ES1KeyGen
 import org.openlca.core.results.EachOneResult as EachOneResult
 import org.openlca.io.openepd.Ec3Category as Ec3Category
