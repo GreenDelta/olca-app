@@ -35,7 +35,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 
 	public AddLibraryAction() {
 		setText("Add a library");
-		setImageDescriptor(Icon.DATABASE.descriptor());
+		setImageDescriptor(Icon.LIBRARY.descriptor());
 	}
 
 	@Override

@@ -27,6 +27,7 @@ public enum Icon {
 	COMPARE_COMMIT("collaboration/compare_commit.png"),
 	COMPARE_VIEW("collaboration/compare_view.png"),
 	CONNECT("connect.png"),
+	CONSOLE("console.png"),
 	COPY("copy.png"),
 	COPY_ALL_CHANGES("collaboration/copy_all.png"),
 	COPY_SELECTED_CHANGE("collaboration/copy_selected.png"),

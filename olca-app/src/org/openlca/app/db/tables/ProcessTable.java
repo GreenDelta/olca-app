@@ -81,7 +81,7 @@ public class ProcessTable extends SimpleFormEditor {
 			var table = Tables.createViewer(body,
 				M.Name,
 				M.Category,
-				M.FlowType,
+				M.ProcessType,
 				"Reference Flow",
 				"ID");
 			Tables.bindColumnWidths(table, 0.4, 0.1, 0.1, 0.2, 0.2);
@@ -105,7 +105,7 @@ public class ProcessTable extends SimpleFormEditor {
 			return switch (col) {
 				case 0 -> Images.get(ModelType.PROCESS);
 				case 1 -> Images.get(process.category);
-				case 2 -> Images.get(process.processType);
+				case 2 -> Images.get(process);
 				case 3 -> Images.get(process.quantitativeReference.flow.flowType);
 				default -> null;
 			};

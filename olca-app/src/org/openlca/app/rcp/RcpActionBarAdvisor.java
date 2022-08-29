@@ -43,7 +43,6 @@ import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.tools.openepd.EpdPanel;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
-import org.openlca.app.util.FileType;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
@@ -236,7 +235,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		var devMenu = new MenuManager(M.DeveloperTools);
 		menu.add(devMenu);
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
-		devMenu.add(Actions.create("Console", Images.descriptor(FileType.DEFAULT), Console::show));
+		devMenu.add(Actions.create("Console", Icon.CONSOLE.descriptor(), Console::show));
 		devMenu.add(Actions.create("Python", Icon.PYTHON.descriptor(), PythonEditor::open));
 		devMenu.add(Actions.create("IPC Server", Icon.DATABASE.descriptor(), IpcDialog::show));
 	}
