@@ -118,7 +118,7 @@ public class GroupPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.formHeader(mform,
 				Labels.name(editor.setup.target()),
-				Images.get(editor.result));
+				Icon.ANALYSIS_RESULT.get());
 		var toolkit = mform.getToolkit();
 		var body = UI.formBody(form, toolkit);
 		createGroupingSection(toolkit, body);

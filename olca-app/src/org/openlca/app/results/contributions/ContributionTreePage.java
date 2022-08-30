@@ -17,6 +17,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
@@ -57,7 +58,7 @@ public class ContributionTreePage extends FormPage {
 		FormToolkit tk = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
 			Labels.name(setup.target()),
-			Images.get(result));
+			Icon.ANALYSIS_RESULT.get());
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);

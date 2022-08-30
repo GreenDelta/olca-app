@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
-import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
@@ -42,7 +42,7 @@ public class TagResultPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.formHeader(mform,
 			Labels.name(editor.setup.target()),
-			Images.get(editor.result));
+			Icon.ANALYSIS_RESULT.get());
 		var tk = mform.getToolkit();
 		var body = UI.formBody(form, tk);
 

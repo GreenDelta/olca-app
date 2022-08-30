@@ -34,7 +34,8 @@ enum ModelIcon {
 	GROUP_INVENTORY("model/group_inventory.png"),
 	GROUP_MODELS("model/group_models.png"),
 
-	IMPACT_CATEGORY("model/impact_category.png"),
+	IMPACT_CATEGORY_OUT("model/impact_category.png"),
+	IMPACT_CATEGORY_IN("model/impact_category_reverse.png"),
 	IMPACT_CATEGORY_CATEGORY("category/impact_category.png"),
 	IMPACT_CATEGORY_WIZARD("wizard/impact_category.png"),
 

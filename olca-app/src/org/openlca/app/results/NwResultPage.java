@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -43,7 +43,7 @@ public class NwResultPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.formHeader(mform,
 				Labels.name(setup.target()),
-				Images.get(result));
+				Icon.ANALYSIS_RESULT.get());
 		toolkit = mform.getToolkit();
 		body = UI.formBody(form, toolkit);
 		if (setup.nwSet() == null)

@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -55,7 +56,7 @@ public class ImpactChecksPage extends FormPage {
 		var form = UI.formHeader(mform,
 				"Flows that are not covered by the "
 						+ "selected LCIA method",
-				Images.get(result));
+				Icon.ANALYSIS_RESULT.get());
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 

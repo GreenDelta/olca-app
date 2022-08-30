@@ -3,7 +3,7 @@ package org.openlca.app.results;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
-import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.contributions.ContributionChartSection;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -25,7 +25,7 @@ public class InfoPage extends FormPage {
 		var result = editor.result;
 		var form = UI.formHeader(mform,
 				Labels.name(editor.setup.target()),
-				Images.get(editor.result));
+				Icon.ANALYSIS_RESULT.get());
 		var tk = mform.getToolkit();
 		var body = UI.formBody(form, tk);
 		InfoSection.create(body, tk, editor.setup);

@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ContributionCutoff.CutoffContentProvider;
 import org.openlca.app.results.requirements.TotalRequirementsSection;
@@ -50,7 +51,7 @@ public class InventoryPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.formHeader(mform,
 				Labels.name(editor.setup.target()),
-				Images.get(editor.result));
+				Icon.ANALYSIS_RESULT.get());
 		toolkit = mform.getToolkit();
 		var body = UI.formBody(form, toolkit);
 		var sash = new SashForm(body, SWT.VERTICAL);

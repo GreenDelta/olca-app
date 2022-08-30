@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
@@ -69,7 +70,7 @@ public class LocationPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
 				Labels.name(editor.setup.target()),
-				Images.get(editor.result));
+				Icon.ANALYSIS_RESULT.get());
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 		createCombos(body, tk);

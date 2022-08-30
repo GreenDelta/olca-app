@@ -20,7 +20,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -98,7 +98,7 @@ public class ProcessResultPage extends FormPage {
 		toolkit = mForm.getToolkit();
 		var form = UI.formHeader(mForm,
 				Labels.name(setup.target()),
-				Images.get(result));
+				Icon.ANALYSIS_RESULT.get());
 		var body = UI.formBody(form, toolkit);
 		if (result.hasEnviFlows()) {
 			createFlowSection(body);

@@ -21,6 +21,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ContributionCutoff.CutoffContentProvider;
 import org.openlca.app.util.Actions;
@@ -66,7 +67,7 @@ public class TotalImpactResultPage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		ScrolledForm form = UI.formHeader(mform,
 				Labels.name(setup.target()),
-				Images.get(result));
+				Icon.ANALYSIS_RESULT.get());
 		toolkit = mform.getToolkit();
 		Composite body = UI.formBody(form, toolkit);
 		Section section = UI.section(body, toolkit, M.ImpactAnalysis + ": "

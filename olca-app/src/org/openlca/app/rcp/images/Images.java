@@ -9,8 +9,10 @@ import org.openlca.app.navigation.elements.GroupType;
 import org.openlca.app.util.FileType;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.Direction;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
@@ -21,9 +23,8 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.results.IResult;
-import org.openlca.core.results.LcaResult;
 
 public class Images {
 
@@ -31,8 +32,8 @@ public class Images {
 		if (f == null)
 			return null;
 		return f.isVirtual() && f.wrapped() != null
-			? get(f.wrapped())
-			: get(f.flow());
+				? get(f.wrapped())
+				: get(f.flow());
 	}
 
 	public static Image get(RefEntity entity) {
@@ -46,9 +47,15 @@ public class Images {
 			return get(flow.flowType);
 		if (entity instanceof Unit)
 			return get(ModelType.UNIT_GROUP);
-		if (entity instanceof RootEntity re) {
+
+		if (entity instanceof ImpactCategory impact)
+			return impact.direction == Direction.INPUT
+					? ImageManager.get(ModelIcon.IMPACT_CATEGORY_IN)
+					: ImageManager.get(ModelIcon.IMPACT_CATEGORY_OUT);
+
+		if (entity instanceof RootEntity re)
 			return get(ModelType.of(re));
-		}
+
 		return null;
 	}
 
@@ -63,6 +70,11 @@ public class Images {
 			var icon = categoryIcon(c.categoryType);
 			return ImageManager.get(icon);
 		}
+		if (d instanceof ImpactDescriptor i) {
+			return i.direction == Direction.INPUT
+					? ImageManager.get(ModelIcon.IMPACT_CATEGORY_IN)
+					: ImageManager.get(ModelIcon.IMPACT_CATEGORY_OUT);
+		}
 		return get(d.type);
 	}
 
@@ -71,8 +83,8 @@ public class Images {
 			return null;
 		var icon = categoryIcon(c.modelType);
 		return icon == null
-			? Icon.FOLDER.get()
-			: ImageManager.get(icon);
+				? Icon.FOLDER.get()
+				: ImageManager.get(icon);
 	}
 
 	public static Image get(Group group) {
@@ -80,15 +92,15 @@ public class Images {
 			return null;
 		var icon = icon(group.type);
 		return icon == null
-			? Icon.FOLDER.get()
-			: ImageManager.get(icon);
+				? Icon.FOLDER.get()
+				: ImageManager.get(icon);
 	}
 
 	public static Image get(ModelType type) {
 		var icon = icon(type);
 		return icon != null
-			? ImageManager.get(icon)
-			: null;
+				? ImageManager.get(icon)
+				: null;
 	}
 
 	public static Image get(FlowType type) {
@@ -96,8 +108,8 @@ public class Images {
 			return null;
 		ModelIcon icon = icon(type);
 		return icon == null
-			? null
-			: ImageManager.get(icon);
+				? null
+				: ImageManager.get(icon);
 	}
 
 	public static Image get(ProcessType type) {
@@ -116,14 +128,14 @@ public class Images {
 
 	public static Image get(FileType type) {
 		return type == null
-			? null
-			: ImageManager.get(imgPath(type));
+				? null
+				: ImageManager.get(imgPath(type));
 	}
 
 	public static ImageDescriptor descriptor(FileType type) {
 		return type == null
-			? null
-			: ImageManager.descriptor(imgPath(type));
+				? null
+				: ImageManager.descriptor(imgPath(type));
 	}
 
 	private static String imgPath(FileType type) {
@@ -146,12 +158,12 @@ public class Images {
 	}
 
 	public static Image get(ModelType type, Overlay overlay) {
-		ModelIcon icon = Images.icon(type);
+		var icon = icon(type);
 		if (icon == null)
 			return null;
-		if (overlay == null)
-			return ImageManager.get(icon);
-		return ImageManager.get(icon, overlay);
+		return overlay == null
+				? ImageManager.get(icon)
+				: ImageManager.get(icon, overlay);
 	}
 
 	public static Image get(Boolean value) {
@@ -166,20 +178,11 @@ public class Images {
 		return null;
 	}
 
-	// TODO: remove this, we only have LcaResult now
-	public static Image get(IResult result) {
-		if (result == null)
-			return null;
-		if (result instanceof LcaResult)
-			return Icon.ANALYSIS_RESULT.get();
-		return Icon.QUICK_RESULT.get();
-	}
-
 	public static Image getForCategory(ModelType type) {
 		var icon = categoryIcon(type);
 		return icon == null
-			? Icon.FOLDER.get()
-			: ImageManager.get(icon);
+				? Icon.FOLDER.get()
+				: ImageManager.get(icon);
 	}
 
 	public static ImageDescriptor descriptor(RefEntity entity) {
@@ -317,7 +320,7 @@ public class Images {
 		};
 	}
 
-	static ModelIcon icon(ModelType type) {
+	private static ModelIcon icon(ModelType type) {
 		if (type == null)
 			return null;
 		return switch (type) {
@@ -326,7 +329,7 @@ public class Images {
 			case FLOW -> ModelIcon.FLOW;
 			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY;
 			case IMPACT_METHOD -> ModelIcon.IMPACT_METHOD;
-			case IMPACT_CATEGORY -> ModelIcon.IMPACT_CATEGORY;
+			case IMPACT_CATEGORY -> ModelIcon.IMPACT_CATEGORY_OUT;
 			case PROCESS -> ModelIcon.PROCESS;
 			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM;
 			case PROJECT -> ModelIcon.PROJECT;
