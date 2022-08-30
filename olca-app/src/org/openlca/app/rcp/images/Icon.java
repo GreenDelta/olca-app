@@ -109,6 +109,7 @@ public enum Icon {
 	NEW_WIZARD("wizard/new.png"),
 	NUMBER("number.png"),
 
+	OPEN_FOLDER("open_folder.png"),
 	OUTLINE("graphical/outline.png"),
 	OUTPUT("model/output.png"),
 

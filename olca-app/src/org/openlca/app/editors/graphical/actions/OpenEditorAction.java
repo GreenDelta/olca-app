@@ -22,7 +22,7 @@ public class OpenEditorAction extends SelectionAction {
 		super(part);
 		editor = part;
 		setId(ActionIds.OPEN_EDITOR);
-		setImageDescriptor(Icon.FOLDER.descriptor());
+		setImageDescriptor(Icon.OPEN_FOLDER.descriptor());
 	}
 
 	@Override
