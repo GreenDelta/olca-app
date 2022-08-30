@@ -12,9 +12,9 @@ import java.util.Objects;
 public class GraphConfig extends Element implements Copyable<GraphConfig> {
 
 	public static final String CONFIG_PROP = "config";
-	public static final String ROUTER_NULL = "Straight line";
-	public static final String ROUTER_CURVE = "Curve";
-	public static final String ROUTER_MANHATTAN = "Manhattan";
+	public static final String ROUTER_NULL = "Straight lines";
+	public static final String ROUTER_CURVE = "Curved lines";
+	public static final String ROUTER_MANHATTAN = "Multi-segment lines";
 
 	private boolean showElementaryFlows = false;
 	private String connectionRouter = ROUTER_CURVE;

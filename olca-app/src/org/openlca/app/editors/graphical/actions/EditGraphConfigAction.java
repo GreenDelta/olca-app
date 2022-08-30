@@ -114,7 +114,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		}
 
 		private void connectionRoutersCombo(FormToolkit tk, Composite comp) {
-			var combo = UI.formCombo(comp, tk, "Connection router");
+			var combo = UI.formCombo(comp, tk, "Connections");
 			UI.gridData(combo, true, false);
 			var connectionRouters = new String[]{
 				ROUTER_NULL,
