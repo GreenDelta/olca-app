@@ -61,6 +61,7 @@ class Actions {
 		var m = runner.exception.getMessage();
 		var notAuthorized = m.endsWith("not authorized");
 		var tokenRequired = m.endsWith("400 null");
+		var passwordMissing = m.endsWith("424 null");
 		var notPermitted = m.contains("not permitted on");
 		if (notPermitted) {
 			if (Strings.nullOrEmpty(credentials.token)) {
@@ -68,6 +69,10 @@ class Actions {
 			}
 			repo.invalidateCredentials();
 			throw new TransportException("You do not have sufficient access to this repository");
+		}
+		if (passwordMissing) {
+			throw new TransportException(
+					"We have updated our password encryption. Since we only store encrypted passwords, we are not able to migrate your current password. Please use the 'Forgot your password?' link on the website to request a new password being sent to your email address.");
 		}
 		if (!notAuthorized && !tokenRequired)
 			throw runner.exception;
