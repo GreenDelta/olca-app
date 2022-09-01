@@ -132,7 +132,6 @@ class ResultPage extends FormPage {
 			link.setData(d);
 			link.addHyperlinkListener(click);
 			renderCategory(tk, d, comp);
-			renderDescription(tk, d, comp);
 		}
 	}
 
@@ -147,16 +146,6 @@ class ResultPage extends FormPage {
 			end = results.size();
 		}
 		return results.subList(start, end);
-	}
-
-	private void renderDescription(FormToolkit tk, Descriptor d, Composite comp) {
-		if (d.description == null)
-			return;
-		String text = Strings.cut(d.description, 400);
-		if (text != null && !text.isEmpty()) {
-			Label label = tk.createLabel(comp, text, SWT.WRAP);
-			UI.gridData(label, false, false).widthHint = 600;
-		}
 	}
 
 	private void renderCategory(FormToolkit tk, Descriptor d, Composite comp) {

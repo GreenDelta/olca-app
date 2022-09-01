@@ -88,8 +88,6 @@ public class BaseLabelProvider extends ColumnLabelProvider {
 
 	@Override
 	public String getToolTipText(Object obj) {
-		if (obj instanceof Descriptor d)
-			return d.description;
 		if (obj instanceof RefEntity e)
 			return e.description;
 		return null;

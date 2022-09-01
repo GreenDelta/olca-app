@@ -66,7 +66,6 @@ public class ILCDProvider implements IProvider {
 					return;
 				Descriptor d = new UnitDescriptor();
 				d.name = unit.name;
-				d.description = LangString.getFirst(unit.comment, "en");
 				units.put(ug.getUUID(), d);
 			});
 

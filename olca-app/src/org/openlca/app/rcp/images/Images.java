@@ -41,10 +41,25 @@ public class Images {
 			if (source.externalFile != null)
 				return get(FileType.forName(source.externalFile));
 		}
-		if (entity instanceof Process process)
-			return get(process.processType);
+
+		if (entity instanceof Process process) {
+			var qRef = process.quantitativeReference;
+			var flowType = qRef != null && qRef.flow != null
+					? qRef.flow.flowType
+					: null;
+			if (process.processType == ProcessType.LCI_RESULT) {
+				return flowType == FlowType.WASTE_FLOW
+						? ImageManager.get(ModelIcon.PROCESS_SYSTEM_WASTE)
+						: ImageManager.get(ModelIcon.PROCESS_SYSTEM);
+			}
+			return flowType == FlowType.WASTE_FLOW
+					? ImageManager.get(ModelIcon.PROCESS_WASTE)
+					: ImageManager.get(ModelIcon.PROCESS);
+		}
+
 		if (entity instanceof Flow flow)
 			return get(flow.flowType);
+
 		if (entity instanceof Unit)
 			return get(ModelType.UNIT_GROUP);
 
@@ -62,8 +77,17 @@ public class Images {
 	public static Image get(Descriptor d) {
 		if (d == null || d.type == null)
 			return null;
-		if (d instanceof ProcessDescriptor p && p.processType != null)
-			return get(p.processType);
+
+		if (d instanceof ProcessDescriptor p) {
+			if (p.processType == ProcessType.LCI_RESULT)
+				return p.flowType == FlowType.WASTE_FLOW
+						? ImageManager.get(ModelIcon.PROCESS_SYSTEM_WASTE)
+						: ImageManager.get(ModelIcon.PROCESS_SYSTEM);
+			return p.flowType == FlowType.WASTE_FLOW
+					? ImageManager.get(ModelIcon.PROCESS_WASTE)
+					: ImageManager.get(ModelIcon.PROCESS);
+		}
+
 		if (d instanceof FlowDescriptor f && f.flowType != null)
 			return get(f.flowType);
 		if (d instanceof CategoryDescriptor c && c.category != null) {

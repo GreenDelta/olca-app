@@ -23,7 +23,7 @@ public class DescriptorViewer extends AbstractTableViewer<Descriptor> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { M.Name, M.Description };
+		return new String[] { M.Name };
 	}
 
 	private class DescriptorLabelProvider
@@ -46,8 +46,6 @@ public class DescriptorViewer extends AbstractTableViewer<Descriptor> {
 			switch (col) {
 			case 0:
 				return Labels.name(d);
-			case 1:
-				return d.description;
 			}
 			return null;
 		}

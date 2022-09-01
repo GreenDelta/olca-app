@@ -40,8 +40,8 @@ public class ExchangeNode extends Node {
 		if (parent == null)
 			return false;
 		if (parent.process instanceof ProcessDescriptor p) {
-			return p.quantitativeReference != null
-				&& p.quantitativeReference == exchange.id;
+			// return p.quantitativeReference != null
+			// 	&& p.quantitativeReference == exchange.id;
 		}
 		// TODO: product systems and results ...
 
