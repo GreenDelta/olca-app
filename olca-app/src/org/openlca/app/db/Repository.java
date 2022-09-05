@@ -10,6 +10,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.ObjectIdStore;
 import org.openlca.git.find.Commits;
@@ -76,6 +77,7 @@ public class Repository {
 		try {
 			current.isCollaborationServer(current.client.isCollaborationServer());
 		} catch (WebRequestException e) {
+			MsgBox.error("Could not connect, is this a Git server or a Collaboration Server 2.0?");
 			current.isCollaborationServer(false);
 		}
 		return current;
