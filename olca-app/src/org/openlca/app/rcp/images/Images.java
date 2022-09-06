@@ -75,6 +75,8 @@ public class Images {
 	}
 
 	public static Image get(Descriptor d) {
+		if (d.isFromLibrary())
+			return get(d, Overlay.LIBRARY);
 		var icon = icon(d);
 		return icon != null
 				? ImageManager.get(icon)
