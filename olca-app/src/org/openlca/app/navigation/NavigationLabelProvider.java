@@ -157,7 +157,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Images.get(category);
 		if (content instanceof Descriptor descriptor) {
 			return descriptor.isFromLibrary()
-				? Images.get(descriptor.type, Overlay.LIBRARY)
+				? Images.get(descriptor, Overlay.LIBRARY)
 				: Images.get(descriptor);
 		}
 

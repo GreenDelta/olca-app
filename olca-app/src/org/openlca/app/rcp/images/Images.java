@@ -75,31 +75,10 @@ public class Images {
 	}
 
 	public static Image get(Descriptor d) {
-		if (d == null || d.type == null)
-			return null;
-
-		if (d instanceof ProcessDescriptor p) {
-			if (p.processType == ProcessType.LCI_RESULT)
-				return p.flowType == FlowType.WASTE_FLOW
-						? ImageManager.get(ModelIcon.PROCESS_SYSTEM_WASTE)
-						: ImageManager.get(ModelIcon.PROCESS_SYSTEM);
-			return p.flowType == FlowType.WASTE_FLOW
-					? ImageManager.get(ModelIcon.PROCESS_WASTE)
-					: ImageManager.get(ModelIcon.PROCESS);
-		}
-
-		if (d instanceof FlowDescriptor f && f.flowType != null)
-			return get(f.flowType);
-		if (d instanceof CategoryDescriptor c && c.category != null) {
-			var icon = categoryIcon(c.categoryType);
-			return ImageManager.get(icon);
-		}
-		if (d instanceof ImpactDescriptor i) {
-			return i.direction == Direction.INPUT
-					? ImageManager.get(ModelIcon.IMPACT_CATEGORY_IN)
-					: ImageManager.get(ModelIcon.IMPACT_CATEGORY_OUT);
-		}
-		return get(d.type);
+		var icon = icon(d);
+		return icon != null
+				? ImageManager.get(icon)
+				: null;
 	}
 
 	public static Image get(Category c) {
@@ -188,6 +167,15 @@ public class Images {
 		return overlay == null
 				? ImageManager.get(icon)
 				: ImageManager.get(icon, overlay);
+	}
+
+	public static Image get(Descriptor d, Overlay overlay) {
+		var icon = icon(d);
+		if (icon == null)
+			return null;
+		return overlay != null
+				? ImageManager.get(icon, overlay)
+				: ImageManager.get(icon);
 	}
 
 	public static Image get(Boolean value) {
@@ -332,6 +320,33 @@ public class Images {
 			case DQ_SYSTEM -> ModelIcon.DQ_SYSTEM_WIZARD;
 			default -> null;
 		};
+	}
+
+	public static ModelIcon icon(Descriptor d) {
+		if (d == null)
+			return null;
+
+		if (d instanceof ProcessDescriptor p) {
+			if (p.processType == ProcessType.LCI_RESULT)
+				return p.flowType == FlowType.WASTE_FLOW
+						? ModelIcon.PROCESS_SYSTEM_WASTE
+						: ModelIcon.PROCESS_SYSTEM;
+			return p.flowType == FlowType.WASTE_FLOW
+					? ModelIcon.PROCESS_WASTE
+					: ModelIcon.PROCESS;
+		}
+
+		if (d instanceof FlowDescriptor f && f.flowType != null)
+			return icon(f.flowType);
+		if (d instanceof CategoryDescriptor c && c.category != null)
+			return categoryIcon(c.categoryType);
+
+		if (d instanceof ImpactDescriptor i) {
+			return i.direction == Direction.INPUT
+					? ModelIcon.IMPACT_CATEGORY_IN
+					: ModelIcon.IMPACT_CATEGORY_OUT;
+		}
+		return icon(d.type);
 	}
 
 	private static ModelIcon icon(GroupType type) {

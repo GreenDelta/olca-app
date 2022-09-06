@@ -10,7 +10,7 @@ import org.openlca.core.model.descriptors.ActorDescriptor as ActorDescriptor
 import org.openlca.io.ilcd.output.ActorExport as ActorExport
 import org.openlca.jsonld.input.ActorReader as ActorReader
 import org.openlca.core.database.usage.ActorUseSearch as ActorUseSearch
-import org.openlca.proto.io.output.ActorWriter as ActorWriter
+import org.openlca.jsonld.output.ActorWriter as ActorWriter
 import org.openlca.core.math.data_quality.AggregationType as AggregationType
 import org.openlca.core.model.AllocationFactor as AllocationFactor
 import org.openlca.core.matrix.AllocationIndex as AllocationIndex
@@ -33,7 +33,7 @@ import org.openlca.ipc.handlers.CacheHandler as CacheHandler
 import org.openlca.core.matrix.CalcAllocationFactor as CalcAllocationFactor
 import org.openlca.core.matrix.CalcExchange as CalcExchange
 import org.openlca.core.matrix.CalcImpactFactor as CalcImpactFactor
-import org.openlca.core.math.CalculationQueue as CalculationQueue
+import org.openlca.core.services.CalculationQueue as CalculationQueue
 import org.openlca.core.model.CalculationSetup as CalculationSetup
 import org.openlca.proto.io.input.CalculationSetupReader as CalculationSetupReader
 import org.openlca.ipc.handlers.Calculator as Calculator
@@ -64,7 +64,7 @@ import org.openlca.core.model.descriptors.CurrencyDescriptor as CurrencyDescript
 import org.openlca.io.refdata.CurrencyImport as CurrencyImport
 import org.openlca.jsonld.input.CurrencyReader as CurrencyReader
 import org.openlca.core.database.usage.CurrencyUseSearch as CurrencyUseSearch
-import org.openlca.proto.io.output.CurrencyWriter as CurrencyWriter
+import org.openlca.jsonld.output.CurrencyWriter as CurrencyWriter
 import org.openlca.core.math.data_quality.DQCalculationSetup as DQCalculationSetup
 import org.openlca.core.model.DQIndicator as DQIndicator
 import org.openlca.core.math.data_quality.DQResult as DQResult
@@ -74,7 +74,7 @@ import org.openlca.core.database.DQSystemDao as DQSystemDao
 import org.openlca.core.model.descriptors.DQSystemDescriptor as DQSystemDescriptor
 import org.openlca.jsonld.input.DQSystemReader as DQSystemReader
 import org.openlca.core.database.usage.DQSystemUseSearch as DQSystemUseSearch
-import org.openlca.proto.io.output.DQSystemWriter as DQSystemWriter
+import org.openlca.jsonld.output.DQSystemWriter as DQSystemWriter
 import org.openlca.util.DQSystems as DQSystems
 import org.openlca.core.database.Daos as Daos
 import org.openlca.core.DataDir as DataDir
@@ -137,7 +137,7 @@ import org.openlca.core.model.EpdProduct as EpdProduct
 import org.openlca.io.openepd.EpdQuantity as EpdQuantity
 import org.openlca.jsonld.input.EpdReader as EpdReader
 import org.openlca.io.openepd.EpdScopeValue as EpdScopeValue
-import org.openlca.proto.io.output.EpdWriter as EpdWriter
+import org.openlca.jsonld.output.EpdWriter as EpdWriter
 import org.openlca.io.xls.Excel as Excel
 import org.openlca.io.xls.process.output.ExcelExport as ExcelExport
 import org.openlca.io.xls.process.input.ExcelImport as ExcelImport
@@ -174,7 +174,7 @@ import org.openlca.io.ilcd.input.FlowPropertyImport as FlowPropertyImport
 import org.openlca.jsonld.input.FlowPropertyReader as FlowPropertyReader
 import org.openlca.core.model.FlowPropertyType as FlowPropertyType
 import org.openlca.core.database.usage.FlowPropertyUseSearch as FlowPropertyUseSearch
-import org.openlca.proto.io.output.FlowPropertyWriter as FlowPropertyWriter
+import org.openlca.jsonld.output.FlowPropertyWriter as FlowPropertyWriter
 import org.openlca.jsonld.input.FlowReader as FlowReader
 import org.openlca.core.io.maps.FlowRef as FlowRef
 import org.openlca.core.model.FlowResult as FlowResult
@@ -183,7 +183,7 @@ import org.openlca.core.matrix.cache.FlowTable as FlowTable
 import org.openlca.core.model.FlowType as FlowType
 import org.openlca.core.database.usage.FlowUseSearch as FlowUseSearch
 import org.openlca.core.results.FlowValue as FlowValue
-import org.openlca.proto.io.output.FlowWriter as FlowWriter
+import org.openlca.jsonld.output.FlowWriter as FlowWriter
 import org.openlca.util.ForegroundSystemGenerator as ForegroundSystemGenerator
 import org.openlca.io.Format as Format
 import org.openlca.util.Formula as Formula
@@ -212,7 +212,7 @@ import org.openlca.core.database.ImpactCategoryDao as ImpactCategoryDao
 import org.openlca.io.refdata.ImpactCategoryExport as ImpactCategoryExport
 import org.openlca.jsonld.input.ImpactCategoryReader as ImpactCategoryReader
 import org.openlca.core.database.usage.ImpactCategoryUseSearch as ImpactCategoryUseSearch
-import org.openlca.proto.io.output.ImpactCategoryWriter as ImpactCategoryWriter
+import org.openlca.jsonld.output.ImpactCategoryWriter as ImpactCategoryWriter
 import org.openlca.core.model.descriptors.ImpactDescriptor as ImpactDescriptor
 import org.openlca.util.ImpactDirections as ImpactDirections
 import org.openlca.core.model.ImpactFactor as ImpactFactor
@@ -225,7 +225,7 @@ import org.openlca.core.model.descriptors.ImpactMethodDescriptor as ImpactMethod
 import org.openlca.io.ilcd.output.ImpactMethodExport as ImpactMethodExport
 import org.openlca.jsonld.input.ImpactMethodReader as ImpactMethodReader
 import org.openlca.core.database.usage.ImpactMethodUseSearch as ImpactMethodUseSearch
-import org.openlca.proto.io.output.ImpactMethodWriter as ImpactMethodWriter
+import org.openlca.jsonld.output.ImpactMethodWriter as ImpactMethodWriter
 import org.openlca.core.model.ImpactResult as ImpactResult
 import org.openlca.core.results.ImpactValue as ImpactValue
 import org.openlca.io.ecospold1.input.ImportConfig as ImportConfig
@@ -262,6 +262,8 @@ import org.openlca.core.matrix.io.index.IxTechItem as IxTechItem
 import org.openlca.core.matrix.format.JavaMatrix as JavaMatrix
 import org.openlca.core.matrix.solvers.JavaSolver as JavaSolver
 import org.openlca.jsonld.Json as Json
+import org.openlca.core.services.JsonCalculationSetup as JsonCalculationSetup
+import org.openlca.util.JsonDiffZip as JsonDiffZip
 import org.openlca.jsonld.output.JsonExport as JsonExport
 import org.openlca.jsonld.input.JsonImport as JsonImport
 import org.openlca.util.KeyGen as KeyGen
@@ -287,7 +289,7 @@ import org.openlca.core.model.descriptors.LocationDescriptor as LocationDescript
 import org.openlca.jsonld.input.LocationReader as LocationReader
 import org.openlca.core.results.LocationResult as LocationResult
 import org.openlca.core.database.usage.LocationUseSearch as LocationUseSearch
-import org.openlca.proto.io.output.LocationWriter as LocationWriter
+import org.openlca.jsonld.output.LocationWriter as LocationWriter
 import org.openlca.core.matrix.index.LongPair as LongPair
 import org.openlca.ipc.Main as Main
 import org.openlca.io.maps.MapFactor as MapFactor
@@ -354,7 +356,7 @@ import org.openlca.core.model.ParameterScope as ParameterScope
 import org.openlca.core.matrix.ParameterTable as ParameterTable
 import org.openlca.core.database.usage.ParameterUsageTree as ParameterUsageTree
 import org.openlca.core.database.usage.ParameterUseSearch as ParameterUseSearch
-import org.openlca.proto.io.output.ParameterWriter as ParameterWriter
+import org.openlca.jsonld.output.ParameterWriter as ParameterWriter
 import org.openlca.core.model.ParameterizedEntity as ParameterizedEntity
 import org.openlca.util.Parameters as Parameters
 import org.openlca.expressions.ParseException as ParseException
@@ -382,7 +384,7 @@ import org.openlca.jsonld.input.ProcessReader as ProcessReader
 import org.openlca.core.matrix.cache.ProcessTable as ProcessTable
 import org.openlca.core.model.ProcessType as ProcessType
 import org.openlca.core.database.usage.ProcessUseSearch as ProcessUseSearch
-import org.openlca.io.simapro.csv.ProcessWriter as ProcessWriter
+import org.openlca.jsonld.output.ProcessWriter as ProcessWriter
 import org.openlca.util.Processes as Processes
 import org.openlca.core.model.ProductSystem as ProductSystem
 import org.openlca.core.matrix.ProductSystemBuilder as ProductSystemBuilder
@@ -390,7 +392,7 @@ import org.openlca.core.database.ProductSystemDao as ProductSystemDao
 import org.openlca.core.model.descriptors.ProductSystemDescriptor as ProductSystemDescriptor
 import org.openlca.jsonld.input.ProductSystemReader as ProductSystemReader
 import org.openlca.core.database.usage.ProductSystemUseSearch as ProductSystemUseSearch
-import org.openlca.proto.io.output.ProductSystemWriter as ProductSystemWriter
+import org.openlca.jsonld.output.ProductSystemWriter as ProductSystemWriter
 import org.openlca.util.ProductSystems as ProductSystems
 import org.openlca.core.model.Project as Project
 import org.openlca.core.database.ProjectDao as ProjectDao
@@ -399,13 +401,14 @@ import org.openlca.jsonld.input.ProjectReader as ProjectReader
 import org.openlca.core.results.ProjectResult as ProjectResult
 import org.openlca.io.xls.results.ProjectResultExport as ProjectResultExport
 import org.openlca.core.model.ProjectVariant as ProjectVariant
-import org.openlca.proto.io.output.ProjectWriter as ProjectWriter
+import org.openlca.jsonld.output.ProjectWriter as ProjectWriter
 import org.openlca.geo.calc.Projection as Projection
 import org.openlca.geo.geojson.Proto as Proto
 import org.openlca.proto.io.input.ProtoImport as ProtoImport
 import org.openlca.core.matrix.linking.ProviderIndex as ProviderIndex
 import org.openlca.core.matrix.linking.ProviderLinking as ProviderLinking
 import org.openlca.core.matrix.linking.ProviderSearch as ProviderSearch
+import org.openlca.jsonld.input.Quantity as Quantity
 import org.openlca.core.database.Query as Query
 import org.openlca.io.refdata.RefDataExport as RefDataExport
 import org.openlca.io.refdata.RefDataImport as RefDataImport
@@ -426,7 +429,7 @@ import org.openlca.core.results.providers.ResultModelProvider as ResultModelProv
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
 import org.openlca.jsonld.input.ResultReader as ResultReader
 import org.openlca.core.database.usage.ResultUsageSearch as ResultUsageSearch
-import org.openlca.proto.io.output.ResultWriter as ResultWriter
+import org.openlca.jsonld.output.ResultWriter as ResultWriter
 import org.openlca.util.Results as Results
 import org.openlca.core.model.RiskLevel as RiskLevel
 import org.openlca.core.model.descriptors.RootDescriptor as RootDescriptor
@@ -458,7 +461,7 @@ import org.openlca.core.database.SocialIndicatorDao as SocialIndicatorDao
 import org.openlca.core.model.descriptors.SocialIndicatorDescriptor as SocialIndicatorDescriptor
 import org.openlca.jsonld.input.SocialIndicatorReader as SocialIndicatorReader
 import org.openlca.core.database.usage.SocialIndicatorUseSearch as SocialIndicatorUseSearch
-import org.openlca.proto.io.output.SocialIndicatorWriter as SocialIndicatorWriter
+import org.openlca.jsonld.output.SocialIndicatorWriter as SocialIndicatorWriter
 import org.openlca.core.results.providers.SolverContext as SolverContext
 import org.openlca.core.model.Source as Source
 import org.openlca.core.database.SourceDao as SourceDao
@@ -468,7 +471,7 @@ import org.openlca.io.ilcd.input.SourceImport as SourceImport
 import org.openlca.jsonld.input.SourceReader as SourceReader
 import org.openlca.io.ecospold2.input.SourceUpdate as SourceUpdate
 import org.openlca.core.database.usage.SourceUseSearch as SourceUseSearch
-import org.openlca.proto.io.output.SourceWriter as SourceWriter
+import org.openlca.jsonld.output.SourceWriter as SourceWriter
 import org.openlca.core.matrix.solvers.SparseFactorization as SparseFactorization
 import org.openlca.core.matrix.format.SparseMatrixData as SparseMatrixData
 import org.openlca.io.ecospold2.input.Spold2Files as Spold2Files
@@ -506,11 +509,12 @@ import org.openlca.io.ilcd.output.UnitGroupExport as UnitGroupExport
 import org.openlca.io.ilcd.input.UnitGroupImport as UnitGroupImport
 import org.openlca.jsonld.input.UnitGroupReader as UnitGroupReader
 import org.openlca.core.database.usage.UnitGroupUseSearch as UnitGroupUseSearch
-import org.openlca.proto.io.output.UnitGroupWriter as UnitGroupWriter
+import org.openlca.jsonld.output.UnitGroupWriter as UnitGroupWriter
 import org.openlca.io.UnitMapping as UnitMapping
 import org.openlca.io.UnitMappingEntry as UnitMappingEntry
 import org.openlca.io.UnitMappingSync as UnitMappingSync
 import org.openlca.core.database.usage.UnitUsageSearch as UnitUsageSearch
+import org.openlca.jsonld.output.UnitWriter as UnitWriter
 import org.openlca.jsonld.input.UpdateMode as UpdateMode
 import org.openlca.core.database.upgrades.Upgrade11 as Upgrade11
 import org.openlca.core.database.upgrades.Upgrades as Upgrades

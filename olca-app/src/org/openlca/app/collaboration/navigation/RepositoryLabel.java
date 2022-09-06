@@ -28,7 +28,7 @@ public class RepositoryLabel {
 				|| e.isFromLibrary()
 				|| !isZero(getRepositoryId(elem)))
 			return null;
-		return Images.get(e.getContent().type, Overlay.ADDED);
+		return Images.get(e.getContent(), Overlay.ADDED);
 	}
 
 	private static ObjectId getRepositoryId(INavigationElement<?> elem) {
