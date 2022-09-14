@@ -8,7 +8,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.RootDescriptor;
 
 import java.util.Objects;
 
@@ -19,15 +18,16 @@ public class SetReferenceCommand extends Command {
 	private final IDatabase db = Database.get();
 	private final Node node;
 	private final ExchangeItem child;
+	private final ExchangeItem oldRefExchangeItem;
 	private Exchange oldRefExchange;
 
 	public SetReferenceCommand(ExchangeItem child) {
 		this.child = child;
 		this.node = child.getNode();
 		var process = db.get(Process.class, node.descriptor.id);
-		var currentRefExchangeItem = node.getRefExchangeItem();
-		if (currentRefExchangeItem != null)
-			this.oldRefExchange = getExchange(process, currentRefExchangeItem);
+		this.oldRefExchangeItem = node.getRefExchangeItem();
+		if (oldRefExchangeItem != null)
+			this.oldRefExchange = getExchange(process, oldRefExchangeItem);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class SetReferenceCommand extends Command {
 		var descriptor = Descriptor.of(process);
 
 		if (oldRefExchange != null)
-			updateExchangeItem(node, descriptor, node.getRefExchangeItem(),
+			updateExchangeItem(node, descriptor, oldRefExchangeItem,
 				new ExchangeItem(oldRefExchange));
 
 		updateExchangeItem(node, descriptor, newRefExchangeItem,
