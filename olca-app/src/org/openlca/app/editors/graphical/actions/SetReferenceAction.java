@@ -33,7 +33,6 @@ public class SetReferenceAction extends SelectionAction {
 
 	@Override
 	public void run() {
-		var node = part.getModel().getNode();
 		execute(getCommand());
 	}
 

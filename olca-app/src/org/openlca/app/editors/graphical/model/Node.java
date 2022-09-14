@@ -375,17 +375,20 @@ public class Node extends MinMaxComponent {
 
 		if (descriptor instanceof ProcessDescriptor) {
 			var process = db.get(Process.class, descriptor.id);
-			return process.quantitativeReference.flow;
+			if (process.quantitativeReference != null)
+				return process.quantitativeReference.flow;
 		}
 		else if (descriptor instanceof ResultDescriptor) {
 			var result = db.get(Result.class, descriptor.id);
-			return result.referenceFlow.flow;
+			if (result.referenceFlow != null)
+				return result.referenceFlow.flow;
 		}
 		else if (descriptor instanceof ProductSystemDescriptor) {
 			var productSystem = db.get(ProductSystem.class, descriptor.id);
-			return productSystem.referenceExchange.flow;
+			if (productSystem.referenceExchange != null)
+				return productSystem.referenceExchange.flow;
 		}
-		else return null;
+		return null;
 	}
 
 	public String toString() {
