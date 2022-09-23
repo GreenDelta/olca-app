@@ -21,6 +21,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.core.services.ServerConfig;
 import org.openlca.ipc.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,8 +118,12 @@ public class IpcDialog extends FormDialog {
 									db, Workspace.dataDir(), port);
 							new Thread(() -> grpcServer.start()).start();
 						} else {
+							var config = ServerConfig.defaultOf(db)
+									.withDataDir(Workspace.dataDir())
+									.withPort(port)
+									.get();
 							server = new Server(port)
-									.withDefaultHandlers(db, App.getSolver());
+									.withDefaultHandlers(config);
 							server.start();
 						}
 					},
