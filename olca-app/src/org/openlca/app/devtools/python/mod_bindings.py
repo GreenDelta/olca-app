@@ -291,6 +291,7 @@ import org.openlca.core.results.LocationResult as LocationResult
 import org.openlca.core.database.usage.LocationUseSearch as LocationUseSearch
 import org.openlca.jsonld.output.LocationWriter as LocationWriter
 import org.openlca.core.matrix.index.LongPair as LongPair
+import org.openlca.ipc.Server as Server
 import org.openlca.io.maps.MapFactor as MapFactor
 import org.openlca.io.openepd.io.MappedExportResult as MappedExportResult
 import org.openlca.core.model.MappingFile as MappingFile
