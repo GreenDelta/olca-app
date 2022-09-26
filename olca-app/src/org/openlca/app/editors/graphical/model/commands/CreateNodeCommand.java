@@ -39,7 +39,8 @@ public class CreateNodeCommand extends Command {
 
 	public void execute() {
 		if (descriptor.type != ModelType.PROCESS
-			&& descriptor.type != ModelType.PRODUCT_SYSTEM) {
+			&& descriptor.type != ModelType.PRODUCT_SYSTEM
+			&& descriptor.type != ModelType.RESULT) {
 			return;
 		}
 
