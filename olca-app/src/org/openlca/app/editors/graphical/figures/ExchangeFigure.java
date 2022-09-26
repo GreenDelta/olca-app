@@ -76,7 +76,10 @@ public class ExchangeFigure extends ComponentFigure {
 		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
-		amountLabel = new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
+		amountLabel = exchange.formula != null
+				? new Label(exchange.formula)
+				: new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
+		
 		amountLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		amountLabel.setLabelAlignment(PositionConstants.RIGHT);
 		add(amountLabel);
@@ -144,7 +147,9 @@ public class ExchangeFigure extends ComponentFigure {
 	}
 
 	public static Dimension getPreferredAmountLabelSize(ExchangeItem item) {
-		var amountText = Numbers.format(item.exchange.amount, SIGNIF_NUMBER);
+		var amountText = item.exchange.formula != null
+				? item.exchange.formula
+				: Numbers.format(item.exchange.amount, SIGNIF_NUMBER);
 		var amount = new Label(amountText);
 		return amount.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
 	}
