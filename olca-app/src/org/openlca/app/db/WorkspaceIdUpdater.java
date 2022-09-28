@@ -60,14 +60,16 @@ public class WorkspaceIdUpdater {
 		if (id != null) {
 			path += "/" + Cache.getPathCache().pathOf(id);
 		}
-		while (path != null) {
+		while (true) {
 			var diffs = Diffs.of(repo.git).filter(Collections.singletonList(path)).with(Database.get(), workspaceIds);
-			if (!diffs.isEmpty()) {
-				path = null;
-			} else {
-				workspaceIds.put(path, repo.ids.get(path));
-				path = path.contains("/") ? path.substring(0, path.lastIndexOf("/")) : null;
+			if (!diffs.isEmpty())
+				break;
+			if (path.equals("")) {
+				workspaceIds.put("", workspaceIds.getHead(""));
+				break;
 			}
+			workspaceIds.put(path, repo.ids.get(path));
+			path = path.contains("/") ? path.substring(0, path.lastIndexOf("/")) : "";
 		}
 		if (inTransaction)
 			return;
