@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.collaboration.dialogs.JsonCompareDialog;
@@ -196,9 +197,11 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var descriptor = Daos.root(Database.get(), diff.type).getDescriptorForRefId(diff.refId);
 			if (descriptor != null)
 				return descriptor.name;
-			if (diff.rightNewObjectId != null)
+			if (!ObjectId.zeroId().equals(diff.rightNewObjectId))
 				return Repository.get().datasets.getName(diff.rightNewObjectId);
-			return Repository.get().datasets.getName(diff.leftNewObjectId);
+			if (!ObjectId.zeroId().equals(diff.leftNewObjectId))
+				return Repository.get().datasets.getName(diff.leftNewObjectId);
+			return Repository.get().datasets.getName(diff.objectId);
 		}
 
 		@Override
