@@ -9,6 +9,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.navigation.actions.RepositoryUpgrade;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
@@ -180,6 +181,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 					M.UpdateDatabase,
 					() -> runUpgrades(db, failed),
 					() -> {
+						RepositoryUpgrade.on(db);
 						closeDatabase();
 						DbActivateAction.this.run();
 					});
