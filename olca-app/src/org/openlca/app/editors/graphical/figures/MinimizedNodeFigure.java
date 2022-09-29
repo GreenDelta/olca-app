@@ -3,6 +3,8 @@ package org.openlca.app.editors.graphical.figures;
 import org.eclipse.draw2d.*;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.themes.Theme;
+import org.openlca.app.tools.graphics.figures.GridPos;
+import org.openlca.app.tools.graphics.figures.RoundBorder;
 
 public class MinimizedNodeFigure extends NodeFigure {
 

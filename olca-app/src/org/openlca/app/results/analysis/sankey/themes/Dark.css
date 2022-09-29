@@ -1,0 +1,95 @@
+/* The 'Dark' theme of the openLCA graph editor. */
+/* colors from https://draculatheme.com/contribute */
+
+/* basic attributes and graph settings */
+:root {
+  --name: 'Dark';         /* the name of the theme */
+  --mode: 'dark';         /* this is a dark theme */
+  background: #282a36;  /* the background color of the graph */
+}
+
+
+/* -- process boxes -- */
+
+/* defaults */
+.box {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 2px #ff79c6;  /* border width and color */
+}
+
+/* reference processes */
+.box .reference-process {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 4px #ff79c6;  /* border width and color */
+}
+
+/* unit processes */
+.box .unit-process {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 2px #ff79c6;  /* border width and color */
+}
+
+/* system processes */
+.box .system-process {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 3px #bd93f9;  /* border width and color */
+}
+
+/* library processes */
+.box .library-process {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 3px #f1fa8c;  /* border width and color */
+}
+
+/* sub-systems */
+.box .sub-system {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 5px #8daff7;  /* border width and colcor */
+}
+
+
+/* -- process links -- */
+
+/* defaults */
+.link {
+  color: #f8f8f2;
+}
+
+/* product flows */
+.link .product {
+  color: #8be9fd;
+}
+
+/* waste flows */
+.link .waste {
+  color: #ffb86c;
+}
+
+
+/* -- labels -- */
+
+/* info-headers */
+.label .info {
+  color: #6272a4;
+}
+
+/* product flows */
+.label .product {
+  color: #8be9fd;
+}
+
+/* waste flows */
+.label .waste {
+  color: #ffb86c;
+}
+
+/* elementary flows */
+.label .elementary-flow {
+  color: #50fa7b;
+}

@@ -11,6 +11,7 @@ import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
+import org.openlca.app.tools.graphics.figures.GridPos;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;

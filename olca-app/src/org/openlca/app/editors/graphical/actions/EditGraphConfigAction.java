@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;

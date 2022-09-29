@@ -71,7 +71,7 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		return showElementaryFlows == other.showElementaryFlows
 			&& isNodeEditingEnabled == other.isNodeEditingEnabled
 			&& theme.equals(other.theme)
-			&& connectionRouter == other.connectionRouter;
+			&& Objects.equals(connectionRouter, other.connectionRouter);
 	}
 
 	public static GraphConfig fromJson(JsonObject obj) {

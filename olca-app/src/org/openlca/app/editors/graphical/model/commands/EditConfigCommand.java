@@ -1,7 +1,5 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import java.util.List;
-
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.osgi.util.NLS;

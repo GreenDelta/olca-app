@@ -9,6 +9,7 @@ import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.themes.Theme;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
+import org.openlca.app.tools.graphics.figures.GridPos;
 
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
