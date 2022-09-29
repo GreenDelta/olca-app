@@ -267,6 +267,7 @@ public class M extends NLS {
 	public static String DownloadingData;
 
 	// E
+	public static String East;
 	public static String EcoSpold2Export;
 	public static String EcoSpoldConfiguration;
 	public static String Economic;
@@ -598,6 +599,7 @@ public class M extends NLS {
 	public static String NormalizationFactor;
 	public static String NormalizationWeighting;
 	public static String NormalizationWeightingSets;
+	public static String North;
 	public static String NotAnIntegerNumber;
 	public static String NotApplicable;
 	public static String Note;
@@ -854,6 +856,7 @@ public class M extends NLS {
 	public static String SourceFileDeleteQuestion;
 	public static String SourceFileOverwriteFileQuestion;
 	public static String Sources;
+	public static String South;
 	public static String StandardDeviation;
 	public static String StandardDeviationFormula;
 	public static String Start;
@@ -957,6 +960,7 @@ public class M extends NLS {
 	public static String Weighting;
 	public static String WeightingFactor;
 	public static String Welcome;
+	public static String West;
 	public static String Window;
 	public static String With;
 	public static String WithPassword;

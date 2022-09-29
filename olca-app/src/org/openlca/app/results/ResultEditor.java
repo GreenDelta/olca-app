@@ -15,7 +15,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.results.analysis.sankey.SankeyDiagram;
+import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ProcessResultPage;
 import org.openlca.app.results.contributions.TagResultPage;
@@ -39,9 +39,6 @@ public class ResultEditor extends FormEditor {
 	public CalculationSetup setup;
 	public DQResult dqResult;
 	public ResultItemOrder items;
-
-	private SankeyDiagram diagram;
-	private int diagramIndex;
 
 	public static void open(CalculationSetup setup, LcaResult result) {
 		open(setup, result, null);
@@ -83,9 +80,26 @@ public class ResultEditor extends FormEditor {
 			addPage(new ContributionTreePage(this));
 			addPage(new GroupPage(this));
 			addPage(new LocationPage(this));
-			diagram = new SankeyDiagram(this);
-			diagramIndex = addPage(diagram, getEditorInput());
-			setPageText(diagramIndex, M.SankeyDiagram);
+
+			var sankeyEditor = new SankeyEditor(this);
+			var sankeyEditorIndex = addPage(sankeyEditor, getEditorInput());
+			setPageText(sankeyEditorIndex, M.SankeyDiagram);
+			// Add a page listener to focus the graph on the reference node when it is
+			// activated the first time.
+			var sankeyInit = new AtomicReference<IPageChangedListener>();
+			IPageChangedListener fn = e -> {
+				if (e.getSelectedPage() != sankeyEditor)
+					return;
+				var listener = sankeyInit.get();
+				if (listener == null)
+					return;
+				sankeyEditor.focusOnReferenceNode();
+				removePageChangedListener(listener);
+				sankeyInit.set(null);
+			};
+			sankeyInit.set(fn);
+			addPageChangedListener(fn);
+
 			if (result.hasImpacts()) {
 				addPage(new ImpactChecksPage(this));
 			}
@@ -93,39 +107,10 @@ public class ResultEditor extends FormEditor {
 				addPage(new TagResultPage(this));
 			}
 
-			// add a page listener to initialize the Sankey diagram
-			// lazily when it is activated the first time
-			var sankeyInit = new AtomicReference<IPageChangedListener>();
-			IPageChangedListener fn = e -> {
-				if (e.getSelectedPage() != diagram)
-					return;
-				var listener = sankeyInit.get();
-				if (listener == null)
-					return;
-				diagram.initContent();
-				removePageChangedListener(listener);
-				sankeyInit.set(null);
-			};
-			sankeyInit.set(fn);
-			addPageChangedListener(fn);
-
 		} catch (final PartInitException e) {
 			var log = LoggerFactory.getLogger(getClass());
 			log.error("Add pages failed", e);
 		}
-	}
-
-	public SankeyDiagram getDiagram() {
-		return diagram;
-	}
-
-	@Override
-	public Object getSelectedPage() {
-		Object page = super.getSelectedPage();
-		if (page == null && getActivePage() == diagramIndex) {
-			page = diagram;
-		}
-		return page;
 	}
 
 	@Override

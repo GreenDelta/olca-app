@@ -9,7 +9,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.*;
 import org.eclipse.gef.commands.CommandStack;
-import org.openlca.app.editors.graphical.figures.GridPos;
+import org.openlca.app.tools.graphics.figures.GridPos;
 import org.openlca.app.editors.graphical.figures.MaximizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.MinimizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.NodeFigure;

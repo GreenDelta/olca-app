@@ -7,7 +7,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
-import org.openlca.app.editors.graphical.figures.GridPos;
+import org.openlca.app.tools.graphics.figures.GridPos;
 import org.openlca.app.editors.graphical.figures.IOPaneFigure;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;

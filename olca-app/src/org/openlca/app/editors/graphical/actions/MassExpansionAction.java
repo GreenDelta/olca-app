@@ -7,7 +7,6 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.StackAction;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;

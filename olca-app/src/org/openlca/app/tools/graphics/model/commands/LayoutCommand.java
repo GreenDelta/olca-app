@@ -6,8 +6,6 @@ import java.util.Map;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.tools.graphics.model.Component;
 
 import static org.openlca.app.tools.graphics.layouts.GraphLayout.DEFAULT_LOCATION;

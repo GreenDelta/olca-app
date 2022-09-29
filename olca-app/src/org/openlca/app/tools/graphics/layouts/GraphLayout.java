@@ -23,9 +23,9 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 			new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
 	private final int orientation;
-	double distanceSibling = 16;
-	double distanceSubtree = 32;
-	double distanceLevel = 64;
+	public double distanceSibling = 16;
+	public double distanceSubtree = 32;
+	public double distanceLevel = 64;
 
 	private Map<Figure, Point> mapFigureToLocation = new HashMap<>();
 	/** A map keeping track of nodes laid out by the TreeLayout. */

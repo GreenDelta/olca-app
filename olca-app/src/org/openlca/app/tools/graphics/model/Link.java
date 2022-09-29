@@ -61,5 +61,9 @@ public class Link extends Element {
 	public boolean isCloseLoop() {
 		return getSourceNode() == getTargetNode();
 	}
+	
+	public String toString() {
+		return "Link(" + getSource() + " -> " + getTarget() + ")";
+	}
 
 }

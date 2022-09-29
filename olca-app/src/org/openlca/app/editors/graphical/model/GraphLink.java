@@ -98,16 +98,4 @@ public class GraphLink extends Link {
 		return processLink;
 	}
 
-	public Component getTarget() {
-		return target;
-	}
-
-	public Component getSource() {
-		return source;
-	}
-
-	public String toString() {
-		return "Link(" + getSource() + " -> " + getTarget() + ")";
-	}
-
 }
