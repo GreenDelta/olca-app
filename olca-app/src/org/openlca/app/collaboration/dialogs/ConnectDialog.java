@@ -90,13 +90,13 @@ public class ConnectDialog extends FormDialog {
 	}
 
 	public String url() {
-		return url;
+		return new UrlParts(url).toString();
 	}
 
 	public String user() {
 		return auth.user();
 	}
-	
+
 	public GitCredentialsProvider credentials() {
 		return new GitCredentialsProvider(auth.user(), auth.password());
 	}
@@ -128,6 +128,9 @@ public class ConnectDialog extends FormDialog {
 				if (path.startsWith("/")) {
 					path = path.substring(1);
 				}
+				if (path.endsWith("/")) {
+					path = path.substring(0, path.length() - 1);
+				}
 			} catch (MalformedURLException e) {
 			}
 			this.protocol = protocol;
@@ -146,6 +149,16 @@ public class ConnectDialog extends FormDialog {
 			if (Strings.nullOrEmpty(path))
 				return false;
 			return true;
+		}
+		
+		@Override
+		public String toString() {
+			var url = protocol + "://" + host;
+			if (!port.equals("80") && !port.equals("443")) {
+				url += ":" + port;
+			}
+			url += "/" + path;
+			return url;
 		}
 
 	}
