@@ -143,17 +143,18 @@ public class CopyPaste {
 			for (INavigationElement<?> element : cache)
 				paste(element, categoryElement);
 		} finally {
-			if (started)
+			if (started) {
 				Database.getWorkspaceIdUpdater().endTransaction();
+			}
 			clearCache();
+			var root = Navigator.findElement(Database.getActiveConfiguration());
+			Navigator.refresh(root);
 		}
 	}
 
 	public static void clearCache() {
 		cache = null;
 		currentAction = Action.NONE;
-		INavigationElement<?> root = Navigator.findElement(Database.getActiveConfiguration());
-		Navigator.refresh(root);
 	}
 
 	public static boolean canMove(Collection<INavigationElement<?>> elements, INavigationElement<?> target) {
