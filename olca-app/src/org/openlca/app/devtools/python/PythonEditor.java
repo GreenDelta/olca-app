@@ -70,9 +70,7 @@ public class PythonEditor extends ScriptingEditor {
 
 					// set the script content
 					if (Strings.notEmpty(script)) {
-						var js = script.replace("'", "\\'")
-								.replaceAll("\\r?\\n", "\\\\n");
-						browser.execute("setContent('" + js + "')");
+						browser.execute("setContent(" + toJavaScript(script) + ")");
 					}
 
 					// add the _onChange listener
@@ -105,6 +103,43 @@ public class PythonEditor extends ScriptingEditor {
 				ErrorReporter.on("failed to get script content", e);
 				return "";
 			}
+		}
+
+		/**
+		 * We use a browser view as script editor. To initialize the browser view
+		 * with an existing script, we need to pass the script to the browser
+		 * by calling a JavaScript function with the script as string parameter.
+		 * For this, we need to convert the script into a valid JavaScript string
+		 * so that we can pass it to that function.
+		 *
+		 * @param script the raw string of the script as saved on disk
+		 * @return the JavaScript string of the script enclosed in single-quotes.
+		 */
+		private static String toJavaScript(String script) {
+			if (Strings.nullOrEmpty(script))
+				return "''";
+			var buffer = new StringBuilder("'");
+			for (int i = 0; i < script.length(); i++) {
+				char c = script.charAt(i);
+				switch (c) {
+					case '\r':
+						break;
+					case '\n':
+						buffer.append("\\n");
+						break;
+					case '\'':
+						buffer.append("\\'");
+						break;
+					case '\\':
+						buffer.append("\\\\");
+						break;
+					default:
+						buffer.append(c);
+						break;
+				}
+			}
+			buffer.append("'");
+			return buffer.toString();
 		}
 	}
 }
