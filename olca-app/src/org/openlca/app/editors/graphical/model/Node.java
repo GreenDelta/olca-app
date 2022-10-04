@@ -351,7 +351,7 @@ public class Node extends MinMaxComponent {
 
 	public ExchangeItem getRefExchangeItem() {
 		for (var item : getExchangeItems())
-			if (item.isRefFlow())
+			if (item.isQuantitativeReference())
 				return item;
 		return null;
 	}

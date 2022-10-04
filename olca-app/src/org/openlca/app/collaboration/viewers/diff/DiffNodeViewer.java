@@ -108,22 +108,22 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		if (diff.rightDiffType == null) {
 			if (diff.leftDiffType == DiffType.ADDED)
 				return null;
-			return RefJson.get(diff.type, diff.refId, diff.objectId);
+			return RefJson.get(diff);
 		}
 		if (diff.leftDiffType == DiffType.DELETED)
 			return null;
-		return RefJson.get(diff.type, diff.refId, diff.leftNewObjectId);
+		return RefJson.get(diff.left());
 	}
 
 	private JsonObject getRight(TriDiff diff) {
 		if (diff.rightDiffType == null) {
 			if (diff.leftDiffType == DiffType.DELETED)
 				return null;
-			return RefJson.get(diff.type, diff.refId, diff.leftNewObjectId);
+			return RefJson.get(diff.left());
 		}
 		if (diff.rightDiffType == DiffType.DELETED)
 			return null;
-		return RefJson.get(diff.type, diff.refId, diff.rightNewObjectId);
+		return RefJson.get(diff.right());
 	}
 
 	private DiffNode getSelected(DoubleClickEvent event) {
@@ -198,10 +198,10 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (descriptor != null)
 				return descriptor.name;
 			if (!ObjectId.zeroId().equals(diff.rightNewObjectId))
-				return Repository.get().datasets.getName(diff.rightNewObjectId);
+				return Repository.get().datasets.getName(diff.right());
 			if (!ObjectId.zeroId().equals(diff.leftNewObjectId))
-				return Repository.get().datasets.getName(diff.leftNewObjectId);
-			return Repository.get().datasets.getName(diff.objectId);
+				return Repository.get().datasets.getName(diff.left());
+			return Repository.get().datasets.getName(diff);
 		}
 
 		@Override

@@ -55,6 +55,7 @@ public class WorkspaceIdUpdater {
 		if (disabled || !Repository.isConnected())
 			return;
 		var repo = Repository.get();
+		var commit = repo.commits.head();
 		var workspaceIds = repo.workspaceIds;
 		var path = type.name();
 		if (id != null) {
@@ -68,7 +69,12 @@ public class WorkspaceIdUpdater {
 				workspaceIds.put("", workspaceIds.getHead(""));
 				break;
 			}
-			workspaceIds.put(path, repo.ids.get(path));
+			if (commit != null) {
+				var entry = repo.entries.get(path, commit.id);
+				if (entry != null) {
+					workspaceIds.put(path, entry.objectId);
+				}
+			}
 			path = path.contains("/") ? path.substring(0, path.lastIndexOf("/")) : "";
 		}
 		if (inTransaction)

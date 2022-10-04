@@ -11,6 +11,7 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
+import org.openlca.git.model.Reference;
 import org.openlca.jsonld.output.JsonExport;
 
 import com.google.gson.Gson;
@@ -21,15 +22,15 @@ class RefJson {
 
 	private static Gson gson = new Gson();
 
-	static JsonObject get(ModelType type, String refId, ObjectId objectId) {
-		if (type == null || refId == null)
+	static JsonObject get(Reference ref) {
+		if (ref == null)
 			return null;
-		if (objectId == null || objectId.equals(ObjectId.zeroId()))
-			return getLocalJson(type, refId);
-		var json = gson.fromJson(Repository.get().datasets.get(objectId), JsonObject.class);
+		if (ref.objectId == null || ref.objectId.equals(ObjectId.zeroId()))
+			return getLocalJson(ref.type, ref.refId);
+		var json = gson.fromJson(Repository.get().datasets.get(ref), JsonObject.class);
 		if (json == null)
 			return null;
-		split(json, type);
+		split(json, ref.type);
 		return json;
 	}
 
@@ -118,7 +119,7 @@ class RefJson {
 		var remoteLastId = Json.getInt(remote, "lastInternalId", 0);
 		if (remoteLastId > mergedLastId) {
 			merged.addProperty("lastInternalId", remoteLastId);
-		}		
+		}
 	}
 
 }

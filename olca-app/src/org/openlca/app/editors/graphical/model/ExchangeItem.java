@@ -38,6 +38,15 @@ public class ExchangeItem extends Component {
 				&& parent.getRefFlow().equals(exchange.flow);
 	}
 
+	/**
+	 * Check if this is the quantitative reference.
+	 */
+	public boolean isQuantitativeReference() {
+		return isRefFlow()
+				&& ((isWaste() && getIOPane().isForInputs())
+				|| (!isWaste() && !getIOPane().isForInputs()));
+	}
+
 	public Graph getGraph() {
 		return getIOPane().getGraph();
 	}
