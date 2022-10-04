@@ -157,7 +157,7 @@
 		<editor
 			class="org.openlca.app.editors.processes.ProcessEditor"
 			default="false"
-			icon="icons/model/process.png"
+			icon="icons/model/process_unit_prod.png"
 			id="editors.process"
 			name="%ProcessEditor"
 			contributorClass="org.openlca.app.editors.processes.ProcessToolbar">
@@ -329,7 +329,7 @@
 		<editor
 			class="org.openlca.app.db.tables.ProcessTable"
 			default="false"
-			icon="icons/model/process.png"
+			icon="icons/model/process_unit_prod.png"
 			id="DbProcessTable"
 			name="Processes">
 		</editor>

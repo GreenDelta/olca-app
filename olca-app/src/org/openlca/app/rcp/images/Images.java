@@ -50,11 +50,11 @@ public class Images {
 			if (process.processType == ProcessType.LCI_RESULT) {
 				return flowType == FlowType.WASTE_FLOW
 						? ImageManager.get(ModelIcon.PROCESS_SYSTEM_WASTE)
-						: ImageManager.get(ModelIcon.PROCESS_SYSTEM);
+						: ImageManager.get(ModelIcon.PROCESS_SYSTEM_PROD);
 			}
 			return flowType == FlowType.WASTE_FLOW
 					? ImageManager.get(ModelIcon.PROCESS_WASTE)
-					: ImageManager.get(ModelIcon.PROCESS);
+					: ImageManager.get(ModelIcon.PROCESS_PROD);
 		}
 
 		if (entity instanceof Flow flow)
@@ -332,10 +332,10 @@ public class Images {
 			if (p.processType == ProcessType.LCI_RESULT)
 				return p.flowType == FlowType.WASTE_FLOW
 						? ModelIcon.PROCESS_SYSTEM_WASTE
-						: ModelIcon.PROCESS_SYSTEM;
+						: ModelIcon.PROCESS_SYSTEM_PROD;
 			return p.flowType == FlowType.WASTE_FLOW
 					? ModelIcon.PROCESS_WASTE
-					: ModelIcon.PROCESS;
+					: ModelIcon.PROCESS_PROD;
 		}
 
 		if (d instanceof FlowDescriptor f && f.flowType != null)
@@ -371,7 +371,7 @@ public class Images {
 			case FLOW_PROPERTY -> ModelIcon.FLOW_PROPERTY;
 			case IMPACT_METHOD -> ModelIcon.IMPACT_METHOD;
 			case IMPACT_CATEGORY -> ModelIcon.IMPACT_CATEGORY_OUT;
-			case PROCESS -> ModelIcon.PROCESS;
+			case PROCESS -> ModelIcon.PROCESS_GENERIC;
 			case PRODUCT_SYSTEM -> ModelIcon.PRODUCT_SYSTEM;
 			case PROJECT -> ModelIcon.PROJECT;
 			case RESULT -> ModelIcon.RESULT;
@@ -400,8 +400,8 @@ public class Images {
 		if (type == null)
 			return null;
 		return switch (type) {
-			case UNIT_PROCESS -> ModelIcon.PROCESS;
-			case LCI_RESULT -> ModelIcon.PROCESS_SYSTEM;
+			case UNIT_PROCESS -> ModelIcon.PROCESS_PROD;
+			case LCI_RESULT -> ModelIcon.PROCESS_SYSTEM_PROD;
 		};
 	}
 

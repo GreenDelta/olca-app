@@ -88,6 +88,7 @@ public enum Icon {
 	IMPORT_ZIP_WIZARD("wizard/zip.png"),
 	INFO("info.png"),
 	INPUT("model/input.png"),
+	IPC("ipc.png"),
 
 	JAVASCRIPT("javascript.png"),
 

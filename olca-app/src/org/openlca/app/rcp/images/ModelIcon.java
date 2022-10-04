@@ -51,9 +51,10 @@ enum ModelIcon {
 	PARAMETER_CATEGORY("category/parameter.png"),
 	PARAMETER_WIZARD("wizard/parameter.png"),
 
-	PROCESS("model/process.png"),
+	PROCESS_GENERIC("model/process_generic.png"),
+	PROCESS_PROD("model/process_unit_prod.png"),
 	PROCESS_WASTE("model/process_unit_waste.png"),
-	PROCESS_SYSTEM("model/process_system.png"),
+	PROCESS_SYSTEM_PROD("model/process_system_prod.png"),
 	PROCESS_SYSTEM_WASTE("model/process_system_waste.png"),
 	PROCESS_CATEGORY("category/process.png"),
 	PROCESS_WIZARD("wizard/process.png"),
