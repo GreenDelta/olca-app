@@ -16,7 +16,6 @@ import org.openlca.git.ObjectIdStore;
 import org.openlca.git.find.Commits;
 import org.openlca.git.find.Datasets;
 import org.openlca.git.find.Entries;
-import org.openlca.git.find.Ids;
 import org.openlca.git.find.References;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.History;
@@ -33,7 +32,6 @@ public class Repository {
 	public final ObjectIdStore workspaceIds;
 	public final Commits commits;
 	public final Datasets datasets;
-	public final Ids ids;
 	public final References references;
 	public final Entries entries;
 	public final History localHistory;
@@ -48,7 +46,6 @@ public class Repository {
 		datasets = Datasets.of(git);
 		references = References.of(git);
 		entries = Entries.of(git);
-		ids = Ids.of(git);
 		localHistory = History.localOf(git);
 	}
 

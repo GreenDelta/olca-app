@@ -101,7 +101,7 @@ public class HistoryView extends ViewPart {
 		if (ref == null || ObjectId.zeroId().equals(ref.objectId))
 			return null;
 		var datasets = Repository.get().datasets;
-		var json = datasets.get(ref.objectId);
+		var json = datasets.get(ref);
 		if (Strings.nullOrEmpty(json))
 			return null;
 		var obj = gson.fromJson(json, JsonObject.class);
@@ -165,8 +165,8 @@ public class HistoryView extends ViewPart {
 			var descriptor = Database.get().getDescriptor(diff.type.getModelClass(), diff.refId);
 			if (descriptor != null)
 				return text + descriptor.name;
-			var objectId = ObjectId.zeroId().equals(diff.oldObjectId) ? diff.newObjectId : diff.oldObjectId;
-			return text + Repository.get().datasets.getName(objectId);
+			var side = ObjectId.zeroId().equals(diff.oldObjectId) ? Side.NEW : Side.OLD;
+			return text + Repository.get().datasets.getName(diff.toReference(side));
 		}
 
 		@Override

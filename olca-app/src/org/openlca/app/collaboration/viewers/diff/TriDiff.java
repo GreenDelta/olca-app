@@ -23,11 +23,19 @@ public class TriDiff extends Reference {
 		this.rightDiffType = right != null ? right.diffType : null;
 		this.rightNewObjectId = right != null ? right.newObjectId : ObjectId.zeroId();
 	}
-	
+
 	private static Diff any(Diff left, Diff right) {
 		return right != null ? right : left;
 	}
-	
+
+	Reference left() {
+		return new Reference(path, commitId, leftNewObjectId);
+	}
+
+	Reference right() {
+		return new Reference(path, commitId, rightNewObjectId);
+	}
+
 	public boolean noAction() {
 		if (leftDiffType == null && rightDiffType == null)
 			return true;

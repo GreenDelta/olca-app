@@ -189,7 +189,7 @@ public class RepositoryUpgrade {
 				var localModel = descriptors.get(entry.type, entry.refId);
 				if (localModel != null) {
 					monitor.subTask(entry.category + "/" + localModel.name);
-					var remoteModel = repo.datasets.parse(entry.objectId, "lastChange", "version");
+					var remoteModel = repo.datasets.parse(entry, "lastChange", "version");
 					var version = Version.fromString(string(remoteModel, "version")).getValue();
 					var lastChange = number(remoteModel, "lastChange");
 					if (version != localModel.version || lastChange != localModel.lastChange) {
