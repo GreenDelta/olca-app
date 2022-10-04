@@ -33,7 +33,7 @@ public class SetReferenceCommand extends Command {
 	@Override
 	public boolean canExecute() {
 		return child.canBeReferenceFlow()
-			&& !child.isRefFlow()
+			&& !child.isQuantitativeReference()
 			&& node != null
 			&& node.descriptor != null
 			&& node.isEditable();

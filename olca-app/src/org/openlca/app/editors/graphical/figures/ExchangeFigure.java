@@ -79,7 +79,7 @@ public class ExchangeFigure extends ComponentFigure {
 		amountLabel = exchange.formula != null
 				? new Label(exchange.formula)
 				: new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
-		
+
 		amountLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		amountLabel.setLabelAlignment(PositionConstants.RIGHT);
 		add(amountLabel);
@@ -121,8 +121,8 @@ public class ExchangeFigure extends ComponentFigure {
 			g.setBackgroundColor(Colors.gray());
 			g.fillRectangle(getBounds());
 		}
-		if (exchangeItem.isRefFlow())
-			label.setFont(UI.boldFont());
+		if (exchangeItem.isQuantitativeReference())
+			setHighlighted(true);
 
 		g.setForegroundColor(ColorConstants.white);
 		g.popState();
