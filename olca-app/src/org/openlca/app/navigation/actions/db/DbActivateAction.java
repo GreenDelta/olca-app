@@ -127,17 +127,17 @@ public class DbActivateAction extends Action implements INavigationAction {
 		private void handleVersionState(VersionState state) {
 			log.trace("Check version state");
 			switch (state) {
-			case HIGHER_VERSION:
-				error(M.DatabaseNeedsUpdate);
-				break;
-			case NEEDS_UPGRADE:
-				askRunUpgrades();
-				break;
-			case UP_TO_DATE:
-				refresh();
-				break;
-			default:
-				break;
+				case HIGHER_VERSION:
+					error(M.DatabaseNeedsUpdate);
+					break;
+				case NEEDS_UPGRADE:
+					askRunUpgrades();
+					break;
+				case UP_TO_DATE:
+					refresh();
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -181,7 +181,9 @@ public class DbActivateAction extends Action implements INavigationAction {
 					M.UpdateDatabase,
 					() -> runUpgrades(db, failed),
 					() -> {
-						RepositoryUpgrade.on(db);
+						if (!failed.get()) {
+							RepositoryUpgrade.on(db);
+						}
 						closeDatabase();
 						DbActivateAction.this.run();
 					});
