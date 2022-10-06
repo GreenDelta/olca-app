@@ -8,6 +8,7 @@ import org.eclipse.draw2d.*;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
+import org.eclipse.swt.graphics.Color;
 import org.openlca.app.results.analysis.sankey.model.SankeyLink;
 import org.openlca.app.tools.graphics.figures.CurvedConnection;
 
@@ -46,7 +47,13 @@ public class LinkEditPart extends AbstractConnectionEditPart
 	@Override
 	protected IFigure createFigure() {
 		var config = getModel().getSourceNode().getDiagram().getConfig();
-		var color = ColorConstants.red;
+		Color color;
+		if (getModel().getSourceNode().totalResult < 0)
+			color = ColorConstants.green;
+		else if (getModel().getSourceNode().totalResult > 0)
+			color = ColorConstants.red;
+		else color = ColorConstants.blue;
+
 		var orientation = getModel().getSourceNode().getDiagram().orientation;
 
 		var connection = Objects.equals(config.connectionRouter(), ROUTER_CURVE)
