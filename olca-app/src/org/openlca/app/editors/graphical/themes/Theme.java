@@ -24,6 +24,7 @@ public class Theme {
 	private boolean isDark;
 	private Color graphBackgroundColor;
 	private Color defaultLinkColor;
+	private Color defaultLinkColorSelected;
 	private Color infoLabelColor;
 
 	private final EnumMap<FlowType, Color> flowLabelColors;
@@ -100,6 +101,12 @@ public class Theme {
 			: defaultLinkColor;
 	}
 
+	public Color linkColorSelected() {
+		return defaultLinkColorSelected == null
+				? Colors.darkGray()
+				: defaultLinkColorSelected;
+	}
+
 	public Color linkColor(FlowType flowType) {
 		var color = linkColors.get(flowType);
 		return color != null
@@ -158,8 +165,11 @@ public class Theme {
 			// links
 			if (Css.isLink(rule)) {
 				var flowType = Css.flowTypeOf(rule);
+				var selection = Css.isSelection(rule);
 				Css.getColor(rule).ifPresent(color -> {
-					if (flowType.isPresent()) {
+					if (selection)
+						theme.defaultLinkColorSelected = color;
+					else if (flowType.isPresent()) {
 						theme.linkColors.put(flowType.get(), color);
 					} else {
 						theme.defaultLinkColor = color;

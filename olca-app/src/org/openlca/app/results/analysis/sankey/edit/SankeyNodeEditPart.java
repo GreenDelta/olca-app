@@ -19,6 +19,8 @@ public class SankeyNodeEditPart extends AbstractVertexEditPart<SankeyNode> {
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
 				new SankeyComponentEditPolicy());
+		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE,
+				new SankeyNodeSelectionEditPolicy());
 	}
 
 	@Override

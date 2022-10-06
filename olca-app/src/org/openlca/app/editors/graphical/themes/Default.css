@@ -81,6 +81,11 @@
   color: #000000;
 }
 
+/* selected flows */
+.link ::selection {
+  color: #fcba03;
+}
+
 
 /* -- labels -- */
 

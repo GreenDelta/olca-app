@@ -94,6 +94,12 @@ class Css {
     return Optional.empty();
   }
 
+	static boolean isSelection(CSSStyleRule rule) {
+		if (rule == null)
+			return false;
+		return hasSelector("::selection", rule);
+	}
+
   static Optional<Theme.Box> boxOf(CSSStyleRule rule) {
     if (!isBox(rule))
       return Optional.empty();

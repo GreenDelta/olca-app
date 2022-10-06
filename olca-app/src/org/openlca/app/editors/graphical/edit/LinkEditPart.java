@@ -14,6 +14,7 @@ import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.tools.graphics.figures.CurvedConnection;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.DeleteLinkCommand;
+import org.openlca.app.tools.graphics.figures.SelectableConnection;
 
 import static org.eclipse.swt.SWT.ON;
 import static org.openlca.app.editors.graphical.GraphConfig.*;
@@ -51,30 +52,14 @@ public class LinkEditPart extends AbstractConnectionEditPart
 	@Override
 	protected IFigure createFigure() {
 		var config = getModel().getSourceNode().getGraph().getConfig();
+		var theme = config.getTheme();
 
-		var provider = getModel().provider();
-		var theme = provider != null
-				? provider.getGraph().getEditor().config.getTheme()
-				: null;
 		var color = theme != null ? theme.linkColor() : ColorConstants.black;
+		var colorSelected = theme != null ? theme.linkColorSelected() : ColorConstants.black;
 
 		var connection = Objects.equals(config.connectionRouter(), ROUTER_CURVE)
-				? new CurvedConnection(ORIENTATION) {
-			@Override
-			public void paint(Graphics g) {
-				setAntialias(ON);
-				setForegroundColor(color);
-				super.paint(g);
-			}
-		}
-				: new PolylineConnection() {
-			@Override
-			public void paint(Graphics g) {
-				setAntialias(ON);
-				setForegroundColor(color);
-				super.paint(g);
-			}
-		};
+				? new CurvedConnection(ORIENTATION, color, colorSelected)
+				: new SelectableConnection(color, colorSelected);
 		connection.setTargetDecoration(new PolygonDecoration());
 		connection.setLineWidth(1);
 		return connection;
