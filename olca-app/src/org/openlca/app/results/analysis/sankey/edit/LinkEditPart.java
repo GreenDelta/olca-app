@@ -11,6 +11,7 @@ import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.results.analysis.sankey.model.SankeyLink;
 import org.openlca.app.tools.graphics.figures.CurvedConnection;
+import org.openlca.app.tools.graphics.figures.SelectableConnection;
 
 import static org.eclipse.swt.SWT.ON;
 import static org.openlca.app.results.analysis.sankey.SankeyConfig.ROUTER_CURVE;
@@ -47,30 +48,29 @@ public class LinkEditPart extends AbstractConnectionEditPart
 	@Override
 	protected IFigure createFigure() {
 		var config = getModel().getSourceNode().getDiagram().getConfig();
+		var theme = config.getTheme();
+
 		Color color;
 		if (getModel().getSourceNode().totalResult < 0)
 			color = ColorConstants.green;
 		else if (getModel().getSourceNode().totalResult > 0)
 			color = ColorConstants.red;
 		else color = ColorConstants.blue;
+		var colorSelected = theme != null ? theme.linkColorSelected() : ColorConstants.black;
 
 		var orientation = getModel().getSourceNode().getDiagram().orientation;
 
 		var connection = Objects.equals(config.connectionRouter(), ROUTER_CURVE)
-				? new CurvedConnection(orientation) {
+				? new CurvedConnection(orientation, color, colorSelected) {
 			@Override
 			public void paint(Graphics g) {
-				setAntialias(ON);
-				setForegroundColor(color);
 				setAlpha(180);
 				super.paint(g);
 			}
 		}
-				: new PolylineConnection() {
+				: new SelectableConnection(color, colorSelected) {
 			@Override
 			public void paint(Graphics g) {
-				setAntialias(ON);
-				setForegroundColor(color);
 				setAlpha(180);
 				super.paint(g);
 			}

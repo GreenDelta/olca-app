@@ -2,10 +2,10 @@ package org.openlca.app.tools.graphics.figures;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.widgets.Display;
 
@@ -16,7 +16,7 @@ import static org.eclipse.draw2d.PositionConstants.*;
 import static org.eclipse.draw2d.PositionConstants.NORTH;
 import static org.eclipse.swt.SWT.HIGH;
 
-public class CurvedConnection extends PolylineConnection {
+public class CurvedConnection extends SelectableConnection {
 
 	private static final double FLATNESS = 0.1;
 
@@ -28,7 +28,8 @@ public class CurvedConnection extends PolylineConnection {
 
 	private final int orientation;
 
-	public CurvedConnection(int orientation) {
+	public CurvedConnection(int orientation, Color color, Color colorSelected) {
+		super(color, colorSelected);
 		this.orientation = orientation;
 	}
 
