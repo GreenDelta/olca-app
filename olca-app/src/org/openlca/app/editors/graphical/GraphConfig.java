@@ -2,8 +2,8 @@ package org.openlca.app.editors.graphical;
 
 import com.google.gson.JsonObject;
 import org.openlca.app.tools.graphics.model.Element;
-import org.openlca.app.editors.graphical.themes.Theme;
-import org.openlca.app.editors.graphical.themes.Themes;
+import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.core.model.Copyable;
 import org.openlca.jsonld.Json;
 
@@ -19,7 +19,7 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 	private boolean showElementaryFlows = false;
 	private String connectionRouter = ROUTER_CURVE;
 	private boolean isNodeEditingEnabled = false;
-	private Theme theme = Themes.getDefault();
+	private Theme theme = Themes.getDefault(Themes.MODEL);
 
 	/**
 	 * Creates a copy from the given configuration.
@@ -85,7 +85,7 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		config.isNodeEditingEnabled = Json.getBool(
 			obj, "isNodeEditingEnabled", false);
 		var themeID = Json.getString(obj, "theme");
-		config.setTheme(Themes.get(themeID));
+		config.setTheme(Themes.get(themeID, Themes.MODEL));
 		return config;
 	}
 

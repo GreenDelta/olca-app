@@ -54,7 +54,7 @@ public class DiagramEditPart extends AbstractComponentEditPart<Diagram> {
 	@Override
 	protected IFigure createFigure() {
 		var theme = getModel().getConfig().getTheme();
-		getViewer().getControl().setBackground(theme.graphBackgroundColor());
+		getViewer().getControl().setBackground(theme.backgroundColor());
 
 		var f = new FreeformLayer();
 		f.setBorder(new MarginBorder(8000));

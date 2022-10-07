@@ -64,6 +64,10 @@ public class SankeyNode extends Component {
 		return (Diagram) getParent();
 	}
 
+	public boolean isReference() {
+		return getDiagram().isReferenceNode(this);
+	}
+
 	public String toString() {
 		return "Node: "+ Labels.name(node.product.provider());
 	}

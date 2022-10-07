@@ -1,4 +1,4 @@
-package org.openlca.app.results.analysis.sankey.themes;
+package org.openlca.app.tools.graphics.themes;
 
 import org.openlca.app.rcp.Workspace;
 import org.slf4j.LoggerFactory;
@@ -13,31 +13,34 @@ import java.util.Objects;
 
 public final class Themes {
 
+	public static String MODEL = "model";
+	public static String SANKEY = "sankey";
+
 	private Themes() {
 	}
 
-	public static Theme getDefault() {
-		return loadFromWorkspace()
+	public static Theme getDefault(String id) {
+		return loadFromWorkspace(id)
 			.stream()
 			.filter(theme -> "Default".equalsIgnoreCase(theme.name()))
 			.findAny()
 			.orElse(noCss().get(0));
 	}
 
-	public static Theme get(String file) {
-		return loadFromWorkspace()
+	public static Theme get(String file, String id) {
+		return loadFromWorkspace(id)
 				.stream()
 				.filter(theme -> Objects.equals(file, theme.file()))
 				.findAny()
 				.orElse(noCss().get(0));
 	}
 
-	public static List<Theme> loadFromWorkspace() {
+	public static List<Theme> loadFromWorkspace(String id) {
 		var dir = new File(Workspace.root(), "graph-themes");
-		return loadFrom(dir);
+		return loadFrom(dir, id);
 	}
 
-	public static synchronized List<Theme> loadFrom(File dir) {
+	public static synchronized List<Theme> loadFrom(File dir, String id) {
 
 		// create the directory if it does not exist
 		if (dir == null)
@@ -77,7 +80,7 @@ public final class Themes {
 			return noCss();
 		var themes = new ArrayList<Theme>();
 		for (var file : files) {
-			var theme = Theme.loadFrom(file);
+			var theme = Theme.loadFrom(file, id);
 			theme.ifPresent(themes::add);
 		}
 		return themes.isEmpty() ? noCss() : themes;

@@ -1,22 +1,20 @@
-package org.openlca.app.results.analysis.sankey.themes;
+package org.openlca.app.tools.graphics.themes;
+
+import java.io.File;
+import java.util.EnumMap;
+import java.util.Optional;
 
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.reader.CSSReader;
 import com.helger.css.reader.CSSReaderSettings;
 import org.eclipse.swt.graphics.Color;
-import org.openlca.app.results.analysis.sankey.model.SankeyNode;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ResultDescriptor;
-
-import java.io.File;
-import java.util.EnumMap;
-import java.util.Optional;
-
-import static org.openlca.app.results.analysis.sankey.themes.Css.*;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class Theme {
 
@@ -24,9 +22,9 @@ public class Theme {
 	private final String name;
 
 	private boolean isDark;
-	private Color graphBackgroundColor;
+	private Color backgroundColor;
 	private Color defaultLinkColor;
-	private Color defaultLinkColorSelected;
+	private Color defaultLinkColorSelection;
 	private Color infoLabelColor;
 
 	private final EnumMap<FlowType, Color> flowLabelColors;
@@ -63,74 +61,74 @@ public class Theme {
 		return isDark;
 	}
 
-	public Color graphBackgroundColor() {
-		return graphBackgroundColor == null
-			? Colors.white()
-			: graphBackgroundColor;
+	public Color backgroundColor() {
+		return backgroundColor == null
+				? Colors.white()
+				: backgroundColor;
 	}
 
 	public Color boxFontColor(Box box) {
 		var config = boxConfigs.get(box);
 		return config != null && config.fontColor != null
-			? config.fontColor
-			: Colors.black();
+				? config.fontColor
+				: Colors.black();
 	}
 
 	public Color boxBackgroundColor(Box box) {
 		var config = boxConfigs.get(box);
 		return config != null && config.backgroundColor != null
-			? config.backgroundColor
-			: graphBackgroundColor();
+				? config.backgroundColor
+				: backgroundColor();
 	}
 
 	public Color boxBorderColor(Box box) {
 		var config = boxConfigs.get(box);
 		return config != null && config.borderColor != null
-			? config.borderColor
-			: Colors.black();
+				? config.borderColor
+				: Colors.black();
 	}
 
 	public int boxBorderWidth(Box box) {
 		var config = boxConfigs.get(box);
 		return config != null
-			? Math.max(1, config.borderWidth)
-			: 1;
+				? Math.max(1, config.borderWidth)
+				: 1;
 	}
 
 	public Color linkColor() {
 		return defaultLinkColor == null
-			? Colors.black()
-			: defaultLinkColor;
+				? Colors.black()
+				: defaultLinkColor;
 	}
 
 	public Color linkColorSelected() {
-		return defaultLinkColorSelected == null
+		return defaultLinkColorSelection == null
 				? Colors.darkGray()
-				: defaultLinkColorSelected;
+				: defaultLinkColorSelection;
 	}
 
 	public Color linkColor(FlowType flowType) {
 		var color = linkColors.get(flowType);
 		return color != null
-			? color
-			: linkColor();
+				? color
+				: linkColor();
 	}
 
 	public Color infoLabelColor() {
 		return infoLabelColor == null
-			? Colors.black()
-			: infoLabelColor;
+				? Colors.black()
+				: infoLabelColor;
 	}
 
 	public Color labelColor(FlowType flowType) {
 		var type = flowType == null
-			? FlowType.PRODUCT_FLOW
-			: flowType;
+				? FlowType.PRODUCT_FLOW
+				: flowType;
 		return flowLabelColors.getOrDefault(
-			type,boxFontColor(Box.DEFAULT));
+				type,boxFontColor(Box.DEFAULT));
 	}
 
-	public static Optional<Theme> loadFrom(File file) {
+	public static Optional<Theme> loadFrom(File file, String id) {
 		if (file == null)
 			return Optional.empty();
 
@@ -153,40 +151,42 @@ public class Theme {
 
 		for (int i = 0; i < css.getStyleRuleCount(); i++) {
 			var rule = css.getStyleRuleAtIndex(i);
+			if (Css.asId(rule, id)) {
 
-			// box config
-			Css.boxOf(rule)
-				.ifPresent(box -> theme.styleBox(box, rule));
+				// box config
+				Css.boxOf(rule)
+						.ifPresent(box -> theme.styleBox(box, rule));
 
-			// root config
-			if (Css.isRoot(rule)) {
-				Css.getBackgroundColor(rule)
-					.ifPresent(color -> theme.graphBackgroundColor = color);
-			}
+				// root config
+				if (Css.isBody(rule)) {
+					Css.getBackgroundColor(rule)
+							.ifPresent(color -> theme.backgroundColor = color);
+				}
 
-			// links
-			if (isLink(rule)) {
-				var flowType = flowTypeOf(rule);
-				var selection = isSelection(rule);
-				getColor(rule).ifPresent(color -> {
-					if (selection)
-						theme.defaultLinkColorSelected = color;
-					else if (flowType.isPresent()) {
-						theme.linkColors.put(flowType.get(), color);
-					} else {
-						theme.defaultLinkColor = color;
-					}
-				});
-			}
+				// links
+				if (Css.isLink(rule)) {
+					var flowType = Css.flowTypeOf(rule);
+					var selection = Css.isSelection(rule);
+					Css.getColor(rule).ifPresent(color -> {
+						if (selection)
+							theme.defaultLinkColorSelection = color;
+						else if (flowType.isPresent()) {
+							theme.linkColors.put(flowType.get(), color);
+						} else {
+							theme.defaultLinkColor = color;
+						}
+					});
+				}
 
-			// labels
-			if (Css.isLabel(rule)) {
-				Css.getColor(rule).ifPresent(color -> {
-					if (Css.isInfo(rule)) {
-						theme.infoLabelColor = color;
-					}
-					flowTypeOf(rule).ifPresent(flowType -> theme.flowLabelColors.put(flowType, color));
-				});
+				// labels
+				if (Css.isLabel(rule)) {
+					Css.getColor(rule).ifPresent(color -> {
+						if (Css.isInfo(rule)) {
+							theme.infoLabelColor = color;
+						}
+						Css.flowTypeOf(rule).ifPresent(flowType -> theme.flowLabelColors.put(flowType, color));
+					});
+				}
 			}
 		}
 		return Optional.of(theme);
@@ -195,13 +195,13 @@ public class Theme {
 	private void styleBox(Box box, CSSStyleRule rule) {
 		var config = boxConfigs.computeIfAbsent(box, $ -> new BoxConfig());
 		Css.getColor(rule)
-			.ifPresent(color -> config.fontColor = color);
+				.ifPresent(color -> config.fontColor = color);
 		Css.getBackgroundColor(rule)
-			.ifPresent(color -> config.backgroundColor = color);
+				.ifPresent(color -> config.backgroundColor = color);
 		Css.getBorderColor(rule)
-			.ifPresent(color -> config.borderColor = color);
+				.ifPresent(color -> config.borderColor = color);
 		Css.getBorderWidth(rule)
-			.ifPresent(width -> config.borderWidth = width);
+				.ifPresent(width -> config.borderWidth = width);
 	}
 
 	public enum Box {
@@ -213,21 +213,20 @@ public class Theme {
 		LIBRARY_PROCESS,
 		RESULT;
 
-		public static Box of(SankeyNode node) {
-			if (node == null || node.product.provider() == null)
+		public static Box of(RootDescriptor descriptor, boolean isReference) {
+			if (descriptor == null)
 				return DEFAULT;
-			var provider = node.product.provider();
-			if (provider.isFromLibrary())
+			if (descriptor.isFromLibrary())
 				return LIBRARY_PROCESS;
-			if (node.getDiagram().isReferenceNode(node))
+			if (isReference)
 				return REFERENCE_PROCESS;
-			if (provider instanceof ProcessDescriptor p)
+			if (descriptor instanceof ProcessDescriptor p)
 				return p.processType == ProcessType.UNIT_PROCESS
-					? UNIT_PROCESS
-					: SYSTEM_PROCESS;
-			if (provider instanceof ResultDescriptor)
+						? UNIT_PROCESS
+						: SYSTEM_PROCESS;
+			if (descriptor instanceof ResultDescriptor)
 				return RESULT;
-			if (provider instanceof ProductSystemDescriptor)
+			if (descriptor instanceof ProductSystemDescriptor)
 				return SUB_SYSTEM;
 			return DEFAULT;
 		}

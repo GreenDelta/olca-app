@@ -1,8 +1,8 @@
 package org.openlca.app.results.analysis.sankey;
 
-import org.openlca.app.results.analysis.sankey.themes.Theme;
-import org.openlca.app.results.analysis.sankey.themes.Themes;
 import org.openlca.app.tools.graphics.model.Element;
+import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.core.model.Copyable;
 import org.openlca.util.Strings;
 
@@ -22,7 +22,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 	private int maxCount = 25;
 	private int orientation = NORTH;
 	private String connectionRouter = ROUTER_CURVE;
-	private Theme theme = Themes.getDefault();
+	private Theme theme = Themes.getDefault(Themes.SANKEY);
 
 	public SankeyConfig(SankeyEditor editor) {
 		this.editor = editor;

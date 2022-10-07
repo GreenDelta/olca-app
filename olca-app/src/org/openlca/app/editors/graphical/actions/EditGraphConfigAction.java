@@ -18,7 +18,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.themes.Themes;
+import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Popup;
@@ -134,7 +134,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		private void themeCombo(FormToolkit tk, Composite comp) {
 			var combo = UI.formCombo(comp, tk, "Theme");
 			UI.gridData(combo, true, false);
-			var themes = Themes.loadFromWorkspace();
+			var themes = Themes.loadFromWorkspace(Themes.MODEL);
 			var current = config.getTheme();
 			int currentIdx = 0;
 			for (int i = 0; i < themes.size(); i++) {

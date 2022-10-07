@@ -7,7 +7,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
-import org.openlca.app.editors.graphical.themes.Theme;
+import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.tools.graphics.figures.GridPos;
 
@@ -27,14 +27,15 @@ public class IOPaneFigure extends ComponentFigure {
 		super(pane);
 		this.pane = pane;
 		var theme = pane.getGraph().getConfig().getTheme();
-		var box = Theme.Box.of(pane.getNode());
+		var node = pane.getNode();
+		var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
 
 		var layout = new GridLayout(1, false);
 		layout.marginWidth = 0;
 		layout.horizontalSpacing = 0;
 		setLayoutManager(layout);
 
-		if (!pane.getExchangesItems().isEmpty() || pane.getNode().isEditable()) {
+		if (!pane.getExchangesItems().isEmpty() || node.isEditable()) {
 
 			add(new Header(), GridPos.fillTop());
 
@@ -44,7 +45,7 @@ public class IOPaneFigure extends ComponentFigure {
 			contentPane.setLayoutManager(contentPaneLayout);
 			add(contentPane, GridPos.fill());
 
-			if (pane.getNode().isEditable()) {
+			if (node.isEditable()) {
 				var alignment = pane.isForInputs() ? SWT.LEAD : SWT.TRAIL;
 				add(addExchangeButton, new GridData(alignment, SWT.BOTTOM, false, false));
 			}
@@ -151,7 +152,8 @@ public class IOPaneFigure extends ComponentFigure {
 				var inputIOPane = pane.getNode().getIOPanes().get(INPUT_PROP);
 				if (!inputIOPane.getExchangesItems().isEmpty()) {
 					var theme = pane.getGraph().getConfig().getTheme();
-					var box = Theme.Box.of(pane.getNode());
+					var node = pane.getNode();
+					var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
 					var location = getLocation();
 					var size = getNodeFigure().getSize();
 					g.setForegroundColor(theme.boxBorderColor(box));

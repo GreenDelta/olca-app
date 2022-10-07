@@ -1,4 +1,4 @@
-package org.openlca.app.results.analysis.sankey.themes;
+package org.openlca.app.tools.graphics.themes;
 
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.decl.CascadingStyleSheet;
@@ -7,12 +7,7 @@ import org.eclipse.swt.graphics.Color;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.FlowType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.function.IntFunction;
 import java.util.function.ToIntFunction;
 
@@ -67,25 +62,33 @@ class Css {
     return buffer.toString();
   }
 
+	static boolean asId(CSSStyleRule rule, String id) {
+		return hasSelector("#" + id, rule);
+	}
+
   static boolean isRoot(CSSStyleRule rule) {
     return hasSelector(":root", rule);
   }
 
-  static boolean isInfo(CSSStyleRule rule) {
-    return hasSelector(".info", rule);
-  }
+	static boolean isBody(CSSStyleRule rule) {
+		return hasSelector("body", rule);
+	}
 
   static boolean isBox(CSSStyleRule rule) {
-    return hasSelector(".box", rule);
+    return hasSelector("box", rule);
   }
 
   static boolean isLabel(CSSStyleRule rule) {
-    return hasSelector(".label", rule);
+    return hasSelector("label", rule);
   }
 
   static boolean isLink(CSSStyleRule rule) {
-    return hasSelector(".link", rule);
+    return hasSelector("link", rule);
   }
+
+	static boolean isInfo(CSSStyleRule rule) {
+		return hasSelector(".info", rule);
+	}
 
   static Optional<FlowType> flowTypeOf(CSSStyleRule rule) {
     if (rule == null)
