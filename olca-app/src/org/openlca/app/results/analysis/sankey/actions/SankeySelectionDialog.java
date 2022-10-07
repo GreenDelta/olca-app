@@ -11,7 +11,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.components.ResultItemSelector.SelectionHandler;
 import org.openlca.app.results.analysis.sankey.SankeyConfig;
-import org.openlca.app.results.analysis.sankey.themes.Themes;
+import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
@@ -84,7 +84,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 	private void themeCombo(FormToolkit tk, Composite comp) {
 		var combo = UI.formCombo(comp, tk, "Theme");
 		UI.gridData(combo, true, false);
-		var themes = Themes.loadFromWorkspace();
+		var themes = Themes.loadFromWorkspace(Themes.SANKEY);
 		var current = config.getTheme();
 		int currentIdx = 0;
 		for (int i = 0; i < themes.size(); i++) {

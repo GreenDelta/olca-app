@@ -7,9 +7,9 @@ import org.openlca.app.M;
 import org.openlca.app.tools.graphics.figures.GridPos;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.analysis.sankey.model.SankeyNode;
-import org.openlca.app.results.analysis.sankey.themes.Theme;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.tools.graphics.figures.RoundBorder;
+import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -26,7 +26,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 		super(node);
 		this.node = node;
 		var theme = node.getDiagram().getConfig().getTheme();
-		var box = Theme.Box.of(node);
+		var box = Theme.Box.of(node.product.provider(), node.isReference());
 
 		GridLayout layout = new GridLayout(1, false);
 		layout.marginHeight = 2;
@@ -101,7 +101,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 
 		SankeyNodeHeader() {
 			var theme = node.getDiagram().getConfig().getTheme();
-			var box = Theme.Box.of(node);
+			var box = Theme.Box.of(node.product.provider(), node.isReference());
 
 			GridLayout layout = new GridLayout(2, false);
 			layout.marginHeight = 2;

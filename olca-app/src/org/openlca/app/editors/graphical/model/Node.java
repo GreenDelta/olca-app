@@ -391,6 +391,10 @@ public class Node extends MinMaxComponent {
 		return null;
 	}
 
+	public boolean isOfReferenceProcess() {
+		return getGraph().isReferenceProcess(this);
+	}
+
 	public String toString() {
 		var editable = isEditable() ? "E-" : "";
 		var prefix = isMinimized() ? M.Minimize : M.Maximize;

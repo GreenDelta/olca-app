@@ -4,7 +4,7 @@ import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.editors.graphical.themes.Theme;
+import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.tools.graphics.figures.GridPos;
 import org.openlca.app.tools.graphics.figures.RoundBorder;
 
@@ -15,7 +15,7 @@ public class MaximizedNodeFigure extends NodeFigure {
 	public MaximizedNodeFigure(Node node) {
 		super(node);
 		var theme = node.getGraph().getConfig().getTheme();
-		var box = Theme.Box.of(node);
+		var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
 
 		var layout = new GridLayout(1, false);
 		layout.marginHeight = 2;
