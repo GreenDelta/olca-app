@@ -409,7 +409,7 @@ public class TotalImpactResultPage extends FormPage {
 			if (flow == null)
 				return null;
 			if (process == null)
-				return result.getTotalFlowResult(flow);
+				return result.totalFlowOf(flow);
 			return result.getDirectFlowResult(process, flow);
 		}
 

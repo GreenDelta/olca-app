@@ -34,11 +34,11 @@ class ProviderItem implements Item {
 
 		// create the items
 		var items = new ArrayList<ProviderItem>();
-		result.techIndex().each((index, product) -> {
+		result.techIndex().each((index, techFlow) -> {
 
-			var item = new ProviderItem(index, product);
+			var item = new ProviderItem(index, techFlow);
 			items.add(item);
-			var tr = result.totalRequirements()[index];
+			var tr = result.totalRequirementsOf(techFlow);
 			item.amount = tr == 0
 				? 0
 				: item.hasWasteFlow() ? -tr : tr;

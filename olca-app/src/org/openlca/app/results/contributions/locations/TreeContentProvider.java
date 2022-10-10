@@ -111,7 +111,7 @@ class TreeContentProvider implements ITreeContentProvider {
 			return null;
 
 		// prepare the stream
-		double total = result.getTotalFlowResult(enviFlow);
+		double total = result.totalFlowOf(enviFlow);
 
 		// in a regionalized result, the flow with the
 		// given location can occur in processes that

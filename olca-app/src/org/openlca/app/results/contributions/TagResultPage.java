@@ -83,7 +83,7 @@ public class TagResultPage extends FormPage {
 		@Override
 		public void onFlowSelected(EnviFlow flow) {
 			fillTable(Labels.refUnit(flow),
-				editor.result.getTotalFlowResult(flow),
+				editor.result.totalFlowOf(flow),
 				tagResult -> tagResult.inventoryResultOf(flow).value());
 		}
 

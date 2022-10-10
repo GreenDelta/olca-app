@@ -352,7 +352,7 @@ public class ProcessResultPage extends FormPage {
 		private double getUpstreamContribution(EnviFlow flow) {
 			if (process == null || flow == null)
 				return 0;
-			double total = result.getTotalFlowResult(flow);
+			double total = result.totalFlowOf(flow);
 			if (total == 0)
 				return 0;
 			double val = result.getUpstreamFlowResult(process, flow);

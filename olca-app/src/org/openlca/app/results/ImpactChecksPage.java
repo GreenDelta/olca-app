@@ -121,7 +121,7 @@ public class ImpactChecksPage extends FormPage {
 			}
 			if (allZero) {
 				Contribution<?> c = Contribution.of(flow);
-				c.amount = result.getTotalFlowResult(flow);
+				c.amount = result.totalFlowOf(flow);
 				nodes.add(c);
 			}
 		}
@@ -145,7 +145,7 @@ public class ImpactChecksPage extends FormPage {
 				if (f != 0)
 					continue;
 				Contribution<?> child = Contribution.of(flow);
-				child.amount = result.getTotalFlowResult(flow);
+				child.amount = result.totalFlowOf(flow);
 				c.childs.add(child);
 			}
 			return c.childs.toArray();

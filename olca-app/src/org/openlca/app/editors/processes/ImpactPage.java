@@ -316,10 +316,10 @@ class ImpactPage extends ModelPage<Process> {
 					return Labels.category((EnviFlow) c.item);
 				return null;
 			case 2:
-				if (!(c.item instanceof EnviFlow iFlow))
+				if (!(c.item instanceof EnviFlow f))
 					return null;
-				double a = result.getTotalFlowResult(iFlow);
-				return Numbers.format(a) + " " + Labels.refUnit(iFlow);
+				double a = result.totalFlowOf(f);
+				return Numbers.format(a) + " " + Labels.refUnit(f);
 			case 3:
 				return Strings.nullOrEmpty(c.unit)
 						? Numbers.format(c.amount)
