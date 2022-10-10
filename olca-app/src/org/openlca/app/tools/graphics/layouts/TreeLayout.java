@@ -77,13 +77,15 @@ public class TreeLayout {
 	private int maxDepth = 0;
 	private List<Double> levels;
 
-	TreeLayout(GraphLayout manager, int orientation, Component apex,
+	TreeLayout(	GraphLayout manager, int orientation, Component apex,
 						 boolean forInputs) {
 		this.manager = manager;
 		this.orientation = orientation;
 		this.forInputs = forInputs;
 		apexVertex = createApexVertex(apex);
 		createTree(apexVertex, 0);
+		if (apexVertex != null)
+			createMistletoes(apexVertex);
 		levelSizes = new ArrayList<>(Collections.nCopies(maxDepth + 2, 0.0));
 		mistletoeSizes = new ArrayList<>(Collections.nCopies(maxDepth + 2, 0.0));
 	}
@@ -212,6 +214,8 @@ public class TreeLayout {
 	 *
 	 */
 	private void createTree(Vertex parent, int depth) {
+		var space = " ".repeat(Math.max(0, depth + 1));
+		System.out.println(space + "Creating tree of " + parent);
 		var links = forInputs
 				? parent.node.getAllTargetConnections()
 				: parent.node.getAllSourceConnections();
@@ -222,19 +226,31 @@ public class TreeLayout {
 			var child = forInputs
 					? link.getSourceNode()
 					: link.getTargetNode();
+			System.out.println(space + " " + "child: " + child);
 			// Check if this child has not been already added by a neighbor, an
 			// ancestor or the root of the subtree itself.
 			if (!manager.mapNodeToVertex.containsKey(child) && !children.contains(child))
 				children.add(child);
 		}
 
-		if (!children.isEmpty())
+		if (!children.isEmpty()) {
+			System.out.println(space + "updating max depth: " + maxDepth);
 			maxDepth = Math.max(maxDepth, depth + 1);
+		}
 
 		children.sort(Comparator.comparing(Component::getComparisonLabel));
 
+		var ParentSiblings = parent.parent == null
+				? Collections.emptyList()
+				: parent.parent.children.stream()
+				.map(vertex -> vertex.node)
+				.toList();
+
 		// Create the vertices of the children.
 		for (var child : children) {
+			if (ParentSiblings.contains(child))
+				// That subtree will be created by the parent of parent.
+				continue;
 			var index = children.indexOf(child);
 			var figure = manager.figureOf(child);
 			var size = manager.getConstrainedSize(figure);
@@ -248,17 +264,31 @@ public class TreeLayout {
 				childVertex.setPreviousSibling(
 						manager.mapNodeToVertex.get(children.get(index - 1)));
 
-			// Check if this vertex is a mistletoe.
-			if (isMistletoe(childVertex))
-				childVertex.mistletoe =
-						new TreeLayout(manager, orientation, child, !forInputs);
-
 			manager.mapNodeToVertex.put(child, childVertex);
 			parent.addChild(childVertex);
 			createTree(childVertex, depth + 1);
 		}
 	}
 
+	private void createMistletoes(Vertex parent) {
+		for (var child : parent.children) {
+			// Check if this vertex is a mistletoe.
+			if (isMistletoe(child))
+				child.mistletoe =
+						new TreeLayout(manager, orientation, child.node, !forInputs);
+			createMistletoes(child);
+		}
+	}
+
+	/**
+	 * In this first postorder walk, every node of the tree is assigned a
+	 * preliminary x-coordinate (held in field Vertex.prelim). In addition,
+	 * internal nodes are given modifiers, which will be used to move their
+	 * offspring to the right (held in field Vertex.modifier).
+	 * @param vertex
+	 * @param number
+	 * @param depth
+	 */
 	private void firstWalk(Vertex vertex, int number, int depth) {
 		vertex.number = number;
 		updateLevelSizes(depth, vertex);
@@ -431,6 +461,8 @@ public class TreeLayout {
 					? link.getTargetNode()
 					: link.getSourceNode();
 			if (!manager.mapNodeToVertex.containsKey(otherNode)) {
+				System.out.println("Creating mistletoe for " + vertex);
+				System.out.println("  -> " + otherNode);
 				return true;
 			}
 		}
