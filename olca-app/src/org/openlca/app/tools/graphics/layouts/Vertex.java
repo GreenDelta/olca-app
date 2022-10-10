@@ -24,8 +24,10 @@ public class Vertex {
 
 	public Vertex thread;
 	public Vertex ancestor;
+	/** Index of this child within the siblings. */
 	public double number;
 	public double change;
+	/** Amount by which this vertex should be shifted to the right*/
 	public double shift;
 
 	/** A mistletoe is a vertex that has more than one parent. This abnormal

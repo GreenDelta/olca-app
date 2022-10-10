@@ -68,6 +68,11 @@ public class SankeyNode extends Component {
 		return getDiagram().isReferenceNode(this);
 	}
 
+	@Override
+	public String getComparisonLabel() {
+		return Labels.name(product.provider());
+	}
+
 	public String toString() {
 		return "Node: "+ Labels.name(node.product.provider());
 	}
