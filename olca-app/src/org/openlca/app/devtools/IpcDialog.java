@@ -122,8 +122,8 @@ public class IpcDialog extends FormDialog {
 									.withDataDir(Workspace.dataDir())
 									.withPort(port)
 									.get();
-							server = new Server(port)
-									.withDefaultHandlers(config);
+							server = new Server(config)
+									.withDefaultHandlers();
 							server.start();
 						}
 					},

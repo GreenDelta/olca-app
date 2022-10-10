@@ -263,6 +263,7 @@ import org.openlca.core.matrix.format.JavaMatrix as JavaMatrix
 import org.openlca.core.matrix.solvers.JavaSolver as JavaSolver
 import org.openlca.jsonld.Json as Json
 import org.openlca.core.services.JsonCalculationSetup as JsonCalculationSetup
+import org.openlca.core.services.JsonDataService as JsonDataService
 import org.openlca.util.JsonDiffZip as JsonDiffZip
 import org.openlca.jsonld.output.JsonExport as JsonExport
 import org.openlca.jsonld.input.JsonImport as JsonImport
@@ -272,6 +273,7 @@ import org.openlca.core.results.providers.LazyLibrarySolver as LazyLibrarySolver
 import org.openlca.core.results.LcaResult as LcaResult
 import org.openlca.core.results.providers.LibImpactMatrix as LibImpactMatrix
 import org.openlca.core.library.LibMatrix as LibMatrix
+import org.openlca.util.LibStrip as LibStrip
 import org.openlca.core.library.Libraries as Libraries
 import org.openlca.core.library.Library as Library
 import org.openlca.core.results.providers.LibraryCache as LibraryCache
@@ -291,7 +293,6 @@ import org.openlca.core.results.LocationResult as LocationResult
 import org.openlca.core.database.usage.LocationUseSearch as LocationUseSearch
 import org.openlca.jsonld.output.LocationWriter as LocationWriter
 import org.openlca.core.matrix.index.LongPair as LongPair
-import org.openlca.ipc.Server as Server
 import org.openlca.io.maps.MapFactor as MapFactor
 import org.openlca.io.openepd.io.MappedExportResult as MappedExportResult
 import org.openlca.core.model.MappingFile as MappingFile
@@ -419,6 +420,7 @@ import org.openlca.core.math.ReferenceAmount as ReferenceAmount
 import org.openlca.proto.io.output.Refs as Refs
 import org.openlca.expressions.Repl as Repl
 import org.openlca.core.database.internal.Resource as Resource
+import org.openlca.core.services.Response as Response
 import org.openlca.ipc.Responses as Responses
 import org.openlca.core.model.Result as Result
 import org.openlca.core.database.ResultDao as ResultDao
@@ -447,6 +449,7 @@ import org.openlca.core.database.internal.ScriptRunner as ScriptRunner
 import org.openlca.core.matrix.solvers.SeqAgg as SeqAgg
 import org.openlca.core.matrix.solvers.SequentialSolver as SequentialSolver
 import org.openlca.proto.io.server.Server as Server
+import org.openlca.core.services.ServerConfig as ServerConfig
 import org.openlca.io.simapro.csv.input.SimaProCsvImport as SimaProCsvImport
 import org.openlca.io.simapro.csv.SimaProUnit as SimaProUnit
 import org.openlca.core.matrix.io.SimpleBin as SimpleBin
@@ -521,6 +524,7 @@ import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree
 import org.openlca.ipc.handlers.UpstreamTreeHandler as UpstreamTreeHandler
+import org.openlca.jsonld.output.Util as Util
 import org.openlca.core.database.validation.Validation as Validation
 import org.openlca.expressions.VariableFunction as VariableFunction
 import org.openlca.core.model.Version as Version
