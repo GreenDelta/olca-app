@@ -120,6 +120,7 @@ import org.openlca.io.EcoSpoldUnitFetch as EcoSpoldUnitFetch
 import org.openlca.core.database.EntityCache as EntityCache
 import org.openlca.jsonld.Enums as Enums
 import org.openlca.core.matrix.index.EnviFlow as EnviFlow
+import org.openlca.core.results.EnviFlowValue as EnviFlowValue
 import org.openlca.core.matrix.index.EnviIndex as EnviIndex
 import org.openlca.core.model.Epd as Epd
 import org.openlca.io.openepd.EpdConverter as EpdConverter
@@ -182,7 +183,6 @@ import org.openlca.io.maps.FlowSync as FlowSync
 import org.openlca.core.matrix.cache.FlowTable as FlowTable
 import org.openlca.core.model.FlowType as FlowType
 import org.openlca.core.database.usage.FlowUseSearch as FlowUseSearch
-import org.openlca.core.results.FlowValue as FlowValue
 import org.openlca.jsonld.output.FlowWriter as FlowWriter
 import org.openlca.util.ForegroundSystemGenerator as ForegroundSystemGenerator
 import org.openlca.io.Format as Format
@@ -267,6 +267,8 @@ import org.openlca.core.services.JsonDataService as JsonDataService
 import org.openlca.util.JsonDiffZip as JsonDiffZip
 import org.openlca.jsonld.output.JsonExport as JsonExport
 import org.openlca.jsonld.input.JsonImport as JsonImport
+import org.openlca.core.services.JsonRef as JsonRef
+import org.openlca.core.services.JsonResultService as JsonResultService
 import org.openlca.util.KeyGen as KeyGen
 import org.openlca.geo.Kml2GeoJson as Kml2GeoJson
 import org.openlca.core.results.providers.LazyLibrarySolver as LazyLibrarySolver
@@ -488,6 +490,7 @@ import org.openlca.core.results.SystemProcess as SystemProcess
 import org.openlca.util.TLongSets as TLongSets
 import org.openlca.core.results.TagResult as TagResult
 import org.openlca.core.matrix.index.TechFlow as TechFlow
+import org.openlca.core.results.TechFlowValue as TechFlowValue
 import org.openlca.core.matrix.index.TechIndex as TechIndex
 import org.openlca.core.matrix.linking.TechIndexBuilder as TechIndexBuilder
 import org.openlca.core.matrix.linking.TechIndexCutoffBuilder as TechIndexCutoffBuilder
