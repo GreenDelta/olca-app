@@ -8,6 +8,10 @@ public class GridPos {
 	private GridPos() {
 	}
 
+	public static GridData centerCenter() {
+		return new GridData(SWT.CENTER, SWT.CENTER, false, false);
+	}
+
 	public static GridData leadTop() {
 		return new GridData(SWT.LEAD, SWT.TOP, false, false);
 	}
