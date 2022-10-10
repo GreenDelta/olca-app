@@ -21,12 +21,14 @@ public class SankeyNodeFigure extends ComponentFigure {
 
 	public final SankeyNode node;
 	private final Figure contentPane = new Figure();
+	private final Theme theme;
+	private final Theme.Box box;
 
 	public SankeyNodeFigure(SankeyNode node) {
 		super(node);
 		this.node = node;
-		var theme = node.getDiagram().getConfig().getTheme();
-		var box = Theme.Box.of(node.product.provider(), node.isReference());
+		theme = node.getDiagram().getConfig().getTheme();
+		box = Theme.Box.of(node.product.provider(), node.isReference());
 
 		GridLayout layout = new GridLayout(1, false);
 		layout.marginHeight = 2;
@@ -58,9 +60,6 @@ public class SankeyNodeFigure extends ComponentFigure {
 		header.setBorder(headerBorder);
 		add(header, new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		var totalVal = Numbers.format(node.totalResult, SIGNIF_NUMBER);
-		var totalPerc = Numbers.format(node.totalShare * 100, SIGNIF_NUMBER);
-
 		var contentPaneLayout = new GridLayout(1, false);
 		contentPaneLayout.marginHeight = 2;
 		contentPaneLayout.marginWidth = 4;
@@ -69,32 +68,43 @@ public class SankeyNodeFigure extends ComponentFigure {
 		contentPane.setLayoutManager(contentPaneLayout);
 		add(contentPane, GridPos.fill());
 
-		var totalValLabel = new Label(totalVal + node.unit);
-		totalValLabel.setForegroundColor(theme.boxFontColor(box));
-		totalValLabel.setFont(UI.boldFont());
-		var totalPercLabel = new Label(totalPerc + "%");
-		totalPercLabel.setForegroundColor(theme.boxFontColor(box));
-		contentPane.add(totalValLabel, new GridData(SWT.CENTER, SWT.CENTER, true, true));
-		contentPane.add(totalPercLabel, new GridData(SWT.CENTER, SWT.CENTER, true, true));
+		contentPane.add(createDirectLabel(), GridPos.centerCenter());
+		contentPane.add(createDirectValue(), GridPos.centerCenter());
+		contentPane.add(createUpstreamLabel(), GridPos.centerCenter());
+		contentPane.add(createUpstreamValue(), GridPos.centerCenter());
 
 		setBackgroundColor(theme.boxBackgroundColor(box));
-		setToolTip(createToolTip());
 		setOpaque(true);
 	}
 
-	private Label createToolTip() {
-		var singleVal = Numbers.format(node.directResult, SIGNIF_NUMBER);
-		var singlePerc = Numbers.format(node.directShare * 100, SIGNIF_NUMBER);
-		var totalVal = Numbers.format(node.totalResult, SIGNIF_NUMBER);
-		var totalPerc = Numbers.format(node.totalShare * 100, SIGNIF_NUMBER);
+	private Label createDirectLabel() {
+		var percentage = Numbers.format(node.directShare * 100, SIGNIF_NUMBER);
+		var label = new Label(M.Direct + " (" + percentage + "%)" + ":");
+		label.setForegroundColor(theme.boxFontColor(box));
+		label.setFont(UI.boldFont());
+		return label;
+	}
 
-		var single = singleVal + " (" + singlePerc + "%)";
-		var total = totalVal + " (" + totalPerc + "%)";
+	private Label createDirectValue() {
+		var val = Numbers.format(node.directResult, SIGNIF_NUMBER);
+		var label = new Label(val + " " + node.unit);
+		label.setForegroundColor(theme.boxFontColor(box));
+		return label;
+	}
 
-		return new Label(
-				Labels.name(node.product)
-						+ M.Direct + ": " + single + "\n"
-						+ M.UpstreamTotal + ": " + total);
+	private Label createUpstreamLabel() {
+		var percentage = Numbers.format(node.totalShare * 100, SIGNIF_NUMBER);
+		var label = new Label(M.UpstreamTotal + " (" + percentage + "%)" + ":");
+		label.setForegroundColor(theme.boxFontColor(box));
+		label.setFont(UI.boldFont());
+		return label;
+	}
+
+	private Label createUpstreamValue() {
+		var val = Numbers.format(node.totalShare, SIGNIF_NUMBER);
+		var label = new Label(val + " " + node.unit);
+		label.setForegroundColor(theme.boxFontColor(box));
+		return label;
 	}
 
 	class SankeyNodeHeader extends Figure {
