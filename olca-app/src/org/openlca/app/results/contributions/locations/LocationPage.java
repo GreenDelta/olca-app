@@ -14,13 +14,11 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -68,13 +66,13 @@ public class LocationPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform,
+		var form = UI.formHeader(mform,
 				Labels.name(editor.setup.target()),
 				Icon.ANALYSIS_RESULT.get());
-		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
+		var tk = mform.getToolkit();
+		var body = UI.formBody(form, tk);
 		createCombos(body, tk);
-		SashForm sash = new SashForm(body, SWT.VERTICAL);
+		var sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridData(sash, true, true);
 		tk.adapt(sash);
 		createTree(sash, tk);
@@ -179,7 +177,7 @@ public class LocationPage extends FormPage {
 	}
 
 	private void update(List<Contribution<Location>> items) {
-		List<Contribution<Location>> sorted = items.stream()
+		var sorted = items.stream()
 				.filter(c -> c.amount != 0)
 				.sorted((c1, c2) -> Double.compare(c2.amount, c1.amount))
 				.collect(Collectors.toList());

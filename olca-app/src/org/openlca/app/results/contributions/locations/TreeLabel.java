@@ -44,9 +44,8 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		if (!(obj instanceof Contribution))
+		if (!(obj instanceof Contribution<?> c))
 			return null;
-		Contribution<?> c = (Contribution<?>) obj;
 		if (col == 1)
 			return image.get(c.share);
 		if (col != 0)
@@ -62,9 +61,8 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (!(obj instanceof Contribution))
+		if (!(obj instanceof Contribution<?> c))
 			return null;
-		Contribution<?> c = (Contribution<?>) obj;
 		switch (col) {
 		case 0:
 			return getLabel(c);

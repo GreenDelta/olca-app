@@ -8,7 +8,6 @@ import java.util.Map;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.components.mapview.LayerConfig;
@@ -29,7 +28,6 @@ import org.openlca.geo.calc.Bounds;
 import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
-import org.openlca.geo.geojson.Geometry;
 import org.openlca.util.Pair;
 
 class ResultMap {
@@ -49,12 +47,12 @@ class ResultMap {
 	}
 
 	static ResultMap on(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, M.Map);
+		var section = UI.section(body, tk, M.Map);
 		UI.gridData(section, true, true);
-		Composite comp = UI.sectionClient(section, tk);
+		var comp = UI.sectionClient(section, tk);
 		comp.setLayout(new FillLayout());
 		UI.gridData(comp, true, true);
-		ResultMap m = new ResultMap();
+		var m = new ResultMap();
 		m.map = new MapView(comp);
 		m.map.addBaseLayers();
 		Actions.bind(section, Actions.create(
@@ -76,22 +74,22 @@ class ResultMap {
 
 		coll = new FeatureCollection();
 		List<Pair<Location, Feature>> pairs = new ArrayList<>();
-		for (Contribution<Location> c : contributions) {
-			Location loc = c.item;
-			if (loc == null || loc.geodata == null)
+		for (var c : contributions) {
+			var location = c.item;
+			if (location == null || location.geodata == null)
 				continue;
-			FeatureCollection fc = GeoJSON.unpack(loc.geodata);
+			var fc = GeoJSON.unpack(location.geodata);
 			if (fc == null || fc.features.isEmpty())
 				continue;
-			Geometry g = fc.features.get(0).geometry;
+			var g = fc.features.get(0).geometry;
 			if (g == null)
 				continue;
-			Feature feature = new Feature();
+			var feature = new Feature();
 			feature.geometry = g;
 			feature.properties = new HashMap<>();
 			feature.properties.put("result", c.amount);
-			addMetaData(loc, feature, selection);
-			pairs.add(Pair.of(loc, feature));
+			addMetaData(location, feature, selection);
+			pairs.add(Pair.of(location, feature));
 		}
 
 		if (pairs.isEmpty())
@@ -110,8 +108,7 @@ class ResultMap {
 		f.properties.put("location_code", loc.code);
 		f.properties.put("location", loc.name);
 		f.properties.put("location_id", loc.refId);
-		if (selection instanceof FlowDescriptor) {
-			FlowDescriptor flow = (FlowDescriptor) selection;
+		if (selection instanceof FlowDescriptor flow) {
 			f.properties.put("flow_id", flow.refId);
 			f.properties.put("flow", Labels.name(flow));
 			f.properties.put("flow_category", Labels.category(flow));
@@ -119,16 +116,14 @@ class ResultMap {
 			return;
 		}
 
-		if (selection instanceof ImpactDescriptor) {
-			var imp = (ImpactDescriptor) selection;
+		if (selection instanceof ImpactDescriptor imp) {
 			f.properties.put("impact_id", imp.refId);
 			f.properties.put("impact_name", imp.name);
 			f.properties.put("unit", imp.referenceUnit);
 			return;
 		}
 
-		if (selection instanceof CostResultDescriptor) {
-			CostResultDescriptor c = (CostResultDescriptor) selection;
+		if (selection instanceof CostResultDescriptor c) {
 			f.properties.put("cost_type", c.forAddedValue
 					? "added value"
 					: "net costs");
