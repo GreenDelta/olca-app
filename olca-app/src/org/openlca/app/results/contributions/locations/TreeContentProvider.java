@@ -152,7 +152,7 @@ class TreeContentProvider implements ITreeContentProvider {
 	private Stream<Contribution<?>> contributions(
 			Location loc, ImpactDescriptor impact) {
 
-		double total = result.getTotalImpactResult(impact);
+		double total = result.totalImpactOf(impact);
 		if (!result.enviIndex().isRegionalized()) {
 			return processes(loc).stream().map(p -> {
 				Contribution<?> c = Contribution.of(p);

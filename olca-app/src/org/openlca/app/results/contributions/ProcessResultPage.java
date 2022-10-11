@@ -375,7 +375,7 @@ public class ProcessResultPage extends FormPage {
 		private double getUpstreamContribution(ImpactDescriptor d) {
 			if (process == null || d == null)
 				return 0;
-			double total = result.getTotalImpactResult(d);
+			double total = result.totalImpactOf(d);
 			if (total == 0)
 				return 0;
 			double val = result.getUpstreamImpactResult(process, d);

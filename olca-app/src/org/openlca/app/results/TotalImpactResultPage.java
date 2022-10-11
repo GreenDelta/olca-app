@@ -425,7 +425,7 @@ public class TotalImpactResultPage extends FormPage {
 
 		double result() {
 			return switch (type()) {
-				case IMPACT_CATEGORY -> result.getTotalImpactResult(impact);
+				case IMPACT_CATEGORY -> result.totalImpactOf(impact);
 				case PROCESS -> result.getDirectImpactResult(process, impact);
 				case FLOW -> {
 					var factor = impactFactor();
@@ -464,7 +464,7 @@ public class TotalImpactResultPage extends FormPage {
 
 		double contribution() {
 			double total = Math.abs(
-					result.getTotalImpactResult(impact));
+					result.totalImpactOf(impact));
 			double r = result();
 			if (r == 0)
 				return 0;

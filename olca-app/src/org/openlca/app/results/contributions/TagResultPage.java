@@ -90,7 +90,7 @@ public class TagResultPage extends FormPage {
 		@Override
 		public void onImpactSelected(ImpactDescriptor impact) {
 			fillTable(impact.referenceUnit,
-				editor.result.getTotalImpactResult(impact),
+				editor.result.totalImpactOf(impact),
 				tagResult -> tagResult.impactResultOf(impact).value());
 		}
 

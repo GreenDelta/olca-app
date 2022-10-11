@@ -155,7 +155,7 @@ class ImpactPage extends ModelPage<Process> {
 				.stream()
 				.sorted((d1, d2) -> Strings.compare(d1.name, d2.name))
 				.map(d -> {
-					var c = Contribution.of(d, result.getTotalImpactResult(d));
+					var c = Contribution.of(d, result.totalImpactOf(d));
 					c.unit = d.referenceUnit;
 					return c;
 				})
@@ -243,7 +243,7 @@ class ImpactPage extends ModelPage<Process> {
 			if (!(c.item instanceof ImpactDescriptor impact))
 				return null;
 
-			double total = result.getTotalImpactResult(impact);
+			double total = result.totalImpactOf(impact);
 			boolean withoutZeros = zeroCheck.getSelection();
 			List<Contribution<?>> childs = new ArrayList<>();
 			for (var flow : result.enviIndex()) {

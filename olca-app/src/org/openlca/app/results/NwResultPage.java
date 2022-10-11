@@ -51,7 +51,7 @@ public class NwResultPage extends FormPage {
 		var nwSet = NwSetTable.of(Database.get(), setup.nwSet());
 		if (nwSet.isEmpty())
 			return;
-		var impacts = result.getTotalImpactResults();
+		var impacts = result.totalImpacts();
 		if (impacts.isEmpty())
 			return;
 		if (nwSet.hasNormalization()) {

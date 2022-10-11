@@ -90,17 +90,20 @@ public class LayerConfig {
 		return center;
 	}
 
-	private class ColorScale {
+	private static class ColorScale {
 
 		private final double refVal;
 
 		public ColorScale(double min, double max) {
-			refVal = Math.max(Math.abs(min), Math.abs(max));
+			refVal = Math.abs(Math.max(Math.abs(min), Math.abs(max)));
 		}
 
 		public Color get(double val) {
 			double share = val / refVal;
-			return Colors.getForContribution(share);
+			var alpha = 10 + (int) (244d * Math.abs(share));
+			return share < 0
+					? Colors.get(0, 255, 0, alpha)
+					: Colors.get(255, 0, 0, alpha);
 		}
 	}
 }

@@ -1,15 +1,21 @@
 package org.openlca.app.editors.projects.reports.model;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import org.openlca.app.editors.projects.ProjectResultData;
 import org.openlca.jsonld.Json;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 class ReportImpactResult {
 
@@ -62,7 +68,7 @@ class ReportImpactResult {
         var result = projectResult.getResult(variant);
         if (result == null)
           continue;
-        var total = result.getTotalImpactResult(impact);
+        var total = result.totalImpactOf(impact);
         var vr = new VariantResult(variant.name, total);
         r.variantResults.add(vr);
         for (var process : report.processes) {
