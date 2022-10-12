@@ -4,6 +4,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.tools.graphics.model.Component;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -74,18 +75,17 @@ public class TreeLayout {
 	 * The maximum depth of the tree (set to zero if there is only an apex
 	 * node).
 	 */
-	private int maxDepth = 0;
+	private int maxDepth = -1;
 	private List<Double> levels;
 
-	TreeLayout(	GraphLayout manager, int orientation, Component apex,
+	TreeLayout(GraphLayout manager, int orientation, Component apex,
 						 boolean forInputs) {
 		this.manager = manager;
 		this.orientation = orientation;
 		this.forInputs = forInputs;
 		apexVertex = createApexVertex(apex);
-		createTree(apexVertex, 0);
-		if (apexVertex != null)
-			createMistletoes(apexVertex);
+		createTree(apexVertex);
+		createMistletoes(apexVertex);
 		levelSizes = new ArrayList<>(Collections.nCopies(maxDepth + 2, 0.0));
 		mistletoeSizes = new ArrayList<>(Collections.nCopies(maxDepth + 2, 0.0));
 	}
@@ -207,71 +207,83 @@ public class TreeLayout {
 	}
 
 	/**
-	 * Create the vertices of a tree which root is <code>parent</code>>.
-	 * It works recursively by calling this method on children that have at
-	 * least one child.
-	 * @param parent The apex of the (sub-)tree to be created.
+	 * Create the vertices of a tree which root is <code>parent</code>.
+	 * It works by doing a breadth-first search.
+	 * @param apex The apex of the tree to be created.
 	 *
 	 */
-	private void createTree(Vertex parent, int depth) {
-		var links = forInputs
-				? parent.node.getAllTargetConnections()
-				: parent.node.getAllSourceConnections();
-		var children = new ArrayList<Component>();
+	private void createTree(Vertex apex) {
+		if (apex == null)
+			return;
 
-		// Create the list of children of parent.
-		for (var link : links) {
-			var child = forInputs
-					? link.getSourceNode()
-					: link.getTargetNode();
-			// Check if this child has not been already added by a neighbor, an
-			// ancestor or the root of the subtree itself.
-			if (!manager.mapNodeToVertex.containsKey(child) && !children.contains(child))
-				children.add(child);
-		}
+		var queue = new ArrayDeque<Vertex>();
+		queue.add(apex);
 
-		if (!children.isEmpty())
-			maxDepth = Math.max(maxDepth, depth + 1);
+		while (!queue.isEmpty()) {
+			var levelSize = queue.size(); // Number of parents on the level.
+			while (levelSize-- != 0) {
+				var parent = queue.poll();
+				if (parent != null) {
+					var links = forInputs
+							? parent.node.getAllTargetConnections()
+							: parent.node.getAllSourceConnections();
+					var children = new ArrayList<Component>();
 
-		children.sort(Comparator.comparing(Component::getComparisonLabel));
+					// Create the list of children of parent.
+					for (var link : links) {
+						var child = forInputs
+								? link.getSourceNode()
+								: link.getTargetNode();
+						// Check if this child has not been already added by a neighbor, an
+						// ancestor or the root of the subtree itself.
+						if (!manager.mapNodeToVertex.containsKey(child)
+								&& !children.contains(child))
+							children.add(child);
+					}
 
-		var parentSiblings = parent.parent == null
-				? Collections.emptyList()
-				: parent.parent.node.getSiblings(forInputs);
+					children.sort(Comparator.comparing(Component::getComparisonLabel));
 
-		// Removing children that are also siblings of the parent.
-		var filteredChildren = children.stream()
-				.filter(component -> !parentSiblings.contains(component))
-				.toList();
+					// Create the vertices of the filtered children.
+					for (var child : children) {
+						var index = children.indexOf(child);
+						var figure = manager.figureOf(child);
+						var size = manager.getConstrainedSize(figure);
+						var childVertex = new Vertex(child, figure, size, index);
+						childVertex.setParent(parent);
+						if (childVertex.figure == null
+								|| manager.getConstraint(childVertex.figure) == null)  // see layout()
+							continue;
+						childVertex.setStartLocation(calculateStartLocation(childVertex));
+						if (children.indexOf(child) != 0)
+							childVertex.setPreviousSibling(
+									manager.mapNodeToVertex.get(children.get(index - 1)));
 
-		// Create the vertices of the filtered children.
-		for (var child : filteredChildren) {
-			var index = filteredChildren.indexOf(child);
-			var figure = manager.figureOf(child);
-			var size = manager.getConstrainedSize(figure);
-			var childVertex = new Vertex(child, figure, size, index);
-			childVertex.setParent(parent);
-			if (childVertex.figure == null
-					|| manager.getConstraint(childVertex.figure) == null)  // see layout()
-				continue;
-			childVertex.setStartLocation(calculateStartLocation(childVertex));
-			if (filteredChildren.indexOf(child) != 0)
-				childVertex.setPreviousSibling(
-						manager.mapNodeToVertex.get(filteredChildren.get(index - 1)));
-
-			manager.mapNodeToVertex.put(child, childVertex);
-			parent.addChild(childVertex);
-			createTree(childVertex, depth + 1);
+						manager.mapNodeToVertex.put(child, childVertex);
+						parent.addChild(childVertex);
+						queue.add(childVertex);
+					}
+				}
+			}
+			maxDepth++;
 		}
 	}
 
-	private void createMistletoes(Vertex parent) {
-		for (var child : parent.children) {
-			// Check if this vertex is a mistletoe.
-			if (isMistletoe(child))
-				child.mistletoe =
-						new TreeLayout(manager, orientation, child.node, !forInputs);
-			createMistletoes(child);
+	private void createMistletoes(Vertex apex) {
+		if (apex == null)
+			return;
+
+		var queue = new ArrayDeque<Vertex>();
+		queue.add(apex);
+
+		while (!queue.isEmpty()) {
+			var parent = queue.poll();
+			for (var child : parent.children) {
+				// Check if this vertex is a mistletoe.
+				if (isMistletoe(child) && child.mistletoe == null)
+					child.mistletoe =
+							new TreeLayout(manager, orientation, child.node, !forInputs);
+				queue.add(child);
+			}
 		}
 	}
 
