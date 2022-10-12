@@ -43,7 +43,8 @@ public class Node extends MinMaxComponent {
 	public int isExpanded;
 	/** Helper variable when exploring graph in CollapseCommand */
 	public boolean isCollapsing;
-	/** Helper variable when exploring graph in isChainingReferenceNode */
+	/** Helper variable when exploring graph in isChainingReferenceNode and in
+	 * isOnlyChainingReferenceNode.*/
 	public boolean wasExplored;
 
 	public Node(RootDescriptor descriptor) {

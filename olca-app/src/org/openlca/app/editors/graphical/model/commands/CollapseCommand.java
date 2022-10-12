@@ -4,6 +4,7 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.tools.graphics.model.Link;
 
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
@@ -58,40 +59,41 @@ public class CollapseCommand extends Command {
 		// It is needed to copy the links otherwise we get a concurrent modification
 		// exception
 		var links = side == INPUT
-			? node.getAllTargetConnections().toArray(new GraphLink[0])
-			: node.getAllSourceConnections().toArray(new GraphLink[0]);
+			? node.getAllTargetConnections().toArray(new Link[0])
+			: node.getAllSourceConnections().toArray(new Link[0]);
 
-		for (var link : links) {
-			var thisNode = side == INPUT
-				? link.getTargetNode()
-				: link.getSourceNode();
-			var otherNode = side == INPUT
-				? link.getSourceNode()
-				: link.getTargetNode();
+		for (var l : links) {
+			if (l instanceof GraphLink link) {
+				var thisNode = side == INPUT
+						? link.getTargetNode()
+						: link.getSourceNode();
+				var otherNode = side == INPUT
+						? link.getSourceNode()
+						: link.getTargetNode();
 
-			if (!thisNode.equals(node)  // wrong link
-				|| otherNode.equals(host))  // double link
-				continue;
+				if (!thisNode.equals(node)  // wrong link
+						|| otherNode.equals(host))  // double link
+					continue;
 
-			if (host != host.getGraph().getReferenceNode()
-				&& (otherNode.isChainingReferenceNode(side)
-				|| otherNode == host.getGraph().getReferenceNode()))
-				continue;
+				if (host != host.getGraph().getReferenceNode()
+					&& (otherNode.isChainingReferenceNode(side)
+					|| otherNode == host.getGraph().getReferenceNode()))
+					continue;
 
-			link.disconnect();
-			collapse(otherNode, INPUT);
-			collapse(otherNode, OUTPUT);
+				link.disconnect();
+				collapse(otherNode, INPUT);
+				collapse(otherNode, OUTPUT);
 
-			if (link.isCloseLoop()) { // close loop
-				host.setExpanded(side == INPUT ? OUTPUT : INPUT, false);
+				if (link.isCloseLoop()) // close loop
+					host.setExpanded(side == INPUT ? OUTPUT : INPUT, false);
+
+				var linkStream = otherNode.getAllLinks().stream()
+						.map(GraphLink.class::cast);
+				if (!linkStream.filter(con -> !con.isCloseLoop()).toList().isEmpty())
+					continue;
+
+				host.getGraph().removeChild(otherNode);
 			}
-
-			var linkStream = otherNode.getAllLinks().stream()
-					.map(GraphLink.class::cast);
-			if (!linkStream.filter(l -> !l.isCloseLoop()).toList().isEmpty())
-				continue;
-
-			host.getGraph().removeChild(otherNode);
 		}
 		node.isCollapsing = false;
 	}
