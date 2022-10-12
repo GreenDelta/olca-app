@@ -214,8 +214,6 @@ public class TreeLayout {
 	 *
 	 */
 	private void createTree(Vertex parent, int depth) {
-		var space = " ".repeat(Math.max(0, depth + 1));
-		System.out.println(space + "Creating tree of " + parent);
 		var links = forInputs
 				? parent.node.getAllTargetConnections()
 				: parent.node.getAllSourceConnections();
@@ -226,32 +224,29 @@ public class TreeLayout {
 			var child = forInputs
 					? link.getSourceNode()
 					: link.getTargetNode();
-			System.out.println(space + " " + "child: " + child);
 			// Check if this child has not been already added by a neighbor, an
 			// ancestor or the root of the subtree itself.
 			if (!manager.mapNodeToVertex.containsKey(child) && !children.contains(child))
 				children.add(child);
 		}
 
-		if (!children.isEmpty()) {
-			System.out.println(space + "updating max depth: " + maxDepth);
+		if (!children.isEmpty())
 			maxDepth = Math.max(maxDepth, depth + 1);
-		}
 
 		children.sort(Comparator.comparing(Component::getComparisonLabel));
 
-		var ParentSiblings = parent.parent == null
+		var parentSiblings = parent.parent == null
 				? Collections.emptyList()
-				: parent.parent.children.stream()
-				.map(vertex -> vertex.node)
+				: parent.parent.node.getSiblings(forInputs);
+
+		// Removing children that are also siblings of the parent.
+		var filteredChildren = children.stream()
+				.filter(component -> !parentSiblings.contains(component))
 				.toList();
 
-		// Create the vertices of the children.
-		for (var child : children) {
-			if (ParentSiblings.contains(child))
-				// That subtree will be created by the parent of parent.
-				continue;
-			var index = children.indexOf(child);
+		// Create the vertices of the filtered children.
+		for (var child : filteredChildren) {
+			var index = filteredChildren.indexOf(child);
 			var figure = manager.figureOf(child);
 			var size = manager.getConstrainedSize(figure);
 			var childVertex = new Vertex(child, figure, size, index);
@@ -260,9 +255,9 @@ public class TreeLayout {
 					|| manager.getConstraint(childVertex.figure) == null)  // see layout()
 				continue;
 			childVertex.setStartLocation(calculateStartLocation(childVertex));
-			if (children.indexOf(child) != 0)
+			if (filteredChildren.indexOf(child) != 0)
 				childVertex.setPreviousSibling(
-						manager.mapNodeToVertex.get(children.get(index - 1)));
+						manager.mapNodeToVertex.get(filteredChildren.get(index - 1)));
 
 			manager.mapNodeToVertex.put(child, childVertex);
 			parent.addChild(childVertex);
@@ -460,11 +455,8 @@ public class TreeLayout {
 			var otherNode = forInputs
 					? link.getTargetNode()
 					: link.getSourceNode();
-			if (!manager.mapNodeToVertex.containsKey(otherNode)) {
-				System.out.println("Creating mistletoe for " + vertex);
-				System.out.println("  -> " + otherNode);
+			if (!manager.mapNodeToVertex.containsKey(otherNode))
 				return true;
-			}
 		}
 		return false;
 	}

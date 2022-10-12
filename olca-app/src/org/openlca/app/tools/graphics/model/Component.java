@@ -181,6 +181,15 @@ abstract public class Component extends Element {
 		return new ArrayList<>(links);
 	}
 
+	public List<Component> getSiblings(boolean forInputs) {
+		var links = forInputs
+				? getAllTargetConnections()
+				: getAllSourceConnections();
+		return links.stream()
+				.map((forInputs) ? Link::getSourceNode : Link::getTargetNode)
+				.toList();
+	}
+
 	public String getComparisonLabel() {
 		return "";
 	}

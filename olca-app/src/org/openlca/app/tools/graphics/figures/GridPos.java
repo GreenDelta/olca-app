@@ -9,7 +9,7 @@ public class GridPos {
 	}
 
 	public static GridData centerCenter() {
-		return new GridData(SWT.CENTER, SWT.CENTER, false, false);
+		return new GridData(SWT.CENTER, SWT.CENTER, true, true);
 	}
 
 	public static GridData leadTop() {
