@@ -86,6 +86,11 @@ public class Graph extends Component {
 		return (List<Node>) super.getChildren();
 	}
 
+	@Override
+	public int compareTo(Component other) {
+		return 0;
+	}
+
 	public List<Long> getChildrenIds() {
 		var ids = new ArrayList<Long>();
 		for (var node : getChildren()) {

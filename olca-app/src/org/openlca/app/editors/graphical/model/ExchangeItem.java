@@ -5,6 +5,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.util.Strings;
 
 import java.util.Objects;
 
@@ -97,10 +98,45 @@ public class ExchangeItem extends Component {
 			|| !getIOPane().isForInputs() == (flowType == FlowType.PRODUCT_FLOW);
 	}
 
+	private static int typeOrderOf(Exchange e) {
+		if (e == null
+				|| e.flow == null
+				|| e.flow.flowType == null)
+			return -1;
+		return switch (e.flow.flowType) {
+			case PRODUCT_FLOW -> 0;
+			case WASTE_FLOW -> 1;
+			default -> 2;
+		};
+	}
+
+	public static int compare(ExchangeItem e1, ExchangeItem e2) {
+		if (e1 == null && e2 == null)
+			return 0;
+		if (e1 != null && e2 == null)
+			return 1;
+		if (e1 == null)
+			return -1;
+		int t1 = typeOrderOf(e1.exchange);
+		int t2 = typeOrderOf(e2.exchange);
+		if (t1 != t2)
+			return t1 - t2;
+		var name1 = Labels.name(e1.exchange.flow);
+		var name2 = Labels.name(e2.exchange.flow);
+		return Strings.compare(name1, name2);
+	}
+
+	@Override
+	public int compareTo(Component other) {
+		if (other instanceof ExchangeItem e)
+			return compare(this, e);
+		else return 0;
+	}
+
 	public String toString() {
 		var name = Labels.name(exchange.flow);
 		return "ExchangeItem("
-			+ name.substring(0, Math.min(name.length(), 20)) + ")";
+				+ name.substring(0, Math.min(name.length(), 20)) + ")";
 	}
 
 }

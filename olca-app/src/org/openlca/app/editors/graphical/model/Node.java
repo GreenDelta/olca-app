@@ -4,6 +4,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
@@ -364,6 +365,20 @@ public class Node extends MinMaxComponent {
 					return item;
 		}
 		return null;
+	}
+
+	@Override
+	public int compareTo(Component other) {
+		if (other instanceof Node node) {
+			if (getRefExchangeItem() == null && node.getRefExchangeItem() == null)
+				return 0;
+			if (getRefExchangeItem() != null && node.getRefExchangeItem() == null)
+				return 1;
+			if (getRefExchangeItem() == null)
+				return -1;
+			return this.getRefExchangeItem().compareTo(node.getRefExchangeItem());
+		}
+		else return 0;
 	}
 
 	@Override

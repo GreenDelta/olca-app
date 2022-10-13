@@ -39,4 +39,15 @@ public class IOPane extends Component {
 		return "IOPane(" + label + ")";
 	}
 
+	@Override
+	public int compareTo(Component other) {
+		if (other == null)
+			return 1;
+		if (other instanceof IOPane pane) {
+			if (this.forInputs == pane.forInputs) return 0;
+			return this.forInputs ? 1 : -1;
+		}
+		else return 0;
+	}
+
 }

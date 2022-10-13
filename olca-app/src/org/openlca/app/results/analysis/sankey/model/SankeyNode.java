@@ -12,6 +12,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.Sankey;
+import org.openlca.util.Strings;
 
 import static org.openlca.app.results.analysis.sankey.layouts.SankeyLayout.DEFAULT_LOCATION;
 
@@ -69,7 +70,16 @@ public class SankeyNode extends Component {
 	}
 
 	@Override
+	public int compareTo(Component other) {
+		if (other instanceof SankeyNode n)
+			return Strings.compare(getComparisonLabel(), n.getComparisonLabel());
+		else return 1;
+	}
+
+	@Override
 	public String getComparisonLabel() {
+		if (product == null)
+			return "";
 		return Labels.name(product.provider());
 	}
 
