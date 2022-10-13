@@ -31,6 +31,11 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 	/** A map keeping track of nodes laid out by the TreeLayout. */
 	final Map<Component, Vertex> mapNodeToVertex = new HashMap<>();
 	private IFigure parentFigure;
+	/**
+	 * Figures are usually laid out in two times as children are laid out first.
+	 * This flag allows to execute tasks after the pre-layout.
+	 */
+	private boolean preLayout = false;
 
 	public GraphLayout(int orientation) {
 		this.orientation = orientation;
@@ -63,7 +68,11 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 				figure.setBounds(bounds.getTranslated(offset));
 			}
 		}
+		if (preLayout) focusOnStart();
+		if (!preLayout) preLayout = true;
 	}
+
+	protected abstract void focusOnStart();
 
 	private Point calculateLocation(Figure figure, Rectangle constraint) {
 		// Set the location to the TreeLayout location if the figure has not been

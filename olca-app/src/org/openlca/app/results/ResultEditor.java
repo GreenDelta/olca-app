@@ -3,6 +3,7 @@ package org.openlca.app.results;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -26,6 +27,7 @@ import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
+import org.python.modules.time.Time;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -84,21 +86,9 @@ public class ResultEditor extends FormEditor {
 			var sankeyEditor = new SankeyEditor(this);
 			var sankeyEditorIndex = addPage(sankeyEditor, getEditorInput());
 			setPageText(sankeyEditorIndex, M.SankeyDiagram);
-			// Add a page listener to focus the graph on the reference node when it is
-			// activated the first time.
-			var sankeyInit = new AtomicReference<IPageChangedListener>();
-			IPageChangedListener fn = e -> {
-				if (e.getSelectedPage() != sankeyEditor)
-					return;
-				var listener = sankeyInit.get();
-				if (listener == null)
-					return;
-				sankeyEditor.focusOnReferenceNode();
-				removePageChangedListener(listener);
-				sankeyInit.set(null);
-			};
-			sankeyInit.set(fn);
-			addPageChangedListener(fn);
+			// Add a page listener to set the graph when it is activated the first
+			// time.
+			setSankeyPageListener(sankeyEditor);
 
 			if (result.hasImpacts()) {
 				addPage(new ImpactChecksPage(this));
@@ -111,6 +101,25 @@ public class ResultEditor extends FormEditor {
 			var log = LoggerFactory.getLogger(getClass());
 			log.error("Add pages failed", e);
 		}
+	}
+
+	private void setSankeyPageListener(SankeyEditor sankeyEditor) {
+		var sankeyInit = new AtomicReference<IPageChangedListener>();
+		IPageChangedListener fn = e -> {
+			if (e.getSelectedPage() != sankeyEditor)
+				return;
+			var listener = sankeyInit.get();
+			if (listener == null)
+				return;
+			var diagram = sankeyEditor.getSankeyFactory().createDiagram();
+			sankeyEditor.setModel(diagram);
+			var viewer = (GraphicalViewer) sankeyEditor.getAdapter(GraphicalViewer.class);
+			viewer.setContents(diagram);
+			removePageChangedListener(listener);
+			sankeyInit.set(null);
+		};
+		sankeyInit.set(fn);
+		addPageChangedListener(fn);
 	}
 
 	@Override
