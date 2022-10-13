@@ -74,7 +74,7 @@ class ConflictResolutionMap implements ConflictResolver {
 			answers.add("Stash changes");
 		}
 		var result = Question.ask("Handle conflicts",
-				"There are conflicts with uncommited changes, how do you want to proceed?",
+				"There are conflicts with uncommitted changes, how do you want to proceed?",
 				answers.toArray(new String[answers.size()]));
 		if (result == 0)
 			return null;
