@@ -52,4 +52,13 @@ public class SankeyLayout extends GraphLayout {
 		}
 		return null;
 	}
+
+	@Override
+	protected void focusOnStart() {
+		var editor = diagram.editor;
+		if (!editor.wasFocus) {
+			editor.wasFocus = editor.focusOnReferenceNode();
+		}
+	}
+
 }

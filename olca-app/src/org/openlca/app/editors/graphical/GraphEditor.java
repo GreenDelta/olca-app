@@ -68,6 +68,7 @@ public class GraphEditor extends GraphicalEditor {
 	// TODO: save this in the same way as the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
 	private final GraphFactory graphFactory = new GraphFactory(this);
+	public boolean wasFocus = false;
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
@@ -320,8 +321,9 @@ public class GraphEditor extends GraphicalEditor {
 	@Override
 	protected void setInput(IEditorInput input) {
 		super.setInput(input);
-		var array = GraphFile.getLayouts(this);
-		setModel(getGraphFactory().createGraph(this, array));
+		// The model is initialized with an empty graph so that it is only created
+		// when the model graph page is open (see ProductSystemEditor).
+		setModel(new Graph(this));
 	}
 
 	public void setDirty() {
@@ -397,9 +399,13 @@ public class GraphEditor extends GraphicalEditor {
 		return systemEditor;
 	}
 
-	public void focusOnReferenceNode() {
+	public boolean focusOnReferenceNode() {
 		var action = getActionRegistry().getAction(ActionIds.FOCUS);
-		if (action.isEnabled()) action.run();
+		if (action.isEnabled()) {
+			action.run();
+			return true;
+		}
+		else return false;
 	}
 
 }

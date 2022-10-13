@@ -29,7 +29,8 @@ public class FocusAction extends WorkbenchPartAction {
 			return false;
 		viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
 		return viewer != null && editor.getModel() != null
-			&& editor.getModel().getNode(editor.getSankey().root) != null;
+				&& editor.getSankey() != null
+				&& editor.getModel().getNode(editor.getSankey().root) != null;
 	}
 
 	@Override

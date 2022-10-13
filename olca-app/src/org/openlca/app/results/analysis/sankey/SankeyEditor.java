@@ -60,6 +60,7 @@ public class SankeyEditor extends GraphicalEditor {
 	public final SankeyConfig config;
 	private Diagram diagram;
 	private Sankey<?> sankey;
+	public boolean wasFocus = false;
 
 	public SankeyEditor(ResultEditor parent) {
 		this.resultEditor = parent;
@@ -136,7 +137,9 @@ public class SankeyEditor extends GraphicalEditor {
 	@Override
 	protected void setInput(IEditorInput input) {
 		super.setInput(input);
-		setModel(getSankeyFactory().createDiagram());
+		// The model is initialized with an empty diagram so that it is only created
+		// when the SankeyDiagram page is open (see ResultEditor).
+		setModel(new Diagram(this, config.orientation()));
 	}
 
 	/**
@@ -286,9 +289,13 @@ public class SankeyEditor extends GraphicalEditor {
 		return sankey;
 	}
 
-	public void focusOnReferenceNode() {
+	public boolean focusOnReferenceNode() {
 		var action = getActionRegistry().getAction(ActionIds.FOCUS);
-		if (action.isEnabled()) action.run();
+		if (action.isEnabled()) {
+			action.run();
+			return true;
+		}
+		else return false;
 	}
 
 }
