@@ -78,26 +78,18 @@ public class GraphFactory {
 
 		// filter and sort the exchanges
 		exchanges.stream()
-			.filter(e -> {
-				if (e.flow == null)
-					return false;
-				return editor.config.showElementaryFlows()
-					|| e.flow.flowType != FlowType.ELEMENTARY_FLOW;
-			})
-			.sorted((e1, e2) -> {
-				int t1 = typeOrderOf(e1);
-				int t2 = typeOrderOf(e2);
-				if (t1 != t2)
-					return t1 - t2;
-				var name1 = Labels.name(e1.flow);
-				var name2 = Labels.name(e2.flow);
-				return Strings.compare(name1, name2);
-			})
-			.forEach(e -> {
-				var key = e.isInput ? INPUT_PROP : OUTPUT_PROP;
-				panes.get(key).addChild(new ExchangeItem(e));
-			});
-
+				.filter(e -> {
+					if (e.flow == null)
+						return false;
+					return editor.config.showElementaryFlows()
+							|| e.flow.flowType != FlowType.ELEMENTARY_FLOW;
+				})
+				.map(ExchangeItem::new)
+				.sorted(ExchangeItem::compareTo)
+				.forEach(e -> {
+					var key = e.exchange.isInput ? INPUT_PROP : OUTPUT_PROP;
+					panes.get(key).addChild(e);
+				});
 		return panes;
 	}
 
@@ -156,18 +148,6 @@ public class GraphFactory {
 				yield Collections.singletonList(e);
 			}
 			default -> Collections.emptyList();
-		};
-	}
-
-	private int typeOrderOf(Exchange e) {
-		if (e == null
-			|| e.flow == null
-			|| e.flow.flowType == null)
-			return -1;
-		return switch (e.flow.flowType) {
-			case PRODUCT_FLOW -> 0;
-			case WASTE_FLOW -> 1;
-			default -> 2;
 		};
 	}
 

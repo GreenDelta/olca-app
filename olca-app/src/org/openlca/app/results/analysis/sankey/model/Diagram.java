@@ -41,4 +41,9 @@ public class Diagram extends Component {
 		return "DiagramModel";
 	}
 
+	@Override
+	public int compareTo(Component other) {
+		return 0;
+	}
+
 }

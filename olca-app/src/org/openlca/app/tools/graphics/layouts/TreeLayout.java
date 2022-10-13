@@ -7,7 +7,6 @@ import org.openlca.app.tools.graphics.model.Component;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.eclipse.draw2d.PositionConstants.*;
@@ -241,7 +240,7 @@ public class TreeLayout {
 							children.add(child);
 					}
 
-					children.sort(Comparator.comparing(Component::getComparisonLabel));
+					children.sort(Component::compareTo);
 
 					// Create the vertices of the filtered children.
 					for (var child : children) {

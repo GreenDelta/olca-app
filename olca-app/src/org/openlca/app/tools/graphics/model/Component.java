@@ -20,7 +20,7 @@ import org.openlca.app.editors.graphical.model.Node;
 	 * <li>support for adding and removing children,</li>
 	 * <li>methods for connections with other <code>Components</code>,</li>
  */
-abstract public class Component extends Element {
+abstract public class Component extends Element implements Comparable<Component> {
 
 	public static final String
 		CHILDREN_PROP = "children",
@@ -72,7 +72,6 @@ abstract public class Component extends Element {
 		child.setParent(this);
 		firePropertyChange(CHILDREN_PROP, index, child);
 	}
-
 
 	public void addChildren(List<Node> children) {
 		for (var child : children) addChild(child);
@@ -189,6 +188,9 @@ abstract public class Component extends Element {
 				.map((forInputs) ? Link::getSourceNode : Link::getTargetNode)
 				.toList();
 	}
+
+	@Override
+	public abstract int compareTo(Component other);
 
 	public String getComparisonLabel() {
 		return "";
