@@ -16,6 +16,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.*;
 import org.openlca.app.tools.graphics.KeyHandler;
+import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.tools.graphics.actions.ZoomInAction;
 import org.openlca.app.tools.graphics.actions.ZoomOutAction;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
@@ -202,7 +203,7 @@ public class GraphEditor extends GraphicalEditor {
 		action = new OpenMiniatureViewAction(this);
 		registry.registerAction(action);
 
-		action = new SaveImageAction(this);
+		action = new SaveImageAction(this, "graph.png");
 		registry.registerAction(action);
 
 		action = new MassExpansionAction(this, EXPAND);

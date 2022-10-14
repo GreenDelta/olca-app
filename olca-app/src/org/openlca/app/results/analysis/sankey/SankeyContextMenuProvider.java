@@ -26,6 +26,7 @@ public class SankeyContextMenuProvider extends ContextMenuProvider {
 		addUndoActions(menu);
 		addViewActions(menu);
 		addEditActions(menu);
+		addSaveActions(menu);
 		addRestActions(menu);
 	}
 
@@ -56,6 +57,11 @@ public class SankeyContextMenuProvider extends ContextMenuProvider {
 		var openEditor = actionRegistry.getAction(ActionIds.OPEN_EDITOR);
 		if (openEditor.isEnabled())
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, openEditor);
+	}
+
+	private void addSaveActions(IMenuManager menu) {
+		var saveImage = actionRegistry.getAction(org.openlca.app.editors.graphical.actions.ActionIds.SAVE_IMAGE);
+		menu.appendToGroup(GEFActionConstants.GROUP_SAVE, saveImage);
 	}
 
 	private void addRestActions(IMenuManager menu) {
