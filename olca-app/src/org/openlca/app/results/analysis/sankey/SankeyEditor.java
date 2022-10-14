@@ -15,9 +15,15 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.*;
 import org.eclipse.ui.actions.ActionFactory;
-import org.openlca.app.results.analysis.sankey.actions.*;
+import org.openlca.app.results.analysis.sankey.actions.ActionIds;
+import org.openlca.app.results.analysis.sankey.actions.EditSankeyConfigAction;
+import org.openlca.app.results.analysis.sankey.actions.FocusAction;
+import org.openlca.app.results.analysis.sankey.actions.LayoutAction;
+import org.openlca.app.results.analysis.sankey.actions.OpenEditorAction;
+import org.openlca.app.results.analysis.sankey.actions.OpenMiniatureViewAction;
 import org.openlca.app.results.analysis.sankey.model.SankeyFactory;
 import org.openlca.app.tools.graphics.KeyHandler;
+import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.tools.graphics.actions.ZoomInAction;
 import org.openlca.app.tools.graphics.actions.ZoomOutAction;
 import org.openlca.app.tools.graphics.edit.RootEditPart;
@@ -212,10 +218,10 @@ public class SankeyEditor extends GraphicalEditor {
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 
-		action = new SaveImageAction(this);
+		action = new EditSankeyConfigAction(this);
 		registry.registerAction(action);
 
-		action = new EditSankeyConfigAction(this);
+		action = new SaveImageAction(this, "sankey.png");
 		registry.registerAction(action);
 
 		action = new OpenMiniatureViewAction(this);
