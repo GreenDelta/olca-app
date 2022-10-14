@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.Display;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.openlca.app.tools.graphics.edit.RootEditPart.MARGIN_PADDING;
+
 /**
  * <i>This class is a copy of {@link org.eclipse.gef.editparts.ZoomManager}
  * to have the ability to override <code>primSetZoom</code>.</i>
@@ -351,6 +353,17 @@ public class ZoomManager {
 
 		pane.setScale(zoom);
 		fireZoomChanged();
+
+		// Adapt the size of the border of the pane according to the zoom. This
+		// avoids having little scrollbar when zooming in.
+		var viewportSize = getViewport().getSize();
+		var viewportSizeMean = (viewportSize.height() + viewportSize.width()) / 2;
+		var padding = zoom > 1
+				? MARGIN_PADDING
+				: MARGIN_PADDING + (int) (viewportSizeMean * (1 - zoom));
+		var border = new MarginBorder(padding);
+		pane.setBorder(border);
+
 		getViewport().validate();
 
 		// Translate the viewport to keep the same cursor location in the pane.
