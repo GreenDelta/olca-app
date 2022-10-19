@@ -68,11 +68,11 @@ class ReportImpactResult {
         var result = projectResult.getResult(variant);
         if (result == null)
           continue;
-        var total = result.totalImpactOf(impact);
+        var total = result.getTotalImpactValueOf(impact);
         var vr = new VariantResult(variant.name, total);
         r.variantResults.add(vr);
         for (var process : report.processes) {
-          var contribution = result.getDirectImpactResult(process, impact);
+          var contribution = result.getDirectImpactOf(impact, process);
           vr.contributions.put(process.refId, contribution);
         }
       }

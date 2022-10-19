@@ -88,8 +88,8 @@ public class Labels {
 		// process-flow pairs here. though this could
 		// result in very long display names.
 		return product == null
-			? ""
-			: name(product.provider());
+				? ""
+				: name(product.provider());
 	}
 
 	public static String name(EnviFlow flow) {
@@ -116,8 +116,8 @@ public class Labels {
 
 	public static String refUnit(TechFlow flow) {
 		return flow == null
-			? ""
-			: refUnit(flow.flow());
+				? ""
+				: refUnit(flow.flow());
 	}
 
 	public static String refUnit(FlowDescriptor flow) {
@@ -159,6 +159,12 @@ public class Labels {
 		if (c == null)
 			return "";
 		return CategoryPath.getFull(c);
+	}
+
+	public static String category(TechFlow techFlow) {
+		return techFlow != null
+				? category(techFlow.provider())
+				: "";
 	}
 
 	/**

@@ -8,6 +8,7 @@ import org.openlca.app.navigation.elements.Group;
 import org.openlca.app.navigation.elements.GroupType;
 import org.openlca.app.util.FileType;
 import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Direction;
 import org.openlca.core.model.Flow;
@@ -34,6 +35,12 @@ public class Images {
 		return f.isVirtual() && f.wrapped() != null
 				? get(f.wrapped())
 				: get(f.flow());
+	}
+
+	public static Image get(TechFlow techFlow) {
+		return techFlow != null
+				? get(techFlow.provider())
+				: null;
 	}
 
 	public static Image get(RefEntity entity) {

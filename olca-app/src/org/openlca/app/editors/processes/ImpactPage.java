@@ -155,7 +155,7 @@ class ImpactPage extends ModelPage<Process> {
 				.stream()
 				.sorted((d1, d2) -> Strings.compare(d1.name, d2.name))
 				.map(d -> {
-					var c = Contribution.of(d, result.totalImpactOf(d));
+					var c = Contribution.of(d, result.getTotalImpactValueOf(d));
 					c.unit = d.referenceUnit;
 					return c;
 				})
@@ -243,11 +243,11 @@ class ImpactPage extends ModelPage<Process> {
 			if (!(c.item instanceof ImpactDescriptor impact))
 				return null;
 
-			double total = result.totalImpactOf(impact);
+			double total = result.getTotalImpactValueOf(impact);
 			boolean withoutZeros = zeroCheck.getSelection();
 			List<Contribution<?>> childs = new ArrayList<>();
 			for (var flow : result.enviIndex()) {
-				double value = result.getDirectFlowImpact(flow, impact);
+				double value = result.getFlowImpactOf(impact, flow);
 				if (value == 0 && withoutZeros)
 					continue;
 				var child = Contribution.of(flow, value);
@@ -318,7 +318,7 @@ class ImpactPage extends ModelPage<Process> {
 			case 2:
 				if (!(c.item instanceof EnviFlow f))
 					return null;
-				double a = result.totalFlowOf(f);
+				double a = result.getTotalFlowValueOf(f);
 				return Numbers.format(a) + " " + Labels.refUnit(f);
 			case 3:
 				return Strings.nullOrEmpty(c.unit)

@@ -159,22 +159,22 @@ class ContributionSection extends LabelProvider implements TableSection,
 	public void onFlowSelected(EnviFlow flow) {
 		unit = Labels.refUnit(flow);
 		updateCells((result, techFlow)
-			-> result.getDirectFlowResult(techFlow, flow));
+			-> result.getDirectFlowOf(flow, techFlow));
 	}
 
 	@Override
 	public void onImpactSelected(ImpactDescriptor impact) {
 		unit = impact.referenceUnit;
 		updateCells((result, techFlow)
-			-> result.getDirectImpactResult(techFlow, impact));
+			-> result.getDirectImpactOf( impact, techFlow));
 	}
 
 	@Override
 	public void onCostsSelected(CostResultDescriptor cost) {
 		unit = Labels.getReferenceCurrencyCode();
 		updateCells((result, techFlow) -> cost.forAddedValue
-			? -result.getDirectCostResult(techFlow)
-			: result.getDirectCostResult(techFlow));
+			? -result.getDirectCostsOf(techFlow)
+			: result.getDirectCostsOf(techFlow));
 	}
 
 	/**
