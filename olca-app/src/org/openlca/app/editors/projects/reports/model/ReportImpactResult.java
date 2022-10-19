@@ -43,50 +43,53 @@ class ReportImpactResult {
 		var variantResults = Json.getArray(obj, "variantResults");
 		if (variantResults == null) {
 			log.warn("Failed to parse the variant's results of the impact results " +
-				"of the report.");
+					"of the report.");
 		} else {
 			Json.stream(variantResults)
-				.filter(JsonElement::isJsonObject)
-				.map(JsonElement::getAsJsonObject)
-				.map(VariantResult::fromJson)
-				.filter(Objects::nonNull)
-				.forEach(reportImpactResult.variantResults::add);
+					.filter(JsonElement::isJsonObject)
+					.map(JsonElement::getAsJsonObject)
+					.map(VariantResult::fromJson)
+					.filter(Objects::nonNull)
+					.forEach(reportImpactResult.variantResults::add);
 		}
 
 		return reportImpactResult;
 	}
 
 	static List<ReportImpactResult> allOf(Report report, ProjectResultData data) {
-	  if (report == null || isEmpty(data))
-	    return Collections.emptyList();
-	  var projectResult = data.result();
-	  var results = new ArrayList<ReportImpactResult>();
-	  for (var impact : data.items().impacts()) {
-	    var r = new ReportImpactResult(impact.refId);
-	    results.add(r);
-      for (var variant : data.project().variants) {
-        var result = projectResult.getResult(variant);
-        if (result == null)
-          continue;
-        var total = result.getTotalImpactValueOf(impact);
-        var vr = new VariantResult(variant.name, total);
-        r.variantResults.add(vr);
-        for (var process : report.processes) {
-          var contribution = result.getDirectImpactOf(impact, process);
-          vr.contributions.put(process.refId, contribution);
-        }
-      }
-    }
-	  return results;
-  }
+		if (report == null || isEmpty(data))
+			return Collections.emptyList();
+		var projectResult = data.result();
+		var results = new ArrayList<ReportImpactResult>();
+		for (var impact : data.items().impacts()) {
+			var r = new ReportImpactResult(impact.refId);
+			results.add(r);
+			for (var variant : data.project().variants) {
+				var result = projectResult.getResult(variant);
+				if (result == null)
+					continue;
+				var total = result.getTotalImpactValueOf(impact);
+				var vr = new VariantResult(variant.name, total);
+				r.variantResults.add(vr);
+				for (var process : report.processes) {
+					double con = 0;
+					for (var techFlow : result.techIndex().getProviders(process)) {
+						con += result.getDirectImpactOf(impact, techFlow);
+					}
+					vr.contributions.put(process.refId, con);
+				}
+			}
+		}
+		return results;
+	}
 
-  private static boolean isEmpty(ProjectResultData data) {
-	  return data == null
-      || data.project() == null
-      || data.result() == null
-      || data.items() == null
-      || data.items().impacts().isEmpty();
-  }
+	private static boolean isEmpty(ProjectResultData data) {
+		return data == null
+				|| data.project() == null
+				|| data.result() == null
+				|| data.items() == null
+				|| data.items().impacts().isEmpty();
+	}
 
 	static class VariantResult {
 		final String variant;
@@ -95,22 +98,23 @@ class ReportImpactResult {
 		final Map<String, Double> contributions = new HashMap<>();
 
 		private VariantResult(String variant, double totalAmount) {
-		  this.variant = variant;
-		  this.totalAmount = totalAmount;
-    }
+			this.variant = variant;
+			this.totalAmount = totalAmount;
+		}
 
 		static VariantResult fromJson(JsonObject obj) {
 			if (obj == null)
 				return null;
 
 			var variantResult = new VariantResult(
-				Json.getString(obj, "variant"),
-				Json.getDouble(obj, "totalAmount", 0)
+					Json.getString(obj, "variant"),
+					Json.getDouble(obj, "totalAmount", 0)
 			);
 
 
 			if (!obj.get("contributions").isJsonArray()) {
-				Type contributionsMapType = new TypeToken<Map<String, Double>>() {}.getType();
+				Type contributionsMapType = new TypeToken<Map<String, Double>>() {
+				}.getType();
 				Map<String, Double> contributionsMap = new Gson().fromJson(obj.get("contributions"), contributionsMapType);
 				variantResult.contributions.putAll(contributionsMap);
 			}

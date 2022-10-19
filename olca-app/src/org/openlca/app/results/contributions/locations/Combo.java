@@ -67,7 +67,7 @@ class Combo {
 			var d2 = new CostResultDescriptor();
 			d2.forAddedValue = true;
 			d2.name = M.AddedValue;
-			c.costs = editor.result.totalCosts() >= 0
+			c.costs = editor.result.getTotalCosts() >= 0
 					? Arrays.asList(d1, d2)
 					: Arrays.asList(d2, d1);
 		}

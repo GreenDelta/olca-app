@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -111,23 +112,23 @@ class TreeContentProvider implements ITreeContentProvider {
 			return null;
 
 		// prepare the stream
-		double total = result.totalFlowOf(enviFlow);
+		double total = result.getTotalFlowValueOf(enviFlow);
 
 		// in a regionalized result, the flow with the
 		// given location can occur in processes that
 		// have another location which is not the case
 		// in a non-regionalized result
 		if (enviIndex.isRegionalized()) {
-			return result.techIndex().content().stream().map(p -> {
-				var c = Contribution.of(p.provider());
-				c.amount = result.getDirectFlowResult(p, enviFlow);
+			return result.techIndex().stream().map(techFlow -> {
+				var c = Contribution.of(techFlow);
+				c.amount = result.getDirectFlowOf(enviFlow, techFlow);
 				c.computeShare(total);
 				return c;
 			});
 		} else {
-			return processes(loc).stream().map(p -> {
-				var c = Contribution.of(p);
-				c.amount = result.getDirectFlowResult(p, enviFlow);
+			return techFlows(loc).stream().map(techFlow -> {
+				var c = Contribution.of(techFlow);
+				c.amount = result.getDirectFlowOf(enviFlow, techFlow);
 				c.computeShare(total);
 				return c;
 			});
@@ -137,13 +138,13 @@ class TreeContentProvider implements ITreeContentProvider {
 	private Stream<Contribution<?>> contributions(
 			Location loc, CostResultDescriptor c) {
 		double total = c.forAddedValue
-				? -result.totalCosts()
-				: result.totalCosts();
-		return processes(loc).stream().map(p -> {
-			Contribution<?> con = Contribution.of(p);
+				? -result.getTotalCosts()
+				: result.getTotalCosts();
+		return techFlows(loc).stream().map(p -> {
+			var con = Contribution.of(p);
 			con.amount = c.forAddedValue
-					? -result.getDirectCostResult(p)
-					: result.getDirectCostResult(p);
+					? -result.getDirectCostsOf(p)
+					: result.getDirectCostsOf(p);
 			con.computeShare(total);
 			return con;
 		});
@@ -152,11 +153,11 @@ class TreeContentProvider implements ITreeContentProvider {
 	private Stream<Contribution<?>> contributions(
 			Location loc, ImpactDescriptor impact) {
 
-		double total = result.totalImpactOf(impact);
+		double total = result.getTotalImpactValueOf(impact);
 		if (!result.enviIndex().isRegionalized()) {
-			return processes(loc).stream().map(p -> {
-				Contribution<?> c = Contribution.of(p);
-				c.amount = result.getDirectImpactResult(p, impact);
+			return techFlows(loc).stream().map(techFlow -> {
+				var c = Contribution.of(techFlow);
+				c.amount = result.getDirectImpactOf(impact, techFlow);
 				c.computeShare(total);
 				return c;
 			});
@@ -164,7 +165,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 		// first collect all flows in that location
 		var flows = new ArrayList<EnviFlow>();
-		for(var enviFlow : result.enviIndex()) {
+		for (var enviFlow : result.enviIndex()) {
 			if (loc == null && enviFlow.location() == null) {
 				flows.add(enviFlow);
 				continue;
@@ -176,27 +177,27 @@ class TreeContentProvider implements ITreeContentProvider {
 			}
 		}
 
-		return flows.stream().map(iFlow -> {
-			Contribution<?> c = Contribution.of(iFlow);
-			c.amount = result.getDirectFlowImpact(iFlow, impact);
+		return flows.stream().map(enviFlow -> {
+			var c = Contribution.of(enviFlow);
+			c.amount = result.getFlowImpactOf(impact, enviFlow);
 			c.computeShare(total);
 			return c;
 		});
 	}
 
-	private List<ProcessDescriptor> processes(Location loc) {
-		List<ProcessDescriptor> list = new ArrayList<>();
-		result.techIndex().each((i, product) -> {
-			if (!(product.provider() instanceof ProcessDescriptor process))
+	private List<TechFlow> techFlows(Location loc) {
+		List<TechFlow> list = new ArrayList<>();
+		result.techIndex().each((i, techFlow) -> {
+			if (!(techFlow.provider() instanceof ProcessDescriptor process))
 				return;
 			if (loc == null && process.location == null) {
-				list.add(process);
+				list.add(techFlow);
 				return;
 			}
 			if (loc == null || process.location == null)
 				return;
 			if (loc.id == process.location) {
-				list.add(process);
+				list.add(techFlow);
 			}
 		});
 		return list;

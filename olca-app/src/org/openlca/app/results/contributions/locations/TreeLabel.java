@@ -10,6 +10,7 @@ import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.RefEntity;
 import org.openlca.core.model.RootEntity;
@@ -25,10 +26,12 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 	private final ContributionImage image = new ContributionImage();
 
 	void update(Object selection) {
-		if (selection instanceof FlowDescriptor) {
-			unit = Labels.refUnit((FlowDescriptor) selection);
-		} else if (selection instanceof ImpactDescriptor) {
-			unit = ((ImpactDescriptor) selection).referenceUnit;
+		if (selection instanceof EnviFlow f) {
+			unit = Labels.refUnit(f);
+		} else if (selection instanceof FlowDescriptor f) {
+			unit = Labels.refUnit(f);
+		} else if (selection instanceof ImpactDescriptor i) {
+			unit = i.referenceUnit;
 		} else if (selection instanceof CostResultDescriptor) {
 			unit = Labels.getReferenceCurrencyCode();
 		} else {
@@ -63,23 +66,18 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 	public String getColumnText(Object obj, int col) {
 		if (!(obj instanceof Contribution<?> c))
 			return null;
-		switch (col) {
-		case 0:
-			return getLabel(c);
-		case 1:
-			return Numbers.format(c.amount);
-		case 2:
-			return unit;
-		default:
-			return null;
-		}
+		return switch (col) {
+			case 0 -> getLabel(c);
+			case 1 -> Numbers.format(c.amount);
+			case 2 -> unit;
+			default -> null;
+		};
 	}
 
 	private String getLabel(Contribution<?> c) {
 		if (c == null || c.item == null)
 			return M.None;
-		if (c.item instanceof Location) {
-			Location loc = (Location) c.item;
+		if (c.item instanceof Location loc) {
 			String label = loc.name;
 			if (loc.code != null
 					&& !Strings.nullOrEqual(loc.code, label)) {
@@ -87,12 +85,14 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 			}
 			return label;
 		}
-		if (c.item instanceof EnviFlow)
-			return Labels.name((EnviFlow) c.item);
-		if (c.item instanceof Descriptor)
-			return Labels.name((Descriptor) c.item);
-		if (c.item instanceof RefEntity)
-			return Labels.name((RefEntity) c.item);
+		if (c.item instanceof EnviFlow ef)
+			return Labels.name(ef);
+		if (c.item instanceof TechFlow tf)
+			return Labels.name(tf);
+		if (c.item instanceof Descriptor d)
+			return Labels.name(d);
+		if (c.item instanceof RefEntity e)
+			return Labels.name(e);
 		return null;
 	}
 }
