@@ -74,10 +74,10 @@ public class GroupPage extends FormPage {
 
 	private void initGroups() {
 		groups = new ArrayList<>();
-		ProcessGrouping restGroup = new ProcessGrouping();
+		var restGroup = new ProcessGrouping();
 		restGroup.name = M.Other;
 		restGroup.rest = true;
-		restGroup.processes.addAll(editor.items.processes());
+		restGroup.processes.addAll(editor.items.providers());
 		groups.add(restGroup);
 	}
 
@@ -85,8 +85,8 @@ public class GroupPage extends FormPage {
 		if (groupSet == null || editor.result == null)
 			return;
 		this.groupSet = groupSet;
-		List<ProcessGrouping> newGroups = ProcessGrouping.applyOn(
-				editor.items.processes(), groupSet, M.Other);
+		var newGroups = ProcessGrouping.applyOn(
+				editor.items.providers(), groupSet, M.Other);
 		groups.clear();
 		groups.addAll(newGroups);
 		updateViewers();

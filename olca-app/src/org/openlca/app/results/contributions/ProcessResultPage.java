@@ -1,8 +1,6 @@
 package org.openlca.app.results.contributions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -32,11 +30,11 @@ import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.index.EnviFlow;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 
@@ -45,7 +43,6 @@ import org.openlca.core.results.ResultItemOrder;
  */
 public class ProcessResultPage extends FormPage {
 
-	private final Map<Long, ProcessDescriptor> processes = new HashMap<>();
 	private final CalculationSetup setup;
 	private final LcaResult result;
 	private final ResultItemOrder items;
@@ -54,8 +51,8 @@ public class ProcessResultPage extends FormPage {
 	private final ContributionImage image = new ContributionImage();
 
 	private FormToolkit toolkit;
-	private ProcessViewer flowProcessViewer;
-	private ProcessViewer impactProcessCombo;
+	private TechFlowCombo flowProcessViewer;
+	private TechFlowCombo impactCombo;
 	private TableViewer inputTable;
 	private TableViewer outputTable;
 	private TableViewer impactTable;
@@ -78,11 +75,6 @@ public class ProcessResultPage extends FormPage {
 		this.result = editor.result;
 		this.setup = editor.setup;
 		this.items = editor.items;
-		for (var desc : items.processes()) {
-			if (desc instanceof ProcessDescriptor p) {
-				processes.put(desc.id, p);
-			}
-		}
 		this.flowResult = new ResultProvider(result);
 		this.impactResult = new ResultProvider(result);
 	}
@@ -116,12 +108,11 @@ public class ProcessResultPage extends FormPage {
 
 		fillFlows(inputTable);
 		fillFlows(outputTable);
-		long refProcessId = result.demand().techFlow().providerId();
-		ProcessDescriptor p = processes.get(refProcessId);
-		flowProcessViewer.select(p);
+		var refFlow = result.demand().techFlow();
+		flowProcessViewer.select(refFlow);
 
 		if (result.hasImpacts()) {
-			impactProcessCombo.select(p);
+			impactCombo.select(refFlow);
 			impactTable.setInput(items.impacts());
 		}
 	}
@@ -149,10 +140,10 @@ public class ProcessResultPage extends FormPage {
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, toolkit, M.Process);
-		flowProcessViewer = new ProcessViewer(container);
-		flowProcessViewer.setInput(processes.values());
+		flowProcessViewer = new TechFlowCombo(container);
+		flowProcessViewer.setInput(items.techFlows());
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
-			flowResult.setProcess(selection);
+			flowResult.setTechFlow(selection);
 			inputTable.refresh();
 			outputTable.refresh();
 		});
@@ -182,8 +173,8 @@ public class ProcessResultPage extends FormPage {
 		TableViewer table = Tables.createViewer(parent, EXCHANGE_COLUMN_LABELS, label);
 		decorateResultViewer(table);
 		Viewers.sortByLabels(table, label, 1, 4);
-		Viewers.sortByDouble(table, (EnviFlow f) -> flowResult.getUpstreamContribution(f), 0);
-		Viewers.sortByDouble(table, (EnviFlow f) -> flowResult.getUpstreamTotal(f), 2);
+		Viewers.sortByDouble(table, (EnviFlow f) -> flowResult.getTotalContribution(f), 0);
+		Viewers.sortByDouble(table, (EnviFlow f) -> flowResult.getTotalResult(f), 2);
 		Viewers.sortByDouble(table, (EnviFlow f) -> flowResult.getDirectResult(f), 3);
 		Actions.bind(table, TableClipboard.onCopySelected(table));
 		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
@@ -203,10 +194,10 @@ public class ProcessResultPage extends FormPage {
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, M.Process);
-		impactProcessCombo = new ProcessViewer(container);
-		impactProcessCombo.setInput(processes.values());
-		impactProcessCombo.addSelectionChangedListener((selection) -> {
-			impactResult.setProcess(selection);
+		impactCombo = new TechFlowCombo(container);
+		impactCombo.setInput(items.techFlows());
+		impactCombo.addSelectionChangedListener((selection) -> {
+			impactResult.setTechFlow(selection);
 			impactTable.refresh();
 		});
 		UI.formLabel(container, toolkit, M.DontShowSmallerThen);
@@ -226,8 +217,8 @@ public class ProcessResultPage extends FormPage {
 		TableViewer table = Tables.createViewer(composite, IMPACT_COLUMN_LABELS, label);
 		decorateResultViewer(table);
 		Viewers.sortByLabels(table, label, 1, 4);
-		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getUpstreamContribution(i), 0);
-		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getUpstreamTotal(i), 2);
+		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getTotalContribution(i), 0);
+		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getTotalResult(i), 2);
 		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getDirectResult(i), 3);
 		Actions.bind(table, TableClipboard.onCopySelected(table));
 		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
@@ -241,16 +232,16 @@ public class ProcessResultPage extends FormPage {
 		Tables.bindColumnWidths(table.getTable(), 0.20, 0.30, 0.20, 0.20, 0.10);
 	}
 
-	private static class ProcessViewer extends AbstractComboViewer<ProcessDescriptor> {
+	private static class TechFlowCombo extends AbstractComboViewer<TechFlow> {
 
-		public ProcessViewer(Composite parent) {
+		public TechFlowCombo(Composite parent) {
 			super(parent);
-			setInput(new ProcessDescriptor[0]);
+			setInput(new TechFlow[0]);
 		}
 
 		@Override
-		public Class<ProcessDescriptor> getType() {
-			return ProcessDescriptor.class;
+		public Class<TechFlow> getType() {
+			return TechFlow.class;
 		}
 
 	}
@@ -262,7 +253,7 @@ public class ProcessResultPage extends FormPage {
 		public Image getColumnImage(Object o, int col) {
 			if (!(o instanceof EnviFlow flow) || col != 0)
 				return null;
-			double c = flowResult.getUpstreamContribution(flow);
+			double c = flowResult.getTotalContribution(flow);
 			return image.get(c);
 		}
 
@@ -271,9 +262,9 @@ public class ProcessResultPage extends FormPage {
 			if (!(o instanceof EnviFlow f))
 				return null;
 			return switch (col) {
-				case 0 -> Numbers.percent(flowResult.getUpstreamContribution(f));
+				case 0 -> Numbers.percent(flowResult.getTotalContribution(f));
 				case 1 -> getFlowLabel(f.flow());
-				case 2 -> Numbers.format(flowResult.getUpstreamTotal(f));
+				case 2 -> Numbers.format(flowResult.getTotalResult(f));
 				case 3 -> Numbers.format(flowResult.getDirectResult(f));
 				case 4 -> Labels.refUnit(f);
 				default -> null;
@@ -299,7 +290,7 @@ public class ProcessResultPage extends FormPage {
 				return null;
 			if (col != 0)
 				return null;
-			return image.get(impactResult.getUpstreamContribution(d));
+			return image.get(impactResult.getTotalContribution(d));
 		}
 
 		@Override
@@ -307,9 +298,9 @@ public class ProcessResultPage extends FormPage {
 			if (!(o instanceof ImpactDescriptor d))
 				return null;
 			return switch (col) {
-				case 0 -> Numbers.percent(impactResult.getUpstreamContribution(d));
+				case 0 -> Numbers.percent(impactResult.getTotalContribution(d));
 				case 1 -> d.name;
-				case 2 -> Numbers.format(impactResult.getUpstreamTotal(d));
+				case 2 -> Numbers.format(impactResult.getTotalResult(d));
 				case 3 -> Numbers.format(impactResult.getDirectResult(d));
 				case 4 -> d.referenceUnit;
 				default -> null;
@@ -329,8 +320,8 @@ public class ProcessResultPage extends FormPage {
 			if (cutoff == 0)
 				return true;
 			double c = forFlow
-					? flowResult.getUpstreamContribution((EnviFlow) o)
-					: impactResult.getUpstreamContribution((ImpactDescriptor) o);
+					? flowResult.getTotalContribution((EnviFlow) o)
+					: impactResult.getTotalContribution((ImpactDescriptor) o);
 			return c * 100 > cutoff;
 		}
 	}
@@ -338,61 +329,55 @@ public class ProcessResultPage extends FormPage {
 	private static class ResultProvider {
 
 		private final LcaResult result;
-		private RootDescriptor process;
+		private TechFlow techFlow;
 
 		public ResultProvider(LcaResult result) {
-			this.process = result.demand().techFlow().provider();
+			this.techFlow = result.demand().techFlow();
 			this.result = result;
 		}
 
-		public void setProcess(ProcessDescriptor process) {
-			this.process = process;
+		public void setTechFlow(TechFlow techFlow) {
+			this.techFlow = techFlow;
 		}
 
-		private double getUpstreamContribution(EnviFlow flow) {
-			if (process == null || flow == null)
+		private double getTotalContribution(EnviFlow flow) {
+			if (techFlow == null || flow == null)
 				return 0;
-			double total = result.totalFlowOf(flow);
-			if (total == 0)
-				return 0;
-			double val = result.getUpstreamFlowResult(process, flow);
-			double c = val / Math.abs(total);
-			return c > 1 ? 1 : c;
+			double total = result.getTotalFlowValueOf(flow);
+			double value = result.getTotalFlowOf(flow, techFlow);
+			return Contribution.shareOf(value, total);
 		}
 
 		private double getDirectResult(EnviFlow flow) {
-			if (process == null || flow == null)
-				return 0;
-			return result.getDirectFlowResult(process, flow);
+			return techFlow == null || flow == null
+					? 0
+					: result.getDirectFlowOf(flow, techFlow);
 		}
 
-		private double getUpstreamTotal(EnviFlow flow) {
-			if (process == null || flow == null)
-				return 0;
-			return result.getUpstreamFlowResult(process, flow);
+		private double getTotalResult(EnviFlow flow) {
+			return techFlow == null || flow == null
+					? 0
+					: result.getTotalFlowOf(flow, techFlow);
 		}
 
-		private double getUpstreamContribution(ImpactDescriptor d) {
-			if (process == null || d == null)
+		private double getTotalContribution(ImpactDescriptor impact) {
+			if (techFlow == null || impact == null)
 				return 0;
-			double total = result.totalImpactOf(d);
-			if (total == 0)
-				return 0;
-			double val = result.getUpstreamImpactResult(process, d);
-			double c = val / Math.abs(total);
-			return c > 1 ? 1 : c;
+			double total = result.getTotalImpactValueOf(impact);
+			double val = result.getTotalImpactOf(impact, techFlow);
+			return Contribution.shareOf(val, total);
 		}
 
-		private double getDirectResult(ImpactDescriptor category) {
-			if (process == null || category == null)
-				return 0;
-			return result.getDirectImpactResult(process, category);
+		private double getDirectResult(ImpactDescriptor impact) {
+			return techFlow == null || impact == null
+					? 0
+					: result.getDirectImpactOf(impact, techFlow);
 		}
 
-		private double getUpstreamTotal(ImpactDescriptor category) {
-			if (process == null || category == null)
-				return 0;
-			return result.getUpstreamImpactResult(process, category);
+		private double getTotalResult(ImpactDescriptor impact) {
+			return techFlow == null || impact == null
+					? 0
+					: result.getTotalImpactOf(impact, techFlow);
 		}
 	}
 

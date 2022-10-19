@@ -58,19 +58,16 @@ public abstract class AbstractComboViewer<T> extends
 				if (!Character.isLetterOrDigit(c))
 					return;
 				var input = getViewer().getInput();
-				if (!(input instanceof Object[]))
+				if (!(input instanceof Object[] objects))
 					return;
 
-				var objects = (Object[]) input;
 				for (var obj : objects) {
 
 					String text = null;
-					if (label instanceof ITableLabelProvider) {
-						text = ((ITableLabelProvider) label)
-								.getColumnText(obj, col);
-					} else if (label instanceof ColumnLabelProvider) {
-						text = ((ColumnLabelProvider) label)
-								.getText(obj);
+					if (label instanceof ITableLabelProvider tLabel) {
+						text = tLabel.getColumnText(obj, col);
+					} else if (label instanceof ColumnLabelProvider cLabel) {
+						text = cLabel.getText(obj);
 					}
 					if (Strings.nullOrEmpty(text))
 						continue;
