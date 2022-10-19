@@ -113,7 +113,7 @@ public class ImpactChecksPage extends FormPage {
 		for (var flow : items.enviFlows()) {
 			boolean allZero = true;
 			for (var impact : items.impacts()) {
-				double f = result.getImpactFactor(impact, flow);
+				double f = result.getImpactFactorOf(impact, flow);
 				if (f != 0) {
 					allZero = false;
 					break;
@@ -121,7 +121,7 @@ public class ImpactChecksPage extends FormPage {
 			}
 			if (allZero) {
 				Contribution<?> c = Contribution.of(flow);
-				c.amount = result.totalFlowOf(flow);
+				c.amount = result.getTotalFlowValueOf(flow);
 				nodes.add(c);
 			}
 		}
@@ -141,11 +141,11 @@ public class ImpactChecksPage extends FormPage {
 				return null;
 			c.childs = new ArrayList<>();
 			for (var flow : items.enviFlows()) {
-				double f = result.getImpactFactor(impact, flow);
+				double f = result.getImpactFactorOf(impact, flow);
 				if (f != 0)
 					continue;
 				Contribution<?> child = Contribution.of(flow);
-				child.amount = result.totalFlowOf(flow);
+				child.amount = result.getTotalFlowValueOf(flow);
 				c.childs.add(child);
 			}
 			return c.childs.toArray();

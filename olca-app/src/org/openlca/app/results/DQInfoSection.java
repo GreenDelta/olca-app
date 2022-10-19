@@ -19,10 +19,10 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class DQInfoSection {
 
@@ -58,7 +58,7 @@ public class DQInfoSection {
 			return;
 		UI.formLabel(parent, toolkit, label);
 		UI.formLabel(parent, toolkit, "");
-		String[] headers = { M.Indicator, M.Coverage };
+		String[] headers = {M.Indicator, M.Coverage};
 		TreeViewer viewer = Trees.createViewer(parent, headers);
 		viewer.setContentProvider(new ContentProvider(forProcesses));
 		viewer.setLabelProvider(new LabelProvider());
@@ -82,8 +82,8 @@ public class DQInfoSection {
 			if (!(parent instanceof DQIndicator dqi))
 				return null;
 			List<Object> children = new ArrayList<>();
-			for (var p : editor.items.processes()) {
-				children.add(new Tuple(p,dqi));
+			for (var p : editor.items.techFlows()) {
+				children.add(new Tuple(p, dqi));
 			}
 			return children.toArray();
 		}
@@ -121,11 +121,11 @@ public class DQInfoSection {
 
 		private String getText(DQIndicator indicator, int col) {
 			switch (col) {
-			case 0:
-				return indicator.name;
-			case 1:
-				int withQuality = 0;
-				int total = 0;
+				case 0:
+					return indicator.name;
+				case 1:
+					int withQuality = 0;
+					int total = 0;
 //				if (forProcesses) {
 //					withQuality = dqResult.statistics.getNoOfProcesses(indicator);
 //					total = dqResult.statistics.getNoOfProcesses();
@@ -133,22 +133,22 @@ public class DQInfoSection {
 //					withQuality = dqResult.statistics.getNoOfExchanges(indicator);
 //					total = dqResult.statistics.getNoOfExchanges();
 //				}
-				return getCoverage(withQuality, total);
-			default:
-				return null;
+					return getCoverage(withQuality, total);
+				default:
+					return null;
 			}
 		}
 
 		private String getText(Tuple value, int col) {
 			switch (col) {
-			case 0:
-				return value.process.name;
-			case 1:
+				case 0:
+					return Labels.name(value.techFlow);
+				case 1:
 //				int withQuality = dqResult.statistics.getNoOfExchanges(value.process, value.indicator);
 //				int total = dqResult.statistics.getNoOfExchanges(value.process);
 //				return getCoverage(withQuality, total);
-			default:
-				return null;
+				default:
+					return null;
 			}
 		}
 
@@ -160,7 +160,7 @@ public class DQInfoSection {
 		}
 	}
 
-	private record Tuple(RootDescriptor process, DQIndicator indicator) {
+	private record Tuple(TechFlow techFlow, DQIndicator indicator) {
 	}
 
 }

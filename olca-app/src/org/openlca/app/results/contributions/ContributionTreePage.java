@@ -57,15 +57,15 @@ public class ContributionTreePage extends FormPage {
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
 		ScrolledForm form = UI.formHeader(mform,
-			Labels.name(setup.target()),
-			Icon.ANALYSIS_RESULT.get());
+				Labels.name(setup.target()),
+				Icon.ANALYSIS_RESULT.get());
 		Composite body = UI.formBody(form, tk);
 		Composite comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
 		var selector = ResultItemSelector
-			.on(items)
-			.withSelectionHandler(new SelectionHandler())
-			.create(comp, tk);
+				.on(items)
+				.withSelectionHandler(new SelectionHandler())
+				.create(comp, tk);
 		Composite treeComp = tk.createComposite(body);
 		UI.gridLayout(treeComp, 1);
 		UI.gridData(treeComp, true, true);
@@ -76,12 +76,12 @@ public class ContributionTreePage extends FormPage {
 
 	private void createTree(FormToolkit tk, Composite comp) {
 		var headers = new String[]{
-			M.Contribution,
-			M.Process,
-			"Required amount",
-			M.Result};
+				M.Contribution,
+				M.Process,
+				"Required amount",
+				M.Result};
 		tree = Trees.createViewer(comp, headers,
-			new ContributionLabelProvider());
+				new ContributionLabelProvider());
 
 		tree.setAutoExpandLevel(2);
 		tree.getTree().setLinesVisible(false);
@@ -91,7 +91,7 @@ public class ContributionTreePage extends FormPage {
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(tree.getTree(),
-			0.20, 0.40, 0.20, 0.20);
+				0.20, 0.40, 0.20, 0.20);
 
 		// action bindings
 		Action onOpen = Actions.onOpen(() -> {
@@ -102,12 +102,12 @@ public class ContributionTreePage extends FormPage {
 		});
 
 		Action onExport = Actions.create(M.ExportToExcel,
-			Images.descriptor(FileType.EXCEL), () -> {
-				Object input = tree.getInput();
-				if (!(input instanceof UpstreamTree))
-					return;
-				TreeExportDialog.open((UpstreamTree) input);
-			});
+				Images.descriptor(FileType.EXCEL), () -> {
+					Object input = tree.getInput();
+					if (!(input instanceof UpstreamTree))
+						return;
+					TreeExportDialog.open((UpstreamTree) input);
+				});
 
 		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree), onExport);
 		Trees.onDoubleClick(tree, e -> onOpen.run());
@@ -118,23 +118,23 @@ public class ContributionTreePage extends FormPage {
 		@Override
 		public void onFlowSelected(EnviFlow flow) {
 			selection = flow;
-			UpstreamTree model = result.getTree(flow);
+			var model = UpstreamTree.of(result.provider(), flow);
 			tree.setInput(model);
 		}
 
 		@Override
 		public void onImpactSelected(ImpactDescriptor impact) {
 			selection = impact;
-			UpstreamTree model = result.getTree(impact);
+			var model = UpstreamTree.of(result.provider(), impact);
 			tree.setInput(model);
 		}
 
 		@Override
 		public void onCostsSelected(CostResultDescriptor cost) {
 			selection = cost;
-			UpstreamTree model = cost.forAddedValue
-				? result.getAddedValueTree()
-				: result.getCostTree();
+			var model = cost.forAddedValue
+					? UpstreamTree.addedValuesOf(result.provider())
+					: UpstreamTree.costsOf(result.provider());
 			tree.setInput(model);
 		}
 	}
@@ -155,8 +155,8 @@ public class ContributionTreePage extends FormPage {
 		@Override
 		public Object[] getElements(Object input) {
 			return input instanceof UpstreamTree t
-				? new Object[]{t.root}
-				: null;
+					? new Object[]{t.root}
+					: null;
 		}
 
 		@Override
@@ -187,7 +187,7 @@ public class ContributionTreePage extends FormPage {
 	}
 
 	private class ContributionLabelProvider extends BaseLabelProvider implements
-		ITableLabelProvider {
+			ITableLabelProvider {
 
 		private final ContributionImage image = new ContributionImage();
 
@@ -216,7 +216,7 @@ public class ContributionTreePage extends FormPage {
 				case 0 -> Numbers.percent(getContribution(node));
 				case 1 -> Labels.name(node.provider().provider());
 				case 2 -> Numbers.format(node.requiredAmount()) + " "
-					+ Labels.refUnit(node.provider());
+						+ Labels.refUnit(node.provider());
 				case 3 -> Numbers.format(node.result()) + " " + getUnit();
 				default -> null;
 			};
@@ -240,8 +240,8 @@ public class ContributionTreePage extends FormPage {
 			if (total == 0)
 				return 0;
 			return total < 0 && node.result() > 0
-				? -node.result() / total
-				: node.result() / total;
+					? -node.result() / total
+					: node.result() / total;
 		}
 	}
 }

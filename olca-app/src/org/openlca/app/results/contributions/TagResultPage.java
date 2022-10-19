@@ -83,22 +83,22 @@ public class TagResultPage extends FormPage {
 		@Override
 		public void onFlowSelected(EnviFlow flow) {
 			fillTable(Labels.refUnit(flow),
-				editor.result.totalFlowOf(flow),
+				editor.result.getTotalFlowValueOf(flow),
 				tagResult -> tagResult.inventoryResultOf(flow).value());
 		}
 
 		@Override
 		public void onImpactSelected(ImpactDescriptor impact) {
 			fillTable(impact.referenceUnit,
-				editor.result.totalImpactOf(impact),
+				editor.result.getTotalImpactValueOf(impact),
 				tagResult -> tagResult.impactResultOf(impact).value());
 		}
 
 		@Override
 		public void onCostsSelected(CostResultDescriptor cost) {
 			var total = cost.forAddedValue
-				? -editor.result.totalCosts()
-				: editor.result.totalCosts();
+				? -editor.result.getTotalCosts()
+				: editor.result.getTotalCosts();
 			fillTable(Labels.getReferenceCurrencyCode(),
 				total,
 				tagResults -> cost.forAddedValue

@@ -51,7 +51,7 @@ public class NwResultPage extends FormPage {
 		var nwSet = NwSetTable.of(Database.get(), setup.nwSet());
 		if (nwSet.isEmpty())
 			return;
-		var impacts = result.totalImpacts();
+		var impacts = result.getTotalImpacts();
 		if (impacts.isEmpty())
 			return;
 		if (nwSet.hasNormalization()) {
@@ -67,11 +67,11 @@ public class NwResultPage extends FormPage {
 	private void createTable(String title, List<ImpactValue> results,
 			boolean withUnit) {
 		var columns = withUnit
-				? new String[] { M.ImpactCategory, M.Amount, M.Unit }
-				: new String[] { M.ImpactCategory, M.Amount };
+				? new String[]{M.ImpactCategory, M.Amount, M.Unit}
+				: new String[]{M.ImpactCategory, M.Amount};
 		var colWidths = withUnit
-				? new double[] { 0.5, 0.25, 0.25 }
-				: new double[] { 0.5, 0.25 };
+				? new double[]{0.5, 0.25, 0.25}
+				: new double[]{0.5, 0.25};
 
 		var section = UI.section(body, toolkit, title);
 		UI.gridData(section, true, true);
@@ -94,7 +94,7 @@ public class NwResultPage extends FormPage {
 		public Image getColumnImage(Object o, int col) {
 			if (col != 0 || !(o instanceof Contribution))
 				return null;
-			Contribution<ImpactValue> item = Contribution.class.cast(o);
+			var item = (Contribution<ImpactValue>) o;
 			return image.get(item.share);
 		}
 
@@ -103,17 +103,17 @@ public class NwResultPage extends FormPage {
 		public String getColumnText(Object o, int col) {
 			if (!(o instanceof Contribution))
 				return null;
-			Contribution<ImpactValue> item = Contribution.class.cast(o);
+			var item = (Contribution<ImpactValue>) o;
 			switch (col) {
-			case 0:
-				return Labels.name(item.item.impact());
-			case 1:
-				return Numbers.format(item.amount);
-			case 2:
-				if (setup.nwSet() != null)
-					return setup.nwSet().weightedScoreUnit;
-			default:
-				return null;
+				case 0:
+					return Labels.name(item.item.impact());
+				case 1:
+					return Numbers.format(item.amount);
+				case 2:
+					if (setup.nwSet() != null)
+						return setup.nwSet().weightedScoreUnit;
+				default:
+					return null;
 			}
 		}
 

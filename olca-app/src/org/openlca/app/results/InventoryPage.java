@@ -249,7 +249,7 @@ public class InventoryPage extends FormPage {
 
 	private double getAmount(Object o) {
 		if (o instanceof EnviFlow e) {
-			return editor.result.totalFlowOf(e);
+			return editor.result.getTotalFlowValueOf(e);
 		} else if (o instanceof FlowContribution c) {
 			return c.item.amount;
 		}
