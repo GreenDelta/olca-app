@@ -57,6 +57,20 @@
   border: 5px #8daff7;  /* border width and color */
 }
 
+/* results */
+#model box .result {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 2px #eda211;  /* border width and color */
+}
+
+/* sticky-note */
+#model box .sticky-note {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 2px #ccff00;  /* border width and color */
+}
+
 /* -- process links -- */
 
 /* defaults */
@@ -149,6 +163,13 @@ link ::selection {
   color: #f8f8f2;       /* font color */
   background: #282A36;  /* background color */
   border: 5px #8daff7;  /* border width and color */
+}
+
+/* results */
+#sankey box .result {
+  color: #f8f8f2;       /* font color */
+  background: #282A36;  /* background color */
+  border: 2px #eda211;  /* border width and color */
 }
 
 /* -- links -- */

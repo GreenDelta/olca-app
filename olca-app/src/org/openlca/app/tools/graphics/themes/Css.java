@@ -123,6 +123,8 @@ class Css {
       return Optional.of(Theme.Box.SUB_SYSTEM);
 		if (hasSelector(".result", rule))
 			return Optional.of(Theme.Box.RESULT);
+		if (hasSelector(".sticky-note", rule))
+			return Optional.of(Theme.Box.STICKY_NOTE);
     return Optional.of(Theme.Box.DEFAULT);
   }
 

@@ -83,5 +83,4 @@ public class GraphRequest extends Request implements DropRequest {
 		this.size = size;
 	}
 
-
 }

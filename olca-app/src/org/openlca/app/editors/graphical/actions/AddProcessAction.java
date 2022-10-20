@@ -41,14 +41,13 @@ import static org.eclipse.gef.RequestConstants.REQ_CREATE;
 
 public class AddProcessAction extends WorkbenchPartAction {
 
-	private final Graph graph;
+	private Graph graph;
 	private final GraphEditor editor;
 	private org.eclipse.swt.graphics.Point cursorLocation;
 
 	public AddProcessAction(GraphEditor part) {
 		super(part);
 		editor = part;
-		graph = part.getModel();
 		setId(ActionIds.ADD_PROCESS);
 		setText(M.AddProcess);
 		setImageDescriptor(Images.descriptor(ModelType.PROCESS));
@@ -63,7 +62,11 @@ public class AddProcessAction extends WorkbenchPartAction {
 	@Override
 	protected boolean calculateEnabled() {
 		cursorLocation = Display.getCurrent().getCursorLocation();
-		return editor != null && editor.getProductSystem() != null;
+		if (editor != null) {
+			graph = editor.getModel();
+			return editor.getProductSystem() != null;
+		}
+		else return false;
 	}
 
 	private class Dialog extends FormDialog {
@@ -196,9 +199,12 @@ public class AddProcessAction extends WorkbenchPartAction {
 			var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
 				GraphicalViewer.class);
 			var registry = viewer.getEditPartRegistry();
+			System.out.println("registry: " + registry);
 			var graphEditPart = (EditPart) registry.get(graph);
-			if (graphEditPart == null)
+			if (graphEditPart == null) {
+				System.out.println("graphEditPart is null....");
 				return;
+			}
 
 			var cursorLocationInViewport = new Point(viewer.getControl()
 				.toControl(cursorLocation));

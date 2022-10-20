@@ -3,11 +3,13 @@ package org.openlca.app.editors.graphical.model;
 import java.util.*;
 
 import com.google.gson.JsonArray;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
+import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
@@ -171,8 +173,9 @@ public class GraphFactory {
 		}
 	}
 
-	public Graph createGraph(GraphEditor editor, JsonArray array) {
-		if (array == null)
+	public Graph createGraph(GraphEditor editor, JsonArray nodeArray,
+	  JsonArray stickyNoteArray) {
+		if ((nodeArray == null) || (stickyNoteArray == null))
 			return createGraph(editor);
 
 		var graph = new Graph(editor);
@@ -182,7 +185,7 @@ public class GraphFactory {
 
 		// Create the reference node.
 		if (referenceProcess != null) {
-			var refNodeInfo = getNodeInfo(array, referenceProcess.refId);
+			var refNodeInfo = getNodeInfo(nodeArray, referenceProcess.refId);
 			var descriptor = getDescriptor(referenceProcess.id);
 			var refNode = createNode(descriptor, refNodeInfo);
 			if (refNode != null) {
@@ -191,11 +194,11 @@ public class GraphFactory {
 		}
 
 		// Create other nodes.
-		for (var elem : array) {
+		for (var elem : nodeArray) {
 			if (!elem.isJsonObject())
 				continue;
 			var obj = elem.getAsJsonObject();
-			var info = GraphFile.toInfo(obj);
+			var info = GraphFile.toNodeLayoutInfo(obj);
 			if (info == null)
 				continue;
 
@@ -212,6 +215,20 @@ public class GraphFactory {
 		}
 
 		createNecessaryLinks(graph);
+
+		// Create the sticky notes
+		for (var elem : stickyNoteArray) {
+			if (!elem.isJsonObject())
+				continue;
+			var obj = elem.getAsJsonObject();
+			var info = GraphFile.toStickyNoteLayoutInfo(obj);
+			if (info == null)
+				continue;
+			var note = createStickyNote(info);
+			if (note == null)
+				continue;
+			graph.addChild(note);
+		}
 		return graph;
 	}
 
@@ -254,7 +271,7 @@ public class GraphFactory {
 				if (!elem.isJsonObject())
 					continue;
 				var obj = elem.getAsJsonObject();
-				var info = GraphFile.toInfo(obj);
+				var info = GraphFile.toNodeLayoutInfo(obj);
 				if (Objects.equals(info.id, descriptor.refId))
 					return info;
 			}
@@ -290,6 +307,16 @@ public class GraphFactory {
 				return r;
 		}
 		return null;
+	}
+
+	public StickyNote createStickyNote(StickyNoteLayoutInfo info) {
+		var note = new StickyNote();
+		note.setTitle(info.title);
+		note.setContent(info.content);
+		note.setMinimized(info.minimized);
+		note.setSize(info.size);
+		note.setLocation(info.location);
+		return note;
 	}
 
 }
