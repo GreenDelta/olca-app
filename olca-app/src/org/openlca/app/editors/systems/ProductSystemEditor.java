@@ -61,11 +61,6 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 					.getAdapter(GraphicalViewer.class);
 			viewer.setContents(graph);
 
-			var registry = viewer.getEditPartRegistry();
-			System.out.println("registry: " + registry);
-			var graphEditPart = (EditPart) registry.get(graph);
-			System.out.println("graphEditPart: " + graphEditPart);
-
 			removePageChangedListener(listener);
 			graphInit.set(null);
 		};

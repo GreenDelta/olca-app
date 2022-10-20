@@ -58,13 +58,10 @@ public class AddStickyNoteAction extends WorkbenchPartAction {
 
 	@Override
 	public void run() {
-		System.out.println("Adding sticky note");
 		var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
 				GraphicalViewer.class);
 		var registry = viewer.getEditPartRegistry();
 		var graphEditPart = (EditPart) registry.get(graph);
-		System.out.println("graph: " + graph);
-		System.out.println("graphEditPart: " + graphEditPart);
 		if (graphEditPart == null)
 			return;
 
@@ -74,11 +71,8 @@ public class AddStickyNoteAction extends WorkbenchPartAction {
 		request.setLocation(cursorLocationInViewport);
 		// Getting the command via GraphXYLayoutEditPolicy and executing it.
 		var command = graphEditPart.getCommand(request);
-		System.out.println("Command: " + command);
-		if (command.canExecute()) {
-			System.out.println("Executing command");
+		if (command.canExecute())
 			execute(command);
-		}
 		else {
 			MsgBox.info("No sticky note can be added to the graph.");
 		}
