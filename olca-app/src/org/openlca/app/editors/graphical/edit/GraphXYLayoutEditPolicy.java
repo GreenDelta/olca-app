@@ -54,11 +54,9 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 
 		var descriptors = request.getDescriptors();
 
-		if (descriptors == null) {
+		if (descriptors == null)
 			command.add(createCreateStickyNoteCommand(
 					(Rectangle) getConstraintFor(request)));
-			System.out.println("Command added");
-		}
 		else for (var descriptor : descriptors)
 			command.add(createCreateNodeCommand(descriptor,
 				(Rectangle) getConstraintFor(request)));

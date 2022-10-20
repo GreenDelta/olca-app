@@ -199,12 +199,9 @@ public class AddProcessAction extends WorkbenchPartAction {
 			var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
 				GraphicalViewer.class);
 			var registry = viewer.getEditPartRegistry();
-			System.out.println("registry: " + registry);
 			var graphEditPart = (EditPart) registry.get(graph);
-			if (graphEditPart == null) {
-				System.out.println("graphEditPart is null....");
+			if (graphEditPart == null)
 				return;
-			}
 
 			var cursorLocationInViewport = new Point(viewer.getControl()
 				.toControl(cursorLocation));
