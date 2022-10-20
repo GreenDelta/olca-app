@@ -11,8 +11,6 @@ public class MinimizedStickyNoteFigure extends StickyNoteFigure {
 
 	public MinimizedStickyNoteFigure(StickyNote note) {
 		super(note);
-		var theme = note.getGraph().getConfig().getTheme();
-		var box = Theme.Box.STICKY_NOTE;
 
 		var layout = new GridLayout(1, false);
 		layout.marginHeight = 0;
@@ -22,11 +20,6 @@ public class MinimizedStickyNoteFigure extends StickyNoteFigure {
 		setLayoutManager(layout);
 
 		var header = new StickyNoteHeader();
-		var roundedCorners = RoundBorder.Corners
-			.fullRoundedCorners(HEADER_ARC_SIZE);
-		var headerBorder = new RoundBorder(theme.boxBorderWidth(box), roundedCorners);
-		headerBorder.setColor(theme.boxBorderColor(box));
-		header.setBorder(headerBorder);
 		add(header, GridPos.fill());
 
 		setOpaque(true);

@@ -1,15 +1,8 @@
 package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.FormDialog;
-import org.eclipse.ui.forms.IManagedForm;
-import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.StickyNote;
-import org.openlca.app.util.UI;
 
 public class EditStickyNoteCommand extends Command {
 
@@ -35,7 +28,7 @@ public class EditStickyNoteCommand extends Command {
 	@Override
 	public void execute() {
 		newStickyNote = oldStickyNote.copy();
-		if (!EditStickyNoteDialog.open(newStickyNote))
+		if (!StickyNoteDialog.open(newStickyNote))
 			return;
 		redo();
 	}

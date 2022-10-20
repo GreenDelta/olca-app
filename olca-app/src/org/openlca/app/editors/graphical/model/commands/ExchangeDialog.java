@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-class EditExchangeDialog extends FormDialog {
+class ExchangeDialog extends FormDialog {
 
 	private final Exchange exchange;
 	private final List<Pair<FlowPropertyFactor, Unit>> units;
@@ -37,11 +37,11 @@ class EditExchangeDialog extends FormDialog {
 	static boolean open(Exchange exchange) {
 		if (exchange == null)
 			return false;
-		var dialog = new EditExchangeDialog(exchange);
+		var dialog = new ExchangeDialog(exchange);
 		return dialog.open() == OK;
 	}
 
-	private EditExchangeDialog(Exchange exchange) {
+	private ExchangeDialog(Exchange exchange) {
 		super(UI.shell());
 		this.exchange = exchange;
 		setBlockOnOpen(true);

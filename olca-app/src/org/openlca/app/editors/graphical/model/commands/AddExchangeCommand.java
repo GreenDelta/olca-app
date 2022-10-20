@@ -85,7 +85,7 @@ public class AddExchangeCommand extends Command {
 		var exchange = forInput
 			? process.input(flow, 1.0)
 			: process.output(flow, 1.0);
-		EditExchangeDialog.open(exchange);
+		ExchangeDialog.open(exchange);
 		db.update(process);
 
 		// If an elementary flow was added, make sure that our graph shows
