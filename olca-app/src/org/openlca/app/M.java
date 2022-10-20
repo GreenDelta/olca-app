@@ -227,7 +227,7 @@ public class M extends NLS {
 	public static String DatabaseImport;
 	public static String DatabaseImportDescription;
 	public static String DatabaseName;
-	public static String DatabaseNeedsUpdate;
+	public static String DatabaseNewerThanThisError;
 	public static String DatabaseRenameError;
 	public static String DatabaseType;
 	public static String DatabaseValidationCompleteNoErrorsWereFound;
