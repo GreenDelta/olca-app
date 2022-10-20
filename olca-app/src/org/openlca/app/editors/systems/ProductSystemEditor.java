@@ -2,6 +2,7 @@ package org.openlca.app.editors.systems;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.openlca.app.M;
@@ -51,13 +52,15 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			var listener = graphInit.get();
 			if (listener == null)
 				return;
-			var array = GraphFile.getLayouts(graphEditor);
-			var diagram = graphEditor.getGraphFactory()
-					.createGraph(graphEditor, array);
-			graphEditor.setModel(diagram);
+			var nodeArray = GraphFile.getLayout(graphEditor, "nodes");
+			var stickyNoteArray = GraphFile.getLayout(graphEditor, "sticky-notes");
+			var graph = graphEditor.getGraphFactory()
+					.createGraph(graphEditor, nodeArray, stickyNoteArray);
+			graphEditor.setModel(graph);
 			var viewer = (GraphicalViewer) graphEditor
 					.getAdapter(GraphicalViewer.class);
-			viewer.setContents(diagram);
+			viewer.setContents(graph);
+
 			removePageChangedListener(listener);
 			graphInit.set(null);
 		};

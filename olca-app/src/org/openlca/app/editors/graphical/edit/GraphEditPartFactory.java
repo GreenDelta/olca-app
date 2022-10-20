@@ -27,6 +27,10 @@ public class GraphEditPartFactory implements EditPartFactory {
 			if (node.isMinimized())
 				return new NodeEditPart.Minimized();
 			else return new NodeEditPart.Maximized();
+		else if (model instanceof StickyNote note)
+			if (note.isMinimized())
+				return new StickyNoteEditPart.Minimized();
+			else return new StickyNoteEditPart.Maximized();
 		else if (model instanceof IOPane)
 			return new IOPaneEditPart();
 		else if (model instanceof ExchangeItem)

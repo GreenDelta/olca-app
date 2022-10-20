@@ -181,6 +181,9 @@ public class GraphEditor extends GraphicalEditor {
 		action = new AddProcessAction(this);
 		registry.registerAction(action);
 
+		action = new AddStickyNoteAction(this);
+		registry.registerAction(action);
+
 		action = new AddExchangeAction(this, true);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
@@ -190,6 +193,10 @@ public class GraphEditor extends GraphicalEditor {
 		selectionActions.add(action.getId());
 
 		action = new EditExchangeAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new EditStickyNoteAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 

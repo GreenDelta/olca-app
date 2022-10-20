@@ -47,8 +47,10 @@ public class EditConfigCommand extends Command {
 		newConfig.copyTo(editor.config);
 		// Create new nodes with the new config.
 		var rootObj = GraphFile.createJsonArray(editor, editor.getModel());
-		var array = Json.getArray(rootObj, "nodes");
-		newGraph = editor.getGraphFactory().createGraph(editor, array);
+		var nodeArray = Json.getArray(rootObj, "nodes");
+		var stickyNoteArray = Json.getArray(rootObj, "sticky-notes");
+		newGraph = editor.getGraphFactory().createGraph(editor, nodeArray,
+				stickyNoteArray);
 
 		editor.setModel(newGraph);
 		viewer.setContents(newGraph);

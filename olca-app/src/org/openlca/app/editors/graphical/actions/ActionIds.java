@@ -5,6 +5,7 @@ public interface ActionIds {
 	String ADD_PROCESS = "graph.actions.AddProcessAction";
 	String ADD_INPUT_EXCHANGE = "graph.actions.AddExchangeAction.Input";
 	String ADD_OUTPUT_EXCHANGE = "graph.actions.AddExchangeAction.Output";
+	String ADD_STICKY_NOTE = "graph.actions.AddStickyNoteAction";
 
 	String BUILD_NEXT_TIER = "graph.actions.BuildNextTierAction";
 	String BUILD_SUPPLY_CHAIN = "graph.actions.BuildSupplyChainAction";
@@ -15,6 +16,7 @@ public interface ActionIds {
 
 	String EDIT_EXCHANGE = "graph.actions.EditExchangeAction";
 	String EDIT_GRAPH_CONFIG = "graph.actions.EditGraphSettingsAction";
+	String EDIT_STICKY_NOTE = "graph.actions.EditStickyNoteAction";
 	String FOCUS = "graph.actions.FocusAction";
 	String LAYOUT_TREE = "graph.actions.LayoutAction.TREE_LAYOUT";
 	String LINK_UPDATE = "graph.actions.LinkUpdateAction";

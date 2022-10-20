@@ -42,7 +42,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 		ProductSystem system = editor.getModel().getProductSystem();
 		long refId = system.referenceProcess.id;
 		if (refId == node.descriptor.id) {
-			for (var node : editor.getModel().getChildren())
+			for (var node : editor.getModel().getNodes())
 				if (refId != node.descriptor.id) {
 					nodes.add(node);
 					var links = node.getAllLinks().stream()

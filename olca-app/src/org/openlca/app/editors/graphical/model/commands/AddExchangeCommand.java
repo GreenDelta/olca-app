@@ -34,8 +34,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
-import static org.openlca.app.editors.graphical.model.commands.EditExchangeDialog.open;
-
 public class AddExchangeCommand extends Command {
 
 	private final IDatabase db = Database.get();
@@ -87,7 +85,7 @@ public class AddExchangeCommand extends Command {
 		var exchange = forInput
 			? process.input(flow, 1.0)
 			: process.output(flow, 1.0);
-		open(exchange);
+		EditExchangeDialog.open(exchange);
 		db.update(process);
 
 		// If an elementary flow was added, make sure that our graph shows

@@ -7,16 +7,17 @@ import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
+import org.openlca.app.editors.graphical.edit.StickyNoteEditPart;
 import org.openlca.app.rcp.images.Icon;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT;
 
-public class EditExchangeAction extends SelectionAction {
+public class EditStickyNoteAction extends SelectionAction {
 
-	public EditExchangeAction(GraphEditor part) {
+	public EditStickyNoteAction(GraphEditor part) {
 		super(part);
-		setId(ActionIds.EDIT_EXCHANGE);
-		setText(M.EditFlow);
+		setId(ActionIds.EDIT_STICKY_NOTE);
+		setText(M.Edit + " " + M.Note.toLowerCase());
 		setImageDescriptor(Icon.EDIT.descriptor());
 	}
 
@@ -38,14 +39,14 @@ public class EditExchangeAction extends SelectionAction {
 			return null;
 
 		CompoundCommand cc = new CompoundCommand();
-		cc.setDebugLabel("Edit exchange item");
+		cc.setDebugLabel("Edit sticky note");
 
 		var parts = getSelectedObjects();
 		for (Object o : parts) {
-			if (!(o instanceof ExchangeEditPart exchangeEditPart))
+			if (!(o instanceof StickyNoteEditPart noteEditPart))
 				return null;
 
-			cc.add(exchangeEditPart.getCommand(new Request(REQ_EDIT)));
+			cc.add(noteEditPart.getCommand(new Request(REQ_EDIT)));
 		}
 		return cc.unwrap();
 	}

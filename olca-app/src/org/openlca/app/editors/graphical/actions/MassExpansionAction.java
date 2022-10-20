@@ -77,7 +77,7 @@ public class MassExpansionAction extends StackAction {
 		}
 
 		else if (type == EXPAND) {
-			for (var node : editor.getModel().getChildren()) {
+			for (var node : editor.getModel().getNodes()) {
 				if (!node.isExpanded(INPUT)
 					|| !node.isExpanded(OUTPUT)) {
 					var editPart = (EditPart) viewer.getEditPartRegistry().get(node);

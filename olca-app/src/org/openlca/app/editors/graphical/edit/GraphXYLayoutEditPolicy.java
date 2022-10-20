@@ -18,10 +18,12 @@ import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.CreateNodeCommand;
+import org.openlca.app.editors.graphical.model.commands.CreateStickyNoteCommand;
 import org.openlca.app.editors.graphical.model.commands.EditConfigCommand;
 import org.openlca.app.editors.graphical.model.commands.GraphLayoutCommand;
-import org.openlca.app.editors.graphical.model.commands.NodeSetConstraintCommand;
+import org.openlca.app.editors.graphical.model.commands.SetConstraintCommand;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
+import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 import static org.openlca.app.editors.graphical.actions.EditGraphConfigAction.KEY_CONFIG;
@@ -47,29 +49,38 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 	}
 
 	protected Command getCreateCommand(GraphRequest request) {
-
-		var descriptors = request.getDescriptors();
 		var command = new CompoundCommand();
 		command.setDebugLabel("Create in GraphXYLayoutEditPolicy");
 
-		for (var descriptor : descriptors)
-			command.add(createCreateCommand(descriptor,
+		var descriptors = request.getDescriptors();
+
+		if (descriptors == null)
+			command.add(createCreateStickyNoteCommand(
+					(Rectangle) getConstraintFor(request)));
+		else for (var descriptor : descriptors)
+			command.add(createCreateNodeCommand(descriptor,
 				(Rectangle) getConstraintFor(request)));
 
 		return command.unwrap();
 	}
 
-	protected Command createCreateCommand(RootDescriptor descriptor,
-																				Rectangle constraint) {
+	protected Command createCreateNodeCommand(RootDescriptor descriptor,
+																						Rectangle constraint) {
 		var graph = (Graph) getHost().getModel();
 		return new CreateNodeCommand(graph, descriptor, constraint);
+	}
+
+	protected Command createCreateStickyNoteCommand(Rectangle constraint) {
+		var graph = (Graph) getHost().getModel();
+		return new CreateStickyNoteCommand(graph, constraint);
 	}
 
 	@Override
 	protected Command createChangeConstraintCommand(
 		ChangeBoundsRequest request, EditPart child, Object constraint) {
-		if (child instanceof NodeEditPart && constraint instanceof Rectangle) {
-			return new NodeSetConstraintCommand((Node) child.getModel(),
+		if (child instanceof AbstractVertexEditPart
+				&& constraint instanceof Rectangle) {
+			return new SetConstraintCommand((Component) child.getModel(),
 				request, (Rectangle) constraint);
 		}
 		return super.createChangeConstraintCommand(request, child,
@@ -79,8 +90,9 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 	@Override
 	protected EditPolicy createChildEditPolicy(EditPart child) {
 		var policy = new ResizableEditPolicy();
-		policy.setResizeDirections(
-			PositionConstants.EAST | PositionConstants.WEST);
+		if (child instanceof NodeEditPart)
+			policy.setResizeDirections(
+					PositionConstants.EAST | PositionConstants.WEST);
 		return policy;
 	}
 
