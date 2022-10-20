@@ -211,7 +211,8 @@ public class Theme {
 		SYSTEM_PROCESS,
 		SUB_SYSTEM,
 		LIBRARY_PROCESS,
-		RESULT;
+		RESULT,
+		STICKY_NOTE;
 
 		public static Box of(RootDescriptor descriptor, boolean isReference) {
 			if (descriptor == null)

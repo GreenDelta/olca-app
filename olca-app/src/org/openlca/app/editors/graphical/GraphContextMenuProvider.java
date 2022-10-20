@@ -67,6 +67,14 @@ public class GraphContextMenuProvider extends ContextMenuProvider {
 		if (editExchange.isEnabled())
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, editExchange);
 
+		var editNote = actionRegistry.getAction(ActionIds.EDIT_STICKY_NOTE);
+		if (editNote.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, editNote);
+
+		var addStickyNote = actionRegistry.getAction(ActionIds.ADD_STICKY_NOTE);
+		if (addStickyNote.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, addStickyNote);
+
 		var delete = actionRegistry.getAction(ActionFactory.DELETE.getId());
 		delete.setText(M.Delete);
 		delete.setImageDescriptor(Icon.DELETE.descriptor());

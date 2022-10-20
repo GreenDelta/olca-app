@@ -59,8 +59,10 @@ public class MassCreationCommand extends Command {
 		for (ProcessLink newLink : newLinks)
 			link(newLink);
 
-		for (Node node : graph.getChildren()) {
-			var bounds = new Rectangle(node.getLocation().getCopy(), node.getSize().getCopy());
+		for (Node node : graph.getNodes()) {
+			var bounds = new Rectangle(
+					node.getLocation().getCopy(),
+					node.getSize().getCopy());
 			oldConstraints.put(node, bounds);
 		}
 
@@ -105,7 +107,7 @@ public class MassCreationCommand extends Command {
 			unlink(link);
 		for (Node node : createdNodes)
 			removeNode(node);
-		for (Node node : graph.getChildren()) {
+		for (Node node : graph.getNodes()) {
 			node.setSize(oldConstraints.get(node).getSize());
 			node.setLocation(oldConstraints.get(node).getLocation());
 		}

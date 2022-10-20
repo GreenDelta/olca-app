@@ -1,5 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -8,6 +9,7 @@ import org.eclipse.gef.ui.actions.StackAction;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
+import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.rcp.images.Icon;
 
@@ -56,17 +58,18 @@ public class MinMaxAllAction extends StackAction {
 			? M.MinimizeAll.toLowerCase()
 			: M.MaximizeAll.toLowerCase());
 
-		for (Node node : editor.getModel().getChildren()) {
+		for (MinMaxComponent component : editor.getModel().getMinMaxComponents()) {
 			var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
 			if (viewer == null)
 				return null;
-			var nodeEditPart = (NodeEditPart) viewer.getEditPartRegistry().get(node);
-			if (nodeEditPart == null)
+			var registry = viewer.getEditPartRegistry();
+			var componentEditPart = (EditPart) registry.get(component);
+			if (componentEditPart == null)
 				return null;
 			var request_type = type == MINIMIZE
 				? REQ_MIN
 				: REQ_MAX;
-			cc.add(nodeEditPart.getCommand(new Request(request_type)));
+			cc.add(componentEditPart.getCommand(new Request(request_type)));
 		}
 
 		return cc;

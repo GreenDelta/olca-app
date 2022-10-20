@@ -49,7 +49,7 @@ public class Graph extends Component {
 	}
 
 	public Node getNode(long id) {
-		for (var node : getChildren()) {
+		for (var node : getNodes()) {
 			if (node.descriptor != null && node.descriptor.id == id)
 				return node;
 		}
@@ -80,11 +80,36 @@ public class Graph extends Component {
 		this.zoom = zoom;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Node> getChildren() {
-		return (List<Node>) super.getChildren();
+	/**
+	 * @return Only return the Node children of the graph.
+	 */
+	public List<Node> getNodes() {
+		return getChildren().stream()
+				.filter(child -> child instanceof Node)
+				.map(child -> (Node) child)
+				.toList();
 	}
+
+	/**
+	 * @return Only return the StickyNote children of the graph.
+	 */
+	public List<StickyNote> getStickyNotes() {
+		return getChildren().stream()
+				.filter(child -> child instanceof StickyNote)
+				.map(child -> (StickyNote) child)
+				.toList();
+	}
+
+	/**
+	 * @return Only return the MinMaxComponent children of the graph.
+	 */
+	public List<MinMaxComponent> getMinMaxComponents() {
+		return getChildren().stream()
+				.filter(child -> child instanceof MinMaxComponent)
+				.map(child -> (MinMaxComponent) child)
+				.toList();
+	}
+
 
 	@Override
 	public int compareTo(Component other) {
@@ -93,7 +118,7 @@ public class Graph extends Component {
 
 	public List<Long> getChildrenIds() {
 		var ids = new ArrayList<Long>();
-		for (var node : getChildren()) {
+		for (var node : getNodes()) {
 			ids.add(node.descriptor.id);
 		}
 		return ids;

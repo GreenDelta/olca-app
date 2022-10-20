@@ -73,7 +73,7 @@ public class SankeyNode extends Component {
 	public int compareTo(Component other) {
 		if (other instanceof SankeyNode n)
 			return Strings.compare(getComparisonLabel(), n.getComparisonLabel());
-		else return 1;
+		else return 0;
 	}
 
 	@Override

@@ -8,8 +8,10 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
+import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.editors.graphical.model.StickyNote;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
 import org.slf4j.Logger;
@@ -48,15 +50,21 @@ public final class GraphFile {
 		var rootObj = new JsonObject();
 		rootObj.add("config", editor.config.toJson());
 
-		// add node info's
+		// add component info's
 		var nodeArray = new JsonArray();
-		for (var node : graph.getChildren()) {
+		for (var node : graph.getNodes()) {
 			var nodeObj = toJson(node);
-			if (nodeObj != null) {
+			if (nodeObj != null)
 				nodeArray.add(nodeObj);
-			}
+		}
+		var stickyNoteArray = new JsonArray();
+		for (var note : graph.getStickyNotes()) {
+			var noteObj = toJson(note);
+			if (noteObj != null)
+				stickyNoteArray.add(noteObj);
 		}
 		rootObj.add("nodes", nodeArray);
+		rootObj.add("sticky-notes", stickyNoteArray);
 		return rootObj;
 	}
 
@@ -84,6 +92,29 @@ public final class GraphFile {
 		return json;
 	}
 
+	private static JsonObject toJson(StickyNote note) {
+		if (note == null)
+			return null;
+		var json = new JsonObject();
+		json.addProperty("title", note.title);
+
+		var size = note.getSize();
+		if (size != null) {
+			json.addProperty("width", size.width);
+			json.addProperty("height", size.height);
+		}
+		var location = note.getLocation();
+		if (location != null) {
+			json.addProperty("x", location.x);
+			json.addProperty("y", location.y);
+		}
+
+		json.addProperty("content", note.content);
+		json.addProperty("minimized", note.isMinimized());
+
+		return json;
+	}
+
 	public static GraphConfig getGraphConfig(GraphEditor editor) {
 		try {
 			var file = GraphFile.file(editor.getProductSystem());
@@ -104,7 +135,7 @@ public final class GraphFile {
 		}
 	}
 
-	public static JsonArray getLayouts(GraphEditor editor) {
+	public static JsonArray getLayout(GraphEditor editor, String element) {
 		try {
 			// read JSON object from file
 			var file = file(editor.getProductSystem());
@@ -115,7 +146,7 @@ public final class GraphFile {
 				return null;
 
 			// apply node info's
-			return Json.getArray(rootObj, "nodes");
+			return Json.getArray(rootObj, element);
 		} catch (Exception e) {
 			var log = LoggerFactory.getLogger(GraphFile.class);
 			log.error("Failed to load layout", e);
@@ -123,7 +154,7 @@ public final class GraphFile {
 		}
 	}
 
-	public static NodeLayoutInfo toInfo(JsonObject obj) {
+	public static NodeLayoutInfo toNodeLayoutInfo(JsonObject obj) {
 		if (obj == null)
 			return null;
 		var info = new NodeLayoutInfo();
@@ -137,6 +168,23 @@ public final class GraphFile {
 			Json.getInt(obj, "height", Node.DEFAULT_SIZE.height));
 		info.expandedLeft = Json.getBool(obj, "expandedLeft", false);
 		info.expandedRight = Json.getBool(obj, "expandedRight", false);
+		return info;
+	}
+
+	public static StickyNoteLayoutInfo toStickyNoteLayoutInfo(JsonObject obj) {
+		if (obj == null)
+			return null;
+		var info = new StickyNoteLayoutInfo();
+		info.minimized = Json.getBool(obj, "minimized", false);
+		info.location = new Point(
+				Json.getInt(obj, "x", Integer.MAX_VALUE),
+				Json.getInt(obj, "y", Integer.MAX_VALUE));
+		info.size = new Dimension(
+				Json.getInt(obj, "width", Node.DEFAULT_SIZE.width),
+				Json.getInt(obj, "height", Node.DEFAULT_SIZE.height));
+		info.title = Json.getString(obj, "title");
+		info.content = Json.getString(obj, "content");
+
 		return info;
 	}
 

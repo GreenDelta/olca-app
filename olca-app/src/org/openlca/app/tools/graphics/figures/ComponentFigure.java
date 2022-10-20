@@ -7,8 +7,8 @@ public class ComponentFigure extends Figure {
 
 	private final Component component;
 
-	public ComponentFigure(Component node) {
-		this.component = node;
+	public ComponentFigure(Component component) {
+		this.component = component;
 	}
 
 	public Component getComponent() {
