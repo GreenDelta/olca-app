@@ -53,7 +53,7 @@ public class EditExchangeCommand extends Command {
 		if (process == null || exchange == null)
 			return;
 
-		if (!EditExchangeDialog.open(exchange))
+		if (!ExchangeDialog.open(exchange))
 			return;
 		newExchangeItem = new ExchangeItem(exchange);
 		redo();

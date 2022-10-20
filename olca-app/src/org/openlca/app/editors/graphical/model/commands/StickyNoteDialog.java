@@ -9,7 +9,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.StickyNote;
 import org.openlca.app.util.UI;
 
-public class EditStickyNoteDialog extends FormDialog {
+public class StickyNoteDialog extends FormDialog {
 
 	private final StickyNote note;
 	private Text title;
@@ -22,11 +22,11 @@ public class EditStickyNoteDialog extends FormDialog {
 	static boolean open(StickyNote note) {
 		if (note == null)
 			return false;
-		var dialog = new EditStickyNoteDialog(note);
+		var dialog = new StickyNoteDialog(note);
 		return dialog.open() == OK;
 	}
 
-	private EditStickyNoteDialog(StickyNote note) {
+	private StickyNoteDialog(StickyNote note) {
 		super(UI.shell());
 		this.note = note;
 		setBlockOnOpen(true);
@@ -40,7 +40,7 @@ public class EditStickyNoteDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return UI.initialSizeOf(this, 600, 350);
+		return UI.initialSizeOf(this, 600, 250);
 	}
 
 	@Override
@@ -51,8 +51,7 @@ public class EditStickyNoteDialog extends FormDialog {
 		title = UI.formText(body, tk, M.Title);
 		title.setText(note.title);
 
-		content = UI.formText(body, tk, M.Content);
-		content.setSize(content.getSize().x, 250);
+		content = UI.formMultiText(body, tk, M.Content);
 		content.setText(note.content);
 	}
 

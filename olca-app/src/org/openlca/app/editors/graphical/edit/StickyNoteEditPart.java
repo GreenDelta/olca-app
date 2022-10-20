@@ -2,22 +2,27 @@ package org.openlca.app.editors.graphical.edit;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.editors.graphical.figures.MaximizedStickyNoteFigure;
 import org.openlca.app.editors.graphical.figures.MinimizedStickyNoteFigure;
+import org.openlca.app.editors.graphical.figures.NodeFigure;
 import org.openlca.app.editors.graphical.figures.StickyNoteFigure;
 import org.openlca.app.editors.graphical.model.StickyNote;
-import org.openlca.app.tools.graphics.figures.GridPos;
+import org.openlca.app.editors.graphical.model.commands.DeleteStickyNoteCommand;
+import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.app.tools.graphics.model.Component;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import java.util.List;
+
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public abstract class StickyNoteEditPart extends
 		AbstractVertexEditPart<StickyNote> {
@@ -56,6 +61,14 @@ public abstract class StickyNoteEditPart extends
 		super.refreshVisuals();
 	}
 
+	protected void addButtonActionListener(StickyNoteFigure figure) {
+		figure.closeButton.addActionListener($ -> {
+			var command = getCommand(new GroupRequest(REQ_DELETE));
+			if (command.canExecute())
+				getViewer().getEditDomain().getCommandStack().execute(command);
+		});
+	}
+
 	@Override
 	public StickyNoteFigure getFigure() {
 		return (StickyNoteFigure) super.getFigure();
@@ -70,7 +83,9 @@ public abstract class StickyNoteEditPart extends
 
 		@Override
 		protected IFigure createFigure() {
-			return new MaximizedStickyNoteFigure(getModel());
+			var figure = new MaximizedStickyNoteFigure(getModel());
+			addButtonActionListener(figure);
+			return figure;
 		}
 
 	}

@@ -66,8 +66,7 @@
 /* sticky-note */
 #model box .sticky-note {
   color: #000000;       /* font color */
-  background: #ffffff;  /* background color */
-  border: 2px #ccff00;  /* border width and color */
+  background: #fef5aa;  /* background color */
 }
 
 /* -- links -- */
