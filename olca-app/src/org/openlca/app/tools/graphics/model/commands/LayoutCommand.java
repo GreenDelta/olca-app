@@ -15,7 +15,7 @@ public class LayoutCommand extends Command {
 
 	private final Component parent;
 	/** Stores the old size and location. */
-	private final Map<Component, Point> oldLocations = new HashMap<>();
+	public final Map<Component, Point> oldLocations = new HashMap<>();
 
 	/**
 	 * Create a command that can reset the location of all the nodes to force a
