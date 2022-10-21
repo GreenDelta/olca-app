@@ -36,7 +36,6 @@ import org.openlca.core.matrix.CalcImpactFactor as CalcImpactFactor
 import org.openlca.core.services.CalculationQueue as CalculationQueue
 import org.openlca.core.model.CalculationSetup as CalculationSetup
 import org.openlca.proto.io.input.CalculationSetupReader as CalculationSetupReader
-import org.openlca.ipc.handlers.Calculator as Calculator
 import org.openlca.util.Categories as Categories
 import org.openlca.core.model.Category as Category
 import org.openlca.util.CategoryContentTest as CategoryContentTest
@@ -55,7 +54,6 @@ import org.openlca.core.results.Contribution as Contribution
 import org.openlca.core.results.Contributions as Contributions
 import org.openlca.core.matrix.cache.ConversionTable as ConversionTable
 import org.openlca.util.Copy as Copy
-import org.openlca.ipc.handlers.CostHandler as CostHandler
 import org.openlca.core.matrix.io.Csv as Csv
 import org.openlca.core.matrix.io.CsvExport as CsvExport
 import org.openlca.core.model.Currency as Currency
@@ -85,7 +83,6 @@ import org.openlca.io.olca.DatabaseImport as DatabaseImport
 import org.openlca.util.Databases as Databases
 import org.openlca.core.io.DbEntityResolver as DbEntityResolver
 import org.openlca.core.library.DbLibrarySwap as DbLibrarySwap
-import org.openlca.jsonld.output.DbRefs as DbRefs
 import org.openlca.core.database.DbUtils as DbUtils
 import org.openlca.core.matrix.linking.DefaultProcessLinker as DefaultProcessLinker
 import org.openlca.core.matrix.Demand as Demand
@@ -120,6 +117,7 @@ import org.openlca.io.EcoSpoldUnitFetch as EcoSpoldUnitFetch
 import org.openlca.core.database.EntityCache as EntityCache
 import org.openlca.jsonld.Enums as Enums
 import org.openlca.core.matrix.index.EnviFlow as EnviFlow
+import org.openlca.core.services.EnviFlowId as EnviFlowId
 import org.openlca.core.results.EnviFlowValue as EnviFlowValue
 import org.openlca.core.matrix.index.EnviIndex as EnviIndex
 import org.openlca.core.model.Epd as Epd
@@ -216,7 +214,6 @@ import org.openlca.jsonld.output.ImpactCategoryWriter as ImpactCategoryWriter
 import org.openlca.core.model.descriptors.ImpactDescriptor as ImpactDescriptor
 import org.openlca.util.ImpactDirections as ImpactDirections
 import org.openlca.core.model.ImpactFactor as ImpactFactor
-import org.openlca.ipc.handlers.ImpactHandler as ImpactHandler
 import org.openlca.io.ilcd.input.ImpactImport as ImpactImport
 import org.openlca.core.matrix.index.ImpactIndex as ImpactIndex
 import org.openlca.core.model.ImpactMethod as ImpactMethod
@@ -240,7 +237,6 @@ import org.openlca.io.xls.results.InfoSheet as InfoSheet
 import org.openlca.expressions.InterpreterException as InterpreterException
 import org.openlca.geo.calc.IntersectionCalculator as IntersectionCalculator
 import org.openlca.core.matrix.InventoryBuilder as InventoryBuilder
-import org.openlca.ipc.handlers.InventoryHandler as InventoryHandler
 import org.openlca.core.results.providers.InversionResult as InversionResult
 import org.openlca.core.results.providers.InversionResultProvider as InversionResultProvider
 import org.openlca.io.ecospold2.input.IsicCategoryTreeSync as IsicCategoryTreeSync
@@ -268,6 +264,7 @@ import org.openlca.util.JsonDiffZip as JsonDiffZip
 import org.openlca.jsonld.output.JsonExport as JsonExport
 import org.openlca.jsonld.input.JsonImport as JsonImport
 import org.openlca.core.services.JsonRef as JsonRef
+import org.openlca.jsonld.output.JsonRefs as JsonRefs
 import org.openlca.core.services.JsonResultService as JsonResultService
 import org.openlca.util.KeyGen as KeyGen
 import org.openlca.geo.Kml2GeoJson as Kml2GeoJson
@@ -428,6 +425,7 @@ import org.openlca.core.model.Result as Result
 import org.openlca.core.database.ResultDao as ResultDao
 import org.openlca.core.model.descriptors.ResultDescriptor as ResultDescriptor
 import org.openlca.io.xls.results.system.ResultExport as ResultExport
+import org.openlca.ipc.handlers.ResultHandler as ResultHandler
 import org.openlca.core.results.ResultItemOrder as ResultItemOrder
 import org.openlca.core.results.providers.ResultModelProvider as ResultModelProvider
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
@@ -457,6 +455,7 @@ import org.openlca.io.simapro.csv.SimaProUnit as SimaProUnit
 import org.openlca.core.matrix.io.SimpleBin as SimpleBin
 import org.openlca.expressions.SimpleCharStream as SimpleCharStream
 import org.openlca.core.results.providers.SimpleResultProvider as SimpleResultProvider
+import org.openlca.ipc.handlers.SimulationHandler as SimulationHandler
 import org.openlca.core.results.SimulationResult as SimulationResult
 import org.openlca.io.xls.results.SimulationResultExport as SimulationResultExport
 import org.openlca.core.math.Simulator as Simulator
@@ -490,6 +489,7 @@ import org.openlca.core.results.SystemProcess as SystemProcess
 import org.openlca.util.TLongSets as TLongSets
 import org.openlca.core.results.TagResult as TagResult
 import org.openlca.core.matrix.index.TechFlow as TechFlow
+import org.openlca.core.services.TechFlowId as TechFlowId
 import org.openlca.core.results.TechFlowValue as TechFlowValue
 import org.openlca.core.matrix.index.TechIndex as TechIndex
 import org.openlca.core.matrix.linking.TechIndexBuilder as TechIndexBuilder
@@ -526,7 +526,6 @@ import org.openlca.core.database.upgrades.Upgrade11 as Upgrade11
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree
-import org.openlca.ipc.handlers.UpstreamTreeHandler as UpstreamTreeHandler
 import org.openlca.jsonld.output.Util as Util
 import org.openlca.core.database.validation.Validation as Validation
 import org.openlca.expressions.VariableFunction as VariableFunction
