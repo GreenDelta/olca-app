@@ -51,9 +51,7 @@ public class SankeyLink extends Link {
 	public void setTargetAnchor() {
 		var links = target.getAllTargetConnections();
 
-		links.sort(Comparator.comparing(
-				link -> link.getSource().getComparisonLabel()
-		));
+		links.sort(Comparator.comparing(Link::getSource));
 
 		var sankeyLinks = links.stream()
 				.filter(link -> link instanceof SankeyLink)

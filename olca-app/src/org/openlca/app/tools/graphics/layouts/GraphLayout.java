@@ -167,9 +167,8 @@ public abstract class GraphLayout extends FreeformLayout implements
 					stackFigures.add(figure);
 			}
 		}
-		stackFigures.sort(
-				Comparator.comparing(
-						figure -> figure.getComponent().getComparisonLabel()));
+
+		stackFigures.sort(Comparator.comparing(ComponentFigure::getComponent));
 		return stackFigures;
 	}
 

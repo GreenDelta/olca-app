@@ -370,13 +370,13 @@ public class Node extends MinMaxComponent {
 	@Override
 	public int compareTo(Component other) {
 		if (other instanceof Node node) {
-			if (getRefExchangeItem() == null && node.getRefExchangeItem() == null)
+			if (getRefFlow() == null && node.getRefFlow() == null)
 				return 0;
-			if (getRefExchangeItem() != null && node.getRefExchangeItem() == null)
+			if (getRefFlow() != null && node.getRefFlow() == null)
 				return 1;
-			if (getRefExchangeItem() == null)
+			if (getRefFlow() == null)
 				return -1;
-			return this.getRefExchangeItem().compareTo(node.getRefExchangeItem());
+			return this.getComparisonLabel().compareTo(node.getComparisonLabel());
 		}
 		else return 0;
 	}
