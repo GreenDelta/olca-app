@@ -18,7 +18,7 @@ public class SetReferenceAction extends SelectionAction {
 
 	public SetReferenceAction(GraphEditor part) {
 		super(part);
-		setId(ActionIds.SET_REFERENCE);
+		setId(GraphActionIds.SET_REFERENCE);
 		setText(NLS.bind(M.SetAsQuantitativeReference, M.Reference));
 		setImageDescriptor(Icon.FORMULA.descriptor());
 	}

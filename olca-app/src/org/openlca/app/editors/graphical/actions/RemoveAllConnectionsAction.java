@@ -25,7 +25,7 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 	public RemoveAllConnectionsAction(GraphEditor part) {
 		super(part);
 		editor = part;
-		setId(ActionIds.REMOVE_ALL_CONNECTIONS);
+		setId(GraphActionIds.REMOVE_ALL_CONNECTIONS);
 		setText(M.RemoveConnections);
 	}
 

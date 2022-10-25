@@ -8,9 +8,7 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.StackAction;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.rcp.images.Icon;
 
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
@@ -28,11 +26,11 @@ public class MinMaxAllAction extends StackAction {
 		this.type = type;
 		this.editor = part;
 		if (type == MINIMIZE) {
-			setId(ActionIds.MINIMIZE_ALL);
+			setId(GraphActionIds.MINIMIZE_ALL);
 			setText(M.MinimizeAll);
 			setImageDescriptor(Icon.MINIMIZE.descriptor());
 		} else if (type == MAXIMIZE) {
-			setId(ActionIds.MAXIMIZE_ALL);
+			setId(GraphActionIds.MAXIMIZE_ALL);
 			setText(M.MaximizeAll);
 			setImageDescriptor(Icon.MAXIMIZE.descriptor());
 		}

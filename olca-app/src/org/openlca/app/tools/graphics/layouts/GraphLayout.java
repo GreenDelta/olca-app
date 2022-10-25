@@ -7,6 +7,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
+import org.openlca.app.tools.graphics.BasicGraphicalEditor;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.tools.graphics.model.Component;
 
@@ -14,7 +15,8 @@ import java.util.*;
 
 import static org.eclipse.draw2d.PositionConstants.*;
 
-public abstract class GraphLayout extends FreeformLayout implements LayoutInterface {
+public abstract class GraphLayout extends FreeformLayout implements
+		LayoutInterface {
 
 	/** Integer.MAX_VALUE is used as a default value with the limited risk of
 	 * having a figure in that area of the canvas.
@@ -23,6 +25,7 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 			new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
 	private final int orientation;
+	private final BasicGraphicalEditor editor;
 	public double distanceSibling = 16;
 	public double distanceSubtree = 32;
 	public double distanceLevel = 64;
@@ -37,8 +40,13 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 	 */
 	private boolean preLayout = false;
 
-	public GraphLayout(int orientation) {
+	public GraphLayout(BasicGraphicalEditor editor, int orientation) {
+		this.editor = editor;
 		this.orientation = orientation;
+	}
+
+	public BasicGraphicalEditor getEditor() {
+		return editor;
 	}
 
 	@Override
@@ -72,7 +80,11 @@ public abstract class GraphLayout extends FreeformLayout implements LayoutInterf
 		if (!preLayout) preLayout = true;
 	}
 
-	protected abstract void focusOnStart();
+	protected void focusOnStart() {
+		if (!editor.wasFocused) {
+			editor.wasFocused = editor.doFocus();
+		}
+	}
 
 	private Point calculateLocation(Figure figure, Rectangle constraint) {
 		// Set the location to the TreeLayout location if the figure has not been

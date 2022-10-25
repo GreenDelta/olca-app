@@ -27,7 +27,7 @@ public class BuildSupplyChainMenuAction extends SelectionAction implements Updat
 
 	public BuildSupplyChainMenuAction(GraphEditor editor) {
 		super(editor);
-		setId(ActionIds.BUILD_SUPPLY_CHAIN_MENU);
+		setId(GraphActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		setText(M.BuildSupplyChain);
 		setImageDescriptor(Icon.BUILD_SUPPLY_CHAIN.descriptor());
 		setMenuCreator(new MenuCreator());

@@ -71,7 +71,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 		getViewer().getControl().setBackground(theme.backgroundColor());
 
 		var f = new FreeformLayer();
-		f.setLayoutManager(new Layout(this, ORIENTATION));
+		f.setLayoutManager(new Layout(getModel().getEditor(), ORIENTATION));
 		return f;
 	}
 

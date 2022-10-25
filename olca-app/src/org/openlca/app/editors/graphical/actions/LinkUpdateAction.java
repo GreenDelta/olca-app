@@ -35,7 +35,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 	public LinkUpdateAction(GraphEditor part) {
 		super(part);
 		editor = part;
-		setId(ActionIds.LINK_UPDATE);
+		setId(GraphActionIds.LINK_UPDATE);
 		setImageDescriptor(Icon.UPDATE.descriptor());
 		setText(NLS.bind(M.Update, M.ProcessLinks));
 	}

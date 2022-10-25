@@ -33,11 +33,11 @@ public class SearchConnectorsAction extends SelectionAction {
 	public SearchConnectorsAction(GraphEditor part, int type) {
 		super(part);
 		if (type == PROVIDER) {
-			setId(ActionIds.SEARCH_PROVIDERS);
+			setId(GraphActionIds.SEARCH_PROVIDERS);
 			setText(M.SearchProvidersFor);
 		}
 		else if (type == RECIPIENTS) {
-			setId(ActionIds.SEARCH_RECIPIENTS);
+			setId(GraphActionIds.SEARCH_RECIPIENTS);
 			setText(M.SearchRecipientsFor);
 		}
 		this.type = type;

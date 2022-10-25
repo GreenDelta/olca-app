@@ -6,7 +6,6 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.StickyNoteEditPart;
 import org.openlca.app.rcp.images.Icon;
 
@@ -16,7 +15,7 @@ public class EditStickyNoteAction extends SelectionAction {
 
 	public EditStickyNoteAction(GraphEditor part) {
 		super(part);
-		setId(ActionIds.EDIT_STICKY_NOTE);
+		setId(GraphActionIds.EDIT_STICKY_NOTE);
 		setText(M.Edit + " " + M.Note.toLowerCase());
 		setImageDescriptor(Icon.EDIT.descriptor());
 	}

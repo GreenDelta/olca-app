@@ -34,7 +34,7 @@ public class BuildSupplyChainAction extends Action implements IBuildAction {
 	private final LinkingConfig config;
 
 	public BuildSupplyChainAction() {
-		setId(ActionIds.BUILD_SUPPLY_CHAIN);
+		setId(GraphActionIds.BUILD_SUPPLY_CHAIN);
 		setText(M.Complete);
 		config = new LinkingConfig()
 			.preferredType(ProcessType.UNIT_PROCESS)
