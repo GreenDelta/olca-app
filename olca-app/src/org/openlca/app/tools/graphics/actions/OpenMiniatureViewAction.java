@@ -1,4 +1,4 @@
-package org.openlca.app.editors.graphical.actions;
+package org.openlca.app.tools.graphics.actions;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
@@ -22,7 +22,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.tools.graphics.BasicGraphicalEditor;
 import org.openlca.app.tools.graphics.edit.RootEditPart;
 import org.openlca.app.tools.graphics.zoom.ZoomManager;
 import org.openlca.app.rcp.images.Icon;
@@ -31,14 +31,14 @@ import org.openlca.app.util.UI;
 
 public class OpenMiniatureViewAction extends WorkbenchPartAction {
 
-	private final GraphEditor editor;
+	private final BasicGraphicalEditor editor;
 	private Control control;
 	private IFigure figure;
 	private Viewport port;
 	private MiniView window;
 	private ZoomManager zoomManager;
 
-	public OpenMiniatureViewAction(GraphEditor part) {
+	public OpenMiniatureViewAction(BasicGraphicalEditor part) {
 		super(part);
 		this.editor = part;
 		setId(ActionIds.OPEN_MINIATURE_VIEW);
@@ -69,7 +69,8 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 	protected boolean calculateEnabled() {
 		if (editor == null)
 			return false;
-		IFigure layer = getRootEditPart().getLayer(LayerConstants.PRINTABLE_LAYERS);
+		IFigure layer = editor.getRootEditPart()
+				.getLayer(LayerConstants.PRINTABLE_LAYERS);
 		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
 		update(getViewport(), layer, viewer.getControl(), editor.getZoomManager());
 		return true;
@@ -113,7 +114,7 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 			toolkit.paintBordersFor(composite);
 			final Scale scale = new Scale(composite, SWT.NONE);
 			scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-			final double[] values = GraphEditor.ZOOM_LEVELS;
+			final double[] values = BasicGraphicalEditor.ZOOM_LEVELS;
 			final int increment = 100 / (values.length - 1);
 			scale.setIncrement(increment);
 			scale.setMinimum(0);
@@ -128,18 +129,14 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 			thumbnail = new ScrollableThumbnail(port);
 			thumbnail.setSource(figure);
 			lws.setContents(thumbnail);
-			disposeListener = new DisposeListener() {
-
-				@Override
-				public void widgetDisposed(final DisposeEvent e) {
-					if (thumbnail != null) {
-						thumbnail.deactivate();
-						thumbnail = null;
-					}
-					if (control != null && !control.isDisposed())
-						control.removeDisposeListener(disposeListener);
-					close();
+			disposeListener = e -> {
+				if (thumbnail != null) {
+					thumbnail.deactivate();
+					thumbnail = null;
 				}
+				if (control != null && !control.isDisposed())
+					control.removeDisposeListener(disposeListener);
+				close();
 			};
 			control.addDisposeListener(disposeListener);
 			return super.createContents(parent);
@@ -163,11 +160,7 @@ public class OpenMiniatureViewAction extends WorkbenchPartAction {
 	}
 
 	private Viewport getViewport() {
-		return (Viewport) getRootEditPart().getFigure();
+		return (Viewport) editor.getRootEditPart().getFigure();
 	}
 
-	private RootEditPart getRootEditPart() {
-		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
-		return (RootEditPart) viewer.getRootEditPart();
-	}
 }

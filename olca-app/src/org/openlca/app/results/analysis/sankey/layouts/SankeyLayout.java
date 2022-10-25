@@ -1,10 +1,12 @@
 package org.openlca.app.results.analysis.sankey.layouts;
 
 import org.eclipse.gef.GraphicalViewer;
+import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.results.analysis.sankey.edit.DiagramEditPart;
 import org.openlca.app.results.analysis.sankey.edit.SankeyNodeEditPart;
 import org.openlca.app.results.analysis.sankey.figures.SankeyNodeFigure;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
+import org.openlca.app.tools.graphics.BasicGraphicalEditor;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.tools.graphics.layouts.GraphLayout;
 import org.openlca.app.tools.graphics.model.Component;
@@ -19,16 +21,13 @@ import org.openlca.app.tools.graphics.model.Component;
  */
 public class SankeyLayout extends GraphLayout {
 
-	private final Diagram diagram;
-
-	public SankeyLayout(DiagramEditPart diagramEditPart, int inputDirection) {
-		super(inputDirection);
-		this.diagram = diagramEditPart.getModel();
+	public SankeyLayout(BasicGraphicalEditor editor, int orientation) {
+		super(editor, orientation);
 	}
 
 	@Override
 	public ComponentFigure figureOf(Component node) {
-		var viewer = (GraphicalViewer) diagram.editor.getAdapter(
+		var viewer = (GraphicalViewer) getEditor().getAdapter(
 				GraphicalViewer.class);
 		var registry = viewer.getEditPartRegistry();
 		if (registry.get(node) instanceof SankeyNodeEditPart nodeEditPart)
@@ -39,7 +38,7 @@ public class SankeyLayout extends GraphLayout {
 
 	@Override
 	public Component getReferenceNode() {
-		return diagram.getNode(diagram.editor.getSankey().root);
+		return getDiagram().getNode(getDiagram().editor.getSankey().root);
 	}
 
 	@Override
@@ -53,12 +52,8 @@ public class SankeyLayout extends GraphLayout {
 		return null;
 	}
 
-	@Override
-	protected void focusOnStart() {
-		var editor = diagram.editor;
-		if (!editor.wasFocus) {
-			editor.wasFocus = editor.focusOnReferenceNode();
-		}
+	private Diagram getDiagram() {
+		return ((Diagram) getEditor().getModel());
 	}
 
 }

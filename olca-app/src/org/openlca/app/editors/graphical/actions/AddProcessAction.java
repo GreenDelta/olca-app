@@ -48,7 +48,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 	public AddProcessAction(GraphEditor part) {
 		super(part);
 		editor = part;
-		setId(ActionIds.ADD_PROCESS);
+		setId(GraphActionIds.ADD_PROCESS);
 		setText(M.AddProcess);
 		setImageDescriptor(Images.descriptor(ModelType.PROCESS));
 	}

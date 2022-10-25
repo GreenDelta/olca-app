@@ -8,6 +8,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.search.LinkSearchMap;
+import org.openlca.app.tools.graphics.model.BaseComponent;
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.model.FlowType;
@@ -22,10 +23,9 @@ import static org.eclipse.draw2d.PositionConstants.EAST;
  * processes, results and/or product systems (represented by a
  * {@link Node}).
  */
-public class Graph extends Component {
+public class Graph extends BaseComponent {
 
 	public static final int ORIENTATION = EAST;
-	private double zoom = 1.0;
 
 	public final GraphEditor editor;
 	public final LinkSearchMap linkSearch;
@@ -64,10 +64,6 @@ public class Graph extends Component {
 		return node != null && referenceProcess.id == node.descriptor.id;
 	}
 
-	public double getZoom() {
-		return zoom;
-	}
-
 	public GraphEditor getEditor() {
 		return editor;
 	}
@@ -76,8 +72,9 @@ public class Graph extends Component {
 		return editor.config;
 	}
 
-	public void setZoom(double zoom) {
-		this.zoom = zoom;
+	@Override
+	public Component getFocusComponent() {
+		return getReferenceNode();
 	}
 
 	/**

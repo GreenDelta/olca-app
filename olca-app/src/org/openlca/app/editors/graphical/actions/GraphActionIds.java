@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-public interface ActionIds {
+public interface GraphActionIds {
 
 	String ADD_PROCESS = "graph.actions.AddProcessAction";
 	String ADD_INPUT_EXCHANGE = "graph.actions.AddExchangeAction.Input";
@@ -15,20 +15,15 @@ public interface ActionIds {
 	String EXPAND_ALL = "graph.actions.ExpansionAction.EXPAND";
 
 	String EDIT_EXCHANGE = "graph.actions.EditExchangeAction";
-	String EDIT_GRAPH_CONFIG = "graph.actions.EditGraphSettingsAction";
 	String EDIT_STICKY_NOTE = "graph.actions.EditStickyNoteAction";
-	String FOCUS = "graph.actions.FocusAction";
 	String LAYOUT_TREE = "graph.actions.LayoutAction.TREE_LAYOUT";
 	String LINK_UPDATE = "graph.actions.LinkUpdateAction";
 
 	String MINIMIZE_ALL = "graph.actions.ChangeAllStateAction.MINIMIZE";
 	String MAXIMIZE_ALL = "graph.actions.ChangeAllStateAction.MAXIMIZE";
 
-	String OPEN_MINIATURE_VIEW = "graph.actions.OpenMiniatureViewAction";
-	String OPEN_EDITOR = "graph.actions.OpenEditorAction";
 	String REMOVE_ALL_CONNECTIONS = "graph.actions.RemoveAllConnectionsAction";
 	String REMOVE_SUPPLY_CHAIN = "graph.actions.RemoveSupplyChainAction";
-	String SAVE_IMAGE = "graph.actions.SaveImageAction";
 	String SEARCH_PROVIDERS = "graph.actions.SearchConnectorsAction.PROVIDERS";
 	String SEARCH_RECIPIENTS = "graph.actions.SearchConnectorsAction.RECIPIENTS";
 	String SET_REFERENCE = "graph.actions.SetReferenceAction";

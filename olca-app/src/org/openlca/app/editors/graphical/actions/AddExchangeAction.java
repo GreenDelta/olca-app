@@ -28,8 +28,8 @@ public class AddExchangeAction extends SelectionAction {
 			? REQ_ADD_INPUT_EXCHANGE
 			: REQ_ADD_OUTPUT_EXCHANGE);
 		setId(forInput
-			?	ActionIds.ADD_INPUT_EXCHANGE
-			: ActionIds.ADD_OUTPUT_EXCHANGE);
+			?	GraphActionIds.ADD_INPUT_EXCHANGE
+			: GraphActionIds.ADD_OUTPUT_EXCHANGE);
 		setText(forInput ? M.AddInputFlow : M.AddOutputFlow);
 		setImageDescriptor(Images.descriptor(ModelType.FLOW));
 	}

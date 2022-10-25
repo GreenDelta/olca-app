@@ -32,7 +32,7 @@ public final class GraphFile {
 
 	public static void save(GraphEditor editor) {
 		var graph = editor != null
-				? editor.getModel()
+				? (Graph) editor.getModel()
 				: null;
 		if (graph == null)
 			return;

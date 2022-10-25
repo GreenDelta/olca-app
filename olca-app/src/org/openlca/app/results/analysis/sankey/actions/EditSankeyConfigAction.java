@@ -10,6 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
+import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.util.Popup;
 
 import static org.openlca.app.results.analysis.sankey.requests.SankeyRequestConstants.REQ_EDIT_CONFIG;
@@ -24,7 +25,7 @@ public class EditSankeyConfigAction extends WorkbenchPartAction {
 	public EditSankeyConfigAction(SankeyEditor part) {
 		super(part);
 		this.editor = part;
-		setId(ActionIds.EDIT_GRAPH_CONFIG);
+		setId(ActionIds.EDIT_CONFIG);
 		setText(M.Settings);
 		setImageDescriptor(Icon.PREFERENCES.descriptor());
 	}

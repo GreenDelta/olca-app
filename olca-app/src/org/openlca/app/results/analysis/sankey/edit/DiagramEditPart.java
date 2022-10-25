@@ -58,7 +58,7 @@ public class DiagramEditPart extends AbstractComponentEditPart<Diagram> {
 
 		var f = new FreeformLayer();
 		f.setBorder(new MarginBorder(8000));
-		var layout = new SankeyLayout(this, getModel().orientation);
+		var layout = new SankeyLayout(getModel().editor, getModel().orientation);
 		layout.setDistanceLevel(150);
 		f.setLayoutManager(layout);
 		return f;

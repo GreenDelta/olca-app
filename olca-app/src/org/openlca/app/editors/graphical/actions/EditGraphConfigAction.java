@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -37,7 +38,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 	public EditGraphConfigAction(GraphEditor part) {
 		super(part);
 		this.editor = part;
-		setId(ActionIds.EDIT_GRAPH_CONFIG);
+		setId(ActionIds.EDIT_CONFIG);
 		setText(M.Settings);
 		setImageDescriptor(Icon.PREFERENCES.descriptor());
 	}

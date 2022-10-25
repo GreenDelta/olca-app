@@ -31,7 +31,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 	public RemoveSupplyChainAction(GraphEditor part) {
 		super(part);
 		editor = part;
-		setId(ActionIds.REMOVE_SUPPLY_CHAIN);
+		setId(GraphActionIds.REMOVE_SUPPLY_CHAIN);
 		setText(M.RemoveSupplyChain);
 		setImageDescriptor(Icon.REMOVE_SUPPLY_CHAIN.descriptor());
 	}
