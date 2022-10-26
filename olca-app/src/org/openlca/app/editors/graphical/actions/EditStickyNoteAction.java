@@ -16,7 +16,7 @@ public class EditStickyNoteAction extends SelectionAction {
 	public EditStickyNoteAction(GraphEditor part) {
 		super(part);
 		setId(GraphActionIds.EDIT_STICKY_NOTE);
-		setText(M.Edit + " " + M.Note.toLowerCase());
+		setText(M.EditStickyNote);
 		setImageDescriptor(Icon.EDIT.descriptor());
 	}
 

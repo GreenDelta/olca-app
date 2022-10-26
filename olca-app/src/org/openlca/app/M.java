@@ -32,6 +32,7 @@ public class M extends NLS {
 	public static String AddProcess;
 	public static String AddScore;
 	public static String AddSection;
+	public static String AddStickyNote;
 	public static String AddToMethodParameters;
 	public static String AddedValue;
 	public static String AdditionalInformation;
@@ -273,6 +274,7 @@ public class M extends NLS {
 	public static String Economic;
 	public static String Edit;
 	public static String EditFlow;
+	public static String EditStickyNote;
 	public static String ElementaryFlow;
 	public static String Email;
 	public static String EmptyDatabase;
