@@ -165,8 +165,6 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 	}
 
 	public RootEditPart getRootEditPart() {
-		System.out.println("getGraphicalViewer(): " + getGraphicalViewer());
-		System.out.println("getGraphicalViewer().getRootEditPart(): " + getGraphicalViewer().getRootEditPart());
 		return (RootEditPart) getGraphicalViewer().getRootEditPart();
 	}
 

@@ -24,7 +24,7 @@ public class AddStickyNoteAction extends WorkbenchPartAction {
 		super(part);
 		editor = part;
 		setId(GraphActionIds.ADD_STICKY_NOTE);
-		setText(M.Add + " " + M.Note.toLowerCase());
+		setText(M.AddStickyNote);
 		setImageDescriptor(Icon.COMMENT.descriptor());
 	}
 
