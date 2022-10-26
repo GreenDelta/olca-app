@@ -176,7 +176,7 @@
 			icon="icons/model/product_system.png"
 			id="editors.productsystem"
 			name="%ProductSystemEditor"
-			contributorClass="org.openlca.app.editors.systems.ProductSystemActions">
+			contributorClass="org.openlca.app.editors.systems.ProductSystemBarContributor">
 		</editor>
 		<editor
 			class="org.openlca.app.editors.social.SocialIndicatorEditor"
@@ -216,7 +216,7 @@
 		<!-- result views -->
 		<editor
 			class="org.openlca.app.results.ResultEditor"
-			contributorClass="org.openlca.app.results.ResultEditorActions"
+			contributorClass="org.openlca.app.results.ResultsBarContributor"
 			default="false"
 			icon="icons/analysis.png"
 			id="editors.analyze"
