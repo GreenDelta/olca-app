@@ -34,12 +34,8 @@ import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.TreeClipboard.ClipboardLabelProvider;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.matrix.index.EnviFlow;
-import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.Contribution;
 import org.openlca.core.results.LcaResult;
 
 public class ImpactTreePage extends FormPage {
@@ -100,7 +96,7 @@ public class ImpactTreePage extends FormPage {
 	private void setInput() {
 		var items = editor.items.impacts()
 				.stream()
-				.map(impact -> Item.of(result, impact))
+				.map(impact -> ImpactItem.rootOf(result, impact))
 				.collect(Collectors.toList());
 		viewer.setInput(items);
 	}
@@ -136,23 +132,23 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void onOpen() {
-		Item item = Viewers.getFirstSelected(viewer);
+		ImpactItem item = Viewers.getFirstSelected(viewer);
 		if (item == null)
 			return;
-		if (item.enviFlow != null) {
-			App.open(item.enviFlow.flow());
-		} else if (item.techFlow != null) {
-			App.open(item.techFlow.provider());
-		} else if (item.impact != null) {
-			App.open(item.impact);
+		if (item.enviFlow() != null) {
+			App.open(item.enviFlow().flow());
+		} else if (item.techFlow() != null) {
+			App.open(item.techFlow().provider());
+		} else if (item.impact() != null) {
+			App.open(item.impact());
 		}
 	}
 
 	private void createColumnSorters(LabelProvider p) {
 		Viewers.sortByLabels(viewer, p, 0, 1, 5);
-		Viewers.sortByDouble(viewer, (item) -> ((Item) item).flowAmount(), 2);
-		Viewers.sortByDouble(viewer, (item) -> ((Item) item).impactFactor(), 3);
-		Viewers.sortByDouble(viewer, (item) -> ((Item) item).amount(), 4);
+		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).flowAmount(), 2);
+		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).impactFactor(), 3);
+		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).amount(), 4);
 		if (!DQUI.displayExchangeQuality(dqResult))
 			return;
 		for (int i = 0; i < dqResult.setup.exchangeSystem.indicators.size(); i++) {
@@ -187,7 +183,7 @@ public class ImpactTreePage extends FormPage {
 
 		@Override
 		public String getLabel(TreeItem treeItem, int col) {
-			Item item = (Item) treeItem.getData();
+			ImpactItem item = (ImpactItem) treeItem.getData();
 			switch (col) {
 				case 0:
 					return label.getText(item, 0);
@@ -198,7 +194,7 @@ public class ImpactTreePage extends FormPage {
 				case 3:
 					if (item.flowAmount() == null)
 						return "";
-					return Labels.refUnit(item.enviFlow);
+					return Labels.refUnit(item.enviFlow());
 				case 4:
 					return format(item.impactFactor());
 				case 5:
@@ -239,14 +235,14 @@ public class ImpactTreePage extends FormPage {
 
 		@Override
 		public Image getImage(Object obj, int col) {
-			if (!(obj instanceof Item item))
+			if (!(obj instanceof ImpactItem item))
 				return null;
 			if (col == 0) {
-				if (item.enviFlow != null)
-					return Images.get(item.enviFlow);
-				if (item.techFlow != null)
-					return Images.get(item.techFlow);
-				return Images.get(item.impact);
+				if (item.enviFlow() != null)
+					return Images.get(item.enviFlow());
+				if (item.techFlow() != null)
+					return Images.get(item.techFlow());
+				return Images.get(item.impact());
 			}
 			if (col == 4 && item.type() != ModelType.IMPACT_CATEGORY)
 				return img.get(item.contribution());
@@ -255,7 +251,7 @@ public class ImpactTreePage extends FormPage {
 
 		@Override
 		public String getText(Object obj, int col) {
-			if (!(obj instanceof Item item))
+			if (!(obj instanceof ImpactItem item))
 				return null;
 			return switch (col) {
 				case 0 -> item.name();
@@ -272,18 +268,18 @@ public class ImpactTreePage extends FormPage {
 		protected int[] getQuality(Object obj) {
 			if (dqResult == null)
 				return null;
-			if (!(obj instanceof Item item))
+			if (!(obj instanceof ImpactItem item))
 				return null;
 			return switch (item.type()) {
-				case IMPACT_CATEGORY -> dqResult.get(item.impact);
-				case PROCESS -> dqResult.get(item.impact, item.techFlow);
+				case IMPACT_CATEGORY -> dqResult.get(item.impact());
+				case PROCESS -> dqResult.get(item.impact(), item.techFlow());
 				case FLOW -> {
-					if (item.enviFlow == null)
+					if (item.enviFlow() == null)
 						yield null;
-					if (item.techFlow != null)
-						yield dqResult.get(item.techFlow, item.enviFlow);
+					if (item.techFlow() != null)
+						yield dqResult.get(item.techFlow(), item.enviFlow());
 					else
-						yield dqResult.get(item.impact, item.enviFlow);
+						yield dqResult.get(item.impact(), item.enviFlow());
 				}
 				default -> null;
 			};
@@ -297,14 +293,14 @@ public class ImpactTreePage extends FormPage {
 
 		@Override
 		public Object[] getChildren(Object obj) {
-			if (!(obj instanceof Item parent))
+			if (!(obj instanceof ImpactItem parent))
 				return null;
-			var childs = new ArrayList<Item>();
+			var childs = new ArrayList<ImpactItem>();
 
 			double cutoffValue = Math.abs(parent.amount() * cutoff);
 			if (parent.type() == ModelType.IMPACT_CATEGORY && !flowsFirst) {
-				for (var process : editor.items.techFlows()) {
-					var child = Item.of(parent, process);
+				for (var techFlow : editor.items.techFlows()) {
+					var child = ImpactItem.of(parent, techFlow);
 					double result = child.amount();
 					if (result == 0)
 						continue;
@@ -315,7 +311,7 @@ public class ImpactTreePage extends FormPage {
 
 			} else if (result.hasEnviFlows()) {
 				result.enviIndex().each((i, f) -> {
-					var child = Item.of(parent, f);
+					var child = ImpactItem.of(parent, f);
 					double result = child.amount();
 					if (result == 0)
 						return;
@@ -336,7 +332,7 @@ public class ImpactTreePage extends FormPage {
 
 		@Override
 		public boolean hasChildren(Object o) {
-			if (!(o instanceof Item item))
+			if (!(o instanceof ImpactItem item))
 				return false;
 			return item.type() != ModelType.FLOW;
 		}
@@ -348,121 +344,4 @@ public class ImpactTreePage extends FormPage {
 
 	}
 
-	private record Item(
-			LcaResult result,
-			ImpactDescriptor impact,
-			TechFlow techFlow,
-			EnviFlow enviFlow) {
-
-		static Item of(LcaResult result, ImpactDescriptor impact) {
-			return new Item(result, impact, null, null);
-		}
-
-		static Item of(Item parent, TechFlow techFlow) {
-			return new Item(parent.result, parent.impact, techFlow, parent.enviFlow);
-		}
-
-		static Item of(Item parent, EnviFlow enviFlow) {
-			return new Item(parent.result, parent.impact, parent.techFlow, enviFlow);
-		}
-
-		/**
-		 * The type of contribution shown by the item.
-		 */
-		ModelType type() {
-			if (enviFlow != null)
-				return ModelType.FLOW;
-			if (techFlow != null)
-				return ModelType.PROCESS;
-			return ModelType.IMPACT_CATEGORY;
-		}
-
-		Double impactFactor() {
-			return enviFlow != null
-					? result.getImpactFactorOf(impact, enviFlow)
-					: null;
-		}
-
-		String impactFactorUnit() {
-			String iUnit = impact.referenceUnit;
-			if (iUnit == null) {
-				iUnit = "1";
-			}
-			String fUnit = enviFlow != null
-					? Labels.refUnit(enviFlow)
-					: "?";
-			return iUnit + "/" + fUnit;
-		}
-
-		String impactFactorString() {
-			if (type() != ModelType.FLOW)
-				return null;
-			var factor = impactFactor();
-			if (factor == null)
-				return null;
-			return Numbers.format(factor) + " " + impactFactorUnit();
-		}
-
-		Double flowAmount() {
-			if (enviFlow == null)
-				return null;
-			return techFlow == null
-					? result.getTotalFlowValueOf(enviFlow)
-					: result.getDirectFlowOf(enviFlow, techFlow);
-		}
-
-		String flowAmountString() {
-			if (type() != ModelType.FLOW)
-				return null;
-			var amount = flowAmount();
-			if (amount == null)
-				return null;
-			String unit = Labels.refUnit(enviFlow);
-			return Numbers.format(amount) + " " + unit;
-		}
-
-		double amount() {
-			return switch (type()) {
-				case IMPACT_CATEGORY -> result.getTotalImpactValueOf(impact);
-				case PROCESS -> result.getDirectImpactOf(impact, techFlow);
-				case FLOW -> {
-					var factor = impactFactor();
-					var amount = flowAmount();
-					yield factor == null || amount == null
-							? 0
-							: factor * amount;
-				}
-				default -> 0;
-			};
-		}
-
-		String unit() {
-			if (impact.referenceUnit == null)
-				return null;
-			return impact.referenceUnit;
-		}
-
-		String name() {
-			return switch (type()) {
-				case IMPACT_CATEGORY -> Labels.name(impact);
-				case FLOW -> Labels.name(enviFlow);
-				case PROCESS -> Labels.name(techFlow);
-				default -> null;
-			};
-		}
-
-		String category() {
-			return switch (type()) {
-				case IMPACT_CATEGORY -> Labels.category(impact);
-				case FLOW -> Labels.category(enviFlow);
-				case PROCESS -> Labels.category(techFlow);
-				default -> null;
-			};
-		}
-
-		double contribution() {
-			double total = result.getTotalImpactValueOf(impact);
-			return Contribution.shareOf(amount(), total);
-		}
-	}
 }
