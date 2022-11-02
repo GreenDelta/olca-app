@@ -22,12 +22,12 @@ import org.openlca.app.results.contributions.ProcessResultPage;
 import org.openlca.app.results.contributions.TagResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
+import org.openlca.app.results.impacts.ImpactTreePage;
 import org.openlca.app.util.Labels;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
-import org.python.modules.time.Time;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -75,7 +75,7 @@ public class ResultEditor extends FormEditor {
 			addPage(new InfoPage(this));
 			addPage(new InventoryPage(this));
 			if (result.hasImpacts())
-				addPage(new TotalImpactResultPage(this));
+				addPage(new ImpactTreePage(this));
 			if (result.hasImpacts() && setup.nwSet() != null)
 				addPage(new NwResultPage(this));
 			addPage(new ProcessResultPage(this));

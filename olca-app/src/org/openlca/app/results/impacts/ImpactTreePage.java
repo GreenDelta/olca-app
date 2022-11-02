@@ -1,4 +1,4 @@
-package org.openlca.app.results;
+package org.openlca.app.results.impacts;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -9,19 +9,19 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.ContributionCutoff;
+import org.openlca.app.results.DQLabelProvider;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.ContributionCutoff.CutoffContentProvider;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -42,20 +42,19 @@ import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.LcaResult;
 
-public class TotalImpactResultPage extends FormPage {
+public class ImpactTreePage extends FormPage {
 
 	private final ResultEditor editor;
 	private final CalculationSetup setup;
 	private final LcaResult result;
 	private final DQResult dqResult;
 
-	private FormToolkit toolkit;
 	private TreeViewer viewer;
-	private ContributionCutoff spinner;
+	private ContributionCutoff cutoff;
 
-	private boolean subgroupByProcesses = true;
+	private boolean flowsFirst = true;
 
-	public TotalImpactResultPage(ResultEditor editor) {
+	public ImpactTreePage(ResultEditor editor) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
 		this.editor = editor;
 		this.result = editor.result;
@@ -64,35 +63,38 @@ public class TotalImpactResultPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform,
+	protected void createFormContent(IManagedForm mForm) {
+		var form = UI.formHeader(mForm,
 				Labels.name(setup.target()),
 				Icon.ANALYSIS_RESULT.get());
-		toolkit = mform.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
-		Section section = UI.section(body, toolkit, M.ImpactAnalysis + ": "
-				+ Labels.name(setup.impactMethod()));
+		var tk = mForm.getToolkit();
+		var body = UI.formBody(form, tk);
+		var section = UI.section(body, tk,
+				M.ImpactAnalysis + ": " + Labels.name(setup.impactMethod()));
 		UI.gridData(section, true, true);
-		Composite client = toolkit.createComposite(section);
-		section.setClient(client);
-		UI.gridLayout(client, 1);
-		createOptions(client);
-		createTree(client);
-		spinner.register(viewer);
+		var comp = tk.createComposite(section);
+		section.setClient(comp);
+		UI.gridLayout(comp, 1);
+		createOptions(comp, tk);
+		createTree(comp, tk);
+		cutoff.register(viewer);
 		form.reflow(true);
 	}
 
-	private void createOptions(Composite parent) {
-		Composite comp = UI.formComposite(parent, toolkit);
-		UI.gridLayout(comp, 3);
-		Button button = UI.formCheckBox(
-				comp, toolkit, M.SubgroupByProcesses);
-		button.setSelection(true);
-		Controls.onSelect(button, (e) -> {
-			subgroupByProcesses = button.getSelection();
+	private void createOptions(Composite parent, FormToolkit tk) {
+		var comp = UI.formComposite(parent, tk);
+		UI.gridLayout(comp, 5);
+		tk.createLabel(comp, "Sub-group by:");
+		var flowCheck = tk.createButton(comp, M.Flows, SWT.RADIO);
+		flowCheck.setSelection(flowsFirst);
+		var processCheck = tk.createButton(comp, M.Processes, SWT.RADIO);
+		processCheck.setSelection(!flowsFirst);
+		Controls.onSelect(flowCheck, e -> {
+			flowsFirst = flowCheck.getSelection();
 			setInput();
 		});
-		spinner = ContributionCutoff.create(comp, toolkit);
+		tk.createLabel(comp, " | ");
+		cutoff = ContributionCutoff.create(comp, tk);
 	}
 
 	private void setInput() {
@@ -103,7 +105,7 @@ public class TotalImpactResultPage extends FormPage {
 		viewer.setInput(items);
 	}
 
-	private void createTree(Composite comp) {
+	private void createTree(Composite comp, FormToolkit tk) {
 		String[] columns = {M.Name, M.Category, M.InventoryResult,
 				M.ImpactFactor, M.ImpactResult, M.Unit};
 		if (DQUI.displayExchangeQuality(dqResult)) {
@@ -113,8 +115,8 @@ public class TotalImpactResultPage extends FormPage {
 		LabelProvider label = new LabelProvider();
 		viewer = Trees.createViewer(comp, columns, label);
 		viewer.setContentProvider(new ContentProvider());
-		toolkit.adapt(viewer.getTree(), false, false);
-		toolkit.paintBordersFor(viewer.getTree());
+		tk.adapt(viewer.getTree(), false, false);
+		tk.paintBordersFor(viewer.getTree());
 
 		Action onOpen = Actions.onOpen(this::onOpen);
 		Actions.bind(viewer, onOpen,
@@ -300,7 +302,7 @@ public class TotalImpactResultPage extends FormPage {
 			var childs = new ArrayList<Item>();
 
 			double cutoffValue = Math.abs(parent.amount() * cutoff);
-			if (parent.type() == ModelType.IMPACT_CATEGORY && subgroupByProcesses) {
+			if (parent.type() == ModelType.IMPACT_CATEGORY && !flowsFirst) {
 				for (var process : editor.items.techFlows()) {
 					var child = Item.of(parent, process);
 					double result = child.amount();
