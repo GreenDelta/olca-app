@@ -9,11 +9,11 @@ import org.openlca.app.util.Numbers;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.util.Strings;
 
-class ImpactTreeLabel extends DQLabelProvider {
+class TreeLabel extends DQLabelProvider {
 
 	private final ContributionImage img = new ContributionImage();
 
-	ImpactTreeLabel(DQResult dqResult) {
+	TreeLabel(DQResult dqResult) {
 		super(dqResult, dqResult != null
 				? dqResult.setup.exchangeSystem
 				: null, 5);
@@ -27,7 +27,7 @@ class ImpactTreeLabel extends DQLabelProvider {
 
 	@Override
 	public Image getImage(Object obj, int col) {
-		if (!(obj instanceof Item item))
+		if (!(obj instanceof TreeItem item))
 			return null;
 		if (col == 0) {
 			if (item.isRoot())
@@ -43,7 +43,7 @@ class ImpactTreeLabel extends DQLabelProvider {
 
 	@Override
 	public String getText(Object obj, int col) {
-		if (!(obj instanceof Item item))
+		if (!(obj instanceof TreeItem item))
 			return null;
 		return switch (col) {
 			case 0 -> nameOf(item);
@@ -55,7 +55,7 @@ class ImpactTreeLabel extends DQLabelProvider {
 		};
 	}
 
-	private String nameOf(Item item) {
+	private String nameOf(TreeItem item) {
 		if (item.isRoot())
 			return Labels.name(item.impact());
 		return item.isTechItem()
@@ -63,7 +63,7 @@ class ImpactTreeLabel extends DQLabelProvider {
 				: Labels.name(item.enviFlow());
 	}
 
-	private String categoryOf(Item item) {
+	private String categoryOf(TreeItem item) {
 		if (item.isRoot())
 			return Labels.category(item.impact());
 		return item.isTechItem()
@@ -71,7 +71,7 @@ class ImpactTreeLabel extends DQLabelProvider {
 				: Labels.category(item.enviFlow());
 	}
 
-	private String inventoryResultOf(Item item) {
+	private String inventoryResultOf(TreeItem item) {
 		if (item.isEnviItem()) {
 			var unit = Labels.refUnit(item.enviFlow());
 			return format(item.inventoryResult(), unit);
@@ -83,7 +83,7 @@ class ImpactTreeLabel extends DQLabelProvider {
 		return null;
 	}
 
-	private String impactFactorOf(Item item) {
+	private String impactFactorOf(TreeItem item) {
 		if (!item.isEnviItem())
 			return null;
 		var flowUnit = Labels.refUnit(item.enviFlow());
@@ -104,7 +104,7 @@ class ImpactTreeLabel extends DQLabelProvider {
 	protected int[] getQuality(Object obj) {
 		if (dqResult == null)
 			return null;
-		if (!(obj instanceof Item item))
+		if (!(obj instanceof TreeItem item))
 			return null;
 		if (item.isRoot())
 			return dqResult.get(item.impact());

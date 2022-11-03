@@ -1,11 +1,8 @@
 package org.openlca.app.results.impacts;
 
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -18,7 +15,6 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ContributionCutoff;
 import org.openlca.app.results.ResultEditor;
-import org.openlca.app.results.ContributionCutoff.CutoffContentProvider;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.DQUI;
@@ -31,8 +27,8 @@ import org.openlca.app.viewers.trees.TreeClipboard.ClipboardLabelProvider;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.results.LcaResult;
+import org.openlca.core.results.ResultItemOrder;
 
 public class ImpactTreePage extends FormPage {
 
@@ -44,7 +40,8 @@ public class ImpactTreePage extends FormPage {
 	private TreeViewer viewer;
 	private ContributionCutoff cutoff;
 
-	private boolean flowsFirst = true;
+	final ResultItemOrder items;
+	boolean flowsFirst = true;
 
 	public ImpactTreePage(ResultEditor editor) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
@@ -52,6 +49,7 @@ public class ImpactTreePage extends FormPage {
 		this.result = editor.result;
 		this.setup = editor.setup;
 		this.dqResult = editor.dqResult;
+		this.items = editor.items;
 	}
 
 	@Override
@@ -104,9 +102,9 @@ public class ImpactTreePage extends FormPage {
 			columns = DQUI.appendTableHeaders(columns,
 					dqResult.setup.exchangeSystem);
 		}
-		var label = new ImpactTreeLabel(editor.dqResult);
+		var label = new TreeLabel(editor.dqResult);
 		viewer = Trees.createViewer(comp, columns, label);
-		viewer.setContentProvider(new ContentProvider());
+		viewer.setContentProvider(new TreeContent(this));
 		tk.adapt(viewer.getTree(), false, false);
 		tk.paintBordersFor(viewer.getTree());
 
@@ -140,7 +138,7 @@ public class ImpactTreePage extends FormPage {
 		}
 	}
 
-	private void createColumnSorters(ImpactTreeLabel p) {
+	private void createColumnSorters(TreeLabel p) {
 		Viewers.sortByLabels(viewer, p, 0, 1, 5);
 		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).flowAmount(), 2);
 		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).impactFactor(), 3);
@@ -154,7 +152,7 @@ public class ImpactTreePage extends FormPage {
 
 	private class ClipboardLabel implements ClipboardLabelProvider {
 
-		private final ImpactTreeLabel label = new ImpactTreeLabel(editor.dqResult);
+		private final TreeLabel label = new TreeLabel(editor.dqResult);
 
 		private final String[] columns = {
 				M.Name,
@@ -210,65 +208,6 @@ public class ImpactTreePage extends FormPage {
 				return "";
 			return Numbers.format(d);
 		}
-
-	}
-
-	private class ContentProvider extends ArrayContentProvider
-			implements ITreeContentProvider, CutoffContentProvider {
-
-		private double cutoff;
-
-		@Override
-		public Object[] getChildren(Object obj) {
-			if (!(obj instanceof ImpactItem parent))
-				return null;
-			var childs = new ArrayList<ImpactItem>();
-
-			double cutoffValue = Math.abs(parent.amount() * cutoff);
-			if (parent.type() == ModelType.IMPACT_CATEGORY && !flowsFirst) {
-				for (var techFlow : editor.items.techFlows()) {
-					var child = ImpactItem.of(parent, techFlow);
-					double result = child.amount();
-					if (result == 0)
-						continue;
-					if (Math.abs(result) >= cutoffValue) {
-						childs.add(child);
-					}
-				}
-
-			} else if (result.hasEnviFlows()) {
-				result.enviIndex().each((i, f) -> {
-					var child = ImpactItem.of(parent, f);
-					double result = child.amount();
-					if (result == 0)
-						return;
-					if (Math.abs(result) >= cutoffValue) {
-						childs.add(child);
-					}
-				});
-			}
-
-			childs.sort((i1, i2) -> -Double.compare(i1.amount(), i2.amount()));
-			return childs.toArray();
-		}
-
-		@Override
-		public Object getParent(Object o) {
-			return null;
-		}
-
-		@Override
-		public boolean hasChildren(Object o) {
-			if (!(o instanceof ImpactItem item))
-				return false;
-			return item.type() != ModelType.FLOW;
-		}
-
-		@Override
-		public void setCutoff(double cutoff) {
-			this.cutoff = cutoff;
-		}
-
 	}
 
 }
