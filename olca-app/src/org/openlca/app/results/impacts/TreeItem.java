@@ -101,7 +101,8 @@ record TreeItem(
 				: 0;
 		return elements.stream()
 				.map(e -> fn.apply(this, e))
-				.filter(item -> cutoff == 0 || Math.abs(item.impactResult) >= absMax)
+				.filter(item -> item.impactResult != 0
+						&& (cutoff == 0 || Math.abs(item.impactResult) >= absMax))
 				.sorted((i1, i2) -> Double.compare(i2.impactResult, i1.impactResult))
 				.toList();
 	}

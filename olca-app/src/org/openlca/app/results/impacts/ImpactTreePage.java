@@ -1,12 +1,8 @@
 package org.openlca.app.results.impacts;
 
-import java.util.stream.Collectors;
-
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -19,11 +15,9 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.DQUI;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
-import org.openlca.app.viewers.trees.TreeClipboard.ClipboardLabelProvider;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
@@ -88,16 +82,16 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void setInput() {
-		var items = editor.items.impacts()
-				.stream()
-				.map(impact -> ImpactItem.rootOf(result, impact))
-				.collect(Collectors.toList());
-		viewer.setInput(items);
+		viewer.setInput(TreeItem.rootsOf(result, items.impacts()));
 	}
 
 	private void createTree(Composite comp, FormToolkit tk) {
-		String[] columns = {M.Name, M.Category, M.InventoryResult,
-				M.ImpactFactor, M.ImpactResult, M.Unit};
+		String[] columns = {
+				M.Name,
+				M.Category,
+				M.InventoryResult,
+				M.ImpactFactor,
+				M.ImpactResult};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			columns = DQUI.appendTableHeaders(columns,
 					dqResult.setup.exchangeSystem);
@@ -108,12 +102,11 @@ public class ImpactTreePage extends FormPage {
 		tk.adapt(viewer.getTree(), false, false);
 		tk.paintBordersFor(viewer.getTree());
 
-		Action onOpen = Actions.onOpen(this::onOpen);
-		Actions.bind(viewer, onOpen,
-				TreeClipboard.onCopy(viewer, new ClipboardLabel()));
+		var onOpen = Actions.onOpen(this::onOpen);
+		Actions.bind(viewer, onOpen, TreeClipboard.onCopy(viewer));
 		Trees.onDoubleClick(viewer, e -> onOpen.run());
 		createColumnSorters(label);
-		double[] widths = {.35, .2, .10, .10, .15, .05};
+		double[] widths = {.3, .25, .15, .15, .15};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			widths = DQUI.adjustTableWidths(
 					widths, dqResult.setup.exchangeSystem);
@@ -126,87 +119,27 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void onOpen() {
-		ImpactItem item = Viewers.getFirstSelected(viewer);
+		TreeItem item = Viewers.getFirstSelected(viewer);
 		if (item == null)
 			return;
-		if (item.enviFlow() != null) {
-			App.open(item.enviFlow().flow());
-		} else if (item.techFlow() != null) {
-			App.open(item.techFlow().provider());
-		} else if (item.impact() != null) {
+		if (item.isRoot()) {
 			App.open(item.impact());
+		} else if (item.isEnviItem()) {
+			App.open(item.enviFlow().flow());
+		} else if (item.isTechItem()) {
+			App.open(item.techFlow().provider());
 		}
 	}
 
 	private void createColumnSorters(TreeLabel p) {
-		Viewers.sortByLabels(viewer, p, 0, 1, 5);
-		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).flowAmount(), 2);
-		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).impactFactor(), 3);
-		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).amount(), 4);
+		Viewers.sortByLabels(viewer, p, 0, 1);
+		Viewers.sortByDouble(viewer, item -> ((TreeItem) item).inventoryResult(), 2);
+		Viewers.sortByDouble(viewer, item -> ((TreeItem) item).impactFactor(), 3);
+		Viewers.sortByDouble(viewer, item -> ((TreeItem) item).impactResult(), 4);
 		if (!DQUI.displayExchangeQuality(dqResult))
 			return;
 		for (int i = 0; i < dqResult.setup.exchangeSystem.indicators.size(); i++) {
 			Viewers.sortByDouble(viewer, p, i + 5);
-		}
-	}
-
-	private class ClipboardLabel implements ClipboardLabelProvider {
-
-		private final TreeLabel label = new TreeLabel(editor.dqResult);
-
-		private final String[] columns = {
-				M.Name,
-				M.Category,
-				M.InventoryResult,
-				M.Unit,
-				M.ImpactFactor,
-				M.Unit,
-				M.ImpactResult,
-				M.Unit
-		};
-
-		@Override
-		public int columns() {
-			return columns.length;
-		}
-
-		@Override
-		public String getHeader(int col) {
-			return columns[col];
-		}
-
-		@Override
-		public String getLabel(TreeItem treeItem, int col) {
-			ImpactItem item = (ImpactItem) treeItem.getData();
-			switch (col) {
-				case 0:
-					return label.getText(item, 0);
-				case 1:
-					return label.getText(item, 1);
-				case 2:
-					return format(item.flowAmount());
-				case 3:
-					if (item.flowAmount() == null)
-						return "";
-					return Labels.refUnit(item.enviFlow());
-				case 4:
-					return format(item.impactFactor());
-				case 5:
-					if (item.impactFactor() == null)
-						return "";
-					return item.impactFactorUnit();
-				case 6:
-					return label.getText(item, 4);
-				case 7:
-					return label.getText(item, 5);
-			}
-			return null;
-		}
-
-		private String format(Double d) {
-			if (d == null)
-				return "";
-			return Numbers.format(d);
 		}
 	}
 
