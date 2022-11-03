@@ -16,12 +16,12 @@ import org.openlca.core.model.DQSystem;
 public abstract class DQLabelProvider extends ColumnLabelProvider
 		implements ITableLabelProvider, ITableColorProvider {
 
-	protected final DQResult dataQualityResult;
+	protected final DQResult dqResult;
 	private final DQSystem dqSystem;
 	private final int startCol;
 
 	public DQLabelProvider(DQResult result, DQSystem dqSystem, int startCol) {
-		this.dataQualityResult = result;
+		this.dqResult = result;
 		this.dqSystem = dqSystem;
 		this.startCol = startCol;
 	}

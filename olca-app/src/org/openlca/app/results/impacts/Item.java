@@ -3,11 +3,11 @@ package org.openlca.app.results.impacts;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Predicate;
 
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
+import org.openlca.core.results.Contribution;
 import org.openlca.core.results.LcaResult;
 
 /**
@@ -96,21 +96,15 @@ record Item(
 
 	private <E> List<Item> collect(
 			List<E> elements, double cutoff, BiFunction<Item, E, Item> fn) {
-		var cutoffFilter = cutoffFilterOf(cutoff);
+		double absMax = cutoff != 0
+				? Math.abs(result.getTotalImpactValueOf(impact) * cutoff)
+				: 0;
 		return elements.stream()
 				.map(e -> fn.apply(this, e))
-				.filter(cutoffFilter)
+				.filter(item -> cutoff == 0 || Math.abs(item.impactResult) >= absMax)
 				.sorted((i1, i2) -> Double.compare(i2.impactResult, i1.impactResult))
 				.toList();
 	}
-
-	private Predicate<Item> cutoffFilterOf(double cutoff) {
-		if (cutoff == 0)
-			return item -> true;
-		double absMax = Math.abs(result.getTotalImpactValueOf(impact) * cutoff);
-		return item -> Math.abs(item.impactResult) > absMax;
-	}
-
 
 	boolean isRoot() {
 		return parent == null;
@@ -138,6 +132,11 @@ record Item(
 		return isEnviItem()
 				? result.getImpactFactorOf(impact, enviFlow)
 				: parent.impactFactor();
+	}
+
+	double contributionShare() {
+		double total = result.getTotalImpactValueOf(impact);
+		return Contribution.shareOf(impactResult, total);
 	}
 
 }

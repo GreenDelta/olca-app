@@ -8,7 +8,6 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IManagedForm;
@@ -16,11 +15,8 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ContributionCutoff;
-import org.openlca.app.results.DQLabelProvider;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.ContributionCutoff.CutoffContentProvider;
 import org.openlca.app.util.Actions;
@@ -108,7 +104,7 @@ public class ImpactTreePage extends FormPage {
 			columns = DQUI.appendTableHeaders(columns,
 					dqResult.setup.exchangeSystem);
 		}
-		LabelProvider label = new LabelProvider();
+		var label = new ImpactTreeLabel(editor.dqResult);
 		viewer = Trees.createViewer(comp, columns, label);
 		viewer.setContentProvider(new ContentProvider());
 		tk.adapt(viewer.getTree(), false, false);
@@ -144,7 +140,7 @@ public class ImpactTreePage extends FormPage {
 		}
 	}
 
-	private void createColumnSorters(LabelProvider p) {
+	private void createColumnSorters(ImpactTreeLabel p) {
 		Viewers.sortByLabels(viewer, p, 0, 1, 5);
 		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).flowAmount(), 2);
 		Viewers.sortByDouble(viewer, (item) -> ((ImpactItem) item).impactFactor(), 3);
@@ -158,7 +154,7 @@ public class ImpactTreePage extends FormPage {
 
 	private class ClipboardLabel implements ClipboardLabelProvider {
 
-		private final LabelProvider label = new LabelProvider();
+		private final ImpactTreeLabel label = new ImpactTreeLabel(editor.dqResult);
 
 		private final String[] columns = {
 				M.Name,
@@ -215,75 +211,6 @@ public class ImpactTreePage extends FormPage {
 			return Numbers.format(d);
 		}
 
-	}
-
-	private class LabelProvider extends DQLabelProvider {
-
-		private final ContributionImage img = new ContributionImage();
-
-		LabelProvider() {
-			super(dqResult, dqResult != null
-					? dqResult.setup.exchangeSystem
-					: null, 6);
-		}
-
-		@Override
-		public void dispose() {
-			img.dispose();
-			super.dispose();
-		}
-
-		@Override
-		public Image getImage(Object obj, int col) {
-			if (!(obj instanceof ImpactItem item))
-				return null;
-			if (col == 0) {
-				if (item.enviFlow() != null)
-					return Images.get(item.enviFlow());
-				if (item.techFlow() != null)
-					return Images.get(item.techFlow());
-				return Images.get(item.impact());
-			}
-			if (col == 4 && item.type() != ModelType.IMPACT_CATEGORY)
-				return img.get(item.contribution());
-			return null;
-		}
-
-		@Override
-		public String getText(Object obj, int col) {
-			if (!(obj instanceof ImpactItem item))
-				return null;
-			return switch (col) {
-				case 0 -> item.name();
-				case 1 -> item.category();
-				case 2 -> item.flowAmountString();
-				case 3 -> item.impactFactorString();
-				case 4 -> Numbers.format(item.amount());
-				case 5 -> item.unit();
-				default -> null;
-			};
-		}
-
-		@Override
-		protected int[] getQuality(Object obj) {
-			if (dqResult == null)
-				return null;
-			if (!(obj instanceof ImpactItem item))
-				return null;
-			return switch (item.type()) {
-				case IMPACT_CATEGORY -> dqResult.get(item.impact());
-				case PROCESS -> dqResult.get(item.impact(), item.techFlow());
-				case FLOW -> {
-					if (item.enviFlow() == null)
-						yield null;
-					if (item.techFlow() != null)
-						yield dqResult.get(item.techFlow(), item.enviFlow());
-					else
-						yield dqResult.get(item.impact(), item.enviFlow());
-				}
-				default -> null;
-			};
-		}
 	}
 
 	private class ContentProvider extends ArrayContentProvider
