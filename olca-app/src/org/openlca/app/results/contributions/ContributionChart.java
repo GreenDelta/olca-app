@@ -78,7 +78,7 @@ public class ContributionChart {
 		legend.label = label;
 	}
 
-	public void setData(List<Contribution<?>> items, String unit) {
+	public void setData(List<? extends Contribution<?>> items, String unit) {
 
 		// delete the old series
 		Arrays.stream(chart.getSeriesSet().getSeries())
@@ -92,7 +92,7 @@ public class ContributionChart {
 		// real values to have a nice order in the chart.
 		items.sort((i1, i2) -> -Double.compare(
 				Math.abs(i1.amount), Math.abs(i2.amount)));
-		List<Contribution<?>> top = items.size() <= 6
+		var top = items.size() <= 6
 				? items
 				: items.subList(0, 5);
 		top.sort((i1, i2) -> -Double.compare(
@@ -140,10 +140,10 @@ public class ContributionChart {
 		bars.setBarWidthStyle(BarWidthStyle.FIXED);
 	}
 
-	private void setYRange(List<Contribution<?>> top, double rest) {
+	private void setYRange(List<? extends Contribution<?>> top, double rest) {
 		double min = rest < 0 ? rest : 0;
 		double max = rest > 0 ? rest : 0;
-		for (Contribution<?> item : top) {
+		for (var item : top) {
 			min = Math.min(min, item.amount);
 			max = Math.max(max, item.amount);
 		}

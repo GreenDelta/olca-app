@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
@@ -62,7 +63,7 @@ class GroupResultTable {
 			var c = (Contribution<ProcessGrouping>) con;
 			return switch (column) {
 				case 0 -> con.item != null ? c.item.name : null;
-				case 1 -> Double.toString(c.amount);
+				case 1 -> Numbers.format(c.amount);
 				case 2 -> unit;
 				default -> null;
 			};

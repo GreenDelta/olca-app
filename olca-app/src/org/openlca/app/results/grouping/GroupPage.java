@@ -102,16 +102,14 @@ public class GroupPage extends FormPage {
 		}
 	}
 
-	/**
-	 * Add the current group set name to the section title, if it is not null.
-	 */
 	void updateTitle() {
 		if (groupingSection == null)
 			return;
-		if (groupSet == null)
-			groupingSection.setText(M.Groups);
-		else
-			groupingSection.setText(M.Groups + " (" + groupSet.name + ")");
+		// Add the current group set name to the section title, if it is not null.
+		var title = groupSet != null
+				? M.Groups + " (" + groupSet.name + ")"
+				: M.Groups;
+		groupingSection.setText(title);
 	}
 
 	@Override
@@ -132,7 +130,7 @@ public class GroupPage extends FormPage {
 		Composite composite = UI.sectionClient(groupingSection, toolkit);
 		UI.gridLayout(composite, 2);
 		Actions.bind(groupingSection, new AddGroupAction(),
-			new SaveGroupSetAction(this), new GroupSetAction(this));
+				new SaveGroupSetAction(this), new GroupSetAction(this));
 		createGroupViewer(composite);
 		processViewer = Tables.createViewer(composite);
 		UI.gridData(processViewer.getControl(), true, false).heightHint = 200;

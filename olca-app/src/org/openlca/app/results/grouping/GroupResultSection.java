@@ -38,9 +38,9 @@ class GroupResultSection {
 	private ResultFlowCombo flowViewer;
 	private ImpactCategoryViewer impactViewer;
 	private GroupResultTable table;
+	private ContributionChart chart;
 
-	public GroupResultSection(
-			List<ProcessGrouping> groups, ResultEditor editor) {
+	public GroupResultSection(List<ProcessGrouping> groups, ResultEditor editor) {
 		this.groups = groups;
 		this.editor = editor;
 	}
@@ -49,22 +49,25 @@ class GroupResultSection {
 		Object selection;
 		String unit;
 		if (resultType == FLOW) {
-			EnviFlow flow = flowViewer.getSelected();
+			var flow = flowViewer.getSelected();
 			unit = Labels.refUnit(flow);
 			selection = flow;
 		} else {
-			ImpactDescriptor impact = impactViewer.getSelected();
+			var impact = impactViewer.getSelected();
 			unit = impact.referenceUnit;
 			selection = impact;
 		}
-		updateResults(selection, unit);
-	}
 
-	private void updateResults(Object selection, String unit) {
-		if (selection != null && table != null) {
-			List<Contribution<ProcessGrouping>> items = calculate(selection);
-			Contributions.sortDescending(items);
+		if (selection == null)
+			return;
+		var items = calculate(selection);
+		Contributions.sortDescending(items);
+
+		if (table != null) {
 			table.setInput(items, unit);
+		}
+		if (chart != null) {
+			chart.setData(items, unit);
 		}
 	}
 
@@ -84,11 +87,11 @@ class GroupResultSection {
 		UI.gridLayout(comp, 1);
 		createCombos(tk, comp);
 		table = new GroupResultTable(comp);
-		ContributionChart chart = ContributionChart.create(comp, tk);
+		chart = ContributionChart.create(comp, tk);
 		chart.setLabel(new BaseLabelProvider() {
 			@Override
-			public String getText(Object element) {
-				return ((ProcessGrouping) element).name;
+			public String getText(Object obj) {
+				return ((ProcessGrouping) obj).name;
 			}
 		});
 		update();
