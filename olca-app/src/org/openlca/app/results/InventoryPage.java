@@ -113,8 +113,9 @@ public class InventoryPage extends FormPage {
 			var obj = Viewers.getFirstSelected(viewer);
 			if (obj instanceof RootDescriptor d) {
 				App.open(d);
-			}
-			if (obj instanceof FlowContribution c) {
+			} else if (obj instanceof EnviFlow e) {
+				App.open(e.flow());
+			} else if (obj instanceof FlowContribution c) {
 				App.open(c.item.item.provider());
 			}
 		});
