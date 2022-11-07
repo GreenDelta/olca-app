@@ -10,6 +10,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.parameters.RenameParameterDialog;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.actions.CreateCategoryAction.CategoryNameValidator;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
@@ -75,8 +76,12 @@ class RenameAction extends Action implements INavigationAction {
 			? ((CategoryElement) element).getContent().name
 			: ((ModelElement) element).getContent().name;
 
+		var validator = element instanceof CategoryElement
+			? new CategoryNameValidator()
+			: null;
+		
 		var dialog = new InputDialog(UI.shell(), M.Rename,
-			M.PleaseEnterANewName, name, null);
+			M.PleaseEnterANewName, name, validator);
 		if (dialog.open() != Window.OK)
 			return;
 		var newName = dialog.getValue();
