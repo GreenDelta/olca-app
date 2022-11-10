@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.edit;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Objects;
 
 import org.eclipse.draw2d.*;
 import org.eclipse.gef.EditPolicy;
@@ -11,13 +10,10 @@ import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
-import org.openlca.app.tools.graphics.figures.CurvedConnection;
+import org.openlca.app.tools.graphics.figures.Connection;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.DeleteLinkCommand;
-import org.openlca.app.tools.graphics.figures.SelectableConnection;
 
-import static org.eclipse.swt.SWT.ON;
-import static org.openlca.app.editors.graphical.GraphConfig.*;
 import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
 
 public class LinkEditPart extends AbstractConnectionEditPart
@@ -35,7 +31,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 		 * listening for its router to change.
 		 */
 		getFigure().addPropertyChangeListener(
-			Connection.PROPERTY_CONNECTION_ROUTER, this);
+			org.eclipse.draw2d.Connection.PROPERTY_CONNECTION_ROUTER, this);
 	}
 
 	public void deactivate() {
@@ -45,7 +41,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 
 	public void deactivateFigure() {
 		getFigure().removePropertyChangeListener(
-			Connection.PROPERTY_CONNECTION_ROUTER, this);
+			org.eclipse.draw2d.Connection.PROPERTY_CONNECTION_ROUTER, this);
 		super.deactivateFigure();
 	}
 
@@ -55,11 +51,12 @@ public class LinkEditPart extends AbstractConnectionEditPart
 		var theme = config.getTheme();
 
 		var color = theme != null ? theme.linkColor() : ColorConstants.black;
-		var colorSelected = theme != null ? theme.linkColorSelected() : ColorConstants.black;
+		var colorSelected = theme != null
+				? theme.linkColorSelected()
+				: ColorConstants.black;
 
-		var connection = Objects.equals(config.connectionRouter(), ROUTER_CURVE)
-				? new CurvedConnection(ORIENTATION, color, colorSelected)
-				: new SelectableConnection(color, colorSelected);
+		var connection = new Connection(config.connectionRouter(), ORIENTATION, color,
+				colorSelected);
 		connection.setTargetDecoration(new PolygonDecoration());
 		connection.setLineWidth(1);
 		return connection;
