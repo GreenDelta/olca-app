@@ -22,6 +22,7 @@ import org.openlca.core.results.ResultItemOrder;
 import java.util.Objects;
 
 import static org.eclipse.draw2d.PositionConstants.*;
+import static org.openlca.app.tools.graphics.figures.Connection.*;
 
 public class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 
@@ -48,6 +49,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 		createCountSpinner(tk, body);
 		themeCombo(tk, body);
 		orientationsCombo(tk, body);
+		connectionRoutersCombo(tk, body);
 	}
 
 	private void createCutoffSpinner(FormToolkit tk, Composite comp) {
@@ -118,6 +120,25 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 		Controls.onSelect(combo, e -> {
 			var orientation = orientations[combo.getSelectionIndex()];
 			config.setOrientation(orientation);
+		});
+	}
+
+	private void connectionRoutersCombo(FormToolkit tk, Composite comp) {
+		var combo = UI.formCombo(comp, tk, "Connections");
+		UI.gridData(combo, true, false);
+		var connectionRouters = new String[]{
+				ROUTER_NULL,
+				ROUTER_CURVE
+		};
+		for (var router : connectionRouters) {
+			combo.add(router);
+		}
+		System.out.println("config.connectionRouter()" + config.connectionRouter());
+		combo.select(
+				ArrayUtils.indexOf(connectionRouters, config.connectionRouter()));
+		Controls.onSelect(combo, e -> {
+			var router = connectionRouters[combo.getSelectionIndex()];
+			config.setConnectionRouter(router);
 		});
 	}
 

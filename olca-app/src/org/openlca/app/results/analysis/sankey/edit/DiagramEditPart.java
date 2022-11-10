@@ -4,16 +4,13 @@ import org.eclipse.draw2d.*;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.results.analysis.sankey.layouts.SankeyLayout;
-import org.openlca.app.results.analysis.sankey.layouts.TreeConnectionRouter;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
-import java.util.Objects;
 
 import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
 import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.ROUTER_MANHATTAN;
 
 public class DiagramEditPart extends AbstractComponentEditPart<Diagram> {
 
@@ -75,11 +72,7 @@ public class DiagramEditPart extends AbstractComponentEditPart<Diagram> {
 	@Override
 	protected void refreshVisuals() {
 		var cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
-		var router = getModel().getConfig().connectionRouter();
-
-		if (Objects.equals(router, ROUTER_MANHATTAN))
-			cLayer.setConnectionRouter(new TreeConnectionRouter());
-		else cLayer.setConnectionRouter(ConnectionRouter.NULL);
+		cLayer.setConnectionRouter(ConnectionRouter.NULL);
 
 		super.refreshVisuals();
 	}

@@ -25,8 +25,8 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 
-import static org.openlca.app.editors.graphical.GraphConfig.*;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.tools.graphics.figures.Connection.*;
 
 public class EditGraphConfigAction extends WorkbenchPartAction {
 
