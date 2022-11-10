@@ -133,7 +133,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 		for (var router : connectionRouters) {
 			combo.add(router);
 		}
-		System.out.println("config.connectionRouter()" + config.connectionRouter());
+		
 		combo.select(
 				ArrayUtils.indexOf(connectionRouters, config.connectionRouter()));
 		Controls.onSelect(combo, e -> {
