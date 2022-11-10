@@ -63,10 +63,11 @@ import org.openlca.io.refdata.CurrencyImport as CurrencyImport
 import org.openlca.jsonld.input.CurrencyReader as CurrencyReader
 import org.openlca.core.database.usage.CurrencyUseSearch as CurrencyUseSearch
 import org.openlca.jsonld.output.CurrencyWriter as CurrencyWriter
-import org.openlca.core.math.data_quality.DQCalculationSetup as DQCalculationSetup
+import org.openlca.core.math.data_quality.DQData as DQData
 import org.openlca.core.model.DQIndicator as DQIndicator
 import org.openlca.core.math.data_quality.DQResult as DQResult
 import org.openlca.core.model.DQScore as DQScore
+import org.openlca.core.math.data_quality.DQSetup as DQSetup
 import org.openlca.core.model.DQSystem as DQSystem
 import org.openlca.core.database.DQSystemDao as DQSystemDao
 import org.openlca.core.model.descriptors.DQSystemDescriptor as DQSystemDescriptor
@@ -97,7 +98,6 @@ import org.openlca.core.model.Direction as Direction
 import org.openlca.util.Dirs as Dirs
 import org.openlca.io.DisplayValues as DisplayValues
 import org.openlca.util.Doubles as Doubles
-import org.openlca.core.math.data_quality.DqiData as DqiData
 import org.openlca.io.ecospold1.input.ES1KeyGen as ES1KeyGen
 import org.openlca.core.results.EachOneResult as EachOneResult
 import org.openlca.io.openepd.Ec3Category as Ec3Category

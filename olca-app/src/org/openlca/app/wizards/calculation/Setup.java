@@ -4,7 +4,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.data_quality.AggregationType;
-import org.openlca.core.math.data_quality.DQCalculationSetup;
+import org.openlca.core.math.data_quality.DQSetup;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.CalculationSetup;
@@ -22,7 +22,7 @@ class Setup {
 	private final IDatabase db = Database.get();
 	final boolean hasLibraries;
 	final CalculationSetup calcSetup;
-	final DQCalculationSetup dqSetup;
+	final DQSetup dqSetup;
 
 	boolean withDataQuality;
 	CalculationType type;
@@ -36,8 +36,7 @@ class Setup {
 				&& ProductSystems.hasLibraryLinks(system, db);
 
 		calcSetup = CalculationSetup.of(target);
-		dqSetup = new DQCalculationSetup();
-		// dqSetup.productSystemId = target.id;
+		dqSetup = new DQSetup();
 
 		// add parameter redefinitions
 		if (system != null && system.parameterSets.size() > 0) {
