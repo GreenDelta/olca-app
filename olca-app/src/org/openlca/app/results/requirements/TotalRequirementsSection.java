@@ -1,9 +1,7 @@
 package org.openlca.app.results.requirements;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -106,7 +104,7 @@ public class TotalRequirementsSection {
 	}
 
 	private void addActions(TreeViewer tree) {
-		Action onOpen = Actions.onOpen(() -> {
+		var onOpen = Actions.onOpen(() -> {
 			Item item = Viewers.getFirstSelected(tree);
 			if (item == null)
 				return;
@@ -150,7 +148,7 @@ public class TotalRequirementsSection {
 	private void renderTotalCosts(Composite comp, FormToolkit tk) {
 		if (costs == Costs.NONE)
 			return;
-		String label = costs == Costs.NET_COSTS
+		var label = costs == Costs.NET_COSTS
 			? M.TotalNetcosts
 			: M.TotalAddedValue;
 		double v = costs == Costs.NET_COSTS
@@ -169,7 +167,7 @@ public class TotalRequirementsSection {
 	}
 
 	private String[] columnLabels() {
-		List<String> b = new ArrayList<>();
+		var b = new ArrayList<String>();
 		b.add(M.Process);
 		b.add(M.Product);
 		b.add(M.Amount);

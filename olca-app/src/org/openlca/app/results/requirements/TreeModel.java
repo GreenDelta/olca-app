@@ -36,9 +36,8 @@ class TreeModel implements ITreeContentProvider {
 
 	@Override
 	public Object[] getChildren(Object elem) {
-		if (!(elem instanceof Item))
+		if (!(elem instanceof Item item))
 			return empty;
-		var item = (Item) elem;
 		if (item.isProvider())
 			return ChildItem
 				.allOf(item.asProvider(), result)
@@ -54,17 +53,15 @@ class TreeModel implements ITreeContentProvider {
 
 	@Override
 	public boolean hasChildren(Object elem) {
-		if (!(elem instanceof Item))
+		if (!(elem instanceof Item item))
 			return false;
-		var item = (Item) elem;
 		return item.isProvider() || item.isCategory();
 	}
 
 	@Override
 	public Object getParent(Object elem) {
-		if (!(elem instanceof ChildItem))
+		if (!(elem instanceof ChildItem child))
 			return null;
-		var child = (ChildItem) elem;
 		return child.parent;
 	}
 }

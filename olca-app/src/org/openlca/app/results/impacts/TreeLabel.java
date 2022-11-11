@@ -111,7 +111,7 @@ class TreeLabel extends DQLabelProvider {
 		if (item.isInnerNode())
 			return item.isTechItem()
 					? dqResult.get(item.impact(), item.techFlow())
-					: dqResult.get(item.impact(), item.enviFlow());
+					: dqResult.get(item.enviFlow());
 		return item.isTechItem()
 				? dqResult.get(item.techFlow(), item.parent().enviFlow())
 				: dqResult.get(item.parent().techFlow(), item.enviFlow());
