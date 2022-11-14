@@ -2,7 +2,6 @@ package org.openlca.app.results;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -90,8 +89,8 @@ public class InventoryPage extends FormPage {
 		var spinner = ContributionCutoff.create(comp, toolkit);
 
 		// create the tree
-		String[] headers = new String[]{
-				M.Name, M.Category, M.SubCategory, M.Amount, M.Unit};
+		var headers = new String[]{
+				M.Name, M.Category, M.Amount, M.Unit};
 		if (DQUI.displayExchangeQuality(editor.dqResult)) {
 			headers = DQUI.appendTableHeaders(
 					headers, editor.dqResult.setup.exchangeSystem);
@@ -100,12 +99,12 @@ public class InventoryPage extends FormPage {
 		var viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
 		createColumnSorters(viewer, label);
-		double[] widths = {.4, .2, .2, .15, .05};
+		double[] widths = {.45, .35, .15, .05};
 		if (DQUI.displayExchangeQuality(editor.dqResult)) {
 			widths = DQUI.adjustTableWidths(
 					widths, editor.dqResult.setup.exchangeSystem);
 		}
-		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
+		viewer.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
 
 		// bind actions
@@ -126,12 +125,12 @@ public class InventoryPage extends FormPage {
 	}
 
 	private void createColumnSorters(TreeViewer viewer, Label label) {
-		Viewers.sortByLabels(viewer, label, 0, 1, 2, 4);
-		Viewers.sortByDouble(viewer, this::getAmount, 3);
+		Viewers.sortByLabels(viewer, label, 0, 1, 3);
+		Viewers.sortByDouble(viewer, this::getAmount, 2);
 		if (DQUI.displayExchangeQuality(editor.dqResult)) {
 			int len = editor.dqResult.setup.exchangeSystem.indicators.size();
 			for (int i = 0; i < len; i++) {
-				Viewers.sortByDouble(viewer, label, i + 5);
+				Viewers.sortByDouble(viewer, label, i + 4);
 			}
 		}
 	}
@@ -214,26 +213,22 @@ public class InventoryPage extends FormPage {
 		private String getFlowColumnText(EnviFlow f, int col) {
 			if (f.flow() == null)
 				return null;
-			Pair<String, String> category = Labels.getCategory(f.flow());
 			return switch (col) {
 				case 0 -> Labels.name(f);
-				case 1 -> category.getLeft();
-				case 2 -> category.getRight();
-				case 3 -> Numbers.format(getAmount(f));
-				case 4 -> Labels.refUnit(f);
+				case 1 -> Labels.category(f);
+				case 2 -> Numbers.format(getAmount(f));
+				case 3 -> Labels.refUnit(f);
 				default -> null;
 			};
 		}
 
 		private String getProcessColumnText(FlowContribution item, int col) {
 			var techFlow = item.item.item;
-			var category = Labels.getCategory(techFlow.provider());
 			return switch (col) {
 				case 0 -> Labels.name(techFlow.provider());
-				case 1 -> category.getLeft();
-				case 2 -> category.getRight();
-				case 3 -> Numbers.format(getAmount(item));
-				case 4 -> Labels.refUnit(item.flow);
+				case 1 -> Labels.category(techFlow);
+				case 2 -> Numbers.format(getAmount(item));
+				case 3 -> Labels.refUnit(item.flow);
 				default -> null;
 			};
 		}
@@ -257,10 +252,7 @@ public class InventoryPage extends FormPage {
 		return 0d;
 	}
 
-	private record FlowContribution(
-			Contribution<TechFlow> item,
-			EnviFlow flow) {
-
+	private record FlowContribution(Contribution<TechFlow> item, EnviFlow flow) {
 	}
 
 }

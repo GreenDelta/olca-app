@@ -105,7 +105,7 @@ public class ExchangeFigure extends ComponentFigure {
 		}
 		var text = prefix + ": " + Labels.name(exchange.flow) + "\n";
 		if (exchange.flow.category != null) {
-			text += M.Category + ": " + Labels.getShortCategory(
+			text += M.Category + ": " + Labels.category(
 				Descriptor.of(exchange.flow)) + "\n";
 		}
 		text += M.Amount + ": "
