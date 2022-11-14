@@ -3,7 +3,6 @@ package org.openlca.app.util;
 import java.math.RoundingMode;
 import java.util.Objects;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -155,40 +154,6 @@ public class Labels {
 		return techFlow != null
 				? category(techFlow.provider())
 				: "";
-	}
-
-	/**
-	 * We often have to show the category and sub-category of a flow in the
-	 * result pages. This method returns a pair where the left value is the
-	 * category and the right value is the sub-category. Default values are
-	 * empty strings.
-	 */
-	public static Pair<String, String> getCategory(RootDescriptor entity) {
-		var cache = Cache.getEntityCache();
-		if (entity == null || entity.category == null)
-			return Pair.of("", "");
-		Category cat = cache.get(Category.class, entity.category);
-		if (cat == null)
-			return Pair.of("", "");
-		if (cat.category == null)
-			return Pair.of(cat.name, "");
-		else
-			return Pair.of(cat.category.name, cat.name);
-	}
-
-	/**
-	 * Same as {@link #getCategory(RootDescriptor)} but top-
-	 * and sub-category concatenated as a short string.
-	 */
-	public static String getShortCategory(RootDescriptor entity) {
-		Pair<String, String> p = getCategory(entity);
-		if (Strings.nullOrEmpty(p.getLeft()) && Strings.nullOrEmpty(p.getRight()))
-			return "";
-		if (Strings.nullOrEmpty(p.getLeft()))
-			return p.getRight();
-		if (Strings.nullOrEmpty(p.getRight()))
-			return p.getLeft();
-		return p.getLeft() + " / " + p.getRight();
 	}
 
 	public static String getEnumText(Object enumValue) {
