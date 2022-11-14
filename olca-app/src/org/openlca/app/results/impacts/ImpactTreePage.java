@@ -18,11 +18,13 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
+import org.openlca.app.viewers.trees.TreeClipboard.Provider;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
+import org.openlca.util.Strings;
 
 public class ImpactTreePage extends FormPage {
 
@@ -103,7 +105,8 @@ public class ImpactTreePage extends FormPage {
 		tk.paintBordersFor(viewer.getTree());
 
 		var onOpen = Actions.onOpen(this::onOpen);
-		Actions.bind(viewer, onOpen, TreeClipboard.onCopy(viewer));
+		var onCopy = TreeClipboard.onCopy(viewer, new ClipboardProvider(label));
+		Actions.bind(viewer, onOpen, onCopy);
 		Trees.onDoubleClick(viewer, e -> onOpen.run());
 		createColumnSorters(label);
 		double[] widths = {.3, .25, .15, .15, .15};
@@ -140,6 +143,61 @@ public class ImpactTreePage extends FormPage {
 			return;
 		for (int i = 0; i < dqResult.setup.exchangeSystem.indicators.size(); i++) {
 			Viewers.sortByDouble(viewer, p, i + 5);
+		}
+	}
+
+	private record ClipboardProvider(TreeLabel label) implements Provider {
+
+		@Override
+		public int columns() {
+			return 8;
+		}
+
+		@Override
+		public String getHeader(int col) {
+			return switch (col) {
+				case 0 -> M.Name;
+				case 1 -> M.Category;
+				case 2 -> M.InventoryResult;
+				case 3, 5, 7 -> M.Unit;
+				case 4 -> M.ImpactFactor;
+				case 6 -> M.ImpactResult;
+				default -> "";
+			};
+		}
+
+		@Override
+		public String getLabel(org.eclipse.swt.widgets.TreeItem widget, int col) {
+			if (!(widget.getData() instanceof TreeItem item))
+				return "";
+
+			var inventoryValue = "";
+			var inventoryUnit = "";
+			var impactFactorUnit = "";
+			if (item.isEnviItem()) {
+				inventoryValue = Double.toString(item.inventoryResult());
+				inventoryUnit = Labels.refUnit(item.enviFlow());
+				var impactUnit = item.impact().referenceUnit;
+				impactFactorUnit = Strings.notEmpty(impactUnit)
+						? impactUnit + "/" + inventoryUnit
+						: "1/" + inventoryUnit;
+			} else if (item.isTechItem() && item.isLeaf()) {
+				inventoryValue = Double.toString(item.inventoryResult());
+				inventoryUnit = Labels.refUnit(item.parent().enviFlow());
+			}
+
+			return switch (col) {
+				case 0, 1 -> label.getText(item, 0);
+				case 2 -> inventoryValue;
+				case 3 -> inventoryUnit;
+				case 4 -> item.isEnviItem()
+						? Double.toString(item.impactFactor())
+						: "";
+				case 5 -> impactFactorUnit;
+				case 6 -> Double.toString(item.impactResult());
+				case 7 -> item.impact().referenceUnit;
+				default -> "";
+			};
 		}
 	}
 
