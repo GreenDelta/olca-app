@@ -75,7 +75,7 @@ class ModelUtil {
 		var path = !parentPath.isEmpty()
 				? parentPath + "." + property
 				: property;
-		var hiddenProps = Arrays.asList("@id", "@type", "lastChange", "version", "internalId", "lastInternalId",
+		var hiddenProps = Arrays.asList("@id", "@type", "@context", "lastChange", "version", "internalId", "lastInternalId",
 				"precedingDataSet", "position", "parameterScope", "context");
 		var hiddenPaths = Arrays.asList("flowProperties.flowProperty", "impactFactors.flow", "product.flow",
 				"nwSets.name", "nwSet.name", "nwSets.factors.impactCategory", "socialAspects.socialIndicator",
