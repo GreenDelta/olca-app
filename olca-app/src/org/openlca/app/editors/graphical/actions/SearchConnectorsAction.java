@@ -15,6 +15,7 @@ import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.model.commands.MassCreationCommand;
 import org.openlca.app.editors.graphical.search.ConnectionDialog;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.ProcessLink;
@@ -98,6 +99,7 @@ public class SearchConnectorsAction extends SelectionAction {
 				var item = new MenuItem(menu, SWT.NONE);
 
 				item.setText(label);
+				item.setImage(Images.get(n.exchange.flow));
 				Controls.onSelect(item, $ -> executeRequest(n));
 			}
 		}
