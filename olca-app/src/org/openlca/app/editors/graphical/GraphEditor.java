@@ -2,34 +2,22 @@ package org.openlca.app.editors.graphical;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.*;
-import org.eclipse.gef.ui.actions.*;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.SWT;
 import org.eclipse.ui.*;
-import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.*;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
 import org.openlca.app.tools.graphics.BasicGraphicalEditor;
-import org.openlca.app.tools.graphics.KeyHandler;
-import org.openlca.app.tools.graphics.actions.FocusAction;
-import org.openlca.app.tools.graphics.actions.OpenMiniatureViewAction;
 import org.openlca.app.tools.graphics.actions.SaveImageAction;
-import org.openlca.app.tools.graphics.edit.RootEditPart;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
-import org.openlca.app.tools.graphics.model.BaseComponent;
-import org.openlca.app.tools.graphics.zoom.MouseWheelZoomHandler;
-import org.openlca.app.tools.graphics.zoom.ZoomManager;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
-
-import java.util.EventObject;
 
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;

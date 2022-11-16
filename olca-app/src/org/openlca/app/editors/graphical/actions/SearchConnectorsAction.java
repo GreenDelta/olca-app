@@ -12,8 +12,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
-import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.model.commands.MassCreationCommand;
 import org.openlca.app.editors.graphical.search.ConnectionDialog;
 import org.openlca.app.util.Controls;
@@ -28,7 +27,7 @@ public class SearchConnectorsAction extends SelectionAction {
 	public static final int PROVIDER = 1;
 	public static final int RECIPIENTS = 2;
 	private final int type;
-	private Node node;
+	private IOPane ioPane;
 
 	public SearchConnectorsAction(GraphEditor part, int type) {
 		super(part);
@@ -44,23 +43,31 @@ public class SearchConnectorsAction extends SelectionAction {
 		setMenuCreator(new MenuCreator());
 	}
 
-
 	@Override
 	protected boolean calculateEnabled() {
 		if (getSelectedObjects().size() != 1)
 			return false;
 
 		var object = getSelectedObjects().get(0);
-		if (NodeEditPart.class.isAssignableFrom(object.getClass()))
-			node = ((NodeEditPart) object).getModel();
-		if (node != null)
-			((MenuCreator) getMenuCreator()).fillMenu();
-		return node != null;
+		// The selected object is a node.
+		if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
+			var node = ((NodeEditPart) object).getModel();
+			if (node != null) {
+				ioPane = type == PROVIDER
+						? node.getInputIOPane()
+						: node.getOutputIOPane();
+				if (ioPane != null &&
+						(type == RECIPIENTS || !ioPane.hasOnlyElementary())) {
+					((MenuCreator) getMenuCreator()).fillMenu();
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
-
 	private void executeRequest(ExchangeItem exchangeItem) {
-		Graph graph = node.getGraph();
+		var graph = exchangeItem.getGraph();
 		ConnectionDialog dialog = new ConnectionDialog(exchangeItem);
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
@@ -70,10 +77,6 @@ public class SearchConnectorsAction extends SelectionAction {
 				? MassCreationCommand.providers(newProcesses, newLinks, graph)
 				: MassCreationCommand.recipients(newProcesses, newLinks, graph);
 		execute(command);
-	}
-
-	@Override
-	public void run() {
 	}
 
 	private class MenuCreator implements IMenuCreator {
@@ -87,11 +90,13 @@ public class SearchConnectorsAction extends SelectionAction {
 				item.dispose();
 			}
 			boolean providers = type == PROVIDER;
-			for (var n : node.getExchangeItems()) {
-				if (n.exchange.isInput != providers)
+			for (var n : ioPane.getExchangesItems()) {
+				if ((n.exchange.isInput != providers)
+						|| (providers && n.isElementary()))
 					continue;
 				var label = Labels.name(n.exchange.flow);
 				var item = new MenuItem(menu, SWT.NONE);
+
 				item.setText(label);
 				Controls.onSelect(item, $ -> executeRequest(n));
 			}
@@ -118,5 +123,7 @@ public class SearchConnectorsAction extends SelectionAction {
 			fillMenu();
 			return menu;
 		}
+
 	}
+
 }
