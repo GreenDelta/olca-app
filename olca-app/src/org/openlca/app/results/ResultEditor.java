@@ -30,6 +30,8 @@ import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.slf4j.LoggerFactory;
 
+import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
+
 /**
  * View for the analysis results of a product system.
  */
@@ -115,6 +117,10 @@ public class ResultEditor extends FormEditor {
 			sankeyEditor.setModel(diagram);
 			var viewer = (GraphicalViewer) sankeyEditor.getAdapter(GraphicalViewer.class);
 			viewer.setContents(diagram);
+
+			// Artificially refreshing the ActionBarContributor.
+			refreshActionBar(this);
+
 			removePageChangedListener(listener);
 			sankeyInit.set(null);
 		};
