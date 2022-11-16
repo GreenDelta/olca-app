@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.core.model.FlowType;
 
 import java.util.List;
 
@@ -19,6 +20,13 @@ public class IOPane extends Component {
 
 	public boolean isForInputs() {
 		return forInputs;
+	}
+
+	public boolean hasOnlyElementary() {
+		for (var item : getExchangesItems())
+			if (!item.isElementary())
+				return false;
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")

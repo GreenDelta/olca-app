@@ -98,6 +98,10 @@ public class ExchangeItem extends Component {
 			|| !getIOPane().isForInputs() == (flowType == FlowType.PRODUCT_FLOW);
 	}
 
+	public boolean isElementary() {
+		return exchange.flow.flowType == FlowType.ELEMENTARY_FLOW;
+	}
+
 	private static int typeOrderOf(Exchange e) {
 		if (e == null
 				|| e.flow == null
