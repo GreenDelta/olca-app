@@ -20,7 +20,6 @@ public class SetReferenceAction extends SelectionAction {
 		super(part);
 		setId(GraphActionIds.SET_REFERENCE);
 		setText(NLS.bind(M.SetAsQuantitativeReference, M.Reference));
-		setImageDescriptor(Icon.FORMULA.descriptor());
 	}
 
 	@Override
