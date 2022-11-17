@@ -8,6 +8,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.tools.graphics.figures.RoundBorder;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
@@ -22,6 +23,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 public class ExchangeFigure extends ComponentFigure {
 
 	private static final Integer SIGNIF_NUMBER = 2;
+	public final static Dimension BORDER_ARC_SIZE = new Dimension(6, 6);
 	private final Theme theme;
 	public ExchangeItem exchangeItem;
 	private final Exchange exchange;
@@ -42,7 +44,8 @@ public class ExchangeFigure extends ComponentFigure {
 		layout.marginHeight = 0;
 		setLayoutManager(layout);
 
-		var border = new LineBorder(1);
+		var corners = RoundBorder.Corners.fullRoundedCorners(BORDER_ARC_SIZE);
+		var border = new RoundBorder(1, corners);
 		setBorder(border);
 
 		addMouseMotionListener(new MouseMotionListener.Stub() {
