@@ -13,7 +13,6 @@ public class ExchangeSelectionEditPolicy extends SelectionEditPolicy {
 	@Override
 	protected void hideSelection() {
 		getFigure().setSelected(false);
-
 	}
 
 	@Override

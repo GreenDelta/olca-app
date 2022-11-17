@@ -35,4 +35,11 @@ public class SelectableConnection extends PolylineConnection {
 		repaint();
 	}
 
+	/**
+	 * Return the selection state of this connection.
+	 */
+	public boolean isSelected() {
+		return selected;
+	}
+
 }
