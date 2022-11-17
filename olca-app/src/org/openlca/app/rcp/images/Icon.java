@@ -119,6 +119,7 @@ public enum Icon {
 	PREFERENCES("preferences.png"),
 	PREVIOUS_CHANGE("collaboration/previous_change.png"),
 	PROCESS_BG("graphical/process_bg.jpg"),
+	PROCESS_ADD("graphical/process_add.png"),
 	PROCESS_BG_LCI("graphical/process_bg_lci.jpg"),
 	PROCESS_BG_SYS("graphical/process_bg_sys.jpg"),
 	PROCESS_BG_MARKED("graphical/process_bg_marked.jpg"),
