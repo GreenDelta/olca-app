@@ -1,15 +1,16 @@
-package org.openlca.app.results.analysis.sankey.edit;
+package org.openlca.app.editors.graphical.edit;
 
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.editpolicies.SelectionEditPolicy;
 import org.openlca.app.tools.graphics.figures.SelectableConnection;
 
 import java.util.stream.Stream;
 
-public class SankeyNodeSelectionEditPolicy extends SelectionEditPolicy {
+public class NodeSelectionEditPolicy extends SelectionEditPolicy {
 
 	@Override
-	public SankeyNodeEditPart getHost() {
-		return (SankeyNodeEditPart) super.getHost();
+	public NodeEditPart getHost() {
+		return (NodeEditPart) super.getHost();
 	}
 
 	@Override
@@ -29,13 +30,16 @@ public class SankeyNodeSelectionEditPolicy extends SelectionEditPolicy {
 
 	private void setSelected(boolean b) {
 		var connections = Stream.concat(
-						getHost().getSourceConnections().stream(),
-						getHost().getTargetConnections().stream())
+						getHost().getModel().getAllSourceConnections().stream(),
+						getHost().getModel().getAllTargetConnections().stream())
 				.toList();
-		for (var connection : connections)
-			if (connection instanceof LinkEditPart link)
+		for (var connection : connections) {
+			var registry = getHost().getViewer().getEditPartRegistry();
+			var linkEditPart = (EditPart) registry.get(connection);
+			if (linkEditPart instanceof LinkEditPart link)
 				if (link.getFigure() instanceof SelectableConnection con)
 					con.setSelected(b);
+		}
 	}
 
 }

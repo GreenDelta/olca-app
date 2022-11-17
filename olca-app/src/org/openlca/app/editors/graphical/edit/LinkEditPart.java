@@ -56,9 +56,14 @@ public class LinkEditPart extends AbstractConnectionEditPart
 				: ColorConstants.black;
 
 		var connection = new Connection(config.connectionRouter(), ORIENTATION, color,
-				colorSelected);
+				colorSelected) {
+			@Override
+			public void paint(Graphics g) {
+				setLineWidth(isSelected() ? 2 : 1);
+				super.paint(g);
+			}
+		};
 		connection.setTargetDecoration(new PolygonDecoration());
-		connection.setLineWidth(1);
 		return connection;
 	}
 

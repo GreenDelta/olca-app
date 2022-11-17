@@ -25,6 +25,8 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 	@Override
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
+		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE,
+				new NodeSelectionEditPolicy());
 	}
 
 	@Override
