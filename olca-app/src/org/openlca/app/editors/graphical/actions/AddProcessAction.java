@@ -10,6 +10,8 @@ import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
@@ -24,7 +26,9 @@ import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -50,7 +54,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 		editor = part;
 		setId(GraphActionIds.ADD_PROCESS);
 		setText(M.AddProcess);
-		setImageDescriptor(Images.descriptor(ModelType.PROCESS));
+		setImageDescriptor(Icon.PROCESS_ADD.descriptor());
 	}
 
 	@Override
