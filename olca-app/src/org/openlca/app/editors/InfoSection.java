@@ -102,9 +102,10 @@ public class InfoSection {
 		// uuid
 		tk.createLabel(versionComp, " ");
 		tk.createLabel(versionComp, "UUID:");
-		var uuidText = tk.createFormText(versionComp, false);
+		var uuidText = tk.createText(versionComp, "");
+		uuidText.setEditable(false);
 		if (entity.refId != null) {
-			uuidText.setText(entity.refId, false, false);
+			uuidText.setText(entity.refId);
 		}
 
 		// last change
