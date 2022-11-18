@@ -59,7 +59,6 @@ import org.openlca.core.matrix.io.CsvExport as CsvExport
 import org.openlca.core.model.Currency as Currency
 import org.openlca.core.database.CurrencyDao as CurrencyDao
 import org.openlca.core.model.descriptors.CurrencyDescriptor as CurrencyDescriptor
-import org.openlca.io.refdata.CurrencyImport as CurrencyImport
 import org.openlca.jsonld.input.CurrencyReader as CurrencyReader
 import org.openlca.core.database.usage.CurrencyUseSearch as CurrencyUseSearch
 import org.openlca.jsonld.output.CurrencyWriter as CurrencyWriter
@@ -207,7 +206,6 @@ import org.openlca.expressions.functions.If as If
 import org.openlca.core.matrix.ImpactBuilder as ImpactBuilder
 import org.openlca.core.model.ImpactCategory as ImpactCategory
 import org.openlca.core.database.ImpactCategoryDao as ImpactCategoryDao
-import org.openlca.io.refdata.ImpactCategoryExport as ImpactCategoryExport
 import org.openlca.jsonld.input.ImpactCategoryReader as ImpactCategoryReader
 import org.openlca.core.database.usage.ImpactCategoryUseSearch as ImpactCategoryUseSearch
 import org.openlca.jsonld.output.ImpactCategoryWriter as ImpactCategoryWriter
@@ -298,7 +296,6 @@ import org.openlca.core.model.MappingFile as MappingFile
 import org.openlca.core.database.MappingFileDao as MappingFileDao
 import org.openlca.io.openepd.io.MappingModel as MappingModel
 import org.openlca.core.io.maps.MappingStatus as MappingStatus
-import org.openlca.io.maps.Maps as Maps
 import org.openlca.core.matrix.io.MarketFormatWriter as MarketFormatWriter
 import org.openlca.io.ecospold2.input.MarketProcessCleanUp as MarketProcessCleanUp
 import org.openlca.core.matrix.io.MatBinMatrixReader as MatBinMatrixReader
