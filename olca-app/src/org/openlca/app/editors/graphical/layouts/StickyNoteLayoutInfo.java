@@ -31,7 +31,7 @@ public class StickyNoteLayoutInfo {
 	}
 
 	public StickyNoteLayoutInfo(Point location, Dimension size) {
-		this(location, size, true, "", "");
+		this(location, size, false, "", "");
 	}
 
 }
