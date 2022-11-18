@@ -126,7 +126,7 @@ public class ExchangeFigure extends ComponentFigure {
 			g.fillRectangle(getBounds());
 		}
 		if (exchangeItem.isQuantitativeReference())
-			setHighlighted(true);
+			setBold(true);
 
 		g.setForegroundColor(ColorConstants.white);
 		g.popState();
@@ -134,7 +134,7 @@ public class ExchangeFigure extends ComponentFigure {
 		super.paintFigure(g);
 	}
 
-	public void setHighlighted(boolean b) {
+	public void setBold(boolean b) {
 		if (b) label.setFont(UI.boldFont());
 		else label.setFont(null);
 	}
@@ -182,10 +182,26 @@ public class ExchangeFigure extends ComponentFigure {
 			new GridData(unitPrefSize.width, unitPrefSize.height));
 	}
 
+	public void setHighlighted(boolean b) {
+		var border = (LineBorder) getBorder();
+		if (b) {
+			var node = exchangeItem.getNode();
+			var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
+			var color = theme.boxBorderColor(box);
+			border.setColor(color);
+			border.setStyle(SWT.LINE_DASH);
+		} else {
+			var backgroundColor = theme.backgroundColor();
+			border.setColor(backgroundColor);
+			border.setStyle(SWT.LINE_SOLID);
+			repaint();
+		}
+	}
+
 	public String toString() {
 		var name = Labels.name(exchange.flow);
 		return "ExchangeFigure("
-			+ name.substring(0, Math.min(name.length(), 20)) + ")";
+				+ name.substring(0, Math.min(name.length(), 20)) + ")";
 	}
 
 }
