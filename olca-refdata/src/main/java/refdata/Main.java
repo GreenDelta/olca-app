@@ -15,6 +15,8 @@ import org.openlca.jsonld.input.JsonImport;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.openlca.util.Dirs;
+import refdata.RefData.Set;
 
 public class Main {
 
@@ -22,9 +24,9 @@ public class Main {
 		try {
 			System.out.println("  Create database from CSV files");
 			Util.clean();
-			create("empty", null);
-			create("units", "units");
-			create("flows", "all");
+			create("empty", Set.NONE);
+			create("units", Set.UNITS);
+			create("flows", Set.FLOWS);
 			Util.zip();
 			Util.copyToApp();
 			System.out.println("  done");
@@ -33,22 +35,30 @@ public class Main {
 		}
 	}
 
-	private static void create(String name, String dataDir) throws Exception {
+	private static void create(String name, Set refSet) throws Exception {
 		System.out.println("  Create " + name + " database ...");
-		var db = new Derby(F("build/" + name));
-		if (dataDir != null) {
-			new RefDataImport(F("data/" + dataDir), db).run();
-			if ("all".equals(dataDir)) {
+
+		var tempDir = RefData.createTempImportDir(refSet).orElse(null);
+		if (tempDir == null) {
+			System.out.println("... failed");
+			return;
+		}
+
+		try (var db = new Derby(F("build/" + name))) {
+			new RefDataImport(tempDir, db).run();
+			if (refSet == Set.FLOWS) {
 				importDQS(db);
 				GeoImport.on(db);
 			}
 		}
-		db.close();
-		System.out.println("  done");
-	}
 
-	private static File F(String path) {
-		return Util.F(path);
+		try {
+			Dirs.delete(tempDir);
+		} catch (Exception e) {
+			System.out.println(
+					"WARNING: failed to delete temporary folder: " + e);
+		}
+		System.out.println("  done");
 	}
 
 	private static void importDQS(IDatabase db) throws Exception {
@@ -67,4 +77,7 @@ public class Main {
 		new JsonImport(store, db).run();
 	}
 
+	private static File F(String path) {
+		return Util.F(path);
+	}
 }

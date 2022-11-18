@@ -11,9 +11,9 @@ import org.openlca.geo.GeoJsonImport;
 
 /**
  * Import the ecoinvent geography shapes into a database. It downloads them
- * from https://geography.ecoinvent.org/ if they are not yet available in the
- * "target" directory of this project and imports the using the standard
- * openLCA GeoJSON import.
+ * from <a href="https://geography.ecoinvent.org/">geography.ecoinvent.org</a>
+ * if they are not yet available in the "target" directory of this project and
+ * imports the using the standard openLCA GeoJSON import.
  */
 class GeoImport {
 
