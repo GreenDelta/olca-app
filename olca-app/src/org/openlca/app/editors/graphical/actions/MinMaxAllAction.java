@@ -70,7 +70,7 @@ public class MinMaxAllAction extends StackAction {
 			cc.add(componentEditPart.getCommand(new Request(request_type)));
 		}
 
-		return cc;
+		return cc.unwrap();
 	}
 
 }
