@@ -107,13 +107,6 @@ public class GraphContextMenuProvider extends BasicContextMenuProvider {
 		var max = getActionRegistry().getAction(GraphActionIds.MAXIMIZE);
 		if (max.isEnabled())
 			menu.appendToGroup(GEFActionConstants.GROUP_VIEW, max);
-
-		var expandAll = getActionRegistry().getAction(GraphActionIds.EXPAND_ALL);
-		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, expandAll);
-
-		var collapseAll = getActionRegistry()
-				.getAction(GraphActionIds.COLLAPSE_ALL);
-		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, collapseAll);
 	}
 
 }
