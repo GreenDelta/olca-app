@@ -6,7 +6,6 @@ import org.eclipse.draw2d.ViewportAwareConnectionLayerClippingStrategy;
 import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.MouseWheelHandler;
-import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchSizeAction;
@@ -23,6 +22,7 @@ import org.openlca.app.tools.graphics.actions.ZoomInAction;
 import org.openlca.app.tools.graphics.actions.ZoomOutAction;
 import org.openlca.app.tools.graphics.edit.RootEditPart;
 import org.openlca.app.tools.graphics.model.BaseComponent;
+import org.openlca.app.tools.graphics.tools.PanningSelectionTool;
 import org.openlca.app.tools.graphics.zoom.MouseWheelZoomHandler;
 import org.openlca.app.tools.graphics.zoom.ZoomManager;
 
@@ -50,8 +50,6 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 	protected void initializeGraphicalViewer() {
 		var viewer = getGraphicalViewer();
 
-		// TODO (francois) Implement a PanningSelectionTool without pressing SpaceBar and
-		//  Selection while pressing Ctrl.
 		viewer.getEditDomain().setActiveTool(new PanningSelectionTool());
 		viewer.setContents(getModel());
 	}
