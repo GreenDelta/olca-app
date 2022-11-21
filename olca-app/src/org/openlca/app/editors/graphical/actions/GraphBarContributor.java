@@ -46,6 +46,8 @@ public class GraphBarContributor extends BasicActionBarContributor {
 		super.contributeToToolBar(tbm);
 		tbm.add(getAction(GraphActionIds.MINIMIZE_ALL));
 		tbm.add(getAction(GraphActionIds.MAXIMIZE_ALL));
+		tbm.add(getAction(GraphActionIds.EXPAND_ALL));
+		tbm.add(getAction(GraphActionIds.COLLAPSE_ALL));
 	}
 
 	@Override
