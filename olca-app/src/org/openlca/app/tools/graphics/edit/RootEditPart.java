@@ -1,9 +1,12 @@
 package org.openlca.app.tools.graphics.edit;
 
 import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.geometry.Insets;
+import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.editparts.FreeformGraphicalRootEditPart;
 import org.eclipse.gef.editparts.GuideLayer;
+import org.eclipse.gef.editparts.ViewportAutoexposeHelper;
 import org.openlca.app.tools.graphics.zoom.ZoomManager;
 
 /**
@@ -118,6 +121,13 @@ public class RootEditPart extends FreeformGraphicalRootEditPart {
 		FeedbackLayer() {
 			setEnabled(false);
 		}
+	}
+
+	@Override
+	public Object getAdapter(Class adapter) {
+		if (adapter == AutoexposeHelper.class)
+			return new ViewportAutoexposeHelper(this, new Insets(50));
+		return super.getAdapter(adapter);
 	}
 
 }
