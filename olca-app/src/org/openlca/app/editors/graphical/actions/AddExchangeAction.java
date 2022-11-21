@@ -66,9 +66,10 @@ public class AddExchangeAction extends SelectionAction {
 			var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
 				GraphicalViewer.class);
 			var registry = viewer.getEditPartRegistry();
-			if (registry.get(pane) instanceof IOPaneEditPart paneEditPart) {
+			var editPart = registry.get(pane);
+
+			if (editPart instanceof IOPaneEditPart paneEditPart)
 				cc.add(paneEditPart.getCommand(request));
-			}
 		}
 		return cc.unwrap();
 	}

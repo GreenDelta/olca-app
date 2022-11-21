@@ -19,8 +19,10 @@ public interface GraphActionIds {
 	String LAYOUT_TREE = "graph.actions.LayoutAction.TREE_LAYOUT";
 	String LINK_UPDATE = "graph.actions.LinkUpdateAction";
 
-	String MINIMIZE_ALL = "graph.actions.ChangeAllStateAction.MINIMIZE";
-	String MAXIMIZE_ALL = "graph.actions.ChangeAllStateAction.MAXIMIZE";
+	String MINIMIZE = "graph.actions.MinMaxAction.MINIMIZE";
+	String MINIMIZE_ALL = "graph.actions.MinMaxAllAction.MINIMIZE";
+	String MAXIMIZE = "graph.actions.MinMaxAction.MAXIMIZE";
+	String MAXIMIZE_ALL = "graph.actions.MinMaxAllAction.MAXIMIZE";
 
 	String REMOVE_ALL_CONNECTIONS = "graph.actions.RemoveAllConnectionsAction";
 	String REMOVE_SUPPLY_CHAIN = "graph.actions.RemoveSupplyChainAction";

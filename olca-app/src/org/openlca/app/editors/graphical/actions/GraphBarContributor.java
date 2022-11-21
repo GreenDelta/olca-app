@@ -42,6 +42,13 @@ public class GraphBarContributor extends BasicActionBarContributor {
 	}
 
 	@Override
+	public void contributeToToolBar(IToolBarManager tbm) {
+		super.contributeToToolBar(tbm);
+		tbm.add(getAction(GraphActionIds.MINIMIZE_ALL));
+		tbm.add(getAction(GraphActionIds.MAXIMIZE_ALL));
+	}
+
+	@Override
 	public void contributeToEditMenu(IMenuManager menuManager) {
 		super.contributeToEditMenu(menuManager);
 		var editMenu = getEditMenu();

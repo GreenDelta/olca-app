@@ -91,6 +91,14 @@ public class GraphEditor extends BasicGraphicalEditor {
 		action = new LayoutAction(this);
 		registry.registerAction(action);
 
+		action = new MinMaxAction(this, MINIMIZE);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new MinMaxAction(this, MAXIMIZE);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
 		action = new MinMaxAllAction(this, MINIMIZE);
 		registry.registerAction(action);
 		stackActions.add(action.getId());
