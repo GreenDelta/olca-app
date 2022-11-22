@@ -151,10 +151,9 @@ public class GraphEditor extends BasicGraphicalEditor {
 		registry.registerAction(action);
 		stackActions.add(action.getId());
 
-		// TODO (francois) Too slow.
-//		action = new RemoveAllConnectionsAction(this);
-//		registry.registerAction(action);
-//		selectionActions.add(action.getId());
+		action = new RemoveAllConnectionsAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
 
 		action = new BuildSupplyChainMenuAction(this);
 		registry.registerAction(action);
