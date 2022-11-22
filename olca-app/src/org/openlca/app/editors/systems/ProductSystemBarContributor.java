@@ -2,11 +2,14 @@ package org.openlca.app.editors.systems;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.ui.IEditorPart;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.tools.graphics.BasicGraphicalEditor;
 import org.openlca.app.tools.graphics.EditorActionBarContributor;
 import org.openlca.app.tools.graphics.MultiPageSubActionBars;
 import org.openlca.app.editors.graphical.actions.GraphBarContributor;
@@ -31,11 +34,20 @@ import org.openlca.io.MatrixImageExport;
  */
 public class ProductSystemBarContributor extends EditorActionBarContributor {
 
+	private GraphEditor editor;
+
+	@Override
+	public void setActivePage(IEditorPart activePage) {
+		if (activePage instanceof GraphEditor editor)
+			this.editor = editor;
+		super.setActivePage(activePage);
+	}
+
 	@Override
 	public MultiPageSubActionBars getNewSubActionBars() {
 		return new MultiPageSubActionBars(getPage(),
 					getActionBars2(),
-					new GraphBarContributor(),
+					new GraphBarContributor(editor),
 					"org.openlca.app.editors.graphical.actions" +
 							".GraphActionBarContributor");
 	}

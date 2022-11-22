@@ -833,6 +833,7 @@ public class M extends NLS {
 	public static String SettingsForTheSankeyDiagram;
 	public static String Show;
 	public static String ShowComments;
+	public static String ShowElementaryFlows;
 	public static String ShowExecutedUpdates;
 	public static String ShowFormulas;
 	public static String ShowInHistory;
@@ -895,6 +896,7 @@ public class M extends NLS {
 	public static String Title;
 	public static String ToDirectory;
 	public static String ToFile;
+	public static String ToggleShowElementaryFlows;
 	public static String TotalAddedValue;
 	public static String TotalNetcosts;
 	public static String TotalRequirements;

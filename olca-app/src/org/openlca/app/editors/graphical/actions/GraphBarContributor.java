@@ -1,10 +1,13 @@
 package org.openlca.app.editors.graphical.actions;
 
 import org.eclipse.jface.action.*;
+import org.openlca.app.editors.graphical.GraphConfig;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.actions.retarget.AddExchangeRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.AddProcessRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.AddStickyNoteRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.EditExchangeRetargetAction;
+import org.openlca.app.editors.graphical.actions.retarget.ShowElementaryFlowsRetargetAction;
 import org.openlca.app.tools.graphics.actions.retarget.EditConfigRetargetAction;
 import org.openlca.app.tools.graphics.actions.retarget.LayoutAsTreeRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.EditStickyNoteRetargetAction;
@@ -21,6 +24,12 @@ import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAX
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
 
 public class GraphBarContributor extends BasicActionBarContributor {
+
+	private final GraphEditor editor;
+
+	public GraphBarContributor(GraphEditor editor) {
+		this.editor = editor;
+	}
 
 	@Override
 	protected void buildActions() {
@@ -39,11 +48,14 @@ public class GraphBarContributor extends BasicActionBarContributor {
 		addRetargetAction(new MinMaxAllRetargetAction(MAXIMIZE));
 		addRetargetAction(new OpenEditorRetargetAction());
 		addRetargetAction(new SetReferenceRetargetAction());
+		var checked = getConfig().showElementaryFlows();
+		addRetargetAction(new ShowElementaryFlowsRetargetAction(checked));
 	}
 
 	@Override
 	public void contributeToToolBar(IToolBarManager tbm) {
 		super.contributeToToolBar(tbm);
+		tbm.add(getAction(GraphActionIds.SHOW_ELEMENTARY_FLOWS));
 		tbm.add(getAction(GraphActionIds.MINIMIZE_ALL));
 		tbm.add(getAction(GraphActionIds.MAXIMIZE_ALL));
 		tbm.add(getAction(GraphActionIds.EXPAND_ALL));
@@ -88,6 +100,10 @@ public class GraphBarContributor extends BasicActionBarContributor {
 		var collapseAll = getActionRegistry()
 				.getAction(GraphActionIds.COLLAPSE_ALL);
 		viewMenu.add(collapseAll);
+	}
+
+	public GraphConfig getConfig() {
+		return editor.config;
 	}
 
 }

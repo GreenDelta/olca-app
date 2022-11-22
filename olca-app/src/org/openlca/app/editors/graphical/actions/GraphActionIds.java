@@ -29,5 +29,6 @@ public interface GraphActionIds {
 	String SEARCH_PROVIDERS = "graph.actions.SearchConnectorsAction.PROVIDERS";
 	String SEARCH_RECIPIENTS = "graph.actions.SearchConnectorsAction.RECIPIENTS";
 	String SET_REFERENCE = "graph.actions.SetReferenceAction";
+	String SHOW_ELEMENTARY_FLOWS = "graph.actions.ShowElementaryFlowsAction";
 
 }

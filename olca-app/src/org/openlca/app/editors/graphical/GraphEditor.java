@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.*;
+import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -132,6 +133,9 @@ public class GraphEditor extends BasicGraphicalEditor {
 		action = new EditGraphConfigAction(this);
 		registry.registerAction(action);
 
+		action = new ShowElementaryFlowsAction(this);
+		registry.registerAction(action);
+
 		action = new OpenEditorAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
@@ -233,6 +237,13 @@ public class GraphEditor extends BasicGraphicalEditor {
 
 	public GraphFactory getGraphFactory() {
 		return graphFactory;
+	}
+
+	/**
+	 * Make super.getActionRegistry() public.
+	 */
+	public ActionRegistry getActionRegistry() {
+		return super.getActionRegistry();
 	}
 
 	@Override
