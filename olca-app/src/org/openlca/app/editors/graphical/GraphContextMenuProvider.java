@@ -62,11 +62,10 @@ public class GraphContextMenuProvider extends BasicContextMenuProvider {
 		if (delete.isEnabled())
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, delete);
 
-		// TODO (francois) Too slow...
-//		var removeConnections = getActionRegistry().getAction(
-//			ActionIds.REMOVE_ALL_CONNECTIONS);
-//		if (removeConnections.isEnabled())
-//			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, removeConnections);
+		var removeConnections = getActionRegistry().getAction(
+			GraphActionIds.REMOVE_ALL_CONNECTIONS);
+		if (removeConnections.isEnabled())
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, removeConnections);
 
 		var buildSupplyChainMenu = getActionRegistry().
 				getAction(GraphActionIds.BUILD_SUPPLY_CHAIN_MENU);

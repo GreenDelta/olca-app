@@ -11,6 +11,9 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.search.LinkSearchMap;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.ProcessLink;
 
 import java.util.ArrayList;
@@ -27,19 +30,31 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 		editor = part;
 		setId(GraphActionIds.REMOVE_ALL_CONNECTIONS);
 		setText(M.RemoveConnections);
+		setImageDescriptor(Icon.LINK.descriptor());
 	}
 
 	@Override
 	protected boolean calculateEnabled() {
-		var command = getCommand();
-		if (command == null)
+		if (getSelectedObjects().isEmpty())
 			return false;
-		return command.canExecute();
+
+		for (Object o : getSelectedObjects()) {
+			if (!(o instanceof NodeEditPart part))
+				return false;
+			if (part.getModel().getAllLinks().isEmpty())
+				return false;
+		}
+		return true;
 	}
 
 	@Override
 	public void run() {
-		execute(getCommand());
+		var command = getCommand();
+		if (command != null) {
+			if (command.canExecute())
+				execute(getCommand());
+			else MsgBox.info("Connections cannot be removed.");
+		}
 	}
 
 	private Command getCommand() {
