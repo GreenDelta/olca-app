@@ -4,6 +4,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -43,6 +44,7 @@ public class ConnectionDialog extends Dialog {
 		setBlockOnOpen(true);
 		exchange = new ModelExchange(exchangeItem);
 		candidates = exchange.searchCandidates(Database.get());
+		setShellStyle(SWT.RESIZE);
 	}
 
 	@Override
@@ -74,7 +76,7 @@ public class ConnectionDialog extends Dialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(800, 500);
+		return new Point(1200, 500);
 	}
 
 	boolean canBeConnected(Candidate c) {
