@@ -798,7 +798,9 @@ public class M extends NLS {
 	public static String SearchInSources;
 	public static String SearchInUnitGroups;
 	public static String SearchParameters;
+	public static String SearchProviders;
 	public static String SearchProvidersFor;
+	public static String SearchRecipients;
 	public static String SearchRecipientsFor;
 	public static String SearchResults;
 	public static String Searching;
