@@ -43,7 +43,7 @@ public class Database {
 			Logger log = LoggerFactory.getLogger(Database.class);
 			log.trace("activated database {} with version{}",
 					database.getName(), database.getVersion());
-			Repository.open(database);
+			Repository.open(Repository.gitDir(database.getName()));
 			return database;
 		} catch (Exception e) {
 			database = null;

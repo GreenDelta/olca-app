@@ -1,12 +1,15 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.collaboration.dialogs.ConnectDialog;
 import org.openlca.app.collaboration.util.Announcements;
+import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -18,11 +21,10 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Input;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.upgrades.Upgrades;
-import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitInit;
-import org.openlca.git.actions.GitMerge;
 import org.openlca.util.Dirs;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
@@ -48,55 +50,66 @@ public class CloneAction extends Action implements INavigationAction {
 		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
 		var url = dialog.url();
-		File dbDir = null;
-		File gitDir = null;
-		DerbyConfig config = null;
+		var repoName = url.substring(url.lastIndexOf("/") + 1);
+		var config = initDatabase(repoName);
 		try {
-			var dbName = url.substring(url.lastIndexOf("/") + 1);
-			dbDir = getDbDir(dbName);
-			if (dbDir == null)
+			if (!initRepository(config.name(), dialog)) {
+				onError(config);
 				return;
-			config = new DerbyConfig();
-			config.name(dbDir.getName());
-			DbTemplate.EMPTY.extract(dbDir);
-			var db = Database.activate(config);
-			if (db == null)
-				return;
-			Upgrades.on(db);
-			Database.register((DerbyConfig) config);
-			gitDir = Repository.gitDir(db.getName());
-			GitInit.in(gitDir).remoteUrl(url).run();
-			var repo = Repository.initialize(db);
-			repo.user(dialog.user());
-			repo.password(dialog.credentials().password);
-			var newCommits = Actions.run(dialog.credentials(),
-					GitFetch.to(repo.git));
-			if (newCommits == null || newCommits.isEmpty())
-				return;
-			var libraryResolver = WorkspaceLibraryResolver.forRemote();
-			if (libraryResolver == null)
-				return;
-			Actions.run(GitMerge
-					.from(repo.git)
-					.into(db)
-					.update(repo.workspaceIds)
-					.resolveLibrariesWith(libraryResolver));
+			}
+			new PullAction().run();
 			Announcements.check();
 		} catch (Exception e) {
-			try {
-				Database.close();
-				if (config != null) {
-					Database.remove(config);
-				}
-				Dirs.delete(gitDir);
-				Dirs.delete(dbDir);
-			} catch (Exception e1) {
-				log.error("Error importing database", e1);
-			}
+			onError(config);
 			Actions.handleException("Error importing repository", e);
 		} finally {
 			Cache.evictAll();
 			Actions.refresh();
+		}
+	}
+
+	private DerbyConfig initDatabase(String name) {
+		var dbDir = getDbDir(name);
+		if (dbDir == null)
+			return null;
+		var config = new DerbyConfig();
+		config.name(dbDir.getName());
+		DbTemplate.EMPTY.extract(dbDir);
+		var db = Database.activate(config);
+		if (db == null)
+			return null;
+		Upgrades.on(db);
+		Database.register((DerbyConfig) config);
+		return config;
+	}
+
+	private boolean initRepository(String dbName, ConnectDialog dialog)
+			throws GitAPIException, URISyntaxException {
+		try {
+			var gitDir = Repository.gitDir(dbName);
+			GitInit.in(gitDir).remoteUrl(dialog.url()).run();
+			var repo = Repository.initialize(gitDir);
+			if (repo == null)
+				return false;
+			repo.user(dialog.user());
+			repo.password(dialog.credentials().password);
+			return true;
+		} catch (WebRequestException e) {
+			MsgBox.error("Could not connect, is this an older version of the collaboration server?");
+			return false;
+		}
+	}
+
+	private void onError(DerbyConfig config) {
+		try {
+			Database.close();
+			if (config != null) {
+				Database.remove(config);
+				Dirs.delete(Repository.gitDir(config.name()));
+				Dirs.delete(DatabaseDir.getRootFolder(config.name()));
+			}
+		} catch (Exception e1) {
+			log.error("Error deleting unused files", e1);
 		}
 	}
 

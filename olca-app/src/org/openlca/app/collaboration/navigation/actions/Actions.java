@@ -118,19 +118,20 @@ class Actions {
 		applyStash();
 	}
 
-	static void applyStash() throws GitAPIException, InvocationTargetException, IOException, InterruptedException {
+	static boolean applyStash() throws GitAPIException, InvocationTargetException, IOException, InterruptedException {
 		var repo = org.openlca.app.db.Repository.get();
 		var libraryResolver = WorkspaceLibraryResolver.forStash();
 		if (libraryResolver == null)
-			return;
+			return false;
 		var conflictResult = ConflictResolutionMap.forStash();
 		if (conflictResult == null)
-			return;
+			return false;
 		Actions.run(GitStashApply.from(repo.git)
 				.to(Database.get())
 				.update(repo.workspaceIds)
 				.resolveConflictsWith(conflictResult.resolutions())
 				.resolveLibrariesWith(libraryResolver));
+		return true;
 	}
 
 	private static class GitRemoteRunner<T> implements IRunnableWithProgress {

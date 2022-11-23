@@ -13,9 +13,11 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
+import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.Input;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
@@ -66,20 +68,22 @@ public class RepositoryUpgrade {
 					update your server connection? (This requires that the server you are
 					connected to is already updated)"""))
 				return;
-			upgrade.run(config);
+			if (!upgrade.run(config)) {
+				Dirs.delete(Repository.gitDir(database.getName()));
+			}
 		} catch (Throwable e) {
 			log.warn("Could not upgrade repository connection", e);
 		}
 	}
 
-	void run(Config config) {
-		var repo = initGit(config);
+	boolean run(Config config) {
+		var repo = initGit(config.url, config.username);
 		if (repo == null)
-			return;
+			return false;
 		var credentials = AuthenticationDialog.promptCredentials(repo);
 		if (credentials == null)
-			return;
-		pull(repo, credentials);
+			return false;
+		return pull(repo, credentials);
 	}
 
 	private Config init() {
@@ -126,30 +130,39 @@ public class RepositoryUpgrade {
 		return null;
 	}
 
-	private Repository initGit(Config config) {
+	private Repository initGit(String url, String user) {
 		try {
 			var gitDir = Repository.gitDir(database.getName());
 			if (gitDir.exists() && gitDir.list() != null && gitDir.list().length > 0) {
 				Dirs.delete(gitDir);
 			}
-			GitInit.in(gitDir).remoteUrl(config.url).run();
-			var repo = Repository.initialize(Database.get());
-			repo.user(config.username);
+			GitInit.in(gitDir).remoteUrl(url).run();
+			var repo = Repository.initialize(gitDir);
+			if (repo == null)
+				return null;
+			repo.user(user);
 			return repo;
+		} catch (WebRequestException e) {
+			url = Input.promptString("Could not connect",
+					"Could not connect, this might be an older version of the collaboration server? Please specify the url to the updated repository:",
+					url);
+			if (url != null)
+				return initGit(url, user);
+			return null;
 		} catch (GitAPIException | URISyntaxException e) {
-			log.warn("Error initializing git repo from " + config.url, e);
+			log.warn("Error initializing git repo from " + url, e);
 			return null;
 		}
 	}
 
-	private void pull(Repository repo, GitCredentialsProvider credentials) {
+	private boolean pull(Repository repo, GitCredentialsProvider credentials) {
 		try {
 			var commits = Actions.run(credentials, GitFetch.to(repo.git));
 			if (commits == null || commits.isEmpty())
-				return;
+				return true;
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
-				return;
+				return false;
 			var descriptors = new TypeRefIdMap<RootDescriptor>();
 			for (var type : ModelType.values()) {
 				Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
@@ -162,11 +175,12 @@ public class RepositoryUpgrade {
 					.update(repo.workspaceIds)
 					.resolveLibrariesWith(libraryResolver)
 					.resolveConflictsWith(new EqualResolver(descriptors)));
-			if (wasStashed) {
-				Actions.applyStash();
-			}
+			if (!wasStashed)
+				return true;
+			return Actions.applyStash();
 		} catch (GitAPIException | InvocationTargetException | InterruptedException | IOException e) {
 			log.warn("Error pulling from " + repo.client.serverUrl + "/" + repo.client.repositoryId, e);
+			return false;
 		}
 	}
 
