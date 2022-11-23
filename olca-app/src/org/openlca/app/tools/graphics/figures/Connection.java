@@ -65,21 +65,24 @@ public class Connection extends SelectableConnection {
 				path.lineTo((float) point.preciseX(), (float) point.preciseY());
 				pathIterator.next();
 			}
+
 			path.lineTo(tangentPoints.getRight().x, tangentPoints.getRight().y);
 		}
 
 		path.lineTo(getEnd().x, getEnd().y);
+
 		g.drawPath(path);
 		path.dispose();
 	}
 
 	PathIterator getPathIterator() {
+		var initPoints = getControlPoints(tangent);
 		var controlPoints = getControlPoints(offset);
 		var curve = new CubicCurve2D.Float(
-				getStart().x, getStart().y,
+				initPoints.getLeft().x, initPoints.getLeft().y,
 				controlPoints.getLeft().x, controlPoints.getLeft().y,
 				controlPoints.getRight().x, controlPoints.getRight().y,
-				getEnd().x, getEnd().y);
+				initPoints.getRight().x, initPoints.getRight().y);
 		return curve.getPathIterator(null, FLATNESS);
 	}
 
