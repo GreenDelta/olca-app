@@ -5,9 +5,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.MergeDialog;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
@@ -16,15 +18,21 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Question;
+import org.openlca.core.database.Daos;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Version;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.actions.GitStashDrop;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.ModelRef;
+import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypeRefIdMap;
+import org.openlca.jsonld.Json;
 
 import com.google.common.base.Predicates;
 import com.google.gson.JsonObject;
@@ -33,7 +41,7 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	private final TypeRefIdMap<ConflictResolution> resolutions;
 
-	ConflictResolutionMap(Commit remoteCommit, TypeRefIdMap<ConflictResolution> resolutions) {
+	ConflictResolutionMap(TypeRefIdMap<ConflictResolution> resolutions) {
 		this.resolutions = resolutions;
 	}
 
@@ -42,6 +50,14 @@ class ConflictResolutionMap implements ConflictResolver {
 		return resolutions.contains(ref);
 	}
 
+	@Override
+	public ConflictResolutionType peekConflictResolution(ModelRef ref) {
+		var resolution = resolutions.get(ref);
+		if (resolution == null)
+			return null;
+		return resolution.type;
+	}
+	
 	@Override
 	public ConflictResolution resolveConflict(ModelRef ref, JsonObject remote) {
 		return resolutions.get(ref);
@@ -63,8 +79,8 @@ class ConflictResolutionMap implements ConflictResolver {
 		var commit = repo.commits.find().refs(ref).latest();
 		var commonParent = repo.localHistory.commonParentOf(ref);
 		var workspaceConflicts = workspaceDiffs(commit, commonParent);
-		if (workspaceConflicts.isEmpty()) {
-			var resolved = resolve(commit, localDiffs(commit, commonParent));
+		if (workspaceConflicts.remaining.isEmpty()) {
+			var resolved = resolve(commit, localDiffs(commit, commonParent), workspaceConflicts);
 			if (resolved == null)
 				return null;
 			return new ConflictResult(resolved, false);
@@ -88,33 +104,35 @@ class ConflictResolutionMap implements ConflictResolver {
 		}
 		if (result == 3 && !stashChanges(false))
 			return null;
-		var resolved = resolve(commit, localDiffs(commit, commonParent));
+		var resolved = resolve(commit, localDiffs(commit, commonParent), Conflicts.none());
 		if (resolved == null)
 			return null;
 		return new ConflictResult(resolved, result == 3);
 	}
 
-	private static List<TriDiff> workspaceDiffs(Commit commit, Commit commonParent) throws IOException {
+	private static Conflicts workspaceDiffs(Commit commit, Commit commonParent) throws IOException {
 		var repo = Repository.get();
 		var workspaceChanges = Diffs.of(repo.git).with(Database.get(), repo.workspaceIds);
 		if (workspaceChanges.isEmpty())
-			return new ArrayList<>();
+			return Conflicts.none();
 		var remoteChanges = Diffs.of(repo.git, commonParent).with(commit);
-		return between(workspaceChanges, remoteChanges);
+		var diffs = between(workspaceChanges, remoteChanges);
+		return check(diffs);
 	}
 
-	private static List<TriDiff> localDiffs(Commit commit, Commit commonParent) throws IOException {
+	private static Conflicts localDiffs(Commit commit, Commit commonParent) throws IOException {
 		var repo = Repository.get();
 		var localCommit = repo.commits.get(repo.commits.resolve(Constants.LOCAL_BRANCH));
 		if (localCommit == null)
-			return new ArrayList<>();
+			return Conflicts.none();
 		var localChanges = Diffs.of(repo.git, commonParent).with(localCommit);
 		if (localChanges.isEmpty())
-			return new ArrayList<>();
+			return Conflicts.none();
 		var remoteChanges = Diffs.of(repo.git, commonParent).with(commit);
 		if (remoteChanges.isEmpty())
-			return new ArrayList<>();
-		return between(localChanges, remoteChanges);
+			return Conflicts.none();
+		var diffs = between(localChanges, remoteChanges);
+		return check(diffs);
 	}
 
 	private static List<TriDiff> between(List<Diff> localChanges, List<Diff> remoteChanges) {
@@ -175,30 +193,97 @@ class ConflictResolutionMap implements ConflictResolver {
 		return true;
 	}
 
-	private static ConflictResolutionMap resolve(Commit commit, List<TriDiff> conflicts) {
-		var solved = solve(conflicts);
-		if (solved == null)
-			return null;
-		conflicts.stream()
-				.filter(Predicate.not(TriDiff::conflict))
-				.forEach(conflict -> solved.put(conflict, ConflictResolution.keep()));
-		return new ConflictResolutionMap(commit, solved);
-	}
-
 	private static TypeRefIdMap<ConflictResolution> solve(List<TriDiff> conflicts) {
 		if (conflicts.isEmpty())
 			return new TypeRefIdMap<>();
+		var resolved = new TypeRefIdMap<ConflictResolution>();
+		if (conflicts.isEmpty())
+			return resolved;
 		var node = new DiffNodeBuilder(Database.get()).build(conflicts);
 		if (node == null || node.children.isEmpty())
-			return new TypeRefIdMap<>();
+			return resolved;
 		var dialog = new MergeDialog(node);
 		if (dialog.open() == MergeDialog.CANCEL)
 			return null;
-		return dialog.getResolvedConflicts();
+		dialog.getResolvedConflicts().forEach(
+				(type, refId, resolution) -> resolved.put(type, refId, resolution));
+		return resolved;
+	}
+
+	private static Conflicts check(List<TriDiff> conflicts) {
+		var equal = new ArrayList<TriDiff>();
+		var remaining = new ArrayList<TriDiff>();
+		var descriptors = new TypeRefIdMap<RootDescriptor>();
+		for (var type : ModelType.values()) {
+			Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
+		}
+		conflicts.forEach(conflict -> {
+			if (equalsDescriptor(conflict, descriptors.get(conflict))) {
+				equal.add(conflict);
+			} else {
+				remaining.add(conflict);
+			}
+		});
+		return new Conflicts(equal, remaining);
+	}
+
+	private static ConflictResolutionMap resolve(Commit commit, Conflicts local, Conflicts workspace) {
+		var solved = solve(local.remaining);
+		if (solved == null)
+			return null;
+		workspace.equal.forEach(c -> solved.put(c, ConflictResolution.isEqual()));
+		local.equal.forEach(c -> solved.put(c, ConflictResolution.isEqual()));
+		local.remaining.stream()
+				.filter(Predicate.not(TriDiff::conflict))
+				.forEach(conflict -> solved.put(conflict, ConflictResolution.keep()));
+		return new ConflictResolutionMap(solved);
+	}
+
+	private static boolean equalsDescriptor(TriDiff diff, RootDescriptor d) {
+		if (d == null)
+			return false;
+		if (ObjectId.zeroId().equals(diff.rightNewObjectId))
+			return false;
+		var ref = new Reference(diff.path, diff.commitId, diff.rightNewObjectId);
+		var remoteModel = Repository.get().datasets.parse(ref, "lastChange", "version");
+		if (remoteModel == null)
+			return false;
+		var version = Version.fromString(string(remoteModel, "version")).getValue();
+		var lastChange = date(remoteModel, "lastChange");
+		return version == d.version && lastChange == d.lastChange;
+	}
+
+	private static String string(Map<String, Object> map, String field) {
+		var value = map.get(field);
+		if (value == null)
+			return null;
+		return value.toString();
+	}
+
+	private static long date(Map<String, Object> map, String field) {
+		var value = map.get(field);
+		if (value == null)
+			return 0;
+		try {
+			return Long.parseLong(value.toString());
+		} catch (NumberFormatException e) {
+			var date = Json.parseDate(value.toString());
+			if (date == null)
+				return 0;
+			return date.getTime();
+		}
 	}
 
 	record ConflictResult(ConflictResolutionMap resolutions, boolean stashedChanges) {
 
+	}
+
+	record Conflicts(List<TriDiff> equal, List<TriDiff> remaining) {
+
+		private static Conflicts none() {
+			return new Conflicts(new ArrayList<>(), new ArrayList<>());
+		}
+		
 	}
 
 }

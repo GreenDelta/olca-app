@@ -5,18 +5,42 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Question;
+import org.openlca.core.database.Daos;
+import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ProcessDao;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.Version;
+import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitInit;
 import org.openlca.git.actions.GitMerge;
+import org.openlca.git.actions.GitStashCreate;
+import org.openlca.git.find.Entries;
+import org.openlca.git.model.Change;
+import org.openlca.git.model.Commit;
+import org.openlca.git.model.Diff;
+import org.openlca.git.model.Entry.EntryType;
+import org.openlca.git.model.ModelRef;
+import org.openlca.git.model.Reference;
+import org.openlca.git.util.Constants;
+import org.openlca.git.util.Diffs;
+import org.openlca.git.util.TypeRefIdMap;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Dirs;
 import org.openlca.util.Strings;
@@ -37,22 +61,22 @@ public class RepositoryUpgrade {
 	}
 
 	public static void on(IDatabase database) {
-		// TODO currently disabled
-		// try {
-		// var upgrade = new RepositoryUpgrade(database);
-		// var config = upgrade.init();
-		// if (config == null)
-		// return;
-		// if (!Question.ask("Update repository connection",
-		// "You were previously connected to a Collaboration Server version 1.
-		// openLCA 2 requires Collaboration Server version 2. Do you want to
-		// update your server connection? (This requires that the server you are
-		// connected to is already updated)"))
-		// return;
-		// upgrade.run(config);
-		// } catch (Throwable e) {
-		// log.warn("Could not upgrade repository connection", e);
-		// }
+		// TODO reenable this feature, after fix
+//		try {
+//			var upgrade = new RepositoryUpgrade(database);
+//			var config = upgrade.init();
+//			if (config == null)
+//				return;
+//			if (!Question.ask("Update repository connection", """
+//					You were previously connected to a Collaboration Server version 1.
+//					openLCA 2 requires Collaboration Server version 2. Do you want to
+//					update your server connection? (This requires that the server you are
+//					connected to is already updated)"""))
+//				return;
+//			upgrade.run(config);
+//		} catch (Throwable e) {
+//			log.warn("Could not upgrade repository connection", e);
+//		}
 	}
 
 	void run(Config config) {
@@ -130,16 +154,134 @@ public class RepositoryUpgrade {
 			var commits = Actions.run(credentials, GitFetch.to(repo.git));
 			if (commits == null || commits.isEmpty())
 				return;
+			var libraryResolver = WorkspaceLibraryResolver.forRemote();
+			if (libraryResolver == null)
+				return;
+			var descriptors = new TypeRefIdMap<RootDescriptor>();
+			for (var type : ModelType.values()) {
+				Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
+			}
+			var commit = repo.commits.find().refs(Constants.REMOTE_REF).latest();
+			boolean wasStashed = stashDifferences(repo, commit, credentials.ident, descriptors);
 			Actions.run(GitMerge.from(repo.git)
 					.into(database)
-					.as(AuthenticationDialog.promptUser(repo))
-					.resolveConflictsWith(null));
+					.as(credentials.ident)
+					.resolveLibrariesWith(libraryResolver)
+					.resolveConflictsWith(new EqualResolver(descriptors)));
+			updateWorkspaceIds(repo, commit, "");
+			repo.workspaceIds.putRoot(ObjectId.fromString(commit.id));
+			repo.workspaceIds.save();
+			if (wasStashed) {
+				Actions.applyStash();
+			}
 		} catch (GitAPIException | InvocationTargetException | InterruptedException | IOException e) {
 			log.warn("Error pulling from " + repo.client.serverUrl + "/" + repo.client.repositoryId, e);
 		}
 	}
 
+	private boolean stashDifferences(Repository repo, Commit commit, PersonIdent user,
+			TypeRefIdMap<RootDescriptor> descriptors)
+			throws IOException, InvocationTargetException, InterruptedException, GitAPIException {
+		var differences = Diffs.of(repo.git, commit)
+				.with(Database.get(), repo.workspaceIds).stream()
+				.filter(diff -> !equalsDescriptor(diff, descriptors.get(diff)))
+				.map(diff -> new Change(diff))
+				.collect(Collectors.toList());
+		if (differences.isEmpty())
+			return false;
+		Actions.run(GitStashCreate.from(Database.get())
+				.to(repo.git)
+				.as(user)
+				.reference(commit)
+				.changes(differences));
+		return true;
+	}
+
+	private static void updateWorkspaceIds(Repository repo, Commit commit, String path) {
+		Entries.of(repo.git).find().commit(commit.id).path(path).all().forEach(entry -> {
+			repo.workspaceIds.put(entry.path, entry.objectId);
+			if (entry.typeOfEntry == EntryType.DATASET)
+				return;
+			updateWorkspaceIds(repo, commit, entry.path);
+		});
+	}
+
+	private static boolean equalsDescriptor(Diff diff, RootDescriptor d) {
+		if (d == null)
+			return false;
+		if (ObjectId.zeroId().equals(diff.oldObjectId))
+			return false;
+		var ref = new Reference(diff.path, diff.oldCommitId, diff.oldObjectId);
+		var remoteModel = Repository.get().datasets.parse(ref, "lastChange", "version");
+		if (remoteModel == null)
+			return false;
+		var version = Version.fromString(string(remoteModel, "version")).getValue();
+		var lastChange = date(remoteModel, "lastChange");
+		return version == d.version && lastChange == d.lastChange;
+	}
+
+	private static String string(Map<String, Object> map, String field) {
+		var value = map.get(field);
+		if (value == null)
+			return null;
+		return value.toString();
+	}
+
+	private static long date(Map<String, Object> map, String field) {
+		var value = map.get(field);
+		if (value == null)
+			return 0;
+		try {
+			return Long.parseLong(value.toString());
+		} catch (NumberFormatException e) {
+			var date = Json.parseDate(value.toString());
+			if (date == null)
+				return 0;
+			return date.getTime();
+		}
+	}
+
 	private record Config(String url, String username) {
+	}
+
+	private class EqualResolver implements ConflictResolver {
+
+		private final TypeRefIdMap<RootDescriptor> descriptors;
+
+		private EqualResolver(TypeRefIdMap<RootDescriptor> descriptors) {
+			this.descriptors = descriptors;
+		}
+
+		@Override
+		public boolean isConflict(ModelRef ref) {
+			return descriptors.contains(ref);
+		}
+
+		@Override
+		public ConflictResolutionType peekConflictResolution(ModelRef ref) {
+			return isConflict(ref) ? ConflictResolutionType.IS_EQUAL : null;
+		}
+
+		@Override
+		public ConflictResolution resolveConflict(ModelRef ref, JsonObject fromHistory) {
+			return isConflict(ref) ? ConflictResolution.isEqual() : null;
+		}
+
+	}
+
+	public static void main(String[] args) {
+		var db = new Derby(new File("C:/Users/Sebastian/openLCA-data-1.4/databases/ecoinvent_38_en15804gd_v3_1"));
+		var dao = new ProcessDao(db);
+		var system = new HashSet<String>();
+		var descriptors = dao.getDescriptors();
+		descriptors.stream()
+				.filter(d -> d.processType == ProcessType.LCI_RESULT)
+				.map(d -> d.refId)
+				.forEach(system::add);
+		descriptors.stream()
+				.filter(d -> d.processType == ProcessType.UNIT_PROCESS)
+				.filter(d -> system.contains(d.refId))
+				.forEach(d -> dao.delete(dao.getForId(d.id)));
 	}
 
 }
