@@ -52,14 +52,20 @@ public class Connection extends SelectableConnection {
 		}
 
 		var path = new Path(Display.getCurrent());
-		path.moveTo(getStart().x, getStart().y);
+
+		if (Objects.equals(type, ROUTER_NULL)) {
+			var points = getControlPoints(-getLineWidth() / 2);
+			path.moveTo(points.getLeft().x, points.getLeft().y);
+			path.lineTo(points.getRight().x, points.getRight().y);
+		}
 
 		if (Objects.equals(type, ROUTER_CURVE)) {
-			var pathIterator = getPathIterator();
+			path.moveTo(getStart().x, getStart().y);
 
 			var tangentPoints = getControlPoints(tangent);
 			path.lineTo(tangentPoints.getLeft().x, tangentPoints.getLeft().y);
 
+			var pathIterator = getPathIterator();
 			while (!pathIterator.isDone()) {
 				var point = nextPoint(pathIterator);
 				path.lineTo((float) point.preciseX(), (float) point.preciseY());
@@ -67,9 +73,8 @@ public class Connection extends SelectableConnection {
 			}
 
 			path.lineTo(tangentPoints.getRight().x, tangentPoints.getRight().y);
+			path.lineTo(getEnd().x, getEnd().y);
 		}
-
-		path.lineTo(getEnd().x, getEnd().y);
 
 		g.drawPath(path);
 		path.dispose();
@@ -86,32 +91,33 @@ public class Connection extends SelectableConnection {
 		return curve.getPathIterator(null, FLATNESS);
 	}
 
-
 	ImmutablePair<PrecisionPoint, PrecisionPoint> getControlPoints(
 			int offset) {
+		var start = getStart();
+		var end = getEnd();
 		switch (orientation) {
 			case EAST -> {
 				return ImmutablePair.of(
-						new PrecisionPoint(getStart().x + offset, getStart().y),
-						new PrecisionPoint(getEnd().x - offset, getEnd().y)
+						new PrecisionPoint(start.x + offset, start.y),
+						new PrecisionPoint(end.x - offset, end.y)
 				);
 			}
 			case WEST -> {
 				return ImmutablePair.of(
-						new PrecisionPoint(getStart().x - offset, getStart().y),
-						new PrecisionPoint(getEnd().x + offset, getEnd().y)
+						new PrecisionPoint(start.x - offset, start.y),
+						new PrecisionPoint(end.x + offset, end.y)
 				);
 			}
 			case SOUTH -> {
 				return ImmutablePair.of(
-						new PrecisionPoint(getStart().x, getStart().y + offset),
-						new PrecisionPoint(getEnd().x, getEnd().y - offset)
+						new PrecisionPoint(start.x, start.y + offset),
+						new PrecisionPoint(end.x, end.y - offset)
 				);
 			}
 			case NORTH -> {
 				return ImmutablePair.of(
-						new PrecisionPoint(getStart().x, getStart().y - offset),
-						new PrecisionPoint(getEnd().x, getEnd().y + offset)
+						new PrecisionPoint(start.x, start.y - offset),
+						new PrecisionPoint(end.x, end.y + offset)
 				);
 			}
 			default -> {
