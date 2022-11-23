@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -19,11 +18,8 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.Daos;
-import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver;
@@ -31,11 +27,9 @@ import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitInit;
 import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitStashCreate;
-import org.openlca.git.find.Entries;
 import org.openlca.git.model.Change;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
-import org.openlca.git.model.Entry.EntryType;
 import org.openlca.git.model.ModelRef;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
@@ -61,22 +55,21 @@ public class RepositoryUpgrade {
 	}
 
 	public static void on(IDatabase database) {
-		// TODO reenable this feature, after fix
-//		try {
-//			var upgrade = new RepositoryUpgrade(database);
-//			var config = upgrade.init();
-//			if (config == null)
-//				return;
-//			if (!Question.ask("Update repository connection", """
-//					You were previously connected to a Collaboration Server version 1.
-//					openLCA 2 requires Collaboration Server version 2. Do you want to
-//					update your server connection? (This requires that the server you are
-//					connected to is already updated)"""))
-//				return;
-//			upgrade.run(config);
-//		} catch (Throwable e) {
-//			log.warn("Could not upgrade repository connection", e);
-//		}
+		try {
+			var upgrade = new RepositoryUpgrade(database);
+			var config = upgrade.init();
+			if (config == null)
+				return;
+			if (!Question.ask("Update repository connection", """
+					You were previously connected to a Collaboration Server version 1.
+					openLCA 2 requires Collaboration Server version 2. Do you want to
+					update your server connection? (This requires that the server you are
+					connected to is already updated)"""))
+				return;
+			upgrade.run(config);
+		} catch (Throwable e) {
+			log.warn("Could not upgrade repository connection", e);
+		}
 	}
 
 	void run(Config config) {
@@ -166,11 +159,9 @@ public class RepositoryUpgrade {
 			Actions.run(GitMerge.from(repo.git)
 					.into(database)
 					.as(credentials.ident)
+					.update(repo.workspaceIds)
 					.resolveLibrariesWith(libraryResolver)
 					.resolveConflictsWith(new EqualResolver(descriptors)));
-			updateWorkspaceIds(repo, commit, "");
-			repo.workspaceIds.putRoot(ObjectId.fromString(commit.id));
-			repo.workspaceIds.save();
 			if (wasStashed) {
 				Actions.applyStash();
 			}
@@ -193,17 +184,9 @@ public class RepositoryUpgrade {
 				.to(repo.git)
 				.as(user)
 				.reference(commit)
+				.update(repo.workspaceIds)
 				.changes(differences));
 		return true;
-	}
-
-	private static void updateWorkspaceIds(Repository repo, Commit commit, String path) {
-		Entries.of(repo.git).find().commit(commit.id).path(path).all().forEach(entry -> {
-			repo.workspaceIds.put(entry.path, entry.objectId);
-			if (entry.typeOfEntry == EntryType.DATASET)
-				return;
-			updateWorkspaceIds(repo, commit, entry.path);
-		});
 	}
 
 	private static boolean equalsDescriptor(Diff diff, RootDescriptor d) {
@@ -267,21 +250,6 @@ public class RepositoryUpgrade {
 			return isConflict(ref) ? ConflictResolution.isEqual() : null;
 		}
 
-	}
-
-	public static void main(String[] args) {
-		var db = new Derby(new File("C:/Users/Sebastian/openLCA-data-1.4/databases/ecoinvent_38_en15804gd_v3_1"));
-		var dao = new ProcessDao(db);
-		var system = new HashSet<String>();
-		var descriptors = dao.getDescriptors();
-		descriptors.stream()
-				.filter(d -> d.processType == ProcessType.LCI_RESULT)
-				.map(d -> d.refId)
-				.forEach(system::add);
-		descriptors.stream()
-				.filter(d -> d.processType == ProcessType.UNIT_PROCESS)
-				.filter(d -> system.contains(d.refId))
-				.forEach(d -> dao.delete(dao.getForId(d.id)));
 	}
 
 }
