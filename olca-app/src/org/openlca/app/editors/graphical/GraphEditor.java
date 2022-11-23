@@ -15,6 +15,7 @@ import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.systems.ProductSystemEditor;
+import org.openlca.app.tools.graphics.actions.retarget.EditConfigRetargetAction;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -134,6 +135,9 @@ public class GraphEditor extends BasicGraphicalEditor {
 		registry.registerAction(action);
 
 		action = new ShowElementaryFlowsAction(this);
+		registry.registerAction(action);
+
+		action = new EditModeAction(this);
 		registry.registerAction(action);
 
 		action = new OpenEditorAction(this);
