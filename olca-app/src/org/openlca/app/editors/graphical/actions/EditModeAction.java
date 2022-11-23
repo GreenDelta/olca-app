@@ -4,22 +4,20 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
-import org.openlca.core.model.FlowType;
 
-public class ShowElementaryFlowsAction extends GraphConfigAction {
+public class EditModeAction extends GraphConfigAction {
 
-	public ShowElementaryFlowsAction(GraphEditor part) {
+	public EditModeAction(GraphEditor part) {
 		super(part);
 	}
 
 	@Override
 	protected void init() {
-		setId(GraphActionIds.SHOW_ELEMENTARY_FLOWS);
-		setText(M.ShowElementaryFlows);
-		setImageDescriptor(Images.descriptor(FlowType.ELEMENTARY_FLOW));
+		setId(GraphActionIds.EDIT_MODE);
+		setText(M.EditMode);
+		setImageDescriptor(Icon.EDIT.descriptor());
 		if (getEditor() != null)
-			setChecked(getEditor().config.showElementaryFlows());
+			setChecked(getEditor().config.isNodeEditingEnabled());
 	}
 
 	@Override
@@ -28,7 +26,7 @@ public class ShowElementaryFlowsAction extends GraphConfigAction {
 		if (config == null)
 			return false;
 		else {
-			config.setShowElementaryFlows(!config.showElementaryFlows());
+			config.setNodeEditingEnabled(!config.isNodeEditingEnabled());
 			setNewConfig(config);
 			return true;
 		}

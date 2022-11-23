@@ -274,6 +274,7 @@ public class M extends NLS {
 	public static String Economic;
 	public static String Edit;
 	public static String EditFlow;
+	public static String EditMode;
 	public static String EditStickyNote;
 	public static String ElementaryFlow;
 	public static String Email;
@@ -896,6 +897,7 @@ public class M extends NLS {
 	public static String Title;
 	public static String ToDirectory;
 	public static String ToFile;
+	public static String ToggleEditMode;
 	public static String ToggleShowElementaryFlows;
 	public static String TotalAddedValue;
 	public static String TotalNetcosts;

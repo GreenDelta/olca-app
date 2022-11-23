@@ -15,6 +15,7 @@ public interface GraphActionIds {
 	String EXPAND_ALL = "graph.actions.ExpansionAction.EXPAND";
 
 	String EDIT_EXCHANGE = "graph.actions.EditExchangeAction";
+	String EDIT_MODE = "graph.actions.EditModeAction";
 	String EDIT_STICKY_NOTE = "graph.actions.EditStickyNoteAction";
 	String LAYOUT_TREE = "graph.actions.LayoutAction.TREE_LAYOUT";
 	String LINK_UPDATE = "graph.actions.LinkUpdateAction";

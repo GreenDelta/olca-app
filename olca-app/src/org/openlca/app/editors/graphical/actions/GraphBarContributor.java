@@ -7,6 +7,7 @@ import org.openlca.app.editors.graphical.actions.retarget.AddExchangeRetargetAct
 import org.openlca.app.editors.graphical.actions.retarget.AddProcessRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.AddStickyNoteRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.EditExchangeRetargetAction;
+import org.openlca.app.editors.graphical.actions.retarget.EditModeRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.ShowElementaryFlowsRetargetAction;
 import org.openlca.app.tools.graphics.actions.retarget.EditConfigRetargetAction;
 import org.openlca.app.tools.graphics.actions.retarget.LayoutAsTreeRetargetAction;
@@ -48,14 +49,17 @@ public class GraphBarContributor extends BasicActionBarContributor {
 		addRetargetAction(new MinMaxAllRetargetAction(MAXIMIZE));
 		addRetargetAction(new OpenEditorRetargetAction());
 		addRetargetAction(new SetReferenceRetargetAction());
-		var checked = getConfig().showElementaryFlows();
-		addRetargetAction(new ShowElementaryFlowsRetargetAction(checked));
+		var show = getConfig() != null && getConfig().showElementaryFlows();
+		addRetargetAction(new ShowElementaryFlowsRetargetAction(show));
+		var edit = getConfig() != null && getConfig().isNodeEditingEnabled();
+		addRetargetAction(new EditModeRetargetAction(edit));
 	}
 
 	@Override
 	public void contributeToToolBar(IToolBarManager tbm) {
 		super.contributeToToolBar(tbm);
 		tbm.add(getAction(GraphActionIds.SHOW_ELEMENTARY_FLOWS));
+		tbm.add(getAction(GraphActionIds.EDIT_MODE));
 		tbm.add(getAction(GraphActionIds.MINIMIZE_ALL));
 		tbm.add(getAction(GraphActionIds.MAXIMIZE_ALL));
 		tbm.add(getAction(GraphActionIds.EXPAND_ALL));
