@@ -14,7 +14,7 @@
     "@types/ol": "^5.3.5",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
-    "copy-webpack-plugin": "^5.0.4",
+    "copy-webpack-plugin": "^11.0.0",
     "ts-loader": "^6.1.0",
     "typescript": "^4.3.3",
     "webpack": "^4.40.1",
