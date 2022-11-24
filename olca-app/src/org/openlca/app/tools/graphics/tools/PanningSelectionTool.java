@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.openlca.app.tools.graphics.tools;
 
+import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.Handle;
 import org.eclipse.gef.tools.SelectionTool;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -92,10 +95,20 @@ public class PanningSelectionTool extends SelectionTool {
 	protected boolean handleButtonDown(int button) {
 		if (button == 1
 				&& getCurrentViewer().getControl() instanceof FigureCanvas) {
+
+			//
+			var viewer = getCurrentViewer();
+			var p = getLocation();
+			Handle handle = viewer instanceof GraphicalViewer graphicalViewer
+					? graphicalViewer.findHandleAt(p)
+					: null;
+
 			// The button is down on the RootEditPart (background).
 			if (getTargetEditPart() instanceof RootEditPart
 					&& !getCurrentInput().isControlKeyDown()
+					&& handle == null
 					&& stateTransition(STATE_INITIAL, PAN)) {
+
 				viewLocation = ((FigureCanvas) getCurrentViewer().getControl())
 						.getViewport().getViewLocation();
 				return true;
