@@ -33,7 +33,7 @@ public class SankeyFactory {
 
 					// create the nodes
 					editor.getSankey().traverse(n -> {
-						var node = new SankeyNode(n, editor.getSankey(), editor.result);
+						var node = new SankeyNode(n, editor.getSankey());
 						diagram.addChild(node);
 					});
 
@@ -47,8 +47,8 @@ public class SankeyFactory {
 							if (source == null)
 								continue;
 							var linkShare = editor.getSankey().getLinkShare(provider, n);
-							var share = linkShare * provider.share;
-							new SankeyLink(source, target, share);
+							var ratio = linkShare * provider.share;
+							new SankeyLink(source, target, ratio);
 						}
 					});
 				});
