@@ -15,6 +15,7 @@ public interface GraphActionIds {
 	String EXPAND_ALL = "graph.actions.ExpansionAction.EXPAND";
 
 	String EDIT_EXCHANGE = "graph.actions.EditExchangeAction";
+	String EDIT_MODE = "graph.actions.EditModeAction";
 	String EDIT_STICKY_NOTE = "graph.actions.EditStickyNoteAction";
 	String LAYOUT_TREE = "graph.actions.LayoutAction.TREE_LAYOUT";
 	String LINK_UPDATE = "graph.actions.LinkUpdateAction";
@@ -29,5 +30,6 @@ public interface GraphActionIds {
 	String SEARCH_PROVIDERS = "graph.actions.SearchConnectorsAction.PROVIDERS";
 	String SEARCH_RECIPIENTS = "graph.actions.SearchConnectorsAction.RECIPIENTS";
 	String SET_REFERENCE = "graph.actions.SetReferenceAction";
+	String SHOW_ELEMENTARY_FLOWS = "graph.actions.ShowElementaryFlowsAction";
 
 }

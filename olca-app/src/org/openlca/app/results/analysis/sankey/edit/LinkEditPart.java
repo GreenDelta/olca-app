@@ -49,9 +49,9 @@ public class LinkEditPart extends AbstractConnectionEditPart
 		var theme = config.getTheme();
 
 		Color color;
-		if (getModel().getSourceNode().totalResult < 0)
+		if (getModel().getSourceNode().node.total < 0)
 			color = ColorConstants.green;
-		else if (getModel().getSourceNode().totalResult > 0)
+		else if (getModel().getSourceNode().node.total > 0)
 			color = ColorConstants.red;
 		else color = ColorConstants.blue;
 		var colorSelected = theme != null

@@ -274,6 +274,7 @@ public class M extends NLS {
 	public static String Economic;
 	public static String Edit;
 	public static String EditFlow;
+	public static String EditMode;
 	public static String EditStickyNote;
 	public static String ElementaryFlow;
 	public static String Email;
@@ -798,7 +799,9 @@ public class M extends NLS {
 	public static String SearchInSources;
 	public static String SearchInUnitGroups;
 	public static String SearchParameters;
+	public static String SearchProviders;
 	public static String SearchProvidersFor;
+	public static String SearchRecipients;
 	public static String SearchRecipientsFor;
 	public static String SearchResults;
 	public static String Searching;
@@ -831,6 +834,7 @@ public class M extends NLS {
 	public static String SettingsForTheSankeyDiagram;
 	public static String Show;
 	public static String ShowComments;
+	public static String ShowElementaryFlows;
 	public static String ShowExecutedUpdates;
 	public static String ShowFormulas;
 	public static String ShowInHistory;
@@ -893,6 +897,8 @@ public class M extends NLS {
 	public static String Title;
 	public static String ToDirectory;
 	public static String ToFile;
+	public static String ToggleEditMode;
+	public static String ToggleShowElementaryFlows;
 	public static String TotalAddedValue;
 	public static String TotalNetcosts;
 	public static String TotalRequirements;

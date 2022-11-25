@@ -7,6 +7,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
+import org.openlca.app.editors.graphical.actions.GraphActionIds;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.jsonld.Json;
 
@@ -56,6 +57,22 @@ public class EditConfigCommand extends Command {
 		viewer.setContents(newGraph);
 
 		editor.setDirty();
+		updateActions();
+	}
+
+	/**
+	 * Update the status of the config related action.
+	 */
+	private void updateActions() {
+		var registry = editor.getActionRegistry();
+
+		var show = registry.getAction(GraphActionIds.SHOW_ELEMENTARY_FLOWS);
+		if (show != null)
+			show.setChecked(editor.config.showElementaryFlows());
+
+		var edit = registry.getAction(GraphActionIds.EDIT_MODE);
+		if (edit != null)
+			edit.setChecked(editor.config.isNodeEditingEnabled());
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.*;
+import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -14,6 +15,7 @@ import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.systems.ProductSystemEditor;
+import org.openlca.app.tools.graphics.actions.retarget.EditConfigRetargetAction;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -132,6 +134,12 @@ public class GraphEditor extends BasicGraphicalEditor {
 		action = new EditGraphConfigAction(this);
 		registry.registerAction(action);
 
+		action = new ShowElementaryFlowsAction(this);
+		registry.registerAction(action);
+
+		action = new EditModeAction(this);
+		registry.registerAction(action);
+
 		action = new OpenEditorAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
@@ -147,10 +155,9 @@ public class GraphEditor extends BasicGraphicalEditor {
 		registry.registerAction(action);
 		stackActions.add(action.getId());
 
-		// TODO (francois) Too slow.
-//		action = new RemoveAllConnectionsAction(this);
-//		registry.registerAction(action);
-//		selectionActions.add(action.getId());
+		action = new RemoveAllConnectionsAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
 
 		action = new BuildSupplyChainMenuAction(this);
 		registry.registerAction(action);
@@ -233,6 +240,13 @@ public class GraphEditor extends BasicGraphicalEditor {
 
 	public GraphFactory getGraphFactory() {
 		return graphFactory;
+	}
+
+	/**
+	 * Make super.getActionRegistry() public.
+	 */
+	public ActionRegistry getActionRegistry() {
+		return super.getActionRegistry();
 	}
 
 	@Override
