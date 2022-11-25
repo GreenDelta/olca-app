@@ -1,13 +1,13 @@
 package refdata;
 
-import org.openlca.util.Dirs;
-
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+
+import org.openlca.util.Dirs;
 
 class RefData {
 
@@ -34,8 +34,6 @@ class RefData {
 						"units.csv",
 
 						"mappings/EcoSpold1_Import.csv",
-						"mappings/EcoSpold2_Export.csv",
-						"mappings/EcoSpold2_Import.csv",
 						"mappings/ILCD_Import.csv",
 						"mappings/SimaPro_Import.csv"
 				);
