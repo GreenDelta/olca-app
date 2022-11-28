@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.*;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.*;
 import org.openlca.app.results.analysis.sankey.actions.EditSankeyConfigAction;
 import org.openlca.app.results.analysis.sankey.actions.LayoutAction;
@@ -14,13 +15,16 @@ import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.analysis.sankey.edit.SankeyEditPartFactory;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
+import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
+import org.openlca.app.tools.graphics.frame.Header;
+import org.openlca.app.tools.graphics.frame.Splitter;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.Sankey;
 
-public class SankeyEditor extends BasicGraphicalEditor {
+public class SankeyEditor extends GraphicalEditorWithFrame {
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
 
@@ -67,11 +71,22 @@ public class SankeyEditor extends BasicGraphicalEditor {
 	}
 
 	@Override
-	protected void setInput(IEditorInput input) {
+	public void createHeader(Splitter parent) {
+		var header = new SankeyHeader(parent, SWT.NONE);
+		setHeader(header);
+		header.setRootEditPart(getRootEditPart());
+		header.initialize();
+	}
+
+	@Override
+	public void setInput(IEditorInput input) {
 		super.setInput(input);
 		// The model is initialized with an empty diagram so that it is only created
 		// when the SankeyDiagram page is open (see ResultEditor).
-		setModel(new Diagram(this, config.orientation()));
+		var diagram = new Diagram(this, config.orientation());
+		setModel(diagram);
+		if (getHeader() != null)
+			getHeader().setModel(diagram);
 	}
 
 	@Override

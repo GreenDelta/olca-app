@@ -30,6 +30,7 @@ import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.slf4j.LoggerFactory;
 
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
 
 /**
@@ -115,6 +116,10 @@ public class ResultEditor extends FormEditor {
 				return;
 			var diagram = sankeyEditor.getSankeyFactory().createDiagram();
 			sankeyEditor.setModel(diagram);
+			if (sankeyEditor.getHeader() != null) {
+				sankeyEditor.getHeader().setModel(diagram);
+				diagram.firePropertyChange(CONFIG_PROP, null, diagram.getConfig());
+			}
 			var viewer = (GraphicalViewer) sankeyEditor.getAdapter(GraphicalViewer.class);
 			viewer.setContents(diagram);
 

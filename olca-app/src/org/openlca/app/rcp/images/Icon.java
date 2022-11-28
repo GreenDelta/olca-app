@@ -102,7 +102,7 @@ public enum Icon {
 	MAP("map.png"),
 	MAXIMIZE("graphical/maximize.png"),
 	MERGE("collaboration/merge.png"),
-	MINIATURE_VIEW("graphical/miniature_view.png"),
+	MINIMAP("graphical/minimap.png"),
 	MINIMIZE("graphical/minimize.png"),
 	MINUS("graphical/minus.gif"),
 

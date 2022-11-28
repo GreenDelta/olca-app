@@ -38,8 +38,8 @@ public class ProductSystemBarContributor extends EditorActionBarContributor {
 
 	@Override
 	public void setActivePage(IEditorPart activePage) {
-		if (activePage instanceof GraphEditor editor)
-			this.editor = editor;
+		if (activePage instanceof GraphEditor graphEditor)
+			this.editor = graphEditor;
 		super.setActivePage(activePage);
 	}
 

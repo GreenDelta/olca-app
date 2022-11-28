@@ -31,7 +31,7 @@ import static org.openlca.app.tools.graphics.edit.RootEditPart.MARGIN_PADDING;
  * </UL>
  * </p>
  *
- * <P>
+ * <p>
  * A ZoomManager controls how zoom in and zoom out are performed. It also
  * determines the list of choices the user sees in the drop-down Combo on the
  * toolbar. The zoom manager controls a <code>ScalableFigure</code>, which
@@ -48,9 +48,14 @@ import static org.openlca.app.tools.graphics.edit.RootEditPart.MARGIN_PADDING;
  */
 public class ZoomManager {
 
-	/** Style bit meaning don't animate any zooms */
+	/**
+	 * Style bit meaning don't animate any zooms
+	 */
 	public static final int ANIMATE_NEVER = 0;
-	/** Style bit meaning animate during {@link #zoomIn()} and {@link #zoomOut()} */
+	/**
+	 * Style bit meaning animate during {@link #zoomIn(boolean)} and
+	 * {@link #zoomOut(boolean)}
+	 */
 	public static final int ANIMATE_ZOOM_IN_OUT = 1;
 
 	private final List<ZoomListener> listeners = new ArrayList<>();
@@ -60,7 +65,7 @@ public class ZoomManager {
 	private final ScalableFigure pane;
 	private final Viewport viewport;
 	private double zoom = 1.0;
-	private double[] zoomLevels = { .5, .75, 1.0, 1.5, 2.0, 2.5, 3, 4 };
+	private double[] zoomLevels = {.5, .75, 1.0, 1.5, 2.0, 2.5, 3, 4};
 	/**
 	 * String constant for the "Height" zoom level. At this zoom level, the zoom
 	 * manager will adopt a zoom setting such that the entire height of the
@@ -86,10 +91,8 @@ public class ZoomManager {
 	/**
 	 * Creates a new ZoomManager.
 	 *
-	 * @param pane
-	 *            The ScalableFigure associated with this ZoomManager
-	 * @param viewport
-	 *            The Viewport associated with this ZoomManager
+	 * @param pane     The ScalableFigure associated with this ZoomManager
+	 * @param viewport The Viewport associated with this ZoomManager
 	 */
 	public ZoomManager(EditPartViewer viewer, ScalableFigure pane,
 										 Viewport viewport) {
@@ -101,8 +104,7 @@ public class ZoomManager {
 	/**
 	 * Adds the given ZoomListener to this ZoomManager's list of listeners.
 	 *
-	 * @param listener
-	 *            the ZoomListener to be added
+	 * @param listener the ZoomListener to be added
 	 */
 	public void addZoomListener(ZoomListener listener) {
 		listeners.add(listener);
@@ -142,7 +144,7 @@ public class ZoomManager {
 		Dimension desired;
 		if (fig instanceof FreeformFigure)
 			desired = ((FreeformFigure) fig).getFreeformExtent().getCopy()
-				.union(0, 0).getSize();
+					.union(0, 0).getSize();
 		else
 			desired = fig.getPreferredSize().getCopy();
 
@@ -156,9 +158,9 @@ public class ZoomManager {
 		}
 
 		double scaleX = Math.min(available.width * zoom / desired.width,
-			getMaxZoom());
+				getMaxZoom());
 		double scaleY = Math.min(available.height * zoom / desired.height,
-			getMaxZoom());
+				getMaxZoom());
 		if (which == 0)
 			return scaleX;
 		if (which == 1)
@@ -172,7 +174,7 @@ public class ZoomManager {
 	 * the screen. This is the zoom level associated with {@link #FIT_HEIGHT}.
 	 *
 	 * @return zoom setting required to fit the scalable figure vertically on
-	 *         the screen
+	 * the screen
 	 */
 	protected double getFitHeightZoomLevel() {
 		return getFitXZoomLevel(1);
@@ -185,7 +187,7 @@ public class ZoomManager {
 	 * {@link #getFitHeightZoomLevel()} and {@link #getFitWidthZoomLevel()}.
 	 *
 	 * @return zoom setting required to fit the entire scalable figure on the
-	 *         screen
+	 * screen
 	 */
 	protected double getFitPageZoomLevel() {
 		return getFitXZoomLevel(2);
@@ -197,7 +199,7 @@ public class ZoomManager {
 	 * the screen. This is the zoom setting associated with {@link #FIT_WIDTH}.
 	 *
 	 * @return zoom setting required to fit the scalable figure horizontally on
-	 *         the screen
+	 * the screen
 	 */
 	protected double getFitWidthZoomLevel() {
 		return getFitXZoomLevel(0);
@@ -324,29 +326,35 @@ public class ZoomManager {
 	 */
 	public String[] getZoomLevelsAsText() {
 		String[] zoomLevelStrings = new String[zoomLevels.length
-			+ zoomLevelContributions.size()];
+				+ zoomLevelContributions.size()];
 		for (int i = 0; i < zoomLevels.length; i++) {
 			zoomLevelStrings[i] = format.format(zoomLevels[i] * multiplier);
 		}
 		if (zoomLevelContributions != null) {
 			for (int i = 0; i < zoomLevelContributions.size(); i++) {
 				zoomLevelStrings[i + zoomLevels.length] = zoomLevelContributions
-					.get(i);
+						.get(i);
 			}
 		}
 		return zoomLevelStrings;
 	}
 
 	/**
-	 * Sets the zoom level to the given value. Min-max range check is not done.
+	 * Sets the zoom level to the given value, keeping the focus on the cursor
+	 * position. Min-max range check is not done.
 	 *
-	 * @param zoom
-	 *            the new zoom level
+	 * @param zoom the new zoom level
 	 */
-	protected void primSetZoom(double zoom) {
-		var cursorInViewport = new PrecisionPoint(
-			new Point(viewer.getControl().toControl(
-				Display.getCurrent().getCursorLocation())));
+	protected void primSetZoom(double zoom, boolean onCursor) {
+		var middle = new Point(
+				viewer.getControl().getSize().x / 2,
+				viewer.getControl().getSize().y / 2
+		);
+		var focusInViewport = onCursor
+				? new PrecisionPoint(
+				new Point(viewer.getControl().toControl(
+						Display.getCurrent().getCursorLocation())))
+				: new PrecisionPoint(middle);
 
 		double prevZoom = this.zoom;
 		this.zoom = zoom;
@@ -366,12 +374,12 @@ public class ZoomManager {
 
 		getViewport().validate();
 
-		// Translate the viewport to keep the same cursor location in the pane.
+		// Translate the viewport to keep the same focus location in the pane.
 		var viewportLocation = new PrecisionPoint(getViewport().getViewLocation());
-		var cursorInOldPane = (PrecisionPoint) viewportLocation.translate(cursorInViewport);
+		var focusInOldPane = (PrecisionPoint) viewportLocation.translate(focusInViewport);
 		var factor = zoom / prevZoom;
-		var cursorInNewPane = (PrecisionPoint) cursorInOldPane.getPreciseCopy().scale(factor, factor);
-		var translation = cursorInNewPane.getDifference(cursorInOldPane);
+		var focusInNewPane = (PrecisionPoint) focusInOldPane.getPreciseCopy().scale(factor, factor);
+		var translation = focusInNewPane.getDifference(focusInOldPane);
 
 		var p = getViewport().getViewLocation();
 		setViewLocation(p.translate(translation));
@@ -380,8 +388,7 @@ public class ZoomManager {
 	/**
 	 * Removes the given ZoomListener from this ZoomManager's list of listeners.
 	 *
-	 * @param listener
-	 *            the ZoomListener to be removed
+	 * @param listener the ZoomListener to be removed
 	 */
 	public void removeZoomListener(ZoomListener listener) {
 		listeners.remove(listener);
@@ -392,13 +399,12 @@ public class ZoomManager {
 	 * when they are presented to the user ({@link #getZoomAsText()}).
 	 * Similarly, the multiplier is inversely applied when the user specifies a
 	 * zoom level ({@link #setZoomAsText(String)}).
-	 * <P>
+	 * <p>
 	 * When the UI multiplier is <code>1.0</code>, the User will see the exact
 	 * zoom level that is being applied. If the value is <code>2.0</code>, then
 	 * a scale of <code>0.5</code> will be labeled "100%" to the User.
 	 *
-	 * @param multiplier
-	 *            The mutltiplier to set
+	 * @param multiplier The mutltiplier to set
 	 */
 	public void setUIMultiplier(double multiplier) {
 		this.multiplier = multiplier;
@@ -408,8 +414,7 @@ public class ZoomManager {
 	 * Sets the Viewport's view associated with this ZoomManager to the passed
 	 * Point
 	 *
-	 * @param p
-	 *            The new location for the Viewport's view.
+	 * @param p The new location for the Viewport's view.
 	 */
 	public void setViewLocation(Point p) {
 		viewport.setViewLocation(p.x, p.y);
@@ -420,21 +425,19 @@ public class ZoomManager {
 	 * Sets the zoom level to the given value. If the zoom is out of the min-max
 	 * range, it will be ignored.
 	 *
-	 * @param zoom
-	 *            the new zoom level
+	 * @param zoom the new zoom level
 	 */
-	public void setZoom(double zoom) {
+	public void setZoom(double zoom, boolean onCursor) {
 		zoom = Math.min(getMaxZoom(), zoom);
 		zoom = Math.max(getMinZoom(), zoom);
 		if (this.zoom != zoom)
-			primSetZoom(zoom);
+			primSetZoom(zoom, onCursor);
 	}
 
 	/**
 	 * Sets which zoom methods get animated.
 	 *
-	 * @param style
-	 *            the style bits determining the zoom methods to be animated.
+	 * @param style the style bits determining the zoom methods to be animated.
 	 */
 	public void setZoomAnimationStyle(int style) {
 		// zoomAnimationStyle = style;
@@ -447,35 +450,34 @@ public class ZoomManager {
 	 * method should be overridden to provide the appropriate zoom
 	 * implementation for the new zoom levels.
 	 *
-	 * @param zoomString
-	 *            The new zoom level
+	 * @param zoomString The new zoom level
 	 */
 	public void setZoomAsText(String zoomString) {
 		if (zoomString.equalsIgnoreCase(FIT_HEIGHT)) {
-			primSetZoom(getFitHeightZoomLevel());
+			primSetZoom(getFitHeightZoomLevel(), false);
 			viewport.getUpdateManager().performUpdate();
 			viewport.setViewLocation(viewport.getHorizontalRangeModel()
-				.getValue(), viewport.getVerticalRangeModel().getMinimum());
+					.getValue(), viewport.getVerticalRangeModel().getMinimum());
 		} else if (zoomString.equalsIgnoreCase(FIT_ALL)) {
-			primSetZoom(getFitPageZoomLevel());
+			primSetZoom(getFitPageZoomLevel(), false);
 			viewport.getUpdateManager().performUpdate();
 			viewport.setViewLocation(viewport.getHorizontalRangeModel()
-				.getMinimum(), viewport.getVerticalRangeModel()
-				.getMinimum());
+					.getMinimum(), viewport.getVerticalRangeModel()
+					.getMinimum());
 		} else if (zoomString.equalsIgnoreCase(FIT_WIDTH)) {
-			primSetZoom(getFitWidthZoomLevel());
+			primSetZoom(getFitWidthZoomLevel(), false);
 			viewport.getUpdateManager().performUpdate();
 			viewport.setViewLocation(viewport.getHorizontalRangeModel()
-				.getMinimum(), viewport.getVerticalRangeModel().getValue());
+					.getMinimum(), viewport.getVerticalRangeModel().getValue());
 		} else {
 			try {
 				// Trim off the '%'
 				if (zoomString.charAt(zoomString.length() - 1) == '%')
 					zoomString = zoomString.substring(0,
-						zoomString.length() - 1);
+							zoomString.length() - 1);
 				double newZoom = NumberFormat.getInstance().parse(zoomString)
-					.doubleValue() / 100;
-				setZoom(newZoom / multiplier);
+						.doubleValue() / 100;
+				setZoom(newZoom / multiplier, false);
 			} catch (Exception e) {
 				Display.getCurrent().beep();
 			}
@@ -488,8 +490,7 @@ public class ZoomManager {
 	 * {@link #FIT_ALL} you must subclass this class and override this method to
 	 * implement your contributed zoom function.
 	 *
-	 * @param contributions
-	 *            the list of contributed zoom levels
+	 * @param contributions the list of contributed zoom levels
 	 */
 	public void setZoomLevelContributions(List<String> contributions) {
 		zoomLevelContributions = contributions;
@@ -498,8 +499,7 @@ public class ZoomManager {
 	/**
 	 * Sets the zoomLevels.
 	 *
-	 * @param zoomLevels
-	 *            The zoomLevels to set
+	 * @param zoomLevels The zoomLevels to set
 	 */
 	public void setZoomLevels(double[] zoomLevels) {
 		this.zoomLevels = zoomLevels;
@@ -508,15 +508,14 @@ public class ZoomManager {
 	/**
 	 * Sets the zoom level to be one level higher
 	 */
-	public void zoomIn() {
-		setZoom(getNextZoomLevel());
+	public void zoomIn(boolean withFocus) {
+		setZoom(getNextZoomLevel(), withFocus);
 	}
 
 	/**
 	 * Currently does nothing.
 	 *
-	 * @param rect
-	 *            a rectangle
+	 * @param rect a rectangle
 	 */
 	public void zoomTo(Rectangle rect) {
 	}
@@ -524,8 +523,8 @@ public class ZoomManager {
 	/**
 	 * Sets the zoom level to be one level lower
 	 */
-	public void zoomOut() {
-		setZoom(getPreviousZoomLevel());
+	public void zoomOut(boolean withFocus) {
+		setZoom(getPreviousZoomLevel(), withFocus);
 	}
 
 }

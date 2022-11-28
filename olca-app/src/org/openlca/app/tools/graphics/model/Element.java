@@ -35,7 +35,7 @@ abstract public class Element {
 	 * @param oldValue      the old value of the property
 	 * @param newValue      the new value of the property
 	 */
-	protected void firePropertyChange(String prop, Object oldValue,
+	public void firePropertyChange(String prop, Object oldValue,
 																		Object newValue) {
 		listeners.firePropertyChange(prop, oldValue, newValue);
 	}

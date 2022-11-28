@@ -7,8 +7,13 @@ import org.openlca.app.tools.graphics.actions.retarget.EditConfigRetargetAction;
 import org.openlca.app.tools.graphics.BasicActionBarContributor;
 import org.openlca.app.tools.graphics.actions.retarget.LayoutAsTreeRetargetAction;
 import org.openlca.app.tools.graphics.actions.retarget.OpenEditorRetargetAction;
+import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
 
 public class SankeyBarContributor extends BasicActionBarContributor {
+
+	public SankeyBarContributor(GraphicalEditorWithFrame editor) {
+		super(editor);
+	}
 
 	protected void buildActions() {
 		super.buildActions();

@@ -50,7 +50,7 @@ public class BasicContextMenuProvider extends ContextMenuProvider {
 		var focus = actionRegistry.getAction(ActionIds.FOCUS);
 		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, focus);
 
-		var openMiniature = actionRegistry.getAction(ActionIds.OPEN_MINIATURE_VIEW);
+		var openMiniature = actionRegistry.getAction(ActionIds.MINIMAP);
 		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, openMiniature);
 	}
 

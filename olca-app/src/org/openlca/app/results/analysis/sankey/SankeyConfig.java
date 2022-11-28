@@ -42,11 +42,13 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 		if (editor.result == null)
 			return;
 
-		if (editor.result.hasImpacts())
+		if (editor.result.hasImpacts()) {
 			selection = editor.items.impacts()
 					.stream()
 					.min((i1, i2) -> Strings.compare(i1.name, i2.name))
 					.orElse(null);
+
+		}
 
 		if (selection == null)
 			selection = editor.items.enviFlows()
@@ -115,7 +117,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 	public void setTheme(Theme theme) {
 		if (theme != null) {
 			this.theme = theme;
-			firePropertyChange(CONFIG_PROP, null, theme);
+			firePropertyChange(CONFIG_PROP, null, this);
 		}
 	}
 

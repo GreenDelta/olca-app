@@ -17,7 +17,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.actions.FocusAction;
-import org.openlca.app.tools.graphics.actions.OpenMiniatureViewAction;
 import org.openlca.app.tools.graphics.actions.ZoomInAction;
 import org.openlca.app.tools.graphics.actions.ZoomOutAction;
 import org.openlca.app.tools.graphics.edit.RootEditPart;
@@ -35,8 +34,9 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 
 	// Set zoom levels from 0.1 to 3.0 with an incrementing factor of 5%.
 	private static final int ZOOM_LEVELS_LENGTH =
-			(int) Math.ceil(Math.log(3.0/0.1) / Math.log(1.05));
+			(int) Math.ceil(Math.log(3.0 / 0.1) / Math.log(1.05));
 	public static final double[] ZOOM_LEVELS = new double[ZOOM_LEVELS_LENGTH];
+
 	static {
 		for (int i = 0; i < ZOOM_LEVELS_LENGTH; i++) {
 			ZOOM_LEVELS[i] = Math.pow(1.05, i) * 0.1;
@@ -70,8 +70,8 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 
 		var zoom = root.getZoomManager();
 		zoom.setZoomLevels(ZOOM_LEVELS);
-		var zoomStrings = new String[] { ZoomManager.FIT_ALL,
-				ZoomManager.FIT_HEIGHT, ZoomManager.FIT_WIDTH };
+		var zoomStrings = new String[]{ZoomManager.FIT_ALL,
+				ZoomManager.FIT_HEIGHT, ZoomManager.FIT_WIDTH};
 		root.getZoomManager().setZoomLevelContributions(List.of(zoomStrings));
 		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
 		var zoomIn = new ZoomInAction(root.getZoomManager());
@@ -107,9 +107,6 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 		selectionActions.add(action.getId());
 
 		action = new FocusAction(this);
-		registry.registerAction(action);
-
-		action = new OpenMiniatureViewAction(this);
 		registry.registerAction(action);
 	}
 
@@ -181,7 +178,7 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 		// Zoom
 		var manager = getZoomManager();
 		if (manager != null)
-			manager.setZoom(getModel().getZoom());
+			manager.setZoom(getModel().getZoom(), false);
 		getGraphicalViewer().setProperty(
 				MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
 				MouseWheelZoomHandler.SINGLETON);
@@ -200,8 +197,7 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 		if (action.isEnabled()) {
 			action.run();
 			return true;
-		}
-		else return false;
+		} else return false;
 	}
 
 }
