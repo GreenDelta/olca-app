@@ -1,8 +1,6 @@
 package org.openlca.app.editors.graphical.layouts;
 
 import org.eclipse.gef.GraphicalViewer;
-import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.figures.NodeFigure;
 import org.openlca.app.editors.graphical.model.Graph;

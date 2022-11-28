@@ -10,7 +10,6 @@ import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.Sankey;
 import org.openlca.util.Strings;
 

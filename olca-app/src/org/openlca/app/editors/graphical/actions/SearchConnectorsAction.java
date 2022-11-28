@@ -1,6 +1,5 @@
 package org.openlca.app.editors.graphical.actions;
 
-import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -11,7 +10,6 @@ import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.commands.MassCreationCommand;
 import org.openlca.app.editors.graphical.search.ConnectionDialog;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.RootDescriptor;
 

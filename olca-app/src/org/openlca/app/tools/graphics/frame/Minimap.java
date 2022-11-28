@@ -8,7 +8,6 @@ import org.eclipse.draw2d.parts.ScrollableThumbnail;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Canvas;

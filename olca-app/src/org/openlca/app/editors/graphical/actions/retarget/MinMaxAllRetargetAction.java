@@ -5,8 +5,6 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.GraphActionIds;
 import org.openlca.app.rcp.images.Icon;
 
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
 

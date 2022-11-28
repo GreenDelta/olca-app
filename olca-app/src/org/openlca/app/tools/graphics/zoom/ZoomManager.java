@@ -49,10 +49,6 @@ import static org.openlca.app.tools.graphics.edit.RootEditPart.MARGIN_PADDING;
 public class ZoomManager {
 
 	/**
-	 * Style bit meaning don't animate any zooms
-	 */
-	public static final int ANIMATE_NEVER = 0;
-	/**
 	 * Style bit meaning animate during {@link #zoomIn(boolean)} and
 	 * {@link #zoomOut(boolean)}
 	 */

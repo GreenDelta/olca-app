@@ -1,8 +1,6 @@
 package org.openlca.app.results.analysis.sankey.layouts;
 
 import org.eclipse.gef.GraphicalViewer;
-import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.results.analysis.sankey.edit.DiagramEditPart;
 import org.openlca.app.results.analysis.sankey.edit.SankeyNodeEditPart;
 import org.openlca.app.results.analysis.sankey.figures.SankeyNodeFigure;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
