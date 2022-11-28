@@ -8,6 +8,8 @@ import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
 
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+
 public class EditConfigCommand extends Command {
 
 	private final SankeyEditor editor;
@@ -47,6 +49,10 @@ public class EditConfigCommand extends Command {
 		newDiagram = editor.getSankeyFactory().createDiagram();
 
 		editor.setModel(newDiagram);
+		if (editor.getHeader() != null) {
+			editor.getHeader().setModel(newDiagram);
+			newDiagram.firePropertyChange(CONFIG_PROP, null, newDiagram.getConfig());
+		}
 		viewer.setContents(newDiagram);
 	}
 

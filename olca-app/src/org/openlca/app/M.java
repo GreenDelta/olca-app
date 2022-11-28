@@ -522,6 +522,7 @@ public class M extends NLS {
 	public static String Message;
 	public static String Methods;
 	public static String MinimalTree;
+	public static String Minimap;
 	public static String Minimize;
 	public static String MinimizeAll;
 	public static String Minimum;
@@ -625,7 +626,6 @@ public class M extends NLS {
 	public static String OpenInEditor;
 	public static String OpenLCALog;
 	public static String OpenLogFile;
-	public static String OpenMiniatureView;
 	public static String OpenPluginManager;
 	public static String OpenProvider;
 	public static String OpenUpdateManager;
@@ -898,6 +898,7 @@ public class M extends NLS {
 	public static String ToDirectory;
 	public static String ToFile;
 	public static String ToggleEditMode;
+	public static String ToggleMinimap;
 	public static String ToggleShowElementaryFlows;
 	public static String TotalAddedValue;
 	public static String TotalNetcosts;

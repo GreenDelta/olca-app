@@ -18,6 +18,7 @@ import org.openlca.app.tools.graphics.actions.retarget.OpenEditorRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.SetReferenceRetargetAction;
 import org.openlca.app.tools.graphics.BasicActionBarContributor;
 import org.openlca.app.tools.graphics.actions.ActionIds;
+import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
 
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
@@ -26,10 +27,8 @@ import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MIN
 
 public class GraphBarContributor extends BasicActionBarContributor {
 
-	private final GraphEditor editor;
-
-	public GraphBarContributor(GraphEditor editor) {
-		this.editor = editor;
+	public GraphBarContributor(GraphicalEditorWithFrame editor) {
+		super(editor);
 	}
 
 	@Override
@@ -107,7 +106,9 @@ public class GraphBarContributor extends BasicActionBarContributor {
 	}
 
 	public GraphConfig getConfig() {
-		return editor.config;
+		if (getEditor() instanceof GraphEditor graphEditor)
+			return graphEditor.config;
+		else return null;
 	}
 
 }

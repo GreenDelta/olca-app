@@ -10,12 +10,11 @@ import org.eclipse.ui.*;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.*;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
-import org.openlca.app.tools.graphics.BasicGraphicalEditor;
+import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
 import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.systems.ProductSystemEditor;
-import org.openlca.app.tools.graphics.actions.retarget.EditConfigRetargetAction;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -35,7 +34,7 @@ import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MIN
  * The <code>GraphModel</code>  is the head of the model to be further
  * displayed.
  */
-public class GraphEditor extends BasicGraphicalEditor {
+public class GraphEditor extends GraphicalEditorWithFrame {
 
 	public static final String ID = "GraphicalEditor";
 

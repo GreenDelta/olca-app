@@ -5,7 +5,7 @@ public interface ActionIds {
 	String EDIT_CONFIG = "sankey.actions.EditGraphSettingsAction";
 	String FOCUS = "graph.actions.FocusAction";
 	String OPEN_EDITOR = "graph.actions.OpenEditorAction";
-	String OPEN_MINIATURE_VIEW = "graph.actions.OpenMiniatureViewAction";
+	String MINIMAP = "graph.actions.MinimapAction";
 	String SAVE_IMAGE = "graph.actions.SaveImageAction";
 
 }

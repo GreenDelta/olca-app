@@ -11,14 +11,20 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.tools.graphics.actions.retarget.FocusRetargetAction;
-import org.openlca.app.tools.graphics.actions.retarget.OpenMiniatureViewRetargetAction;
+import org.openlca.app.tools.graphics.actions.retarget.MinimapRetargetAction;
 import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.actions.retarget.SaveImageRetargetAction;
+import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
 
 public class BasicActionBarContributor extends ActionBarContributor {
 
+	private final GraphicalEditorWithFrame editor;
 	private MenuManager viewMenu;
 	private MenuManager editMenu;
+
+	public BasicActionBarContributor(GraphicalEditorWithFrame editor) {
+		this.editor = editor;
+	}
 
 	@Override
 	protected void buildActions() {
@@ -26,7 +32,7 @@ public class BasicActionBarContributor extends ActionBarContributor {
 		addRetargetAction(new ZoomOutRetargetAction());
 		addRetargetAction(new MatchWidthRetargetAction());
 		addRetargetAction(new FocusRetargetAction());
-		addRetargetAction(new OpenMiniatureViewRetargetAction());
+		addRetargetAction(new MinimapRetargetAction(editor.getMinimap().isVisible()));
 		addRetargetAction(new SaveImageRetargetAction());
 	}
 
@@ -42,8 +48,8 @@ public class BasicActionBarContributor extends ActionBarContributor {
 		tbm.add(getAction(GEFActionConstants.ZOOM_OUT));
 		tbm.add(getAction(GEFActionConstants.MATCH_WIDTH));
 		tbm.add(getAction(ActionIds.FOCUS));
-		tbm.add(getAction(ActionIds.OPEN_MINIATURE_VIEW));
 		tbm.add(getAction(ActionIds.SAVE_IMAGE));
+		tbm.add(getAction(ActionIds.MINIMAP));
 	}
 
 	@Override
@@ -60,8 +66,8 @@ public class BasicActionBarContributor extends ActionBarContributor {
 		viewMenu.add(new Separator());
 		viewMenu.add(getAction(GEFActionConstants.MATCH_WIDTH));
 		viewMenu.add(getAction(ActionIds.FOCUS));
-		viewMenu.add(getAction(ActionIds.OPEN_MINIATURE_VIEW));
 		viewMenu.add(getAction(ActionIds.SAVE_IMAGE));
+		viewMenu.add(getAction(ActionIds.MINIMAP));
 		menuManager.insertAfter("File", viewMenu);
 	}
 
@@ -76,6 +82,10 @@ public class BasicActionBarContributor extends ActionBarContributor {
 
 	public MenuManager getEditMenu() {
 		return editMenu;
+	}
+
+	public GraphicalEditorWithFrame getEditor() {
+		return editor;
 	}
 
 }

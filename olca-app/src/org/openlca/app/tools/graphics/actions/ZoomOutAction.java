@@ -38,7 +38,7 @@ public class ZoomOutAction extends ZoomAction {
 	 * @see org.eclipse.jface.action.IAction#run()
 	 */
 	public void run() {
-		zoomManager.zoomOut();
+		zoomManager.zoomOut(false);
 	}
 
 	/**
