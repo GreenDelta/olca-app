@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.openlca.app.tools.graphics.tools;
 
-import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Handle;
 import org.eclipse.gef.tools.SelectionTool;

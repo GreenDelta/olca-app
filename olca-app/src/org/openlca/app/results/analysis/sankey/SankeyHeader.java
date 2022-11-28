@@ -12,7 +12,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.index.EnviFlow;
-import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 
 import java.beans.PropertyChangeEvent;

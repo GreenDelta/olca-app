@@ -4,7 +4,6 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.tools.graphics.model.commands.ComponentSetConstraintCommand;
 

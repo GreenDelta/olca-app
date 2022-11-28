@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.actions;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.core.model.FlowType;
 

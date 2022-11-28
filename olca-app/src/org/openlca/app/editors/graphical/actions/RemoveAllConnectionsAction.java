@@ -12,7 +12,6 @@ import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.ProcessLink;
 

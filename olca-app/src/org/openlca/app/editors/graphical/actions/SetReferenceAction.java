@@ -8,7 +8,6 @@ import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
-import org.openlca.app.rcp.images.Icon;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_SET_REFERENCE;
 

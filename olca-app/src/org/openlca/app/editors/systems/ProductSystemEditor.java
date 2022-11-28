@@ -11,8 +11,6 @@ import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.ProductSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
 

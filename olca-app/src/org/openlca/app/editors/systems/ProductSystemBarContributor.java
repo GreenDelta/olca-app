@@ -9,7 +9,6 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.tools.graphics.BasicGraphicalEditor;
 import org.openlca.app.tools.graphics.EditorActionBarContributor;
 import org.openlca.app.tools.graphics.MultiPageSubActionBars;
 import org.openlca.app.editors.graphical.actions.GraphBarContributor;
