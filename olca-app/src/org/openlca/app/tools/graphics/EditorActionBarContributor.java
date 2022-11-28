@@ -87,10 +87,16 @@ public abstract class EditorActionBarContributor extends
 
 	/**
 	 * This method fixes two problems:
-	 *  1. sub-actions were disabled when opening the first model graph of the
-	 *  session.
-	 *  2. sub-actions in the toolbar were invisible after closing every Product
-	 *  System editors and opening a new one.
+	 * <ol>
+	 *   <li>
+	 *     sub-actions were disabled when opening the first model graph of the
+	 *     session.
+	 *   </li>
+	 *   <li>
+	 *     sub-actions in the toolbar were invisible after closing every Product
+	 *     System editors and opening a new one.
+	 *   </li>
+	 * </ol>
 	 * <p>
 	 *  To solve the first issue, the focus is set to the Navigator and back to
 	 *  the model graph editor. This operation somehow updates the actions and
