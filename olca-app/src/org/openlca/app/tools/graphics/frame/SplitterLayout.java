@@ -10,7 +10,6 @@ import java.util.Arrays;
 
 public class SplitterLayout extends Layout {
 
-
 	@Override
 	protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 		var area = composite.getParent().getClientArea();
@@ -52,8 +51,14 @@ public class SplitterLayout extends Layout {
 		if (figureCanvas != null) {
 			if (map != null) {
 				map.moveAbove(figureCanvas);
-				var s = computeSize(map, SWT.DEFAULT, SWT.DEFAULT, flushCache);
-				map.setBounds(area.width - s.x, area.height - s.y, s.x, s.y);
+				var size = computeSize(map, SWT.DEFAULT, SWT.DEFAULT, flushCache);
+				var xOffset = figureCanvas.getVerticalBar().getSize().x;
+				var yOffset = figureCanvas.getHorizontalBar().getSize().y;
+				map.setBounds(
+						area.width - size.x - xOffset,
+						area.height - size.y - yOffset,
+						size.x, size.y
+				);
 			}
 			if (header != null) {
 				header.moveAbove(figureCanvas);
