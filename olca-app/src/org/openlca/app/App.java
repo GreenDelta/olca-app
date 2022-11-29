@@ -67,19 +67,20 @@ public class App {
 			if (solver != null)
 				return solver;
 
-			// try to load the native libraries
-			try {
-				NativeLib.loadFrom(Workspace.root());
-				if (!NativeLib.isLoaded()) {
-					NativeLib.loadFrom(getInstallLocation());
-				}
-			} catch (Throwable e) {
-				ErrorReporter.on("Failed to load native libraries", e);
+			// try to load the native libraries, first try the workspace and
+			// then the installation location
+			var workspace = Workspace.root();
+			if (NativeLib.isLibraryDir(workspace)) {
+				NativeLib.loadFrom(workspace);
+			}
+			var installDir = getInstallLocation();
+			if (!NativeLib.isLoaded() && NativeLib.isLibraryDir(installDir)) {
+				NativeLib.loadFrom(installDir);
 			}
 
 			if (NativeLib.isLoaded()) {
 				log.info("loaded native libraries; with UMFPACK={}",
-					NativeLib.isLoaded(Module.UMFPACK));
+						NativeLib.isLoaded(Module.UMFPACK));
 				solver = new NativeSolver();
 			} else {
 				log.warn("could not load a high-performance library for calculations");
