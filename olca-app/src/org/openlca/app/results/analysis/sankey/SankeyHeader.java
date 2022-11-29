@@ -58,7 +58,7 @@ public class SankeyHeader extends Header implements PropertyChangeListener {
 		button.setImage(Icon.PREFERENCES.get());
 
 		info = new Composite(this, SWT.NONE);
-		info.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, true));
+		info.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		var infoLayout = new GridLayout(3, false);
 		infoLayout.horizontalSpacing = 30;
 		infoLayout.marginHeight = 0;
@@ -226,7 +226,7 @@ public class SankeyHeader extends Header implements PropertyChangeListener {
 			setReferenceType();
 			setProcessMaxNumber();
 			setMinContributionShare();
-			layout();
+			info.layout();
 		}
 	}
 

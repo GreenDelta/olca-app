@@ -4,7 +4,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.parts.ScrollableThumbnail;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
@@ -24,14 +23,24 @@ import java.util.Comparator;
 public class Minimap extends Composite {
 
 	protected static Dimension DEFAULT_SIZE = new Dimension(250, 250);
+	private final MinimapLayout layout;
 
 	private RootEditPart rootEditPart;
-	private ScrollableThumbnail thumbnail;
+	private MinimapThumbnail thumbnail;
 	private DisposeListener disposeListener;
+	private Label scaleLabel;
+	private Scale scale;
+	private LightweightSystem lws;
 
 	public Minimap(Composite parent, int style) {
-		super(parent, style);
-		setLayout(new GridLayout(1, true));
+		super(parent, style | SWT.BORDER);
+
+		layout = new MinimapLayout();
+		setLayout(layout);
+	}
+
+	public RootEditPart getRootEditPart() {
+		return rootEditPart;
 	}
 
 	protected void initialize() {
@@ -44,11 +53,14 @@ public class Minimap extends Composite {
 	}
 
 	protected void createZoomScale() {
-		var zoomScale = new Composite(this, SWT.TRANSPARENT);
-		zoomScale.setLayout(new GridLayout(2, false));
-		zoomScale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		var zoomScale = new ZoomScale(this, SWT.NONE);
 
-		var scale = new Scale(zoomScale, SWT.TRANSPARENT);
+		var zoomScaleLayout = new GridLayout(2, false);
+		zoomScaleLayout.marginHeight = 0;
+		zoomScaleLayout.marginWidth = 0;
+		zoomScale.setLayout(zoomScaleLayout);
+
+		scale = new Scale(zoomScale, SWT.NONE);
 		scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		final double[] values = BasicGraphicalEditor.ZOOM_LEVELS;
@@ -56,30 +68,22 @@ public class Minimap extends Composite {
 		scale.setMinimum(0);
 		scale.setMaximum(values.length - 1);
 
-
 		var zoomManager = rootEditPart.getZoomManager();
 		Controls.onSelect(scale,
 				(e) -> zoomManager.setZoom(values[scale.getSelection()], false));
 		scale.setSelection(getIndex(values, zoomManager.getZoom()));
 
-		var label = new Label(zoomScale, SWT.TRANSPARENT);
-		label.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		scaleLabel = new Label(zoomScale, SWT.NONE);
+		scaleLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		int percentage = (int) (100 * zoomManager.getZoom());
-		label.setText(percentage + "% ");
-
-		zoomManager.addZoomListener(zoom -> {
-			int newPercentage = (int) (100 * zoom);
-			label.setText(newPercentage + "%");
-			scale.setSelection(getIndex(values, zoom));
-		});
+		scaleLabel.setText(percentage + "% ");
 	}
 
 	protected void createCanvas() {
-		var canvas = new Canvas(this, SWT.TRANSPARENT);
-		canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		var canvas = new Canvas(this, SWT.NONE);
 
-		var lws = new LightweightSystem(canvas);
-		thumbnail = new ScrollableThumbnail((Viewport) rootEditPart.getFigure());
+		lws = new LightweightSystem(canvas);
+		thumbnail = new MinimapThumbnail((Viewport) rootEditPart.getFigure());
 		thumbnail.setSource(rootEditPart.getLayer(LayerConstants.PRINTABLE_LAYERS));
 		lws.setContents(thumbnail);
 
@@ -88,11 +92,29 @@ public class Minimap extends Composite {
 		viewer.getControl().addDisposeListener(disposeListener);
 	}
 
+	public void activate() {
+		var viewer = getRootEditPart().getViewer();
+		if (viewer != null) {
+			disposeListener = e -> deactivate();
+			viewer.getControl().addDisposeListener(disposeListener);
+		}
+
+		var zoomManager = getRootEditPart().getZoomManager();
+		zoomManager.addZoomListener(zoom -> {
+			int newPercentage = (int) (100 * zoom);
+			scaleLabel.setText(newPercentage + "%");
+			scale.setSelection(getIndex(BasicGraphicalEditor.ZOOM_LEVELS, zoom));
+		});
+	}
+
 	private void deactivate() {
 		if (thumbnail != null) {
 			thumbnail.deactivate();
 			thumbnail = null;
 		}
+		var viewer = rootEditPart.getViewer();
+		if (viewer != null && viewer.getControl() != null)
+			viewer.getControl().removeDisposeListener(disposeListener);
 	}
 
 	private int getIndex(double[] values, double zoom) {
@@ -101,6 +123,14 @@ public class Minimap extends Composite {
 				.min(Comparator.comparingDouble(i -> Math.abs(i - zoom)))
 				.orElse(values[0]);
 		return ArrayUtils.indexOf(values, zoomValue);
+	}
+
+	protected static class ZoomScale extends Composite {
+
+		public ZoomScale(Composite parent, int style) {
+			super(parent, style);
+		}
+
 	}
 
 }

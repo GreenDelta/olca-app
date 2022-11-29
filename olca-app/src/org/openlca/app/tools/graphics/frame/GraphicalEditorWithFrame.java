@@ -20,10 +20,11 @@ public abstract class GraphicalEditorWithFrame extends BasicGraphicalEditor {
 	}
 
 	public void createMinimap(Splitter parent) {
-		var minimap = new Minimap(parent, SWT.TRANSPARENT);
+		var minimap = new Minimap(parent, SWT.BORDER);
 		setMinimap(minimap);
 		minimap.setRootEditPart(getRootEditPart());
 		minimap.initialize();
+		minimap.activate();
 	}
 
 	public void createHeader(Splitter parent) {}
