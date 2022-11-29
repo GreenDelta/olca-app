@@ -73,7 +73,7 @@ public class App {
 				if (!NativeLib.isLoaded()) {
 					NativeLib.loadFrom(getInstallLocation());
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				ErrorReporter.on("Failed to load native libraries", e);
 			}
 
