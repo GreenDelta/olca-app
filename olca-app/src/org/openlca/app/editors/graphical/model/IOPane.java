@@ -21,6 +21,13 @@ public class IOPane extends Component {
 		return forInputs;
 	}
 
+	public boolean hasOnlyElementary() {
+		for (var item : getExchangesItems())
+			if (!item.isElementary())
+				return false;
+		return true;
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<ExchangeItem> getExchangesItems() {
 		return (List<ExchangeItem>) super.getChildren();

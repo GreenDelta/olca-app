@@ -9,6 +9,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.*;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.tools.TargetingTool;
 import org.openlca.app.tools.graphics.figures.GridPos;
 import org.openlca.app.editors.graphical.figures.MaximizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.MinimizedNodeFigure;
@@ -23,16 +24,49 @@ import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 
 	@Override
+	public DragTracker getDragTracker(Request request) {
+		return new org.eclipse.gef.tools.DragEditPartsTracker(this) {
+			/**
+			 * This method is overriden to remove the use of
+			 * <code>getCurrentViewer().reveal(getSourceEditPart());</code> in
+			 * SelectEditPartTracker that moves the Canvas when clicking on a Node.
+			 * @param button
+			 *            the button being released
+			 * @return
+			 */
+			@Override
+			protected boolean handleButtonUp(int button) {
+				if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
+					eraseSourceFeedback();
+					eraseTargetFeedback();
+					performDrag();
+					return true;
+				}
+				if (isInState(STATE_DRAG)) {
+					performSelection();
+					if (getFlag(TargetingTool.MAX_FLAG << 2))
+						performDirectEdit();
+					setState(STATE_TERMINAL);
+					return true;
+				}
+				return false;
+			}
+		};
+	}
+
+	@Override
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
+		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE,
+				new NodeSelectionEditPolicy());
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
 		if (Component.SIZE_PROP.equals(prop)
-			|| Component.LOCATION_PROP.equals(prop)
-		  || Node.EXPANDED_PROP.equals(prop))
+				|| Component.LOCATION_PROP.equals(prop)
+				|| Node.EXPANDED_PROP.equals(prop))
 			refreshVisuals();
 		else super.propertyChange(evt);
 	}
@@ -52,7 +86,7 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 	protected void refreshVisuals() {
 		var bounds = new Rectangle(getModel().getLocation(), getModel().getSize());
 		((GraphicalEditPart) getParent()).setLayoutConstraint(this,
-			getFigure(), bounds);
+				getFigure(), bounds);
 		super.refreshVisuals();
 	}
 

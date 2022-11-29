@@ -16,7 +16,6 @@ import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.CreateNodeCommand;
 import org.openlca.app.editors.graphical.model.commands.CreateStickyNoteCommand;
 import org.openlca.app.editors.graphical.model.commands.EditConfigCommand;

@@ -9,12 +9,11 @@ import org.openlca.jsonld.Json;
 
 import java.util.Objects;
 
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
+
 public class GraphConfig extends Element implements Copyable<GraphConfig> {
 
 	public static final String CONFIG_PROP = "config";
-	public static final String ROUTER_NULL = "Straight lines";
-	public static final String ROUTER_CURVE = "Curved lines";
-	public static final String ROUTER_MANHATTAN = "Multi-segment lines";
 
 	private boolean showElementaryFlows = false;
 	private String connectionRouter = ROUTER_CURVE;

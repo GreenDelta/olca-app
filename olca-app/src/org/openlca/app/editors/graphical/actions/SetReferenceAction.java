@@ -8,7 +8,6 @@ import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
-import org.openlca.app.rcp.images.Icon;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_SET_REFERENCE;
 
@@ -18,9 +17,8 @@ public class SetReferenceAction extends SelectionAction {
 
 	public SetReferenceAction(GraphEditor part) {
 		super(part);
-		setId(ActionIds.SET_REFERENCE);
+		setId(GraphActionIds.SET_REFERENCE);
 		setText(NLS.bind(M.SetAsQuantitativeReference, M.Reference));
-		setImageDescriptor(Icon.FORMULA.descriptor());
 	}
 
 	@Override

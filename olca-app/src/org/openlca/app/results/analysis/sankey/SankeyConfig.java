@@ -6,14 +6,14 @@ import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.core.model.Copyable;
 import org.openlca.util.Strings;
 
+import java.util.Objects;
+
 import static org.eclipse.draw2d.PositionConstants.NORTH;
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
 
 public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 
 	public static final String CONFIG_PROP = "config";
-	public static final String ROUTER_NULL = "Straight line";
-	public static final String ROUTER_CURVE = "Curve";
-	public static final String ROUTER_MANHATTAN = "Manhattan";
 
 	private final SankeyEditor editor;
 
@@ -42,11 +42,13 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 		if (editor.result == null)
 			return;
 
-		if (editor.result.hasImpacts())
+		if (editor.result.hasImpacts()) {
 			selection = editor.items.impacts()
 					.stream()
 					.min((i1, i2) -> Strings.compare(i1.name, i2.name))
 					.orElse(null);
+
+		}
 
 		if (selection == null)
 			selection = editor.items.enviFlows()
@@ -115,7 +117,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 	public void setTheme(Theme theme) {
 		if (theme != null) {
 			this.theme = theme;
-			firePropertyChange(CONFIG_PROP, null, theme);
+			firePropertyChange(CONFIG_PROP, null, this);
 		}
 	}
 
@@ -144,6 +146,13 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 		if (orientation == this.orientation)
 			return;
 		this.orientation = orientation;
+		firePropertyChange(CONFIG_PROP, null, this);
+	}
+
+	public void setConnectionRouter(String connectionRouter) {
+		if (Objects.equals(connectionRouter, this.connectionRouter))
+			return;
+		this.connectionRouter = connectionRouter;
 		firePropertyChange(CONFIG_PROP, null, this);
 	}
 

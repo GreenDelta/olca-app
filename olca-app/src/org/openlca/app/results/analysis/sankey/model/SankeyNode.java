@@ -10,7 +10,6 @@ import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.Sankey;
 import org.openlca.util.Strings;
 
@@ -18,22 +17,19 @@ import static org.openlca.app.results.analysis.sankey.layouts.SankeyLayout.DEFAU
 
 public class SankeyNode extends Component {
 
-	public static final Dimension DEFAULT_SIZE = new Dimension(250, SWT.DEFAULT);
+	public static final Dimension DEFAULT_SIZE = new Dimension(280, SWT.DEFAULT);
 
 	public final Sankey.Node node;
 	public final TechFlow product;
-	public final double totalResult;
-	public final double totalShare;
-	public final double directResult;
 	public final double directShare;
 	public final String unit;
 
-	public SankeyNode(Sankey.Node node, Sankey<?> sankey, LcaResult result) {
+	public SankeyNode(Sankey.Node node, Sankey<?> sankey) {
 		this.node = node;
 		product = node.product;
-		totalShare = node.share;
-		directResult = node.direct;
-		totalResult = node.total;
+		directShare = sankey.root.total != 0
+				? Math.abs(node.direct / sankey.root.total) + 0.0
+				: 0;
 
 		var db = Database.get();
 
@@ -46,16 +42,6 @@ public class SankeyNode extends Component {
 		else if (sankey.reference instanceof CostResultDescriptor cost)
 			unit = cost.name;
 		else unit = "";
-
-		// calculate the direct result share
-		if (sankey == null || sankey.root == null) {
-			directShare = 0;
-		} else {
-			var total = sankey.root.total;
-			directShare = total != 0
-					? node.direct / total
-					: 0;
-		}
 
 		setLocation(DEFAULT_LOCATION);
 		setSize(DEFAULT_SIZE);

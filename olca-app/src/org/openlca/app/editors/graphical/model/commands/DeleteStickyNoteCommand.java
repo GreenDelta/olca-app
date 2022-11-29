@@ -2,11 +2,8 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.GraphLink;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.StickyNote;
 
-import java.util.List;
 
 public class DeleteStickyNoteCommand extends Command {
 	/** Node to remove. */

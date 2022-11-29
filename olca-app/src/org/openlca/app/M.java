@@ -32,6 +32,7 @@ public class M extends NLS {
 	public static String AddProcess;
 	public static String AddScore;
 	public static String AddSection;
+	public static String AddStickyNote;
 	public static String AddToMethodParameters;
 	public static String AddedValue;
 	public static String AdditionalInformation;
@@ -227,7 +228,7 @@ public class M extends NLS {
 	public static String DatabaseImport;
 	public static String DatabaseImportDescription;
 	public static String DatabaseName;
-	public static String DatabaseNeedsUpdate;
+	public static String DatabaseNewerThanThisError;
 	public static String DatabaseRenameError;
 	public static String DatabaseType;
 	public static String DatabaseValidationCompleteNoErrorsWereFound;
@@ -273,6 +274,8 @@ public class M extends NLS {
 	public static String Economic;
 	public static String Edit;
 	public static String EditFlow;
+	public static String EditMode;
+	public static String EditStickyNote;
 	public static String ElementaryFlow;
 	public static String Email;
 	public static String EmptyDatabase;
@@ -519,6 +522,7 @@ public class M extends NLS {
 	public static String Message;
 	public static String Methods;
 	public static String MinimalTree;
+	public static String Minimap;
 	public static String Minimize;
 	public static String MinimizeAll;
 	public static String Minimum;
@@ -622,7 +626,6 @@ public class M extends NLS {
 	public static String OpenInEditor;
 	public static String OpenLCALog;
 	public static String OpenLogFile;
-	public static String OpenMiniatureView;
 	public static String OpenPluginManager;
 	public static String OpenProvider;
 	public static String OpenUpdateManager;
@@ -796,7 +799,9 @@ public class M extends NLS {
 	public static String SearchInSources;
 	public static String SearchInUnitGroups;
 	public static String SearchParameters;
+	public static String SearchProviders;
 	public static String SearchProvidersFor;
+	public static String SearchRecipients;
 	public static String SearchRecipientsFor;
 	public static String SearchResults;
 	public static String Searching;
@@ -829,6 +834,7 @@ public class M extends NLS {
 	public static String SettingsForTheSankeyDiagram;
 	public static String Show;
 	public static String ShowComments;
+	public static String ShowElementaryFlows;
 	public static String ShowExecutedUpdates;
 	public static String ShowFormulas;
 	public static String ShowInHistory;
@@ -891,6 +897,9 @@ public class M extends NLS {
 	public static String Title;
 	public static String ToDirectory;
 	public static String ToFile;
+	public static String ToggleEditMode;
+	public static String ToggleMinimap;
+	public static String ToggleShowElementaryFlows;
 	public static String TotalAddedValue;
 	public static String TotalNetcosts;
 	public static String TotalRequirements;

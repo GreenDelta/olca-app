@@ -25,9 +25,9 @@ public final class MouseWheelZoomHandler implements MouseWheelHandler {
 			.getProperty(ZoomManager.class.toString());
 		if (zoomMgr != null) {
 			if (event.count > 0)
-				zoomMgr.zoomIn();
+				zoomMgr.zoomIn(true);
 			else
-				zoomMgr.zoomOut();
+				zoomMgr.zoomOut(true);
 			event.doit = false;
 		}
 	}

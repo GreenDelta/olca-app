@@ -2,7 +2,6 @@ package org.openlca.app.editors.systems;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.openlca.app.M;
@@ -12,6 +11,8 @@ import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.ProductSystem;
+
+import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
 
 public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 
@@ -60,6 +61,9 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			var viewer = (GraphicalViewer) graphEditor
 					.getAdapter(GraphicalViewer.class);
 			viewer.setContents(graph);
+
+			// Artificially refreshing the ActionBarContributor.
+			refreshActionBar(this);
 
 			removePageChangedListener(listener);
 			graphInit.set(null);

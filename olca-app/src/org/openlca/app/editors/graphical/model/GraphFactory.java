@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.model;
 import java.util.*;
 
 import com.google.gson.JsonArray;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
@@ -11,12 +10,10 @@ import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
-import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 
 import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
 import static org.openlca.app.editors.graphical.model.Node.OUTPUT_PROP;

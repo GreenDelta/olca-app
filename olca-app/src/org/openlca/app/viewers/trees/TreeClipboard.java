@@ -31,7 +31,7 @@ public final class TreeClipboard {
 	 * Registers Ctr+c for copying table content to clipboard and returns an
 	 * action which also calls this function.
 	 */
-	public static Action onCopy(TreeViewer viewer, ClipboardLabelProvider label) {
+	public static Action onCopy(TreeViewer viewer, Provider label) {
 		return onCopy(viewer.getTree(), label);
 	}
 
@@ -40,14 +40,14 @@ public final class TreeClipboard {
 	 * action which also calls this function.
 	 */
 	public static Action onCopy(Tree tree) {
-		return onCopy(tree, new DefaultLabel(tree));
+		return onCopy(tree, new DefaultProvider(tree));
 	}
 
 	/**
 	 * Registers Ctr+c for copying table content to clipboard and returns an
 	 * action which also calls this function.
 	 */
-	public static Action onCopy(Tree tree, ClipboardLabelProvider label) {
+	public static Action onCopy(Tree tree, Provider label) {
 		tree.addListener(SWT.KeyUp, (event) -> {
 			if (event.stateMask == SWT.CTRL && event.keyCode == 'c') {
 				copy(tree, label);
@@ -57,58 +57,73 @@ public final class TreeClipboard {
 		return Actions.create(M.Copy, image, () -> copy(tree, label));
 	}
 
-	private static void copy(Tree tree, ClipboardLabelProvider label) {
+	private static void copy(Tree tree, Provider label) {
 		if (tree == null)
 			return;
-		StringBuilder text = new StringBuilder();
-		copyHeaders(tree, label, text);
+		var text = new StringBuilder();
+		copyHeaders(label, text);
 		copyItems(tree, label, text);
-		Clipboard clipboard = new Clipboard(UI.shell().getDisplay());
-		clipboard.setContents(new String[] { text.toString() }, new Transfer[] { TextTransfer.getInstance() });
+		var clipboard = new Clipboard(UI.shell().getDisplay());
+		clipboard.setContents(
+				new String[]{text.toString()},
+				new Transfer[]{TextTransfer.getInstance()});
 		clipboard.dispose();
 	}
 
-	private static void copyHeaders(Tree tree, ClipboardLabelProvider label, StringBuilder text) {
-		int cols = label.columns();
+	private static void copyHeaders(Provider provider, StringBuilder text) {
+		int cols = provider.columns();
 		for (int col = 0; col < cols; col++) {
-			String s = label.getHeader(col);
-			text.append(s == null ? "" : s);
-			if (col != (cols - 1))
+			if (col > 0) {
 				text.append('\t');
+			}
+			var s = provider.getHeader(col);
+			text.append(s == null ? "" : s);
 		}
 		text.append('\n');
 	}
 
-	private static void copyItems(Tree tree, ClipboardLabelProvider label, StringBuilder text) {
-		int cols = label.columns();
-		for (TreeItem item : tree.getSelection()) {
-			for (int col = 0; col < cols; col++) {
-				String s = label.getLabel(item, col);
-				text.append(s == null ? "" : s);
-				if (col != (cols - 1))
+	private static void copyItems(
+			Tree tree, Provider provider, StringBuilder text) {
+		for (var item : tree.getSelection()) {
+			for (int col = 0; col < provider.columns(); col++) {
+				if (col > 0) {
 					text.append('\t');
+				} else {
+					int level = levelOf(item);
+					if (level > 0) {
+						text.append("  ".repeat(level));
+					}
+				}
+				var s = provider.getLabel(item, col);
+				text.append(s == null ? "" : s);
 			}
 			text.append('\n');
 		}
 	}
 
-	public static interface ClipboardLabelProvider {
+	private static int levelOf(TreeItem item) {
+		if (item == null)
+			return -1;
+		int level = 0;
+		var parent = item.getParentItem();
+		while (parent != null) {
+			level++;
+			parent = parent.getParentItem();
+		}
+		return level;
+	}
 
-		public int columns();
+	public interface Provider {
 
-		public String getHeader(int col);
+		int columns();
 
-		public String getLabel(TreeItem item, int col);
+		String getHeader(int col);
+
+		String getLabel(TreeItem item, int col);
 
 	}
 
-	private static class DefaultLabel implements ClipboardLabelProvider {
-
-		private Tree tree;
-
-		private DefaultLabel(Tree tree) {
-			this.tree = tree;
-		}
+	private record DefaultProvider(Tree tree) implements Provider {
 
 		@Override
 		public int columns() {
@@ -124,7 +139,6 @@ public final class TreeClipboard {
 		public String getLabel(TreeItem item, int col) {
 			return item.getText(col);
 		}
-
 	}
 
 }

@@ -22,7 +22,6 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ModelType;
-import org.openlca.ilcd.models.Model;
 
 import java.util.Collections;
 import java.util.List;

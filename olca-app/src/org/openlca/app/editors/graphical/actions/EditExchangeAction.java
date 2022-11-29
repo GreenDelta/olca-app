@@ -15,7 +15,7 @@ public class EditExchangeAction extends SelectionAction {
 
 	public EditExchangeAction(GraphEditor part) {
 		super(part);
-		setId(ActionIds.EDIT_EXCHANGE);
+		setId(GraphActionIds.EDIT_EXCHANGE);
 		setText(M.EditFlow);
 		setImageDescriptor(Icon.EDIT.descriptor());
 	}

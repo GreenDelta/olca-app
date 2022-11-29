@@ -26,7 +26,7 @@ in HTML5 and JavaScript. To compile it from source you need to have the
 following tools installed:
 
 * [Git](https://git-scm.com/) (optional)
-* a [Java Development Kit >= v13](https://adoptopenjdk.net/)
+* a [Java Development Kit >= v17](https://adoptium.net)
 * [Maven](http://maven.apache.org/)
 * the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/packages/)
 * [Node.js](https://nodejs.org/) 
@@ -42,7 +42,7 @@ Maven projects and can be installed via `mvn install`. See the
 information.
 
 #### Get the source code of the application
-We recommend that to use Git to manage the source code but you can also download
+We recommend to use Git to manage the source code but you can also download
 the source code as a [zip file](https://github.com/GreenDelta/olca-app/archive/master.zip).
 Create a development directory (the path should not contain whitespaces):
 

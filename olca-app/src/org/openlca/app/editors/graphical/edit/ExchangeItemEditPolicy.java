@@ -4,13 +4,14 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
+import org.openlca.app.editors.graphical.figures.ExchangeFigure;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
-import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
 import org.openlca.app.editors.graphical.model.commands.ReconnectLinkCommand;
@@ -41,11 +42,11 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Command getConnectionCompleteCommand(CreateConnectionRequest req) {
-		CreateLinkCommand cmd = (CreateLinkCommand) req.getStartCommand();
+		var cmd = (CreateLinkCommand) req.getStartCommand();
 		if (cmd == null)
 			return null;
-		ExchangeItem toConnect = (ExchangeItem) req.getTargetEditPart().getModel();
-		ExchangeItem other = cmd.startedFromSource ? cmd.source : cmd.target;
+		var toConnect = (ExchangeItem) req.getTargetEditPart().getModel();
+		var other = cmd.startedFromSource ? cmd.source : cmd.target;
 		if (!toConnect.matches(other) || toConnect.isConnected()) {
 			cmd.completeWith(null);
 			req.setStartCommand(cmd);
@@ -103,21 +104,26 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	public void eraseSourceFeedback(Request request) {
-		ExchangeItem exchangeItem = (ExchangeItem) getHost().getModel();
-		Graph graph = exchangeItem.getGraph();
-		// TODO highlighting
-		//		graph.removeHighlighting();
-		//		exchangeItem.setHighlighted(false);
+		highlightMatchingItems(false);
 		super.eraseSourceFeedback(request);
 	}
 
 	@Override
 	public void showSourceFeedback(Request request) {
-		ExchangeItem exchangeItem = (ExchangeItem) getHost().getModel();
-		Graph graph = exchangeItem.getGraph();
-		// TODO highlighting
-		//		graph.highlightMatchingExchanges(exchangeItem);
-		//		exchangeItem.setHighlighted(true);
+		highlightMatchingItems(true);
 		super.showSourceFeedback(request);
 	}
+
+	private void highlightMatchingItems(boolean b) {
+		var exchangeItem = (ExchangeItem) getHost().getModel();
+		var editor = exchangeItem.getGraph().getEditor();
+		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
+		var registry = viewer.getEditPartRegistry();
+		for (var part : registry.values())
+			if (part instanceof ExchangeEditPart exchangePart) {
+				if (exchangeItem.matches(exchangePart.getModel()))
+					((ExchangeFigure) exchangePart.getFigure()).setHighlighted(b);
+			}
+	}
+
 }

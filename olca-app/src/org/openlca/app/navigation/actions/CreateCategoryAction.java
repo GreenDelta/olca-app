@@ -3,6 +3,7 @@ package org.openlca.app.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.M;
@@ -101,11 +102,22 @@ class CreateCategoryAction extends Action implements INavigationAction {
 	private String getDialogValue() {
 		var dialog = new InputDialog(UI.shell(), M.NewCategory,
 				M.PleaseEnterTheNameOfTheNewCategory,
-				M.NewCategory, null);
+				M.NewCategory, new CategoryNameValidator());
 		int rc = dialog.open();
 		if (rc == Window.OK)
 			return dialog.getValue();
 		return null;
+	}
+
+	static class CategoryNameValidator implements IInputValidator {
+
+		@Override
+		public String isValid(String newText) {
+			if (newText != null && newText.contains("/"))
+				return "The character / can not be used";
+			return null;
+		}
+
 	}
 
 }

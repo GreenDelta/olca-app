@@ -16,6 +16,7 @@ import org.openlca.app.util.UI;
 
 public class SankeyNodeFigure extends ComponentFigure {
 
+	private static final Integer PERCENTAGE_SIGNIF_NUMBER = 3;
 	private static final Integer SIGNIF_NUMBER = 3;
 	public final static Dimension HEADER_ARC_SIZE = new Dimension(15, 15);
 
@@ -78,7 +79,8 @@ public class SankeyNodeFigure extends ComponentFigure {
 	}
 
 	private Label createDirectLabel() {
-		var percentage = Numbers.format(node.directShare * 100, SIGNIF_NUMBER);
+		var percentage = Numbers.format(node.directShare * 100,
+				PERCENTAGE_SIGNIF_NUMBER);
 		var label = new Label(M.Direct + " (" + percentage + "%)" + ":");
 		label.setForegroundColor(theme.boxFontColor(box));
 		label.setFont(UI.boldFont());
@@ -86,14 +88,15 @@ public class SankeyNodeFigure extends ComponentFigure {
 	}
 
 	private Label createDirectValue() {
-		var val = Numbers.format(node.directResult, SIGNIF_NUMBER);
+		var val = Numbers.format(node.node.direct, SIGNIF_NUMBER);
 		var label = new Label(val + " " + node.unit);
 		label.setForegroundColor(theme.boxFontColor(box));
 		return label;
 	}
 
 	private Label createUpstreamLabel() {
-		var percentage = Numbers.format(node.totalShare * 100, SIGNIF_NUMBER);
+		var percentage = Numbers.format(node.node.share * 100,
+				PERCENTAGE_SIGNIF_NUMBER);
 		var label = new Label(M.UpstreamTotal + " (" + percentage + "%)" + ":");
 		label.setForegroundColor(theme.boxFontColor(box));
 		label.setFont(UI.boldFont());
@@ -101,7 +104,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 	}
 
 	private Label createUpstreamValue() {
-		var val = Numbers.format(node.totalShare, SIGNIF_NUMBER);
+		var val = Numbers.format(node.node.total, SIGNIF_NUMBER);
 		var label = new Label(val + " " + node.unit);
 		label.setForegroundColor(theme.boxFontColor(box));
 		return label;

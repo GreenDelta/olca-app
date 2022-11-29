@@ -10,8 +10,6 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.app.util.MsgBox;
-import org.openlca.core.database.IDatabase;
 import org.openlca.git.ObjectIdStore;
 import org.openlca.git.find.Commits;
 import org.openlca.git.find.Datasets;
@@ -37,7 +35,7 @@ public class Repository {
 	public final History localHistory;
 	private String password;
 
-	private Repository(IDatabase database, File gitDir) throws IOException {
+	private Repository(File gitDir) throws IOException {
 		git = new FileRepository(gitDir);
 		client = client(git);
 		var storeFile = new File(gitDir, "object-id.store");
@@ -53,13 +51,12 @@ public class Repository {
 		return current;
 	}
 
-	public static Repository open(IDatabase database) {
+	public static Repository open(File gitDir) {
 		close();
-		var gitDir = gitDir(database.getName());
 		if (!gitDir.exists() || !gitDir.isDirectory() || gitDir.listFiles().length == 0)
 			return null;
 		try {
-			current = new Repository(database, gitDir);
+			current = new Repository(gitDir);
 			return current;
 		} catch (IOException e) {
 			log.error("Error opening Git repo", e);
@@ -67,15 +64,15 @@ public class Repository {
 		}
 	}
 
-	public static Repository initialize(IDatabase database) {
-		open(database);
+	public static Repository initialize(File gitDir) throws WebRequestException {
+		open(gitDir);
 		if (current == null)
 			return null;
 		try {
 			current.isCollaborationServer(current.client.isCollaborationServer());
 		} catch (WebRequestException e) {
-			MsgBox.error("Could not connect, is this a Git server or a Collaboration Server 2.0?");
-			current.isCollaborationServer(false);
+			current = null;
+			throw e;
 		}
 		return current;
 	}

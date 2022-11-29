@@ -12,6 +12,7 @@ import org.openlca.app.App;
 import org.openlca.app.devtools.ScriptingEditor;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
+import org.openlca.app.logging.Console;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
@@ -39,6 +40,7 @@ public class PythonEditor extends ScriptingEditor {
 	@Override
 	public void eval() {
 		var script = page.getScript();
+		Console.show();
 		App.run("Eval script", () -> Jython.exec(script));
 	}
 

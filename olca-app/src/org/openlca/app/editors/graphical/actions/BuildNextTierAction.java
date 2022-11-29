@@ -35,7 +35,7 @@ public class BuildNextTierAction extends Action implements IBuildAction {
 	private ProviderLinking providers = ProviderLinking.ONLY_DEFAULTS;
 
 	public BuildNextTierAction() {
-		setId(ActionIds.BUILD_NEXT_TIER);
+		setId(GraphActionIds.BUILD_NEXT_TIER);
 		setText(M.BuildNextTier);
 		flowDao = new FlowDao(Database.get());
 		processDao = new ProcessDao(Database.get());

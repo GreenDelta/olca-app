@@ -12,8 +12,6 @@ import org.eclipse.swt.widgets.Display;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.actions.ActionIds;
 import org.openlca.app.rcp.images.Icon;
 
 import java.io.File;

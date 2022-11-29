@@ -2,22 +2,22 @@ package org.openlca.app.results.analysis.sankey.model;
 
 import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
+import org.openlca.app.tools.graphics.model.BaseComponent;
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.core.results.Sankey;
 
-public class Diagram extends Component {
+public class Diagram extends BaseComponent {
 
 	public final SankeyEditor editor;
 	public final int orientation;
-	private double zoom = 1.0;
 
 	public Diagram(SankeyEditor editor, int orientation) {
 		this.editor = editor;
 		this.orientation = orientation;
 	}
 
-	public double getZoom() {
-		return zoom;
+	public SankeyEditor getEditor() {
+		return editor;
 	}
 
 	public SankeyNode getNode(Sankey.Node node) {
@@ -37,13 +37,20 @@ public class Diagram extends Component {
 		return editor.config;
 	}
 
-	public String toString() {
-		return "DiagramModel";
-	}
-
 	@Override
 	public int compareTo(Component other) {
 		return 0;
+	}
+
+	@Override
+	public Component getFocusComponent() {
+		return  (editor != null && editor.getSankey() != null)
+				? getNode(editor.getSankey().root)
+				: null;
+	}
+
+	public String toString() {
+		return "DiagramModel";
 	}
 
 }

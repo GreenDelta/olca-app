@@ -1,13 +1,12 @@
 package org.openlca.app.util;
 
 import java.math.RoundingMode;
+import java.util.Objects;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.matrix.index.EnviFlow;
@@ -33,6 +32,7 @@ import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
+import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.CategoryPath;
@@ -48,37 +48,28 @@ public class Labels {
 	public static String name(RefEntity entity) {
 		if (entity == null || entity.name == null)
 			return "";
-		Location loc = null;
-		if (entity instanceof Flow flow) {
-			loc = flow.location;
-		}
-		if (entity instanceof Process process) {
-			loc = process.location;
-		}
-		if (loc == null || Strings.nullOrEmpty(loc.code))
-			return entity.name;
-		return entity.name + " - " + loc.code;
+		if (entity instanceof Flow flow)
+			return LocationCode.append(flow.name, flow.location);
+		if (entity instanceof Process process)
+			return LocationCode.append(process.name, process.location);
+		if (entity instanceof Location location)
+			return LocationCode.append(location.name, location.code);
+		return entity.name;
 	}
 
 	public static String name(Descriptor d) {
-		if (d == null)
+		if (d == null || d.name == null)
 			return "";
-		EntityCache cache = Cache.getEntityCache();
+		var cache = Cache.getEntityCache();
 		String text = d.name;
 		if (cache == null)
 			return text;
-		Long locationId = null;
-		if (d instanceof ProcessDescriptor process) {
-			locationId = process.location;
-		}
-		if (d instanceof FlowDescriptor flow) {
-			locationId = flow.location;
-		}
-		if (locationId != null) {
-			var loc = cache.get(Location.class, locationId);
-			if (loc != null && !Strings.nullOrEmpty(loc.code))
-				text = text + " - " + loc.code;
-		}
+		if (d instanceof ProcessDescriptor process)
+			return LocationCode.append(process.name, process.location);
+		if (d instanceof FlowDescriptor flow)
+			return LocationCode.append(flow.name, flow.location);
+		if (d instanceof LocationDescriptor location)
+			return LocationCode.append(location.name, location.code);
 		return text;
 	}
 
@@ -99,11 +90,9 @@ public class Labels {
 			return name(flow.wrapped());
 		if (flow.flow().flowType != FlowType.ELEMENTARY_FLOW)
 			return Labels.name(flow.flow());
-		String name = flow.flow().name;
-		if (flow.location() != null) {
-			name += " - " + flow.location().code;
-		}
-		return name;
+		return flow.location() != null
+				? LocationCode.append(flow.flow().name, flow.location().code)
+				: flow.flow().name;
 	}
 
 	public static String refUnit(EnviFlow flow) {
@@ -165,40 +154,6 @@ public class Labels {
 		return techFlow != null
 				? category(techFlow.provider())
 				: "";
-	}
-
-	/**
-	 * We often have to show the category and sub-category of a flow in the
-	 * result pages. This method returns a pair where the left value is the
-	 * category and the right value is the sub-category. Default values are
-	 * empty strings.
-	 */
-	public static Pair<String, String> getCategory(RootDescriptor entity) {
-		EntityCache cache = Cache.getEntityCache();
-		if (entity == null || entity.category == null)
-			return Pair.of("", "");
-		Category cat = cache.get(Category.class, entity.category);
-		if (cat == null)
-			return Pair.of("", "");
-		if (cat.category == null)
-			return Pair.of(cat.name, "");
-		else
-			return Pair.of(cat.category.name, cat.name);
-	}
-
-	/**
-	 * Same as {@link #getCategory(RootDescriptor)} but top-
-	 * and sub-category concatenated as a short string.
-	 */
-	public static String getShortCategory(RootDescriptor entity) {
-		Pair<String, String> p = getCategory(entity);
-		if (Strings.nullOrEmpty(p.getLeft()) && Strings.nullOrEmpty(p.getRight()))
-			return "";
-		if (Strings.nullOrEmpty(p.getLeft()))
-			return p.getRight();
-		if (Strings.nullOrEmpty(p.getRight()))
-			return p.getLeft();
-		return p.getLeft() + " / " + p.getRight();
 	}
 
 	public static String getEnumText(Object enumValue) {
@@ -318,7 +273,6 @@ public class Labels {
 			case DQ_SYSTEM -> M.DataQualitySystems;
 			case RESULT -> M.Results;
 			case EPD -> "EPDs";
-			default -> M.Unknown;
 		};
 	}
 
@@ -402,6 +356,34 @@ public class Labels {
 			log.error("failed to get reference currency", e);
 			return "?";
 		}
+	}
+
+	private static class LocationCode {
+
+		static String append(String name, Long locationId) {
+			if (locationId == null)
+				return name;
+			var cache = Cache.getEntityCache();
+			if (cache == null)
+				return name;
+			var location = cache.get(LocationDescriptor.class, locationId);
+			return location != null
+					? append(name, location.code)
+					: name;
+		}
+
+		static String append(String name, Location location) {
+			return location != null
+					? append(name, location.code)
+					: name;
+		}
+
+		static String append(String name, String code) {
+			return Strings.nullOrEmpty(code) || Objects.equals(name, code)
+					? name
+					: name + " - " + code;
+		}
+
 	}
 
 }

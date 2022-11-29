@@ -358,8 +358,8 @@ public class UI {
 	}
 
 	public static Button formRadio(Composite parent, String label) {
-		Button button = new Button(parent, SWT.RADIO);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
+		var button = new Button(parent, SWT.RADIO);
+		var gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		button.setLayoutData(gd);
 		formLabel(parent, label);
 		return button;

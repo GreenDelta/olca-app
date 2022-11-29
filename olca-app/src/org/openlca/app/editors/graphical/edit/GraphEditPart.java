@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
-import static org.openlca.app.editors.graphical.GraphConfig.*;
 import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_MANHATTAN;
 
 /**
  * EditPart for the GraphModel instance.
@@ -71,7 +71,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 		getViewer().getControl().setBackground(theme.backgroundColor());
 
 		var f = new FreeformLayer();
-		f.setLayoutManager(new Layout(this, ORIENTATION));
+		f.setLayoutManager(new Layout(getModel().getEditor(), ORIENTATION));
 		return f;
 	}
 

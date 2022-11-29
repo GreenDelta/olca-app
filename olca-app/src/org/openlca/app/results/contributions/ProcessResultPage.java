@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Icon;
@@ -32,7 +31,6 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.LcaResult;
@@ -60,15 +58,6 @@ public class ProcessResultPage extends FormPage {
 	private Spinner impactSpinner;
 	private double flowCutOff = 0.01;
 	private double impactCutOff = 0.01;
-
-	private final static String[] EXCHANGE_COLUMN_LABELS = {
-			M.Contribution,
-			M.Flow, M.UpstreamInclDirect, M.Direct,
-			M.Unit};
-	private final static String[] IMPACT_COLUMN_LABELS = {
-			M.Contribution,
-			M.ImpactCategory, M.UpstreamInclDirect,
-			M.Direct, M.Unit};
 
 	public ProcessResultPage(ResultEditor editor) {
 		super(editor, ProcessResultPage.class.getName(), M.ProcessResults);
@@ -169,28 +158,38 @@ public class ProcessResultPage extends FormPage {
 	}
 
 	private TableViewer createFlowTable(Composite parent) {
-		FlowLabel label = new FlowLabel();
-		TableViewer table = Tables.createViewer(parent, EXCHANGE_COLUMN_LABELS, label);
+		var label = new FlowLabel();
+		String[] headers = {
+				M.Contribution,
+				M.Flow,
+				M.Category,
+				M.UpstreamInclDirect,
+				M.Direct,
+				M.Unit};
+		var table = Tables.createViewer(parent, headers, label);
+		Tables.bindColumnWidths(table, 0.1, 0.3, 0.2, 0.15, 0.15, 0.1);
 		decorateResultViewer(table);
-		Viewers.sortByLabels(table, label, 1, 4);
-		Viewers.sortByDouble(table, (EnviFlow f) -> flowResult.getTotalContribution(f), 0);
-		Viewers.sortByDouble(table, (EnviFlow f) -> flowResult.getTotalResult(f), 2);
-		Viewers.sortByDouble(table, (EnviFlow f) -> flowResult.getDirectResult(f), 3);
+		Viewers.sortByLabels(table, label, 1, 2, 5);
+		Viewers.sortByDouble(table,
+				(EnviFlow f) -> flowResult.getTotalContribution(f), 0);
+		Viewers.sortByDouble(table,
+				(EnviFlow f) -> flowResult.getTotalResult(f), 3);
+		Viewers.sortByDouble(table,
+				(EnviFlow f) -> flowResult.getDirectResult(f), 4);
 		Actions.bind(table, TableClipboard.onCopySelected(table));
-		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 		table.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
+		table.getTable().getColumns()[4].setAlignment(SWT.RIGHT);
 		return table;
 	}
 
 	private void createImpactSection(Composite parent) {
-		Section section = UI.section(parent, toolkit,
-				M.ImpactAssessmentResults);
+		var section = UI.section(parent, toolkit, M.ImpactAssessmentResults);
 		UI.gridData(section, true, true);
-		Composite composite = toolkit.createComposite(section);
+		var composite = toolkit.createComposite(section);
 		section.setClient(composite);
 		UI.gridLayout(composite, 1);
 
-		Composite container = new Composite(composite, SWT.NONE);
+		var container = new Composite(composite, SWT.NONE);
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
 		UI.formLabel(container, toolkit, M.Process);
@@ -214,12 +213,22 @@ public class ProcessResultPage extends FormPage {
 
 	private TableViewer createImpactTable(Composite composite) {
 		ImpactLabel label = new ImpactLabel();
-		TableViewer table = Tables.createViewer(composite, IMPACT_COLUMN_LABELS, label);
+		String[] headers = {
+				M.Contribution,
+				M.ImpactCategory,
+				M.UpstreamInclDirect,
+				M.Direct,
+				M.Unit};
+		var table = Tables.createViewer(composite, headers, label);
+		Tables.bindColumnWidths(table, 0.20, 0.30, 0.20, 0.20, 0.10);
 		decorateResultViewer(table);
 		Viewers.sortByLabels(table, label, 1, 4);
-		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getTotalContribution(i), 0);
-		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getTotalResult(i), 2);
-		Viewers.sortByDouble(table, (ImpactDescriptor i) -> impactResult.getDirectResult(i), 3);
+		Viewers.sortByDouble(table,
+				(ImpactDescriptor i) -> impactResult.getTotalContribution(i), 0);
+		Viewers.sortByDouble(table,
+				(ImpactDescriptor i) -> impactResult.getTotalResult(i), 2);
+		Viewers.sortByDouble(table,
+				(ImpactDescriptor i) -> impactResult.getDirectResult(i), 3);
 		Actions.bind(table, TableClipboard.onCopySelected(table));
 		table.getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 		table.getTable().getColumns()[3].setAlignment(SWT.RIGHT);
@@ -229,7 +238,6 @@ public class ProcessResultPage extends FormPage {
 	private void decorateResultViewer(TableViewer table) {
 		table.setFilters(new CutOffFilter());
 		UI.gridData(table.getTable(), true, true);
-		Tables.bindColumnWidths(table.getTable(), 0.20, 0.30, 0.20, 0.20, 0.10);
 	}
 
 	private static class TechFlowCombo extends AbstractComboViewer<TechFlow> {
@@ -259,25 +267,17 @@ public class ProcessResultPage extends FormPage {
 
 		@Override
 		public String getColumnText(Object o, int col) {
-			if (!(o instanceof EnviFlow f))
+			if (!(o instanceof EnviFlow flow))
 				return null;
 			return switch (col) {
-				case 0 -> Numbers.percent(flowResult.getTotalContribution(f));
-				case 1 -> getFlowLabel(f.flow());
-				case 2 -> Numbers.format(flowResult.getTotalResult(f));
-				case 3 -> Numbers.format(flowResult.getDirectResult(f));
-				case 4 -> Labels.refUnit(f);
+				case 0 -> Numbers.percent(flowResult.getTotalContribution(flow));
+				case 1 -> Labels.name(flow);
+				case 2 -> Labels.category(flow);
+				case 3 -> Numbers.format(flowResult.getTotalResult(flow));
+				case 4 -> Numbers.format(flowResult.getDirectResult(flow));
+				case 5 -> Labels.refUnit(flow);
 				default -> null;
 			};
-		}
-
-		private String getFlowLabel(FlowDescriptor flow) {
-			if (flow == null)
-				return "";
-			String name = flow.name;
-			return flow.category != null
-					? name + " (" + Labels.getShortCategory(flow) + ")"
-					: name;
 		}
 	}
 

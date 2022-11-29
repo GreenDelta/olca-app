@@ -24,7 +24,7 @@ import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.ModelElement;
-import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -48,9 +48,9 @@ public class AddProcessAction extends WorkbenchPartAction {
 	public AddProcessAction(GraphEditor part) {
 		super(part);
 		editor = part;
-		setId(ActionIds.ADD_PROCESS);
+		setId(GraphActionIds.ADD_PROCESS);
 		setText(M.AddProcess);
-		setImageDescriptor(Images.descriptor(ModelType.PROCESS));
+		setImageDescriptor(Icon.PROCESS_ADD.descriptor());
 	}
 
 	@Override

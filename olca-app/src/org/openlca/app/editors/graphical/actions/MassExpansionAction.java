@@ -37,11 +37,11 @@ public class MassExpansionAction extends StackAction {
 		super(part);
 		editor = part;
 		if (type == EXPAND) {
-			setId(ActionIds.EXPAND_ALL);
+			setId(GraphActionIds.EXPAND_ALL);
 			setText(M.ExpandAll);
 			setImageDescriptor(Icon.EXPAND.descriptor());
 		} else if (type == COLLAPSE) {
-			setId(ActionIds.COLLAPSE_ALL);
+			setId(GraphActionIds.COLLAPSE_ALL);
 			setText(M.CollapseAll);
 			setImageDescriptor(Icon.COLLAPSE.descriptor());
 		}

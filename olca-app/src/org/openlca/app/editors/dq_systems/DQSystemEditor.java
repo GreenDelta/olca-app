@@ -3,8 +3,6 @@ package org.openlca.app.editors.dq_systems;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.DQSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DQSystemEditor extends ModelEditor<DQSystem> {
 

@@ -6,26 +6,36 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
+import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.Input;
 import org.openlca.app.util.Question;
+import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitInit;
+import org.openlca.git.actions.GitMerge;
+import org.openlca.git.actions.GitStashCreate;
+import org.openlca.git.model.Change;
 import org.openlca.git.model.Commit;
-import org.openlca.git.model.Entry.EntryType;
+import org.openlca.git.model.Diff;
+import org.openlca.git.model.ModelRef;
+import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
+import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypeRefIdMap;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Dirs;
@@ -52,27 +62,28 @@ public class RepositoryUpgrade {
 			var config = upgrade.init();
 			if (config == null)
 				return;
-			if (!Question.ask("Update repository connection",
-					"You were previously connected to a Collaboration Server version 1. openLCA 2 requires Collaboration Server version 2. Do you want to update your server connection? (This requires that the server you are connected to is already updated)"))
+			if (!Question.ask("Update repository connection", """
+					You were previously connected to a Collaboration Server version 1.
+					openLCA 2 requires Collaboration Server version 2. Do you want to
+					update your server connection? (This requires that the server you are
+					connected to is already updated)"""))
 				return;
-			upgrade.run(config);
+			if (!upgrade.run(config)) {
+				Dirs.delete(Repository.gitDir(database.getName()));
+			}
 		} catch (Throwable e) {
 			log.warn("Could not upgrade repository connection", e);
 		}
 	}
 
-	void run(Config config) {
-		var repo = initGit(config);
+	boolean run(Config config) {
+		var repo = initGit(config.url, config.username);
 		if (repo == null)
-			return;
+			return false;
 		var credentials = AuthenticationDialog.promptCredentials(repo);
 		if (credentials == null)
-			return;
-		var headCommit = fetch(repo, credentials);
-		if (headCommit == null)
-			return;
-		updateHead(repo, headCommit);
-		initObjectIds(repo, headCommit);
+			return false;
+		return pull(repo, credentials);
 	}
 
 	private Config init() {
@@ -119,102 +130,140 @@ public class RepositoryUpgrade {
 		return null;
 	}
 
-	private Repository initGit(Config config) {
+	private Repository initGit(String url, String user) {
 		try {
 			var gitDir = Repository.gitDir(database.getName());
-			GitInit.in(gitDir).remoteUrl(config.url).run();
-			var repo = Repository.initialize(Database.get());
-			repo.user(config.username);
+			if (gitDir.exists() && gitDir.list() != null && gitDir.list().length > 0) {
+				Dirs.delete(gitDir);
+			}
+			GitInit.in(gitDir).remoteUrl(url).run();
+			var repo = Repository.initialize(gitDir);
+			if (repo == null)
+				return null;
+			repo.user(user);
 			return repo;
+		} catch (WebRequestException e) {
+			url = Input.promptString("Could not connect",
+					"Could not connect, this might be an older version of the collaboration server? Please specify the url to the updated repository:",
+					url);
+			if (url != null)
+				return initGit(url, user);
+			return null;
 		} catch (GitAPIException | URISyntaxException e) {
-			log.warn("Error initializing git repo from " + config.url, e);
+			log.warn("Error initializing git repo from " + url, e);
 			return null;
 		}
 	}
 
-	private Commit fetch(Repository repo, GitCredentialsProvider credentials) {
+	private boolean pull(Repository repo, GitCredentialsProvider credentials) {
 		try {
 			var commits = Actions.run(credentials, GitFetch.to(repo.git));
 			if (commits == null || commits.isEmpty())
-				return null;
-			return commits.get(0);
-		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
-			log.warn("Error fetching from " + repo.client.serverUrl + "/" + repo.client.repositoryId, e);
-			return null;
-		}
-	}
-
-	private void updateHead(Repository repo, Commit commit) {
-		try {
-			var update = repo.git.updateRef(Constants.LOCAL_BRANCH);
-			update.setNewObjectId(ObjectId.fromString(commit.id));
-			update.update();
-		} catch (IOException e) {
-			log.warn("Error updating head of " + repo.client.repositoryId, e);
-		}
-	}
-
-	private void initObjectIds(Repository repo, Commit commit) {
-		var service = PlatformUI.getWorkbench().getProgressService();
-		try {
-			service.run(true, false, monitor -> {
-				monitor.beginTask("Initializing object ids", IProgressMonitor.UNKNOWN);
-				repo.workspaceIds.putRoot(ObjectId.fromString(commit.id));
-				initObjectIds(monitor, repo, commit, "");
-				try {
-					repo.workspaceIds.save();
-				} catch (IOException e) {
-					log.error("Error saving workspace object ids", e);
-				}
-				monitor.done();
-			});
-		} catch (InvocationTargetException | InterruptedException e) {
-			log.error("Error saving workspace object ids", e);
-		}
-	}
-
-	private void initObjectIds(IProgressMonitor monitor, Repository repo, Commit commit, String path) {
-		var ids = repo.workspaceIds;
-		var entries = repo.entries.find().commit(commit.id).path(path).all();
-		var descriptors = new TypeRefIdMap<RootDescriptor>();
-		for (var type : ModelType.values()) {
-			database.getDescriptors(type.getModelClass()).forEach(
-					descriptor -> descriptors.put(type, descriptor.refId, (RootDescriptor) descriptor));
-		}
-		entries.forEach(entry -> {
-			ids.put(entry.path, entry.objectId);
-			if (entry.typeOfEntry != EntryType.DATASET) {
-				initObjectIds(monitor, repo, commit, entry.path);
-			} else {
-				var localModel = descriptors.get(entry.type, entry.refId);
-				if (localModel != null) {
-					monitor.subTask(entry.category + "/" + localModel.name);
-					var remoteModel = repo.datasets.parse(entry, "lastChange", "version");
-					var version = Version.fromString(string(remoteModel, "version")).getValue();
-					var lastChange = number(remoteModel, "lastChange");
-					if (version != localModel.version || lastChange != localModel.lastChange) {
-						ids.invalidate(entry.path);
-					}
-				}
+				return true;
+			var libraryResolver = WorkspaceLibraryResolver.forRemote();
+			if (libraryResolver == null)
+				return false;
+			var descriptors = new TypeRefIdMap<RootDescriptor>();
+			for (var type : ModelType.values()) {
+				Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
 			}
-		});
+			var commit = repo.commits.find().refs(Constants.REMOTE_REF).latest();
+			boolean wasStashed = stashDifferences(repo, commit, credentials.ident, descriptors);
+			Actions.run(GitMerge.from(repo.git)
+					.into(database)
+					.as(credentials.ident)
+					.update(repo.workspaceIds)
+					.resolveLibrariesWith(libraryResolver)
+					.resolveConflictsWith(new EqualResolver(descriptors)));
+			if (!wasStashed)
+				return true;
+			return Actions.applyStash();
+		} catch (GitAPIException | InvocationTargetException | InterruptedException | IOException e) {
+			log.warn("Error pulling from " + repo.client.serverUrl + "/" + repo.client.repositoryId, e);
+			return false;
+		}
 	}
 
-	private String string(Map<String, Object> map, String field) {
+	private boolean stashDifferences(Repository repo, Commit commit, PersonIdent user,
+			TypeRefIdMap<RootDescriptor> descriptors)
+			throws IOException, InvocationTargetException, InterruptedException, GitAPIException {
+		var differences = Diffs.of(repo.git, commit)
+				.with(Database.get(), repo.workspaceIds).stream()
+				.filter(diff -> !equalsDescriptor(diff, descriptors.get(diff)))
+				.map(diff -> new Change(diff))
+				.collect(Collectors.toList());
+		if (differences.isEmpty())
+			return false;
+		Actions.run(GitStashCreate.from(Database.get())
+				.to(repo.git)
+				.as(user)
+				.reference(commit)
+				.update(repo.workspaceIds)
+				.changes(differences));
+		return true;
+	}
+
+	private static boolean equalsDescriptor(Diff diff, RootDescriptor d) {
+		if (d == null)
+			return false;
+		if (ObjectId.zeroId().equals(diff.oldObjectId))
+			return false;
+		var ref = new Reference(diff.path, diff.oldCommitId, diff.oldObjectId);
+		var remoteModel = Repository.get().datasets.parse(ref, "lastChange", "version");
+		if (remoteModel == null)
+			return false;
+		var version = Version.fromString(string(remoteModel, "version")).getValue();
+		var lastChange = date(remoteModel, "lastChange");
+		return version == d.version && lastChange == d.lastChange;
+	}
+
+	private static String string(Map<String, Object> map, String field) {
 		var value = map.get(field);
 		if (value == null)
 			return null;
 		return value.toString();
 	}
 
-	private long number(Map<String, Object> map, String field) {
+	private static long date(Map<String, Object> map, String field) {
 		var value = map.get(field);
 		if (value == null)
 			return 0;
-		return Long.parseLong(value.toString());
+		try {
+			return Long.parseLong(value.toString());
+		} catch (NumberFormatException e) {
+			var date = Json.parseDate(value.toString());
+			if (date == null)
+				return 0;
+			return date.getTime();
+		}
 	}
 
 	private record Config(String url, String username) {
+	}
+
+	private class EqualResolver implements ConflictResolver {
+
+		private final TypeRefIdMap<RootDescriptor> descriptors;
+
+		private EqualResolver(TypeRefIdMap<RootDescriptor> descriptors) {
+			this.descriptors = descriptors;
+		}
+
+		@Override
+		public boolean isConflict(ModelRef ref) {
+			return descriptors.contains(ref);
+		}
+
+		@Override
+		public ConflictResolutionType peekConflictResolution(ModelRef ref) {
+			return isConflict(ref) ? ConflictResolutionType.IS_EQUAL : null;
+		}
+
+		@Override
+		public ConflictResolution resolveConflict(ModelRef ref, JsonObject fromHistory) {
+			return isConflict(ref) ? ConflictResolution.isEqual() : null;
+		}
+
 	}
 
 }

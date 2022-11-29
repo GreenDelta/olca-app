@@ -38,7 +38,7 @@ public class CreateStickyNoteCommand extends Command {
 			: constraint.getSize();
 		var info = new StickyNoteLayoutInfo(location, size);
 		stickyNote = graph.editor.getGraphFactory().createStickyNote(info);
-		EditStickyNoteDialog.open(stickyNote);
+		StickyNoteDialog.open(stickyNote);
 
 		if (this.index > 0)
 			this.graph.addChild(stickyNote, this.index);

@@ -21,7 +21,7 @@ public class LayoutAction extends WorkbenchPartAction {
 		super(part);
 		editor = part;
 		setText(NLS.bind(M.LayoutAs, M.Tree));
-		setId(ActionIds.LAYOUT_TREE);
+		setId(GraphActionIds.LAYOUT_TREE);
 		setImageDescriptor(Icon.LAYOUT.descriptor());
 	}
 

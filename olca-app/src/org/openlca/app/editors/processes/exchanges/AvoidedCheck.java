@@ -25,19 +25,16 @@ class AvoidedCheck extends CheckBoxCellModifier<Exchange> {
 			return false;
 		if (e.flow == null)
 			return false;
-		FlowType type = e.flow.flowType;
+		var type = e.flow.flowType;
 		if (type == null)
 			return false;
-		switch (type) {
-		case ELEMENTARY_FLOW:
-			return false;
-		case PRODUCT_FLOW:
-			return (e.isAvoided && e.isInput) || (!e.isAvoided && !e.isInput);
-		case WASTE_FLOW:
-			return (e.isAvoided && !e.isInput) || (!e.isAvoided && e.isInput);
-		default:
-			return false;
-		}
+		return switch (type) {
+			case ELEMENTARY_FLOW -> false;
+			case PRODUCT_FLOW ->
+					(e.isAvoided && e.isInput) || (!e.isAvoided && !e.isInput);
+			case WASTE_FLOW ->
+					(e.isAvoided && !e.isInput) || (!e.isAvoided && e.isInput);
+		};
 	}
 
 	@Override
@@ -50,13 +47,25 @@ class AvoidedCheck extends CheckBoxCellModifier<Exchange> {
 		if (e.isAvoided == value || !canModify(e))
 			return;
 		e.isAvoided = value;
-		if (!value)
+		if (!value) {
+			// clear the default provider for normal
+			// (non-avoided) product outputs and waste
+			// inputs because they are then provided
+			// by the owning process
 			e.defaultProviderId = 0;
-		FlowType type = e.flow.flowType;
-		if (type == FlowType.PRODUCT_FLOW)
+		}
+		// swap the exchange direction: avoided products
+		// are stored as inputs; avoided wastes as outputs,
+		// but they are displayed on the other sides. This
+		// is because the process linking works like this
+		// for these flow types, and we want to link avoided
+		// flows to supply chains but with opposite signs.
+		var type = e.flow.flowType;
+		if (type == FlowType.PRODUCT_FLOW) {
 			e.isInput = value;
-		if (type == FlowType.WASTE_FLOW)
+		} else if (type == FlowType.WASTE_FLOW) {
 			e.isInput = !value;
+		}
 		editor.setDirty(true);
 	}
 }

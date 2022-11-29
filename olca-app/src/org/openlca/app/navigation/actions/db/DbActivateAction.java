@@ -128,7 +128,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 			log.trace("Check version state");
 			switch (state) {
 				case HIGHER_VERSION:
-					error(M.DatabaseNeedsUpdate);
+					error(M.DatabaseNewerThanThisError);
 					break;
 				case NEEDS_UPGRADE:
 					askRunUpgrades();

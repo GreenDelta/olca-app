@@ -10,11 +10,9 @@ import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.results.analysis.sankey.model.SankeyLink;
-import org.openlca.app.tools.graphics.figures.CurvedConnection;
-import org.openlca.app.tools.graphics.figures.SelectableConnection;
+import org.openlca.app.tools.graphics.figures.Connection;
 
-import static org.eclipse.swt.SWT.ON;
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.ROUTER_CURVE;
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
 
 public class LinkEditPart extends AbstractConnectionEditPart
 		implements PropertyChangeListener {
@@ -31,7 +29,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 		 * listening for its router to change.
 		 */
 		getFigure().addPropertyChangeListener(
-				Connection.PROPERTY_CONNECTION_ROUTER, this);
+				org.eclipse.draw2d.Connection.PROPERTY_CONNECTION_ROUTER, this);
 	}
 
 	public void deactivate() {
@@ -41,7 +39,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 
 	public void deactivateFigure() {
 		getFigure().removePropertyChangeListener(
-				Connection.PROPERTY_CONNECTION_ROUTER, this);
+				org.eclipse.draw2d.Connection.PROPERTY_CONNECTION_ROUTER, this);
 		super.deactivateFigure();
 	}
 
@@ -51,34 +49,29 @@ public class LinkEditPart extends AbstractConnectionEditPart
 		var theme = config.getTheme();
 
 		Color color;
-		if (getModel().getSourceNode().totalResult < 0)
+		if (getModel().getSourceNode().node.total < 0)
 			color = ColorConstants.green;
-		else if (getModel().getSourceNode().totalResult > 0)
+		else if (getModel().getSourceNode().node.total > 0)
 			color = ColorConstants.red;
 		else color = ColorConstants.blue;
-		var colorSelected = theme != null ? theme.linkColorSelected() : ColorConstants.black;
+		var colorSelected = theme != null
+				? theme.linkColorSelected()
+				: ColorConstants.black;
 
 		var orientation = getModel().getSourceNode().getDiagram().orientation;
 
-		var connection = Objects.equals(config.connectionRouter(), ROUTER_CURVE)
-				? new CurvedConnection(orientation, color, colorSelected) {
-			@Override
-			public void paint(Graphics g) {
-				setAlpha(180);
-				super.paint(g);
-			}
-		}
-				: new SelectableConnection(color, colorSelected) {
-			@Override
-			public void paint(Graphics g) {
-				setAlpha(180);
-				super.paint(g);
-			}
-		};
+		var connection = new Connection(config.connectionRouter(), orientation, color, colorSelected) {
+				@Override
+				public void paint(Graphics g) {
+					setAlpha(180);
+					super.paint(g);
+				}
+			};
 
-		if (connection instanceof CurvedConnection con)
-			con.setOffset(100);
+		if (Objects.equals(config.connectionRouter(), ROUTER_CURVE))
+			connection.setOffset(100);
 		connection.setLineWidth(getModel().getLineWidth());
+
 		return connection;
 	}
 

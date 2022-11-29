@@ -38,7 +38,8 @@ class ChartLegend {
 		composite.addDisposeListener((e) -> imageRegistry.dispose());
 	}
 
-	public void setData(List<Contribution<?>> data, double rest, String unit) {
+	public void setData(List<? extends Contribution<?>> data,
+			double rest, String unit) {
 		while (!createdLinks.isEmpty())
 			createdLinks.pop().dispose();
 		int colorIndex = 0;

@@ -8,6 +8,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.tools.graphics.figures.RoundBorder;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
@@ -22,6 +23,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 public class ExchangeFigure extends ComponentFigure {
 
 	private static final Integer SIGNIF_NUMBER = 2;
+	public final static Dimension BORDER_ARC_SIZE = new Dimension(6, 6);
 	private final Theme theme;
 	public ExchangeItem exchangeItem;
 	private final Exchange exchange;
@@ -42,7 +44,8 @@ public class ExchangeFigure extends ComponentFigure {
 		layout.marginHeight = 0;
 		setLayoutManager(layout);
 
-		var border = new LineBorder(1);
+		var corners = RoundBorder.Corners.fullRoundedCorners(BORDER_ARC_SIZE);
+		var border = new RoundBorder(1, corners);
 		setBorder(border);
 
 		addMouseMotionListener(new MouseMotionListener.Stub() {
@@ -105,7 +108,7 @@ public class ExchangeFigure extends ComponentFigure {
 		}
 		var text = prefix + ": " + Labels.name(exchange.flow) + "\n";
 		if (exchange.flow.category != null) {
-			text += M.Category + ": " + Labels.getShortCategory(
+			text += M.Category + ": " + Labels.category(
 				Descriptor.of(exchange.flow)) + "\n";
 		}
 		text += M.Amount + ": "
@@ -123,7 +126,7 @@ public class ExchangeFigure extends ComponentFigure {
 			g.fillRectangle(getBounds());
 		}
 		if (exchangeItem.isQuantitativeReference())
-			setHighlighted(true);
+			setBold(true);
 
 		g.setForegroundColor(ColorConstants.white);
 		g.popState();
@@ -131,7 +134,7 @@ public class ExchangeFigure extends ComponentFigure {
 		super.paintFigure(g);
 	}
 
-	public void setHighlighted(boolean b) {
+	public void setBold(boolean b) {
 		if (b) label.setFont(UI.boldFont());
 		else label.setFont(null);
 	}
@@ -179,10 +182,26 @@ public class ExchangeFigure extends ComponentFigure {
 			new GridData(unitPrefSize.width, unitPrefSize.height));
 	}
 
+	public void setHighlighted(boolean b) {
+		var border = (LineBorder) getBorder();
+		if (b) {
+			var node = exchangeItem.getNode();
+			var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
+			var color = theme.boxBorderColor(box);
+			border.setColor(color);
+			border.setStyle(SWT.LINE_DASH);
+		} else {
+			var backgroundColor = theme.backgroundColor();
+			border.setColor(backgroundColor);
+			border.setStyle(SWT.LINE_SOLID);
+			repaint();
+		}
+	}
+
 	public String toString() {
 		var name = Labels.name(exchange.flow);
 		return "ExchangeFigure("
-			+ name.substring(0, Math.min(name.length(), 20)) + ")";
+				+ name.substring(0, Math.min(name.length(), 20)) + ")";
 	}
 
 }

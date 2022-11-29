@@ -9,6 +9,7 @@ import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.systems.ProductSystemInfoPage;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.graphics.actions.ActionIds;
 
 public class OpenEditorAction extends SelectionAction {
 

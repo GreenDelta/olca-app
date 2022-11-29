@@ -1,38 +1,24 @@
 package org.openlca.app.editors.graphical;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.draw2d.ConnectionLayer;
-import org.eclipse.draw2d.ViewportAwareConnectionLayerClippingStrategy;
 import org.eclipse.gef.*;
-import org.eclipse.gef.tools.PanningSelectionTool;
-import org.eclipse.gef.ui.actions.*;
-import org.eclipse.gef.ui.parts.GraphicalEditor;
+import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.SWT;
 import org.eclipse.ui.*;
-import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.*;
-import org.openlca.app.tools.graphics.KeyHandler;
-import org.openlca.app.tools.graphics.actions.SaveImageAction;
-import org.openlca.app.tools.graphics.actions.ZoomInAction;
-import org.openlca.app.tools.graphics.actions.ZoomOutAction;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
-import org.openlca.app.tools.graphics.edit.RootEditPart;
+import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
+import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
-import org.openlca.app.tools.graphics.zoom.MouseWheelZoomHandler;
-import org.openlca.app.tools.graphics.zoom.ZoomManager;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
-
-import java.util.ArrayList;
-import java.util.EventObject;
 
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
@@ -48,28 +34,15 @@ import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MIN
  * The <code>GraphModel</code>  is the head of the model to be further
  * displayed.
  */
-public class GraphEditor extends GraphicalEditor {
+public class GraphEditor extends GraphicalEditorWithFrame {
 
 	public static final String ID = "GraphicalEditor";
 
-	private org.eclipse.gef.KeyHandler sharedKeyHandler;
 	private final ProductSystemEditor systemEditor;
-	private Graph graph;
-
-	// Set zoom levels from 0.1 to 3.0 with an incrementing factor of 5%.
-	private static final int ZOOM_LEVELS_NUMBER =
-		(int) Math.ceil(Math.log(3.0/0.1) / Math.log(1.05));
-	public static final double[] ZOOM_LEVELS = new double[ZOOM_LEVELS_NUMBER];
-	static {
-		for (int i = 0; i < ZOOM_LEVELS_NUMBER; i++) {
-			ZOOM_LEVELS[i] = Math.pow(1.05, i) * 0.1;
-		}
-	}
 
 	// TODO: save this in the same way as the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
 	private final GraphFactory graphFactory = new GraphFactory(this);
-	public boolean wasFocus = false;
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
@@ -78,7 +51,7 @@ public class GraphEditor extends GraphicalEditor {
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-		throws PartInitException {
+			throws PartInitException {
 		setEditDomain(new DefaultEditDomain(this));
 		if (input instanceof GraphicalEditorInput graphInput) {
 			if (graphInput.descriptor() != null) {
@@ -90,57 +63,21 @@ public class GraphEditor extends GraphicalEditor {
 
 	@Override
 	protected void initializeGraphicalViewer() {
-		var viewer = getGraphicalViewer();
-
+		super.initializeGraphicalViewer();
 		GraphDropListener.on(this);
-
-		// TODO (francois) Implement a PanningSelectionTool without pressing SpaceBar and
-		//  Selection while pressing Ctrl.
-		viewer.getEditDomain().setActiveTool(new PanningSelectionTool());
-
-		viewer.setContents(getModel());
 	}
 
 	@Override
 	protected void configureGraphicalViewer() {
 		super.configureGraphicalViewer();
+
 		var viewer = getGraphicalViewer();
 
-		var root = new RootEditPart(viewer);
-
-		// set clipping strategy for connection layer
-		ConnectionLayer connectionLayer = (ConnectionLayer) root
-			.getLayer(LayerConstants.CONNECTION_LAYER);
-		connectionLayer
-			.setClippingStrategy(new ViewportAwareConnectionLayerClippingStrategy(
-				connectionLayer));
-
-		var zoom = root.getZoomManager();
-		zoom.setZoomLevels(ZOOM_LEVELS);
-		var zoomLevels = new ArrayList<String>(3);
-		zoomLevels.add(ZoomManager.FIT_ALL);
-		zoomLevels.add(ZoomManager.FIT_WIDTH);
-		zoomLevels.add(ZoomManager.FIT_HEIGHT);
-		root.getZoomManager().setZoomLevelContributions(zoomLevels);
-		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
-		var zoomIn = new ZoomInAction(root.getZoomManager());
-		var zoomOut = new ZoomOutAction(root.getZoomManager());
-		getActionRegistry().registerAction(zoomIn);
-		getActionRegistry().registerAction(zoomOut);
-//		getSite().getKeyBindingService().registerAction(zoomIn);
-//		getSite().getKeyBindingService().registerAction(zoomOut);
-
-		viewer.setRootEditPart(root);
-		viewer.setKeyHandler(createGraphKeyHandler());
-
 		ContextMenuProvider provider = new GraphContextMenuProvider(viewer,
-			getActionRegistry());
+				getActionRegistry());
 		viewer.setContextMenu(provider);
 
 		viewer.setEditPartFactory(new GraphEditPartFactory());
-
-		loadProperties();
-		loadConfig();
 	}
 
 	@Override
@@ -152,20 +89,16 @@ public class GraphEditor extends GraphicalEditor {
 		var stackActions = getStackActions();
 		IAction action;
 
-		action = new MatchSizeAction(this);
-		registry.registerAction(action);
-		selectionActions.add(action.getId());
-
-		action = new MatchWidthAction(this);
-		registry.registerAction(action);
-		selectionActions.add(action.getId());
-
-		action = new MatchHeightAction(this);
-		registry.registerAction(action);
-		selectionActions.add(action.getId());
-
 		action = new LayoutAction(this);
 		registry.registerAction(action);
+
+		action = new MinMaxAction(this, MINIMIZE);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new MinMaxAction(this, MAXIMIZE);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
 
 		action = new MinMaxAllAction(this, MINIMIZE);
 		registry.registerAction(action);
@@ -174,9 +107,6 @@ public class GraphEditor extends GraphicalEditor {
 		action = new MinMaxAllAction(this, MAXIMIZE);
 		registry.registerAction(action);
 		stackActions.add(action.getId());
-
-		action = new LayoutAction(this);
-		registry.registerAction(action);
 
 		action = new AddProcessAction(this);
 		registry.registerAction(action);
@@ -203,12 +133,15 @@ public class GraphEditor extends GraphicalEditor {
 		action = new EditGraphConfigAction(this);
 		registry.registerAction(action);
 
+		action = new ShowElementaryFlowsAction(this);
+		registry.registerAction(action);
+
+		action = new EditModeAction(this);
+		registry.registerAction(action);
+
 		action = new OpenEditorAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
-
-		action = new OpenMiniatureViewAction(this);
-		registry.registerAction(action);
 
 		action = new SaveImageAction(this, "graph.png");
 		registry.registerAction(action);
@@ -221,10 +154,9 @@ public class GraphEditor extends GraphicalEditor {
 		registry.registerAction(action);
 		stackActions.add(action.getId());
 
-		// TODO (francois) Too slow.
-//		action = new RemoveAllConnectionsAction(this);
-//		registry.registerAction(action);
-//		selectionActions.add(action.getId());
+		action = new RemoveAllConnectionsAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
 
 		action = new BuildSupplyChainMenuAction(this);
 		registry.registerAction(action);
@@ -251,59 +183,12 @@ public class GraphEditor extends GraphicalEditor {
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 
-		action = new FocusAction(this);
-		registry.registerAction(action);
-
 		action = new SetReferenceAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 	}
 
-	/**
-	 * Returns the KeyHandler with common bindings for both the Outline (if it
-	 * exists) and Graphical Views. For example, delete is a common action.
-	 */
-	protected org.eclipse.gef.KeyHandler getCommonKeyHandler() {
-		if (sharedKeyHandler == null) {
-			sharedKeyHandler = new org.eclipse.gef.KeyHandler();
-			var registry = getActionRegistry();
-			sharedKeyHandler.put(
-				KeyStroke.getPressed(SWT.DEL, 127, 0),
-				registry.getAction(ActionFactory.DELETE.getId()));
-		}
-		return sharedKeyHandler;
-	}
-
-	protected org.eclipse.gef.KeyHandler createGraphKeyHandler() {
-		var keyHandler = new KeyHandler(getGraphicalViewer());
-		keyHandler.setParent(getCommonKeyHandler());
-
-		var registry = getActionRegistry();
-		keyHandler.put(
-			KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
-			registry.getAction(GEFActionConstants.ZOOM_IN));
-		keyHandler.put(
-			KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
-			registry.getAction(GEFActionConstants.ZOOM_OUT));
-		keyHandler.put(
-			KeyStroke.getPressed('+', 43, SWT.MOD1),
-			registry.getAction(GEFActionConstants.ZOOM_IN));
-		keyHandler.put(
-			KeyStroke.getPressed('-', 45, SWT.MOD1),
-			registry.getAction(GEFActionConstants.ZOOM_OUT));
-		return keyHandler;
-	}
-
-	protected void loadProperties() {
-		// Zoom
-		var manager = getZoomManager();
-		if (manager != null)
-			manager.setZoom(getModel().getZoom());
-		getGraphicalViewer().setProperty(
-			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
-			MouseWheelZoomHandler.SINGLETON);
-	}
-
+	@Override
 	protected void loadConfig() {
 		// read GraphConfig object from file
 		var config = GraphFile.getGraphConfig(this);
@@ -327,6 +212,11 @@ public class GraphEditor extends GraphicalEditor {
 	}
 
 	@Override
+	public Graph getModel() {
+		return (Graph) super.getModel();
+	}
+
+	@Override
 	protected void setInput(IEditorInput input) {
 		super.setInput(input);
 		// The model is initialized with an empty graph so that it is only created
@@ -347,30 +237,15 @@ public class GraphEditor extends GraphicalEditor {
 		return systemEditor.getModel();
 	}
 
-	@Override
-	public void commandStackChanged(EventObject event) {
-		firePropertyChange(IEditorPart.PROP_DIRTY);
-		super.commandStackChanged(event);
-	}
-
-	public void setModel(Graph model) {
-		graph = model;
-	}
-
-	public Graph getModel() {
-		return graph;
-	}
-
 	public GraphFactory getGraphFactory() {
 		return graphFactory;
 	}
 
-	public ZoomManager getZoomManager() {
-		return getRootEditPart().getZoomManager();
-	}
-
-	public RootEditPart getRootEditPart() {
-		return (RootEditPart) getGraphicalViewer().getRootEditPart();
+	/**
+	 * Make super.getActionRegistry() public.
+	 */
+	public ActionRegistry getActionRegistry() {
+		return super.getActionRegistry();
 	}
 
 	@Override
@@ -396,24 +271,8 @@ public class GraphEditor extends GraphicalEditor {
 		monitor.done();
 	}
 
-	public Object getAdapter(Class type) {
-		if (type == ZoomManager.class)
-			return getZoomManager();
-
-		return super.getAdapter(type);
-	}
-
 	public ProductSystemEditor getProductSystemEditor() {
 		return systemEditor;
-	}
-
-	public boolean focusOnReferenceNode() {
-		var action = getActionRegistry().getAction(ActionIds.FOCUS);
-		if (action.isEnabled()) {
-			action.run();
-			return true;
-		}
-		else return false;
 	}
 
 }
