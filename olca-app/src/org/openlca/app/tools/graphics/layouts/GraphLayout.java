@@ -77,7 +77,10 @@ public abstract class GraphLayout extends FreeformLayout implements
 			}
 		}
 		if (preLayout) focusOnStart();
-		if (!preLayout) preLayout = true;
+		if (!preLayout) {
+			focusOnStart();
+			preLayout = true;
+		}
 	}
 
 	protected void focusOnStart() {
