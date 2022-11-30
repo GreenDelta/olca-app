@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.IntConsumer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -161,8 +160,7 @@ public class FileImportPage extends WizardPage {
 		var dbFiles = new MappingFileDao(db)
 				.getNames()
 				.stream()
-				.sorted()
-				.collect(Collectors.toList());
+				.sorted().toList();
 		var items = new String[dbFiles.size() + 1];
 		items[0] = "";
 		for (int i = 0; i < dbFiles.size(); i++) {
@@ -239,7 +237,9 @@ public class FileImportPage extends WizardPage {
 		});
 	}
 
-	/** Get the selected files from the page. */
+	/**
+	 * Get the selected files from the page.
+	 */
 	public File[] getFiles() {
 		return selectedFiles == null
 				? new File[0]
@@ -315,9 +315,8 @@ public class FileImportPage extends WizardPage {
 
 		@Override
 		public Object[] getChildren(Object parent) {
-			if (!(parent instanceof File))
+			if (!(parent instanceof File dir))
 				return null;
-			File dir = (File) parent;
 			ArrayList<File> childs = new ArrayList<>();
 			for (File f : listFiles(dir)) {
 				if (f.isDirectory()) {
@@ -329,9 +328,8 @@ public class FileImportPage extends WizardPage {
 
 		@Override
 		public Object[] getElements(Object obj) {
-			if (!(obj instanceof File))
+			if (!(obj instanceof File dir))
 				return null;
-			File dir = (File) obj;
 			ArrayList<File> dirs = new ArrayList<>();
 			for (File f : listFiles(dir)) {
 				if (f.isDirectory()) {
@@ -343,17 +341,15 @@ public class FileImportPage extends WizardPage {
 
 		@Override
 		public Object getParent(Object obj) {
-			if (!(obj instanceof File))
+			if (!(obj instanceof File file))
 				return null;
-			File file = (File) obj;
 			return file.getParentFile();
 		}
 
 		@Override
 		public boolean hasChildren(Object obj) {
-			if (!(obj instanceof File))
+			if (!(obj instanceof File dir))
 				return false;
-			File dir = (File) obj;
 			for (File f : listFiles(dir)) {
 				if (f.isDirectory())
 					return true;
@@ -372,9 +368,8 @@ public class FileImportPage extends WizardPage {
 
 		@Override
 		public Image getImage(Object obj) {
-			if (!(obj instanceof File))
+			if (!(obj instanceof File file))
 				return null;
-			var file = (File) obj;
 			return file.isDirectory()
 					? Images.platformImage(ISharedImages.IMG_OBJ_FOLDER)
 					: Images.get(FileType.of(file));
@@ -382,10 +377,9 @@ public class FileImportPage extends WizardPage {
 
 		@Override
 		public String getText(Object obj) {
-			if (!(obj instanceof File))
-				return null;
-			File file = (File) obj;
-			return file.getAbsoluteFile().getName();
+			return obj instanceof File file
+					? file.getAbsoluteFile().getName()
+					: null;
 		}
 	}
 }

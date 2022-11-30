@@ -41,7 +41,7 @@ public class HistoryView extends ViewPart {
 	private HistoryViewer historyViewer;
 	private AbstractTableViewer<Diff> referenceViewer;
 	private JsonCompareViewer diffViewer;
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
 
 	public HistoryView() {
 		instance = this;
@@ -117,7 +117,7 @@ public class HistoryView extends ViewPart {
 				continue;
 			var e = elem.getAsJsonObject();
 			var f = e.get("isInput");
-			var isInput = f.isJsonPrimitive() && f.getAsBoolean() == true;
+			var isInput = f.isJsonPrimitive() && f.getAsBoolean();
 			if (isInput) {
 				inputs.add(elem);
 			} else {
@@ -151,13 +151,12 @@ public class HistoryView extends ViewPart {
 
 	}
 
-	private class ReferenceLabel extends BaseLabelProvider {
+	private static class ReferenceLabel extends BaseLabelProvider {
 
 		@Override
 		public String getText(Object element) {
-			if (!(element instanceof Diff))
+			if (!(element instanceof Diff diff))
 				return null;
-			var diff = (Diff) element;
 			var text = diff.category;
 			if (!text.isEmpty()) {
 				text += "/";
@@ -171,16 +170,15 @@ public class HistoryView extends ViewPart {
 
 		@Override
 		public Image getImage(Object element) {
-			if (!(element instanceof Diff))
+			if (!(element instanceof Diff diff))
 				return null;
-			var data = (Diff) element;
 			Overlay overlay = null;
-			if (data.diffType == DiffType.ADDED) {
+			if (diff.diffType == DiffType.ADDED) {
 				overlay = Overlay.ADDED;
-			} else if (data.diffType == DiffType.DELETED) {
+			} else if (diff.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
-			return Images.get(data.type, overlay);
+			return Images.get(diff.type, overlay);
 		}
 
 	}
