@@ -22,6 +22,8 @@ import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.Sankey;
 
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+
 public class SankeyEditor extends GraphicalEditorWithFrame {
 
 	public static final String ID = "editor.ProductSystemSankeyDiagram";
@@ -132,6 +134,16 @@ public class SankeyEditor extends GraphicalEditorWithFrame {
 		var activePage = getSite().getWorkbenchWindow().getActivePage();
 		if (activePage.getActiveEditor().equals(this.resultEditor))
 			updateActions(getSelectionActions());
+	}
+
+	public void onFirstActivation() {
+		var diagram = getSankeyFactory().createDiagram();
+		setModel(diagram);
+		if (getHeader() != null) {
+			getHeader().setModel(diagram);
+			diagram.firePropertyChange(CONFIG_PROP, null, diagram.getConfig());
+		}
+		getGraphicalViewer().setContents(diagram);
 	}
 
 	public void setSankey(Sankey<?> sankey) {
