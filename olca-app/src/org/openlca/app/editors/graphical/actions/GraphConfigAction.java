@@ -6,11 +6,15 @@ import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
 
-abstract class GraphConfigAction extends WorkbenchPartAction {
+abstract class GraphConfigAction extends WorkbenchPartAction implements
+		PropertyChangeListener {
 
 	public static final String KEY_CONFIG = "config";
 
@@ -20,6 +24,7 @@ abstract class GraphConfigAction extends WorkbenchPartAction {
 	public GraphConfigAction(GraphEditor part) {
 		super(part);
 		this.editor = part;
+		editor.config.addPropertyChangeListener(this);
 	}
 
 	@Override
@@ -53,6 +58,21 @@ abstract class GraphConfigAction extends WorkbenchPartAction {
 
 	protected void setNewConfig(GraphConfig config) {
 		this.newConfig = config;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		String prop = evt.getPropertyName();
+		if (CONFIG_PROP.equals(prop))
+			refreshCheck();
+
+	}
+
+	protected abstract void refreshCheck();
+
+	@Override
+	public void dispose() {
+		getEditor().config.removePropertyChangeListener(this);
 	}
 
 }

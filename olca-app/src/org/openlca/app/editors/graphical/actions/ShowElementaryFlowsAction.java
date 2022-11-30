@@ -17,8 +17,6 @@ public class ShowElementaryFlowsAction extends GraphConfigAction {
 		setId(GraphActionIds.SHOW_ELEMENTARY_FLOWS);
 		setText(M.ShowElementaryFlows);
 		setImageDescriptor(Images.descriptor(FlowType.ELEMENTARY_FLOW));
-		if (getEditor() != null)
-			setChecked(getEditor().config.showElementaryFlows());
 	}
 
 	@Override
@@ -31,6 +29,12 @@ public class ShowElementaryFlowsAction extends GraphConfigAction {
 			setNewConfig(config);
 			return true;
 		}
+	}
+
+	@Override
+	protected void refreshCheck() {
+		if (getEditor() != null)
+			setChecked(getEditor().config.showElementaryFlows());
 	}
 
 }
