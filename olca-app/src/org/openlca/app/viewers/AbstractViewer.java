@@ -44,8 +44,7 @@ public abstract class AbstractViewer<T, V extends StructuredViewer> implements
 		viewer.refresh();
 	}
 
-	public void addSelectionChangedListener(
-		Consumer<T> listener) {
+	public void addSelectionChangedListener(Consumer<T> listener) {
 		if (this.listener.size() == 0) {
 			startListening();
 		}
