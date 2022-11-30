@@ -16,8 +16,6 @@ public class EditModeAction extends GraphConfigAction {
 		setId(GraphActionIds.EDIT_MODE);
 		setText(M.EditMode);
 		setImageDescriptor(Icon.EDIT.descriptor());
-		if (getEditor() != null)
-			setChecked(getEditor().config.isNodeEditingEnabled());
 	}
 
 	@Override
@@ -30,6 +28,12 @@ public class EditModeAction extends GraphConfigAction {
 			setNewConfig(config);
 			return true;
 		}
+	}
+
+	@Override
+	protected void refreshCheck() {
+		if (getEditor() != null)
+			setChecked(getEditor().config.isNodeEditingEnabled());
 	}
 
 }

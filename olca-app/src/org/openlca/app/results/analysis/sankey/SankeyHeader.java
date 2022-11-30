@@ -25,11 +25,10 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
-public class SankeyHeader extends Header implements PropertyChangeListener {
+public class SankeyHeader extends Header {
 
 	private Button button;
 	private Composite info;
