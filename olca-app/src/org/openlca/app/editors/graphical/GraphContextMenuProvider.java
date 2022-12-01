@@ -56,7 +56,6 @@ public class GraphContextMenuProvider extends BasicContextMenuProvider {
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, addStickyNote);
 
 		var delete = getActionRegistry().getAction(ActionFactory.DELETE.getId());
-		delete.setText(M.Delete);
 		delete.setImageDescriptor(Icon.DELETE.descriptor());
 		delete.setDisabledImageDescriptor(Icon.DELETE_DISABLED.descriptor());
 		if (delete.isEnabled())

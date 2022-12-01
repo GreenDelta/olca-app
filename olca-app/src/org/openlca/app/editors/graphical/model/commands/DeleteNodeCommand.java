@@ -84,6 +84,8 @@ public class DeleteNodeCommand extends Command {
 	private void removeConnections(List<GraphLink> links) {
 		for (GraphLink link : links) {
 			link.disconnect();
+			parent.linkSearch.remove(link.processLink);
+			parent.getProductSystem().processLinks.remove(link.processLink);
 		}
 	}
 
