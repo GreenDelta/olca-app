@@ -37,9 +37,9 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
+	protected void createFormContent(IManagedForm mForm) {
 		var form = UI.formHeader(this);
-		var tk = mform.getToolkit();
+		var tk = mForm.getToolkit();
 		var body = UI.formBody(form, tk);
 		var info = new InfoSection(getEditor());
 		info.render(body, tk);

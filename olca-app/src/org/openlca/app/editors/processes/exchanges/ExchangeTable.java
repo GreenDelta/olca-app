@@ -32,14 +32,12 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
@@ -47,7 +45,6 @@ import org.openlca.util.Strings;
  * The table for the display and editing of inputs or outputs of process
  * exchanges. Avoided products are inputs that are shown on the output site in
  * this table.
- *
  */
 class ExchangeTable {
 
@@ -106,7 +103,7 @@ class ExchangeTable {
 		double x = editor.hasAnyComment("exchanges")
 				? 0.7 / 10
 				: 0.7 / 9;
-			Tables.bindColumnWidths(viewer,
+		Tables.bindColumnWidths(viewer,
 				0.15, 0.15, x, x, x, x, x, x, x, x, x);
 		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5, 6, 7, 8);
 		Viewers.sortByDouble(viewer, (Exchange e) -> e.amount, 2);
@@ -159,12 +156,36 @@ class ExchangeTable {
 	}
 
 	private void bindActions(Section section) {
-		if (!editor.isEditable())
+
+		var openFlow = Actions.create(
+				M.OpenFlow, Images.descriptor(ModelType.FLOW), () -> {
+					Exchange e = Viewers.getFirstSelected(viewer);
+					if (e == null || e.flow == null)
+						return;
+					App.open(e.flow);
+				});
+
+		var openProvider = Actions.create(
+				M.OpenProvider, Images.descriptor(ModelType.PROCESS), () -> {
+					Exchange e = Viewers.getFirstSelected(viewer);
+					if (e == null || e.defaultProviderId == 0L)
+						return;
+					var d = Database.get().getDescriptor(
+							Process.class, e.defaultProviderId);
+					if (d != null) {
+						App.open(d);
+					}
+				});
+
+		if (!editor.isEditable()) {
+			Actions.bind(viewer, openFlow, openProvider);
 			return;
+		}
+
 		var add = Actions.onAdd(
 				() -> add(ModelSelector.multiSelect(ModelType.FLOW)));
-		Action remove = Actions.onRemove(this::onRemove);
-		Action qRef = Actions.create(M.SetAsQuantitativeReference, null, () -> {
+		var remove = Actions.onRemove(this::onRemove);
+		var qRef = Actions.create(M.SetAsQuantitativeReference, null, () -> {
 			Exchange e = Viewers.getFirstSelected(viewer);
 			if (e == null)
 				return;
@@ -172,30 +193,14 @@ class ExchangeTable {
 			page.refreshTables();
 			editor.setDirty();
 		});
-		Action formulaSwitch = new FormulaSwitchAction();
-		Action copy = TableClipboard.onCopySelected(viewer, this::toClipboard);
-		Action paste = TableClipboard.onPaste(viewer, this::onPaste);
+
+		var formulaSwitch = new FormulaSwitchAction();
+		var copy = TableClipboard.onCopySelected(viewer, this::toClipboard);
+		var paste = TableClipboard.onPaste(viewer, this::onPaste);
+
 		CommentAction.bindTo(section, "exchanges",
 				editor.getComments(), add, remove, formulaSwitch);
 		Tables.onDeletePressed(viewer, e -> onRemove());
-		Action openFlow = Actions.create(
-				M.OpenFlow, Images.descriptor(ModelType.FLOW), () -> {
-					Exchange e = Viewers.getFirstSelected(viewer);
-					if (e == null || e.flow == null)
-						return;
-					App.open(e.flow);
-				});
-		Action openProvider = Actions.create(
-				M.OpenProvider, Images.descriptor(ModelType.PROCESS), () -> {
-					Exchange e = Viewers.getFirstSelected(viewer);
-					if (e == null || e.defaultProviderId == 0L)
-						return;
-					ProcessDao dao = new ProcessDao(Database.get());
-					ProcessDescriptor d = dao.getDescriptor(e.defaultProviderId);
-					if (d != null) {
-						App.open(d);
-					}
-				});
 		Actions.bind(viewer, add, remove, qRef,
 				copy, paste, openFlow, openProvider);
 	}
@@ -291,29 +296,29 @@ class ExchangeTable {
 		if (!(data instanceof Exchange e))
 			return TableClipboard.text(item, col);
 		switch (col) {
-		case 1:
-			if (e.flow != null && e.flow.category != null)
-				return CategoryPath.getFull(e.flow.category);
-			else
-				return "";
-		case 2:
-			if (label.showFormulas
-					&& Strings.notEmpty(e.formula))
-				return e.formula;
-			else
-				return Double.toString(e.amount);
-		case 4:
-			if (e.costs == null || e.currency == null)
-				return "";
-			if (label.showFormulas
-					&& Strings.notEmpty(e.costFormula))
-				return e.costFormula + " " + e.currency.code;
-			else
-				return e.costs + " " + e.currency.code;
-		case 6:
-			return e.isAvoided ? "TRUE" : "";
-		default:
-			return TableClipboard.text(item, col);
+			case 1:
+				if (e.flow != null && e.flow.category != null)
+					return CategoryPath.getFull(e.flow.category);
+				else
+					return "";
+			case 2:
+				if (label.showFormulas
+						&& Strings.notEmpty(e.formula))
+					return e.formula;
+				else
+					return Double.toString(e.amount);
+			case 4:
+				if (e.costs == null || e.currency == null)
+					return "";
+				if (label.showFormulas
+						&& Strings.notEmpty(e.costFormula))
+					return e.costFormula + " " + e.currency.code;
+				else
+					return e.costs + " " + e.currency.code;
+			case 6:
+				return e.isAvoided ? "TRUE" : "";
+			default:
+				return TableClipboard.text(item, col);
 		}
 	}
 

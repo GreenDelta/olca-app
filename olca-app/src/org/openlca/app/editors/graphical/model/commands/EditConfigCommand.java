@@ -57,22 +57,6 @@ public class EditConfigCommand extends Command {
 		viewer.setContents(newGraph);
 
 		editor.setDirty();
-		updateActions();
-	}
-
-	/**
-	 * Update the status of the config related action.
-	 */
-	private void updateActions() {
-		var registry = editor.getActionRegistry();
-
-		var show = registry.getAction(GraphActionIds.SHOW_ELEMENTARY_FLOWS);
-		if (show != null)
-			show.setChecked(editor.config.showElementaryFlows());
-
-		var edit = registry.getAction(GraphActionIds.EDIT_MODE);
-		if (edit != null)
-			edit.setChecked(editor.config.isNodeEditingEnabled());
 	}
 
 	@Override

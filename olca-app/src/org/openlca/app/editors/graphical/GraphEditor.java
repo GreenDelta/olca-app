@@ -271,6 +271,14 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		monitor.done();
 	}
 
+	public void onFirstActivation() {
+		var nodeArray = GraphFile.getLayout(this, "nodes");
+		var stickyNoteArray = GraphFile.getLayout(this, "sticky-notes");
+		var graph = getGraphFactory().createGraph(this, nodeArray, stickyNoteArray);
+		setModel(graph);
+		getGraphicalViewer().setContents(graph);
+	}
+
 	public ProductSystemEditor getProductSystemEditor() {
 		return systemEditor;
 	}

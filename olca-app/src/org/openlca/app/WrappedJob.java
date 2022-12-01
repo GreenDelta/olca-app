@@ -8,15 +8,15 @@ import org.openlca.app.util.ErrorReporter;
 
 class WrappedJob extends Job {
 
-	private Runnable runnable;
+	private final Runnable runnable;
 	private WrappedUIJob callback;
 
-	public WrappedJob(String name, Runnable runnable) {
+	WrappedJob(String name, Runnable runnable) {
 		super(name);
 		this.runnable = runnable;
 	}
 
-	public void setCallback(Runnable callback) {
+	void setCallback(Runnable callback) {
 		if (callback == null)
 			return;
 		String name = "Callback of " + getName();

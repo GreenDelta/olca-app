@@ -25,11 +25,10 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
-public class SankeyHeader extends Header implements PropertyChangeListener {
+public class SankeyHeader extends Header {
 
 	private Button button;
 	private Composite info;
@@ -58,7 +57,7 @@ public class SankeyHeader extends Header implements PropertyChangeListener {
 		button.setImage(Icon.PREFERENCES.get());
 
 		info = new Composite(this, SWT.NONE);
-		info.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, true, true));
+		info.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		var infoLayout = new GridLayout(3, false);
 		infoLayout.horizontalSpacing = 30;
 		infoLayout.marginHeight = 0;
@@ -226,7 +225,7 @@ public class SankeyHeader extends Header implements PropertyChangeListener {
 			setReferenceType();
 			setProcessMaxNumber();
 			setMinContributionShare();
-			layout();
+			info.layout();
 		}
 	}
 

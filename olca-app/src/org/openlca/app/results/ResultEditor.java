@@ -114,14 +114,8 @@ public class ResultEditor extends FormEditor {
 			var listener = sankeyInit.get();
 			if (listener == null)
 				return;
-			var diagram = sankeyEditor.getSankeyFactory().createDiagram();
-			sankeyEditor.setModel(diagram);
-			if (sankeyEditor.getHeader() != null) {
-				sankeyEditor.getHeader().setModel(diagram);
-				diagram.firePropertyChange(CONFIG_PROP, null, diagram.getConfig());
-			}
-			var viewer = (GraphicalViewer) sankeyEditor.getAdapter(GraphicalViewer.class);
-			viewer.setContents(diagram);
+			
+			sankeyEditor.onFirstActivation();
 
 			// Artificially refreshing the ActionBarContributor.
 			refreshActionBar(this);

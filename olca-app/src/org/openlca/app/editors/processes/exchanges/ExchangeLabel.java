@@ -29,7 +29,7 @@ import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
 class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
-	ITableColorProvider, ITableFontProvider {
+		ITableColorProvider, ITableFontProvider {
 
 	private final ProcessEditor editor;
 
@@ -45,15 +45,15 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return null;
 		return switch (col) {
 			case 0 -> e.flow == null
-				? Images.get(ModelType.FLOW)
-				: Images.get(e.flow);
+					? Images.get(ModelType.FLOW)
+					: Images.get(e.flow);
 			case 3 -> Images.get(ModelType.UNIT_GROUP);
 			case 6 -> getAvoidedCheck(e);
 			case 7 -> {
 				if (e.defaultProviderId == 0)
 					yield null;
 				var d = Cache.getEntityCache().get(
-					ProcessDescriptor.class, e.defaultProviderId);
+						ProcessDescriptor.class, e.defaultProviderId);
 				yield d != null ? Images.get(d) : null;
 			}
 			case 10 -> Images.get(editor.getComments(), CommentPaths.get(e));
@@ -86,8 +86,8 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		return switch (col) {
 			case 0 -> Labels.name(e.flow);
 			case 1 -> e.flow == null
-				? null
-				: CategoryPath.getShort(e.flow.category);
+					? null
+					: CategoryPath.getShort(e.flow.category);
 			case 2 -> getAmountText(e);
 			case 3 -> Labels.name(e.unit);
 			case 4 -> getCostValue(e);
@@ -99,13 +99,13 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 					yield null;
 				Process p = editor.getModel();
 				yield p.exchangeDqSystem == null
-					? null
-					: p.exchangeDqSystem.applyScoreLabels(e.dqEntry);
+						? null
+						: p.exchangeDqSystem.applyScoreLabels(e.dqEntry);
 			}
 			case 9 -> e.location == null ? ""
-				: e.location.code != null
-				? e.location.code
-				: Labels.name(e.location);
+					: e.location.code != null
+					? e.location.code
+					: Labels.name(e.location);
 			case 10 -> e.description;
 			default -> null;
 		};
@@ -117,14 +117,14 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		var cache = Cache.getEntityCache();
 		var p = cache.get(ProcessDescriptor.class, e.defaultProviderId);
 		return p != null
-			? Labels.name(p)
-			: null;
+				? Labels.name(p)
+				: null;
 	}
 
 	private String getAmountText(Exchange e) {
 		return !showFormulas || e.formula == null
-			? Numbers.format(e.amount)
-			: e.formula;
+				? Numbers.format(e.amount)
+				: e.formula;
 	}
 
 	private String getCostValue(Exchange e) {
@@ -132,8 +132,8 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return null;
 		var unit = e.currency == null ? "" : " " + e.currency.code;
 		return showFormulas && e.costFormula != null
-			? e.costFormula + unit
-			: Numbers.format(e.costs) + unit;
+				? e.costFormula + unit
+				: Numbers.format(e.costs) + unit;
 	}
 
 	@Override
@@ -143,19 +143,34 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 
 	@Override
 	public Color getForeground(Object obj, int col) {
-		// we currently only use this for costs
-		if (col != 4)
+		if (!(obj instanceof Exchange e))
 			return null;
-		Exchange e = (Exchange) obj;
-		if (e.flow == null || e.costs == null)
-			return null;
-		FlowType type = e.flow.flowType;
-		boolean isRevenue = (e.isInput && type == FlowType.WASTE_FLOW)
-			|| (!e.isInput && type == FlowType.PRODUCT_FLOW);
-		if ((isRevenue && e.costs >= 0) || (!isRevenue && e.costs < 0))
-			return Colors.systemColor(SWT.COLOR_DARK_GREEN);
-		else
-			return Colors.systemColor(SWT.COLOR_DARK_MAGENTA);
+		if (e.flow == null)
+			return Colors.systemColor(SWT.COLOR_RED);
+
+		// unit validation
+		if (col == 3) {
+			if (e.unit == null
+					|| e.flowPropertyFactor == null
+					|| e.flowPropertyFactor.flowProperty == null
+					|| e.flowPropertyFactor.flowProperty.unitGroup == null
+					|| !e.flowPropertyFactor.flowProperty.unitGroup.units.contains(e.unit))
+				return Colors.systemColor(SWT.COLOR_RED);
+		}
+
+		// costs
+		if (col == 4) {
+			if (e.costs == null)
+				return null;
+			var type = e.flow.flowType;
+			boolean isRevenue = (e.isInput && type == FlowType.WASTE_FLOW)
+					|| (!e.isInput && type == FlowType.PRODUCT_FLOW);
+			return (isRevenue && e.costs >= 0) || (!isRevenue && e.costs < 0)
+					? Colors.systemColor(SWT.COLOR_DARK_GREEN)
+					: Colors.systemColor(SWT.COLOR_DARK_MAGENTA);
+		}
+
+		return null;
 	}
 
 	@Override
@@ -164,7 +179,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return null;
 		var qRef = editor.getModel().quantitativeReference;
 		return Objects.equals(e, qRef)
-			? UI.boldFont()
-			: null;
+				? UI.boldFont()
+				: null;
 	}
 }

@@ -53,14 +53,8 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			var listener = graphInit.get();
 			if (listener == null)
 				return;
-			var nodeArray = GraphFile.getLayout(graphEditor, "nodes");
-			var stickyNoteArray = GraphFile.getLayout(graphEditor, "sticky-notes");
-			var graph = graphEditor.getGraphFactory()
-					.createGraph(graphEditor, nodeArray, stickyNoteArray);
-			graphEditor.setModel(graph);
-			var viewer = (GraphicalViewer) graphEditor
-					.getAdapter(GraphicalViewer.class);
-			viewer.setContents(graph);
+
+			graphEditor.onFirstActivation();
 
 			// Artificially refreshing the ActionBarContributor.
 			refreshActionBar(this);

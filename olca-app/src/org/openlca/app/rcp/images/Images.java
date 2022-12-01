@@ -43,51 +43,26 @@ public class Images {
 				: null;
 	}
 
-	public static Image get(RefEntity entity) {
-		if (entity instanceof Source source) {
+	public static Image get(RefEntity e) {
+		if (e instanceof Source source) {
 			if (source.externalFile != null)
 				return get(FileType.forName(source.externalFile));
 		}
-
-		if (entity instanceof Process process) {
-			var qRef = process.quantitativeReference;
-			var flowType = qRef != null && qRef.flow != null
-					? qRef.flow.flowType
-					: null;
-			if (process.processType == ProcessType.LCI_RESULT) {
-				return flowType == FlowType.WASTE_FLOW
-						? ImageManager.get(ModelIcon.PROCESS_SYSTEM_WASTE)
-						: ImageManager.get(ModelIcon.PROCESS_SYSTEM_PROD);
-			}
-			return flowType == FlowType.WASTE_FLOW
-					? ImageManager.get(ModelIcon.PROCESS_WASTE)
-					: ImageManager.get(ModelIcon.PROCESS_PROD);
-		}
-
-		if (entity instanceof Flow flow)
-			return get(flow.flowType);
-
-		if (entity instanceof Unit)
-			return get(ModelType.UNIT_GROUP);
-
-		if (entity instanceof ImpactCategory impact)
-			return impact.direction == Direction.INPUT
-					? ImageManager.get(ModelIcon.IMPACT_CATEGORY_IN)
-					: ImageManager.get(ModelIcon.IMPACT_CATEGORY_OUT);
-
-		if (entity instanceof RootEntity re)
-			return get(ModelType.of(re));
-
-		return null;
+		var icon = icon(e);
+		if (icon == null)
+			return null;
+		return e instanceof RootEntity root && root.isFromLibrary()
+				? ImageManager.get(icon, Overlay.LIBRARY)
+				: ImageManager.get(icon);
 	}
 
 	public static Image get(Descriptor d) {
-		if (d.isFromLibrary())
-			return get(d, Overlay.LIBRARY);
 		var icon = icon(d);
-		return icon != null
-				? ImageManager.get(icon)
-				: null;
+		if (icon == null)
+			return null;
+		return d.isFromLibrary()
+				? ImageManager.get(icon, Overlay.LIBRARY)
+				: ImageManager.get(icon);
 	}
 
 	public static Image get(Category c) {
@@ -100,42 +75,32 @@ public class Images {
 	}
 
 	public static Image get(Group group) {
-		if (group == null)
-			return null;
 		var icon = icon(group.type);
-		return icon == null
-				? Icon.FOLDER.get()
-				: ImageManager.get(icon);
+		return icon != null
+				? ImageManager.get(icon)
+				: Icon.FOLDER.get();
 	}
 
 	public static Image get(ModelType type) {
-		var icon = icon(type);
-		return icon != null
-				? ImageManager.get(icon)
-				: null;
+		return imageOf(icon(type));
 	}
 
 	public static Image get(FlowType type) {
-		if (type == null)
-			return null;
-		ModelIcon icon = icon(type);
-		return icon == null
-				? null
-				: ImageManager.get(icon);
+		return imageOf(icon(type));
 	}
 
 	public static Image get(ProcessType type) {
-		ModelIcon icon = icon(type);
-		if (icon == null)
-			return null;
-		return ImageManager.get(icon);
+		return imageOf(icon(type));
 	}
 
 	public static Image get(GroupType type) {
-		ModelIcon icon = icon(type);
-		if (icon == null)
-			return Icon.FOLDER.get();
-		return ImageManager.get(icon);
+		return imageOf(icon(type));
+	}
+
+	private static Image imageOf(ModelIcon icon) {
+		return icon != null
+				? ImageManager.get(icon)
+				: null;
 	}
 
 	public static Image get(FileType type) {
@@ -188,15 +153,15 @@ public class Images {
 	}
 
 	public static Image get(Boolean value) {
-		if (value == null || !value)
-			return Icon.CHECK_FALSE.get();
-		return Icon.CHECK_TRUE.get();
+		return value == null || !value
+				? Icon.CHECK_FALSE.get()
+				: Icon.CHECK_TRUE.get();
 	}
 
 	public static Image get(Comments comments, String path) {
-		if (comments != null && comments.hasPath(path))
-			return Icon.COMMENT.get();
-		return null;
+		return comments != null && comments.hasPath(path)
+				? Icon.COMMENT.get()
+				: null;
 	}
 
 	public static Image getForCategory(ModelType type) {
@@ -207,20 +172,18 @@ public class Images {
 	}
 
 	public static ImageDescriptor descriptor(RefEntity entity) {
-		if (entity instanceof Process p)
-			return descriptor(p.processType);
-		if (entity instanceof Flow f)
-			return descriptor(f.flowType);
-		if (entity instanceof RootEntity re)
-			return descriptor(ModelType.of(re));
-		if (entity instanceof Unit)
-			return descriptor(ModelType.UNIT_GROUP);
-		return null;
+		var icon = icon(entity);
+		if (icon == null)
+			return null;
+		return entity instanceof RootEntity root && root.isFromLibrary()
+				? ImageManager.descriptor(icon, Overlay.LIBRARY)
+				: ImageManager.descriptor(icon);
 	}
 
 	public static ImageDescriptor descriptor(Descriptor d) {
 		if (d == null || d.type == null)
 			return null;
+
 		return switch (d.type) {
 			case PROCESS -> descriptor(((ProcessDescriptor) d).processType);
 			case FLOW -> descriptor(((FlowDescriptor) d).flowType);
@@ -231,40 +194,37 @@ public class Images {
 	public static ImageDescriptor descriptor(Category category) {
 		if (category == null)
 			return null;
-		ModelIcon icon = categoryIcon(category.modelType);
-		if (icon == null)
-			return Icon.FOLDER.descriptor();
-		return ImageManager.descriptor(icon);
+		var icon = categoryIcon(category.modelType);
+		return icon != null
+				? ImageManager.descriptor(icon)
+				: Icon.FOLDER.descriptor();
 	}
 
 	public static ImageDescriptor descriptor(Group group) {
 		if (group == null)
 			return null;
-		ModelIcon icon = icon(group.type);
-		if (icon == null)
-			return Icon.FOLDER.descriptor();
-		return ImageManager.descriptor(icon);
+		var icon = icon(group.type);
+		return icon != null
+				? ImageManager.descriptor(icon)
+				: Icon.FOLDER.descriptor();
 	}
 
 	public static ImageDescriptor descriptor(ModelType type) {
-		ModelIcon icon = icon(type);
-		if (icon == null)
-			return null;
-		return ImageManager.descriptor(icon);
+		return descriptorOf(icon(type));
 	}
 
 	public static ImageDescriptor descriptor(FlowType type) {
-		ModelIcon icon = icon(type);
-		if (icon == null)
-			return null;
-		return ImageManager.descriptor(icon);
+		return descriptorOf(icon(type));
 	}
 
 	public static ImageDescriptor descriptor(ProcessType type) {
-		ModelIcon icon = icon(type);
-		if (icon == null)
-			return null;
-		return ImageManager.descriptor(icon);
+		return descriptorOf(icon(type));
+	}
+
+	private static ImageDescriptor descriptorOf(ModelIcon icon) {
+		return icon != null
+				? ImageManager.descriptor(icon)
+				: null;
 	}
 
 	public static ImageDescriptor descriptor(GroupType type) {
@@ -275,18 +235,12 @@ public class Images {
 	}
 
 	public static ImageDescriptor descriptor(ModelType type, Overlay overlay) {
-		ModelIcon icon = Images.icon(type);
+		var icon = Images.icon(type);
 		if (icon == null)
 			return null;
-		if (overlay == null)
-			return ImageManager.descriptor(icon);
-		return ImageManager.descriptor(icon, overlay);
-	}
-
-	public static ImageDescriptor descriptor(Boolean value) {
-		if (value == null || !value)
-			return Icon.CHECK_FALSE.descriptor();
-		return Icon.CHECK_TRUE.descriptor();
+		return overlay != null
+				? ImageManager.descriptor(icon, overlay)
+				: ImageManager.descriptor(icon);
 	}
 
 	public static ImageDescriptor descriptor(Comments comments, String path) {
@@ -304,6 +258,37 @@ public class Images {
 
 	public static ImageDescriptor newDatabase() {
 		return ImageManager.descriptor(Icon.DATABASE, Overlay.NEW);
+	}
+
+	private static ModelIcon icon(RefEntity entity) {
+		if (entity instanceof Process p) {
+			var qRef = p.quantitativeReference;
+			var flowType = qRef != null && qRef.flow != null
+					? qRef.flow.flowType
+					: null;
+			if (p.processType == ProcessType.LCI_RESULT) {
+				return flowType == FlowType.WASTE_FLOW
+						? ModelIcon.PROCESS_SYSTEM_WASTE
+						: ModelIcon.PROCESS_SYSTEM_PROD;
+			}
+			return flowType == FlowType.WASTE_FLOW
+					? ModelIcon.PROCESS_WASTE
+					: ModelIcon.PROCESS_PROD;
+		}
+
+		if (entity instanceof Flow flow)
+			return icon(flow.flowType);
+		if (entity instanceof Unit)
+			return icon(ModelType.UNIT_GROUP);
+		if (entity instanceof ImpactCategory impact)
+			return impact.direction == Direction.INPUT
+					? ModelIcon.IMPACT_CATEGORY_IN
+					: ModelIcon.IMPACT_CATEGORY_OUT;
+
+		if (entity instanceof RootEntity re)
+			return icon(ModelType.of(re));
+
+		return null;
 	}
 
 	private static ModelIcon wizardIcon(ModelType type) {
@@ -331,7 +316,7 @@ public class Images {
 		};
 	}
 
-	public static ModelIcon icon(Descriptor d) {
+	private static ModelIcon icon(Descriptor d) {
 		if (d == null)
 			return null;
 

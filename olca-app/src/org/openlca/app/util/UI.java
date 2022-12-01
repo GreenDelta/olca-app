@@ -183,11 +183,12 @@ public class UI {
 	}
 
 	public static ScrolledForm formHeader(ModelPage<?> page) {
-		Image image = Images.get(page.getEditor().getModel());
-		ScrolledForm form = formHeader(page.getManagedForm(), page.getFormTitle(), image);
+		var image = Images.get(page.getEditor().getModel());
+		var form = formHeader(page.getManagedForm(), page.getFormTitle(), image);
 		// "" is 'general' comment on data set
 		if (page.getEditor().hasComment("")) {
-			form.getToolBarManager().add(new CommentAction("", page.getEditor().getComments()));
+			form.getToolBarManager()
+					.add(new CommentAction("", page.getEditor().getComments()));
 		}
 		Editors.addRefresh(form, page.getEditor());
 		form.getToolBarManager().update(true);
