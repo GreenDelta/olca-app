@@ -307,7 +307,7 @@ public class Node extends MinMaxComponent {
 
 	/**
 	 * Recursively check if any of this node's outputs or inputs chain to the
-	 * reference node (close loop are not considered).
+	 * reference node (closed loop are not considered).
 	 * Returns false is the initial node is the reference.
 	 */
 	public boolean isChainingReferenceNode(int side) {
