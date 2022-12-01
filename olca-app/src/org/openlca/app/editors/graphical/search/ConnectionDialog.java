@@ -60,8 +60,7 @@ public class ConnectionDialog extends Dialog {
 		Composite container = (Composite) super.createDialogArea(parent);
 		UI.gridLayout(container, 1);
 		viewer = Tables.createViewer(container, LABELS.ALL);
-		double w = 1 / 6d;
-		Tables.bindColumnWidths(viewer, w, w, w, w, w, w);
+		Tables.bindColumnWidths(viewer, 0.43, 0.04, 0.08, 0.15, 0.16, 0.14);
 		viewer.setLabelProvider(new ConnectionLabelProvider(this));
 		Table table = viewer.getTable();
 		viewer.setInput(candidates);
