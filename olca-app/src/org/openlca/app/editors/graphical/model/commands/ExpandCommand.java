@@ -83,7 +83,9 @@ public class ExpandCommand extends Command {
 			} else {
 				continue;
 			}
-			new GraphLink(pLink, outNode, inNode);
+			var link = new GraphLink(pLink, outNode, inNode);
+			graph.links.put(pLink, link);
+
 			// Update the node's expanded state on the other side in case of loops.
 			graph.getNode(otherID).updateIsExpanded(side == INPUT ? OUTPUT : INPUT);
 		}

@@ -44,6 +44,8 @@ public class Node extends MinMaxComponent {
 	public int isExpanded;
 	/** Helper variable when exploring graph in CollapseCommand */
 	public boolean isCollapsing;
+	/** Helper variable when exploring graph in RemoveSupplyChainCommand */
+	public boolean isRemoving;
 	/** Helper variable when exploring graph in isChainingReferenceNode and in
 	 * isOnlyChainingReferenceNode.*/
 	public boolean wasExplored;
@@ -146,7 +148,7 @@ public class Node extends MinMaxComponent {
 	public List<ExchangeItem> getExchangeItems() {
 		List<ExchangeItem> list = new ArrayList<>();
 		for (IOPane ioPane : getIOPanes().values()) {
-			list.addAll(ioPane.getExchangesItems());
+			list.addAll(ioPane.getExchangeItems());
 		}
 		return list;
 	}

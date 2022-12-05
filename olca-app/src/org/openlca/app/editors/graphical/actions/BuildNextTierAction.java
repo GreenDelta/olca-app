@@ -108,7 +108,7 @@ public class BuildNextTierAction extends Action implements IBuildAction {
 		var editor = node.getGraph().getEditor();
 		var ioPanes = editor.getGraphFactory().createIOPanes(node.descriptor);
 		for (var pane : ioPanes.values()) {
-			for (var exchangeItem : pane.getExchangesItems()) {
+			for (var exchangeItem : pane.getExchangeItems()) {
 				if (exchangeItem.exchange == null || exchangeItem.isConnected())
 					continue;
 				if (exchangeItem.isWaste() && !exchangeItem.exchange.isInput)
