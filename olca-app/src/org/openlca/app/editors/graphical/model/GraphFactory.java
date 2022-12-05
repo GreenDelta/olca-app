@@ -166,7 +166,8 @@ public class GraphFactory {
 				: null;
 			if (inNode == null)
 				continue;
-			new GraphLink(pLink, outNode, inNode);
+			var link = new GraphLink(pLink, outNode, inNode);
+			graph.links.put(pLink, link);
 		}
 	}
 

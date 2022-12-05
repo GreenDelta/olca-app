@@ -74,7 +74,11 @@ abstract public class Component extends Element implements Comparable<Component>
 	}
 
 	public void addChildren(List<Node> children) {
-		for (var child : children) addChild(child);
+		for (var child : children) {
+			children.add(child);
+			child.setParent(this);
+		}
+		firePropertyChange(CHILDREN_PROP, null, null);
 	}
 
 	public void setParent(Component parent) {

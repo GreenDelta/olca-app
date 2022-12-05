@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+
 /**
  * This is a data structure for searching a set of existing links by
  * provider and recipient processes.
@@ -31,6 +33,7 @@ public class LinkSearchMap {
 	TLongObjectHashMap<TIntArrayList> connectionIndex;
 
 	ArrayList<ProcessLink> data;
+	private ArrayList<Long> wasExplored = new ArrayList<>();
 
 	public LinkSearchMap(Collection<ProcessLink> links) {
 		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
@@ -79,7 +82,7 @@ public class LinkSearchMap {
 	 */
 	public List<ProcessLink> getLinks(List<Long> processIds) {
 		TIntHashSet intSet = new TIntHashSet(
-			Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+				Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
 		for (long processId : processIds) {
 			TIntArrayList list = providerIndex.get(processId);
 			if (list != null)
@@ -95,7 +98,7 @@ public class LinkSearchMap {
 	 * Returns all links where the process with the given ID is connected (has
 	 * an product input or waste output).
 	 */
-	public List<ProcessLink> getConnectionLinks(long processId) {
+	public List<ProcessLink>  getConnectionLinks(long processId) {
 		return getLinks(processId, connectionIndex);
 	}
 
@@ -108,7 +111,7 @@ public class LinkSearchMap {
 	}
 
 	private List<ProcessLink> getLinks(long processId,
-			TLongObjectHashMap<TIntArrayList> map) {
+																		 TLongObjectHashMap<TIntArrayList> map) {
 		TIntArrayList list = map.get(processId);
 		if (list == null)
 			return Collections.emptyList();
@@ -167,6 +170,45 @@ public class LinkSearchMap {
 		list.remove(index);
 		if (list.size() == 0)
 			map.remove(id);
+	}
+
+
+	/**
+	 * Recursively check if any of this process's outputs or inputs chain to the
+	 * reference (closed loop are not considered).
+	 * Returns false is the initial process is the reference.
+	 */
+	public boolean isChainingReference(long process, int side, long ref) {
+		if (wasExplored.contains(process))
+			return false;
+		else if (process == ref)
+			// The reference node is explored if and only if it is the initial node
+			// (see the condition in the for loop).
+			return false;
+		wasExplored.add(process);
+
+		var links = side == INPUT
+				? getConnectionLinks(process)
+				: getProviderLinks(process);
+		if (links.isEmpty()) {
+			wasExplored.remove(process);
+			return false;
+		}
+
+		for (var link : links) {
+			if (link.processId == link.providerId)
+				continue;
+			var otherProcess = side == INPUT
+					? link.providerId
+					: link.processId;
+			if (otherProcess == ref
+					|| isChainingReference(otherProcess, side, ref)) {
+				wasExplored.remove(process);
+				return true;
+			}
+		}
+		wasExplored.remove(process);
+		return false;
 	}
 
 }

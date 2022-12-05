@@ -92,6 +92,7 @@ public class MassCreationCommand extends Command {
 				isWaste ? newLink.providerId
 						: newLink.processId);
 		var link = new GraphLink(newLink, outNode, inNode);
+		graph.links.put(newLink, link);
 
 		createdLinks.add(link);
 	}

@@ -1,7 +1,9 @@
 package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import gnu.trove.set.hash.TLongHashSet;
 import org.openlca.app.db.Database;
@@ -13,6 +15,7 @@ import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
 import static org.eclipse.draw2d.PositionConstants.EAST;
@@ -29,6 +32,7 @@ public class Graph extends BaseComponent {
 
 	public final GraphEditor editor;
 	public final LinkSearchMap linkSearch;
+	public Map<ProcessLink, GraphLink> links = new HashMap<>();
 	public final FlowTable flows = FlowTable.create(Database.get());
 	private final TLongHashSet wasteProcesses;
 	private final Process referenceProcess;
@@ -54,6 +58,10 @@ public class Graph extends BaseComponent {
 				return node;
 		}
 		return null;
+	}
+
+	public GraphLink getLink(ProcessLink processLink) {
+		return links.get(processLink);
 	}
 
 	public Node getReferenceNode() {
@@ -128,5 +136,4 @@ public class Graph extends BaseComponent {
 	public String toString() {
 		return "GraphModel";
 	}
-
 }

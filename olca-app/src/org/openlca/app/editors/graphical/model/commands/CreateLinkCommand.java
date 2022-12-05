@@ -44,6 +44,7 @@ public class CreateLinkCommand extends Command {
 		link = new GraphLink(processLink, source, target);
 		link.getTargetNode().updateIsExpanded(INPUT);
 		link.getSourceNode().updateIsExpanded(OUTPUT);
+		graph.links.put(processLink, link);
 
 		graph.editor.setDirty();
 	}

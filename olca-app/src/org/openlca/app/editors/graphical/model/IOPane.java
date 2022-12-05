@@ -22,14 +22,14 @@ public class IOPane extends Component {
 	}
 
 	public boolean hasOnlyElementary() {
-		for (var item : getExchangesItems())
+		for (var item : getExchangeItems())
 			if (!item.isElementary())
 				return false;
 		return true;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<ExchangeItem> getExchangesItems() {
+	public List<ExchangeItem> getExchangeItems() {
 		return (List<ExchangeItem>) super.getChildren();
 	}
 

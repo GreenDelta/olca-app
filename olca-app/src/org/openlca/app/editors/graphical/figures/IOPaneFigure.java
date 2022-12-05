@@ -35,7 +35,7 @@ public class IOPaneFigure extends ComponentFigure {
 		layout.horizontalSpacing = 0;
 		setLayoutManager(layout);
 
-		if (!pane.getExchangesItems().isEmpty() || node.isEditable()) {
+		if (!pane.getExchangeItems().isEmpty() || node.isEditable()) {
 
 			add(new Header(), GridPos.fillTop());
 
@@ -79,7 +79,7 @@ public class IOPaneFigure extends ComponentFigure {
 
 	public Dimension getAmountLabelSize() {
 		if (amountLabelSize == null) {
-			for (ExchangeItem item : pane.getExchangesItems()) {
+			for (ExchangeItem item : pane.getExchangeItems()) {
 				var preferredSize = getPreferredAmountLabelSize(item);
 				setAmountLabelSize(preferredSize, false);
 			}
@@ -105,7 +105,7 @@ public class IOPaneFigure extends ComponentFigure {
 
 	public Dimension getUnitLabelSize() {
 		if (unitLabelSize == null) {
-			for (ExchangeItem item : pane.getExchangesItems()) {
+			for (ExchangeItem item : pane.getExchangeItems()) {
 				var preferredSize = getPreferredUnitLabelSize(item);
 				setUnitLabelSize(preferredSize, false);
 			}
@@ -150,7 +150,7 @@ public class IOPaneFigure extends ComponentFigure {
 		public void paint(Graphics g) {
 			if (!pane.isForInputs()) {
 				var inputIOPane = pane.getNode().getIOPanes().get(INPUT_PROP);
-				if (!inputIOPane.getExchangesItems().isEmpty()) {
+				if (!inputIOPane.getExchangeItems().isEmpty()) {
 					var theme = pane.getGraph().getConfig().getTheme();
 					var node = pane.getNode();
 					var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());

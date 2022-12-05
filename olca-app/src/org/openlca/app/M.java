@@ -734,6 +734,7 @@ public class M extends NLS {
 	public static String RemoteDatabase;
 	public static String Remove;
 	public static String RemoveConnections;
+	public static String RemoveFlowSupplyChain;
 	public static String RemoveIndicator;
 	public static String RemoveObject;
 	public static String RemoveScore;
@@ -977,7 +978,7 @@ public class M extends NLS {
 	public static String Yes;
 	public static String ZipCode;
 
-	private static Map<String, String> map;
+    private static Map<String, String> map;
 
 	static {
 		NLS.initializeMessages("org.openlca.app.messages", M.class);

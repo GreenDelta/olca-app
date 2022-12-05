@@ -23,9 +23,7 @@ public class EditStickyNoteAction extends SelectionAction {
 	@Override
 	protected boolean calculateEnabled() {
 		var command = getCommand();
-		if (command == null)
-			return false;
-		return command.canExecute();
+		return command != null && command.canExecute();
 	}
 
 	@Override

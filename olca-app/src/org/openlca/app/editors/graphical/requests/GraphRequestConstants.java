@@ -61,4 +61,9 @@ public class GraphRequestConstants implements RequestConstants {
 	 */
 	public static String REQ_SET_REFERENCE = "set_reference";
 
+	/**
+	 * Indicates that the supply chain of this exchange should be removed.
+	 */
+	public static String REQ_REMOVE_CHAIN = "set_reference";
+
 }
