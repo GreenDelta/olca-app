@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.actions;
 
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
@@ -12,8 +11,6 @@ import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_SET_REFERENCE;
 
 public class SetReferenceAction extends SelectionAction {
-
-	private ExchangeEditPart part;
 
 	public SetReferenceAction(GraphEditor part) {
 		super(part);
@@ -35,19 +32,13 @@ public class SetReferenceAction extends SelectionAction {
 	}
 
 	private Command getCommand() {
-		if (getSelectedObjects().isEmpty())
+		if (getSelectedObjects().size() != 1)
 			return null;
 
-		CompoundCommand cc = new CompoundCommand();
-		cc.setDebugLabel("Set node as quantitative reference.");
-
-		var parts = getSelectedObjects();
-		for (Object o : parts) {
-			if (!(o instanceof ExchangeEditPart exchangeEditPart))
-				return null;
-			part = exchangeEditPart;
-			cc.add(exchangeEditPart.getCommand(new Request(REQ_SET_REFERENCE)));
-		}
-		return cc.unwrap();
+		var part = getSelectedObjects().get(0);
+		if (!(part instanceof ExchangeEditPart exchangeEditPart))
+			return null;
+		else return exchangeEditPart.getCommand(new Request(REQ_SET_REFERENCE));
 	}
+	
 }
