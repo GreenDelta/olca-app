@@ -40,7 +40,6 @@ public class GraphBarContributor extends BasicActionBarContributor {
 		addRetargetAction(new AddStickyNoteRetargetAction());
 		addRetargetAction(new EditExchangeRetargetAction());
 		addRetargetAction(new EditConfigRetargetAction());
-		addRetargetAction(new LayoutAsTreeRetargetAction());
 		addRetargetAction(new EditStickyNoteRetargetAction());
 		addRetargetAction(new MassExpansionRetargetAction(EXPAND));
 		addRetargetAction(new MassExpansionRetargetAction(COLLAPSE));
@@ -70,17 +69,10 @@ public class GraphBarContributor extends BasicActionBarContributor {
 		super.contributeToEditMenu(menuManager);
 		var editMenu = getEditMenu();
 
-		var addProcess = getAction(GraphActionIds.ADD_PROCESS);
-		editMenu.add(addProcess);
-
-		var editNote = getAction(GraphActionIds.EDIT_STICKY_NOTE);
-		editMenu.add(editNote);
-
-		var addStickyNote = getAction(GraphActionIds.ADD_STICKY_NOTE);
-		editMenu.add(addStickyNote);
-
-		var openEditor = getAction(ActionIds.OPEN_EDITOR);
-		editMenu.add(openEditor);
+		editMenu.add(getAction(GraphActionIds.ADD_PROCESS));
+		editMenu.add(getAction(GraphActionIds.EDIT_STICKY_NOTE));
+		editMenu.add(getAction(GraphActionIds.ADD_STICKY_NOTE));
+		editMenu.add(getAction(ActionIds.OPEN_EDITOR));
 	}
 
 	@Override
@@ -88,21 +80,10 @@ public class GraphBarContributor extends BasicActionBarContributor {
 		super.contributeToViewMenu(menuManager);
 		var viewMenu = getViewMenu();
 
-		var layout = getActionRegistry().getAction(GraphActionIds.LAYOUT_TREE);
-		viewMenu.add(layout);
-
-		var minAll = getActionRegistry().getAction(GraphActionIds.MINIMIZE_ALL);
-		viewMenu.add(minAll);
-
-		var maxAll = getActionRegistry().getAction(GraphActionIds.MAXIMIZE_ALL);
-		viewMenu.add(maxAll);
-
-		var expandAll = getActionRegistry().getAction(GraphActionIds.EXPAND_ALL);
-		viewMenu.add(expandAll);
-
-		var collapseAll = getActionRegistry()
-				.getAction(GraphActionIds.COLLAPSE_ALL);
-		viewMenu.add(collapseAll);
+		viewMenu.add(getAction(GraphActionIds.MINIMIZE_ALL));
+		viewMenu.add(getAction(GraphActionIds.MAXIMIZE_ALL));
+		viewMenu.add(getAction(GraphActionIds.EXPAND_ALL));
+		viewMenu.add(getAction(GraphActionIds.COLLAPSE_ALL));
 	}
 
 	public GraphConfig getConfig() {

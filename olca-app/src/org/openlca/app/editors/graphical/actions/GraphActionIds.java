@@ -17,7 +17,6 @@ public interface GraphActionIds {
 	String EDIT_EXCHANGE = "graph.actions.EditExchangeAction";
 	String EDIT_MODE = "graph.actions.EditModeAction";
 	String EDIT_STICKY_NOTE = "graph.actions.EditStickyNoteAction";
-	String LAYOUT_TREE = "graph.actions.LayoutAction.TREE_LAYOUT";
 	String LINK_UPDATE = "graph.actions.LinkUpdateAction";
 
 	String MINIMIZE = "graph.actions.MinMaxAction.MINIMIZE";

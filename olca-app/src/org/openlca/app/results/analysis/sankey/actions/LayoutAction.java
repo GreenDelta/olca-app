@@ -9,6 +9,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.analysis.sankey.edit.DiagramEditPart;
+import org.openlca.app.tools.graphics.actions.ActionIds;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
 
@@ -21,7 +22,7 @@ public class LayoutAction extends WorkbenchPartAction {
 		super(part);
 		editor = part;
 		setText(NLS.bind(M.LayoutAs, M.Tree));
-		setId(SankeyActionIds.LAYOUT_TREE);
+		setId(ActionIds.LAYOUT_TREE);
 		setImageDescriptor(Icon.LAYOUT.descriptor());
 	}
 

@@ -9,6 +9,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.graphics.actions.ActionIds;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
 
@@ -21,7 +22,7 @@ public class LayoutAction extends WorkbenchPartAction {
 		super(part);
 		editor = part;
 		setText(NLS.bind(M.LayoutAs, M.Tree));
-		setId(GraphActionIds.LAYOUT_TREE);
+		setId(ActionIds.LAYOUT_TREE);
 		setImageDescriptor(Icon.LAYOUT.descriptor());
 	}
 
