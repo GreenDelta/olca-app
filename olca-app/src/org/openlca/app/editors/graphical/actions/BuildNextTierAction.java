@@ -2,11 +2,12 @@ package org.openlca.app.editors.graphical.actions;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
-import org.eclipse.jface.action.Action;
+import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
-import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.editors.graphical.model.commands.MassCreationCommand;
@@ -26,15 +27,19 @@ import java.util.Set;
 
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 
-public class BuildNextTierAction extends Action implements IBuildAction {
+public class BuildNextTierAction extends WorkbenchPartAction
+		implements IBuildAction {
 
 	private final FlowDao flowDao;
 	private final ProcessDao processDao;
-	private List<Node> nodes;
+	private final GraphEditor editor;
+	private List<NodeEditPart> nodeParts;
 	private ProcessType preferredType = ProcessType.UNIT_PROCESS;
 	private ProviderLinking providers = ProviderLinking.ONLY_DEFAULTS;
 
-	public BuildNextTierAction() {
+	public BuildNextTierAction(GraphEditor part) {
+		super(part);
+		editor = part;
 		setId(GraphActionIds.BUILD_NEXT_TIER);
 		setText(M.BuildNextTier);
 		flowDao = new FlowDao(Database.get());
@@ -42,8 +47,8 @@ public class BuildNextTierAction extends Action implements IBuildAction {
 	}
 
 	@Override
-	public void setProcessNodes(List<Node> nodes) {
-		this.nodes = nodes;
+	public void setNodeParts(List<NodeEditPart> parts) {
+		this.nodeParts = parts;
 	}
 
 	@Override
@@ -58,19 +63,19 @@ public class BuildNextTierAction extends Action implements IBuildAction {
 
 	@Override
 	public void run() {
-		if (nodes == null || nodes.isEmpty())
+		if (nodeParts == null || nodeParts.isEmpty())
 			return;
-		Graph graph = nodes.get(0).getGraph();
+		var graph = editor.getModel();
 		List<RootDescriptor> providers = new ArrayList<>();
 		List<ProcessLink> newConnections = new ArrayList<>();
-		for (Node node : nodes)
-			collectFor(node, providers, newConnections);
+		for (var part : nodeParts)
+			collectFor(part.getModel(), providers, newConnections);
 		Command command = MassCreationCommand.nextTier(providers, newConnections, graph);
-		for (Node node : nodes)
-			command = command.chain(new ExpandCommand(node, INPUT));
-		var stack = (CommandStack) graph.editor.getAdapter(CommandStack.class);
+		for (var part : nodeParts)
+			command = command.chain(new ExpandCommand(part.getModel(), INPUT));
+		var stack = (CommandStack) editor.getAdapter(CommandStack.class);
 		stack.execute(command);
-		graph.editor.setDirty();
+		editor.setDirty();
 	}
 
 	private void collectFor(Node node,
@@ -105,7 +110,6 @@ public class BuildNextTierAction extends Action implements IBuildAction {
 
 	private List<ExchangeItem> getLinkCandidates(Node node) {
 		List<ExchangeItem> nodes = new ArrayList<>();
-		var editor = node.getGraph().getEditor();
 		var ioPanes = editor.getGraphFactory().createIOPanes(node.descriptor);
 		for (var pane : ioPanes.values()) {
 			for (var exchangeItem : pane.getExchangeItems()) {
@@ -152,4 +156,8 @@ public class BuildNextTierAction extends Action implements IBuildAction {
 		return processDao.getDescriptors(providerIds);
 	}
 
+	@Override
+	protected boolean calculateEnabled() {
+		return false;
+	}
 }

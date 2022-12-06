@@ -19,6 +19,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.jsonld.Json;
 
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
@@ -162,10 +163,10 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 
-		action = new BuildNextTierAction();
+		action = new BuildNextTierAction(this);
 		registry.registerAction(action);
 
-		action = new BuildSupplyChainAction();
+		action = new BuildSupplyChainAction(this);
 		registry.registerAction(action);
 
 		action = new RemoveSupplyChainAction(this);
@@ -265,10 +266,20 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		return false;
 	}
 
-	public void updateModel(IProgressMonitor monitor) {
-		monitor.beginTask(M.UpdatingProductSystem, IProgressMonitor.UNKNOWN);
+	public Graph updateModel() {
 		systemEditor.updateModel();
-		monitor.done();
+
+		// Create new nodes with the new config.
+		var rootObj = GraphFile.createJsonArray(this, getModel());
+		var nodeArray = Json.getArray(rootObj, "nodes");
+		var stickyNoteArray = Json.getArray(rootObj, "sticky-notes");
+		var newGraph = getGraphFactory().createGraph(this, nodeArray,
+				stickyNoteArray);
+
+		setModel(newGraph);
+		getGraphicalViewer().setContents(newGraph);
+
+		return newGraph;
 	}
 
 	public void onFirstActivation() {

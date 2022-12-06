@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -21,12 +20,15 @@ import org.openlca.core.model.ProcessType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BuildSupplyChainMenuAction extends SelectionAction implements UpdateAction {
+public class BuildSupplyChainMenuAction extends SelectionAction
+		implements UpdateAction {
 
-	private List<Node> nodes;
+	private final GraphEditor editor;
+	private List<NodeEditPart> nodeEditParts;
 
-	public BuildSupplyChainMenuAction(GraphEditor editor) {
-		super(editor);
+	public BuildSupplyChainMenuAction(GraphEditor part) {
+		super(part);
+		editor = part;
 		setId(GraphActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		setText(M.BuildSupplyChain);
 		setImageDescriptor(Icon.BUILD_SUPPLY_CHAIN.descriptor());
@@ -36,8 +38,8 @@ public class BuildSupplyChainMenuAction extends SelectionAction implements Updat
 	private class MenuCreator implements IMenuCreator {
 
 		private void createMenu(Menu menu) {
-			createItem(menu, new BuildSupplyChainAction());
-			createItem(menu, new BuildNextTierAction());
+			createItem(menu, new BuildSupplyChainAction(editor));
+			createItem(menu, new BuildNextTierAction(editor));
 		}
 
 		private void createItem(Menu menu, IBuildAction action) {
@@ -61,7 +63,7 @@ public class BuildSupplyChainMenuAction extends SelectionAction implements Updat
 			}
 			item.setText(label);
 			Controls.onSelect(item, (e) -> {
-				action.setProcessNodes(nodes);
+				action.setNodeParts(nodeEditParts);
 				action.setProviderMethod(linking);
 				action.setPreferredType(type);
 				action.run();
@@ -93,13 +95,13 @@ public class BuildSupplyChainMenuAction extends SelectionAction implements Updat
 		if (getSelectedObjects().isEmpty())
 			return false;
 
-		nodes = new ArrayList<>();
+		nodeEditParts = new ArrayList<>();
 		for (var object : getSelectedObjects()) {
 			if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
-				nodes.add(((NodeEditPart) object).getModel());
+				nodeEditParts.add((NodeEditPart) object);
 			}
 		}
-		return !nodes.isEmpty();
+		return !nodeEditParts.isEmpty();
 	}
 
 }
