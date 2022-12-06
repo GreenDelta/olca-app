@@ -87,7 +87,7 @@ public class GraphContextMenuProvider extends BasicContextMenuProvider {
 		if (searchRecipients.isEnabled()) {
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, searchRecipients);
 		}
-		
+
 		var linkUpdate = getActionRegistry()
 				.getAction(GraphActionIds.LINK_UPDATE);
 		if (linkUpdate.isEnabled())

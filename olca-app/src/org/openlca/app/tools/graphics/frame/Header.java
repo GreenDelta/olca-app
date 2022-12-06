@@ -12,7 +12,7 @@ import java.beans.PropertyChangeListener;
 public abstract class Header extends Composite implements
 		PropertyChangeListener {
 
-	protected static Dimension DEFAULT_SIZE = new Dimension(SWT.DEFAULT, 60);
+	protected static Dimension DEFAULT_SIZE = new Dimension(SWT.DEFAULT, 50);
 
 	private RootEditPart rootEditPart;
 	private Element model;
