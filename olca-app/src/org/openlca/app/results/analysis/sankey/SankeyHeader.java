@@ -41,15 +41,15 @@ public class SankeyHeader extends Header {
 	private Listener listener;
 
 	public SankeyHeader(Composite parent, int style) {
-		super(parent, style);
+		super(parent, style | SWT.BORDER);
 	}
 
 	@Override
 	public void initialize() {
 		var headerLayout = new GridLayout(2, false);
 		headerLayout.marginHeight = 0;
-		headerLayout.marginWidth = 30;
-		headerLayout.horizontalSpacing = 30;
+		headerLayout.marginWidth = 20;
+		headerLayout.horizontalSpacing = 20;
 		setLayout(headerLayout);
 
 		button = new Button(this, SWT.NONE);
@@ -59,8 +59,8 @@ public class SankeyHeader extends Header {
 		info = new Composite(this, SWT.NONE);
 		info.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		var infoLayout = new GridLayout(3, false);
-		infoLayout.horizontalSpacing = 30;
 		infoLayout.marginHeight = 0;
+		infoLayout.verticalSpacing = 0;
 		info.setLayout(infoLayout);
 
 		createTitle();
