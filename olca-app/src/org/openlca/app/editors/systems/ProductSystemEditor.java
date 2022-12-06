@@ -2,11 +2,9 @@ package org.openlca.app.editors.systems;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.openlca.app.M;
 import org.openlca.app.editors.ModelEditor;
-import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.ErrorReporter;
