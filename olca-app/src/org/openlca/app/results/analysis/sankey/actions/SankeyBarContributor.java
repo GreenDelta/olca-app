@@ -18,7 +18,6 @@ public class SankeyBarContributor extends BasicActionBarContributor {
 	protected void buildActions() {
 		super.buildActions();
 		addRetargetAction(new EditConfigRetargetAction());
-		addRetargetAction(new LayoutAsTreeRetargetAction());
 		addRetargetAction(new OpenEditorRetargetAction());
 	}
 
@@ -29,15 +28,6 @@ public class SankeyBarContributor extends BasicActionBarContributor {
 
 		var openEditor = getAction(ActionIds.OPEN_EDITOR);
 		editMenu.add(openEditor);
-	}
-
-	@Override
-	public void contributeToViewMenu(IMenuManager menuManager) {
-		super.contributeToViewMenu(menuManager);
-		var viewMenu = getViewMenu();
-
-		var layout = getActionRegistry().getAction(GraphActionIds.LAYOUT_TREE);
-		viewMenu.add(layout);
 	}
 
 }

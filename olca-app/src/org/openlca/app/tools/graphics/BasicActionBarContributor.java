@@ -11,6 +11,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.tools.graphics.actions.retarget.FocusRetargetAction;
+import org.openlca.app.tools.graphics.actions.retarget.LayoutAsTreeRetargetAction;
 import org.openlca.app.tools.graphics.actions.retarget.MinimapRetargetAction;
 import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.actions.retarget.SaveImageRetargetAction;
@@ -32,6 +33,7 @@ public class BasicActionBarContributor extends ActionBarContributor {
 		addRetargetAction(new ZoomOutRetargetAction());
 		addRetargetAction(new MatchWidthRetargetAction());
 		addRetargetAction(new FocusRetargetAction());
+		addRetargetAction(new LayoutAsTreeRetargetAction());
 		addRetargetAction(new MinimapRetargetAction(editor.getMinimap().isVisible()));
 		addRetargetAction(new SaveImageRetargetAction());
 	}
@@ -48,6 +50,7 @@ public class BasicActionBarContributor extends ActionBarContributor {
 		tbm.add(getAction(GEFActionConstants.ZOOM_OUT));
 		tbm.add(getAction(GEFActionConstants.MATCH_WIDTH));
 		tbm.add(getAction(ActionIds.FOCUS));
+		tbm.add(getAction(ActionIds.LAYOUT_TREE));
 		tbm.add(getAction(ActionIds.SAVE_IMAGE));
 		tbm.add(getAction(ActionIds.MINIMAP));
 	}
@@ -66,6 +69,7 @@ public class BasicActionBarContributor extends ActionBarContributor {
 		viewMenu.add(new Separator());
 		viewMenu.add(getAction(GEFActionConstants.MATCH_WIDTH));
 		viewMenu.add(getAction(ActionIds.FOCUS));
+		viewMenu.add(getAction(ActionIds.LAYOUT_TREE));
 		viewMenu.add(getAction(ActionIds.SAVE_IMAGE));
 		viewMenu.add(getAction(ActionIds.MINIMAP));
 		menuManager.insertAfter("File", viewMenu);

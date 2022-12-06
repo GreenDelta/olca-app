@@ -9,6 +9,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.GraphActionIds;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.graphics.BasicContextMenuProvider;
+import org.openlca.app.tools.graphics.actions.ActionIds;
 
 public class GraphContextMenuProvider extends BasicContextMenuProvider {
 
@@ -97,7 +98,7 @@ public class GraphContextMenuProvider extends BasicContextMenuProvider {
 	public void addViewActions(IMenuManager menu) {
 		super.addViewActions(menu);
 
-		var layout = getActionRegistry().getAction(GraphActionIds.LAYOUT_TREE);
+		var layout = getActionRegistry().getAction(ActionIds.LAYOUT_TREE);
 		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, layout);
 
 		var min = getActionRegistry().getAction(GraphActionIds.MINIMIZE);
