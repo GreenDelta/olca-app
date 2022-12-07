@@ -7,7 +7,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.core.model.Process;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
 import javax.xml.crypto.Data;
@@ -43,10 +43,17 @@ public class RemoveSupplyChainCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
+		var linkSearch = graph.linkSearch;
+		if (graph.getReferenceNode() == null)
+			return false;
 		var ref = graph.getReferenceNode().descriptor.id;
+
 		for (var link : providerLinks) {
-			var process = link.processId;
-			if (graph.linkSearch.isOnlyChainingReferenceNode(process, INPUT, ref))
+			if (graph.flows.type(link.flowId) == FlowType.WASTE_FLOW
+				&& linkSearch.isOnlyChainingReferenceNode(link.processId, OUTPUT, ref))
+				return false;
+			if (graph.flows.type(link.flowId) == FlowType.PRODUCT_FLOW
+					&& linkSearch.isOnlyChainingReferenceNode(link.processId, INPUT, ref))
 				return false;
 		}
 		return true;
@@ -88,7 +95,10 @@ public class RemoveSupplyChainCommand extends Command {
 						.filter(l -> l != link)
 						.toList();
 				if (otherLinks.isEmpty()) {
-					removeChain(root, link.providerId, INPUT);
+					var side = graph.flows.type(link.flowId) == FlowType.PRODUCT_FLOW
+							? INPUT
+							: OUTPUT;
+					removeChain(root, link.providerId, side);
 					removeProcess(link.providerId);
 				}
 				removeLink(link);

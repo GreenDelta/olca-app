@@ -147,6 +147,12 @@ abstract public class Component extends Element implements Comparable<Component>
 		return new ArrayList<>(sourceConnections);
 	}
 
+	public List<Link> getAllConnections() {
+		var list = new ArrayList<>(targetConnections);
+		list.addAll(sourceConnections);
+		return list;
+	}
+
 	/**
 	 * Create a list of Links with the target connections of this, its children
 	 * and grandchildren to get all target connections. If this is an
