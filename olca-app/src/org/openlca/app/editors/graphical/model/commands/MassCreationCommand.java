@@ -3,6 +3,7 @@ package org.openlca.app.editors.graphical.model.commands;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
@@ -11,6 +12,7 @@ import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 public class MassCreationCommand extends Command {
 
+	private final GraphEditor editor;
 	private final Graph graph;
 	private final List<RootDescriptor> toCreate;
 	private final List<ProcessLink> newLinks;
@@ -47,6 +50,7 @@ public class MassCreationCommand extends Command {
 			List<ProcessLink> newConnections,
 			String label) {
 		this.graph = model;
+		this.editor = graph.getEditor();
 		this.toCreate = toCreate;
 		this.newLinks = newConnections;
 		setLabel(label);
@@ -65,6 +69,8 @@ public class MassCreationCommand extends Command {
 					node.getSize().getCopy());
 			oldConstraints.put(node, bounds);
 		}
+
+		editor.setDirty();
 	}
 
 	private void addNode(RootDescriptor descriptor) {
@@ -110,6 +116,8 @@ public class MassCreationCommand extends Command {
 			node.setSize(oldConstraints.get(node).getSize());
 			node.setLocation(oldConstraints.get(node).getLocation());
 		}
+
+		editor.setDirty();
 
 		createdLinks.clear();
 		createdNodes.clear();

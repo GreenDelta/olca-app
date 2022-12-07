@@ -2,12 +2,15 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
@@ -21,7 +24,6 @@ public class RemoveSupplyChainCommand extends Command {
 	private final ArrayList<ProcessLink> providerLinks;
 	private final GraphEditor editor;
 	private final Graph graph;
-	private final Node host;
 
 	//	Product system objects
 	private Set<Long> processes = new HashSet<>();
@@ -32,17 +34,22 @@ public class RemoveSupplyChainCommand extends Command {
 	private Set<Node> nodes = new HashSet<>();
 	private Set<Long> isRemoving = new HashSet<>();
 
-	public RemoveSupplyChainCommand(ArrayList<ProcessLink> links, Node node) {
+	public RemoveSupplyChainCommand(ArrayList<ProcessLink> links, Graph graph) {
 		providerLinks = links;
-		host = node;
-		editor = host.getGraph().getEditor();
-		graph = editor.getModel();
+		this.graph = graph;
+		editor = graph.getEditor();
 		setLabel(M.RemoveSupplyChain.toLowerCase(Locale.ROOT));
 	}
 
 	@Override
 	public boolean canExecute() {
-		return !host.isOnlyChainingReferenceNode(INPUT);
+		var ref = graph.getReferenceNode().descriptor.id;
+		for (var link : providerLinks) {
+			var process = link.processId;
+			if (graph.linkSearch.isOnlyChainingReferenceNode(process, INPUT, ref))
+				return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -73,6 +80,7 @@ public class RemoveSupplyChainCommand extends Command {
 			if (!processes.contains(link.providerId)) {
 				// Removing the supply chain if it does not provide to any other
 				// recipient.
+				var root = link.processId;
 				var otherLinks = graph.linkSearch
 						.getProviderLinks(link.providerId)
 						.stream()
@@ -80,7 +88,7 @@ public class RemoveSupplyChainCommand extends Command {
 						.filter(l -> l != link)
 						.toList();
 				if (otherLinks.isEmpty()) {
-					removeChain(link.providerId, INPUT);
+					removeChain(root, link.providerId, INPUT);
 					removeProcess(link.providerId);
 				}
 				removeLink(link);
@@ -120,7 +128,7 @@ public class RemoveSupplyChainCommand extends Command {
 	 *   <li>nodes that are chained to the reference node. </li>
 	 * </ul>
 	 */
-	private void removeChain(Long process, int side) {
+	private void removeChain(Long root, Long process, int side) {
 		if (isRemoving.contains(process))
 			return;
 		isRemoving.add(process);
@@ -138,19 +146,19 @@ public class RemoveSupplyChainCommand extends Command {
 					: link.processId;
 
 			if (thisProcess != process  // wrong link
-					|| otherProcess == this.host.descriptor.id)  // double link
+					|| otherProcess == root)  // double link
 				continue;
 
-			var refNode = this.host.getGraph().getReferenceNode();
-			if (this.host != refNode
+			var refNode = graph.getReferenceNode();
+			if (root != refNode.descriptor.id
 					&& (graph.linkSearch.isChainingReference(
 							otherProcess, side, refNode.descriptor.id)
 					|| otherProcess == refNode.descriptor.id))
 				continue;
 
 			removeLink(link);
-			removeChain(otherProcess, INPUT);
-			removeChain(otherProcess, OUTPUT);
+			removeChain(root, otherProcess, INPUT);
+			removeChain(root, otherProcess, OUTPUT);
 
 			var linkFiltered = graph.linkSearch.getLinks(otherProcess).stream()
 					.filter(l -> l.processId != l.providerId)
