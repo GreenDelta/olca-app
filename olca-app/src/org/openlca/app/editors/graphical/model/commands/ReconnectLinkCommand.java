@@ -51,8 +51,7 @@ public class ReconnectLinkCommand extends Command {
 
 		graph.getProductSystem().processLinks.add(processLink);
 		graph.linkSearch.put(processLink);
-		link.setProcessLink(processLink);
-		link.reconnect(targetItem, sourceNode);
+		link = new GraphLink(processLink, sourceNode, targetItem);
 
 		graph.editor.setDirty();
 	}
