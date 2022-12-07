@@ -18,7 +18,7 @@ import org.openlca.app.tools.graphics.model.commands.ComponentSetConstraintComma
 import org.openlca.app.tools.graphics.model.commands.LayoutCommand;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
-import static org.openlca.app.results.analysis.sankey.actions.EditSankeyConfigAction.KEY_CONFIG;
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 import static org.openlca.app.results.analysis.sankey.requests.SankeyRequestConstants.REQ_EDIT_CONFIG;
 
 public class SankeyXYLayoutEditPolicy extends XYLayoutEditPolicy {
@@ -38,7 +38,7 @@ public class SankeyXYLayoutEditPolicy extends XYLayoutEditPolicy {
 	}
 
 	private Command getEditConfigCommand(Request request) {
-		var newConfig = (SankeyConfig) request.getExtendedData().get(KEY_CONFIG);
+		var newConfig = (SankeyConfig) request.getExtendedData().get(CONFIG_PROP);
 		return new EditConfigCommand((Diagram) getHost().getModel(), newConfig);
 	}
 

@@ -21,6 +21,8 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
 
+import static org.openlca.app.editors.graphical.GraphFile.KEY_NODES;
+import static org.openlca.app.editors.graphical.GraphFile.KEY_STICKY_NOTES;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
 import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.PROVIDER;
@@ -47,7 +49,6 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
-		editor.onSaved(() -> GraphFile.save(this));
 	}
 
 	@Override
@@ -271,8 +272,8 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 
 		// Create new nodes with the new config.
 		var rootObj = GraphFile.createJsonArray(this, getModel());
-		var nodeArray = Json.getArray(rootObj, "nodes");
-		var stickyNoteArray = Json.getArray(rootObj, "sticky-notes");
+		var nodeArray = Json.getArray(rootObj, KEY_NODES);
+		var stickyNoteArray = Json.getArray(rootObj, KEY_STICKY_NOTES);
 		var newGraph = getGraphFactory().createGraph(this, nodeArray,
 				stickyNoteArray);
 
@@ -283,8 +284,8 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	}
 
 	public void onFirstActivation() {
-		var nodeArray = GraphFile.getLayout(this, "nodes");
-		var stickyNoteArray = GraphFile.getLayout(this, "sticky-notes");
+		var nodeArray = GraphFile.getLayout(this, KEY_NODES);
+		var stickyNoteArray = GraphFile.getLayout(this, KEY_STICKY_NOTES);
 		var graph = getGraphFactory().createGraph(this, nodeArray, stickyNoteArray);
 		setModel(graph);
 		getGraphicalViewer().setContents(graph);

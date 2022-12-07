@@ -37,14 +37,12 @@ public class EditStickyNoteCommand extends Command {
 	public void redo() {
 		parent.removeChild(oldStickyNote);
 		parent.addChild(newStickyNote);
-		parent.getEditor().setDirty();
 	}
 
 	@Override
 	public void undo() {
 		parent.removeChild(newStickyNote);
 		parent.addChild(oldStickyNote);
-		parent.getEditor().setDirty();
 	}
 
 }
