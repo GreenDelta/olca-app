@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.DatabaseDir;
@@ -41,6 +42,10 @@ public final class GraphFile {
 				: null;
 		if (graph == null)
 			return;
+
+		editor.config.setZoom(editor.getZoomManager().getZoom());
+		var viewLocation = editor.getZoomManager().getViewport().getViewLocation();
+		editor.config.setViewLocation(viewLocation);
 		var rootObj = createJsonArray(editor, graph);
 		try {
 			Json.write(rootObj, file(editor.getProductSystem()));
