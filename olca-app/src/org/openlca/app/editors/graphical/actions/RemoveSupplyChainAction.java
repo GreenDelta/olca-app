@@ -62,7 +62,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 			}
 			else if (object instanceof ExchangeEditPart part) {
 				setText(M.RemoveFlowSupplyChain);
-				for (var connection : part.getModel().getTargetConnections())
+				for (var connection : part.getModel().getAllConnections())
 					if (connection instanceof GraphLink link)
 						links.add(link.processLink);
 			}
