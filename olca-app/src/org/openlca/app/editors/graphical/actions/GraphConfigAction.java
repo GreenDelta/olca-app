@@ -16,8 +16,6 @@ import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.R
 abstract class GraphConfigAction extends WorkbenchPartAction implements
 		PropertyChangeListener {
 
-	public static final String KEY_CONFIG = "config";
-
 	private final GraphEditor editor;
 	private GraphConfig newConfig;
 
@@ -42,7 +40,7 @@ abstract class GraphConfigAction extends WorkbenchPartAction implements
 		var graphEditPart = editor.getRootEditPart().getContents();
 		var request = new Request(REQ_EDIT_CONFIG);
 		var data = new HashMap<String, Object>();
-		data.put(KEY_CONFIG, newConfig);
+		data.put(CONFIG_PROP, newConfig);
 		request.setExtendedData(data);
 		return graphEditPart.getCommand(request);
 	}

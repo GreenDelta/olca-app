@@ -20,12 +20,12 @@ import org.openlca.app.editors.graphical.model.commands.CreateNodeCommand;
 import org.openlca.app.editors.graphical.model.commands.CreateStickyNoteCommand;
 import org.openlca.app.editors.graphical.model.commands.EditConfigCommand;
 import org.openlca.app.editors.graphical.model.commands.GraphLayoutCommand;
-import org.openlca.app.editors.graphical.model.commands.SetConstraintCommand;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
 import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.tools.graphics.model.commands.ComponentSetConstraintCommand;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-import static org.openlca.app.editors.graphical.actions.EditGraphConfigAction.KEY_CONFIG;
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
 
@@ -79,7 +79,7 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 		ChangeBoundsRequest request, EditPart child, Object constraint) {
 		if (child instanceof AbstractVertexEditPart
 				&& constraint instanceof Rectangle) {
-			return new SetConstraintCommand((Component) child.getModel(),
+			return new ComponentSetConstraintCommand((Component) child.getModel(),
 				request, (Rectangle) constraint);
 		}
 		return super.createChangeConstraintCommand(request, child,
@@ -123,7 +123,7 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 	}
 
 	private Command getEditConfigCommand(Request request) {
-		var newConfig = (GraphConfig) request.getExtendedData().get(KEY_CONFIG);
+		var newConfig = (GraphConfig) request.getExtendedData().get(CONFIG_PROP);
 		return new EditConfigCommand((Graph) getHost().getModel(), newConfig);
 	}
 

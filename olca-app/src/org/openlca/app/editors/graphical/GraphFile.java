@@ -51,8 +51,6 @@ public final class GraphFile {
 	}
 
 	public static JsonObject createJsonArray(GraphEditor editor, Graph graph) {
-		System.out.println("createJsonArray");
-		System.out.println("nodeediting" + editor.config.isNodeEditingEnabled());
 		// add config
 		var rootObj = new JsonObject();
 		rootObj.add(CONFIG_PROP, editor.config.toJson());

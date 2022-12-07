@@ -6,10 +6,7 @@ import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.GraphFile;
-import org.openlca.app.editors.graphical.actions.GraphActionIds;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.jsonld.Json;
 
 public class EditConfigCommand extends Command {
 
@@ -54,8 +51,6 @@ public class EditConfigCommand extends Command {
 		newConfig.copyTo(editor.config);
 		editor.setModel(newGraph);
 		viewer.setContents(newGraph);
-
-		editor.setDirty();
 	}
 
 	@Override
@@ -63,8 +58,6 @@ public class EditConfigCommand extends Command {
 		oldConfig.copyTo(editor.config);
 		editor.setModel(oldGraph);
 		viewer.setContents(oldGraph);
-
-		editor.setDirty();
 	}
 
 }

@@ -63,8 +63,6 @@ public class MinMaxCommand extends Command {
 		var parentEditPart = (AbstractComponentEditPart<?>) childEditPart
 			.getParent();
 		parentEditPart.resetChildEditPart(childEditPart);
-
-		child.getGraph().getEditor().setDirty();
 	}
 
 	public void undo() {

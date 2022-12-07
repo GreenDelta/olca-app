@@ -13,11 +13,10 @@ import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.util.Popup;
 
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 import static org.openlca.app.results.analysis.sankey.requests.SankeyRequestConstants.REQ_EDIT_CONFIG;
 
 public class EditSankeyConfigAction extends WorkbenchPartAction {
-
-	public static final String KEY_CONFIG = "config";
 
 	private final SankeyEditor editor;
 	private SankeyConfig config;
@@ -49,7 +48,7 @@ public class EditSankeyConfigAction extends WorkbenchPartAction {
 		var graphEditPart = editor.getRootEditPart().getContents();
 		var request = new Request(REQ_EDIT_CONFIG);
 		var data = new HashMap<String, Object>();
-		data.put(KEY_CONFIG, config);
+		data.put(CONFIG_PROP, config);
 		request.setExtendedData(data);
 		return graphEditPart.getCommand(request);
 	}

@@ -51,13 +51,11 @@ public class DeleteStickyNoteCommand extends Command {
 	@Override
 	public void redo() {
 		wasRemoved = parent.removeChild(child);
-		parent.editor.setDirty();
 	}
 
 	@Override
 	public void undo() {
 		parent.addChild(child);
-		parent.editor.setDirty();
 	}
 
 }

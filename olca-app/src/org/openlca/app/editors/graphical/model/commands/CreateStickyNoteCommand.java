@@ -43,15 +43,11 @@ public class CreateStickyNoteCommand extends Command {
 		if (this.index > 0)
 			this.graph.addChild(stickyNote, this.index);
 		else this.graph.addChild(stickyNote);
-
-		editor.setDirty();
 	}
 
 	public void undo() {
 		// Remove the note from the graph's children.
 		this.graph.removeChild(stickyNote);
-
-		editor.setDirty();
 	}
 
 }

@@ -1,10 +1,15 @@
 package org.openlca.app.editors.systems;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.openlca.app.M;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.ErrorReporter;
@@ -35,6 +40,19 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			// Add a page listener to set the graph when it is activated the first
 			// time.
 			setGraphPageListener(graphEditor);
+			// Add a part listener to save the graph layout when the editor is closed.
+			var page = Editors.getActivePage();
+			if (page != null)
+				page.addPartListener(new IPartListener2() {
+					@Override
+					public void partClosed(IWorkbenchPartReference partRef) {
+						IPartListener2.super.partClosed(partRef);
+						if (partRef.getId().equals(ID)
+								&& partRef.getPage().getDirtyEditors().length == 0) {
+							GraphFile.save(graphEditor);
+						}
+					}
+				});
 
 			addPage(new StatisticsPage(this));
 			addCommentPage();

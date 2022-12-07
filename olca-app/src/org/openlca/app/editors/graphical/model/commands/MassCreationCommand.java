@@ -65,8 +65,6 @@ public class MassCreationCommand extends Command {
 					node.getSize().getCopy());
 			oldConstraints.put(node, bounds);
 		}
-
-		graph.editor.setDirty();
 	}
 
 	private void addNode(RootDescriptor descriptor) {
@@ -116,8 +114,6 @@ public class MassCreationCommand extends Command {
 		createdLinks.clear();
 		createdNodes.clear();
 		oldConstraints.clear();
-
-		graph.editor.setDirty();
 	}
 
 	private void removeNode(Node node) {

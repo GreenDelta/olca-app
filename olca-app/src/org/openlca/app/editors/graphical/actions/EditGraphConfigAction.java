@@ -25,12 +25,11 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 import static org.openlca.app.tools.graphics.figures.Connection.*;
 
 public class EditGraphConfigAction extends WorkbenchPartAction {
-
-	public static final String KEY_CONFIG = "config";
 
 	private final GraphEditor editor;
 	private GraphConfig config;
@@ -54,8 +53,6 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		if (!config.equals(editor.config)) {
 			if (getCommand().canExecute()) getCommand().execute();
 			else Popup.info("Failed to apply the new settings");
-
-			editor.setDirty();
 		}
 	}
 
@@ -63,7 +60,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		var graphEditPart = editor.getRootEditPart().getContents();
 		var request = new Request(REQ_EDIT_CONFIG);
 		var data = new HashMap<String, Object>();
-		data.put(KEY_CONFIG, config);
+		data.put(CONFIG_PROP, config);
 		request.setExtendedData(data);
 		return graphEditPart.getCommand(request);
 	}

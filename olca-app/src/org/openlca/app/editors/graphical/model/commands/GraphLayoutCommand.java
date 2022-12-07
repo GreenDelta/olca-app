@@ -23,14 +23,12 @@ public class GraphLayoutCommand extends LayoutCommand {
 	public void redo() {
 		for (var child : graph.getNodes())
 			child.setLocation(DEFAULT_LOCATION);
-		editor.setDirty();
 	}
 
 	@Override
 	public void undo() {
 		for (var child : graph.getNodes())
 			child.setLocation(oldLocations.get(child));
-		editor.setDirty();
 	}
 
 }
