@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical;
 
 import com.google.gson.JsonObject;
+import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.tools.graphics.model.Element;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.tools.graphics.themes.Themes;
@@ -19,6 +20,8 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 	private String connectionRouter = ROUTER_CURVE;
 	private boolean isNodeEditingEnabled = false;
 	private Theme theme = Themes.getDefault(Themes.MODEL);
+	private double zoom = 1;
+	private Point viewLocation = new Point();
 
 	/**
 	 * Creates a copy from the given configuration.
@@ -51,6 +54,8 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		other.isNodeEditingEnabled = isNodeEditingEnabled;
 		other.theme = theme;
 		other.connectionRouter = connectionRouter;
+		other.zoom = zoom;
+		other.viewLocation = viewLocation;
 		other.firePropertyChange(CONFIG_PROP, null, this);
 	}
 
@@ -61,6 +66,8 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		clone.isNodeEditingEnabled = isNodeEditingEnabled;
 		clone.theme = theme;
 		clone.connectionRouter = connectionRouter;
+		clone.zoom = zoom;
+		clone.viewLocation = viewLocation;
 		return clone;
 	}
 
@@ -68,9 +75,11 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		if (other == null)
 			return false;
 		return showElementaryFlows == other.showElementaryFlows
-			&& isNodeEditingEnabled == other.isNodeEditingEnabled
-			&& theme.equals(other.theme)
-			&& Objects.equals(connectionRouter, other.connectionRouter);
+				&& isNodeEditingEnabled == other.isNodeEditingEnabled
+				&& theme.equals(other.theme)
+				&& Objects.equals(connectionRouter, other.connectionRouter)
+				&& zoom == other.zoom
+				&& viewLocation.equals(other.viewLocation);
 	}
 
 	public static GraphConfig fromJson(JsonObject obj) {
@@ -85,6 +94,10 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 			obj, "isNodeEditingEnabled", false);
 		var themeID = Json.getString(obj, "theme");
 		config.setTheme(Themes.get(themeID, Themes.MODEL));
+		config.zoom = Json.getDouble(obj, "zoom", 1.0);
+		config.viewLocation = new Point(
+				Json.getInt(obj, "x", 0),
+				Json.getInt(obj, "y", 0));
 		return config;
 	}
 
@@ -94,6 +107,9 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		obj.addProperty("connectionRouter", connectionRouter);
 		obj.addProperty("isNodeEditingEnabled", isNodeEditingEnabled);
 		obj.addProperty("theme", getTheme().file());
+		obj.addProperty("zoom", zoom);
+		obj.addProperty("x", viewLocation.x);
+		obj.addProperty("y", viewLocation.y);
 		return obj;
 	}
 
@@ -118,6 +134,14 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		firePropertyChange(CONFIG_PROP, null, this);
 	}
 
+	public void setZoom(double zoom) {
+		this.zoom = zoom;
+	}
+
+	public void setViewLocation(Point location) {
+		viewLocation = location;
+	}
+
 	public boolean showElementaryFlows() {
 		return showElementaryFlows;
 	}
@@ -128,6 +152,14 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 
 	public boolean isNodeEditingEnabled() {
 		return isNodeEditingEnabled;
+	}
+
+	public double zoom() {
+		return zoom;
+	}
+
+	public Point viewLocation() {
+		return viewLocation;
 	}
 
 }

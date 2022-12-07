@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.Viewport;
 import org.eclipse.gef.*;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
@@ -289,6 +290,8 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		var graph = getGraphFactory().createGraph(this, nodeArray, stickyNoteArray);
 		setModel(graph);
 		getGraphicalViewer().setContents(graph);
+		getZoomManager().setZoom(config.zoom(), false);
+		getZoomManager().getViewport().setViewLocation(config.viewLocation());
 	}
 
 	public ProductSystemEditor getProductSystemEditor() {
