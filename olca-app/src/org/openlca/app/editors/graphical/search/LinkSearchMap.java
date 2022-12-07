@@ -5,12 +5,14 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TIntHashSet;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.core.model.ProcessLink;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 
@@ -98,7 +100,7 @@ public class LinkSearchMap {
 	 * Returns all links where the process with the given ID is connected (has
 	 * an product input or waste output).
 	 */
-	public List<ProcessLink>  getConnectionLinks(long processId) {
+	public List<ProcessLink> getConnectionLinks(long processId) {
 		return getLinks(processId, connectionIndex);
 	}
 
@@ -209,6 +211,43 @@ public class LinkSearchMap {
 		}
 		wasExplored.remove(process);
 		return false;
+	}
+
+	/**
+	 * Recursively check if a process's outputs or inputs only chain to the
+	 * reference process (close loop are not considered).
+	 * Returns false is the initial process is the reference.
+	 */
+	public boolean isOnlyChainingReferenceNode(Long process, int side, Long ref) {
+		if (wasExplored.contains(process))
+			return false;
+		else if (Objects.equals(process, ref))
+			// The reference node is explored if and only if it is the initial node
+			// (see the condition in the for loop).
+			return false;
+		wasExplored.add(process);
+
+		var links = side == INPUT
+				? getConnectionLinks(process)
+				: getProviderLinks(process);
+		if (links.isEmpty()) {
+			wasExplored.remove(process);
+			return false;
+		}
+
+		var isOnlyChainingReferenceNode = true;
+		for (var link : links) {
+			if (link.processId == link.providerId)
+				continue;
+			var otherNode = side == INPUT
+					? link.providerId
+					: link.processId;
+			if (otherNode != ref
+					&& !isOnlyChainingReferenceNode(otherNode, side, ref))
+				isOnlyChainingReferenceNode = false;
+		}
+		wasExplored.remove(process);
+		return isOnlyChainingReferenceNode;
 	}
 
 }

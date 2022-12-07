@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.SelectionAction;
@@ -17,7 +19,7 @@ import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.R
 
 public class RemoveSupplyChainAction extends SelectionAction {
 
-	public static final String KEY_LINKS = "items";
+	public static final String KEY_LINKS = "links";
 	private final GraphEditor editor;
 
 	public RemoveSupplyChainAction(GraphEditor part) {
@@ -39,35 +41,39 @@ public class RemoveSupplyChainAction extends SelectionAction {
 	}
 
 	private Command getCommand() {
-		if (getSelectedObjects().size() != 1)
+		if (getSelectedObjects().isEmpty())
 			return null;
 
-		var object = getSelectedObjects().get(0);
-		NodeEditPart nodeEditPart;
+		var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
+				GraphicalViewer.class);
+		var registry = viewer.getEditPartRegistry();
+		var graphEditPart = (EditPart) registry.get(editor.getModel());
+		if (graphEditPart == null)
+			return null;
+
 		var links = new ArrayList<ProcessLink>();
 		var linkSearch = editor.getModel().linkSearch;
 
-		if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
-			setText(M.RemoveSupplyChain);
-			nodeEditPart = (NodeEditPart) object;
-			var nodeId = nodeEditPart.getModel().descriptor.id;
-			links.addAll(linkSearch.getConnectionLinks(nodeId));
+		for (var object : getSelectedObjects()) {
+			if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
+				setText(M.RemoveSupplyChain);
+				var nodeId = ((NodeEditPart) object).getModel().descriptor.id;
+				links.addAll(linkSearch.getConnectionLinks(nodeId));
+			}
+			else if (object instanceof ExchangeEditPart part) {
+				setText(M.RemoveFlowSupplyChain);
+				for (var connection : part.getModel().getTargetConnections())
+					if (connection instanceof GraphLink link)
+						links.add(link.processLink);
+			}
 		}
-		else if (object instanceof ExchangeEditPart part) {
-			setText(M.RemoveFlowSupplyChain);
-			nodeEditPart = (NodeEditPart) part.getParent().getParent();
-			for (var connection : part.getModel().getTargetConnections())
-				if (connection instanceof GraphLink link) {
-					links.add(link.processLink);
-				}
-		} else return null;
 
 		if (!links.isEmpty()) {
 			var request = new Request(REQ_REMOVE_CHAIN);
 			var data = new HashMap<String, Object>();
 			data.put(KEY_LINKS, links);
 			request.setExtendedData(data);
-			return nodeEditPart.getCommand(request);
+			return graphEditPart.getCommand(request);
 		} else return null;
 	}
 

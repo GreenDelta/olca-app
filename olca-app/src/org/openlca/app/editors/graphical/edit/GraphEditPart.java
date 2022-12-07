@@ -58,8 +58,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 	@Override
 	protected void createEditPolicies() {
 		// Disallows the removal of this edit part.
-		installEditPolicy(EditPolicy.COMPONENT_ROLE,
-			new RootComponentEditPolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new GraphEditPolicy());
 		// Handles constraint changes (e.g. moving and/or resizing) of model
 		// elements within the graph and creation of new model elements.
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new GraphXYLayoutEditPolicy());
