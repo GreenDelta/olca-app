@@ -10,6 +10,7 @@ import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
 import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.StickyNote;
 import org.openlca.core.model.ProductSystem;
@@ -17,6 +18,7 @@ import org.openlca.jsonld.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
@@ -27,12 +29,15 @@ import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
  */
 public final class GraphFile {
 
+	static final String KEY_NODES = "nodes";
+	static final String KEY_STICKY_NOTES = "sticky-notes";
+
 	private GraphFile() {
 	}
 
 	public static void save(GraphEditor editor) {
 		var graph = editor != null
-				? (Graph) editor.getModel()
+				? editor.getModel()
 				: null;
 		if (graph == null)
 			return;
@@ -46,9 +51,11 @@ public final class GraphFile {
 	}
 
 	public static JsonObject createJsonArray(GraphEditor editor, Graph graph) {
+		System.out.println("createJsonArray");
+		System.out.println("nodeediting" + editor.config.isNodeEditingEnabled());
 		// add config
 		var rootObj = new JsonObject();
-		rootObj.add("config", editor.config.toJson());
+		rootObj.add(CONFIG_PROP, editor.config.toJson());
 
 		// add component info's
 		var nodeArray = new JsonArray();
@@ -63,8 +70,8 @@ public final class GraphFile {
 			if (noteObj != null)
 				stickyNoteArray.add(noteObj);
 		}
-		rootObj.add("nodes", nodeArray);
-		rootObj.add("sticky-notes", stickyNoteArray);
+		rootObj.add(KEY_NODES, nodeArray);
+		rootObj.add(KEY_STICKY_NOTES, stickyNoteArray);
 		return rootObj;
 	}
 
@@ -74,22 +81,27 @@ public final class GraphFile {
 		var json = new JsonObject();
 		json.addProperty("id", node.descriptor.refId);
 
-		var size = node.getSize();
+		setLayoutProperties(json, node);
+		json.addProperty("expandedLeft", node.isExpanded(INPUT));
+		json.addProperty("expandedRight", node.isExpanded(OUTPUT));
+
+		return json;
+	}
+
+	private static void setLayoutProperties(JsonObject json,
+		MinMaxComponent component) {
+		var size = component.getSize();
 		if (size != null) {
 			json.addProperty("width",  size.width);
 			json.addProperty("height",  size.height);
 		}
-		var location = node.getLocation();
+		var location = component.getLocation();
 		if (location != null) {
 			json.addProperty("x", location.x);
 			json.addProperty("y",  location.y);
 		}
 
-		json.addProperty("minimized", node.isMinimized());
-		json.addProperty("expandedLeft", node.isExpanded(INPUT));
-		json.addProperty("expandedRight", node.isExpanded(OUTPUT));
-
-		return json;
+		json.addProperty("minimized", component.isMinimized());
 	}
 
 	private static JsonObject toJson(StickyNote note) {
@@ -97,20 +109,9 @@ public final class GraphFile {
 			return null;
 		var json = new JsonObject();
 		json.addProperty("title", note.title);
-
-		var size = note.getSize();
-		if (size != null) {
-			json.addProperty("width", size.width);
-			json.addProperty("height", size.height);
-		}
-		var location = note.getLocation();
-		if (location != null) {
-			json.addProperty("x", location.x);
-			json.addProperty("y", location.y);
-		}
-
 		json.addProperty("content", note.content);
-		json.addProperty("minimized", note.isMinimized());
+
+		setLayoutProperties(json, note);
 
 		return json;
 	}
@@ -127,7 +128,7 @@ public final class GraphFile {
 
 			// apply graph config
 			return GraphConfig.fromJson(
-				Json.getObject(rootObj, "config"));
+				Json.getObject(rootObj, CONFIG_PROP));
 		} catch (Exception e) {
 			var log = LoggerFactory.getLogger(GraphFile.class);
 			log.error("Failed to load config", e);
