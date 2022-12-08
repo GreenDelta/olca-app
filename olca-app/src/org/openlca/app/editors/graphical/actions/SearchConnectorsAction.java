@@ -67,10 +67,11 @@ public class SearchConnectorsAction extends SelectionAction {
 
 		List<RootDescriptor> newProcesses = dialog.getNewProcesses();
 		List<ProcessLink> newLinks = dialog.getNewLinks();
-		Command command = type == PROVIDER
+		var command = type == PROVIDER
 				? MassCreationCommand.providers(newProcesses, newLinks, graph)
 				: MassCreationCommand.recipients(newProcesses, newLinks, graph);
-		execute(command);
+		if (command.canExecute())
+			execute(command);
 	}
 
 }
