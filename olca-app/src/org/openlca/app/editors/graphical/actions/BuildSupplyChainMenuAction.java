@@ -9,30 +9,42 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
+import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.linking.ProviderLinking;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BuildSupplyChainMenuAction extends SelectionAction
 		implements UpdateAction {
 
 	private final GraphEditor editor;
-	private List<NodeEditPart> nodeEditParts;
+	private final FlowDao flowDao;
+	protected final ProcessDao processDao;
+	protected Map<Exchange, Process> exchanges;
 
 	public BuildSupplyChainMenuAction(GraphEditor part) {
 		super(part);
 		editor = part;
 		setId(GraphActionIds.BUILD_SUPPLY_CHAIN_MENU);
-		setText(M.BuildSupplyChain);
 		setImageDescriptor(Icon.BUILD_SUPPLY_CHAIN.descriptor());
 		setMenuCreator(new MenuCreator());
+		flowDao = new FlowDao(Database.get());
+		processDao = new ProcessDao(Database.get());
 	}
 
 	private class MenuCreator implements IMenuCreator {
@@ -42,7 +54,7 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 			createItem(menu, new BuildNextTierAction(editor));
 		}
 
-		private void createItem(Menu menu, IBuildAction action) {
+		private void createItem(Menu menu, BuildAction action) {
 			var item = new MenuItem(menu, SWT.CASCADE);
 			item.setText(action.getText());
 			var subMenu = new Menu(item);
@@ -55,7 +67,7 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 		}
 
 		private void createSubItem(
-			Menu menu, IBuildAction action, ProviderLinking linking, ProcessType type) {
+			Menu menu, BuildAction action, ProviderLinking linking, ProcessType type) {
 			MenuItem item = new MenuItem(menu, SWT.NONE);
 			String label = Labels.of(linking);
 			if (type != null) {
@@ -63,7 +75,7 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 			}
 			item.setText(label);
 			Controls.onSelect(item, (e) -> {
-				action.setNodeParts(nodeEditParts);
+				action.setMapExchangesToProcess(exchanges);
 				action.setProviderMethod(linking);
 				action.setPreferredType(type);
 				action.run();
@@ -95,13 +107,34 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 		if (getSelectedObjects().isEmpty())
 			return false;
 
-		nodeEditParts = new ArrayList<>();
+		var db = Database.get();
+
+		exchanges = new HashMap<>();
 		for (var object : getSelectedObjects()) {
 			if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
-				nodeEditParts.add((NodeEditPart) object);
+				setText(M.BuildSupplyChain);
+				var id = ((NodeEditPart) object).getModel().descriptor.id;
+				var process = db.get(Process.class, id);
+				for (var e : process.exchanges)
+					if (isCandidate(e))
+						exchanges.put(e, process);
+
+			}
+			else if (object instanceof ExchangeEditPart part) {
+				setText(M.BuildFlowSupplyChain);
+				var id = part.getModel().getNode().descriptor.id;
+				var process = db.get(Process.class, id);
+				if (isCandidate(part.getModel().exchange))
+					exchanges.put(part.getModel().exchange, process);
 			}
 		}
-		return !nodeEditParts.isEmpty();
+
+		return !exchanges.isEmpty();
+	}
+
+	private boolean isCandidate(Exchange e) {
+		return (e.flow.flowType == FlowType.WASTE_FLOW && !e.isInput)
+				|| (e.flow.flowType == FlowType.PRODUCT_FLOW && e.isInput);
 	}
 
 }

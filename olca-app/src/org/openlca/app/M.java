@@ -67,6 +67,7 @@ public class M extends NLS {
 	public static String Both;
 	public static String Browse;
 	public static String BrowseLocalFiles;
+	public static String BuildFlowSupplyChain;
 	public static String BuildNextTier;
 	public static String BuildSupplyChain;
 	public static String Bulkreplace;
@@ -95,6 +96,7 @@ public class M extends NLS {
 	public static String CannotDeleteReferenceUnit;
 	public static String CannotDeleteUnit;
 	public static String CannotRemoveExchanges;
+	public static String CannotRemoveSupplyChain;
 	public static String Category;
 	public static String CategoryNotEmpty;
 	public static String Causal;
@@ -691,6 +693,7 @@ public class M extends NLS {
 	public static String ProcessesWithoutProviders;
 	public static String ProducedBy;
 	public static String Product;
+	public static String ProductFlowSupplyReference;
 	public static String ProductSystem;
 	public static String ProductSystemExcelExport;
 	public static String ProductSystemExcelExportMessage;
@@ -963,6 +966,7 @@ public class M extends NLS {
 	public static String Warning;
 	public static String Warnings;
 	public static String Waste;
+	public static String WasteFlowSupplyReference;
 	public static String Website;
 	public static String WeightedArithmeticMean;
 	public static String WeightedAverage;
@@ -978,7 +982,7 @@ public class M extends NLS {
 	public static String Yes;
 	public static String ZipCode;
 
-    private static Map<String, String> map;
+	private static Map<String, String> map;
 
 	static {
 		NLS.initializeMessages("org.openlca.app.messages", M.class);

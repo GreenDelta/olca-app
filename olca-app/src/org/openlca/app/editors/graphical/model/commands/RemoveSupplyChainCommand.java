@@ -52,27 +52,27 @@ public class RemoveSupplyChainCommand extends Command {
 
 	@Override
 	public void execute() {
-		var linkSearch = graph.linkSearch;
-		if (graph.getReferenceNode() != null) {
-			var ref = graph.getReferenceNode().descriptor.id;
-
-			for (var link : providerLinks) {
-				if (graph.flows.type(link.flowId) == FlowType.WASTE_FLOW
-						&& linkSearch.isOnlyChainingReferenceNode(
-						link.processId, OUTPUT, ref)) {
-					MsgBox.error(M.CannotRemoveSupplyChain,
-							M.WasteFlowSupplyReference);
-					return;
-				}
-				if (graph.flows.type(link.flowId) == FlowType.PRODUCT_FLOW
-						&& linkSearch.isOnlyChainingReferenceNode(
-						link.processId, INPUT, ref)) {
-					MsgBox.error(M.CannotRemoveSupplyChain,
-							M.ProductFlowSupplyReference);
-					return;
-				}
-			}
-		}
+//		var linkSearch = graph.linkSearch;
+//		if (graph.getReferenceNode() != null) {
+//			var ref = graph.getReferenceNode().descriptor.id;
+//
+//			for (var link : providerLinks) {
+//				if (graph.flows.type(link.flowId) == FlowType.WASTE_FLOW
+//						&& linkSearch.isOnlyChainingReferenceNode(
+//						link.processId, OUTPUT, ref)) {
+//					MsgBox.error(M.CannotRemoveSupplyChain,
+//							M.WasteFlowSupplyReference);
+//					return;
+//				}
+//				if (graph.flows.type(link.flowId) == FlowType.PRODUCT_FLOW
+//						&& linkSearch.isOnlyChainingReferenceNode(
+//						link.processId, INPUT, ref)) {
+//					MsgBox.error(M.CannotRemoveSupplyChain,
+//							M.ProductFlowSupplyReference);
+//					return;
+//				}
+//			}
+//		}
 
 		redo();
 	}
