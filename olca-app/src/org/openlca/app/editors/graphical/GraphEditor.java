@@ -261,8 +261,8 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 			return true;
 		String question = M.SystemSaveProceedQuestion;
 		if (Question.ask(M.Save + "?", question)) {
-			new ProgressMonitorDialog(UI.shell()).run(
-				false, false, systemEditor::doSave);
+			new ProgressMonitorDialog(UI.shell()).run(false, false,
+					systemEditor::doSave);
 			return true;
 		}
 		return false;

@@ -6,6 +6,10 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.tools.graphics.model.Link;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
@@ -41,6 +45,7 @@ public class CollapseCommand extends Command {
 	public void redo() {
 		collapse(host, host, side);
 		host.setExpanded(side, false);
+		host.getGraph().firePropertyChange(CHILDREN_PROP, null, null);
 	}
 
 	/**
@@ -91,7 +96,7 @@ public class CollapseCommand extends Command {
 				if (!linkStream.filter(con -> !con.isCloseLoop()).toList().isEmpty())
 					continue;
 
-				root.getGraph().removeChild(otherNode);
+				root.getGraph().removeChildQuietly(otherNode);
 			}
 		}
 		node.isCollapsing = false;

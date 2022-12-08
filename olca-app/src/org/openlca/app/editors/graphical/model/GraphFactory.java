@@ -244,7 +244,7 @@ public class GraphFactory {
 			if (refNode != null) {
 				graph.addChild(refNode);
 				for (var side : Arrays.asList(INPUT, OUTPUT)) {
-					var command = new ExpandCommand(refNode, side);
+					var command = new ExpandCommand(refNode, side, true);
 					if (command.canExecute())
 						command.execute();
 				}

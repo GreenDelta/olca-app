@@ -36,6 +36,7 @@ public class Graph extends BaseComponent {
 	public final FlowTable flows = FlowTable.create(Database.get());
 	private final TLongHashSet wasteProcesses;
 	private final Process referenceProcess;
+	private Node referenceNode;
 
 	public Graph(GraphEditor editor) {
 		this.editor = editor;
@@ -65,7 +66,10 @@ public class Graph extends BaseComponent {
 	}
 
 	public Node getReferenceNode() {
-		return getNode(referenceProcess.id);
+		if (referenceNode == null) {
+			referenceNode = getNode(referenceProcess.id);
+		}
+		return referenceNode;
 	}
 
 	public boolean isReferenceProcess(Node node) {

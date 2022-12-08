@@ -5,6 +5,7 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
@@ -14,8 +15,10 @@ import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.openlca.app.tools.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
@@ -34,21 +37,27 @@ public class Node extends MinMaxComponent {
 			OUTPUT_PROP = "output";
 
 	public static final Dimension DEFAULT_SIZE =
-		new Dimension(250, SWT.DEFAULT);
+			new Dimension(250, SWT.DEFAULT);
 
 	public RootDescriptor descriptor;
 
-	/** Define if the input or this output side is expanded.
+	/**
+	 * Define if the input or this output side is expanded.
 	 * 0: not expanded, 1: input expanded, 2: output expanded, 3: both
-	 * expanded */
+	 * expanded
+	 */
 	public int isExpanded;
-	/** Helper variable when exploring graph in CollapseCommand */
+	/**
+	 * Helper variable when exploring graph in CollapseCommand
+	 */
 	public boolean isCollapsing;
-	/** Helper variable when exploring graph in RemoveSupplyChainCommand */
-	public boolean isRemoving;
-	/** Helper variable when exploring graph in isChainingReferenceNode and in
-	 * isOnlyChainingReferenceNode.*/
+	/**
+	 * Helper variable when exploring graph in isChainingReferenceNode and in
+	 * isOnlyChainingReferenceNode.
+	 */
 	public boolean wasExplored;
+	private String comparisonLabel = Labels.name(getRefFlow());
+	private Map<Integer, Boolean> buttonStatus = new HashMap<>();
 
 	public Node(RootDescriptor descriptor) {
 		this.descriptor = descriptor;
@@ -65,12 +74,12 @@ public class Node extends MinMaxComponent {
 		for (ExchangeItem exchangeItem : getExchangeItems()) {
 			Exchange exchange = exchangeItem.exchange;
 			if (exchange == null || exchange.isInput ||
-				exchange.flow == null || exchange.flow.id != link.flowId)
+					exchange.flow == null || exchange.flow.id != link.flowId)
 				continue;
 			if (type == FlowType.PRODUCT_FLOW)
 				return exchangeItem;
 			if (type == FlowType.WASTE_FLOW
-				&& exchange.id == link.exchangeId)
+					&& exchange.id == link.exchangeId)
 				return exchangeItem;
 		}
 		return null;
@@ -85,10 +94,10 @@ public class Node extends MinMaxComponent {
 		for (ExchangeItem exchangeItem : getExchangeItems()) {
 			Exchange exchange = exchangeItem.exchange;
 			if (exchange == null || !exchange.isInput ||
-				exchange.flow == null || exchange.flow.id != link.flowId)
+					exchange.flow == null || exchange.flow.id != link.flowId)
 				continue;
 			if (type == FlowType.PRODUCT_FLOW
-				&& exchange.id == link.exchangeId)
+					&& exchange.id == link.exchangeId)
 				return exchangeItem;
 			if (type == FlowType.WASTE_FLOW)
 				return exchangeItem;
@@ -102,7 +111,7 @@ public class Node extends MinMaxComponent {
 		return !isProvider && type == FlowType.PRODUCT_FLOW; // product input
 	}
 
-	public static  boolean isOutput(FlowType type, boolean isProvider) {
+	public static boolean isOutput(FlowType type, boolean isProvider) {
 		if (isProvider && type == FlowType.PRODUCT_FLOW)
 			return true; // product output
 		return !isProvider && type == FlowType.WASTE_FLOW; // waste output
@@ -164,8 +173,8 @@ public class Node extends MinMaxComponent {
 	public boolean isEditable() {
 		if (descriptor instanceof ProcessDescriptor p) {
 			return !p.isFromLibrary()
-				&& p.processType == ProcessType.UNIT_PROCESS
-				&& getGraph().getConfig().isNodeEditingEnabled();
+					&& p.processType == ProcessType.UNIT_PROCESS
+					&& getGraph().getConfig().isNodeEditingEnabled();
 		}
 		return false;
 	}
@@ -195,7 +204,7 @@ public class Node extends MinMaxComponent {
 		var sourceNodeIds = getAllTargetConnections().stream()
 				.map(GraphLink.class::cast)
 				.map(c -> c.getSourceNode().descriptor.id)
-			.toList();
+				.toList();
 		var targetNodeIds = getAllSourceConnections().stream()
 				.map(GraphLink.class::cast)
 				.map(c -> c.getTargetNode().descriptor.id)
@@ -221,7 +230,7 @@ public class Node extends MinMaxComponent {
 				}
 			} else if (this.descriptor.id == otherID) {  // close loop
 				if (!sourceNodeIds.contains(this.descriptor.id)
-					|| !targetNodeIds.contains(this.descriptor.id)) {
+						|| !targetNodeIds.contains(this.descriptor.id)) {
 					setExpanded(side, false);
 					return;
 				}
@@ -257,15 +266,23 @@ public class Node extends MinMaxComponent {
 		return false;
 	}
 
+	public void setButtonStatus() {
+		for (var side : Arrays.asList(INPUT, OUTPUT)) {
+			if (!canExpandOrCollapse(side))
+				buttonStatus.put(side, false);
+			if (!isExpanded(side))
+				buttonStatus.put(side, true);
+			else if (this == getGraph().getReferenceNode())
+				buttonStatus.put(side, true);
+			else
+				buttonStatus.put(side, !isOnlyChainingReferenceNode(side));
+		}
+	}
+
 	public boolean isButtonEnabled(int side) {
-		if (!canExpandOrCollapse(side))
-			return false;
-		if (!isExpanded(side))
-			return true;
-		else if (this == getGraph().getReferenceNode())
-			return true;
-		else
-			return !isOnlyChainingReferenceNode(side);
+		if (buttonStatus.get(side) == null)
+			setButtonStatus();
+		return buttonStatus.get(side);
 	}
 
 	/**
@@ -283,8 +300,8 @@ public class Node extends MinMaxComponent {
 		wasExplored = true;
 
 		var links = side == INPUT
-			? getAllTargetConnections()
-			: getAllSourceConnections();
+				? getAllTargetConnections()
+				: getAllSourceConnections();
 		if (links.isEmpty()) {
 			wasExplored = false;
 			return false;
@@ -322,8 +339,8 @@ public class Node extends MinMaxComponent {
 		wasExplored = true;
 
 		var links = side == INPUT
-			? getAllTargetConnections()
-			: getAllSourceConnections();
+				? getAllTargetConnections()
+				: getAllSourceConnections();
 		if (links.isEmpty()) {
 			wasExplored = false;
 			return false;
@@ -372,20 +389,21 @@ public class Node extends MinMaxComponent {
 	@Override
 	public int compareTo(Component other) {
 		if (other instanceof Node node) {
-			if (getRefFlow() == null && node.getRefFlow() == null)
+			var thisRefFlow = getRefFlow();
+			var otherRefFlow = node.getRefFlow();
+			if (thisRefFlow == null && otherRefFlow == null)
 				return 0;
-			if (getRefFlow() != null && node.getRefFlow() == null)
+			if (thisRefFlow != null && otherRefFlow == null)
 				return 1;
-			if (getRefFlow() == null)
+			if (thisRefFlow == null)
 				return -1;
 			return this.getComparisonLabel().compareTo(node.getComparisonLabel());
-		}
-		else return 0;
+		} else return 0;
 	}
 
 	@Override
 	public String getComparisonLabel() {
-		return Labels.name(getRefFlow());
+		return comparisonLabel;
 	}
 
 	Flow getRefFlow() {
@@ -395,13 +413,11 @@ public class Node extends MinMaxComponent {
 			var process = db.get(Process.class, descriptor.id);
 			if (process.quantitativeReference != null)
 				return process.quantitativeReference.flow;
-		}
-		else if (descriptor instanceof ResultDescriptor) {
+		} else if (descriptor instanceof ResultDescriptor) {
 			var result = db.get(Result.class, descriptor.id);
 			if (result.referenceFlow != null)
 				return result.referenceFlow.flow;
-		}
-		else if (descriptor instanceof ProductSystemDescriptor) {
+		} else if (descriptor instanceof ProductSystemDescriptor) {
 			var productSystem = db.get(ProductSystem.class, descriptor.id);
 			if (productSystem.referenceExchange != null)
 				return productSystem.referenceExchange.flow;
@@ -418,7 +434,7 @@ public class Node extends MinMaxComponent {
 		var prefix = isMinimized() ? M.Minimize : M.Maximize;
 		var name = Labels.name(descriptor);
 		return editable + "Node[" + prefix + "]("
-			+ name.substring(0, Math.min(name.length(), 20)) + ")";
+				+ name.substring(0, Math.min(name.length(), 20)) + ")";
 	}
 
 }

@@ -9,6 +9,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.widgets.Display;
+import org.openlca.app.tools.graphics.model.BaseComponent;
 
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.PathIterator;
@@ -27,6 +28,8 @@ public class Connection extends SelectableConnection {
 	public static final String ROUTER_MANHATTAN = "Manhattan";
 
 	private static final double FLATNESS = 0.1;
+	private static final int CHILDREN_LIMIT = 100;
+	private final BaseComponent base;
 
 	private int offset = 20;
 	private int tangent = 1;
@@ -36,15 +39,18 @@ public class Connection extends SelectableConnection {
 	private RotatableDecoration startArrow, endArrow;
 
 	public Connection(String type, int orientation, Color color,
-		Color colorSelected) {
+		Color colorSelected, BaseComponent base) {
 		super(color, colorSelected);
 		this.orientation = orientation;
 		this.type = type;
+		this.base = base;
 	}
 
 	@Override
 	protected void outlineShape(Graphics g) {
 		g.setInterpolation(HIGH);
+		// When the graphical interface is too packed, ROUTER_NULL is used.
+		var accelerate = base.getChildren().size() > CHILDREN_LIMIT;
 
 		if (Objects.equals(type, ROUTER_MANHATTAN)) {
 			g.drawPolyline(getPoints());
@@ -53,13 +59,13 @@ public class Connection extends SelectableConnection {
 
 		var path = new Path(Display.getCurrent());
 
-		if (Objects.equals(type, ROUTER_NULL)) {
+		if (Objects.equals(type, ROUTER_NULL) || accelerate) {
 			var points = getControlPoints(-getLineWidth() / 2);
 			path.moveTo(points.getLeft().x, points.getLeft().y);
 			path.lineTo(points.getRight().x, points.getRight().y);
 		}
 
-		if (Objects.equals(type, ROUTER_CURVE)) {
+		if (Objects.equals(type, ROUTER_CURVE) && !accelerate) {
 			path.moveTo(getStart().x, getStart().y);
 
 			var tangentPoints = getControlPoints(tangent);
