@@ -16,7 +16,7 @@ import org.openlca.app.tools.graphics.zoom.ZoomManager;
  */
 public class RootEditPart extends FreeformGraphicalRootEditPart {
 
-	public static final int MARGIN_PADDING = 500;
+	public static final Insets MARGIN_PADDING = new Insets(1100, 1650, 0, 0);
 
 	private ScalableFreeformLayeredPane scaledLayers;
 	private final ZoomManager zoomManager;

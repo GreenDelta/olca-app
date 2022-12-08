@@ -4,6 +4,7 @@ import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
 import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -361,10 +362,13 @@ public class ZoomManager {
 		// Adapt the size of the border of the pane according to the zoom. This
 		// avoids having little scrollbar when zooming in.
 		var viewportSize = getViewport().getSize();
-		var viewportSizeMean = (viewportSize.height() + viewportSize.width()) / 2;
+		var heightOffset = (int) (viewportSize.height() * (1 - zoom));
+		var widthOffset = (int) (viewportSize.width() * (1 - zoom));
+		var offset = new Insets(
+				heightOffset, widthOffset, heightOffset, widthOffset);
 		var padding = zoom > 1
 				? MARGIN_PADDING
-				: MARGIN_PADDING + (int) (viewportSizeMean * (1 - zoom));
+				: MARGIN_PADDING.getAdded(offset);
 		var border = new MarginBorder(padding);
 		pane.setBorder(border);
 
