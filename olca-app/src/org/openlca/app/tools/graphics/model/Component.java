@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
@@ -73,6 +74,15 @@ abstract public class Component extends Element implements Comparable<Component>
 		firePropertyChange(CHILDREN_PROP, index, child);
 	}
 
+	/**
+	 * Add a child to the children list without firing a property change.
+	 * Should be use with caution as it won't repaint the figures.
+	 */
+	public void addChildQuietly(Component child) {
+		children.add(child);
+		child.setParent(this);
+	}
+
 	public void addChildren(List<Node> children) {
 		for (var child : children) {
 			children.add(child);
@@ -102,6 +112,19 @@ abstract public class Component extends Element implements Comparable<Component>
 			return true;
 		}
 		return false;
+	}
+
+
+	/**
+	 * Remove a child from this without firing the property change.
+	 * Should be use with caution as it won't repaint the figures.
+	 *
+	 * @param child
+	 *            a non-null component instance;
+	 * @return true, if the component was removed, false otherwise
+	 */
+	public boolean removeChildQuietly(Component child) {
+		return child != null && children.remove(child);
 	}
 
 	public void removeAllChildren() {

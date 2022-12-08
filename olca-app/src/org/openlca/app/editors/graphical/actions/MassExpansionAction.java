@@ -12,6 +12,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
@@ -71,7 +72,7 @@ public class MassExpansionAction extends StackAction {
 			var referenceNode = editor.getModel().getReferenceNode();
 
 			var editPart = (EditPart) viewer.getEditPartRegistry().get(referenceNode);
-			var request = new ExpandCollapseRequest(referenceNode, REQ_COLLAPSE);
+			var request = new ExpandCollapseRequest(referenceNode, REQ_COLLAPSE, true);
 			if (editPart != null)
 				cc.add(editPart.getCommand(request));
 		}
@@ -81,7 +82,7 @@ public class MassExpansionAction extends StackAction {
 				if (!node.isExpanded(INPUT)
 					|| !node.isExpanded(OUTPUT)) {
 					var editPart = (EditPart) viewer.getEditPartRegistry().get(node);
-					var request = new ExpandCollapseRequest(node, REQ_EXPAND);
+					var request = new ExpandCollapseRequest(node, REQ_EXPAND, true);
 					if (editPart != null)
 						cc.add(editPart.getCommand(request));
 				}
@@ -93,12 +94,16 @@ public class MassExpansionAction extends StackAction {
 
 	@Override
 	public void run() {
+		var graph = editor.getModel();
 		// Ask if the model is very large.
-		int count = editor.getModel().getChildren().size();
+		int count = graph.getChildren().size();
 		var doIt = type == COLLAPSE || count < NODE_LIMITATION || Question.ask(
 			M.ExpandAll, M.ExpandAll + ": " + count + " " + M.Processes);
 
-		if (doIt)	execute(getCommand());
+		if (doIt)	{
+			execute(getCommand());
+			graph.firePropertyChange(CHILDREN_PROP, null, null);
+		}
 	}
 
 }

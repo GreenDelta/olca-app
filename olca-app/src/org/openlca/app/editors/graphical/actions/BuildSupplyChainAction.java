@@ -27,6 +27,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 
 
@@ -87,11 +88,12 @@ public class BuildSupplyChainAction extends BuildAction {
 		for (var process : new HashSet<>(mapExchangeToProcess.values())) {
 			var part = (NodeEditPart) registry.get(graph.getNode(process.id));
 			part.getModel().setExpanded(INPUT, false);
-			var request = new ExpandCollapseRequest(part.getModel(), INPUT);
+			var request = new ExpandCollapseRequest(part.getModel(), INPUT, true);
 			var command = part.getCommand(request);
 			if (command.canExecute())
 				viewer.getEditDomain().getCommandStack().execute(command);
 		}
+		graph.firePropertyChange(CHILDREN_PROP, null, null);
 	}
 
 	@Override

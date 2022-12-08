@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
+
 public class MassCreationCommand extends Command {
 
 	private final GraphEditor editor;
@@ -78,7 +80,6 @@ public class MassCreationCommand extends Command {
 			return;
 		Node node = graph.editor.getGraphFactory().createNode(descriptor, null);
 		graph.getProductSystem().processes.add(descriptor.id);
-		graph.addChild(node);
 		createdNodes.add(node);
 	}
 
@@ -111,7 +112,8 @@ public class MassCreationCommand extends Command {
 		for (GraphLink link : createdLinks)
 			unlink(link);
 		for (Node node : createdNodes)
-			removeNode(node);
+			removeNodeQuietly(node);
+		graph.firePropertyChange(CHILDREN_PROP, null, null);
 		for (Node node : graph.getNodes()) {
 			node.setSize(oldConstraints.get(node).getSize());
 			node.setLocation(oldConstraints.get(node).getLocation());
@@ -124,9 +126,9 @@ public class MassCreationCommand extends Command {
 		oldConstraints.clear();
 	}
 
-	private void removeNode(Node node) {
+	private void removeNodeQuietly(Node node) {
 		graph.getProductSystem().processes.remove(node.descriptor.id);
-		graph.removeChild(node);
+		graph.removeChildQuietly(node);
 	}
 
 	private void unlink(GraphLink link) {

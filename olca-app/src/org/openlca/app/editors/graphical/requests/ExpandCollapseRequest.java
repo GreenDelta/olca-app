@@ -11,16 +11,19 @@ public class ExpandCollapseRequest extends Request {
 
 	private final Node node;
 	private final int side;
+	private final boolean quiet;
 
-	public ExpandCollapseRequest(Node node, String requestType) {
+	public ExpandCollapseRequest(Node node, String requestType, boolean quiet) {
 		this.node = node;
 		this.side = INPUT | OUTPUT;
+		this.quiet = quiet;
 		setType(requestType);
 	}
 
-	public ExpandCollapseRequest(Node node, int side) {
+	public ExpandCollapseRequest(Node node, int side, boolean quiet) {
 		this.node = node;
 		this.side = side;
+		this.quiet = quiet;
 		setType(REQ_EXPAND_OR_COLLAPSE);
 	}
 
@@ -30,6 +33,10 @@ public class ExpandCollapseRequest extends Request {
 
 	public int getSide() {
 		return side;
+	}
+
+	public boolean isQuiet() {
+		return quiet;
 	}
 
 }

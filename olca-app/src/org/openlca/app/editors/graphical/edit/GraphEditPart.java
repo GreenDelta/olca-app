@@ -15,6 +15,7 @@ import java.util.Objects;
 import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
 import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
 import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_MANHATTAN;
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 
 /**
  * EditPart for the GraphModel instance.
@@ -77,6 +78,9 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
+		if (CHILDREN_PROP.equals(prop))
+			for (var node : getChildren())
+				node.getModel().setButtonStatus();
 		if (GraphConfig.CONFIG_PROP.equals(prop)) {
 			refresh();
 		}

@@ -45,7 +45,8 @@ public class LinkEditPart extends AbstractConnectionEditPart
 
 	@Override
 	protected IFigure createFigure() {
-		var config = getModel().getSourceNode().getDiagram().getConfig();
+		var diagram = getModel().getSourceNode().getDiagram();
+		var config = diagram.getConfig();
 		var theme = config.getTheme();
 
 		Color color;
@@ -59,8 +60,9 @@ public class LinkEditPart extends AbstractConnectionEditPart
 				: ColorConstants.black;
 
 		var orientation = getModel().getSourceNode().getDiagram().orientation;
-
-		var connection = new Connection(config.connectionRouter(), orientation, color, colorSelected) {
+		var router = config.connectionRouter();
+		var connection = new Connection(router, orientation, color, colorSelected,
+				diagram) {
 				@Override
 				public void paint(Graphics g) {
 					setAlpha(180);

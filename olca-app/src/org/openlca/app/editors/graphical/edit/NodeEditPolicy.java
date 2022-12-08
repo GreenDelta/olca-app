@@ -20,20 +20,23 @@ public class NodeEditPolicy extends MinMaxComponentEditPolicy {
 	@Override
 	public Command getCommand(Request request) {
 		if (request instanceof ExpandCollapseRequest req) {
+			var node = req.getNode();
+			var quiet = req.isQuiet();
 			if (req.getType() == REQ_EXPAND_OR_COLLAPSE) {
 				var type = req.getNode().isExpanded(req.getSide())
 					? REQ_COLLAPSE : REQ_EXPAND;
-				return getExpansionCommand(req.getNode(), req.getSide(), type);
+				return getExpansionCommand(node, req.getSide(), type, quiet);
 			}
 			if (req.getType() == REQ_EXPAND)
-				return getExpansionCommand(req.getNode(), req.getSide(), REQ_EXPAND);
+				return getExpansionCommand(node, req.getSide(), REQ_EXPAND, quiet);
 			if (req.getType() == REQ_COLLAPSE)
-				return getExpansionCommand(req.getNode(), req.getSide(), REQ_COLLAPSE);
+				return getExpansionCommand(node, req.getSide(), REQ_COLLAPSE, quiet);
 		}
 		return super.getCommand(request);
 	}
 
-	private Command getExpansionCommand(Node node, int side, String type) {
+	private Command getExpansionCommand(Node node, int side, String type,
+		boolean quiet) {
 		var cc = new CompoundCommand();
 		var isExpand = Objects.equals(type, REQ_EXPAND);
 
@@ -42,12 +45,12 @@ public class NodeEditPolicy extends MinMaxComponentEditPolicy {
 				if (node.isExpanded(s) && !isExpand)
 					cc.add(new CollapseCommand(node, s));
 				else if (!node.isExpanded(s) && isExpand)
-					cc.add(new ExpandCommand(node, s));
+					cc.add(new ExpandCommand(node, s, quiet));
 		} else if ((side == INPUT) || (side == OUTPUT))
 			if (node.isExpanded(side) && !isExpand)
 				cc.add(new CollapseCommand(node, side));
 			else if (!node.isExpanded(side) && isExpand)
-				cc.add(new ExpandCommand(node, side));
+				cc.add(new ExpandCommand(node, side, quiet));
 		else return null;
 
 		return cc.unwrap();

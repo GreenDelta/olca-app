@@ -56,7 +56,7 @@ public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 
 		if (child instanceof Node node && type == MAXIMIZE) {
 			for (var side : Arrays.asList(INPUT, OUTPUT)) {
-				var com = new ExpandCommand(node, side);
+				var com = new ExpandCommand(node, side, false);
 				if (com.canExecute())
 					cc.add(com);
 			}

@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import static org.openlca.app.editors.graphical.model.commands.CollapseCommand.collapse;
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
@@ -103,6 +104,8 @@ public class RemoveSupplyChainCommand extends Command {
 				// graphically connected to the reference node.
 				removeGraphicalElements(link);
 			}
+
+		graph.firePropertyChange(CHILDREN_PROP, null, null);
 		if (!processes.isEmpty() || !links.isEmpty()) {
 			editor.setDirty();
 		}
@@ -145,7 +148,7 @@ public class RemoveSupplyChainCommand extends Command {
 					? INPUT
 					: OUTPUT;
 			collapse(root, provider, side);
-			graph.removeChild(provider);
+			graph.removeChildQuietly(provider);
 		}
 		var graphLink = graph.getLink(link);
 		if (graphLink != null)
@@ -169,7 +172,7 @@ public class RemoveSupplyChainCommand extends Command {
 		var node = graph.getNode(process);
 		if (node != null) {
 			nodes.add(node);
-			graph.removeChild(node);
+			graph.removeChildQuietly(node);
 		}
 	}
 

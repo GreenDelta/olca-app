@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.openlca.app.editors.graphical.model.Node.isInput;
 import static org.openlca.app.editors.graphical.model.Node.isOutput;
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
@@ -23,12 +24,14 @@ public class ExpandCommand extends Command {
 	private final int side;
 	private final GraphEditor editor;
 	private final Graph graph;
+	private final boolean quiet;
 
-	public ExpandCommand(Node host, int side) {
+	public ExpandCommand(Node host, int side, boolean quiet) {
 		this.host = host;
 		this.editor = host.getGraph().getEditor();
 		this.graph = host.getGraph();
 		this.side = side;
+		this.quiet = quiet;
 		setLabel(M.Expand);
 	}
 
@@ -90,6 +93,10 @@ public class ExpandCommand extends Command {
 			graph.getNode(otherID).updateIsExpanded(side == INPUT ? OUTPUT : INPUT);
 		}
 		host.setExpanded(side, true);
+
+		// Fire a property change as the Nodes has been added quietly.
+		if (!quiet)
+			graph.firePropertyChange(CHILDREN_PROP, null, null);
 	}
 
 	/**
@@ -104,10 +111,11 @@ public class ExpandCommand extends Command {
 			return node;
 
 		var descriptor = GraphFactory.getDescriptor(id);
-		node = editor.getGraphFactory().createNode(descriptor, null);
-		graph.addChild(node);
-		node.updateIsExpanded(side == INPUT ? OUTPUT : INPUT);
-		return node;
+		var newNode = editor.getGraphFactory().createNode(descriptor, null);
+		if (quiet) graph.addChildQuietly(newNode);
+		else graph.addChild(newNode);
+		newNode.updateIsExpanded(side == INPUT ? OUTPUT : INPUT);
+		return newNode;
 	}
 
 }

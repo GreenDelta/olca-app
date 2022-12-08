@@ -47,16 +47,18 @@ public class LinkEditPart extends AbstractConnectionEditPart
 
 	@Override
 	protected IFigure createFigure() {
-		var config = getModel().getSourceNode().getGraph().getConfig();
+		var graph = getModel().getSourceNode().getGraph();
+		var config = graph.getConfig();
 		var theme = config.getTheme();
 
+		var router = config.connectionRouter();
 		var color = theme != null ? theme.linkColor() : ColorConstants.black;
 		var colorSelected = theme != null
 				? theme.linkColorSelected()
 				: ColorConstants.black;
 
-		var connection = new Connection(config.connectionRouter(), ORIENTATION, color,
-				colorSelected) {
+		var connection = new Connection(router, ORIENTATION, color, colorSelected,
+				graph) {
 			@Override
 			public void paint(Graphics g) {
 				setLineWidth(isSelected() ? 2 : 1);
