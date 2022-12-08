@@ -2,24 +2,28 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import static org.openlca.app.editors.graphical.model.commands.CollapseCommand.collapse;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class RemoveSupplyChainCommand extends Command {
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private final ArrayList<ProcessLink> providerLinks;
 	private final GraphEditor editor;
@@ -43,24 +47,33 @@ public class RemoveSupplyChainCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		var linkSearch = graph.linkSearch;
-		if (graph.getReferenceNode() == null)
-			return false;
-		var ref = graph.getReferenceNode().descriptor.id;
-
-		for (var link : providerLinks) {
-			if (graph.flows.type(link.flowId) == FlowType.WASTE_FLOW
-				&& linkSearch.isOnlyChainingReferenceNode(link.processId, OUTPUT, ref))
-				return false;
-			if (graph.flows.type(link.flowId) == FlowType.PRODUCT_FLOW
-					&& linkSearch.isOnlyChainingReferenceNode(link.processId, INPUT, ref))
-				return false;
-		}
-		return true;
+		return (!providerLinks.isEmpty() && graph != null);
 	}
 
 	@Override
 	public void execute() {
+		var linkSearch = graph.linkSearch;
+		if (graph.getReferenceNode() != null) {
+			var ref = graph.getReferenceNode().descriptor.id;
+
+			for (var link : providerLinks) {
+				if (graph.flows.type(link.flowId) == FlowType.WASTE_FLOW
+						&& linkSearch.isOnlyChainingReferenceNode(
+						link.processId, OUTPUT, ref)) {
+					MsgBox.error(M.CannotRemoveSupplyChain,
+							M.WasteFlowSupplyReference);
+					return;
+				}
+				if (graph.flows.type(link.flowId) == FlowType.PRODUCT_FLOW
+						&& linkSearch.isOnlyChainingReferenceNode(
+						link.processId, INPUT, ref)) {
+					MsgBox.error(M.CannotRemoveSupplyChain,
+							M.ProductFlowSupplyReference);
+					return;
+				}
+			}
+		}
+
 		redo();
 	}
 
@@ -85,27 +98,58 @@ public class RemoveSupplyChainCommand extends Command {
 	public void redo() {
 		for (var link : providerLinks)
 			if (!processes.contains(link.providerId)) {
-				// Removing the supply chain if it does not provide to any other
-				// recipient.
-				var root = link.processId;
-				var otherLinks = graph.linkSearch
-						.getProviderLinks(link.providerId)
-						.stream()
-						.filter(l -> l.processId != l.providerId) // Self-loop
-						.filter(l -> l != link)
-						.toList();
-				if (otherLinks.isEmpty()) {
-					var side = graph.flows.type(link.flowId) == FlowType.PRODUCT_FLOW
-							? INPUT
-							: OUTPUT;
-					removeChain(root, link.providerId, side);
-					removeProcess(link.providerId);
-				}
-				removeLink(link);
+				removeEntities(link);
+				// It is necessary the remove the supply chain of the nodes that are not
+				// graphically connected to the reference node.
+				removeGraphicalElements(link);
 			}
 		if (!processes.isEmpty() || !links.isEmpty()) {
 			editor.setDirty();
 		}
+	}
+
+	private void removeEntities(ProcessLink link) {
+		// Removing the supply chain if it does not provide to any other
+		// recipient.
+		var root = link.processId;
+		var otherLinks = graph.linkSearch
+				.getProviderLinks(link.providerId)
+				.stream()
+				.filter(l -> l.processId != l.providerId) // Self-loop
+				.filter(l -> l != link)
+				.toList();
+		if (otherLinks.isEmpty()) {
+			var side = graph.flows.type(link.flowId) == FlowType.PRODUCT_FLOW
+					? INPUT
+					: OUTPUT;
+			removeChain(root, link.providerId, side);
+			removeProcess(link.providerId);
+		}
+		removeLink(link);
+	}
+
+	private void removeGraphicalElements(ProcessLink link) {
+		// Removing the supply chain if it does not provide to any other
+		// recipient.
+		var root = graph.getNode(link.processId);
+		var provider = graph.getNode(link.providerId);
+		if (root == null || provider == null)
+			return;
+		var linkStream = provider.getAllLinks().stream()
+				.map(GraphLink.class::cast)
+				.filter(con -> !con.isCloseLoop())
+				.filter(con -> con.processLink != link)
+				.toList();
+		if (linkStream.isEmpty()) {
+			var side = graph.flows.type(link.flowId) == FlowType.PRODUCT_FLOW
+					? INPUT
+					: OUTPUT;
+			collapse(root, provider, side);
+			graph.removeChild(provider);
+		}
+		var graphLink = graph.getLink(link);
+		if (graphLink != null)
+			graphLink.disconnect();
 	}
 
 	private void removeLink(ProcessLink link) {
@@ -159,12 +203,21 @@ public class RemoveSupplyChainCommand extends Command {
 					|| otherProcess == root)  // double link
 				continue;
 
+			// Checking if the reference process belongs to the supply/demand chain.
 			var refNode = graph.getReferenceNode();
-			if (root != refNode.descriptor.id
-					&& (graph.linkSearch.isChainingReference(
-							otherProcess, side, refNode.descriptor.id)
-					|| otherProcess == refNode.descriptor.id))
-				continue;
+			if (refNode != null) {
+				if (root != refNode.descriptor.id
+						&& (graph.linkSearch.isChainingReference(
+						otherProcess, side, refNode.descriptor.id)
+						|| otherProcess == refNode.descriptor.id)) {
+					// Removing the graphical nodes that do not link to the reference.
+					var node = graph.getNode(otherProcess);
+					if (node != null) {
+
+					}
+					continue;
+				}
+			}
 
 			removeLink(link);
 			removeChain(root, otherProcess, INPUT);

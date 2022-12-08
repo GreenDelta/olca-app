@@ -39,7 +39,7 @@ public class CollapseCommand extends Command {
 
 	@Override
 	public void redo() {
-		collapse(host, side);
+		collapse(host, host, side);
 		host.setExpanded(side, false);
 	}
 
@@ -50,7 +50,7 @@ public class CollapseCommand extends Command {
 	 *  - the reference node,
 	 *  - nodes that are chained to the reference node.
 	 */
-	private void collapse(Node node, int side) {
+	protected static void collapse(Node root, Node node, int side) {
 		if (node.isCollapsing)
 			return;
 		node.isCollapsing = true;
@@ -71,27 +71,27 @@ public class CollapseCommand extends Command {
 						: link.getTargetNode();
 
 				if (!thisNode.equals(node)  // wrong link
-						|| otherNode.equals(host))  // double link
+						|| otherNode.equals(root))  // double link
 					continue;
 
-				if (host != host.getGraph().getReferenceNode()
+				if (root != root.getGraph().getReferenceNode()
 					&& (otherNode.isChainingReferenceNode(side)
-					|| otherNode == host.getGraph().getReferenceNode()))
+					|| otherNode == root.getGraph().getReferenceNode()))
 					continue;
 
 				link.disconnect();
-				collapse(otherNode, INPUT);
-				collapse(otherNode, OUTPUT);
+				collapse(root, otherNode, INPUT);
+				collapse(root, otherNode, OUTPUT);
 
 				if (link.isCloseLoop()) // close loop
-					host.setExpanded(side == INPUT ? OUTPUT : INPUT, false);
+					root.setExpanded(side == INPUT ? OUTPUT : INPUT, false);
 
 				var linkStream = otherNode.getAllLinks().stream()
 						.map(GraphLink.class::cast);
 				if (!linkStream.filter(con -> !con.isCloseLoop()).toList().isEmpty())
 					continue;
 
-				host.getGraph().removeChild(otherNode);
+				root.getGraph().removeChild(otherNode);
 			}
 		}
 		node.isCollapsing = false;
