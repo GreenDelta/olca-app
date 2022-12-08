@@ -11,6 +11,7 @@ import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
 import java.util.*;
@@ -62,9 +63,16 @@ public class RemoveSupplyChainAction extends SelectionAction {
 			}
 			else if (object instanceof ExchangeEditPart part) {
 				setText(M.RemoveFlowSupplyChain);
-				for (var connection : part.getModel().getAllConnections())
-					if (connection instanceof GraphLink link)
-						links.add(link.processLink);
+				var e = part.getModel().exchange;
+				if ((e.flow.flowType == FlowType.WASTE_FLOW && !e.isInput)
+						|| (e.flow.flowType == FlowType.PRODUCT_FLOW && e.isInput)) {
+					var connection = part.getModel().getAllConnections();
+					// there should only one link to a waste output or product input.
+					if (connection.size() != 1)
+						continue;
+					if (connection.get(0) instanceof GraphLink link)
+							links.add(link.processLink);
+				}
 			}
 		}
 
