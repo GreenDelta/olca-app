@@ -10,7 +10,6 @@ import org.openlca.app.editors.graphical.actions.retarget.EditExchangeRetargetAc
 import org.openlca.app.editors.graphical.actions.retarget.EditModeRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.ShowElementaryFlowsRetargetAction;
 import org.openlca.app.tools.graphics.actions.retarget.EditConfigRetargetAction;
-import org.openlca.app.tools.graphics.actions.retarget.LayoutAsTreeRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.EditStickyNoteRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.MassExpansionRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.MinMaxAllRetargetAction;

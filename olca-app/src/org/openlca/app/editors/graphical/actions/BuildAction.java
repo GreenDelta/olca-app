@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
-import org.eclipse.jface.action.Action;
 import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.FlowDao;
@@ -11,7 +10,6 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 

@@ -5,7 +5,6 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TIntHashSet;
-import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.core.model.ProcessLink;
 
 import java.util.ArrayList;

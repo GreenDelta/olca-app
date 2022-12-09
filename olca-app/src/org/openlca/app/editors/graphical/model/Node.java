@@ -5,7 +5,6 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.graphics.model.Component;
-import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
