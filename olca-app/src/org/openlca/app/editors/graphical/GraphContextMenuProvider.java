@@ -5,7 +5,6 @@ import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.ui.actions.ActionFactory;
-import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.GraphActionIds;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.graphics.BasicContextMenuProvider;

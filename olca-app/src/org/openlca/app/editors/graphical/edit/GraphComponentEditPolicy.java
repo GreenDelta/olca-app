@@ -6,7 +6,6 @@ import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.StickyNote;
@@ -15,14 +14,8 @@ import org.openlca.app.editors.graphical.model.commands.DeleteNodeCommand;
 import org.openlca.app.editors.graphical.model.commands.DeleteStickyNoteCommand;
 import org.openlca.app.editors.graphical.model.commands.EditExchangeCommand;
 import org.openlca.app.editors.graphical.model.commands.EditStickyNoteCommand;
-import org.openlca.app.editors.graphical.model.commands.RemoveSupplyChainCommand;
 import org.openlca.app.editors.graphical.model.commands.SetReferenceCommand;
-import org.openlca.core.model.ProcessLink;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static org.openlca.app.editors.graphical.actions.RemoveSupplyChainAction.KEY_LINKS;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 public class GraphComponentEditPolicy extends ComponentEditPolicy {

@@ -6,7 +6,6 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.slf4j.Logger;

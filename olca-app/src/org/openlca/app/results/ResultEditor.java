@@ -3,7 +3,6 @@ package org.openlca.app.results;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -30,7 +29,6 @@ import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.slf4j.LoggerFactory;
 
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
 
 /**
@@ -114,7 +112,7 @@ public class ResultEditor extends FormEditor {
 			var listener = sankeyInit.get();
 			if (listener == null)
 				return;
-			
+
 			sankeyEditor.onFirstActivation();
 
 			// Artificially refreshing the ActionBarContributor.

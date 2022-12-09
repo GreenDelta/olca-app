@@ -16,7 +16,6 @@ import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.Exchange;
@@ -24,16 +23,13 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class BuildSupplyChainMenuAction extends SelectionAction
 		implements UpdateAction {
 
 	private final GraphEditor editor;
-	private final FlowDao flowDao;
 	protected final ProcessDao processDao;
 	protected Map<Exchange, Process> exchanges;
 
@@ -43,7 +39,6 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 		setId(GraphActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		setImageDescriptor(Icon.BUILD_SUPPLY_CHAIN.descriptor());
 		setMenuCreator(new MenuCreator());
-		flowDao = new FlowDao(Database.get());
 		processDao = new ProcessDao(Database.get());
 	}
 
