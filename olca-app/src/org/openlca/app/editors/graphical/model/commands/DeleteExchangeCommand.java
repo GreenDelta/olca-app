@@ -4,6 +4,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.*;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
@@ -15,38 +16,38 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static org.openlca.app.editors.processes.exchanges.Exchanges.canRemove;
 
 public class DeleteExchangeCommand extends Command {
 
-	/** ExchangeItem to remove. */
+	/**
+	 * ExchangeItem to remove.
+	 */
 	private final ExchangeItem child;
-	/** IOPane to remove from. */
+	/**
+	 * IOPane to remove from.
+	 */
 	private final IOPane parent;
-	/** Node to remove from. */
+	/**
+	 * Node to remove from.
+	 */
 	private final Node node;
+	private final Graph graph;
+	private final GraphEditor editor;
 
 
-	/** Holds a copy of all the links of the child and sub-child. */
-	private List<GraphLink> links;
-	/** True, if child was removed from its parent. */
-	private boolean wasRemoved;
 	private final IDatabase db = Database.get();
-	private final Process process;
-	private final Exchange exchange;
+	private Process process;
+	private Exchange exchange;
 
 	/**
 	 * Create a command that will remove the exchange item from its parent.
 	 *
-	 * @param parent
-	 *            the parent containing the child
-	 * @param child
-	 *            the component to remove
-	 * @throws IllegalArgumentException
-	 *             if any parameter is null
+	 * @param parent the parent containing the child
+	 * @param child  the component to remove
+	 * @throws IllegalArgumentException if any parameter is null
 	 */
 	public DeleteExchangeCommand(IOPane parent, ExchangeItem child) {
 		if (parent == null || child == null) {
@@ -55,30 +56,27 @@ public class DeleteExchangeCommand extends Command {
 		setLabel(NLS.bind(M.Delete.toLowerCase(), M.Flow));
 		this.parent = parent;
 		this.child = child;
-		this.node = child.getNode();
-		this.process = db.get(Process.class, node.descriptor.id);
-		this.exchange = getExchange();
+		node = child.getNode();
+		graph = node.getGraph();
+		editor = graph.getEditor();
 	}
 
 	@Override
 	public boolean canExecute() {
-		return child.exchange != null
-			&& child.exchange.flow != null
-			&& node != null
-			&& node.descriptor != null
-			&& !node.descriptor.isFromLibrary()
-			&& node.descriptor.type == ModelType.PROCESS;
-	}
+		if (node == null || node.descriptor == null
+				|| node.descriptor.type != ModelType.PROCESS
+				|| child.exchange == null
+				|| node.descriptor.isFromLibrary())
+			return false;
 
-	@Override
-	public boolean canUndo() {
-		return wasRemoved;
+		process = (Process) node.getEntity();
+		exchange = getExchange();
+
+		return process != null && exchange != null;
 	}
 
 	@Override
 	public void execute() {
-		// store a copy of incoming & outgoing links before proceeding
-		links = child.getAllLinks().stream().map(GraphLink.class::cast).toList();
 		redo();
 	}
 
@@ -96,73 +94,47 @@ public class DeleteExchangeCommand extends Command {
 		// check that the exchange is not used in other models
 		var system = child.getGraph().getProductSystem();
 		var usages = new ExchangeUseSearch(db, process)
-			.findUses(exchange);
+				.findUses(exchange);
 		for (var d : usages) {
 			if (d.id == system.id || d.id == process.id)
 				continue;
 			MsgBox.error("Used in other models",
-				Labels.name(exchange.flow)
-					+ " is used in other models "
-					+ "and cannot be deleted");
+					Labels.name(exchange.flow)
+							+ " is used in other models "
+							+ "and cannot be deleted");
 			return;
 		}
 
 		var b = Question.ask("Remove exchange",
-			"Remove flow " + Labels.name(exchange.flow)
-				+ " from process " + Labels.name(process) + "?");
+				"Remove flow " + Labels.name(exchange.flow)
+						+ " from process " + Labels.name(process) + "?");
 		if (!b)
 			return;
 
-		// TODO: we need to remove process links of that exchange
 
 		process.exchanges.remove(exchange);
-		db.update(process);
-
-		wasRemoved = parent.removeChild(child);
-		if (wasRemoved) {
-			removeConnections(links);
+		var processLinks = graph.linkSearch.getLinks(process.id);
+		for (var link : processLinks) {
+			if (link.exchangeId == exchange.id) {
+				system.processLinks.remove(link);
+				var graphLink = graph.mapProcessLinkToGraphLink.remove(link);
+				if (graphLink != null)
+					graphLink.disconnect();
+			}
 		}
 
-		child.getGraph().getEditor().setDirty();
+		parent.removeChild(child);
+
+		editor.setDirty(process);
 	}
 
 	private Exchange getExchange() {
 		if (process == null)
 			return null;
 		return process.exchanges.stream()
-			.filter(e -> Objects.equals(e, child.exchange))
-			.findFirst()
-			.orElse(null);
-	}
-
-
-	/**
-	 * Reconnects a List of Links with their previous endpoints.
-	 *
-	 * @param links
-	 *            a non-null List of links
-	 */
-	private void addConnections(List<GraphLink> links) {
-		for (GraphLink link : links) {
-			link.reconnect();
-		}
-	}
-
-	private void removeConnections(List<GraphLink> links) {
-		for (GraphLink link : links) {
-			link.disconnect();
-		}
-	}
-
-	@Override
-	public void undo() {
-		// add the child and reconnect its links
-		process.add(exchange);
-		parent.addChild(child);
-
-		addConnections(links);
-
-		node.getGraph().getEditor().setDirty();
+				.filter(e -> Objects.equals(e, child.exchange))
+				.findFirst()
+				.orElse(null);
 	}
 
 }

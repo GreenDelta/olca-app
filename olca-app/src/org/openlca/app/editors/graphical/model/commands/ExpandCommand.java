@@ -2,14 +2,17 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.openlca.app.editors.graphical.model.Node.isInput;
@@ -25,6 +28,9 @@ public class ExpandCommand extends Command {
 	private final GraphEditor editor;
 	private final Graph graph;
 	private final boolean quiet;
+	private final IDatabase db = Database.get();
+	private List<Node> newNodes = new ArrayList<>();
+	private List<GraphLink> newLinks = new ArrayList<>();
 
 	public ExpandCommand(Node host, int side, boolean quiet) {
 		this.host = host;
@@ -83,18 +89,15 @@ public class ExpandCommand extends Command {
 			} else if (processID == otherID) {  // close loop
 				inNode = host;
 				outNode = host;
-			} else {
-				continue;
-			}
-			var link = new GraphLink(pLink, outNode, inNode);
-			graph.links.put(pLink, link);
+			} else continue;
 
-			// Update the node's expanded state on the other side in case of loops.
-			graph.getNode(otherID).updateIsExpanded(side == INPUT ? OUTPUT : INPUT);
+			var link = new GraphLink(pLink, outNode, inNode);
+			newLinks.add(link);
+			graph.mapProcessLinkToGraphLink.put(pLink, link);
 		}
 		host.setExpanded(side, true);
 
-		// Fire a property change as the Nodes has been added quietly.
+		// Fire a property change if the Nodes have been added quietly.
 		if (!quiet)
 			graph.firePropertyChange(CHILDREN_PROP, null, null);
 	}

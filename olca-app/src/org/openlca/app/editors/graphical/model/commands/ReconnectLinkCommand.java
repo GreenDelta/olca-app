@@ -3,21 +3,27 @@ package org.openlca.app.editors.graphical.model.commands;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.ProductSystem;
 
 public class ReconnectLinkCommand extends Command {
 
 	private final Node sourceNode;
 	private final ExchangeItem targetItem;
 	private final GraphLink oldLink;
+	private final Graph graph;
+	private final ProductSystem system;
 	private GraphLink link;
 
-	public ReconnectLinkCommand(Node sourceNode, ExchangeItem targetItem, GraphLink oldLink) {
-		this.sourceNode = sourceNode;
-		this.targetItem = targetItem;
-		this.oldLink = oldLink;
+	public ReconnectLinkCommand(Node node, ExchangeItem target, GraphLink link) {
+		sourceNode = node;
+		targetItem = target;
+		oldLink = link;
+		graph = node.getGraph();
+		system = graph.getProductSystem();
 	}
 
 	@Override
@@ -36,11 +42,10 @@ public class ReconnectLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		var graph = sourceNode.getGraph();
-
 		oldLink.disconnect();
-		graph.getProductSystem().processLinks.remove(oldLink.processLink);
+		system.processLinks.remove(oldLink.processLink);
 		graph.linkSearch.remove(oldLink.processLink);
+		graph.mapProcessLinkToGraphLink.remove(oldLink.processLink);
 
 		var processLink = new ProcessLink();
 		processLink.providerId = sourceNode.descriptor.id;
@@ -52,6 +57,7 @@ public class ReconnectLinkCommand extends Command {
 		graph.getProductSystem().processLinks.add(processLink);
 		graph.linkSearch.put(processLink);
 		link = new GraphLink(processLink, sourceNode, targetItem);
+		graph.mapProcessLinkToGraphLink.put(processLink, link);
 
 		graph.editor.setDirty();
 	}
@@ -63,15 +69,15 @@ public class ReconnectLinkCommand extends Command {
 
 	@Override
 	public void redo() {
-		var graph = sourceNode.getGraph();
-		var system = graph.getProductSystem();
-
 		oldLink.disconnect();
 
 		system.processLinks.remove(oldLink.processLink);
 		graph.linkSearch.remove(oldLink.processLink);
+		graph.mapProcessLinkToGraphLink.remove(oldLink.processLink);
+
 		system.processLinks.add(link.processLink);
 		graph.linkSearch.put(link.processLink);
+		graph.mapProcessLinkToGraphLink.put(link.processLink, link);
 		link.reconnect();
 
 		graph.editor.setDirty();
@@ -79,14 +85,15 @@ public class ReconnectLinkCommand extends Command {
 
 	@Override
 	public void undo() {
-		var graph = sourceNode.getGraph();
-		var system = graph.getProductSystem();
 		link.disconnect();
 
 		system.processLinks.remove(link.processLink);
 		graph.linkSearch.remove(link.processLink);
+		graph.mapProcessLinkToGraphLink.remove(link.processLink);
+
 		system.processLinks.add(oldLink.processLink);
 		graph.linkSearch.put(oldLink.processLink);
+		graph.mapProcessLinkToGraphLink.put(oldLink.processLink, oldLink);
 		oldLink.reconnect();
 
 		graph.editor.setDirty();

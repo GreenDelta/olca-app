@@ -4,6 +4,9 @@ import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.tools.graphics.model.Link;
 import org.openlca.core.model.ProcessLink;
 
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
+
 /**
  * A model of the connection between two Node objects. The output and the input
  * can be defined by a Node, an IOPane or a ExchangeItem depending on the status
@@ -26,6 +29,25 @@ public class GraphLink extends Link {
 		target = adaptComponent(newTarget, false);
 
 		reconnect();
+	}
+
+	@Override
+	public void disconnect() {
+		super.disconnect();
+		updateIsExpanded();
+	}
+
+	@Override
+	public void reconnect() {
+		super.reconnect();
+		updateIsExpanded();
+	}
+
+	private void updateIsExpanded() {
+		if (getSourceNode() != null)
+			getSourceNode().updateIsExpanded(OUTPUT);
+		if (getTargetNode() != null)
+			getTargetNode().updateIsExpanded(INPUT);
 	}
 
 	/**

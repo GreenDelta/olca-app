@@ -77,6 +77,9 @@ public class DeleteNodeCommand extends Command {
 	 */
 	private void addConnections(List<GraphLink> links) {
 		for (GraphLink link : links) {
+			parent.linkSearch.put(link.processLink);
+			parent.getProductSystem().processLinks.add(link.processLink);
+			parent.mapProcessLinkToGraphLink.put(link.processLink, link);
 			link.reconnect();
 		}
 	}
@@ -86,6 +89,7 @@ public class DeleteNodeCommand extends Command {
 			link.disconnect();
 			parent.linkSearch.remove(link.processLink);
 			parent.getProductSystem().processLinks.remove(link.processLink);
+			parent.mapProcessLinkToGraphLink.remove(link);
 		}
 	}
 

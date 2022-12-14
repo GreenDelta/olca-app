@@ -7,9 +7,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 import java.util.ArrayList;
@@ -17,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.openlca.app.editors.graphical.model.GraphFactory.createGraphLink;
 import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 
 public class MassCreationCommand extends Command {
@@ -31,8 +30,8 @@ public class MassCreationCommand extends Command {
 	private final List<GraphLink> createdLinks = new ArrayList<>();
 
 	public static MassCreationCommand nextTier(List<RootDescriptor> toCreate,
-			List<ProcessLink> newConnections, Graph model) {
-		return new MassCreationCommand(model, toCreate, newConnections, M.BuildNextTier);
+			List<ProcessLink> newConnections, Graph graph) {
+		return new MassCreationCommand(graph, toCreate, newConnections, M.BuildNextTier);
 	}
 
 	public static MassCreationCommand providers(List<RootDescriptor> toCreate,
@@ -41,17 +40,14 @@ public class MassCreationCommand extends Command {
 	}
 
 	public static MassCreationCommand recipients(List<RootDescriptor> toCreate,
-			List<ProcessLink> newConnections, Graph model) {
-		return new MassCreationCommand(model, toCreate, newConnections, M.ConnectRecipients);
+			List<ProcessLink> newConnections, Graph graph) {
+		return new MassCreationCommand(graph, toCreate, newConnections, M.ConnectRecipients);
 	}
 
-	private MassCreationCommand(
-			Graph model,
-			List<RootDescriptor> toCreate,
-			List<ProcessLink> newConnections,
-			String label) {
-		this.graph = model;
-		this.editor = graph.getEditor();
+	private MassCreationCommand(Graph graph, List<RootDescriptor> toCreate,
+			List<ProcessLink> newConnections, String label) {
+		this.graph = graph;
+		this.editor = this.graph.getEditor();
 		this.toCreate = toCreate;
 		this.newLinks = newConnections;
 		setLabel(label);
@@ -61,8 +57,11 @@ public class MassCreationCommand extends Command {
 	public void execute() {
 		for (RootDescriptor process : toCreate)
 			addNode(process);
-		for (ProcessLink newLink : newLinks)
-			link(newLink);
+		for (ProcessLink link : newLinks) {
+			graph.getProductSystem().processLinks.add(link);
+			graph.linkSearch.put(link);
+			createGraphLink(graph, link);
+		}
 
 		for (Node node : graph.getNodes()) {
 			var bounds = new Rectangle(
@@ -80,25 +79,6 @@ public class MassCreationCommand extends Command {
 		Node node = graph.editor.getGraphFactory().createNode(descriptor, null);
 		graph.getProductSystem().processes.add(descriptor.id);
 		createdNodes.add(node);
-	}
-
-	private void link(ProcessLink newLink) {
-		ProductSystem system = graph.getProductSystem();
-		system.processLinks.add(newLink);
-		graph.linkSearch.put(newLink);
-
-		FlowType ftype = graph.flows.type(newLink.flowId);
-		boolean isWaste = ftype == FlowType.WASTE_FLOW;
-		var outNode = graph.getNode(
-				isWaste ? newLink.processId
-						: newLink.providerId);
-		var inNode = graph.getNode(
-				isWaste ? newLink.providerId
-						: newLink.processId);
-		var link = new GraphLink(newLink, outNode, inNode);
-		graph.links.put(newLink, link);
-
-		createdLinks.add(link);
 	}
 
 	@Override
@@ -131,9 +111,11 @@ public class MassCreationCommand extends Command {
 	}
 
 	private void unlink(GraphLink link) {
-		ProductSystem system = graph.getProductSystem();
+		var system = graph.getProductSystem();
 		system.processLinks.remove(link.processLink);
 		graph.linkSearch.remove(link.processLink);
+		graph.mapProcessLinkToGraphLink.remove(link);
 		link.disconnect();
 	}
+
 }

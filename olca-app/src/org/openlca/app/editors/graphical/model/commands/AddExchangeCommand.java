@@ -49,12 +49,11 @@ public class AddExchangeCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return pane.getNode().isEditable();
+		return pane != null && pane.getNode().isEditable();
 	}
 
 	@Override
 	public boolean canUndo() {
-		// TODO (francois) Implement undo.
 		return false;
 	}
 
@@ -77,8 +76,7 @@ public class AddExchangeCommand extends Command {
 		if (dialog.open() != Window.OK || dialog.flow == null)
 			return;
 		var flow = dialog.flow;
-		var process = db.get(Process.class, d.id);
-		if (process == null)
+		if (!(node.getEntity() instanceof Process process))
 			return;
 
 		// set the flow amount and update the process
@@ -86,27 +84,19 @@ public class AddExchangeCommand extends Command {
 			? process.input(flow, 1.0)
 			: process.output(flow, 1.0);
 		ExchangeDialog.open(exchange);
-		db.update(process);
 
 		// If an elementary flow was added, make sure that our graph shows
 		// elementary flow.
 		// Note that we need to do this, before we create the IOPane in order to
 		// avoid recreation of that node later.
-		var editor = node.getGraph().getEditor();
 		if (flow.flowType == FlowType.ELEMENTARY_FLOW)
 			editor.config.setShowElementaryFlows(true);
 
-		// It is necessary to create an ExchangeItem with the updated exchange.
-		var updatedProcess = db.get(Process.class, node.descriptor.id);
-		var updatedExchange = updatedProcess.exchanges.stream()
-			.filter(e -> e.internalId == exchange.internalId)
-			.findFirst()
-			.orElse(null);
 		var ioPane = forInput ? node.getInputIOPane() : node.getOutputIOPane();
-		if (updatedExchange != null)
-			ioPane.addChild(new ExchangeItem(updatedExchange));
+		if (exchange != null)
+			ioPane.addChild(new ExchangeItem(exchange));
 
-		editor.setDirty();
+		editor.setDirty(process);
 	}
 
 	class Dialog extends FormDialog {

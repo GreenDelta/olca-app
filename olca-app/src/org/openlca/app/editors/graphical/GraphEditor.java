@@ -8,6 +8,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.*;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.actions.*;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
 import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
@@ -19,7 +20,14 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.Version;
 import org.openlca.jsonld.Json;
+
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.openlca.app.editors.graphical.GraphFile.KEY_NODES;
 import static org.openlca.app.editors.graphical.GraphFile.KEY_STICKY_NOTES;
@@ -46,6 +54,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	// TODO: save this in the same way as the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
 	private final GraphFactory graphFactory = new GraphFactory(this);
+	private Set<RootEntity> dirtyEntities = new HashSet<>();
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
@@ -226,7 +235,12 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		setModel(new Graph(this));
 	}
 
-	public void setDirty() {
+	/**
+	 * Set the product system editor dirty and add the eventual other dirty
+	 * entities.
+	 */
+	public void setDirty(RootEntity... entities) {
+		dirtyEntities.addAll(List.of(entities));
 		systemEditor.setDirty(true);
 	}
 
@@ -250,9 +264,26 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		return super.getActionRegistry();
 	}
 
+	/**
+	 * Save the dirty entities collected along the way and the product system.
+	 * Compare to other editor, the GraphEditor is not editing a single type of
+	 * entity.
+	 */
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		systemEditor.doSave(monitor);
+		if (monitor != null) {
+			monitor.beginTask(M.Save + "...", IProgressMonitor.UNKNOWN);
+		}
+		for (var entity : dirtyEntities)
+			saveEntity(entity);
+	}
+
+	private void saveEntity(RootEntity model) {
+		model.lastChange = Calendar.getInstance().getTimeInMillis();
+		Version.incUpdate(model);
+		var db = Database.get();
+		db.update(model);
+		dirtyEntities.remove(model);
 	}
 
 	public boolean promptSaveIfNecessary() throws Exception {

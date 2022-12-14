@@ -39,29 +39,29 @@ public class CreateNodeCommand extends Command {
 
 	public void execute() {
 		if (descriptor.type != ModelType.PROCESS
-			&& descriptor.type != ModelType.PRODUCT_SYSTEM
-			&& descriptor.type != ModelType.RESULT) {
+				&& descriptor.type != ModelType.PRODUCT_SYSTEM
+				&& descriptor.type != ModelType.RESULT)
 			return;
-		}
 
 		// Add the process to the product system.
 		var system = graph.getProductSystem();
-		system.processes.add(descriptor.id);
+		if (system.processes.add(descriptor.id)) {
+			// Add the process to the graph.
+			var location = constraint.getLocation();
+			var size = (new Dimension(-1, -1)).equals(constraint.getSize())
+					? Node.DEFAULT_SIZE
+					: constraint.getSize();
+			var info = new NodeLayoutInfo(location, size, false, false, false);
+			node = graph.editor.getGraphFactory().createNode(descriptor, info);
+			if (this.index > 0)
+				this.graph.addChild(node, this.index);
+			else this.graph.addChild(node);
 
-		// Add the process to the graph.
-		var location = constraint.getLocation();
-		var size = (new Dimension(-1, -1)).equals(constraint.getSize())
-			? Node.DEFAULT_SIZE
-			: constraint.getSize();
-		var info = new NodeLayoutInfo(location, size, false, false, false);
-		node = graph.editor.getGraphFactory().createNode(descriptor, info);
-		if (this.index > 0)
-			this.graph.addChild(node, this.index);
-		else this.graph.addChild(node);
-
-		editor.setDirty();
+			editor.setDirty();
+		}
 	}
 
+	@Override
 	public void undo() {
 		// Remove the process from the product system.
 		var system = graph.getProductSystem();

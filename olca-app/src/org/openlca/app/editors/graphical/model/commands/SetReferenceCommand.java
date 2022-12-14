@@ -2,12 +2,13 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptor;
 
 import java.util.Objects;
 
@@ -18,25 +19,33 @@ public class SetReferenceCommand extends Command {
 	private final IDatabase db = Database.get();
 	private final Node node;
 	private final ExchangeItem child;
-	private final ExchangeItem oldRefExchangeItem;
+	private ExchangeItem oldRefExchangeItem;
+	private final GraphEditor editor;
 	private Exchange oldRefExchange;
+	private Process process;
 
 	public SetReferenceCommand(ExchangeItem child) {
 		this.child = child;
-		this.node = child.getNode();
-		var process = db.get(Process.class, node.descriptor.id);
-		this.oldRefExchangeItem = node.getRefExchangeItem();
-		if (oldRefExchangeItem != null)
-			this.oldRefExchange = getExchange(process, oldRefExchangeItem);
+		node = child.getNode();
+		editor = node.getGraph().getEditor();
 	}
 
 	@Override
 	public boolean canExecute() {
-		return child.canBeReferenceFlow()
-			&& !child.isQuantitativeReference()
-			&& node != null
-			&& node.descriptor != null
-			&& node.isEditable();
+		if (!child.canBeReferenceFlow()
+			|| child.isQuantitativeReference()
+			|| node == null
+			|| node.descriptor == null
+			|| !node.isEditable()
+		  || node.descriptor.type != ModelType.PROCESS)
+			return false;
+
+		process = (Process) node.getEntity();
+		this.oldRefExchangeItem = node.getRefExchangeItem();
+		if (oldRefExchangeItem != null)
+			this.oldRefExchange = getExchange(process, oldRefExchangeItem);
+
+		return process != null;
 	}
 
 	@Override
@@ -55,7 +64,8 @@ public class SetReferenceCommand extends Command {
 			return;
 
 		update(child, oldRefExchange);
-		child.getGraph().getEditor().setDirty();
+
+		editor.setDirty(process);
 	}
 
 	@Override
@@ -63,32 +73,24 @@ public class SetReferenceCommand extends Command {
 		if (child == null)
 			return;
 
-		var process = db.get(Process.class, node.descriptor.id);
 		// Getting the old reference Exchange.
 		var oldRefExchangeItem = node.getExchangeItem(oldRefExchange);
 		var oldExchange = getExchange(process, oldRefExchangeItem);
 		update(oldRefExchangeItem, oldExchange);
 
-		child.getGraph().getEditor().setDirty();
+		editor.setDirty(process);
 	}
 
 	private void update(ExchangeItem newRefExchangeItem, Exchange oldRefExchange) {
-		var process = db.get(Process.class, node.descriptor.id);
-		var newRefExchange = getExchange(process, newRefExchangeItem);
+		var newRefExchange = newRefExchangeItem.exchange;
 		if (newRefExchange == null)
 			return;
 		process.quantitativeReference = newRefExchange;
-		db.update(process);
-
-		// Updating the new and the old quantitative reference.
-		var descriptor = Descriptor.of(process);
 
 		if (oldRefExchange != null)
-			updateExchangeItem(node, descriptor, oldRefExchangeItem,
-				new ExchangeItem(oldRefExchange));
+			updateExchangeItem(oldRefExchangeItem, new ExchangeItem(oldRefExchange));
 
-		updateExchangeItem(node, descriptor, newRefExchangeItem,
-			new ExchangeItem(newRefExchange));
+		updateExchangeItem(newRefExchangeItem, new ExchangeItem(newRefExchange));
 	}
 
 	private Exchange getExchange(Process process, ExchangeItem item) {

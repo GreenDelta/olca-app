@@ -1,11 +1,9 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.slf4j.Logger;
@@ -16,31 +14,25 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import static org.openlca.app.editors.graphical.model.commands.CollapseCommand.collapse;
 import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
-public class RemoveSupplyChainCommand extends Command {
+public class RemoveSupplyChainCommand extends CollapseCommand {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private final ArrayList<ProcessLink> providerLinks;
 	private final GraphEditor editor;
-	private final Graph graph;
 
 	//	Product system objects
 	private Set<Long> processes = new HashSet<>();
 	private Set<ProcessLink> links = new HashSet<>();
-
-	// Graph objects
-	private Set<GraphLink> connections = new HashSet<>();
-	private Set<Node> nodes = new HashSet<>();
 	private Set<Long> isRemoving = new HashSet<>();
 
 	public RemoveSupplyChainCommand(ArrayList<ProcessLink> links, Graph graph) {
+		super(graph.getReferenceNode(), INPUT & OUTPUT);
 		providerLinks = links;
-		this.graph = graph;
 		editor = graph.getEditor();
 		setLabel(M.RemoveSupplyChain.toLowerCase(Locale.ROOT));
 	}
@@ -80,18 +72,6 @@ public class RemoveSupplyChainCommand extends Command {
 	@Override
 	public boolean canUndo() {
 		return false;
-	}
-
-	@Override
-	public void undo() {
-		for (var node : nodes)
-			editor.getProductSystem().processes.add(node.descriptor.id);
-		graph.addChildren(nodes.stream().toList());
-		for (var link : connections) {
-			link.reconnect();
-			editor.getProductSystem().processLinks.add(link.processLink);
-			graph.linkSearch.put(link.processLink);
-		}
 	}
 
 	@Override
@@ -150,29 +130,35 @@ public class RemoveSupplyChainCommand extends Command {
 			graph.removeChildQuietly(provider);
 		}
 		var graphLink = graph.getLink(link);
-		if (graphLink != null)
+		if (graphLink != null) {
 			graphLink.disconnect();
+			graph.mapProcessLinkToGraphLink.remove(link);
+		}
 	}
 
+	/**
+	 * Remove the ProcessLink and the GraphLink.
+	 */
 	private void removeLink(ProcessLink link) {
 		links.add(link);
 		graph.getProductSystem().processLinks.remove(link);
 		graph.linkSearch.remove(link);
 		var graphLink = graph.getLink(link);
 		if (graphLink != null) {
-			connections.add(graphLink);
+			graph.mapProcessLinkToGraphLink.remove(graphLink);
 			graphLink.disconnect();
 		}
 	}
 
+	/**
+	 * Remove the Process and the Node.
+	 */
 	private void removeProcess(Long process) {
 		processes.add(process);
 		graph.getProductSystem().processes.remove(process);
 		var node = graph.getNode(process);
-		if (node != null) {
-			nodes.add(node);
+		if (node != null)
 			graph.removeChildQuietly(node);
-		}
 	}
 
 	/**

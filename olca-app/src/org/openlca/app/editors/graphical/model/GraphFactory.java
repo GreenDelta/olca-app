@@ -42,7 +42,7 @@ public class GraphFactory {
 
 		// A Node (MinMaxGraphComponent) `minimized` attribute is by default true.
 		if (!node.isMinimized()) {
-			var panes = createIOPanes(node.descriptor);
+			var panes = createIOPanes(node);
 			node.addChild(panes.get(INPUT_PROP), 0);
 			node.addChild(panes.get(OUTPUT_PROP), 1);
 		}
@@ -52,6 +52,7 @@ public class GraphFactory {
 
 	/**
 	 * Mutate <code>node</code> with the <code>NodeLayoutInfo</code> provided.
+	 *
 	 * @return Mutated Node object.
 	 */
 	private Node applyInfo(Node node, NodeLayoutInfo info) {
@@ -68,12 +69,12 @@ public class GraphFactory {
 		return node;
 	}
 
-	public HashMap<String, IOPane> createIOPanes(RootDescriptor descriptor) {
+	public HashMap<String, IOPane> createIOPanes(Node node) {
 		var panes = new HashMap<String, IOPane>();
 		panes.put(INPUT_PROP, new IOPane(true));
 		panes.put(OUTPUT_PROP, new IOPane(false));
 
-		var exchanges = getExchanges(descriptor);
+		var exchanges = getExchanges(node);
 
 		// filter and sort the exchanges
 		exchanges.stream()
@@ -93,11 +94,11 @@ public class GraphFactory {
 	}
 
 	/**
-	 * Update an old ExchangeItem with a new one by removing the old one, updating
-	 * the node descriptor and adding the new one.
+	 * Update an old ExchangeItem with a new one by removing the old one, and
+	 * adding the new one.
 	 */
-	public static void updateExchangeItem(Node node, RootDescriptor descriptor,
-		ExchangeItem oldValue, ExchangeItem newValue) {
+	public static void updateExchangeItem(ExchangeItem oldValue,
+																				ExchangeItem newValue) {
 		var ioPane = oldValue.getIOPane();
 
 		var sourceLink = oldValue.getSourceConnections();
@@ -109,7 +110,6 @@ public class GraphFactory {
 
 		var index = ioPane.getChildren().indexOf(oldValue);
 		ioPane.removeChild(oldValue);
-		node.setDescriptor(descriptor);
 		ioPane.addChild(newValue, index);
 
 		for (var link : sourceLink)
@@ -118,22 +118,22 @@ public class GraphFactory {
 			link.reconnect(link.getSource(), newValue);
 	}
 
-	private List<Exchange> getExchanges(RootDescriptor descriptor) {
-		return switch (descriptor.type) {
+	private List<Exchange> getExchanges(Node node) {
+		return switch (node.descriptor.type) {
 			case PROCESS -> {
-				var process = Database.get().get(Process.class, descriptor.id);
+				var process = (Process) node.getEntity();
 				yield process == null
-					? Collections.emptyList()
-					: process.exchanges;
+						? Collections.emptyList()
+						: process.exchanges;
 			}
 			case PRODUCT_SYSTEM -> {
-				var system = Database.get().get(ProductSystem.class, descriptor.id);
+				var system = (ProductSystem) node.getEntity();
 				yield system == null || system.referenceExchange == null
-					? Collections.emptyList()
-					: Collections.singletonList(system.referenceExchange);
+						? Collections.emptyList()
+						: Collections.singletonList(system.referenceExchange);
 			}
 			case RESULT -> {
-				var result = Database.get().get(Result.class, descriptor.id);
+				var result = (Result) node.getEntity();
 				var refFlow = result.referenceFlow;
 				if (refFlow == null)
 					yield Collections.emptyList();
@@ -150,29 +150,26 @@ public class GraphFactory {
 		};
 	}
 
-	public static void createNecessaryLinks(Graph graph) {
-		var linkSearch = graph.linkSearch;
-		for (ProcessLink pLink : linkSearch.getLinks(graph.getChildrenIds())) {
-			var providerNode = graph.getNode(pLink.providerId);
-			var consumerNode = graph.getNode(pLink.processId);
-			if (providerNode == null || consumerNode == null)
-				continue;
-			FlowType type = graph.flows.type(pLink.flowId);
-			var outNode = type == FlowType.PRODUCT_FLOW ? providerNode
-				: type == FlowType.WASTE_FLOW ? consumerNode
+	public static void createGraphLink(Graph graph, ProcessLink pLink) {
+		var provider = graph.getNode(pLink.providerId);
+		var recipient = graph.getNode(pLink.processId);
+		if (provider == null || recipient == null)
+			return;
+		var type = graph.flows.type(pLink.flowId);
+		var source = type == FlowType.PRODUCT_FLOW ? provider
+				: type == FlowType.WASTE_FLOW ? recipient
 				: null;
-			var inNode = type == FlowType.PRODUCT_FLOW ? consumerNode
-				: type == FlowType.WASTE_FLOW ? providerNode
+		var target = type == FlowType.PRODUCT_FLOW ? recipient
+				: type == FlowType.WASTE_FLOW ? provider
 				: null;
-			if (inNode == null)
-				continue;
-			var link = new GraphLink(pLink, outNode, inNode);
-			graph.links.put(pLink, link);
-		}
+		if (target == null)
+			return;
+		var link = new GraphLink(pLink, source, target);
+		graph.mapProcessLinkToGraphLink.put(pLink, link);
 	}
 
 	public Graph createGraph(GraphEditor editor, JsonArray nodeArray,
-	  JsonArray stickyNoteArray) {
+													 JsonArray stickyNoteArray) {
 		if ((nodeArray == null) || (stickyNoteArray == null))
 			return createGraph(editor);
 
@@ -202,7 +199,7 @@ public class GraphFactory {
 
 			// The reference should not be created again.
 			if (referenceProcess != null
-				&& Objects.equals(info.id, referenceProcess.refId))
+					&& Objects.equals(info.id, referenceProcess.refId))
 				continue;
 
 			var descriptor = getDescriptor(info.id);
@@ -212,7 +209,10 @@ public class GraphFactory {
 			graph.addChild(node);
 		}
 
-		createNecessaryLinks(graph);
+		var pLinks = graph.linkSearch.getLinks(graph.getChildrenIds());
+		for (var pLink : pLinks) {
+			createGraphLink(graph, pLink);
+		}
 
 		// Create the sticky notes
 		for (var elem : stickyNoteArray) {
@@ -275,12 +275,6 @@ public class GraphFactory {
 			}
 		}
 		return null;
-	}
-
-	// We changed the ID to a string in openLCA v2; to be a bit backwards
-	// compatible we try the long ID too.
-	public static NodeLayoutInfo getNodeInfo(JsonArray array, long id) {
-		return getNodeInfo(array, String.valueOf(id));
 	}
 
 	public static RootDescriptor getDescriptor(long id) {

@@ -5,14 +5,12 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.StickyNote;
 
 public class CreateStickyNoteCommand extends Command {
 
-	private final GraphEditor editor;
 	private final Graph graph;
 	private final Rectangle constraint;
 	private int index = -1;
@@ -21,7 +19,6 @@ public class CreateStickyNoteCommand extends Command {
 	public CreateStickyNoteCommand(Graph graph, Rectangle constraint) {
 		this.graph = graph;
 		this.constraint = constraint;
-		this.editor = graph.editor;
 		setLabel(NLS.bind(M.Add.toLowerCase(), M.Note));
 	}
 

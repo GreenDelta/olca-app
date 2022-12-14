@@ -6,6 +6,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.util.Labels;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -38,7 +39,9 @@ public class Node extends MinMaxComponent {
 	public static final Dimension DEFAULT_SIZE =
 			new Dimension(250, SWT.DEFAULT);
 
+	private final IDatabase db = Database.get();
 	public RootDescriptor descriptor;
+	private RootEntity entity;
 
 	/**
 	 * Define if the input or this output side is expanded.
@@ -55,13 +58,23 @@ public class Node extends MinMaxComponent {
 	 * isOnlyChainingReferenceNode.
 	 */
 	public boolean wasExplored;
-	private String comparisonLabel = Labels.name(getRefFlow());
-	private Map<Integer, Boolean> buttonStatus = new HashMap<>();
+	private final String comparisonLabel = Labels.name(getRefFlow());
+	private final Map<Integer, Boolean> buttonStatus = new HashMap<>();
 
 	public Node(RootDescriptor descriptor) {
 		this.descriptor = descriptor;
 		setLocation(DEFAULT_LOCATION);
 		setSize(DEFAULT_SIZE);
+	}
+
+	/**
+	 * The RootEntity of this is not instantiate in the constructor for
+	 * computational reasons.
+	 */
+	public RootEntity getEntity() {
+		if (entity == null)
+			entity = db.get(descriptor.type.getModelClass(), descriptor.id);
+		return entity;
 	}
 
 	public ExchangeItem getOutput(ProcessLink link) {
@@ -131,12 +144,11 @@ public class Node extends MinMaxComponent {
 		if (descriptor == null || descriptor.type == null)
 			return;
 		var editor = getGraph().getEditor();
-		var panes = editor.getGraphFactory().createIOPanes(descriptor);
+		var panes = editor.getGraphFactory().createIOPanes(this);
 		addChild(panes.get(INPUT_PROP), 0);
 		addChild(panes.get(OUTPUT_PROP), 1);
 	}
 
-	@SuppressWarnings("unchecked")
 	public HashMap<String, IOPane> getIOPanes() {
 		HashMap<String, IOPane> map = new HashMap<>();
 		for (var child : getChildren())
@@ -170,9 +182,9 @@ public class Node extends MinMaxComponent {
 	}
 
 	public boolean isEditable() {
-		if (descriptor instanceof ProcessDescriptor p) {
-			return !p.isFromLibrary()
-					&& p.processType == ProcessType.UNIT_PROCESS
+		if (entity instanceof Process process) {
+			return !process.isFromLibrary()
+					&& process.processType == ProcessType.UNIT_PROCESS
 					&& getGraph().getConfig().isNodeEditingEnabled();
 		}
 		return false;
@@ -406,18 +418,16 @@ public class Node extends MinMaxComponent {
 	}
 
 	Flow getRefFlow() {
-		var db = Database.get();
-
 		if (descriptor instanceof ProcessDescriptor) {
-			var process = db.get(Process.class, descriptor.id);
+			var process = (Process) getEntity();
 			if (process.quantitativeReference != null)
 				return process.quantitativeReference.flow;
 		} else if (descriptor instanceof ResultDescriptor) {
-			var result = db.get(Result.class, descriptor.id);
+			var result = (Result) getEntity();
 			if (result.referenceFlow != null)
 				return result.referenceFlow.flow;
 		} else if (descriptor instanceof ProductSystemDescriptor) {
-			var productSystem = db.get(ProductSystem.class, descriptor.id);
+			var productSystem = (ProductSystem) getEntity();
 			if (productSystem.referenceExchange != null)
 				return productSystem.referenceExchange.flow;
 		}

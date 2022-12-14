@@ -1,8 +1,8 @@
 package org.openlca.app.editors.systems;
 
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -20,6 +20,7 @@ import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshA
 public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 
 	public static String ID = "editors.productsystem";
+	private GraphEditor graphEditor;
 
 	public ProductSystemEditor() {
 		super(ProductSystem.class);
@@ -34,7 +35,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 
 			var descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
-			var graphEditor = new GraphEditor(this);
+			graphEditor = new GraphEditor(this);
 			int gIdx = addPage(graphEditor, gInput);
 			setPageText(gIdx, M.ModelGraph);
 			// Add a page listener to set the graph when it is activated the first
@@ -80,6 +81,13 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 		};
 		graphInit.set(fn);
 		addPageChangedListener(fn);
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		if (graphEditor != null)
+			graphEditor.doSave(monitor);
+		super.doSave(monitor);
 	}
 
 }
