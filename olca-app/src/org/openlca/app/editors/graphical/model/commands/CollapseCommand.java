@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.tools.graphics.model.Link;
@@ -14,9 +15,11 @@ public class CollapseCommand extends Command {
 
 	private final Node host;
 	private final int side;
+	public final Graph graph;
 
 	public CollapseCommand(Node host, int side) {
 		this.host = host;
+		this.graph = host.getGraph();
 		this.side = side;
 		setLabel(M.Collapse);
 	}
@@ -52,7 +55,7 @@ public class CollapseCommand extends Command {
 	 *  - the reference node,
 	 *  - nodes that are chained to the reference node.
 	 */
-	protected static void collapse(Node root, Node node, int side) {
+	protected void collapse(Node root, Node node, int side) {
 		if (node.isCollapsing)
 			return;
 		node.isCollapsing = true;
@@ -76,12 +79,13 @@ public class CollapseCommand extends Command {
 						|| otherNode.equals(root))  // double link
 					continue;
 
-				if (root != root.getGraph().getReferenceNode()
+				if (root != graph.getReferenceNode()
 					&& (otherNode.isChainingReferenceNode(side)
-					|| otherNode == root.getGraph().getReferenceNode()))
+					|| otherNode == graph.getReferenceNode()))
 					continue;
 
 				link.disconnect();
+				graph.mapProcessLinkToGraphLink.remove(link.processLink);
 				collapse(root, otherNode, INPUT);
 				collapse(root, otherNode, OUTPUT);
 
@@ -93,7 +97,7 @@ public class CollapseCommand extends Command {
 				if (!linkStream.filter(con -> !con.isCloseLoop()).toList().isEmpty())
 					continue;
 
-				root.getGraph().removeChildQuietly(otherNode);
+				graph.removeChildQuietly(otherNode);
 			}
 		}
 		node.isCollapsing = false;

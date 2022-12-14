@@ -78,8 +78,8 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 	public void propertyChange(PropertyChangeEvent evt) {
 		String prop = evt.getPropertyName();
 		if (CHILDREN_PROP.equals(prop))
-			for (var node : getChildren())
-				node.getModel().setButtonStatus();
+			for (var node : getModel().getNodes())
+				node.setButtonStatus();
 		if (GraphConfig.CONFIG_PROP.equals(prop)) {
 			refresh();
 		}

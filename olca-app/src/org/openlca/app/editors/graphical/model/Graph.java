@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gnu.trove.set.hash.TLongHashSet;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
@@ -13,7 +12,6 @@ import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.app.tools.graphics.model.BaseComponent;
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.core.matrix.cache.FlowTable;
-import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
@@ -32,9 +30,8 @@ public class Graph extends BaseComponent {
 
 	public final GraphEditor editor;
 	public final LinkSearchMap linkSearch;
-	public Map<ProcessLink, GraphLink> links = new HashMap<>();
+	public Map<ProcessLink, GraphLink> mapProcessLinkToGraphLink = new HashMap<>();
 	public final FlowTable flows = FlowTable.create(Database.get());
-	private final TLongHashSet wasteProcesses;
 	private final Process referenceProcess;
 	private Node referenceNode;
 
@@ -43,14 +40,6 @@ public class Graph extends BaseComponent {
 		var system = editor.getProductSystem();
 		this.linkSearch = new LinkSearchMap(system.processLinks);
 		referenceProcess = system.referenceProcess;
-
-		wasteProcesses = new TLongHashSet();
-		for (var link : system.processLinks) {
-			var flowType = flows.type(link.flowId);
-			if (flowType == FlowType.WASTE_FLOW) {
-				wasteProcesses.add(link.providerId);
-			}
-		}
 	}
 
 	public Node getNode(long id) {
@@ -62,7 +51,7 @@ public class Graph extends BaseComponent {
 	}
 
 	public GraphLink getLink(ProcessLink processLink) {
-		return links.get(processLink);
+		return mapProcessLinkToGraphLink.get(processLink);
 	}
 
 	public Node getReferenceNode() {
@@ -73,7 +62,7 @@ public class Graph extends BaseComponent {
 	}
 
 	public boolean isReferenceProcess(Node node) {
-		return node != null && referenceProcess.id == node.descriptor.id;
+		return node != null && node.equals(getReferenceNode());
 	}
 
 	public GraphEditor getEditor() {
@@ -118,7 +107,6 @@ public class Graph extends BaseComponent {
 				.map(child -> (MinMaxComponent) child)
 				.toList();
 	}
-
 
 	@Override
 	public int compareTo(Component other) {

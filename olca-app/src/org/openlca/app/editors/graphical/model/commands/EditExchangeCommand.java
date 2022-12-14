@@ -3,44 +3,48 @@ package org.openlca.app.editors.graphical.model.commands;
 import java.util.Objects;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 import static org.openlca.app.editors.graphical.model.GraphFactory.updateExchangeItem;
 
 public class EditExchangeCommand extends Command {
 
 	private final ExchangeItem oldExchangeItem;
+	private final GraphEditor editor;
 	private ExchangeItem newExchangeItem;
-	private final IDatabase db = Database.get();
-	private final Process process;
+	private Process process;
 	private Exchange exchange;
 	private final Node node;
 
 	public EditExchangeCommand(ExchangeItem exchangeItem) {
 		this.oldExchangeItem = exchangeItem;
 		this.node = exchangeItem.getNode();
-		process = db.get(Process.class, node.descriptor.id);
-		exchange = process.exchanges.stream()
-			.filter(e -> Objects.equals(e, oldExchangeItem.exchange))
-			.findFirst()
-			.orElse(null);
+		editor = node.getGraph().getEditor();
 	}
 
 	@Override
 	public boolean canExecute() {
+		if (node == null || node.descriptor == null || !node.isEditable()
+				|| !(node.descriptor instanceof ProcessDescriptor))
+			return false;
+
+		process = (Process) node.getEntity();
+		if (process == null) return false;
+		exchange = process.exchanges.stream()
+				.filter(e -> Objects.equals(e, oldExchangeItem.exchange))
+				.findFirst()
+				.orElse(null);
+
 		var node = oldExchangeItem.getNode();
-		return oldExchangeItem.exchange != null
-			&& oldExchangeItem.exchange.flow != null
-			&& process != null
-			&& node != null
-			&& node.descriptor != null
-			&& node.isEditable();
+		return node != null
+				&& oldExchangeItem.exchange != null
+				&& oldExchangeItem.exchange.flow != null
+				&& process != null;
 	}
 
 	@Override
@@ -62,19 +66,17 @@ public class EditExchangeCommand extends Command {
 	@Override
 	public void redo() {
 		exchange = newExchangeItem.exchange;
-		db.update(process);
-		var descriptor = Descriptor.of(process);
-		updateExchangeItem(node, descriptor, oldExchangeItem, newExchangeItem);
+		updateExchangeItem(oldExchangeItem, newExchangeItem);
 
-		node.getGraph().getEditor().setDirty();
+		editor.setDirty(process);
 	}
 
 	@Override
 	public void undo() {
 		exchange = oldExchangeItem.exchange;
-		db.update(process);
-		var descriptor = Descriptor.of(process);
-		updateExchangeItem(node, descriptor, newExchangeItem, oldExchangeItem);
+		updateExchangeItem(newExchangeItem, oldExchangeItem);
+
+		editor.setDirty(process);
 	}
 
 }

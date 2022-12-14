@@ -9,8 +9,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class CreateLinkCommand extends Command {
 
@@ -42,9 +40,7 @@ public class CreateLinkCommand extends Command {
 		system.processLinks.add(processLink);
 		graph.linkSearch.put(processLink);
 		link = new GraphLink(processLink, source, target);
-		link.getTargetNode().updateIsExpanded(INPUT);
-		link.getSourceNode().updateIsExpanded(OUTPUT);
-		graph.links.put(processLink, link);
+		graph.mapProcessLinkToGraphLink.put(processLink, link);
 
 		graph.editor.setDirty();
 	}
@@ -108,8 +104,7 @@ public class CreateLinkCommand extends Command {
 		var outputNode = graph.getNode(
 				link.getSourceNode().descriptor.id);
 		source = outputNode.getOutput(link.processLink);
-		var inProc = graph.getNode(
-				link.getTargetNode().descriptor.id);
+		var inProc = graph.getNode(link.getTargetNode().descriptor.id);
 		target = inProc.getInput(link.processLink);
 	}
 
@@ -120,10 +115,9 @@ public class CreateLinkCommand extends Command {
 			return;
 		ProductSystem system = graph.getProductSystem();
 		link.disconnect();
-		link.getTargetNode().updateIsExpanded(INPUT);
-		link.getSourceNode().updateIsExpanded(OUTPUT);
 		system.processLinks.remove(processLink);
 		graph.linkSearch.remove(processLink);
+		graph.mapProcessLinkToGraphLink.remove(link);
 
 		graph.editor.setDirty();
 	}

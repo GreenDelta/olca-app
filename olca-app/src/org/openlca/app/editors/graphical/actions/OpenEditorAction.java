@@ -10,8 +10,12 @@ import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.systems.ProductSystemInfoPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.graphics.actions.ActionIds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenEditorAction extends SelectionAction {
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private final GraphEditor editor;
 	/**
@@ -35,8 +39,8 @@ public class OpenEditorAction extends SelectionAction {
 		setText(M.OpenInEditor + ": " + getObjectName());
 
 		return ((object instanceof GraphEditPart)
-			|| (NodeEditPart.class.isAssignableFrom(object.getClass()))
-			|| (object instanceof ExchangeEditPart));
+				|| (NodeEditPart.class.isAssignableFrom(object.getClass()))
+				|| (object instanceof ExchangeEditPart));
 	}
 
 	protected String getObjectName() {
@@ -54,16 +58,22 @@ public class OpenEditorAction extends SelectionAction {
 
 	@Override
 	public void run() {
-		if (object instanceof GraphEditPart) {
-			var systemEditor = editor.getProductSystemEditor();
-			systemEditor.setActivePage(ProductSystemInfoPage.ID);
+		try {
+			if (editor.promptSaveIfNecessary()) {
+				if (object instanceof GraphEditPart) {
+					var systemEditor = editor.getProductSystemEditor();
+					systemEditor.setActivePage(ProductSystemInfoPage.ID);
+				}
+				if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
+					var node = ((NodeEditPart) object).getModel();
+					App.open(node.descriptor);
+				}
+				if (object instanceof ExchangeEditPart exchangeEditPart)
+					App.open(exchangeEditPart.getModel().exchange.flow);
+			}
+		} catch (Exception e) {
+			log.error("Failed to complete product system. ", e);
 		}
-		if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
-			var node = ((NodeEditPart) object).getModel();
-			App.open(node.descriptor);
-		}
-		if (object instanceof ExchangeEditPart exchangeEditPart)
-			App.open(exchangeEditPart.getModel().exchange.flow);
 	}
 
 }

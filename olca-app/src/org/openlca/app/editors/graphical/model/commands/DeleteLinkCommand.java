@@ -11,6 +11,7 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 public class DeleteLinkCommand extends Command {
 
 	private final List<GraphLink> links;
+	private Graph graph;
 
 	public DeleteLinkCommand(GraphLink link) {
 		this(Collections.singletonList(link));
@@ -22,7 +23,10 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return links != null && !links.isEmpty();
+		if (links == null|| links.isEmpty())
+			return false;
+		graph = links.get(0).getSourceNode().getGraph();
+		return graph != null;
 	}
 
 	@Override
@@ -34,11 +38,11 @@ public class DeleteLinkCommand extends Command {
 	public void execute() {
 		if (links.isEmpty())
 			return;
-		Graph graph = links.get(0).getSourceNode().getGraph();
 		for (GraphLink link : links) {
 			graph.getProductSystem().processLinks.remove(link.processLink);
 			graph.linkSearch.remove(link.processLink);
 			link.disconnect();
+			graph.mapProcessLinkToGraphLink.remove(link.processLink);
 		}
 		graph.editor.setDirty();
 	}
@@ -61,6 +65,7 @@ public class DeleteLinkCommand extends Command {
 		for (GraphLink link : links) {
 			graph.getProductSystem().processLinks.add(link.processLink);
 			graph.linkSearch.put(link.processLink);
+			graph.mapProcessLinkToGraphLink.put(link.processLink, link);
 			link.reconnect();
 		}
 		graph.editor.setDirty();

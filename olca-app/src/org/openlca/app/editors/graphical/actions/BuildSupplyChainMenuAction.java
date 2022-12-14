@@ -9,14 +9,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -30,7 +28,6 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 		implements UpdateAction {
 
 	private final GraphEditor editor;
-	protected final ProcessDao processDao;
 	protected Map<Exchange, Process> exchanges;
 
 	public BuildSupplyChainMenuAction(GraphEditor part) {
@@ -39,7 +36,6 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 		setId(GraphActionIds.BUILD_SUPPLY_CHAIN_MENU);
 		setImageDescriptor(Icon.BUILD_SUPPLY_CHAIN.descriptor());
 		setMenuCreator(new MenuCreator());
-		processDao = new ProcessDao(Database.get());
 	}
 
 	private class MenuCreator implements IMenuCreator {
@@ -102,28 +98,24 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 		if (getSelectedObjects().isEmpty())
 			return false;
 
-		var db = Database.get();
-
 		exchanges = new HashMap<>();
 		for (var object : getSelectedObjects()) {
 			if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
 				setText(M.BuildSupplyChain);
-				var id = ((NodeEditPart) object).getModel().descriptor.id;
-				var process = db.get(Process.class, id);
-				for (var e : process.exchanges)
-					if (isCandidate(e))
-						exchanges.put(e, process);
-
+				var node = ((NodeEditPart) object).getModel();
+				if (node.getEntity() instanceof Process process)
+					for (var e : process.exchanges)
+						if (isCandidate(e))
+							exchanges.put(e, process);
 			}
 			else if (object instanceof ExchangeEditPart part) {
 				setText(M.BuildFlowSupplyChain);
-				var id = part.getModel().getNode().descriptor.id;
-				var process = db.get(Process.class, id);
-				if (isCandidate(part.getModel().exchange))
+				if (part.getModel().getNode().getEntity() instanceof Process process
+						&& isCandidate(part.getModel().exchange)) {
 					exchanges.put(part.getModel().exchange, process);
+				}
 			}
 		}
-
 		return !exchanges.isEmpty();
 	}
 
