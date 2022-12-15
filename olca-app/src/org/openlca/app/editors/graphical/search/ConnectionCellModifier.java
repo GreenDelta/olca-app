@@ -19,7 +19,7 @@ class ConnectionCellModifier implements ICellModifier {
 		if (!(obj instanceof Candidate c))
 			return false;
 		if (prop.equals(CREATE))
-			return !c.processExists;
+			return !c.processExists && (c.doCreate || dialog.canBeAdded(c));
 		if (prop.equals(CONNECT))
 			return c.doConnect || dialog.canBeConnected(c);
 		return false;
