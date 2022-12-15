@@ -42,10 +42,7 @@ public class ReconnectLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		oldLink.disconnect();
-		system.processLinks.remove(oldLink.processLink);
-		graph.linkSearch.remove(oldLink.processLink);
-		graph.mapProcessLinkToGraphLink.remove(oldLink.processLink);
+		graph.removeLink(oldLink.processLink);
 
 		var processLink = new ProcessLink();
 		processLink.providerId = sourceNode.descriptor.id;
@@ -69,11 +66,7 @@ public class ReconnectLinkCommand extends Command {
 
 	@Override
 	public void redo() {
-		oldLink.disconnect();
-
-		system.processLinks.remove(oldLink.processLink);
-		graph.linkSearch.remove(oldLink.processLink);
-		graph.mapProcessLinkToGraphLink.remove(oldLink.processLink);
+		graph.removeLink(oldLink.processLink);
 
 		system.processLinks.add(link.processLink);
 		graph.linkSearch.put(link.processLink);
@@ -85,11 +78,7 @@ public class ReconnectLinkCommand extends Command {
 
 	@Override
 	public void undo() {
-		link.disconnect();
-
-		system.processLinks.remove(link.processLink);
-		graph.linkSearch.remove(link.processLink);
-		graph.mapProcessLinkToGraphLink.remove(link.processLink);
+		graph.removeLink(link.processLink);
 
 		system.processLinks.add(oldLink.processLink);
 		graph.linkSearch.put(oldLink.processLink);

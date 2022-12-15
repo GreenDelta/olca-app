@@ -38,12 +38,8 @@ public class DeleteLinkCommand extends Command {
 	public void execute() {
 		if (links.isEmpty())
 			return;
-		for (GraphLink link : links) {
-			graph.getProductSystem().processLinks.remove(link.processLink);
-			graph.linkSearch.remove(link.processLink);
-			link.disconnect();
-			graph.mapProcessLinkToGraphLink.remove(link.processLink);
-		}
+		for (GraphLink link : links)
+			graph.removeLink(link.processLink);
 		graph.editor.setDirty();
 	}
 

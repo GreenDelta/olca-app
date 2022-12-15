@@ -116,10 +116,7 @@ public class DeleteExchangeCommand extends Command {
 		var processLinks = graph.linkSearch.getLinks(process.id);
 		for (var link : processLinks) {
 			if (link.exchangeId == exchange.id) {
-				system.processLinks.remove(link);
-				var graphLink = graph.mapProcessLinkToGraphLink.remove(link);
-				if (graphLink != null)
-					graphLink.disconnect();
+				graph.removeLink(link);
 			}
 		}
 

@@ -113,11 +113,7 @@ public class CreateLinkCommand extends Command {
 		var graph = getGraph();
 		if (graph == null)
 			return;
-		ProductSystem system = graph.getProductSystem();
-		link.disconnect();
-		system.processLinks.remove(processLink);
-		graph.linkSearch.remove(processLink);
-		graph.mapProcessLinkToGraphLink.remove(link);
+		graph.removeLink(processLink);
 
 		graph.editor.setDirty();
 	}
