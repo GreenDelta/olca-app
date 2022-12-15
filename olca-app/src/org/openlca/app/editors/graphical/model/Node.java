@@ -375,6 +375,10 @@ public class Node extends MinMaxComponent {
 		return false;
 	}
 
+	public boolean isChainingReferenceNode() {
+		return isChainingReferenceNode(INPUT) || isChainingReferenceNode(OUTPUT);
+	}
+
 	public void setDescriptor(RootDescriptor d) {
 		if (d == null)
 			return;
