@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.tools.graphics.layouts.GraphLayout;
 import org.openlca.app.tools.graphics.model.Component;
 
 import static org.openlca.app.tools.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
@@ -13,6 +15,7 @@ import static org.openlca.app.tools.graphics.layouts.GraphLayout.DEFAULT_LOCATIO
 
 public class LayoutCommand extends Command {
 
+	private final GraphLayout layoutManager;
 	private final Component parent;
 	/** Stores the old size and location. */
 	public final Map<Component, Point> oldLocations = new HashMap<>();
@@ -21,11 +24,9 @@ public class LayoutCommand extends Command {
 	 * Create a command that can reset the location of all the nodes to force a
 	 * complete relayout.
 	 */
-	public LayoutCommand(Component parent) {
-		if (parent == null) {
-			throw new IllegalArgumentException();
-		}
-		this.parent = parent;
+	public LayoutCommand(GraphicalEditPart part) {
+		this.layoutManager = (GraphLayout) part.getFigure().getLayoutManager();
+		this.parent = (Component) part.getModel();
 		setLabel(M.Layout);
 	}
 
@@ -44,6 +45,7 @@ public class LayoutCommand extends Command {
 
 	@Override
 	public void redo() {
+		layoutManager.clear();
 		for (var child : parent.getChildren())
 			child.setLocation(DEFAULT_LOCATION);
 	}

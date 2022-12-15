@@ -26,7 +26,7 @@ public class SankeyXYLayoutEditPolicy extends XYLayoutEditPolicy {
 	@Override
 	public Command getCommand(Request request) {
 		if (REQ_LAYOUT.equals(request.getType()))
-			return new LayoutCommand((Diagram) getHost().getModel());
+			return new LayoutCommand((DiagramEditPart) getHost());
 		if (REQ_EDIT_CONFIG.equals(request.getType()))
 			return getEditConfigCommand(request);
 		return super.getCommand(request);
