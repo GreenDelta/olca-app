@@ -66,7 +66,7 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 			}
 			item.setText(label);
 			Controls.onSelect(item, (e) -> {
-				action.setMapExchangesToProcess(exchanges);
+				action.setMapExchangeToProcess(exchanges);
 				action.setProviderMethod(linking);
 				action.setPreferredType(type);
 				action.run();

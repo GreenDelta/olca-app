@@ -1,34 +1,22 @@
 package org.openlca.app.editors.graphical.actions;
 
-import java.util.HashSet;
-import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.edit.NodeEditPart;
-import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.LinkingConfig;
 import org.openlca.core.matrix.linking.ProviderLinking;
-import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
 
 
 public class BuildSupplyChainAction extends BuildAction {
@@ -36,7 +24,6 @@ public class BuildSupplyChainAction extends BuildAction {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final GraphEditor editor;
 
-	private Map<Exchange, Process> mapExchangeToProcess;
 	private final LinkingConfig config;
 
 	public BuildSupplyChainAction(GraphEditor part) {
@@ -47,11 +34,6 @@ public class BuildSupplyChainAction extends BuildAction {
 		config = new LinkingConfig()
 			.preferredType(ProcessType.UNIT_PROCESS)
 			.providerLinking(ProviderLinking.PREFER_DEFAULTS);
-	}
-
-	@Override
-	public void setMapExchangesToProcess(Map<Exchange, Process> mapExchangesToProcess) {
-		this.mapExchangeToProcess = mapExchangesToProcess;
 	}
 
 	@Override
@@ -73,27 +55,12 @@ public class BuildSupplyChainAction extends BuildAction {
 			if (editor.promptSaveIfNecessary())
 				new ProgressMonitorDialog(
 						UI.shell()).run(true, false, new Runner(system));
-			var newGraph = editor.updateModel();
+			graph = editor.updateModel();
 			editor.setDirty();
-			expandInputs(newGraph);
+			expandInputs();
 		} catch (Exception e) {
 			log.error("Failed to complete product system. ", e);
 		}
-	}
-
-	private void expandInputs(Graph graph) {
-		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
-		var registry = viewer.getEditPartRegistry();
-
-		for (var process : new HashSet<>(mapExchangeToProcess.values())) {
-			var part = (NodeEditPart) registry.get(graph.getNode(process.id));
-			part.getModel().setExpanded(INPUT, false);
-			var request = new ExpandCollapseRequest(part.getModel(), INPUT, true);
-			var command = part.getCommand(request);
-			if (command.canExecute())
-				viewer.getEditDomain().getCommandStack().execute(command);
-		}
-		graph.firePropertyChange(CHILDREN_PROP, null, null);
 	}
 
 	@Override

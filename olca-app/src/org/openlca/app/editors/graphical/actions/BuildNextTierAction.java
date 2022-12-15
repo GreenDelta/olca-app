@@ -11,13 +11,11 @@ import java.util.ArrayList;
 
 public class BuildNextTierAction extends BuildAction {
 
-	private final GraphEditor editor;
 	private ArrayList<RootDescriptor> newProviders;
 	private ArrayList<ProcessLink> newConnections;
 
 	public BuildNextTierAction(GraphEditor part) {
 		super(part);
-		editor = part;
 		setId(GraphActionIds.BUILD_NEXT_TIER);
 		setText(M.BuildNextTier);
 	}
@@ -37,8 +35,8 @@ public class BuildNextTierAction extends BuildAction {
 	}
 
 	private void collect() {
-		for (var exchange : mapExchangesToProcess.keySet()) {
-			var process = mapExchangesToProcess.get(exchange);
+		for (var exchange : mapExchangeToProcess.keySet()) {
+			var process = mapExchangeToProcess.get(exchange);
 			var provider = findProvider(exchange);
 			if (provider == null)
 				continue;

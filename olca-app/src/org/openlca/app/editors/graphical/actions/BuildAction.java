@@ -1,8 +1,12 @@
 package org.openlca.app.editors.graphical.actions;
 
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
-import org.eclipse.ui.IWorkbenchPart;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.edit.NodeEditPart;
+import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.linking.ProviderLinking;
@@ -14,25 +18,32 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+
 public abstract class BuildAction extends WorkbenchPartAction {
 
-	protected Map<Exchange, Process> mapExchangesToProcess;
+	protected final GraphEditor editor;
+	protected Graph graph;
+	protected Map<Exchange, Process> mapExchangeToProcess;
 	protected ProcessType preferredType;
 	protected ProviderLinking providers;
 	protected final FlowDao flowDao = new FlowDao(Database.get());
-	;
 	protected final ProcessDao processDao = new ProcessDao(Database.get());
 
-	public BuildAction(IWorkbenchPart part) {
+	public BuildAction(GraphEditor part) {
 		super(part);
+		editor = part;
+		graph = part.getModel();
 	}
 
-	public void setMapExchangesToProcess(Map<Exchange, Process> mapExchangesToProcess) {
-		this.mapExchangesToProcess = mapExchangesToProcess;
+	public void setMapExchangeToProcess(Map<Exchange, Process> mapExchangesToProcess) {
+		this.mapExchangeToProcess = mapExchangesToProcess;
 	}
 
 	public void setPreferredType(ProcessType preferredType) {
@@ -92,6 +103,24 @@ public abstract class BuildAction extends WorkbenchPartAction {
 			};
 		}
 		return link;
+	}
+
+	protected void expandInputs() {
+		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
+		var registry = viewer.getEditPartRegistry();
+
+		for (var process : new HashSet<>(mapExchangeToProcess.values())) {
+			var part = (NodeEditPart) registry.get(graph.getNode(process.id));
+			if (part == null)
+				continue;
+
+			part.getModel().setExpanded(INPUT, false);
+			var request = new ExpandCollapseRequest(part.getModel(), INPUT, true);
+			var command = part.getCommand(request);
+			if (command.canExecute())
+				viewer.getEditDomain().getCommandStack().execute(command);
+		}
+		graph.firePropertyChange(CHILDREN_PROP, null, null);
 	}
 
 }

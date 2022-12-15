@@ -57,11 +57,8 @@ public class MassCreationCommand extends Command {
 	public void execute() {
 		for (RootDescriptor process : toCreate)
 			addNode(process);
-		for (ProcessLink link : newLinks) {
-			graph.getProductSystem().processLinks.add(link);
-			graph.linkSearch.put(link);
-			createGraphLink(graph, link);
-		}
+		for (ProcessLink link : newLinks)
+			addLink(link);
 
 		for (Node node : graph.getNodes()) {
 			var bounds = new Rectangle(
@@ -70,9 +67,20 @@ public class MassCreationCommand extends Command {
 			oldConstraints.put(node, bounds);
 		}
 
-		graph.firePropertyChange(CHILDREN_PROP, null, null);
-
 		editor.setDirty();
+	}
+
+	private void addLink(ProcessLink link) {
+		graph.getProductSystem().processLinks.add(link);
+		graph.linkSearch.put(link);
+
+		var graphLink = graph.getLink(link);
+		if (graphLink != null) {
+			graphLink.reconnect();
+			return;
+		}
+
+		createGraphLink(graph, link);
 	}
 
 	private void addNode(RootDescriptor descriptor) {
@@ -80,7 +88,7 @@ public class MassCreationCommand extends Command {
 			return;
 		var node = graph.editor.getGraphFactory().createNode(descriptor, null);
 		graph.getProductSystem().processes.add(descriptor.id);
-		graph.addChildQuietly(node);
+		graph.addChild(node);
 		createdNodes.add(node);
 	}
 
