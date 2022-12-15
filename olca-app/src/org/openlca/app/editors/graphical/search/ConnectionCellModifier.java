@@ -16,12 +16,12 @@ class ConnectionCellModifier implements ICellModifier {
 
 	@Override
 	public boolean canModify(Object obj, String prop) {
-		if (!(obj instanceof Candidate process))
+		if (!(obj instanceof Candidate c))
 			return false;
 		if (prop.equals(CREATE))
-			return !process.processExists && !process.doConnect;
+			return !c.processExists;
 		if (prop.equals(CONNECT))
-			return process.doConnect || dialog.canBeConnected(process);
+			return c.doConnect || dialog.canBeConnected(c);
 		return false;
 	}
 
@@ -42,8 +42,13 @@ class ConnectionCellModifier implements ICellModifier {
 			return;
 		if (!(item.getData() instanceof Candidate c))
 			return;
-		if (prop.equals(CREATE))
+		if (prop.equals(CREATE)) {
 			c.doCreate = Boolean.parseBoolean(value.toString());
+			if (c.doCreate && dialog.canBeConnected(c))
+				c.doConnect = true;
+			else if (c.doConnect && !c.processExists)
+				c.doConnect = false;
+		}
 		else if (prop.equals(CONNECT)) {
 			c.doConnect = Boolean.parseBoolean(value.toString());
 			if (c.doConnect && !c.processExists) {
