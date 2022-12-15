@@ -92,7 +92,7 @@ public class MassCreationCommand extends Command {
 	@Override
 	public void undo() {
 		for (GraphLink link : createdLinks)
-			unlink(link);
+			graph.removeLink(link.processLink);
 		for (Node node : createdNodes)
 			removeNodeQuietly(node);
 		graph.firePropertyChange(CHILDREN_PROP, null, null);
@@ -111,14 +111,6 @@ public class MassCreationCommand extends Command {
 	private void removeNodeQuietly(Node node) {
 		graph.getProductSystem().processes.remove(node.descriptor.id);
 		graph.removeChildQuietly(node);
-	}
-
-	private void unlink(GraphLink link) {
-		var system = graph.getProductSystem();
-		system.processLinks.remove(link.processLink);
-		graph.linkSearch.remove(link.processLink);
-		graph.mapProcessLinkToGraphLink.remove(link.processLink);
-		link.disconnect();
 	}
 
 }

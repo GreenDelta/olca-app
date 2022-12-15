@@ -84,8 +84,8 @@ public class CollapseCommand extends Command {
 					|| otherNode == graph.getReferenceNode()))
 					continue;
 
-				link.disconnect();
 				graph.mapProcessLinkToGraphLink.remove(link.processLink);
+				link.disconnect();
 				collapse(root, otherNode, INPUT);
 				collapse(root, otherNode, OUTPUT);
 

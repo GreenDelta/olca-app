@@ -141,13 +141,7 @@ public class RemoveSupplyChainCommand extends CollapseCommand {
 	 */
 	private void removeLink(ProcessLink link) {
 		links.add(link);
-		graph.getProductSystem().processLinks.remove(link);
-		graph.linkSearch.remove(link);
-		var graphLink = graph.getLink(link);
-		if (graphLink != null) {
-			graph.mapProcessLinkToGraphLink.remove(graphLink);
-			graphLink.disconnect();
-		}
+		graph.removeLink(link);
 	}
 
 	/**

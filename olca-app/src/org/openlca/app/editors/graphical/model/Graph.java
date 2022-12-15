@@ -54,6 +54,14 @@ public class Graph extends BaseComponent {
 		return mapProcessLinkToGraphLink.get(processLink);
 	}
 
+	public void removeLink(ProcessLink link) {
+		getProductSystem().processLinks.remove(link);
+		linkSearch.remove(link);
+		var graphLink = mapProcessLinkToGraphLink.remove(link);
+		if (graphLink != null)
+			graphLink.disconnect();
+	}
+
 	public Node getReferenceNode() {
 		if (referenceNode == null) {
 			referenceNode = getNode(referenceProcess.id);
