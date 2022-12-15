@@ -59,7 +59,8 @@ public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 			return null;
 
 		// True if the node is chained to the reference Node on one of its side.
-		var chained = node.isChainingReferenceNode(INPUT)
+		var chained = node.getGraph().isReferenceProcess(node)
+				||node.isChainingReferenceNode(INPUT)
 				|| node.isChainingReferenceNode(OUTPUT);
 		for (var side : Arrays.asList(INPUT, OUTPUT)) {
 			if (!node.isChainingReferenceNode(side)) {
