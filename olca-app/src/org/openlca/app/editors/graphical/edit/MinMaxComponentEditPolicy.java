@@ -6,6 +6,7 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.editors.graphical.model.commands.CollapseCommand;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.editors.graphical.model.commands.MinMaxCommand;
 
@@ -54,10 +55,19 @@ public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 		var cc = new CompoundCommand();
 		cc.setLabel(M.Open);
 
-		if (child instanceof Node node && type == MAXIMIZE) {
-			for (var side : Arrays.asList(INPUT, OUTPUT)) {
-				var com = new ExpandCommand(node, side, false);
-				if (com.canExecute())
+		if (!(child instanceof Node node))
+			return null;
+
+		// True if the node is chained to the reference Node on one of its side.
+		var chained = node.isChainingReferenceNode(INPUT)
+				&& node.isChainingReferenceNode(OUTPUT);
+		for (var side : Arrays.asList(INPUT, OUTPUT)) {
+			if (!node.isChainingReferenceNode(side)) {
+				var com = type == MAXIMIZE && chained
+						? new ExpandCommand(node, side, false)
+						: type == MINIMIZE
+						? new CollapseCommand(node, side) : null;
+				if (com != null && com.canExecute())
 					cc.add(com);
 			}
 		}
