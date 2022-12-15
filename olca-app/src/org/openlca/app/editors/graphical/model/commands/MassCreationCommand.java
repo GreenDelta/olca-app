@@ -70,14 +70,17 @@ public class MassCreationCommand extends Command {
 			oldConstraints.put(node, bounds);
 		}
 
+		graph.firePropertyChange(CHILDREN_PROP, null, null);
+
 		editor.setDirty();
 	}
 
 	private void addNode(RootDescriptor descriptor) {
 		if (graph.getNode(descriptor.id) != null)
 			return;
-		Node node = graph.editor.getGraphFactory().createNode(descriptor, null);
+		var node = graph.editor.getGraphFactory().createNode(descriptor, null);
 		graph.getProductSystem().processes.add(descriptor.id);
+		graph.addChildQuietly(node);
 		createdNodes.add(node);
 	}
 
@@ -114,7 +117,7 @@ public class MassCreationCommand extends Command {
 		var system = graph.getProductSystem();
 		system.processLinks.remove(link.processLink);
 		graph.linkSearch.remove(link.processLink);
-		graph.mapProcessLinkToGraphLink.remove(link);
+		graph.mapProcessLinkToGraphLink.remove(link.processLink);
 		link.disconnect();
 	}
 
