@@ -34,7 +34,7 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 	@Override
 	public Command getCommand(Request request) {
 		if (REQ_LAYOUT.equals(request.getType()))
-			return new GraphLayoutCommand((Graph) getHost().getModel());
+			return new GraphLayoutCommand((GraphEditPart) getHost());
 		if (REQ_CREATE.equals(request.getType()))
 			return getCreateCommand((GraphRequest) request);
 		if (REQ_EDIT_CONFIG.equals(request.getType()))

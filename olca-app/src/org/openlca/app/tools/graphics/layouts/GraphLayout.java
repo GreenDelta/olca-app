@@ -60,8 +60,7 @@ public abstract class GraphLayout extends FreeformLayout implements
 			if (child instanceof ComponentFigure figure)
 				childrenSet.add(figure);
 		if (!childrenSet.equals(mapFigureToLocation.keySet())) {
-			mapFigureToLocation.clear();
-			mapNodeToVertex.clear();
+			clear();
 		}
 
 		for (var child : parent.getChildren()) {
@@ -76,6 +75,8 @@ public abstract class GraphLayout extends FreeformLayout implements
 				figure.setBounds(bounds.getTranslated(offset));
 			}
 		}
+
+		// Routine to lay out the graph on start.
 		if (preLayout) focusOnStart();
 		if (!preLayout) {
 			focusOnStart();
@@ -173,6 +174,11 @@ public abstract class GraphLayout extends FreeformLayout implements
 
 		stackFigures.sort(Comparator.comparing(ComponentFigure::getComponent));
 		return stackFigures;
+	}
+
+	public void clear() {
+		mapFigureToLocation.clear();
+		mapNodeToVertex.clear();
 	}
 
 	protected IFigure getParentFigure() {
