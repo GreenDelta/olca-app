@@ -25,7 +25,7 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 		case 1:
 			if (con.doCreate)
 				return Icon.CHECK_TRUE.get();
-			if (!con.processExists)
+			if (!con.processExists && dialog.canBeConnected(con))
 				return Icon.CHECK_FALSE.get();
 			return null;
 		case 2:

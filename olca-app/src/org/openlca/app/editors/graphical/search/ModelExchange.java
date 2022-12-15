@@ -151,11 +151,22 @@ class ModelExchange {
 		for (Candidate other : all) {
 			if (other == c)
 				continue;
-			if (other.doConnect)
+			if (other.doConnect || other.doCreate)
 				return false;
 		}
 		return true;
 	}
+
+	public boolean canBeAdded(Candidate c, List<Candidate> all) {
+		for (Candidate other : all) {
+			if (other == c)
+				continue;
+			if (other.doCreate || other.doConnect)
+				return false;
+		}
+		return true;
+	}
+
 }
 
 /** Contains the data of a possible connection candidate. */

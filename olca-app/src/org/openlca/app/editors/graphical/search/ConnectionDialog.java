@@ -82,6 +82,10 @@ public class ConnectionDialog extends Dialog {
 		return exchange.canConnect(c, candidates);
 	}
 
+	boolean canBeAdded(Candidate c) {
+		return exchange.canBeAdded(c, candidates);
+	}
+
 	public List<RootDescriptor> getNewProcesses() {
 		List<RootDescriptor> processes = new ArrayList<>();
 		for (Candidate c : candidates) {
