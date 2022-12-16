@@ -269,13 +269,10 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	 * Compare to other editor, the GraphEditor is not editing a single type of
 	 * entity.
 	 */
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		if (monitor != null) {
-			monitor.beginTask(M.Save + "...", IProgressMonitor.UNKNOWN);
-		}
-		for (var entity : dirtyEntities)
+	public void doSave() {
+		for (var entity : dirtyEntities) {
 			saveEntity(entity);
+		}
 	}
 
 	private void saveEntity(RootEntity model) {

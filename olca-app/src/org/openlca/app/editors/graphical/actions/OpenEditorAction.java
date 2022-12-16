@@ -59,6 +59,7 @@ public class OpenEditorAction extends SelectionAction {
 	@Override
 	public void run() {
 		try {
+			var b = editor.isDirty();
 			if (editor.promptSaveIfNecessary()) {
 				if (object instanceof GraphEditPart) {
 					var systemEditor = editor.getProductSystemEditor();
@@ -66,10 +67,15 @@ public class OpenEditorAction extends SelectionAction {
 				}
 				if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
 					var node = ((NodeEditPart) object).getModel();
+					if (b)
+						App.close(node.descriptor);
 					App.open(node.descriptor);
 				}
-				if (object instanceof ExchangeEditPart exchangeEditPart)
+				if (object instanceof ExchangeEditPart exchangeEditPart) {
+					if (b)
+						App.close(exchangeEditPart.getModel().exchange.flow);
 					App.open(exchangeEditPart.getModel().exchange.flow);
+				}
 			}
 		} catch (Exception e) {
 			log.error("Failed to complete product system. ", e);
