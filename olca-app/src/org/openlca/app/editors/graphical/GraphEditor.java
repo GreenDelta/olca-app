@@ -1,6 +1,5 @@
 package org.openlca.app.editors.graphical;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.*;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;

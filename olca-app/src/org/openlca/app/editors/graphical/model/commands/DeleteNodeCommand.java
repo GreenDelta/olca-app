@@ -3,15 +3,11 @@ package org.openlca.app.editors.graphical.model.commands;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
-import org.openlca.core.database.usage.ExchangeUseSearch;
-import org.openlca.core.database.usage.ProcessUseSearch;
 
 public class DeleteNodeCommand extends Command {
 	/** Node to remove. */
