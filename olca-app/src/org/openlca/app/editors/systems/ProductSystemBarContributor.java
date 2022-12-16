@@ -6,6 +6,7 @@ import org.eclipse.ui.IEditorPart;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.graphical.GraphEditor;
@@ -15,9 +16,7 @@ import org.openlca.app.editors.graphical.actions.GraphBarContributor;
 import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Actions;
-import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.FileType;
+import org.openlca.app.util.*;
 import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.math.MatrixRowSorter;
 import org.openlca.core.matrix.MatrixData;
@@ -25,6 +24,8 @@ import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.io.MatrixImageExport;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A special implementation of a
@@ -72,10 +73,20 @@ public class ProductSystemBarContributor extends EditorActionBarContributor {
 		// add the experimental matrix image export
 		if (FeatureFlag.MATRIX_IMAGE_EXPORT.isEnabled())
 			toolBar.add(new MatrixImageExportAction());
+
 		toolBar.add(Actions.onCalculate(() -> {
 			var system = getProductSystem();
 			if (system == null)
 				return;
+			var stats = new AtomicReference<Statistics>();
+			App.runWithProgress("Updating statistics ...",
+					() -> stats.set(Statistics.calculate(system, Cache.getEntityCache())));
+			if (!stats.get().connectedGraph) {
+				var b = Question.ask("Graph not fully connected",
+						"Calculate results anyway?");
+				if (!b)
+					return;
+			}
 			CalculationWizard.open(system);
 		}));
 	}
