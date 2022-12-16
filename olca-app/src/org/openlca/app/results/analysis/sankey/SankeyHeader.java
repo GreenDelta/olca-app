@@ -58,7 +58,7 @@ public class SankeyHeader extends Header {
 
 		info = new Composite(this, SWT.NONE);
 		info.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		var infoLayout = new GridLayout(3, false);
+		var infoLayout = new GridLayout(3, true);
 		infoLayout.marginHeight = 0;
 		infoLayout.verticalSpacing = 0;
 		info.setLayout(infoLayout);
