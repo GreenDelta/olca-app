@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.DatabaseDir;
@@ -51,6 +52,15 @@ public final class GraphFile {
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(GraphFile.class);
 			log.error("Failed to save layout", e);
+		}
+	}
+
+	public static void clear(GraphEditor editor) {
+		try {
+			FileUtils.deleteDirectory(DatabaseDir.getDir(editor.getProductSystem()));
+		} catch (Exception e) {
+			Logger log = LoggerFactory.getLogger(GraphFile.class);
+			log.error("Failed to clear saved layout", e);
 		}
 	}
 

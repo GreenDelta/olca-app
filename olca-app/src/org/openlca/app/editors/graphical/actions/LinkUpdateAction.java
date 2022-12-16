@@ -19,6 +19,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
@@ -60,22 +61,20 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 			return;
 
 		var system = editor.getProductSystem();
-		new MassExpansionAction(editor, MassExpansionAction.COLLAPSE).run();
 		var progress = new ProgressMonitorDialog(UI.shell());
 		try {
-			progress.run(false, false, monitor -> {
-				editor.getProductSystemEditor().doSave(monitor);
-			});
+			progress.run(false, false, editor.getProductSystemEditor()::doSave);
 		} catch (Exception e) {
 			ErrorReporter.on("failed to save product system in link update", e);
 			return;
 		}
 
 		App.close(system);
+		GraphFile.clear(editor);
 		App.runWithProgress("Update links", () -> {
 			try {
-				var updated = dialog.config.execute();
-				App.open(updated);
+				var productSystem = dialog.config.execute();
+				App.open(productSystem);
 			} catch (Exception e) {
 				ErrorReporter.on("Update failed", e);
 			}
@@ -91,8 +90,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 			super(UI.shell());
 			onLinkingChanged = new ArrayList<>();
 			setBlockOnOpen(true);
-			config = LinkUpdate.of(
-					Database.get(), editor.getProductSystem());
+			config = LinkUpdate.of(Database.get(), editor.getProductSystem());
 		}
 
 		@Override
