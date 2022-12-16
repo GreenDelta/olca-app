@@ -78,9 +78,11 @@ public class DeleteLinkCommand extends Command {
 	 * This method only operates on graphical objects.
 	 */
 	private void removeUnconnectedNodes(GraphLink link) {
-		for (var node : Arrays.asList(link.getSourceNode(), link.getTargetNode()))
-			if (!node.isChainingReferenceNode())
+		for (var node : Arrays.asList(link.getSourceNode(), link.getTargetNode())) {
+			if (!node.isChainingReferenceNode()
+					&& !graph.isReferenceProcess(node))
 				graph.removeChild(node);
+		}
 	}
 
 }
