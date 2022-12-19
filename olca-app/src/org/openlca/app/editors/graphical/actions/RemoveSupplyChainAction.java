@@ -53,27 +53,10 @@ public class RemoveSupplyChainAction extends SelectionAction {
 			return null;
 
 		var links = new ArrayList<ProcessLink>();
-		var linkSearch = editor.getModel().linkSearch;
+
 
 		for (var object : getSelectedObjects()) {
-			if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
-				setText(M.RemoveSupplyChain);
-				var nodeId = ((NodeEditPart) object).getModel().descriptor.id;
-				links.addAll(linkSearch.getConnectionLinks(nodeId));
-			}
-			else if (object instanceof ExchangeEditPart part) {
-				setText(M.RemoveFlowSupplyChain);
-				var e = part.getModel().exchange;
-				if ((e.flow.flowType == FlowType.WASTE_FLOW && !e.isInput)
-						|| (e.flow.flowType == FlowType.PRODUCT_FLOW && e.isInput)) {
-					var connection = part.getModel().getAllConnections();
-					// there should only one link to a waste output or product input.
-					if (connection.size() != 1)
-						continue;
-					if (connection.get(0) instanceof GraphLink link)
-							links.add(link.processLink);
-				}
-			}
+			addContributor(object, links);
 		}
 
 		if (!links.isEmpty()) {
@@ -84,5 +67,28 @@ public class RemoveSupplyChainAction extends SelectionAction {
 			return graphEditPart.getCommand(request);
 		} else return null;
 	}
+
+	private void addContributor(Object object, List<ProcessLink> links) {
+		var linkSearch = editor.getModel().linkSearch;
+		if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
+			setText(M.RemoveSupplyChain);
+			var nodeId = ((NodeEditPart) object).getModel().descriptor.id;
+			links.addAll(linkSearch.getConnectionLinks(nodeId));
+		}
+		else if (object instanceof ExchangeEditPart part) {
+			setText(M.RemoveFlowSupplyChain);
+			var e = part.getModel().exchange;
+			if ((e.flow.flowType == FlowType.WASTE_FLOW && !e.isInput)
+					|| (e.flow.flowType == FlowType.PRODUCT_FLOW && e.isInput)) {
+				var connection = part.getModel().getAllConnections();
+				// there should only one link to a waste output or product input.
+				if (connection.size() != 1)
+					return;
+				if (connection.get(0) instanceof GraphLink link)
+					links.add(link.processLink);
+			}
+		}
+	}
+
 
 }

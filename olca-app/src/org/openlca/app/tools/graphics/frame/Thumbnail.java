@@ -522,6 +522,7 @@ public class Thumbnail extends Figure implements UpdateListener {
 	/**
 	 * @see org.eclipse.draw2d.UpdateListener#notifyPainting(Rectangle, Map)
 	 */
+	@SuppressWarnings("rawtypes")
 	public void notifyPainting(Rectangle damage, Map dirtyRegions) {
 		for (Object o : dirtyRegions.keySet()) {
 			IFigure current = (IFigure) o;

@@ -6,8 +6,6 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,15 +18,13 @@ import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class RemoveSupplyChainCommand extends CollapseCommand {
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
-
 	private final ArrayList<ProcessLink> providerLinks;
 	private final GraphEditor editor;
 
 	//	Product system objects
-	private Set<Long> processes = new HashSet<>();
-	private Set<ProcessLink> links = new HashSet<>();
-	private Set<Long> isRemoving = new HashSet<>();
+	private final Set<Long> processes = new HashSet<>();
+	private final Set<ProcessLink> links = new HashSet<>();
+	private final Set<Long> isRemoving = new HashSet<>();
 
 	public RemoveSupplyChainCommand(ArrayList<ProcessLink> links, Graph graph) {
 		super(graph.getReferenceNode(), INPUT & OUTPUT);

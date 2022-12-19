@@ -1,11 +1,9 @@
 package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
@@ -16,7 +14,6 @@ import static org.openlca.app.editors.graphical.model.GraphFactory.updateExchang
 
 public class SetReferenceCommand extends Command {
 
-	private final IDatabase db = Database.get();
 	private final Node node;
 	private final ExchangeItem child;
 	private ExchangeItem oldRefExchangeItem;

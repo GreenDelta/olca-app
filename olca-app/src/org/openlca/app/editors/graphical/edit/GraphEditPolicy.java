@@ -24,8 +24,10 @@ public class GraphEditPolicy extends RootComponentEditPolicy {
 
 	private Command getRemoveSupplyChainCommand(Request request) {
 		var object = request.getExtendedData().get(KEY_LINKS);
-		if (object instanceof Collection collection) {
-			var links = new ArrayList<ProcessLink>(collection);
+		if (object instanceof Collection<?> collection) {
+			var links = new ArrayList<ProcessLink>();
+			for (var obj : collection)
+				links.add((ProcessLink) obj);
 			return new RemoveSupplyChainCommand(links, (Graph) getHost().getModel());
 		}
 		else return null;
