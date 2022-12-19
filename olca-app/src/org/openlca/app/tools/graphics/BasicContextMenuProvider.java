@@ -34,6 +34,7 @@ public class BasicContextMenuProvider extends ContextMenuProvider {
 		addRestActions(menu);
 	}
 
+	@SuppressWarnings("unused")
 	private void addUndoActions(IMenuManager menu) {
 		var undo = actionRegistry.getAction(ActionFactory.UNDO.getId());
 		undo.setImageDescriptor(Icon.UNDO.descriptor());

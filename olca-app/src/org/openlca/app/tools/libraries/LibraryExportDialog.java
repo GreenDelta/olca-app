@@ -82,10 +82,7 @@ public class LibraryExportDialog extends FormDialog {
 			props.hasInventory || props.hasImpacts,
 			props.hasInventory && props.flowDqs != null
 		};
-		for (var ignored : adds) {
-			height += 25;
-		}
-		UI.initialSizeOf(this, 600, height);
+		UI.initialSizeOf(this, 600, height + 25 * adds.length);
 		return super.getInitialSize();
 	}
 

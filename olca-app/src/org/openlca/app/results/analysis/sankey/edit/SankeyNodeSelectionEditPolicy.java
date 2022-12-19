@@ -3,7 +3,7 @@ package org.openlca.app.results.analysis.sankey.edit;
 import org.eclipse.gef.editpolicies.SelectionEditPolicy;
 import org.openlca.app.tools.graphics.figures.SelectableConnection;
 
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 public class SankeyNodeSelectionEditPolicy extends SelectionEditPolicy {
 
@@ -28,11 +28,9 @@ public class SankeyNodeSelectionEditPolicy extends SelectionEditPolicy {
 	}
 
 	private void setSelected(boolean b) {
-		var connections = Stream.concat(
-						getHost().getSourceConnections().stream(),
-						getHost().getTargetConnections().stream())
-				.toList();
-		for (var connection : connections)
+		var sources = getHost().getSourceConnections();
+		var targets = getHost().getTargetConnections();
+		for (var connection : Arrays.asList(sources, targets))
 			if (connection instanceof LinkEditPart link)
 				if (link.getFigure() instanceof SelectableConnection con)
 					con.setSelected(b);

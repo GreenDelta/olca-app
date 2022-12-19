@@ -18,6 +18,7 @@ import org.openlca.app.tools.graphics.zoom.ZoomManager;
 /**
  * @author danlee
  */
+@SuppressWarnings("restriction")
 public class ZoomOutAction extends ZoomAction {
 
 	/**

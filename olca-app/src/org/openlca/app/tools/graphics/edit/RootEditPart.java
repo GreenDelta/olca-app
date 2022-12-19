@@ -124,6 +124,7 @@ public class RootEditPart extends FreeformGraphicalRootEditPart {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter) {
 		if (adapter == AutoexposeHelper.class)
 			return new ViewportAutoexposeHelper(this, new Insets(50));

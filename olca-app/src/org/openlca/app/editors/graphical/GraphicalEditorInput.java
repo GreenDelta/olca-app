@@ -26,8 +26,8 @@ public record GraphicalEditorInput(Descriptor descriptor)
 	}
 
 	@Override
-	@SuppressWarnings({"unchecked"})
-	public Object getAdapter(final Class adapter) {
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public Object getAdapter( final Class adapter) {
 		return null;
 	}
 

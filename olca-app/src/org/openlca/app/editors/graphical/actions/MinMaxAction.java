@@ -17,12 +17,10 @@ import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MIN
 public class MinMaxAction extends SelectionAction {
 
 	private final int type;
-	private final GraphEditor editor;
 
 	public MinMaxAction(GraphEditor part, int type) {
 		super(part);
 		this.type = type;
-		this.editor = part;
 		if (type == MINIMIZE) {
 			setId(GraphActionIds.MINIMIZE);
 			setText(M.Minimize);
