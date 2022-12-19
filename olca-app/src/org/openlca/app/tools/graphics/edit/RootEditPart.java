@@ -77,7 +77,7 @@ public class RootEditPart extends FreeformGraphicalRootEditPart {
 	 *
 	 * @return LayeredPane
 	 */
-	protected LayeredPane getScaledLayers() {
+	public LayeredPane getScaledLayers() {
 		if (scaledLayers == null)
 			scaledLayers = createScaledLayers();
 		return scaledLayers;
