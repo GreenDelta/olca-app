@@ -1,5 +1,6 @@
 package org.openlca.app.tools.graphics.actions;
 
+import org.eclipse.draw2d.*;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
@@ -13,14 +14,21 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.graphics.edit.RootEditPart;
+import org.openlca.app.tools.graphics.zoom.ZoomManager;
 
 import java.io.File;
+
 
 public class SaveImageAction extends WorkbenchPartAction {
 
 	private final String fileName;
+	private final int SCALE = 2;
 
 	private final GraphicalEditor editor;
+	private Viewport viewport;
+	private ZoomManager zoomManager;
+	private ScalableFreeformLayeredPane pane;
 
 	public SaveImageAction(GraphicalEditor part, String fileName) {
 		super(part);
@@ -33,7 +41,16 @@ public class SaveImageAction extends WorkbenchPartAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		return true;
+		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
+		if (viewer == null)
+			return false;
+		var root = (RootEditPart) viewer.getRootEditPart();
+		if (root == null)
+			return false;
+		zoomManager = root.getZoomManager();
+		pane = (ScalableFreeformLayeredPane) root.getScaledLayers();
+		viewport = ((FigureCanvas) viewer.getControl()).getViewport();
+		return zoomManager != null && viewport != null && pane != null;
 	}
 
 	@Override
@@ -59,16 +76,22 @@ public class SaveImageAction extends WorkbenchPartAction {
 			if (file == null)
 				return;
 
-			var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
-			var figureCanvas = viewer.getControl();
-
 			Display.getDefault().syncExec(() -> {
-				var bounds = figureCanvas.getBounds();
+				var location = viewport.getViewLocation();
+				var size = viewport.getSize();
 
-				var img = new Image(null, bounds.width, bounds.height);
+				var img = new Image(null, size.width * SCALE, size.height * SCALE);
 				var gc = new GC(img);
 
-				figureCanvas.print(gc);
+				var g = new SWTGraphics(gc);
+				g.translate(location.negate().getScaled(SCALE));
+				g.setAntialias(SWT.ON);
+				g.setInterpolation(SWT.HIGH);
+				g.setTextAntialias(SWT.ON);
+
+				zoomManager.setZoom(zoomManager.getZoom() * SCALE, false);
+				pane.paint(g);
+				zoomManager.setZoom(zoomManager.getZoom() / SCALE, false);
 
 				var imgLoader = new ImageLoader();
 				imgLoader.data = new ImageData[] { img.getImageData() };
@@ -78,6 +101,7 @@ public class SaveImageAction extends WorkbenchPartAction {
 				img.dispose();
 			});
 		}
+
 	}
 
 }
