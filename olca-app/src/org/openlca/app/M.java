@@ -301,6 +301,7 @@ public class M extends NLS {
 	public static String ExcelExport;
 	public static String ExchangeDataQualitySchema;
 	public static String ExchangesAreUsed;
+	public static String ExchangesAreUsedOrNotDisconnected;
 	public static String ExcludeExchangesWithDefaultProviders;
 	public static String ExcludeZeroEntries;
 	public static String ExcludeZeroValues;
@@ -982,7 +983,7 @@ public class M extends NLS {
 	public static String Yes;
 	public static String ZipCode;
 
-	private static Map<String, String> map;
+    private static Map<String, String> map;
 
 	static {
 		NLS.initializeMessages("org.openlca.app.messages", M.class);
