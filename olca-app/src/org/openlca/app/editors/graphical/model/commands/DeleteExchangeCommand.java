@@ -6,19 +6,23 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.*;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.ExchangeUseSearch;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static org.openlca.app.editors.processes.exchanges.Exchanges.canRemove;
+import static org.openlca.app.editors.processes.exchanges.Exchanges.*;
 
 public class DeleteExchangeCommand extends Command {
 
@@ -88,22 +92,41 @@ public class DeleteExchangeCommand extends Command {
 
 		var exchanges = new ArrayList<Exchange>();
 		exchanges.add(exchange);
-		if (!canRemove(process, exchanges))
+
+		try {
+			if (editor.promptSaveIfNecessary())
+				delete(exchanges);
+		} catch (Exception e) {
+			ErrorReporter.on(
+					"failed to update database", e);
+		}
+	}
+
+	private void delete(List<Exchange> exchanges) {
+		if (process == null || exchanges == null)
 			return;
 
-		// check that the exchange is not used in other models
-		var system = child.getGraph().getProductSystem();
-		var usages = new ExchangeUseSearch(db, process)
-				.findUses(exchange);
-		for (var d : usages) {
-			if (d.id == system.id || d.id == process.id)
-				continue;
-			MsgBox.error("Used in other models",
-					Labels.name(exchange.flow)
-							+ " is used in other models "
-							+ "and cannot be deleted");
+		if (!checkRefFlow(process, exchanges))
+			return;
+
+		// collect product and waste flows
+		List<Exchange> techFlows = exchanges.stream()
+				.filter(e -> e.flow != null
+						&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
+				.collect(Collectors.toList());
+		if (techFlows.isEmpty())
+			return;
+
+		var usages = new ExchangeUseSearch(Database.get(), process)
+				.findUses(techFlows);
+		if (!usages.isEmpty()) {
+			MsgBox.error(M.CannotRemoveExchanges,
+					M.ExchangesAreUsedOrNotDisconnected);
 			return;
 		}
+
+		if (!checkProviderLinks(process, exchanges, techFlows))
+			return;
 
 		var b = Question.ask("Remove exchange",
 				"Remove flow " + Labels.name(exchange.flow)

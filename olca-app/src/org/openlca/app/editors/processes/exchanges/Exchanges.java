@@ -88,12 +88,8 @@ public class Exchanges {
 		if (p == null || exchanges == null)
 			return false;
 
-		// check reference flow
-		if (p.quantitativeReference != null
-			&& exchanges.contains(p.quantitativeReference)) {
-			MsgBox.error(M.CannotDeleteRefFlow, M.CannotDeleteRefFlowMessage);
-			return false;
-		}
+		if (checkRefFlow(p, exchanges))
+			return true;
 
 		// collect product and waste flows
 		List<Exchange> techFlows = exchanges.stream()
@@ -103,23 +99,24 @@ public class Exchanges {
 		if (techFlows.isEmpty())
 			return true;
 
-		// check usage in product systems
-		var usages = new ExchangeUseSearch(Database.get(), p).findUses(techFlows);
-		if (!usages.isEmpty()) {
-			MsgBox.error(M.CannotRemoveExchanges, M.ExchangesAreUsed);
-			return false;
-		}
+		if (checkSystemUsage(p, techFlows))
+			return true;
 
-		// check provider links
+		return checkProviderLinks(p, exchanges, techFlows);
+	}
+
+	public static boolean checkProviderLinks(Process p, List<Exchange> exchanges,
+																					 List<Exchange> techFlows) {
 		List<Exchange> providers = techFlows.stream()
-			.filter(e -> (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW)
-				|| (!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW)).toList();
+				.filter(e -> (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW)
+						|| (!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW))
+				.toList();
 		if (providers.isEmpty())
 			return true;
 		for (Exchange provider : providers) {
 			String query = "select f_owner from tbl_exchanges where "
-				+ "f_default_provider = " + p.id + " and "
-				+ "f_flow = " + provider.flow.id + "";
+					+ "f_default_provider = " + p.id + " and "
+					+ "f_flow = " + provider.flow.id + "";
 			IDatabase db = Database.get();
 			AtomicReference<ProcessDescriptor> ref = new AtomicReference<>();
 			try {
@@ -145,24 +142,39 @@ public class Exchanges {
 			// that can fulfill this role (and that is not in the list of
 			// exchanges to be deleted).
 			boolean ok = p.exchanges.stream().anyMatch(e ->
-				e.id != provider.id
-					&& e.isInput == provider.isInput
-					&& e.flow != null
-					&& e.flow.id == provider.flow.id
-					&& !exchanges.contains(e));
+					e.id != provider.id
+							&& e.isInput == provider.isInput
+							&& e.flow != null
+							&& e.flow.id == provider.flow.id
+							&& !exchanges.contains(e));
 			if (ok)
 				continue;
 
 			MsgBox.error("Flow used as default provider",
-				"This process is linked as default provider with flow `"
-					+ Strings.cut(Labels.name(provider.flow), 75)
-					+ "` in process `"
-					+ Strings.cut(Labels.name(ref.get()), 75)
-					+ "`.");
+					"This process is linked as default provider with flow `"
+							+ Strings.cut(Labels.name(provider.flow), 75)
+							+ "` in process `"
+							+ Strings.cut(Labels.name(ref.get()), 75)
+							+ "`.");
 			return false;
 		}
-
 		return true;
+	}
+
+	public static boolean checkSystemUsage(Process p, List<Exchange> techFlows) {
+		var usages = new ExchangeUseSearch(Database.get(), p).findUses(techFlows);
+		if (!usages.isEmpty()) {
+			MsgBox.error(M.CannotRemoveExchanges, M.ExchangesAreUsed);
+			return false;
+		} else return true;
+	}
+
+	public static boolean checkRefFlow(Process p, List<Exchange> exchanges) {
+		if (p.quantitativeReference != null
+				&& exchanges.contains(p.quantitativeReference)) {
+			MsgBox.error(M.CannotDeleteRefFlow, M.CannotDeleteRefFlowMessage);
+			return false;
+		} else return true;
 	}
 
 }
