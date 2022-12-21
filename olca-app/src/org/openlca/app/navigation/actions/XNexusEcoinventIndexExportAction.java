@@ -1,10 +1,8 @@
 package org.openlca.app.navigation.actions;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -28,17 +26,14 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.config.DatabaseConfig;
-import org.openlca.core.database.config.DerbyConfig;
-import org.openlca.core.database.config.MySqlConfig;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.KeyGen;
 import org.python.jline.internal.Log;
 
@@ -56,43 +51,43 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
+		if (!(first instanceof DatabaseElement e))
 			return false;
-		var e = (DatabaseElement) first;
 		return Database.isActive(e.getContent());
 	}
 
 	@Override
 	public void run() {
-		DbSelectDialog dialog = new DbSelectDialog();
+		var dialog = new DbSelectDialog();
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
-		File file = FileChooser.forSavingFile(
+		var file = FileChooser.forSavingFile(
 				M.Export, "ecoinvent_nexus_index.json");
 		if (file == null)
 			return;
 		App.runWithProgress("Creating Ecoinvent Nexus Index", () -> {
 			try {
-				Map<String, IndexEntry> index = new HashMap<>();
-				for (Entry e : dialog.entries) {
-					IDatabase db;
-					if (Database.get() != null && Database.get().getName().equals(e.database.name())) {
-						db = Database.get();
-					} else {
-						db = e.database.connect(Workspace.dbDir());
-					}
-					ProcessDao dao = new ProcessDao(db);
-					for (ProcessDescriptor descriptor : dao.getDescriptors()) {
-						Process process = dao.getForId(descriptor.id);
-						String id = getId(process);
-						IndexEntry entry = index.get(id);
+				var index = new HashMap<String, IndexEntry>();
+				for (var e : dialog.entries) {
+					if (e.database == null)
+						continue;
+					var db = Database.isActive(e.database)
+							? Database.get()
+							: e.database.connect(Workspace.dbDir());
+					var dao = new ProcessDao(db);
+					for (var descriptor : dao.getDescriptors()) {
+						var process = dao.getForId(descriptor.id);
+						var id = getId(process);
+						var entry = index.get(id);
 						if (entry == null) {
 							index.put(id, entry = new IndexEntry(process));
 						}
 						entry.name = getName(process);
 						entry.systemModel.add(e.systemModel);
 					}
-					db.close();
+					if (!Database.isActive(e.database)) {
+						db.close();
+					}
 				}
 				IndexEntry.writeEntries(index.values(), file);
 			} catch (Exception e) {
@@ -139,10 +134,26 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			entries.add(new Entry("Consequential long-term"));
 			entries.add(new Entry("APOS"));
 			setInput();
-			ModifySupport<Entry> ms = new ModifySupport<>(viewer);
+			var ms = new ModifySupport<Entry>(viewer);
 			ms.bind("System model", new SystemModelCell());
 			ms.bind("Database", new DatabaseCell());
-			Actions.bind(viewer, new AddAction());
+
+			// actions
+			var onAdd = Actions.create(
+					"Add system model", Icon.ADD.descriptor(), () -> {
+						entries.add(new Entry("model"));
+						setInput();
+					});
+			var onRemove = Actions.create(
+					"Remove system model", Icon.DELETE.descriptor(), () -> {
+						if (Viewers.getFirstSelected(viewer) instanceof Entry e) {
+							entries.remove(e);
+							setInput();
+						}
+					}
+			);
+
+			Actions.bind(viewer, onAdd, onRemove);
 		}
 
 		private void setInput() {
@@ -152,32 +163,28 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 		private static class Label extends LabelProvider implements ITableLabelProvider {
 
 			@Override
-			public Image getColumnImage(Object element, int columnIndex) {
-				Entry entry = (Entry) element;
-				if (columnIndex == 0)
+			public Image getColumnImage(Object obj, int col) {
+				if (col == 0)
 					return null;
-				if (entry.database instanceof DerbyConfig)
-					return Icon.DATABASE.get();
-				if (entry.database instanceof MySqlConfig)
-					return Icon.SQL.get();
-				return null;
+				if (!(obj instanceof Entry entry))
+					return null;
+				return entry.database != null
+						? Icon.DATABASE.get()
+						: null;
 			}
 
 			@Override
-			public String getColumnText(Object element, int columnIndex) {
-				Entry entry = (Entry) element;
-				switch (columnIndex) {
-				case 0:
-					return entry.systemModel;
-				case 1:
-					if (entry.database == null)
-						return "";
-					return entry.database.name();
-				default:
+			public String getColumnText(Object obj, int col) {
+				if (!(obj instanceof Entry entry))
 					return "";
-				}
+				return switch (col) {
+					case 0 -> entry.systemModel;
+					case 1 -> entry.database != null
+							? entry.database.name()
+							: "";
+					default -> "";
+				};
 			}
-
 		}
 
 		private static class SystemModelCell extends TextCellModifier<Entry> {
@@ -191,17 +198,17 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			protected void setText(Entry element, String text) {
 				element.systemModel = text;
 			}
-
 		}
 
-		private static class DatabaseCell extends ComboBoxCellModifier<Entry, DatabaseConfig> {
+		private static class DatabaseCell extends
+				ComboBoxCellModifier<Entry, DatabaseConfig> {
 
 			@Override
 			protected DatabaseConfig[] getItems(Entry element) {
-				List<DatabaseConfig> databases = new ArrayList<>();
-				databases.addAll(Database.getConfigurations().getDerbyConfigs());
-				databases.addAll(Database.getConfigurations().getMySqlConfigs());
-				return databases.toArray(new DatabaseConfig[0]);
+				var dbs = new ArrayList<DatabaseConfig>();
+				dbs.addAll(Database.getConfigurations().getDerbyConfigs());
+				dbs.addAll(Database.getConfigurations().getMySqlConfigs());
+				return dbs.toArray(new DatabaseConfig[0]);
 			}
 
 			@Override
@@ -218,35 +225,16 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			protected void setItem(Entry element, DatabaseConfig item) {
 				element.database = item;
 			}
-
 		}
-
-		private class AddAction extends Action {
-
-			public AddAction() {
-				setText("Add system model");
-				setImageDescriptor(Icon.ADD.descriptor());
-			}
-
-			@Override
-			public void run() {
-				entries.add(new Entry("model"));
-				setInput();
-			}
-
-		}
-
 	}
 
 	private static class Entry {
 
-		private String systemModel;
-		private DatabaseConfig database;
+		String systemModel;
+		DatabaseConfig database;
 
-		private Entry(String systemModel) {
+		Entry(String systemModel) {
 			this.systemModel = systemModel;
 		}
-
 	}
-
 }

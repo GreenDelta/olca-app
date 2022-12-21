@@ -76,6 +76,7 @@ import org.openlca.jsonld.output.DQSystemWriter as DQSystemWriter
 import org.openlca.util.DQSystems as DQSystems
 import org.openlca.core.database.Daos as Daos
 import org.openlca.core.DataDir as DataDir
+import org.openlca.ipc.handlers.DataHandler as DataHandler
 import org.openlca.proto.io.server.DataUpdateService as DataUpdateService
 import org.openlca.core.database.config.DatabaseConfigList as DatabaseConfigList
 import org.openlca.core.database.DatabaseException as DatabaseException
@@ -312,7 +313,6 @@ import org.openlca.jsonld.MemStore as MemStore
 import org.openlca.proto.io.Messages as Messages
 import org.openlca.io.ecospold2.input.MethodImport as MethodImport
 import org.openlca.io.openepd.io.MethodMapping as MethodMapping
-import org.openlca.ipc.handlers.ModelHandler as ModelHandler
 import org.openlca.io.ilcd.input.models.ModelImport as ModelImport
 import org.openlca.jsonld.ModelPath as ModelPath
 import org.openlca.core.model.ModelType as ModelType
