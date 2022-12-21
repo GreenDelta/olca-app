@@ -274,6 +274,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		for (var entity : dirtyEntities) {
 			saveEntity(entity);
 		}
+		dirtyEntities.clear();
 	}
 
 	private void saveEntity(RootEntity model) {
@@ -281,7 +282,6 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		Version.incUpdate(model);
 		var db = Database.get();
 		db.update(model);
-		dirtyEntities.remove(model);
 	}
 
 	public boolean promptSaveIfNecessary() throws Exception {
