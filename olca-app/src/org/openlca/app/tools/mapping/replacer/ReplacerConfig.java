@@ -3,7 +3,7 @@ package org.openlca.app.tools.mapping.replacer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
@@ -21,12 +21,12 @@ public class ReplacerConfig {
 	 * the same database.
 	 *
 	 */
-	public final IProvider provider;
+	public final FlowProvider provider;
 
 	public final List<RootDescriptor> models = new ArrayList<>();
 	public boolean deleteMapped;
 
-	public ReplacerConfig(FlowMap mapping, IProvider provider) {
+	public ReplacerConfig(FlowMap mapping, FlowProvider provider) {
 		this.mapping = mapping;
 		this.provider = provider;
 	}

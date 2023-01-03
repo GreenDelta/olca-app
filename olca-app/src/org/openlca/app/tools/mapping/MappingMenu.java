@@ -12,7 +12,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.tools.mapping.generator.Generator;
 import org.openlca.app.tools.mapping.model.DBProvider;
-import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.tools.mapping.replacer.Replacer;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Actions;
@@ -64,8 +64,8 @@ public class MappingMenu extends EditorActionBarContributor {
 		if (tool == null || tool.mapping == null)
 			return;
 
-		IProvider source = tool.sourceSystem;
-		IProvider target = tool.targetSystem;
+		FlowProvider source = tool.sourceSystem;
+		FlowProvider target = tool.targetSystem;
 		if (source == null || target == null) {
 			MsgBox.error("No source or target system selected",
 					"In order to generate a mapping you need to "
@@ -92,7 +92,7 @@ public class MappingMenu extends EditorActionBarContributor {
 			return;
 
 		// check if we can apply the mapping
-		IProvider source = tool.sourceSystem;
+		FlowProvider source = tool.sourceSystem;
 		if (!(source instanceof DBProvider)) {
 			MsgBox.error("Source system should be a database",
 					"This only works when the source system "
@@ -101,7 +101,7 @@ public class MappingMenu extends EditorActionBarContributor {
 							+ "system (which could be the same database).");
 			return;
 		}
-		IProvider target = tool.targetSystem;
+		FlowProvider target = tool.targetSystem;
 		if (target == null) {
 			MsgBox.error("No target system selected",
 					"No target system was selected.");

@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.openlca.app.tools.mapping.model.DBProvider;
-import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -36,7 +36,7 @@ class Matcher {
 	private Categories.PathBuilder categories;
 	private Map<Long, String> locations;
 
-	Matcher(IProvider targetSystem) {
+	Matcher(FlowProvider targetSystem) {
 		db = targetSystem instanceof DBProvider
 			? ((DBProvider) targetSystem).db()
 			: null;

@@ -10,7 +10,7 @@ import org.openlca.core.io.maps.FlowRef;
  * Provides flow data from an underlying data source and implements
  * functionality for synchronizing them with a database.
  */
-public interface IProvider {
+public interface FlowProvider {
 
 	/**
 	 * Get a list of all flow references from the underlying data source.

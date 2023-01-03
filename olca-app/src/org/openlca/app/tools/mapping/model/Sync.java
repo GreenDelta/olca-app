@@ -22,7 +22,7 @@ final class Sync {
 	 * The sync.-state of the flow references of the mapping is mutated so that it
 	 * can be displayed in the mapping tool.
 	 */
-	static void packageSync(IProvider pack, Stream<FlowRef> mappingRefs) {
+	static void packageSync(FlowProvider pack, Stream<FlowRef> mappingRefs) {
 
 		if (mappingRefs == null || pack == null)
 			return;

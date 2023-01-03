@@ -28,7 +28,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.core.io.maps.FlowRef;
@@ -38,7 +38,7 @@ import org.openlca.util.Strings;
 class FlowRefDialog extends FormDialog {
 
 	static void open(
-			IProvider provider, Consumer<Optional<FlowRef>> fn) {
+			FlowProvider provider, Consumer<Optional<FlowRef>> fn) {
 		if (provider == null || fn == null)
 			return;
 		AtomicReference<Tree> treeRef = new AtomicReference<>();

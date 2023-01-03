@@ -12,7 +12,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.ModelCheckBoxTree;
-import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -28,7 +28,7 @@ class ReplacerDialog extends FormDialog {
 	 * settings result in no possible replacements.
 	 */
 	static Optional<ReplacerConfig> open(
-			FlowMap mapping, IProvider target) {
+			FlowMap mapping, FlowProvider target) {
 		if (mapping == null || target == null)
 			return Optional.empty();
 		ReplacerConfig conf = new ReplacerConfig(mapping, target);

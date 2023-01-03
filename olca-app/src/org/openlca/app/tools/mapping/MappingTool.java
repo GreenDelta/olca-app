@@ -19,7 +19,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -32,8 +32,8 @@ import org.openlca.util.Strings;
 public class MappingTool extends SimpleFormEditor {
 
 	FlowMap mapping;
-	IProvider sourceSystem;
-	IProvider targetSystem;
+	FlowProvider sourceSystem;
+	FlowProvider targetSystem;
 	AtomicBoolean checked = new AtomicBoolean(true);
 
 	private MappingPage page;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.io.maps.FlowMapEntry;
 import org.openlca.core.io.maps.FlowRef;
@@ -20,11 +20,11 @@ import org.slf4j.LoggerFactory;
 public class Generator implements Runnable {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	private final IProvider sourceSystem;
-	private final IProvider targetSystem;
+	private final FlowProvider sourceSystem;
+	private final FlowProvider targetSystem;
 	private final FlowMap mapping;
 
-	public Generator(IProvider sourceSystem, IProvider targetSystem,
+	public Generator(FlowProvider sourceSystem, FlowProvider targetSystem,
 	                 FlowMap mapping) {
 		this.sourceSystem = sourceSystem;
 		this.targetSystem = targetSystem;

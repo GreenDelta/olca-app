@@ -24,7 +24,7 @@ import org.openlca.simapro.csv.process.ProcessBlock;
 import org.openlca.util.KeyGen;
 import org.openlca.util.Strings;
 
-public class SimaProCsvProvider implements IProvider {
+public class SimaProCsvProvider implements FlowProvider {
 
 	private final File file;
 	private List<FlowRef> refs;

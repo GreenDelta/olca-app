@@ -7,20 +7,19 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.mapping.model.DBProvider;
+import org.openlca.app.tools.mapping.model.ES1Provider;
 import org.openlca.app.tools.mapping.model.ILCDProvider;
-import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.tools.mapping.model.JsonProvider;
 import org.openlca.app.tools.mapping.model.SimaProCsvProvider;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.IDatabase;
 import org.openlca.io.Format;
 
 /**
@@ -29,34 +28,34 @@ import org.openlca.io.Format;
  */
 class ProviderRow {
 
-	Consumer<IProvider> onSelect;
+	Consumer<FlowProvider> onSelect;
 
 	ProviderRow(Composite parent, FormToolkit tk) {
 
-		Composite inner = tk.createComposite(parent);
+		var inner = tk.createComposite(parent);
 		UI.gridLayout(inner, 3, 5, 0);
-		ImageHyperlink dbLink = tk.createImageHyperlink(inner, SWT.NONE);
+		var dbLink = tk.createImageHyperlink(inner, SWT.NONE);
 		dbLink.setImage(Icon.DATABASE.get());
 		dbLink.setToolTipText("Select database");
-		ImageHyperlink fileLink = tk.createImageHyperlink(inner, SWT.NONE);
+		var fileLink = tk.createImageHyperlink(inner, SWT.NONE);
 		fileLink.setImage(Icon.FILE.get());
 		fileLink.setToolTipText("Select file");
-		Label label = UI.formLabel(inner, "- none -");
+		var label = UI.formLabel(inner, "- none -");
 
 		// select database as provider
 		Controls.onClick(dbLink, e -> {
-			IDatabase db = Database.get();
+			var db = Database.get();
 			if (db == null) {
 				MsgBox.error(M.NoDatabaseOpened);
 				return;
 			}
-			DBProvider provider = new DBProvider(db);
+			var provider = new DBProvider(db);
 			fireSelect(label, provider);
 		});
 
 		// select a file as provider
 		Controls.onClick(fileLink, e -> {
-			File file = FileChooser.openFile()
+			var file = FileChooser.openFile()
 				.withExtensions("*.zip;*.csv;*.CSV;*.xml;*.XML")
 				.withTitle("Open a flow source")
 				.select()
@@ -76,7 +75,7 @@ class ProviderRow {
 
 	}
 
-	private IProvider providerOf(File file) {
+	private FlowProvider providerOf(File file) {
 		var format = Format.detect(file).orElse(null);
 		if (format == null)
 			return null;
@@ -84,11 +83,12 @@ class ProviderRow {
 			case ILCD_ZIP -> ILCDProvider.of(file);
 			case JSON_LD_ZIP -> JsonProvider.of(file);
 			case SIMAPRO_CSV -> SimaProCsvProvider.of(file);
+			case ES1_XML, ES1_ZIP -> ES1Provider.of(file);
 			default -> null;
 		};
 	}
 
-	private void fireSelect(Label label, IProvider provider) {
+	private void fireSelect(Label label, FlowProvider provider) {
 		label.setText(label(provider));
 		label.getParent().pack();
 		if (onSelect != null) {
@@ -96,7 +96,7 @@ class ProviderRow {
 		}
 	}
 
-	private String label(IProvider provider) {
+	private String label(FlowProvider provider) {
 		if (provider == null)
 			return "- none -";
 		if (provider instanceof DBProvider p)
@@ -107,6 +107,8 @@ class ProviderRow {
 			return "ilcd://" + p.file().getName();
 		if (provider instanceof SimaProCsvProvider p)
 			return "simapro://" + p.file().getName();
+		if (provider instanceof ES1Provider p)
+			return "ecoSpold://" + p.file().getName();
 		return "?";
 	}
 }

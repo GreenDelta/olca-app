@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class JsonProvider implements IProvider {
+public class JsonProvider implements FlowProvider {
 
 	private final File file;
 

@@ -19,7 +19,7 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.DBProvider;
-import org.openlca.app.tools.mapping.model.IProvider;
+import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Fn;
 import org.openlca.app.util.Labels;
@@ -195,7 +195,7 @@ class MappingDialog extends FormDialog {
 			UI.formLabel(comp, tk, M.Flow);
 			flowLink = UI.formLink(comp, tk, "");
 			Controls.onClick(flowLink, _e -> {
-				IProvider p = forSource
+				FlowProvider p = forSource
 					? tool.sourceSystem
 					: tool.targetSystem;
 

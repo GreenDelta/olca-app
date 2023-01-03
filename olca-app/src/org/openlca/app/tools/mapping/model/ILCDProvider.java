@@ -30,7 +30,7 @@ import org.openlca.io.ilcd.input.ImportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ILCDProvider implements IProvider {
+public class ILCDProvider implements FlowProvider {
 
 	private final File file;
 	private List<FlowRef> refs;
@@ -109,7 +109,7 @@ public class ILCDProvider implements IProvider {
 			});
 
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
+			var log = LoggerFactory.getLogger(getClass());
 			log.error("failed to get flow refs", e);
 		}
 		return refs;

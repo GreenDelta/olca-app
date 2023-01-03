@@ -24,7 +24,7 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Categories;
 
-public class DBProvider implements IProvider {
+public class DBProvider implements FlowProvider {
 
 	private final IDatabase db;
 
