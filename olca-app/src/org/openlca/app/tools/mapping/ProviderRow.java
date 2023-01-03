@@ -16,12 +16,12 @@ import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.ILCDProvider;
 import org.openlca.app.tools.mapping.model.IProvider;
 import org.openlca.app.tools.mapping.model.JsonProvider;
-import org.openlca.app.tools.mapping.model.ProviderType;
 import org.openlca.app.tools.mapping.model.SimaProCsvProvider;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
+import org.openlca.io.Format;
 
 /**
  * A provider row contains the label and actions for a connected provider of
@@ -57,27 +57,35 @@ class ProviderRow {
 		// select a file as provider
 		Controls.onClick(fileLink, e -> {
 			File file = FileChooser.openFile()
-				.withExtensions("*.zip;*.csv;*.CSV")
+				.withExtensions("*.zip;*.csv;*.CSV;*.xml;*.XML")
 				.withTitle("Open a flow source")
 				.select()
 				.orElse(null);
 			if (file == null)
 				return;
-			var type = ProviderType.of(file);
-			IProvider provider = switch (type) {
-				case ILCD_ZIP -> ILCDProvider.of(file);
-				case JSON_ZIP -> JsonProvider.of(file);
-				case SIMAPRO_CSV -> SimaProCsvProvider.of(file);
-				default -> null;
-			};
+
+			var provider = providerOf(file);
 			if (provider == null) {
-				MsgBox.error("Unknown flow source (ILCD "
-						+ "or JSON-LD packages are supported).");
+				MsgBox.error(
+						"Unknown supported flow source (supported are ILCD," +
+								" JSON-LD, SimaPro CSV, or EcoSpold 1 files.");
 				return;
 			}
 			fireSelect(label, provider);
 		});
 
+	}
+
+	private IProvider providerOf(File file) {
+		var format = Format.detect(file).orElse(null);
+		if (format == null)
+			return null;
+		return switch (format) {
+			case ILCD_ZIP -> ILCDProvider.of(file);
+			case JSON_LD_ZIP -> JsonProvider.of(file);
+			case SIMAPRO_CSV -> SimaProCsvProvider.of(file);
+			default -> null;
+		};
 	}
 
 	private void fireSelect(Label label, IProvider provider) {

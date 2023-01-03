@@ -20,13 +20,13 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.tools.mapping.model.IProvider;
-import org.openlca.app.tools.mapping.model.ProviderType;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.MappingFile;
+import org.openlca.io.Format;
 import org.openlca.util.Strings;
 
 public class MappingTool extends SimpleFormEditor {
@@ -57,10 +57,10 @@ public class MappingTool extends SimpleFormEditor {
 		if (file == null)
 			return;
 		try {
-			var type = ProviderType.of(file);
-			if (type == ProviderType.JSON_ZIP) {
+			var format = Format.detect(file).orElse(null);
+			if (format == Format.JSON_LD_ZIP) {
 				open(JsonImportDialog.open(file));
-			} else if (type == ProviderType.MAPPING_CSV) {
+			} else if (format == Format.MAPPING_CSV) {
 				open(FlowMap.fromCsv(file));
 			} else {
 				MsgBox.info("Unsupported format file format. Supported are "
