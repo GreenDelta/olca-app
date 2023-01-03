@@ -78,15 +78,15 @@ public class DBProvider implements IProvider {
 	}
 
 	/**
-	 * Sync the flow references with the respective flow in the database (when
-	 * it exists). It tests that the definition of the flow reference can be
-	 * fulfilled with a database flow (i.e. the ref-IDs match and the flow
-	 * property and unit is defined for that flow). If this is not the case it
-	 * returns it sets an error state to the given reference. Otherwise, it will
-	 * mutate the flow reference to have the respective database IDs of the
-	 * corresponding flow and sets the property and unit to the respective
-	 * defaults if they are missing. Also, it will return the matching flow in
-	 * case there was no error (otherwise null).
+	 * Sync the flow references with the respective flow in the database (when it
+	 * exists). It tests if the definition of the flow reference can be fulfilled
+	 * with a database flow (i.e. the ref-IDs match and the flow property and unit
+	 * is defined for that flow). If this is not the case, it returns {@code null}
+	 * and sets an error state to the given reference. Otherwise, it will mutate
+	 * the flow reference to have the respective database IDs of the corresponding
+	 * flow and sets the property and unit to the respective defaults if they are
+	 * missing. Also, it will return the matching flow in case there was no error
+	 * (otherwise {@code null}).
 	 */
 	public Flow sync(FlowRef ref) {
 		if (Sync.isInvalidFlowRef(ref))

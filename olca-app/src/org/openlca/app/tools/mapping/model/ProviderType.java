@@ -27,22 +27,14 @@ public enum ProviderType {
 			return UNKNOWN;
 
 		var format = Format.detect(file).orElse(null);
-		if (format != null) {
-			switch (format) {
-				case JSON_LD_ZIP:
-					return JSON_ZIP;
-				case ILCD_ZIP:
-					return ILCD_ZIP;
-				case SIMAPRO_CSV:
-					return SIMAPRO_CSV;
-				default:
-					break;
-			}
-		}
-
-		String fname = file.getName().toLowerCase();
-		return fname.endsWith(".csv")
-			? MAPPING_CSV // TODO: we should check the format here
-			: UNKNOWN;
+		if (format == null)
+			return UNKNOWN;
+		return switch (format) {
+			case JSON_LD_ZIP -> JSON_ZIP;
+			case ILCD_ZIP -> ILCD_ZIP;
+			case SIMAPRO_CSV -> SIMAPRO_CSV;
+			case MAPPING_CSV -> MAPPING_CSV;
+			default -> UNKNOWN;
+		};
 	}
 }

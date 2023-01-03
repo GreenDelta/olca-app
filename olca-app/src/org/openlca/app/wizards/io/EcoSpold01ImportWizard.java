@@ -12,8 +12,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.io.EcoSpoldUnitFetch;
 import org.openlca.io.UnitMappingSync;
+import org.openlca.io.ecospold1.input.ES1UnitFetch;
 import org.openlca.io.ecospold1.input.EcoSpold01Import;
 import org.openlca.io.ecospold1.input.ImportConfig;
 
@@ -53,7 +53,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			@Override
 			protected String[] checkFiles(File[] files) {
 				try {
-					return new EcoSpoldUnitFetch().getUnits(files);
+					return new ES1UnitFetch().getUnits(files);
 				} catch (Exception e) {
 					var m = "Failed to get the units from files.";
 					ErrorReporter.on(m, e);
