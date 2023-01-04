@@ -99,6 +99,7 @@ import org.openlca.util.Dirs as Dirs
 import org.openlca.io.DisplayValues as DisplayValues
 import org.openlca.util.Doubles as Doubles
 import org.openlca.io.ecospold1.input.ES1KeyGen as ES1KeyGen
+import org.openlca.io.ecospold1.input.ES1UnitFetch as ES1UnitFetch
 import org.openlca.core.results.EachOneResult as EachOneResult
 import org.openlca.io.openepd.Ec3Category as Ec3Category
 import org.openlca.io.openepd.Ec3CategoryTree as Ec3CategoryTree
@@ -113,7 +114,6 @@ import org.openlca.io.ecospold1.input.EcoSpold01Import as EcoSpold01Import
 import org.openlca.io.ecospold1.output.EcoSpold1Export as EcoSpold1Export
 import org.openlca.io.ecospold2.output.EcoSpold2Export as EcoSpold2Export
 import org.openlca.io.ecospold2.input.EcoSpold2Import as EcoSpold2Import
-import org.openlca.io.EcoSpoldUnitFetch as EcoSpoldUnitFetch
 import org.openlca.core.database.EntityCache as EntityCache
 import org.openlca.jsonld.Enums as Enums
 import org.openlca.core.matrix.index.EnviFlow as EnviFlow
@@ -534,4 +534,5 @@ import org.openlca.geo.calc.WebMercator as WebMercator
 import org.openlca.text.WordBuffer as WordBuffer
 import org.openlca.proto.io.output.WriterConfig as WriterConfig
 import org.openlca.io.Xml as Xml
+import org.openlca.util.ZipFiles as ZipFiles
 import org.openlca.jsonld.ZipStore as ZipStore
