@@ -332,7 +332,7 @@ class PropertyLabels {
 	}
 
 	private static void putNwFactorLabels(ModelType type, String path) {
-		put(type, path + ".normalisationFactor", M.NormalizationFactor);
+		put(type, path + ".normalisationFactor", M.NormalizationValue);
 		put(type, path + ".weightingFactor", M.WeightingFactor);
 	}
 
@@ -440,7 +440,7 @@ class PropertyLabels {
 		put(type, path + ".unit", M.Unit);
 		put(type, path + ".location", M.Flow, ModelType.LOCATION);
 		put(type, path + ".amount", M.Amount);
-		put(type, path + ".description", M.Description);		
+		put(type, path + ".description", M.Description);
 	}
 
 	private static void putEpdLabels() {
@@ -463,7 +463,7 @@ class PropertyLabels {
 		put(type, path + ".unit", M.Unit);
 		put(type, path + ".amount", M.Amount);
 	}
-	
+
 	private static void put(ModelType type, String path, String label) {
 		put(type, path, label, null);
 	}

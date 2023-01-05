@@ -603,7 +603,7 @@ public class M extends NLS {
 	public static String NormalisationResultTable;
 	public static String Normalization;
 	public static String NormalizationAndWeightingSet;
-	public static String NormalizationFactor;
+	public static String NormalizationValue;
 	public static String NormalizationWeighting;
 	public static String NormalizationWeightingSets;
 	public static String North;
