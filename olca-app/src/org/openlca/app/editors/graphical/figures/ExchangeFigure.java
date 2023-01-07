@@ -8,6 +8,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.graphics.figures.RoundBorder;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.rcp.images.Images;
@@ -28,7 +29,7 @@ public class ExchangeFigure extends ComponentFigure {
 	public ExchangeItem exchangeItem;
 	private final Exchange exchange;
 	private Label label;
-	private Label amountLabel;
+	private Figure amount;
 	private Label unitLabel;
 	private boolean selected;
 	private IOPaneFigure paneFigure;
@@ -48,24 +49,7 @@ public class ExchangeFigure extends ComponentFigure {
 		var border = new RoundBorder(1, corners);
 		setBorder(border);
 
-		addMouseMotionListener(new MouseMotionListener.Stub() {
-
-			@Override
-			public void mouseEntered(MouseEvent me) {
-				var figure = (IFigure) me.getSource();
-				((LineBorder) figure.getBorder()).setColor(Colors.gray());
-				figure.repaint();
-			}
-
-			@Override
-			public void mouseExited(MouseEvent me) {
-				final IFigure figure = (IFigure) me.getSource();
-				var backgroundColor = theme.backgroundColor();
-				((LineBorder) figure.getBorder()).setColor(backgroundColor);
-				figure.repaint();
-			}
-
-		});
+		addMouseMotionListener(new BorderMouseListener());
 
 		setToolTip(new Label(tooltip()));
 	}
@@ -80,13 +64,16 @@ public class ExchangeFigure extends ComponentFigure {
 		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
-		amountLabel = exchange.formula != null
-				? new Label(exchange.formula)
-				: new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
-
-		amountLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
-		amountLabel.setLabelAlignment(PositionConstants.RIGHT);
-		add(amountLabel);
+		if (exchange.formula != null) {
+			amount = new ImageFigure(Icon.FORMULA.get());
+			amount.setToolTip(new Label(exchange.formula));
+			add(amount);
+		} else {
+			amount = new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
+			amount.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
+			((Label) amount).setLabelAlignment(PositionConstants.RIGHT);
+			add(amount);
+		}
 
 		unitLabel = new Label(Labels.name(exchange.unit));
 		unitLabel.setLabelAlignment(PositionConstants.LEFT);
@@ -101,19 +88,19 @@ public class ExchangeFigure extends ComponentFigure {
 			return "";
 		var type = exchangeItem.flowType();
 		var prefix = type == null
-			? "?"
-			: Labels.of(type);
+				? "?"
+				: Labels.of(type);
 		if (exchange.isAvoided) {
 			prefix += " - avoided";
 		}
 		var text = prefix + ": " + Labels.name(exchange.flow) + "\n";
 		if (exchange.flow.category != null) {
 			text += M.Category + ": " + Labels.category(
-				Descriptor.of(exchange.flow)) + "\n";
+					Descriptor.of(exchange.flow)) + "\n";
 		}
 		text += M.Amount + ": "
-			+ Numbers.format(exchange.amount)
-			+ " " + Labels.name(exchange.unit);
+				+ Numbers.format(exchange.amount)
+				+ " " + Labels.name(exchange.unit);
 		return text;
 	}
 
@@ -142,8 +129,7 @@ public class ExchangeFigure extends ComponentFigure {
 	/**
 	 * Sets the selection state of this ExchangeFigure
 	 *
-	 * @param b
-	 *            true will cause the figure to appear selected
+	 * @param b true will cause the figure to appear selected
 	 */
 	public void setSelected(boolean b) {
 		selected = b;
@@ -151,10 +137,9 @@ public class ExchangeFigure extends ComponentFigure {
 	}
 
 	public static Dimension getPreferredAmountLabelSize(ExchangeItem item) {
-		var amountText = item.exchange.formula != null
-				? item.exchange.formula
-				: Numbers.format(item.exchange.amount, SIGNIF_NUMBER);
-		var amount = new Label(amountText);
+		var amount = item.exchange.formula != null
+				? new ImageFigure(Icon.FORMULA.get())
+				: new Label(Numbers.format(item.exchange.amount, SIGNIF_NUMBER));
 		return amount.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
 	}
 
@@ -175,11 +160,11 @@ public class ExchangeFigure extends ComponentFigure {
 
 	public void setChildrenConstraints() {
 		var amountPrefSize = paneFigure.getAmountLabelSize();
-		setConstraint(amountLabel,
-			new GridData(amountPrefSize.width, amountPrefSize.height));
+		setConstraint(amount,
+				new GridData(amountPrefSize.width, amountPrefSize.height));
 		var unitPrefSize = paneFigure.getUnitLabelSize();
 		setConstraint(unitLabel,
-			new GridData(unitPrefSize.width, unitPrefSize.height));
+				new GridData(unitPrefSize.width, unitPrefSize.height));
 	}
 
 	public void setHighlighted(boolean b) {
@@ -202,6 +187,25 @@ public class ExchangeFigure extends ComponentFigure {
 		var name = Labels.name(exchange.flow);
 		return "ExchangeFigure("
 				+ name.substring(0, Math.min(name.length(), 20)) + ")";
+	}
+
+	private class BorderMouseListener extends MouseMotionListener.Stub {
+
+		@Override
+		public void mouseEntered(MouseEvent me) {
+			var figure = (IFigure) me.getSource();
+			((LineBorder) figure.getBorder()).setColor(Colors.gray());
+			figure.repaint();
+		}
+
+		@Override
+		public void mouseExited(MouseEvent me) {
+			final IFigure figure = (IFigure) me.getSource();
+			var backgroundColor = theme.backgroundColor();
+			((LineBorder) figure.getBorder()).setColor(backgroundColor);
+			figure.repaint();
+		}
+
 	}
 
 }
