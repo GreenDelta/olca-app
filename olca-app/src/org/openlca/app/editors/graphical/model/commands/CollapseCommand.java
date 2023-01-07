@@ -43,10 +43,11 @@ public class CollapseCommand extends Command {
 
 	@Override
 	public void redo() {
-		collapse(host, host, side);
+		collapse(graph, host, host, side);
 		host.setExpanded(side, false);
 		host.getGraph().firePropertyChange(CHILDREN_PROP, null, null);
 	}
+
 
 	/**
 	 * Recursively collapses all the input or output nodes connected to the given
@@ -55,7 +56,7 @@ public class CollapseCommand extends Command {
 	 *  - the reference node,
 	 *  - nodes that are chained to the reference node.
 	 */
-	protected void collapse(Node root, Node node, int side) {
+	protected static void collapse(Graph graph, Node root, Node node, int side) {
 		if (node.isCollapsing)
 			return;
 		node.isCollapsing = true;
@@ -63,8 +64,8 @@ public class CollapseCommand extends Command {
 		// It is needed to copy the links otherwise we get a concurrent modification
 		// exception
 		var links = side == INPUT
-			? node.getAllTargetConnections().toArray(new Link[0])
-			: node.getAllSourceConnections().toArray(new Link[0]);
+				? node.getAllTargetConnections().toArray(new Link[0])
+				: node.getAllSourceConnections().toArray(new Link[0]);
 
 		for (var l : links) {
 			if (l instanceof GraphLink link) {
@@ -80,14 +81,14 @@ public class CollapseCommand extends Command {
 					continue;
 
 				if (root != graph.getReferenceNode()
-					&& (otherNode.isChainingReferenceNode(side)
-					|| otherNode == graph.getReferenceNode()))
+						&& (otherNode.isChainingReferenceNode(side)
+						|| otherNode == graph.getReferenceNode()))
 					continue;
 
 				graph.mapProcessLinkToGraphLink.remove(link.processLink);
 				link.disconnect();
-				collapse(root, otherNode, INPUT);
-				collapse(root, otherNode, OUTPUT);
+				collapse(graph, root, otherNode, INPUT);
+				collapse(graph, root, otherNode, OUTPUT);
 
 				if (link.isCloseLoop()) // close loop
 					root.setExpanded(side == INPUT ? OUTPUT : INPUT, false);
