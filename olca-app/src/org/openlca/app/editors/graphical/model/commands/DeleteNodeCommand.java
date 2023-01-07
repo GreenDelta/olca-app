@@ -1,112 +1,90 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import java.util.List;
-
-import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 
-public class DeleteNodeCommand extends Command {
-	/** Node to remove. */
-	private final Node child;
-	/** Graph to remove from. */
-	private final Graph parent;
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 
-	/** Holds a copy of all the links of the child and sub-child. */
-	private List<GraphLink> links;
-	/** True, if child was removed from its parent. */
-	private boolean wasRemoved;
+public class DeleteNodeCommand extends AbstractRemoveCommand {
+	/**
+	 * Node to remove.
+	 */
+	private final Node node;
 
 	/**
 	 * Create a command that will remove the node from its parent.
 	 *
-	 * @param parent
-	 *            the parent containing the child
-	 * @param child
-	 *            the component to remove
-	 * @throws IllegalArgumentException
-	 *             if any parameter is null
+	 * @param graph the parent containing the child
+	 * @param node  the component to remove
+	 * @throws IllegalArgumentException if any parameter is null
 	 */
-	public DeleteNodeCommand(Graph parent, Node child) {
-		if (parent == null || child == null) {
-			throw new IllegalArgumentException();
-		}
+	public DeleteNodeCommand(Graph graph, Node node) {
+		super(graph);
 		setLabel("delete node");
-		this.parent = parent;
-		this.child = child;
+		this.node = node;
 	}
 
 	@Override
 	public boolean canExecute() {
-		if (child == null)
+		if (node == null)
 			return false;
-		long refID = child.getGraph().getProductSystem().referenceProcess.id;
-		return child.descriptor.id != refID;
+		long refID = node.getGraph().getProductSystem().referenceProcess.id;
+		return node.descriptor.id != refID;
 	}
 
 	@Override
 	public boolean canUndo() {
-		return wasRemoved;
+		return false;
 	}
 
 	@Override
 	public void execute() {
 		var b = Question.ask("Remove process",
-				"Remove " + Labels.name(child.descriptor)
-						+ " from product system " + Labels.name(parent.getProductSystem())
-						+ "?");
+				"Remove " + Labels.name(node.descriptor)
+						+ " from product system " + Labels.name(graph.getProductSystem())
+						+ "?"
+						+ "\nThis action will also remove the processes that are only " +
+						"chained to this process."
+		);
 		if (!b)
 			return;
 
-		// store a copy of incoming & outgoing links before proceeding
-		links = child.getAllLinks().stream().map(GraphLink.class::cast).toList();
 		redo();
 	}
 
 	@Override
 	public void redo() {
-		// remove the child and disconnect its links
-		parent.getProductSystem().processes.remove(child.descriptor.id);
-		wasRemoved = parent.removeChild(child);
-		if (wasRemoved) {
-			removeConnections(links);
-		}
-		parent.editor.setDirty();
-	}
+		var root = node.descriptor.id;
+		var ref = graph.getReferenceNode().descriptor.id;
 
+		// Remove the links to a process that is chained to the reference process.
+		graph.linkSearch.getProviderLinks(node.descriptor.id).stream()
+				.filter(link ->
+						graph.linkSearch.isChainingReference(link.providerId, false, ref))
+				.forEach(this::removeLink);
+		graph.linkSearch.getConnectionLinks(node.descriptor.id).stream()
+				.filter(link ->
+						graph.linkSearch.isChainingReference(link.processId, true, ref))
+				.forEach(this::removeLink);
 
-	/**
-	 * Reconnects a List of Links with their previous endpoints.
-	 *
-	 * @param links
-	 *            a non-null List of links
-	 */
-	private void addConnections(List<GraphLink> links) {
-		for (GraphLink link : links) {
-			parent.linkSearch.put(link.processLink);
-			parent.getProductSystem().processLinks.add(link.processLink);
-			parent.mapProcessLinkToGraphLink.put(link.processLink, link);
-			link.reconnect();
-		}
-	}
+		// Remove the supply and demand chain.
+		removeChain(root, root, false);
+		removeChain(root, root, true);
 
-	private void removeConnections(List<GraphLink> links) {
-		for (GraphLink link : links) {
-			parent.removeLink(link.processLink);
-		}
-	}
+		// Remove eventual remaining graphical  links
+		node.getAllLinks().stream()
+				.map(GraphLink.class::cast)
+				.forEach(this::removeGraphLinkOnly);
 
-	@Override
-	public void undo() {
-		// add the child and reconnect its links
-		parent.getProductSystem().processes.add(child.descriptor.id);
-		parent.addChild(child);
-		addConnections(links);
+		removeProcess(node.descriptor.id);
+		removeNodeChains();
 
-		parent.editor.setDirty();
+		graph.firePropertyChange(CHILDREN_PROP, null, null);
+		if (!processes.isEmpty() || !links.isEmpty())
+			editor.setDirty();
 	}
 
 }
