@@ -15,7 +15,6 @@ import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.systems.ProductSystemEditor;
-import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -24,7 +23,6 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
 import org.openlca.jsonld.Json;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;

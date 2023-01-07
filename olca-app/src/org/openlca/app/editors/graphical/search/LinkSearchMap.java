@@ -178,8 +178,12 @@ public class LinkSearchMap {
 	 * Recursively check if any of this process's outputs or inputs chain to the
 	 * reference (closed loop are not considered).
 	 * Returns false is the initial process is the reference.
+	 * @param process
+	 * @param provider if true checks the supply chain, else the demand chain.
+	 * @param ref the reference process.
+	 * @return
 	 */
-	public boolean isChainingReference(long process, int side, long ref) {
+	public boolean isChainingReference(long process, boolean provider, long ref) {
 		if (wasExplored.contains(process))
 			return false;
 		else if (process == ref)
@@ -188,7 +192,7 @@ public class LinkSearchMap {
 			return false;
 		wasExplored.add(process);
 
-		var links = side == INPUT
+		var links = provider
 				? getConnectionLinks(process)
 				: getProviderLinks(process);
 		if (links.isEmpty()) {
@@ -199,11 +203,11 @@ public class LinkSearchMap {
 		for (var link : links) {
 			if (link.processId == link.providerId)
 				continue;
-			var otherProcess = side == INPUT
+			var otherProcess = provider
 					? link.providerId
 					: link.processId;
 			if (otherProcess == ref
-					|| isChainingReference(otherProcess, side, ref)) {
+					|| isChainingReference(otherProcess, provider, ref)) {
 				wasExplored.remove(process);
 				return true;
 			}
