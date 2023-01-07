@@ -13,6 +13,7 @@ import org.openlca.app.tools.graphics.model.BaseComponent;
 
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.PathIterator;
+import java.util.List;
 import java.util.Objects;
 
 import static org.eclipse.draw2d.ConnectionLocator.SOURCE;
@@ -26,6 +27,8 @@ public class Connection extends SelectableConnection {
 	public static final String ROUTER_NULL = "Straight line";
 	public static final String ROUTER_CURVE = "Curve";
 	public static final String ROUTER_MANHATTAN = "Manhattan";
+	public static final List ROUTERS = List.of(ROUTER_NULL, ROUTER_CURVE,
+			ROUTER_MANHATTAN);
 
 	private static final double FLATNESS = 0.1;
 	private static final int CHILDREN_LIMIT = 100;
@@ -42,7 +45,7 @@ public class Connection extends SelectableConnection {
 		Color colorSelected, BaseComponent base) {
 		super(color, colorSelected);
 		this.orientation = orientation;
-		this.type = type;
+		this.type = ROUTERS.contains(type) ? type : ROUTER_CURVE;
 		this.base = base;
 	}
 

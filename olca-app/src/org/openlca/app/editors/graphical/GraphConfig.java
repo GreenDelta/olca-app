@@ -8,9 +8,10 @@ import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.core.model.Copyable;
 import org.openlca.jsonld.Json;
 
+import java.util.List;
 import java.util.Objects;
 
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.tools.graphics.figures.Connection.*;
 
 public class GraphConfig extends Element implements Copyable<GraphConfig> {
 
@@ -28,8 +29,8 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 	 */
 	public static GraphConfig from(GraphConfig other) {
 		return other == null
-			? new GraphConfig()
-			: other.copy();
+				? new GraphConfig()
+				: other.copy();
 	}
 
 	public Theme getTheme() {
@@ -87,13 +88,17 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		if (obj == null)
 			return config;
 		config.showElementaryFlows = Json.getBool(
-			obj, "showElementaryFlows", false);
-		config.connectionRouter = Json.getString(
-			obj, "connectionRouter");
+				obj, "showElementaryFlows", false);
+
+		var router = Json.getString(obj, "connectionRouter");
+		config.connectionRouter = ROUTERS.contains(router) ? router : ROUTER_CURVE;
+
 		config.isNodeEditingEnabled = Json.getBool(
-			obj, "isNodeEditingEnabled", false);
+				obj, "isNodeEditingEnabled", false);
+
 		var themeID = Json.getString(obj, "theme");
 		config.setTheme(Themes.get(themeID, Themes.MODEL));
+
 		config.zoom = Json.getDouble(obj, "zoom", 1.0);
 		config.viewLocation = new Point(
 				Json.getInt(obj, "x", 0),
