@@ -51,7 +51,7 @@ public class ExchangeFigure extends ComponentFigure {
 
 		addMouseMotionListener(new BorderMouseListener());
 
-		setToolTip(new Label(tooltip()));
+		setToolTip(new Label(getExchangeTooltip()));
 	}
 
 	public void setChildren(IOPaneFigure paneFigure) {
@@ -66,7 +66,7 @@ public class ExchangeFigure extends ComponentFigure {
 
 		if (exchange.formula != null) {
 			amount = new ImageFigure(Icon.FORMULA.get());
-			amount.setToolTip(new Label(exchange.formula));
+			amount.setToolTip(new Label(getFormulaTooltip()));
 			add(amount);
 		} else {
 			amount = new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
@@ -83,7 +83,7 @@ public class ExchangeFigure extends ComponentFigure {
 		setChildrenConstraints();
 	}
 
-	private String tooltip() {
+	private String getExchangeTooltip() {
 		if (exchange == null || exchange.flow == null)
 			return "";
 		var type = exchangeItem.flowType();
@@ -102,6 +102,11 @@ public class ExchangeFigure extends ComponentFigure {
 				+ Numbers.format(exchange.amount)
 				+ " " + Labels.name(exchange.unit);
 		return text;
+	}
+
+	private String getFormulaTooltip() {
+		return exchange.formula
+				+ " = " + exchange.amount + " " + exchange.unit.name;
 	}
 
 	@Override
