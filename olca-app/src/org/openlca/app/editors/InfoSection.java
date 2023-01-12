@@ -99,15 +99,6 @@ public class InfoSection {
 		UI.gridLayout(versionComp, 8, 10, 0);
 		createVersionText(versionComp, tk);
 
-		// uuid
-		tk.createLabel(versionComp, " ");
-		tk.createLabel(versionComp, "UUID:");
-		var uuidText = tk.createText(versionComp, "");
-		uuidText.setEditable(false);
-		if (entity.refId != null) {
-			uuidText.setText(entity.refId);
-		}
-
 		// last change
 		tk.createLabel(versionComp, " ");
 		createDateText(versionComp, tk);
@@ -115,6 +106,14 @@ public class InfoSection {
 
 		// tags
 		createTags(tk);
+
+		// uuid
+		tk.createLabel(versionComp, " ");
+		tk.createLabel(versionComp, "UUID:");
+		var uuidText = tk.createFormText(versionComp, false);
+		if (entity.refId != null) {
+			uuidText.setText(entity.refId, false, false);
+		}
 
 		return this;
 	}
