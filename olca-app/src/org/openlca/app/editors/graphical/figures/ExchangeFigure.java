@@ -6,6 +6,7 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.rcp.images.Icon;
@@ -64,16 +65,11 @@ public class ExchangeFigure extends ComponentFigure {
 		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
-		if (exchange.formula != null) {
-			amount = new ImageFigure(Icon.FORMULA.get());
-			amount.setToolTip(new Label(getFormulaTooltip()));
-			add(amount);
-		} else {
-			amount = new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
-			amount.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
-			((Label) amount).setLabelAlignment(PositionConstants.RIGHT);
-			add(amount);
-		}
+		var flowColor = theme.labelColor(exchangeItem.flowType());
+		amount = exchange.formula != null
+				? getAmountWithFormula(exchange, flowColor)
+				: getAmount(exchange, flowColor);
+		add(amount);
 
 		unitLabel = new Label(Labels.name(exchange.unit));
 		unitLabel.setLabelAlignment(PositionConstants.LEFT);
@@ -81,6 +77,35 @@ public class ExchangeFigure extends ComponentFigure {
 		add(unitLabel);
 
 		setChildrenConstraints();
+	}
+
+	private static Figure getAmount(Exchange exchange, Color color) {
+		var amount = new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
+		if (color != null)
+			amount.setForegroundColor(color);
+		amount.setLabelAlignment(PositionConstants.RIGHT);
+		return amount;
+	}
+
+	private static Figure getAmountWithFormula(Exchange exchange, Color color) {
+		var amount = new Figure();
+		var layout = new GridLayout(2, false);
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		layout.verticalSpacing = 1;
+		amount.setLayoutManager(layout);
+
+		var image = new ImageFigure(Icon.FORMULA.get());
+		image.setToolTip(new Label(exchange.formula));
+		amount.add(image);
+
+		var label = new Label(Numbers.format(exchange.amount, SIGNIF_NUMBER));
+		if (color != null)
+			label.setForegroundColor(color);
+		label.setLabelAlignment(PositionConstants.RIGHT);
+		amount.add(label);
+
+		return amount;
 	}
 
 	private String getExchangeTooltip() {
@@ -101,12 +126,11 @@ public class ExchangeFigure extends ComponentFigure {
 		text += M.Amount + ": "
 				+ Numbers.format(exchange.amount)
 				+ " " + Labels.name(exchange.unit);
-		return text;
-	}
 
-	private String getFormulaTooltip() {
-		return exchange.formula
-				+ " = " + exchange.amount + " " + exchange.unit.name;
+		if (exchange.formula != null)
+			text += "\n" + M.Formula + ": " + exchange.formula;
+
+		return text;
 	}
 
 	@Override
@@ -143,8 +167,8 @@ public class ExchangeFigure extends ComponentFigure {
 
 	public static Dimension getPreferredAmountLabelSize(ExchangeItem item) {
 		var amount = item.exchange.formula != null
-				? new ImageFigure(Icon.FORMULA.get())
-				: new Label(Numbers.format(item.exchange.amount, SIGNIF_NUMBER));
+				? getAmountWithFormula(item.exchange, null)
+				: getAmount(item.exchange, null);
 		return amount.getPreferredSize(SWT.DEFAULT, SWT.DEFAULT);
 	}
 
