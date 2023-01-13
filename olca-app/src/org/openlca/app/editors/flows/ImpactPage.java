@@ -85,7 +85,7 @@ class ImpactPage extends ModelPage<Flow> {
 						impDao.getDescriptor(r.getLong(1)),
 						unitDao.getForId(r.getLong(2)),
 						locDao.getDescriptor(r.getLong(3)),
-						r.getDouble(3)
+						r.getDouble("value")
 				));
 				return true;
 			});
