@@ -56,6 +56,12 @@
 			<artifactId>olca-git</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.openlca</groupId>
+			<artifactId>olca-process-xls</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.python</groupId>

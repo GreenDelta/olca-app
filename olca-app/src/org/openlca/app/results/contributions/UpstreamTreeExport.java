@@ -70,12 +70,12 @@ class UpstreamTreeExport implements Runnable {
 		try (var wb = new XSSFWorkbook()) {
 			sheet = wb.createSheet("Upstream tree");
 
-			var header = Excel.headerStyle(wb);
+			var bold = Excel.createBoldStyle(wb);
 			Excel.cell(sheet, 0, 0,
 					"Upstream contributions to: " + refName())
-					.ifPresent(c -> c.setCellStyle(header));
+					.ifPresent(c -> c.setCellStyle(bold));
 			Excel.cell(sheet, 1, 0, "Processes")
-					.ifPresent(c -> c.setCellStyle(header));
+					.ifPresent(c -> c.setCellStyle(bold));
 
 			// write the tree
 			row = 1;
@@ -90,7 +90,7 @@ class UpstreamTreeExport implements Runnable {
 					? "Result"
 					: "Result [" + unit + "]";
 			Excel.cell(sheet, 1, maxColumn + 1, resultHeader)
-					.ifPresent(c -> c.setCellStyle(header));
+					.ifPresent(c -> c.setCellStyle(bold));
 			for (int i = 0; i < values.size(); i++) {
 				Excel.cell(sheet, i + 2, maxColumn + 1, values.get(i));
 			}

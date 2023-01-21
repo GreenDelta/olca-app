@@ -12,12 +12,12 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.io.xls.process.input.ExcelImport;
+import org.openlca.io.xls.process.XlsProcessReader;
+import org.openlca.jsonld.input.UpdateMode;
 
 public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	private FileImportPage importPage;
-
 	private File initialFile;
 
 	public static void of(File file) {
@@ -67,10 +67,11 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 	private void doRun(File[] files) throws Exception {
 		getContainer().run(true, true, monitor -> {
 			monitor.beginTask(M.Import, files.length);
-			for (File file : files) {
+			var reader = XlsProcessReader.of(Database.get())
+					.withUpdates(UpdateMode.IF_NEWER);
+			for (var file : files) {
 				monitor.subTask(file.getName());
-				ExcelImport importer = new ExcelImport(file, Database.get());
-				importer.run();
+				reader.sync(file);
 				monitor.worked(1);
 			}
 			monitor.done();
