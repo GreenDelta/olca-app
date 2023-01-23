@@ -138,8 +138,6 @@ import org.openlca.jsonld.input.EpdReader as EpdReader
 import org.openlca.io.openepd.EpdScopeValue as EpdScopeValue
 import org.openlca.jsonld.output.EpdWriter as EpdWriter
 import org.openlca.io.xls.Excel as Excel
-import org.openlca.io.xls.process.output.ExcelExport as ExcelExport
-import org.openlca.io.xls.process.input.ExcelImport as ExcelImport
 import org.openlca.util.Exceptions as Exceptions
 import org.openlca.core.model.Exchange as Exchange
 import org.openlca.core.database.ExchangeDao as ExchangeDao
