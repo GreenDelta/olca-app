@@ -11,7 +11,7 @@
 package org.openlca.app.tools.graphics.actions;
 
 import org.eclipse.gef.Disposable;
-import org.eclipse.gef.editparts.ZoomListener;
+import org.eclipse.draw2d.zoom.ZoomListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.tools.graphics.zoom.ZoomManager;

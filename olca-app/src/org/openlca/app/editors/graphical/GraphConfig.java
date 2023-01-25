@@ -8,7 +8,6 @@ import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.core.model.Copyable;
 import org.openlca.jsonld.Json;
 
-import java.util.List;
 import java.util.Objects;
 
 import static org.openlca.app.tools.graphics.figures.Connection.*;
