@@ -247,8 +247,9 @@ public class UI {
 	}
 
 	public static Section section(Composite comp, FormToolkit tk, String title) {
-		var s = tk.createSection(comp, ExpandableComposite.TITLE_BAR
-				| ExpandableComposite.FOCUS_TITLE
+		var s = tk.createSection(comp,
+				ExpandableComposite.SHORT_TITLE_BAR
+				|	ExpandableComposite.FOCUS_TITLE
 				| ExpandableComposite.EXPANDED
 				| ExpandableComposite.TWISTIE);
 		gridData(s, true, false);
