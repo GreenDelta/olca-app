@@ -269,7 +269,9 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	 * entity.
 	 */
 	public void doSave() {
-		for (var entity : dirtyEntities) {
+		// Copying the set to avoid concurrent modification.
+		var entities = new HashSet<>(dirtyEntities);
+		for (var entity : entities) {
 			saveEntity(entity);
 		}
 		dirtyEntities.clear();
