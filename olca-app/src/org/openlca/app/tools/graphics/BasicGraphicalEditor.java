@@ -185,7 +185,7 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object getAdapter(Class type) {
 		if (type == ZoomManager.class)
 			return getZoomManager();

@@ -27,7 +27,7 @@ public class Connection extends SelectableConnection {
 	public static final String ROUTER_NULL = "Straight line";
 	public static final String ROUTER_CURVE = "Curve";
 	public static final String ROUTER_MANHATTAN = "Manhattan";
-	public static final List ROUTERS = List.of(ROUTER_NULL, ROUTER_CURVE,
+	public static final List<String> ROUTERS = List.of(ROUTER_NULL, ROUTER_CURVE,
 			ROUTER_MANHATTAN);
 
 	private static final double FLATNESS = 0.1;
