@@ -10,7 +10,6 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.ExchangeUseSearch;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
@@ -18,6 +17,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,7 +42,6 @@ public class DeleteExchangeCommand extends Command {
 	private final GraphEditor editor;
 
 
-	private final IDatabase db = Database.get();
 	private Process process;
 	private Exchange exchange;
 
@@ -90,50 +89,44 @@ public class DeleteExchangeCommand extends Command {
 		if (exchange == null)
 			return;
 
-		var exchanges = new ArrayList<Exchange>();
-		exchanges.add(exchange);
-
 		try {
 			if (editor.promptSaveIfNecessary())
-				delete(exchanges);
+				delete();
 		} catch (Exception e) {
 			ErrorReporter.on(
 					"failed to update database", e);
 		}
 	}
 
-	private void delete(List<Exchange> exchanges) {
-		if (process == null || exchanges == null)
+	private void delete() {
+		if (process == null || exchange == null)
 			return;
 
+		var exchanges = List.of(exchange);
 		if (!checkRefFlow(process, exchanges))
 			return;
 
-		// collect product and waste flows
-		List<Exchange> techFlows = exchanges.stream()
-				.filter(e -> e.flow != null
-						&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
-				.collect(Collectors.toList());
-		if (techFlows.isEmpty())
+		if (exchange.flow == null)
 			return;
 
-		var usages = new ExchangeUseSearch(Database.get(), process)
-				.findUses(techFlows);
-		if (!usages.isEmpty()) {
-			MsgBox.error(M.CannotRemoveExchanges,
-					M.ExchangesAreUsedOrNotDisconnected);
-			return;
+		if (exchange.flow.flowType != FlowType.ELEMENTARY_FLOW) {
+			var usages = new ExchangeUseSearch(Database.get(), process)
+					.findUses(List.of(exchange));
+			if (!usages.isEmpty()) {
+				MsgBox.error(M.CannotRemoveExchanges,
+						M.ExchangesAreUsedOrNotDisconnected);
+				return;
+			}
+
+			if (!checkProviderLinks(process, exchanges, List.of(exchange)))
+				return;
+
+			var b = Question.ask("Remove exchange",
+					"Remove flow " + Labels.name(exchange.flow)
+							+ " from process " + Labels.name(process) + "?");
+			if (!b)
+				return;
 		}
-
-		if (!checkProviderLinks(process, exchanges, techFlows))
-			return;
-
-		var b = Question.ask("Remove exchange",
-				"Remove flow " + Labels.name(exchange.flow)
-						+ " from process " + Labels.name(process) + "?");
-		if (!b)
-			return;
-
 
 		process.exchanges.remove(exchange);
 		var processLinks = graph.linkSearch.getLinks(process.id);
