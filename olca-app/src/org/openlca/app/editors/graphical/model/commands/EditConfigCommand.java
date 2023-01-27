@@ -7,8 +7,12 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EditConfigCommand extends Command {
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private final GraphEditor editor;
 	private final GraphicalViewer viewer;
@@ -42,8 +46,14 @@ public class EditConfigCommand extends Command {
 
 	@Override
 	public void execute() {
-		newConfig.copyTo(editor.config);
-		newGraph = editor.updateModel();
+		try {
+			if (editor.promptSaveIfNecessary()) {
+				newConfig.copyTo(editor.config);
+				newGraph = editor.updateModel();
+			}
+		} catch (Exception e) {
+			log.error("Failed to edit the configuration. ", e);
+		}
 	}
 
 	@Override
