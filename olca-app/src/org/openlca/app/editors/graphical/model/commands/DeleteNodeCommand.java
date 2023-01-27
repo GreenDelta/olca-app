@@ -47,7 +47,7 @@ public class DeleteNodeCommand extends AbstractRemoveCommand {
 						+ " from product system " + Labels.name(graph.getProductSystem())
 						+ "?"
 						+ "\nThis action will also remove the processes that are only " +
-						"chained to this process."
+						"linked to this process."
 		);
 		if (!b)
 			return;
@@ -74,7 +74,7 @@ public class DeleteNodeCommand extends AbstractRemoveCommand {
 		removeChain(root, root, false);
 		removeChain(root, root, true);
 
-		// Remove eventual remaining graphical  links
+		// Remove eventual remaining graphical links
 		node.getAllLinks().stream()
 				.map(GraphLink.class::cast)
 				.forEach(this::removeGraphLinkOnly);

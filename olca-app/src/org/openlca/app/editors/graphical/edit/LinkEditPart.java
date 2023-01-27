@@ -77,7 +77,8 @@ public class LinkEditPart extends AbstractConnectionEditPart
 			EditPolicy.CONNECTION_ROLE, new ConnectionEditPolicy() {
 				@Override
 				protected Command getDeleteCommand(GroupRequest req) {
-					return new DeleteLinkCommand(getModel());
+					var graph = getModel().getSourceNode().getGraph();
+					return new DeleteLinkCommand(getModel(), graph);
 				}
 			});
 	}
