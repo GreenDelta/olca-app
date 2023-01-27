@@ -108,7 +108,6 @@ public abstract class AbstractRemoveCommand extends Command {
 	 *                 if false, the demand chain and the process are removed.
 	 */
 	protected void removeEntities(ProcessLink link, boolean provider) {
-		var root = provider ? link.processId : link.providerId;
 		var links = provider
 				? graph.linkSearch.getProviderLinks(link.providerId)
 				: graph.linkSearch.getConnectionLinks(link.processId);
