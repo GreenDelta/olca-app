@@ -88,8 +88,9 @@ public class Exchanges {
 		if (p == null || exchanges == null)
 			return false;
 
-		if (checkRefFlow(p, exchanges))
-			return true;
+		if (!checkRefFlow(p, exchanges))
+			return false;
+
 
 		// collect product and waste flows
 		List<Exchange> techFlows = exchanges.stream()
@@ -99,8 +100,8 @@ public class Exchanges {
 		if (techFlows.isEmpty())
 			return true;
 
-		if (checkSystemUsage(p, techFlows))
-			return true;
+		if (!checkSystemUsage(p, techFlows))
+			return false;
 
 		return checkProviderLinks(p, exchanges, techFlows);
 	}
@@ -137,7 +138,7 @@ public class Exchanges {
 			if (ref.get() == null)
 				continue;
 
-			// we found an usage as default provider, now we need to make sure
+			// we found a usage as default provider, now we need to make sure
 			// that there is no other exchange with the same flow and direction
 			// that can fulfill this role (and that is not in the list of
 			// exchanges to be deleted).

@@ -15,6 +15,7 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.descriptors.Descriptor;
 
 import java.util.List;
 import java.util.Objects;
@@ -82,7 +83,6 @@ public class DeleteExchangeCommand extends Command {
 
 	@Override
 	public void redo() {
-		// remove the child and disconnect its links
 		if (exchange == null)
 			return;
 
@@ -106,16 +106,24 @@ public class DeleteExchangeCommand extends Command {
 		if (exchange.flow == null)
 			return;
 
-		if (exchange.flow.flowType != FlowType.ELEMENTARY_FLOW) {
+		// collect product and waste flows
+		List<Exchange> techFlows = exchanges.stream()
+				.filter(e -> e.flow != null
+						&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
+				.toList();
+
+		if (!techFlows.isEmpty()) {
 			var usages = new ExchangeUseSearch(Database.get(), process)
-					.findUses(List.of(exchange));
+					.findUses(exchange);
+			// The exchange cannot be removed if it is used in another product system.
+			usages.remove(Descriptor.of(graph.getProductSystem()));
 			if (!usages.isEmpty()) {
 				MsgBox.error(M.CannotRemoveExchanges,
 						M.ExchangesAreUsedOrNotDisconnected);
 				return;
 			}
 
-			if (!checkProviderLinks(process, exchanges, List.of(exchange)))
+			if (!checkProviderLinks(process, exchanges, techFlows))
 				return;
 
 			var b = Question.ask("Remove exchange",
@@ -132,7 +140,6 @@ public class DeleteExchangeCommand extends Command {
 				graph.removeLink(link);
 			}
 		}
-
 		parent.removeChild(child);
 
 		editor.setDirty(process);
