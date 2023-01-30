@@ -20,6 +20,7 @@ public class Theme {
 
 	private final String file;
 	private final String name;
+	private final Integer version;
 
 	private boolean isDark;
 	private Color backgroundColor;
@@ -31,16 +32,17 @@ public class Theme {
 	private final EnumMap<FlowType, Color> linkColors;
 	private final EnumMap<Box, BoxConfig> boxConfigs;
 
-	private Theme(String file, String name) {
+	private Theme(String file, String name, Integer version) {
 		this.file = file;
 		this.name = name;
+		this.version = version;
 		this.flowLabelColors = new EnumMap<>(FlowType.class);
 		this.linkColors = new EnumMap<>(FlowType.class);
 		this.boxConfigs = new EnumMap<>(Box.class);
 	}
 
-	public static Theme defaults(String file, String name) {
-		return new Theme(file, name);
+	public static Theme defaults(String file, String name, Integer version) {
+		return new Theme(file, name, version);
 	}
 
 	/**
@@ -55,6 +57,10 @@ public class Theme {
 
 	public String name() {
 		return name;
+	}
+
+	public Integer version() {
+		return version;
 	}
 
 	public boolean isDark() {
@@ -145,7 +151,11 @@ public class Theme {
 				name = name.substring(0, name.length() - 4);
 			}
 		}
-		var theme = defaults(file.getName(), name);
+
+		// set the version of the theme
+		var version = Css.themeVersionOf(css).orElse(0);
+
+		var theme = defaults(file.getName(), name, version);
 
 		theme.isDark = Css.hasDarkMode(css);
 

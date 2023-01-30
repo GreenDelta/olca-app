@@ -16,6 +16,21 @@ class Css {
   private Css() {
   }
 
+	static Optional<Integer> themeVersionOf(CascadingStyleSheet css) {
+		if (css == null)
+			return Optional.empty();
+		for (int i = 0; i < css.getStyleRuleCount(); i++) {
+			var rule = css.getStyleRuleAtIndex(i);
+			if (!isRoot(rule))
+				continue;
+			for (var value : valuesOf("--version", rule)) {
+				if (value != null && !value.isBlank())
+					return Optional.of(Integer.parseInt(unquote(value)));
+			}
+		}
+		return Optional.empty();
+	}
+
   static Optional<String> themeNameOf(CascadingStyleSheet css) {
     if (css == null)
       return Optional.empty();
