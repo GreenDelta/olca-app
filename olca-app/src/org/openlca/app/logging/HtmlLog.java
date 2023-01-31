@@ -16,6 +16,8 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
 
+import static ch.qos.logback.core.CoreConstants.LINE_SEPARATOR;
+
 class HtmlLog {
 
 	private HtmlLog() {
@@ -51,7 +53,7 @@ class HtmlLog {
 		policy.setParent(appender);
 		policy.start();
 
-		var layout = new HTMLLayout();
+		var layout = new HTML5Layout();
 		layout.setContext(context);
 		layout.setPattern("%d{HH:mm:ss}%level%logger%msg");
 		layout.start();
@@ -68,6 +70,35 @@ class HtmlLog {
 		appender.start();
 
 		return appender;
+	}
+
+	public static class HTML5Layout extends HTMLLayout {
+
+		@Override
+		public String getFileHeader() {
+			StringBuilder sbuf = new StringBuilder();
+			sbuf.append("<!DOCTYPE html");
+			sbuf.append(LINE_SEPARATOR);
+			sbuf.append("<html>");
+			sbuf.append(LINE_SEPARATOR);
+			sbuf.append("  <head>");
+			sbuf.append(LINE_SEPARATOR);
+			sbuf.append("    <title>");
+			sbuf.append(title);
+			sbuf.append("</title>");
+			sbuf.append(LINE_SEPARATOR);
+
+			cssBuilder.addCss(sbuf);
+
+			sbuf.append(LINE_SEPARATOR);
+			sbuf.append("  </head>");
+			sbuf.append(LINE_SEPARATOR);
+			sbuf.append("<body>");
+			sbuf.append(LINE_SEPARATOR);
+
+			return sbuf.toString();
+		}
+
 	}
 
 }
