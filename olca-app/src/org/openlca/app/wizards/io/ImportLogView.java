@@ -12,10 +12,14 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -105,6 +109,18 @@ public class ImportLogView extends SimpleFormEditor {
 				App.open(message.descriptor());
 			});
 			Actions.bind(table, onOpen);
+			var menuManager = table.getTable().getMenu();
+			menuManager.addMenuListener(new MenuListener() {
+				@Override
+				public void menuShown(MenuEvent e) {
+					Message message = Viewers.getFirstSelected(table);
+					onOpen.setEnabled(message.hasDescriptor());
+				}
+
+				@Override
+				public void menuHidden(MenuEvent e) {
+				}
+			});
 			Tables.onDoubleClick(table, $ -> onOpen.run());
 		}
 
