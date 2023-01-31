@@ -49,6 +49,7 @@ class HtmlLog {
 		policy.setFileNamePattern(
 			logDir.getAbsolutePath() + "/log-%d{yyyy-MM-dd}.html");
 		policy.setMaxHistory(3);
+		policy.setCleanHistoryOnStart(true);
 		policy.setTotalSizeCap(FileSize.valueOf("3MB"));
 		policy.setParent(appender);
 		policy.start();
