@@ -38,7 +38,7 @@ class ProviderItem implements Item {
 
 			var item = new ProviderItem(index, techFlow);
 			items.add(item);
-			var tr = result.totalRequirementsOf(techFlow);
+			var tr = result.getTotalRequirementsOf(techFlow);
 			item.amount = tr == 0
 				? 0
 				: item.hasWasteFlow() ? -tr : tr;
