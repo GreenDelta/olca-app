@@ -27,35 +27,35 @@
 #model box .reference-process {
   color: #f8f8f2;       /* font color */
   background: #282A36;  /* background color */
-  border: 4px #ff79c6;  /* border width and color */
+  border: 2px #ff79c6;  /* border width and color */
 }
 
 /* unit processes */
 #model box .unit-process {
   color: #f8f8f2;       /* font color */
   background: #282A36;  /* background color */
-  border: 2px #ff79c6;  /* border width and color */
+  border: 1px #ff79c6;  /* border width and color */
 }
 
 /* system processes */
 #model box .system-process {
   color: #f8f8f2;       /* font color */
   background: #282A36;  /* background color */
-  border: 3px #bd93f9;  /* border width and color */
+  border: 2px #bd93f9;  /* border width and color */
 }
 
 /* library processes */
 #model box .library-process {
   color: #f8f8f2;       /* font color */
   background: #282A36;  /* background color */
-  border: 3px #f1fa8c;  /* border width and color */
+  border: 2px #f1fa8c;  /* border width and color */
 }
 
 /* sub-systems */
 #model box .sub-system {
   color: #f8f8f2;       /* font color */
   background: #282A36;  /* background color */
-  border: 5px #8daff7;  /* border width and color */
+  border: 2px #8daff7;  /* border width and color */
 }
 
 /* results */
