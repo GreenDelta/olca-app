@@ -31,7 +31,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 		try {
 			addPage(new ProductSystemInfoPage(this));
 			// addPage(new ProductSystemParameterPage(this));
-			addPage(new ParameterPage2(this));
+			addPage(new ParameterPage(this));
 
 			var descriptor = getEditorInput().getDescriptor();
 			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);

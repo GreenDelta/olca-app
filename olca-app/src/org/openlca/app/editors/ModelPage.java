@@ -67,8 +67,8 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected ImageHyperlink link(Composite parent, String label, String property) {
-		new Label(parent, SWT.NONE).setText(label);
-		var link = new ImageHyperlink(parent, SWT.TOP);
+		UI.formLabel(parent, getToolkit(), label);
+		var link = getToolkit().createImageHyperlink(parent, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
 		try {
 			var value = Bean.getValue(getModel(), property);

@@ -30,7 +30,7 @@ public class ContributionChart {
 	private final Chart chart;
 
 	public static ContributionChart create(Composite parent, FormToolkit tk) {
-		Composite comp = UI.formComposite(parent, tk);
+		var comp = UI.formComposite(parent, tk);
 		UI.gridLayout(comp, 2);
 		UI.gridData(comp, true, true);
 
@@ -66,7 +66,7 @@ public class ContributionChart {
 				new DecimalFormatSymbols(Locale.US)));
 		y.getTick().setTickMarkStepHint(10);
 
-		return new ContributionChart(chart, new ChartLegend(comp));
+		return new ContributionChart(chart, new ChartLegend(comp, tk));
 	}
 
 	private ContributionChart(Chart chart, ChartLegend legend) {

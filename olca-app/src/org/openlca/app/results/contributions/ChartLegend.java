@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.util.Colors;
@@ -20,6 +20,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
@@ -29,10 +30,12 @@ class ChartLegend {
 	private final ImageRegistry imageRegistry = new ImageRegistry();
 	private final Stack<Widget> createdLinks = new Stack<>();
 	private final Composite composite;
+	private final FormToolkit tk;
 	ILabelProvider label = new BaseLabelProvider();
 
-	ChartLegend(Composite parent) {
-		composite = new Composite(parent, SWT.NONE);
+	ChartLegend(Composite parent, FormToolkit tk) {
+		composite = tk.createComposite(parent);
+		this.tk = tk;
 		UI.gridData(composite, true, true);
 		UI.gridLayout(composite, 1);
 		composite.addDisposeListener((e) -> imageRegistry.dispose());
@@ -58,16 +61,22 @@ class ChartLegend {
 	}
 
 	private void element(String text, Object model, int colorIndex) {
-		if (model instanceof RootDescriptor || model instanceof RootEntity) {
-			ImageHyperlink link = new ImageHyperlink(composite, SWT.TOP);
+		if (model instanceof RootDescriptor
+				|| model instanceof RootEntity
+				|| model instanceof TechFlow) {
+			var link = tk.createImageHyperlink(composite, SWT.TOP);
 			link.setText(text);
 			link.setImage(getImage(colorIndex));
 			Controls.onClick(link, (e) -> {
 				if (model instanceof RootDescriptor d) {
 					App.open(d);
+				} else if (model instanceof RootEntity re) {
+					App.open(re);
 				} else {
-					App.open((RootEntity) model);
+					var tf = (TechFlow) model;
+					App.open(tf.provider());
 				}
+
 			});
 			createdLinks.push(link);
 		} else {

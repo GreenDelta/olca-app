@@ -25,21 +25,19 @@ import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.util.Strings;
 
-class ParameterPage2 extends ModelPage<ProductSystem> {
+class ParameterPage extends ModelPage<ProductSystem> {
 
-	private ProductSystemEditor editor;
+	private final ProductSystemEditor editor;
 	private ScrolledForm form;
 	private FormToolkit tk;
 	private Composite body;
 	private AddButton addButton;
 	private final List<ParameterSection> sections = new ArrayList<>();
 
-	public ParameterPage2(ProductSystemEditor editor) {
+	public ParameterPage(ProductSystemEditor editor) {
 		super(editor, "ParameterPage2", "Parameters");
 		this.editor = editor;
-		editor.onSaved(() -> {
-			sections.forEach(s -> s.update());
-		});
+		editor.onSaved(() -> sections.forEach(ParameterSection::update));
 	}
 
 	private List<ParameterRedefSet> paramSets() {
@@ -53,7 +51,7 @@ class ParameterPage2 extends ModelPage<ProductSystem> {
 		body = UI.formBody(form, tk);
 
 		// create the baseline scenario if necessary
-		ParameterRedefSet base = getModel().parameterSets
+		var base = getModel().parameterSets
 				.stream()
 				.filter(s -> s.isBaseline)
 				.findFirst()
@@ -66,7 +64,7 @@ class ParameterPage2 extends ModelPage<ProductSystem> {
 		}
 
 		// sort and render the parameter sets
-		List<ParameterRedefSet> sets = paramSets();
+		var sets = paramSets();
 		sets.sort((s1, s2) -> {
 			if (s1.isBaseline)
 				return -1;
