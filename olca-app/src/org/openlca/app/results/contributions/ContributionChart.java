@@ -35,8 +35,8 @@ public class ContributionChart {
 		UI.gridData(comp, true, true);
 
 		// create and configure the chart
-		Chart chart = new Chart(comp, SWT.NONE);
-		GridData gdata = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+		var chart = new Chart(comp, SWT.NONE);
+		var gdata = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		gdata.heightHint = 300;
 		gdata.widthHint = 700;
 		chart.setLayoutData(gdata);
@@ -51,14 +51,14 @@ public class ContributionChart {
 		chart.getTitle().setVisible(true);
 
 		// configure the x-axis with one category
-		IAxis x = chart.getAxisSet().getXAxis(0);
+		var x = chart.getAxisSet().getXAxis(0);
 		x.getTitle().setVisible(false);
 		x.getTick().setForeground(Colors.darkGray());
 		x.enableCategory(true);
 		x.setCategorySeries(new String[] { "" });
 
 		// configure the y-axis
-		IAxis y = chart.getAxisSet().getYAxis(0);
+		var y = chart.getAxisSet().getYAxis(0);
 		y.getTitle().setVisible(false);
 		y.getTick().setForeground(Colors.darkGray());
 		y.getGrid().setStyle(LineStyle.NONE);
@@ -66,6 +66,7 @@ public class ContributionChart {
 				new DecimalFormatSymbols(Locale.US)));
 		y.getTick().setTickMarkStepHint(10);
 
+		tk.adapt(chart);
 		return new ContributionChart(chart, new ChartLegend(comp, tk));
 	}
 

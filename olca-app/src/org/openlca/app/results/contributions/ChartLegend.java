@@ -80,9 +80,10 @@ class ChartLegend {
 			});
 			createdLinks.push(link);
 		} else {
-			CLabel label = new CLabel(composite, SWT.TOP);
+			var label = new CLabel(composite, SWT.TOP);
 			label.setImage(getImage(colorIndex));
 			label.setText(text);
+			tk.adapt(label);
 			createdLinks.push(label);
 		}
 	}

@@ -2,10 +2,8 @@ package org.openlca.app.results;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
@@ -25,17 +23,17 @@ class InfoSection {
 	static void create(Composite body, FormToolkit tk, CalculationSetup setup) {
 		if (setup == null)
 			return;
-		Composite comp = UI.formSection(body, tk, M.GeneralInformation);
+		var comp = UI.formSection(body, tk, M.GeneralInformation);
 		if (setup.hasProductSystem()) {
-			link(comp, M.ProductSystem, setup.productSystem());
+			link(comp, tk, M.ProductSystem, setup.productSystem());
 		} else {
-			link(comp, M.ReferenceProcess, setup.process());
+			link(comp, tk, M.ReferenceProcess, setup.process());
 		}
 
 		text(comp, tk, M.AllocationMethod, Labels.getEnumText(setup.allocation()));
 		text(comp, tk, M.TargetAmount, targetAmountText(setup));
 		if (setup.impactMethod() != null) {
-			link(comp, M.ImpactAssessmentMethod, setup.impactMethod());
+			link(comp, tk, M.ImpactAssessmentMethod, setup.impactMethod());
 		}
 		if (setup.nwSet() != null) {
 			text(comp, tk, M.NormalizationAndWeightingSet, setup.nwSet().name);
@@ -57,9 +55,9 @@ class InfoSection {
 		text.setEditable(false);
 	}
 
-	static void link(Composite comp, String label, Object entity) {
-		new Label(comp, SWT.NONE).setText(label);
-		var link = new ImageHyperlink(comp, SWT.TOP);
+	static void link(Composite comp, FormToolkit tk, String label, Object entity) {
+		UI.formLabel(comp, tk, label);
+		var link = tk.createImageHyperlink(comp, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
 		if (entity instanceof RootDescriptor d) {
 			link.setText(Labels.name(d));

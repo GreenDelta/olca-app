@@ -28,26 +28,25 @@ public class DQInfoSection {
 
 	private final ResultEditor editor;
 	private final DQResult dqResult;
-	private final FormToolkit toolkit;
+	private final FormToolkit tk;
 
-	public DQInfoSection(Composite parent, FormToolkit toolkit,
-			ResultEditor editor) {
+	public DQInfoSection(Composite parent, FormToolkit tk, ResultEditor editor) {
 		this.editor = editor;
 		this.dqResult = editor.dqResult;
-		this.toolkit = toolkit;
+		this.tk = tk;
 		create(parent);
 	}
 
 	private void create(Composite parent) {
-		Section section = UI.section(parent, toolkit, M.DataQuality);
+		Section section = UI.section(parent, tk, M.DataQuality);
 		UI.gridData(section, true, true);
-		Composite client = UI.sectionClient(section, toolkit);
+		Composite client = UI.sectionClient(section, tk);
 		UI.gridData(client, true, true);
-		InfoSection.link(client, M.ProcessDataQualitySchema, dqResult.setup.processSystem);
-		InfoSection.link(client, M.FlowDataQualitySchema, dqResult.setup.exchangeSystem);
-		InfoSection.text(client, toolkit, M.Aggregation, Labels.of(dqResult.setup.aggregationType));
-		InfoSection.text(client, toolkit, M.RoundingMode, dqResult.setup.ceiling ? M.Up : M.HalfUp);
-		InfoSection.text(client, toolkit, M.NaValueHandling, Labels.of(dqResult.setup.naHandling));
+		InfoSection.link(client, tk, M.ProcessDataQualitySchema, dqResult.setup.processSystem);
+		InfoSection.link(client, tk, M.FlowDataQualitySchema, dqResult.setup.exchangeSystem);
+		InfoSection.text(client, tk, M.Aggregation, Labels.of(dqResult.setup.aggregationType));
+		InfoSection.text(client, tk, M.RoundingMode, dqResult.setup.ceiling ? M.Up : M.HalfUp);
+		InfoSection.text(client, tk, M.NaValueHandling, Labels.of(dqResult.setup.naHandling));
 //		statisticsTree(client, M.ProcessDataQualityStatistics, true);
 //		statisticsTree(client, M.FlowDataQualityStatistics, false);
 	}
@@ -56,8 +55,8 @@ public class DQInfoSection {
 		DQSystem system = forProcesses ? dqResult.setup.processSystem : dqResult.setup.exchangeSystem;
 		if (system == null)
 			return;
-		UI.formLabel(parent, toolkit, label);
-		UI.formLabel(parent, toolkit, "");
+		UI.formLabel(parent, tk, label);
+		UI.formLabel(parent, tk, "");
 		String[] headers = {M.Indicator, M.Coverage};
 		TreeViewer viewer = Trees.createViewer(parent, headers);
 		viewer.setContentProvider(new ContentProvider(forProcesses));

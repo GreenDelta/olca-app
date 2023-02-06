@@ -7,8 +7,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
@@ -117,12 +115,13 @@ public class Actions {
 	 * Creates a context menu with the given actions on the tree viewer.
 	 */
 	public static void bind(TreeViewer viewer, Action... actions) {
-		Tree tree = viewer.getTree();
+		var tree = viewer.getTree();
 		if (tree == null)
 			return;
-		MenuManager menu = new MenuManager();
-		for (Action action : actions)
+		var menu = new MenuManager();
+		for (var action : actions) {
 			menu.add(action);
+		}
 		tree.setMenu(menu.createContextMenu(tree));
 	}
 
@@ -130,10 +129,15 @@ public class Actions {
 	 * Creates buttons for the given actions in a section tool-bar.
 	 */
 	public static void bind(Section section, Action... actions) {
-		ToolBarManager toolBar = new ToolBarManager();
-		for (Action action : actions)
+		var toolBar = new ToolBarManager();
+		for (var action : actions) {
 			toolBar.add(action);
-		ToolBar control = toolBar.createControl(section);
+		}
+		var control = toolBar.createControl(section);
+		// we need to set the background color of the toolbar
+		// here, otherwise it is grey on Windows; not sure if
+		// this works with dark mode though
+		control.setBackground(section.getBackground());
 		section.setTextClient(control);
 	}
 
