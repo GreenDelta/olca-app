@@ -22,7 +22,10 @@ Require-Bundle: org.eclipse.ui,
  org.apache.felix.scr,
  org.eclipse.equinox.event,
  org.eclipse.nebula.widgets.opal.notifier,
- com.ibm.icu
+ com.ibm.icu,
+ org.eclipse.gmf.runtime.draw2d.ui.render,
+ org.eclipse.gmf.runtime.draw2d.ui,
+ org.eclipse.gmf.runtime.gef.ui
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  libs/animal-sniffer-annotations-1.21.jar,

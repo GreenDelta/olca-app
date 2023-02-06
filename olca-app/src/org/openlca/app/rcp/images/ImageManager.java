@@ -2,14 +2,19 @@ package org.openlca.app.rcp.images;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.CompositeImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.IDecoration;
+import org.eclipse.gmf.runtime.draw2d.ui.render.RenderedImage;
+import org.eclipse.gmf.runtime.draw2d.ui.render.factory.RenderedImageFactory;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.openlca.app.rcp.RcpActivator;
+
+import static org.openlca.app.rcp.RcpActivator.PLUGIN_ID;
 
 /**
  * Manager for the application images and icons.
@@ -60,6 +65,15 @@ class ImageManager {
 		withOverlay = withIcon.createImage();
 		registry.put(id, withOverlay);
 		return withOverlay;
+	}
+
+	static RenderedImage get(ModelSVG svg) {
+		if (svg == null)
+			return null;
+		if (svg.fileName == null)
+			return null;
+		var url = Platform.getBundle(PLUGIN_ID).getEntry(toPath(svg.fileName));
+		return RenderedImageFactory.getInstance(url);
 	}
 
 	static ImageDescriptor descriptor(Icon icon) {

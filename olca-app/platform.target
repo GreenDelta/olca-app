@@ -29,5 +29,9 @@
 		<unit id="org.apache.commons.io" version="2.8.0.v20210415-0900"/>
 		<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
 	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/modeling/gmp/gmf-runtime/updates/releases/"/>
+		<unit id="org.eclipse.gmf.feature.group" version="1.15.2.202208271122"/>
+	</location>
 </locations>
 </target>
