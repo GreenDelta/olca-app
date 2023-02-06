@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -32,7 +31,7 @@ import org.openlca.core.model.DQSystem;
 
 class DQSystemInfoPage extends ModelPage<DQSystem> {
 
-	private FormToolkit toolkit;
+	private FormToolkit tk;
 	private ScrolledForm form;
 	private Composite body;
 	private Section indicatorSection;
@@ -54,12 +53,12 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+	protected void createFormContent(IManagedForm mForm) {
 		form = UI.formHeader(this);
-		toolkit = managedForm.getToolkit();
-		body = UI.formBody(form, toolkit);
+		tk = mForm.getToolkit();
+		body = UI.formBody(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
-		infoSection.render(body, toolkit);
+		infoSection.render(body, tk);
 		modelLink(infoSection.composite(), M.Source, "source");
 		createAdditionalInfo(body);
 		body.setFocus();
@@ -71,14 +70,14 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		for (DQIndicator indicator : getModel().indicators) {
 			Collections.sort(indicator.scores);
 		}
-		indicatorSection = UI.section(body, toolkit, M.IndicatorsScores);
+		indicatorSection = UI.section(body, tk, M.IndicatorsScores);
 		CommentAction.bindTo(indicatorSection, "indicators", getEditor().getComments());
-		Composite indicatorClient = UI.sectionClient(indicatorSection, toolkit, 1);
+		Composite indicatorClient = UI.sectionClient(indicatorSection, tk, 1);
 		createIndicatorMatrix(indicatorClient);
 		if (!getModel().hasUncertainties)
 			return;
-		uncertaintySection = UI.section(body, toolkit, M.Uncertainties);
-		Composite uncertaintyClient = UI.sectionClient(uncertaintySection, toolkit, 1);
+		uncertaintySection = UI.section(body, tk, M.Uncertainties);
+		Composite uncertaintyClient = UI.sectionClient(uncertaintySection, tk, 1);
 		createUncertaintyMatrix(uncertaintyClient);
 	}
 
@@ -113,7 +112,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		createHeader(composite, false);
 		for (DQIndicator indicator : getModel().indicators) {
 			String name = indicator.name != null ? indicator.name : "";
-			Label label = toolkit.createLabel(composite, name);
+			Label label = tk.createLabel(composite, name);
 			label.setToolTipText(name);
 			setGridData(label, 1, 15);
 			Text indicatorText = indicatorTexts.get(indicator.position);
@@ -121,11 +120,12 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 				label.setText(indicatorText.getText());
 				label.setToolTipText(indicatorText.getText());
 			});
-			for (DQScore score : indicator.scores) {
-				Text uncertaintyText = createTextCell(composite, 1, 8);
+			for (var score : indicator.scores) {
+				var uncertaintyText = createTextCell(composite, 1, 8);
 				getBinding().onDouble(() -> score, "uncertainty", uncertaintyText);
-				commentControl(composite, "indicators[" + indicator.position + "].scores[" + score.position
-						+ "].uncertainty");
+				commentControl(composite,
+						"indicators[" + indicator.position + "].scores["
+								+ score.position+ "].uncertainty");
 			}
 		}
 	}
@@ -151,7 +151,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 				scoreTexts.put(i, labelText);
 				commentControl(composite, "scores[" + i + "]");
 			} else {
-				Label label = UI.formLabel(composite, scoreLabel);
+				Label label = UI.formLabel(composite, tk, scoreLabel);
 				label.setToolTipText(scoreLabel);
 				setGridData(label, 1, 8);
 				((GridData) label.getLayoutData()).horizontalAlignment = SWT.CENTER;
@@ -166,7 +166,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private Text createTextCell(Composite composite, int heightFactor, int widthFactor) {
-		Text text = toolkit.createText(composite, null, SWT.BORDER | SWT.MULTI | SWT.WRAP);
+		Text text = tk.createText(composite, null, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 		text.addTraverseListener(e -> {
 			if (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS) {
 				e.doit = true;
@@ -180,8 +180,8 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		GC gc = new GC(control);
 		try {
 			gc.setFont(control.getFont());
-			FontMetrics fm = gc.getFontMetrics();
-			GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+			var fm = gc.getFontMetrics();
+			var gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 			gd.heightHint = heightFactor * fm.getHeight();
 			gd.widthHint = widthFactor * fm.getHeight();
 			control.setLayoutData(gd);
@@ -191,15 +191,15 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createAddScoreButton(Composite parent) {
-		Button button = toolkit.createButton(parent, M.AddScore, SWT.NONE);
+		var button = tk.createButton(parent, M.AddScore, SWT.NONE);
 		if (getModel().indicators.size() == 0) {
 			button.setEnabled(false);
 			return;
 		}
 		Controls.onSelect(button, (e) -> {
 			int newScore = getModel().getScoreCount() + 1;
-			for (DQIndicator indicator : getModel().indicators) {
-				DQScore score = new DQScore();
+			for (var indicator : getModel().indicators) {
+				var score = new DQScore();
 				score.position = newScore;
 				score.label = "Score " + newScore;
 				score.description = indicator.name + " - score " + newScore;
@@ -211,7 +211,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createRemoveScoreButton(Composite parent, int position) {
-		Button button = toolkit.createButton(parent, M.RemoveScore, SWT.NONE);
+		Button button = tk.createButton(parent, M.RemoveScore, SWT.NONE);
 		Controls.onSelect(button, (e) -> {
 			for (DQIndicator indicator : getModel().indicators) {
 				for (DQScore score : new ArrayList<>(indicator.scores)) {
@@ -230,7 +230,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createAddIndicatorButton(Composite parent) {
-		Button button = toolkit.createButton(parent, M.AddIndicator, SWT.NONE);
+		var button = tk.createButton(parent, M.AddIndicator, SWT.NONE);
 		Controls.onSelect(button, (e) -> {
 			DQIndicator indicator = new DQIndicator();
 			indicator.name = "Indicator " + (getModel().indicators.size() + 1);
@@ -249,7 +249,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createRemoveIndicatorButton(Composite parent, int position) {
-		Button button = toolkit.createButton(parent, M.RemoveIndicator, SWT.NONE);
+		var button = tk.createButton(parent, M.RemoveIndicator, SWT.NONE);
 		Controls.onSelect(button, (e) -> {
 			for (DQIndicator indicator : new ArrayList<>(getModel().indicators)) {
 				if (indicator.position < position)
@@ -267,7 +267,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	private void commentControl(Composite parent, String path) {
 		if (getEditor().hasComment(path)) {
-			new CommentControl(parent, toolkit, path, getEditor().getComments());
+			new CommentControl(parent, tk, path, getEditor().getComments());
 		} else {
 			UI.filler(parent);
 		}

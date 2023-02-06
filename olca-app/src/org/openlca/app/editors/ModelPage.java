@@ -3,7 +3,6 @@ package org.openlca.app.editors;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -92,27 +91,28 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected Label readOnly(Composite parent, String label, String property) {
-		UI.formLabel(parent, label);
-		Label labelWidget = new Label(parent, SWT.NONE);
-		GridData gridData = UI.gridData(labelWidget, false, false);
+		UI.formLabel(parent, getToolkit(), label);
+		var widget = getToolkit().createLabel(parent, "");
+		var gridData = UI.gridData(widget, false, false);
 		gridData.verticalAlignment = SWT.TOP;
 		gridData.verticalIndent = 2;
-		getBinding().readOnly(getModel(), property, labelWidget);
+		getBinding().readOnly(getModel(), property, widget);
 		new CommentControl(parent, getToolkit(), property, getComments());
-		return labelWidget;
+		return widget;
 	}
 
 	protected CLabel readOnly(
 		Composite parent, String label, Image image, String property) {
-		UI.formLabel(parent, label);
-		CLabel labelWidget = new CLabel(parent, SWT.NONE);
-		GridData gridData = UI.gridData(labelWidget, false, false);
+		UI.formLabel(parent, getToolkit(), label);
+		var widget = new CLabel(parent, SWT.NONE);
+		var gridData = UI.gridData(widget, false, false);
 		gridData.verticalAlignment = SWT.TOP;
 		gridData.verticalIndent = 2;
-		labelWidget.setImage(image);
-		getBinding().readOnly(getModel(), property, labelWidget);
+		widget.setImage(image);
+		getToolkit().adapt(widget);
+		getBinding().readOnly(getModel(), property, widget);
 		new CommentControl(parent, getToolkit(), property, getComments());
-		return labelWidget;
+		return widget;
 	}
 
 	protected Text text(Composite parent, String label, String property) {
