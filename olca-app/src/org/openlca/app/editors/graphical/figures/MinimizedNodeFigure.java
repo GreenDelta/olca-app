@@ -20,7 +20,7 @@ public class MinimizedNodeFigure extends NodeFigure {
 		layout.verticalSpacing = 0;
 		setLayoutManager(layout);
 
-		var header = new NodeHeader();
+		header = new NodeHeader();
 		var roundedCorners = RoundBorder.Corners
 			.fullRoundedCorners(HEADER_ARC_SIZE);
 		var headerBorder = new RoundBorder(theme.boxBorderWidth(box), roundedCorners);

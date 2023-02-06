@@ -11,6 +11,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.graphics.figures.RoundBorder;
+import org.openlca.app.tools.graphics.figures.SVGImage;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
@@ -58,11 +59,18 @@ public class ExchangeFigure extends ComponentFigure {
 	public void setChildren(IOPaneFigure paneFigure) {
 		this.paneFigure = paneFigure;
 
-		var image = new ImageFigure(Images.get(exchange.flow));
-		add(image, GridPos.leadCenter());
-
 		label = new Label(Labels.name(exchange.flow));
 		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
+
+		var renderedImage = Images.getSVG(exchange.flow);
+		if (renderedImage != null) {
+			var scalableImage = new SVGImage(renderedImage, true, true, true);
+			var height = label.getPreferredSize().height();
+			add(scalableImage, GridPos.leadCenter());
+			var size = height - 2 * ((RoundBorder) getBorder()).getWidth();
+			scalableImage.setPreferredImageSize(size, size);
+		}
+
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
 		var flowColor = theme.labelColor(exchangeItem.flowType());
