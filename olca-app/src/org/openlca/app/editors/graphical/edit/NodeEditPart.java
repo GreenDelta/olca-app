@@ -118,7 +118,6 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 		@Override
 		protected IFigure createFigure() {
 			var figure = new MaximizedNodeFigure(getModel());
-			figure.initHeader();
 			addButtonActionListener(figure);
 			return figure;
 		}
@@ -141,7 +140,6 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 		@Override
 		protected IFigure createFigure() {
 			var figure = new MinimizedNodeFigure(getModel());
-			figure.initHeader();
 			addButtonActionListener(figure);
 			return figure;
 		}
