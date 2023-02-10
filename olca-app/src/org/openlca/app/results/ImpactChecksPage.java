@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -12,11 +11,9 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
@@ -27,6 +24,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -52,16 +50,16 @@ public class ImpactChecksPage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform,
+	protected void createFormContent(IManagedForm mForm) {
+		var form = UI.formHeader(mForm,
 				"Flows that are not covered by the "
 						+ "selected LCIA method",
 				Icon.ANALYSIS_RESULT.get());
-		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
+		var tk = mForm.getToolkit();
+		var body = UI.formBody(form, tk);
 
 		// the grouping check
-		Button group = tk.createButton(body,
+		var group = tk.createButton(body,
 				"Group by LCIA category", SWT.CHECK);
 		group.setSelection(true);
 		Controls.onSelect(group, e -> tree.setInput(
@@ -73,13 +71,14 @@ public class ImpactChecksPage extends FormPage {
 		tree = Trees.createViewer(body,
 				M.Name, M.Category, M.InventoryResult);
 		tree.setContentProvider(new ContentProvider());
-		tree.setLabelProvider(new Label());
+		var label = new Label();
+		tree.setLabelProvider(label);
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(
 				tree.getTree(), 0.4, 0.4, 0.2);
 
 		// bind `onOpen`
-		Action onOpen = Actions.onOpen(() -> {
+		var onOpen = Actions.onOpen(() -> {
 			Contribution<?> c = Viewers.getFirstSelected(tree);
 			if (c == null)
 				return;
@@ -89,7 +88,8 @@ public class ImpactChecksPage extends FormPage {
 				App.open(i);
 			}
 		});
-		Actions.bind(tree, onOpen);
+		var onCopy = TreeClipboard.onCopy(tree, new ClipboardLabel(label));
+		Actions.bind(tree, onOpen, onCopy);
 		Trees.onDoubleClick(tree, e -> onOpen.run());
 
 		tree.setInput(group.getSelection()
@@ -109,7 +109,7 @@ public class ImpactChecksPage extends FormPage {
 	 * of the LCIA categories.
 	 */
 	private List<Contribution<?>> flatNodes() {
-		List<Contribution<?>> nodes = new ArrayList<>();
+		var nodes = new ArrayList<Contribution<?>>();
 		for (var flow : items.enviFlows()) {
 			boolean allZero = true;
 			for (var impact : items.impacts()) {
@@ -166,6 +166,42 @@ public class ImpactChecksPage extends FormPage {
 		}
 	}
 
+	private record ClipboardLabel(Label label) implements TreeClipboard.Provider {
+
+		@Override
+		public int columns() {
+			return 4;
+		}
+
+		@Override
+		public String getHeader(int col) {
+			return switch (col) {
+				case 0 -> M.Name;
+				case 1 -> M.Category;
+				case 2 -> M.InventoryResult;
+				case 3 -> M.Unit;
+				default -> null;
+			};
+		}
+
+		@Override
+		public String getLabel(TreeItem item, int col) {
+			if (!(item.getData() instanceof Contribution<?> c))
+				return null;
+			boolean isFlow = c.item instanceof EnviFlow;
+			return switch (col) {
+				case 0, 1 -> label.getColumnText(c, col);
+				case 2 -> isFlow
+						? Double.toString(c.amount)
+						: null;
+				case 3 -> isFlow
+						? Labels.refUnit((EnviFlow) c.item)
+						: null;
+				default -> null;
+			};
+		}
+	}
+
 	private static class Label extends ColumnLabelProvider
 			implements ITableLabelProvider {
 
@@ -186,25 +222,20 @@ public class ImpactChecksPage extends FormPage {
 				return null;
 
 			if (c.item instanceof EnviFlow flow) {
-				switch (col) {
-				case 0:
-					return Labels.name(flow);
-				case 1:
-					return Labels.category(flow.flow());
-				case 2:
-					String unit = Labels.refUnit(flow);
-					return Numbers.format(c.amount) + " " + unit;
-				default:
-					return null;
-				}
+				return switch (col) {
+					case 0 -> Labels.name(flow);
+					case 1 -> Labels.category(flow);
+					case 2 -> Numbers.format(c.amount) + " " + Labels.refUnit(flow);
+					default -> null;
+				};
 			}
 
 			// not a flow
 			if (col != 0)
 				return null;
-			if (c.item instanceof ImpactDescriptor)
-				return ((ImpactDescriptor) c.item).name;
-			return null;
+			return c.item instanceof ImpactDescriptor indicator
+					? indicator.name
+					: null;
 		}
 	}
 }

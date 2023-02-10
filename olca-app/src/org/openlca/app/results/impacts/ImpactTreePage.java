@@ -187,7 +187,7 @@ public class ImpactTreePage extends FormPage {
 			}
 
 			return switch (col) {
-				case 0, 1 -> label.getText(item, 0);
+				case 0, 1 -> label.getText(item, col);
 				case 2 -> inventoryValue;
 				case 3 -> inventoryUnit;
 				case 4 -> item.isEnviItem()
