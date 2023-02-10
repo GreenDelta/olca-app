@@ -48,16 +48,11 @@ class JsonImportPage extends WizardPage {
 	}
 
 	private String getText(UpdateMode mode) {
-		switch (mode) {
-		case NEVER:
-			return "Never update a data set that already exists";
-		case IF_NEWER:
-			return "Update data sets with newer versions";
-		case ALWAYS:
-			return "Overwrite all existing data sets";
-		default:
-			return "?";
-		}
+		return switch (mode) {
+			case NEVER -> "Never update a data set that already exists";
+			case IF_NEWER -> "Update data sets with newer versions";
+			case ALWAYS -> "Overwrite all existing data sets";
+		};
 	}
 
 }

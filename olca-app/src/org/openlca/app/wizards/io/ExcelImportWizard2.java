@@ -11,6 +11,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
@@ -26,6 +27,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
@@ -80,7 +82,7 @@ public class ExcelImportWizard2 extends Wizard implements IImportWizard {
 			getContainer().run(true, true, monitor -> {
 				monitor.beginTask(M.Import, files.size());
 				var reader = XlsProcessReader.of(Database.get())
-						.withUpdates(UpdateMode.IF_NEWER);
+						.withUpdates(page.updateMode());
 				for (var file : files) {
 					monitor.subTask(file.getName());
 					reader.sync(file);
@@ -102,6 +104,7 @@ public class ExcelImportWizard2 extends Wizard implements IImportWizard {
 	private static class Page extends WizardPage {
 
 		final List<File> files = new ArrayList<>();
+		private final boolean[] _updateMode = {false, true, false};
 
 		Page() {
 			super("ExcelImportWizard.Page");
@@ -171,7 +174,43 @@ public class ExcelImportWizard2 extends Wizard implements IImportWizard {
 				}
 			});
 
+			UI.formLabel(body,
+					"When a process with an ID already exists:");
+			for (int i = 0; i < _updateMode.length; i++) {
+				int id = i;
+				var b = new Button(body, SWT.RADIO);
+				b.setText(updateLabel(i));
+				b.setSelection(_updateMode[i]);
+				Controls.onSelect(b, e -> {
+					for (int j = 0; j < _updateMode.length; j++) {
+						_updateMode[j] = id == j;
+					}
+				});
+			}
 			setControl(body);
+		}
+
+		private String updateLabel(int i) {
+			return switch (i) {
+				case 0 -> "Keep the version in the database";
+				case 1 -> "Update it in the database if it is newer";
+				case 2 -> "Always update it in the database";
+				default -> "?";
+			};
+		}
+
+		private UpdateMode updateMode() {
+			var order = new UpdateMode[]{
+					UpdateMode.NEVER,
+					UpdateMode.IF_NEWER,
+					UpdateMode.ALWAYS
+			};
+			for (int i = 0; i < order.length; i++) {
+				if (_updateMode[i]) {
+					return order[i];
+				}
+			}
+			return UpdateMode.IF_NEWER;
 		}
 	}
 
