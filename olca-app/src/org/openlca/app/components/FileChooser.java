@@ -1,6 +1,8 @@
 package org.openlca.app.components;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -141,6 +143,30 @@ public class FileChooser {
 			return file.exists()
 				? Optional.of(file)
 				: Optional.empty();
+		}
+
+		public List<File> selectMultiple() {
+			var dialog = new FileDialog(UI.shell(), SWT.OPEN | SWT.MULTI);
+			dialog.setText(this.title == null ? M.Open : this.title);
+			if (extensions != null && extensions.length > 0) {
+				dialog.setFilterExtensions(extensions);
+			}
+			var firstPath = dialog.open();
+			if (firstPath == null)
+				return List.of();
+			var first = new File(firstPath);
+			if (!first.exists())
+				return List.of();
+			var dir = first.isDirectory()
+					? first
+					: first.getParentFile();
+			var fs = dialog.getFileNames();
+			if (fs == null || fs.length == 0)
+				return first.isFile() ? List.of(first) : List.of();
+			return Arrays.stream(fs)
+					.map(fi -> new File(dir, fi))
+					.filter(File::exists)
+					.toList();
 		}
 	}
 }

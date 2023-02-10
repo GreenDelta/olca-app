@@ -812,7 +812,7 @@
 		</wizard>
 		<wizard
 			category="import.category.file"
-			class="org.openlca.app.wizards.io.ExcelImportWizard"
+			class="org.openlca.app.wizards.io.ExcelImportWizard2"
 			icon="icons/file/excel.png"
 			id="wizard.import.excel"
 			name="Excel">

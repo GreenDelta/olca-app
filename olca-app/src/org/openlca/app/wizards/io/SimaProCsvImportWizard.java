@@ -192,9 +192,9 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 			@Override
 			public String getColumnText(Object obj, int col) {
-				return !(obj instanceof File file)
-					? null
-					: file.getAbsolutePath();
+				return obj instanceof File file
+					? file.getAbsolutePath()
+					: null;
 			}
 		}
 
