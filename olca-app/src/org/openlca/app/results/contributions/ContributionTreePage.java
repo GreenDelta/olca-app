@@ -1,6 +1,5 @@
 package org.openlca.app.results.contributions;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -9,10 +8,10 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
@@ -27,6 +26,7 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
@@ -54,19 +54,19 @@ public class ContributionTreePage extends FormPage {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		FormToolkit tk = mform.getToolkit();
-		ScrolledForm form = UI.formHeader(mform,
+	protected void createFormContent(IManagedForm mForm) {
+		var tk = mForm.getToolkit();
+		var form = UI.formHeader(mForm,
 				Labels.name(setup.target()),
 				Icon.ANALYSIS_RESULT.get());
-		Composite body = UI.formBody(form, tk);
-		Composite comp = tk.createComposite(body);
+		var body = UI.formBody(form, tk);
+		var comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2);
 		var selector = ResultItemSelector
 				.on(items)
 				.withSelectionHandler(new SelectionHandler())
 				.create(comp, tk);
-		Composite treeComp = tk.createComposite(body);
+		var treeComp = tk.createComposite(body);
 		UI.gridLayout(treeComp, 1);
 		UI.gridData(treeComp, true, true);
 		createTree(tk, treeComp);
@@ -80,12 +80,12 @@ public class ContributionTreePage extends FormPage {
 				M.Process,
 				"Required amount",
 				M.Result};
-		tree = Trees.createViewer(comp, headers,
-				new ContributionLabelProvider());
+		var label = new Label();
+		tree = Trees.createViewer(comp, headers, label);
 
 		tree.setAutoExpandLevel(2);
 		tree.getTree().setLinesVisible(false);
-		tree.setContentProvider(new ContributionContentProvider());
+		tree.setContentProvider(new ContentProvider());
 		tk.adapt(tree.getTree(), false, false);
 		tk.paintBordersFor(tree.getTree());
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
@@ -94,22 +94,22 @@ public class ContributionTreePage extends FormPage {
 				0.20, 0.40, 0.20, 0.20);
 
 		// action bindings
-		Action onOpen = Actions.onOpen(() -> {
+		var onOpen = Actions.onOpen(() -> {
 			UpstreamNode n = Viewers.getFirstSelected(tree);
 			if (n == null || n.provider() == null)
 				return;
 			App.open(n.provider().provider());
 		});
 
-		Action onExport = Actions.create(M.ExportToExcel,
+		var onExport = Actions.create(M.ExportToExcel,
 				Images.descriptor(FileType.EXCEL), () -> {
-					Object input = tree.getInput();
-					if (!(input instanceof UpstreamTree))
-						return;
-					TreeExportDialog.open((UpstreamTree) input);
+					if (tree.getInput() instanceof UpstreamTree uTree) {
+						TreeExportDialog.open(uTree);
+					}
 				});
 
-		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree), onExport);
+		var onCopy = TreeClipboard.onCopy(tree, new ClipboardLabel(label));
+		Actions.bind(tree, onOpen, onCopy, onExport);
 		Trees.onDoubleClick(tree, e -> onOpen.run());
 	}
 
@@ -139,7 +139,7 @@ public class ContributionTreePage extends FormPage {
 		}
 	}
 
-	private static class ContributionContentProvider implements ITreeContentProvider {
+	private static class ContentProvider implements ITreeContentProvider {
 
 		private UpstreamTree tree;
 
@@ -186,8 +186,7 @@ public class ContributionTreePage extends FormPage {
 
 	}
 
-	private class ContributionLabelProvider extends BaseLabelProvider implements
-			ITableLabelProvider {
+	private class Label extends BaseLabelProvider implements ITableLabelProvider {
 
 		private final ContributionImage image = new ContributionImage();
 
@@ -242,6 +241,41 @@ public class ContributionTreePage extends FormPage {
 			return total < 0 && node.result() > 0
 					? -node.result() / total
 					: node.result() / total;
+		}
+	}
+
+	private record ClipboardLabel(Label label) implements TreeClipboard.Provider {
+
+		@Override
+		public int columns() {
+			return 6;
+		}
+
+		@Override
+		public String getHeader(int col) {
+			return switch (col) {
+				case 0 -> M.Contribution + " [%]";
+				case 1 -> M.Process;
+				case 2 -> "Required amount";
+				case 3, 5 -> M.Unit;
+				case 4 -> M.Result;
+				default -> null;
+			};
+		}
+
+		@Override
+		public String getLabel(TreeItem item, int col) {
+			if (!(item.getData() instanceof UpstreamNode node))
+				return null;
+			return switch (col) {
+				case 0 -> Numbers.format(label.getContribution(node) * 100, 2);
+				case 1 -> label.getColumnText(node, 1);
+				case 2 -> Double.toString(node.requiredAmount());
+				case 3 -> Labels.refUnit(node.provider());
+				case 4 -> Double.toString(node.result());
+				case 5 -> label.getUnit();
+				default -> null;
+			};
 		}
 	}
 }
