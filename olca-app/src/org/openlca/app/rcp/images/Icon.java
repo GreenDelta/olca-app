@@ -85,6 +85,7 @@ public enum Icon {
 	HOME("home.png"),
 
 	IMPORT("import.png"),
+	IMPORT_WIZARD("wizard/import.png"),
 	IMPORT_ZIP_WIZARD("wizard/zip.png"),
 	INFO("info.png"),
 	INPUT("model/input.png"),

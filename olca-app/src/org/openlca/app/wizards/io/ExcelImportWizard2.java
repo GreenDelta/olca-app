@@ -14,6 +14,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
@@ -22,6 +25,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
@@ -37,8 +41,8 @@ public class ExcelImportWizard2 extends Wizard implements IImportWizard {
 
 	public ExcelImportWizard2() {
 		setNeedsProgressMonitor(true);
-		setWindowTitle(M.ProcessExcelImportDescription);
-		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
+		setWindowTitle(M.Import);
+		setDefaultPageImageDescriptor(Icon.IMPORT_WIZARD.descriptor());
 	}
 
 	public static void of(File file) {
@@ -101,17 +105,19 @@ public class ExcelImportWizard2 extends Wizard implements IImportWizard {
 
 		Page() {
 			super("ExcelImportWizard.Page");
-			setTitle("#Import");
+			setTitle("Import processes from Excel files");
+			setDescription(
+					"Note that only files in the openLCA process format are supported");
 			setPageComplete(false);
 		}
-
-
 
 		@Override
 		public void createControl(Composite parent) {
 			var body = new Composite(parent, SWT.NONE);
 			UI.gridLayout(body, 1);
-			UI.formLabel(body, "Selected one or more Excel files:");
+			var link = new Hyperlink(body, SWT.NONE);
+			link.setText("Selected one or more Excel files:");
+			link.setForeground(Colors.linkBlue());
 
 			var viewer = Tables.createViewer(body, M.File);
 			var table = viewer.getTable();
@@ -147,6 +153,23 @@ public class ExcelImportWizard2 extends Wizard implements IImportWizard {
 			});
 
 			Actions.bind(viewer, addFiles, removeFiles);
+
+			link.addHyperlinkListener(new HyperlinkAdapter() {
+				@Override
+				public void linkActivated(HyperlinkEvent e) {
+					addFiles.run();
+				}
+
+				@Override
+				public void linkEntered(HyperlinkEvent e) {
+					link.setUnderlined(true);
+				}
+
+				@Override
+				public void linkExited(HyperlinkEvent e) {
+					link.setUnderlined(false);
+				}
+			});
 
 			setControl(body);
 		}
