@@ -27,7 +27,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.DbImportWizard;
 import org.openlca.app.wizards.io.EcoSpold01ImportWizard;
 import org.openlca.app.wizards.io.EcoSpold2ImportWizard;
-import org.openlca.app.wizards.io.ExcelImportWizard2;
+import org.openlca.app.wizards.io.ExcelImportWizard;
 import org.openlca.app.wizards.io.GeoJsonImportWizard;
 import org.openlca.app.wizards.io.ILCDImportWizard;
 import org.openlca.app.wizards.io.ImportLibraryDialog;
@@ -98,7 +98,7 @@ public class FileImport {
 		switch (format) {
 			case ES1_XML, ES1_ZIP -> EcoSpold01ImportWizard.of(file);
 			case ES2_XML, ES2_ZIP -> EcoSpold2ImportWizard.of(file);
-			case EXCEL -> ExcelImportWizard2.of(file);
+			case EXCEL -> ExcelImportWizard.of(file);
 			case GEO_JSON -> GeoJsonImportWizard.of(file);
 			case ILCD_ZIP -> ILCDImportWizard.of(file);
 			case JSON_LD_ZIP -> JsonImportWizard.of(file);
