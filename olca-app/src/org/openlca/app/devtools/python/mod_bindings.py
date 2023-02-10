@@ -29,7 +29,6 @@ import org.openlca.core.matrix.format.ByteMatrixBuffer as ByteMatrixBuffer
 import org.openlca.core.matrix.format.CSCByteMatrix as CSCByteMatrix
 import org.openlca.core.matrix.format.CSCMatrix as CSCMatrix
 import org.openlca.ipc.Cache as Cache
-import org.openlca.ipc.handlers.CacheHandler as CacheHandler
 import org.openlca.core.matrix.CalcAllocationFactor as CalcAllocationFactor
 import org.openlca.core.matrix.CalcExchange as CalcExchange
 import org.openlca.core.matrix.CalcImpactFactor as CalcImpactFactor
@@ -450,7 +449,6 @@ import org.openlca.io.simapro.csv.SimaProUnit as SimaProUnit
 import org.openlca.core.matrix.io.SimpleBin as SimpleBin
 import org.openlca.expressions.SimpleCharStream as SimpleCharStream
 import org.openlca.core.results.providers.SimpleResultProvider as SimpleResultProvider
-import org.openlca.ipc.handlers.SimulationHandler as SimulationHandler
 import org.openlca.core.results.SimulationResult as SimulationResult
 import org.openlca.io.xls.results.SimulationResultExport as SimulationResultExport
 import org.openlca.core.math.Simulator as Simulator
