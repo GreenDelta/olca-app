@@ -38,7 +38,7 @@ public class MaximizedNodeFigure extends NodeFigure {
 		border.setColor(theme.boxBorderColor(box));
 		setBorder(border);
 
-		var header = new NodeHeader();
+		header = new NodeHeader();
 		var topRoundedCorners = RoundBorder.Corners
 			.topRoundedCorners(HEADER_ARC_SIZE);
 		var headerBorder = new RoundBorder(borderWidth, topRoundedCorners);

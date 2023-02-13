@@ -1,5 +1,6 @@
 package org.openlca.app.rcp.images;
 
+import org.eclipse.gmf.runtime.draw2d.ui.render.RenderedImage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
@@ -162,6 +163,20 @@ public class Images {
 		return comments != null && comments.hasPath(path)
 				? Icon.COMMENT.get()
 				: null;
+	}
+
+	public static RenderedImage getSVG(RefEntity e) {
+		var icon = iconSVG(e);
+		if (icon == null)
+			return null;
+		return ImageManager.get(icon);
+	}
+
+	public static RenderedImage getSVG(Descriptor d) {
+		var icon = iconSVG(d);
+		if (icon == null)
+			return null;
+		return ImageManager.get(icon);
 	}
 
 	public static Image getForCategory(ModelType type) {
@@ -418,6 +433,78 @@ public class Images {
 			case PARAMETER -> ModelIcon.PARAMETER_CATEGORY;
 			case CURRENCY -> ModelIcon.CURRENCY_CATEGORY;
 			case DQ_SYSTEM -> ModelIcon.DQ_SYSTEM_CATEGORY;
+			default -> null;
+		};
+	}
+
+	private static ModelIconGraph iconSVG(Descriptor d) {
+		if (d == null)
+			return null;
+
+		if (d instanceof ProcessDescriptor p) {
+			if (p.processType == ProcessType.LCI_RESULT)
+				return p.flowType == FlowType.WASTE_FLOW
+						? ModelIconGraph.PROCESS_SYSTEM_WASTE
+						: ModelIconGraph.PROCESS_SYSTEM_PROD;
+			return p.flowType == FlowType.WASTE_FLOW
+					? ModelIconGraph.PROCESS_WASTE
+					: ModelIconGraph.PROCESS_PROD;
+		}
+
+		if (d instanceof FlowDescriptor f && f.flowType != null)
+			return iconSVG(f.flowType);
+
+		return iconSVG(d.type);
+	}
+
+	private static ModelIconGraph iconSVG(RefEntity entity) {
+		if (entity instanceof Process p) {
+			var qRef = p.quantitativeReference;
+			var flowType = qRef != null && qRef.flow != null
+					? qRef.flow.flowType
+					: null;
+			if (p.processType == ProcessType.LCI_RESULT) {
+				return flowType == FlowType.WASTE_FLOW
+						? ModelIconGraph.PROCESS_SYSTEM_WASTE
+						: ModelIconGraph.PROCESS_SYSTEM_PROD;
+			}
+			return flowType == FlowType.WASTE_FLOW
+					? ModelIconGraph.PROCESS_WASTE
+					: ModelIconGraph.PROCESS_PROD;
+		}
+
+		if (entity instanceof Flow flow)
+			return iconSVG(flow.flowType);
+
+		return null;
+	}
+
+	private static ModelIconGraph iconSVG(FlowType type) {
+		if (type == null)
+			return null;
+		return switch (type) {
+			case ELEMENTARY_FLOW -> ModelIconGraph.FLOW_ELEMENTARY;
+			case PRODUCT_FLOW -> ModelIconGraph.FLOW_PRODUCT;
+			case WASTE_FLOW -> ModelIconGraph.FLOW_WASTE;
+		};
+	}
+
+	private static ModelIconGraph iconSVG(ProcessType type) {
+		if (type == null)
+			return null;
+		return switch (type) {
+			case UNIT_PROCESS -> ModelIconGraph.PROCESS_PROD;
+			case LCI_RESULT -> ModelIconGraph.PROCESS_SYSTEM_PROD;
+		};
+	}
+
+	private static ModelIconGraph iconSVG(ModelType type) {
+		if (type == null)
+			return null;
+		return switch (type) {
+			case EPD -> ModelIconGraph.EPD;
+			case PROCESS -> ModelIconGraph.PROCESS_GENERIC;
+			case RESULT -> ModelIconGraph.RESULT;
 			default -> null;
 		};
 	}
