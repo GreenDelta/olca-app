@@ -14,6 +14,7 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.commands.CreateNodeCommand;
@@ -78,9 +79,14 @@ public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 	protected Command createChangeConstraintCommand(
 		ChangeBoundsRequest request, EditPart child, Object constraint) {
 		if (child instanceof AbstractVertexEditPart
-				&& constraint instanceof Rectangle) {
-			return new ComponentSetConstraintCommand((Component) child.getModel(),
-				request, (Rectangle) constraint);
+				&& constraint instanceof Rectangle rect) {
+			if (child instanceof NodeEditPart) {
+				var nodeConstraint = new Rectangle(rect.x, rect.y, rect.width, SWT.DEFAULT);
+				return new ComponentSetConstraintCommand(
+						(Component) child.getModel(), request, nodeConstraint);
+			}
+			else return new ComponentSetConstraintCommand(
+					(Component) child.getModel(), request, rect);
 		}
 		return super.createChangeConstraintCommand(request, child,
 			constraint);
