@@ -3,7 +3,7 @@
 /* basic attributes and graph settings */
 :root {
   --version: '2';       /* the version of openLCA */
-  --name: 'Default';    /* the name of the theme */
+  --name: 'Light';    /* the name of the theme */
   --mode: 'light';      /* this is a light theme */
 }
 
