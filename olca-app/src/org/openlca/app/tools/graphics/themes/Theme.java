@@ -157,7 +157,7 @@ public class Theme {
 
 		var theme = defaults(file.getName(), name, version);
 
-		theme.isDark = Css.hasDarkMode(css);
+		theme.isDark = Css.isDarkMode(css);
 
 		for (int i = 0; i < css.getStyleRuleCount(); i++) {
 			var rule = css.getStyleRuleAtIndex(i);

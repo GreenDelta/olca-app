@@ -46,7 +46,7 @@ class Css {
     return Optional.empty();
   }
 
-  static boolean hasDarkMode(CascadingStyleSheet css) {
+  static boolean isDarkMode(CascadingStyleSheet css) {
     if (css == null)
       return false;
     for (int i = 0; i < css.getStyleRuleCount(); i++) {

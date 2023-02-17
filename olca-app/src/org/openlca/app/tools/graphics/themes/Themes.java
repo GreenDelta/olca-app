@@ -1,5 +1,6 @@
 package org.openlca.app.tools.graphics.themes;
 
+import org.eclipse.swt.widgets.Display;
 import org.openlca.app.rcp.Workspace;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static org.openlca.util.OS.WINDOWS;
+
 public final class Themes {
 
 	public static String MODEL = "model";
@@ -20,9 +23,10 @@ public final class Themes {
 	}
 
 	public static Theme getDefault(String id) {
+		var name = Display.isSystemDarkTheme() ? "Dark" : "Light";
 		return loadFromWorkspace(id)
 			.stream()
-			.filter(theme -> "Default".equalsIgnoreCase(theme.name()))
+			.filter(theme -> name.equalsIgnoreCase(theme.name()))
 			.findAny()
 			.orElse(noCss().get(0));
 	}
@@ -89,7 +93,7 @@ public final class Themes {
 		// copy the default themes if they are not yet present
 		var defaults = new String[]{
 			"Dark.css",
-			"Default.css",
+			"Light.css",
 		};
 		for (var name : defaults) {
 			var file = new File(v2Dir, name);
