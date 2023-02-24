@@ -36,7 +36,8 @@
 
         var codeMirror = CodeMirror(document.body, {
             mode: "python",
-            lineNumbers: true
+            lineNumbers: true,
+            theme: "idea"
         });
 
         codeMirror.on("change", function () {
