@@ -84,7 +84,7 @@ public class UnitTable extends SimpleFormEditor {
 			var tk = mform.getToolkit();
 			var body = UI.formBody(form, tk);
 
-			var filterComp = tk.createComposite(body);
+			var filterComp = UI.formComposite(body, tk);
 			UI.gridLayout(filterComp, 2);
 			UI.gridData(filterComp, true, false);
 			var filter = UI.formText(filterComp, tk, M.Filter);

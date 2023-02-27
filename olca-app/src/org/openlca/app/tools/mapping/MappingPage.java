@@ -64,7 +64,7 @@ class MappingPage extends FormPage {
 		targetRow.onSelect = p -> tool.targetSystem = p;
 
 		UI.filler(comp);
-		Button checkButton = tk.createButton(comp, "Check mappings", SWT.NONE);
+		Button checkButton = UI.formButton(comp, tk, "Check mappings");
 		Runnable updateCheckState = () -> {
 			if (tool.checked.get()) {
 				checkButton.setImage(Icon.ACCEPT.get());

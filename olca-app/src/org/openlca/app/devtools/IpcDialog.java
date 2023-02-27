@@ -13,11 +13,13 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -71,18 +73,21 @@ public class IpcDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(mForm.getForm(), tk);
+		Composite body = mForm.getForm().getBody();
+		body.setBackground(Colors.widgetBackground());
+		body.setForeground(Colors.widgetForeground());
+		UI.bodyLayout(body, tk);
 
 		// port text
-		var comp = tk.createComposite(body);
+		var comp = UI.formComposite(body, tk);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 3);
-		tk.createLabel(comp, M.Port);
-		portText = tk.createText(comp, "8080", SWT.NONE);
+		portText = UI.formText(comp, tk, M.Port);
+		portText.setText("8080");
 		UI.gridData(portText, true, false);
 
 		// start-stop button
-		button = tk.createButton(comp, "", SWT.NONE);
+		button = UI.formButton(comp, tk, "");
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, e -> {
 			if (server == null && grpcServer == null) {
@@ -92,17 +97,16 @@ public class IpcDialog extends FormDialog {
 			}
 		});
 		UI.filler(comp, tk);
-		grpcCheck = tk.createButton(comp,
+		grpcCheck = UI.formButton(comp, tk,
 				"Start as gRPC service (experimental)",
 				SWT.CHECK);
 
 		// status text and grpc check
-		var statComp = tk.createComposite(body);
+		var statComp = UI.formComposite(body, tk);
 		UI.gridData(statComp, true, true);
 		UI.gridLayout(statComp, 1);
-		statusLabel = tk.createLabel(statComp, M.StartIPCInfo, SWT.WRAP);
+		statusLabel = UI.formLabel(statComp, tk, M.StartIPCInfo, SWT.WRAP);
 		UI.gridData(statusLabel, true, true);
-
 	}
 
 	private void onStart() {

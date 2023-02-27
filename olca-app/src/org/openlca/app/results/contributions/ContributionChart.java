@@ -42,6 +42,7 @@ public class ContributionChart {
 		chart.setLayoutData(gdata);
 		chart.setOrientation(SWT.HORIZONTAL);
 		chart.getLegend().setVisible(false);
+		chart.setBackground(Colors.widgetBackground());
 
 		// we set a white title just to fix the problem
 		// that the y-axis is cut sometimes

@@ -58,19 +58,19 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		// file text
 		UI.gridData(comp, true, false);
 		UI.formLabel(comp, tk, "GeoJSON or setup file:");
-		fileText = tk.createText(comp, "");
+		fileText = UI.formEmptyText(comp, tk);
 		fileText.setEditable(false);
 		UI.gridData(fileText, true, false);
 
 		// buttons
 		UI.filler(comp, tk);
-		var btnComp = tk.createComposite(comp);
+		var btnComp = UI.formComposite(comp, tk);
 		UI.gridLayout(btnComp, 2, 10, 0);
-		var openBtn = tk.createButton(btnComp, "Open", SWT.NONE);
+		var openBtn = UI.formButton(btnComp, tk, "Open");
 		openBtn.setImage(Icon.FOLDER_OPEN.get());
 		UI.gridData(openBtn, false, false).widthHint = 80;
 		Controls.onSelect(openBtn, _e -> onOpenFile());
-		saveBtn = tk.createButton(btnComp, "Save", SWT.NONE);
+		saveBtn = UI.formButton(btnComp, tk, "Save");
 		saveBtn.setImage(Icon.SAVE.get());
 		UI.gridData(saveBtn, false, false).widthHint = 80;
 		saveBtn.setEnabled(false);

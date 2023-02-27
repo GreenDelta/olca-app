@@ -39,7 +39,8 @@ class ProcessModelingPage extends ModelPage<Process> {
 	private void createModelingSection(Composite parent) {
 		var comp = UI.formSection(parent, toolkit, M.ModelingAndValidation, 3);
 
-		getToolkit().createLabel(comp, M.ProcessType);
+		UI.formLabel(comp, getToolkit(), M.ProcessType);
+		UI.formLabel(comp, getToolkit(), M.ProcessType);
 		var typeCombo = new ProcessTypeViewer(comp);
 		getBinding().onModel(this::getModel, "processType", typeCombo);
 		typeCombo.setEnabled(isEditable());
@@ -66,7 +67,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	private void createSourcesSection(Composite parent) {
 		Section section = UI.section(parent, toolkit, M.Sources);
-		Composite comp = toolkit.createComposite(section);
+		Composite comp = UI.formComposite(section, toolkit);
 		UI.gridLayout(comp, 1);
 		UI.gridData(comp, true, true);
 		section.setClient(comp);

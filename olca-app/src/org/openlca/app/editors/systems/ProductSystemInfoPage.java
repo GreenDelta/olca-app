@@ -57,7 +57,7 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	private void createReferenceSection(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, M.Reference, 3);
 		link(comp, M.Process, "referenceProcess");
-		tk.createLabel(comp, M.Product);
+		UI.formLabel(comp, tk, M.Product);
 		flowCombo = new ExchangeViewer(comp);
 		flowCombo.addSelectionChangedListener(e -> {
 			if (e == null || e.flow == null)
@@ -67,11 +67,11 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		});
 		flowCombo.setInput(getRefCandidates(getModel().referenceProcess));
 		new CommentControl(comp, getToolkit(), "referenceExchange", getComments());
-		tk.createLabel(comp, M.FlowProperty);
+		UI.formLabel(comp, tk, M.FlowProperty);
 		propertyCombo = new FlowPropertyFactorViewer(comp);
 		propertyCombo.addSelectionChangedListener(this::propertyChanged);
 		new CommentControl(comp, getToolkit(), "targetFlowPropertyFactor", getComments());
-		tk.createLabel(comp, M.Unit);
+		UI.formLabel(comp, tk, M.Unit);
 		unitCombo = new UnitCombo(comp);
 		new CommentControl(comp, getToolkit(), "targetUnit", getComments());
 		targetAmountText = UI.formText(comp, getManagedForm().getToolkit(), M.TargetAmount);
@@ -106,11 +106,11 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	}
 
 	private void addCalculationButton(Composite comp, FormToolkit tk) {
-		tk.createLabel(comp, "");
-		var button = tk.createButton(comp, M.Calculate, SWT.NONE);
+		UI.formLabel(comp, tk, "");
+		var button = UI.formButton(comp, tk, M.Calculate);
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, e -> CalculationWizard.open(getModel()));
-		tk.createLabel(comp, "");
+		UI.formLabel(comp, tk, "");
 	}
 
 	private void propertyChanged(FlowPropertyFactor f) {

@@ -44,7 +44,7 @@ class EditorPage extends FormPage {
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
 
-		Composite filterComp = tk.createComposite(body);
+		Composite filterComp = UI.formComposite(body, tk);
 		UI.gridLayout(filterComp, 3);
 		UI.gridData(filterComp, true, false);
 		filter = UI.formText(filterComp, tk, M.Filter);

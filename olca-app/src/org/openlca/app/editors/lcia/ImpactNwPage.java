@@ -41,7 +41,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 		var body = UI.formBody(form, toolkit);
 		var section = UI.section(body, toolkit, M.NormalizationWeightingSets);
 		UI.gridData(section, true, true);
-		var client = toolkit.createComposite(section);
+		var client = UI.formComposite(section, toolkit);
 		section.setClient(client);
 		UI.gridLayout(client, 1);
 		var sashForm = createSash(client);

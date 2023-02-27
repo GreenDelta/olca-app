@@ -67,11 +67,11 @@ class ResultPage extends FormPage {
 	}
 
 	private void createFilter() {
-		Composite filterComposite = tk.createComposite(formBody);
+		Composite filterComposite = UI.formComposite(formBody, tk);
 		UI.gridLayout(filterComposite, 2, 10, 10);
-		Label label = tk.createLabel(filterComposite, M.Filter);
+		Label label = UI.formLabel(filterComposite, tk, M.Filter);
 		label.setFont(UI.boldFont());
-		Text text = tk.createText(filterComposite, "");
+		Text text = UI.formEmptyText(filterComposite, tk);
 		UI.gridData(text, false, false).widthHint = 350;
 		text.addModifyListener(e -> filterResults(text.getText()));
 	}

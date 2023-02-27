@@ -40,10 +40,8 @@ class LinkingMatrix {
 	}
 
 	void render(Composite root, FormToolkit tk) {
-		Composite body = tk.createComposite(root);
+		Composite body = UI.formComposite(root, tk);
 		UI.gridData(body, false, false).widthHint = 800;
-
-		body.setBackground(Colors.white());
 
 		GridLayout grid = new GridLayout(6, true);
 		grid.marginWidth = 10;
@@ -122,9 +120,7 @@ class LinkingMatrix {
 	}
 
 	private Label filler(Composite parent) {
-		Label f = new Label(parent, SWT.NONE);
-		f.setBackground(Colors.white());
-		return f;
+		return UI.formLabel(parent);
 	}
 
 	private Label cell(Composite parent, String text) {
@@ -147,7 +143,7 @@ class LinkingMatrix {
 			int vspan,
 			Color foreground,
 			Color background) {
-		Composite comp = new Composite(parent, SWT.BORDER);
+		Composite comp = UI.formComposite(parent, SWT.BORDER);
 		comp.setLayoutData(new GridData(
 				SWT.FILL, SWT.FILL, true, false, 1, vspan));
 		comp.setBackground(background);

@@ -62,7 +62,7 @@ public class SaveResultDialog extends FormDialog {
 		var body = UI.formBody(mform.getForm(), tk);
 
 		// name
-		var nameComp = tk.createComposite(body);
+		var nameComp = UI.formComposite(body, tk);
 		UI.gridLayout(nameComp, 2);
 		UI.fillHorizontal(nameComp);
 		nameText = UI.formText(nameComp, tk, "Name");
@@ -73,7 +73,7 @@ public class SaveResultDialog extends FormDialog {
 			}
 		});
 
-		var groupComp = tk.createComposite(body);
+		var groupComp = UI.formComposite(body, tk);
 		UI.gridLayout(groupComp, 2, 0, 0).horizontalSpacing = 10;
 		UI.fillHorizontal(groupComp);
 
@@ -81,8 +81,8 @@ public class SaveResultDialog extends FormDialog {
 		var processSelector = Selector.forProcess(groupComp, tk);
 		processRadio = processSelector.button;
 
-		metaCheck = tk.createButton(
-			processSelector.group, M.CopyMetaDataFromReferenceProcess, SWT.CHECK);
+		metaCheck = UI.formCheckBox(processSelector.group, tk);
+	  metaCheck.setText(M.CopyMetaDataFromReferenceProcess);
 		metaCheck.setSelection(true);
 		metaCheck.setEnabled(false);
 
@@ -155,7 +155,7 @@ public class SaveResultDialog extends FormDialog {
 		static Selector forResult(Composite comp, FormToolkit tk) {
 			makeIcon(comp, tk, Images.get(ModelType.RESULT));
 			var group = makeGroup(comp, tk);
-			var button = tk.createButton(group, "As result", SWT.RADIO);
+			var button = UI.formRadio(group, tk, "As result");
 			button.setSelection(true);
 			return new Selector(group, button);
 		}
@@ -163,16 +163,15 @@ public class SaveResultDialog extends FormDialog {
 		static Selector forProcess(Composite comp, FormToolkit tk) {
 			makeIcon(comp, tk, Images.get(ProcessType.LCI_RESULT));
 			var group = makeGroup(comp, tk);
-			var button = tk.createButton(group, "As system process", SWT.RADIO);
+			var button = UI.formRadio(group, tk, "As system process");
 			button.setSelection(false);
 			return new Selector(group, button);
 		}
 
 		private static Group makeGroup(Composite comp, FormToolkit tk) {
-			var group = new Group(comp, SWT.NONE);
+			var group = UI.formGroup(comp, tk);
 			UI.fillHorizontal(group);
 			UI.gridLayout(group, 1).makeColumnsEqualWidth = false;
-			tk.adapt(group);
 			return group;
 		}
 

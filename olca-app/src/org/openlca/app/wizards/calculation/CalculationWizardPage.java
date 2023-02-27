@@ -57,7 +57,7 @@ class CalculationWizardPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite body = new Composite(parent, SWT.NULL);
+		Composite body = UI.formComposite(parent);
 		UI.gridLayout(body, 2, 10, 10);
 		setControl(body);
 
@@ -69,20 +69,20 @@ class CalculationWizardPage extends WizardPage {
 		createTypeRadios(body);
 
 		// separator
-		new Label(body, SWT.NONE);
+		UI.formLabel(body, null);
 		UI.gridData(new Label(
 						body, SWT.SEPARATOR | SWT.HORIZONTAL),
 				true, false);
-		new Label(body, SWT.NONE);
+		UI.formLabel(body);
 
 		// options
-		optionStack = new Composite(body, SWT.NULL);
+		optionStack = UI.formComposite(body);
 		var optionsLayout = new StackLayout();
 		optionStack.setLayout(optionsLayout);
 		createMonteCarloOptions(optionStack);
 		createCommonOptions(optionStack);
 		optionsLayout.topControl = commonOptions;
-		new Label(body, SWT.NONE);
+		UI.formLabel(body);
 
 		updateOptions();
 	}
@@ -104,9 +104,10 @@ class CalculationWizardPage extends WizardPage {
 		});
 
 		UI.formLabel(comp, "Parameter set");
-		var combo = new TableCombo(comp,
+		var combo = UI.formTableCombo(comp, null,
 				SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
+
 		for (var paramSet : paramSets) {
 			var item = new TableItem(
 					combo.getTable(), SWT.NONE);
@@ -173,12 +174,12 @@ class CalculationWizardPage extends WizardPage {
 		};
 
 		UI.formLabel(parent, M.CalculationType);
-		Composite comp = new Composite(parent, SWT.NO_RADIO_GROUP);
+		Composite comp = UI.formComposite(parent, SWT.NO_RADIO_GROUP);
 		UI.gridLayout(comp, types.length, 10, 0);
 
 		var radios = new Button[types.length];
 		for (int i = 0; i < types.length; i++) {
-			var radio = new Button(comp, SWT.RADIO);
+			var radio = UI.formRadio(comp);
 			radio.setText(getLabel(types[i]));
 			radio.setSelection(setup.type == types[i]);
 			radio.setEnabled(enabled[i]);
@@ -206,12 +207,11 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createCommonOptions(Composite parent) {
-		commonOptions = new Composite(parent, SWT.NULL);
+		commonOptions = UI.formComposite(parent);
 		UI.gridLayout(commonOptions, 1, 10, 0);
 		addRegioAndCostChecks(commonOptions);
 
-		var dqCheck = new Button(commonOptions, SWT.CHECK);
-		dqCheck.setText(M.AssessDataQuality);
+		var dqCheck = UI.checkBox(commonOptions, M.AssessDataQuality);
 		dqCheck.setSelection(setup.withDataQuality);
 		Controls.onSelect(dqCheck, e -> {
 			setup.withDataQuality = dqCheck.getSelection();
@@ -223,16 +223,16 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createMonteCarloOptions(Composite parent) {
-		monteCarloOptions = new Composite(parent, SWT.NONE);
+		monteCarloOptions = UI.formComposite(parent);
 		UI.gridLayout(monteCarloOptions, 1, 10, 0);
 		addRegioAndCostChecks(monteCarloOptions);
 
 		// number of iterations
-		var inner = new Composite(monteCarloOptions, SWT.NONE);
+		var inner = UI.formComposite(monteCarloOptions);
 		UI.gridLayout(inner, 2, 10, 0);
 		var label = UI.formLabel(inner, M.NumberOfIterations);
 		UI.gridData(label, false, false);
-		var countText = new Text(inner, SWT.BORDER);
+		var countText = UI.formText(inner, SWT.BORDER);
 		UI.gridData(countText, false, false).widthHint = 80;
 
 		countText.setText(Integer.toString(setup.simulationRuns));
@@ -247,14 +247,12 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void addRegioAndCostChecks(Composite comp) {
-		var regioCheck = new Button(comp, SWT.CHECK);
-		regioCheck.setText("Regionalized calculation");
+		var regioCheck = UI.checkBox(comp, "Regionalized calculation");
 		regioCheck.setSelection(setup.calcSetup.hasRegionalization());
 		Controls.onSelect(regioCheck,
 				_e -> setup.calcSetup.withRegionalization(regioCheck.getSelection()));
 
-		var costCheck = new Button(comp, SWT.CHECK);
-		costCheck.setText(M.IncludeCostCalculation);
+		var costCheck = UI.checkBox(comp, M.IncludeCostCalculation);
 		costCheck.setSelection(setup.calcSetup.hasCosts());
 		Controls.onSelect(costCheck,
 				_e -> setup.calcSetup.withCosts(costCheck.getSelection()));

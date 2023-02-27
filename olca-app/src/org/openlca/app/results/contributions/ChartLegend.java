@@ -9,6 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
@@ -34,7 +35,7 @@ class ChartLegend {
 	ILabelProvider label = new BaseLabelProvider();
 
 	ChartLegend(Composite parent, FormToolkit tk) {
-		composite = tk.createComposite(parent);
+		composite = UI.formComposite(parent, tk);
 		this.tk = tk;
 		UI.gridData(composite, true, true);
 		UI.gridLayout(composite, 1);
@@ -64,7 +65,7 @@ class ChartLegend {
 		if (model instanceof RootDescriptor
 				|| model instanceof RootEntity
 				|| model instanceof TechFlow) {
-			var link = tk.createImageHyperlink(composite, SWT.TOP);
+			var link = UI.formImageHyperlink(composite, tk, SWT.TOP);
 			link.setText(text);
 			link.setImage(getImage(colorIndex));
 			Controls.onClick(link, (e) -> {
@@ -80,10 +81,9 @@ class ChartLegend {
 			});
 			createdLinks.push(link);
 		} else {
-			var label = new CLabel(composite, SWT.TOP);
+			var label = UI.formCLabel(composite, tk, SWT.TOP);
 			label.setImage(getImage(colorIndex));
 			label.setText(text);
-			tk.adapt(label);
 			createdLinks.push(label);
 		}
 	}
@@ -100,7 +100,15 @@ class ChartLegend {
 		Image image = imageRegistry.get(key);
 		if (image != null)
 			return image;
-		image = new Image(Display.getCurrent(), 30, 15);
+		// Create a transparent image
+		var src = new Image(null, 30, 15);
+		var imageData = src.getImageData();
+		imageData.transparentPixel =
+				imageData.palette.getPixel(new RGB(255,255,255));
+		src.dispose();
+		image = new Image(Display.getCurrent(), imageData);
+
+
 		GC gc = new GC(image);
 		if (index != -1)
 			gc.setBackground(Colors.getForChart(index));

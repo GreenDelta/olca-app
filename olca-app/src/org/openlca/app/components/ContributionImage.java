@@ -1,9 +1,11 @@
 package org.openlca.app.components;
 
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.util.Colors;
 
@@ -61,11 +63,20 @@ public class ContributionImage {
 		var image = imageRegistry.get(key);
 		if (image != null)
 			return image;
-		image = new Image(display, width, 15);
+
+		// Create a transparent image
+		var src = new Image(null, width, 15);
+		var imageData = src.getImageData();
+		imageData.transparentPixel = imageData.palette.getPixel(new RGB(255,255,255));
+		src.dispose();
+		image = new Image(display, imageData);
+
 		GC gc = new GC(image);
 		gc.setBackground(selectedColor);
 		gc.fillRectangle((int) ((width - barWidth) / 2), 5, filledWidth, 5);
+
 		gc.dispose();
+
 		imageRegistry.put(key, image);
 		return image;
 	}

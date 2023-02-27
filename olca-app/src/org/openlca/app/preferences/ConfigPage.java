@@ -4,11 +4,8 @@ import java.util.Objects;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
@@ -51,65 +48,106 @@ public class ConfigPage extends PreferencePage implements
 		Composite body = new Composite(parent, SWT.NONE);
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true);
-		Composite comp = UI.formComposite(body);
+		Composite comp = new Composite(body, SWT.NONE);
 		UI.gridLayout(comp, 2);
 		UI.gridData(comp, true, false);
 		createLanguageCombo(comp);
+		createMemoryText(comp);
+		if (OS.get() == OS.WINDOWS)
+			createBrowserCheck(comp);
+		createShowHidePage(comp);
 
-		memoryText = UI.formText(comp, M.MaximumMemoryUsage);
-		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
-		memoryText.addModifyListener(e -> setDirty());
-
-		// Edge browser check
-		if (OS.get() == OS.WINDOWS) {
-			var useEdge = UI.formCheckBox(
-				comp, "Use Edge as internal browser");
-			useEdge.setToolTipText("WebView2 needs to be installed for this");
-			useEdge.setSelection(iniFile.useEdgeBrowser());
-			Controls.onSelect(
-				useEdge, $ -> {
-					iniFile.setUseEdgeBrowser(useEdge.getSelection());
-					setDirty();
-				});
-		}
-
-		// show / hide start page
-		var hideStart = UI.formCheckBox(
-			comp, "Hide welcome page");
-		hideStart.setSelection(
-			Preferences.getBool("hide.welcome.page"));
-		Controls.onSelect(hideStart, e -> Preferences.set(
-			"hide.welcome.page", hideStart.getSelection()));
-
-		// reset window layout
 		UI.filler(comp);
 		Composite bcomp = new Composite(comp, SWT.NONE);
 		UI.gridLayout(bcomp, 1, 5, 0);
-		Button b = new Button(bcomp, SWT.NONE);
+
+		createResetWindow(bcomp);
+		if (!NativeLib.isLoaded(Module.UMFPACK))
+			createNativeLib(bcomp);
+
+		UI.filler(comp);
+
+		createNoteComposite(comp.getFont(), comp, M.Note
+			+ ": ", M.SelectLanguageNoteMessage);
+
+		return body;
+	}
+
+	private void createNativeLib(Composite comp) {
+		var libButton = new Button(comp, SWT.NONE);
+		libButton.setText("Download additional calculation libraries");
+		Controls.onSelect(
+				libButton,
+				_e -> LibraryDownload.open());
+		UI.gridData(libButton, true, false);
+	}
+
+	private void createResetWindow(Composite comp) {
+		// reset window layout
+		Button b = new Button(comp, SWT.NONE);
 		b.setText("Reset window layout");
 		Controls.onSelect(b, _e -> {
 			WindowLayout.reset();
 			b.setEnabled(false);
 		});
+		UI.gridData(b, true, false);
+	}
 
-		if (!NativeLib.isLoaded(Module.UMFPACK)) {
-			var libButton = new Button(bcomp, SWT.NONE);
-			libButton.setText("Download additional calculation libraries");
-			Controls.onSelect(
-				libButton,
-				_e -> LibraryDownload.open());
-			UI.gridData(b, true, false);
-			UI.gridData(libButton, true, false);
-		}
+	private void createShowHidePage(Composite comp) {
+		// show / hide start page
+		var hideStartLabel = new Label(comp, SWT.NONE);
+		var gd = UI.gridData(hideStartLabel, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+		hideStartLabel.setText("Hide welcome page");
 
-		UI.filler(comp);
-		createNoteComposite(comp.getFont(), comp, M.Note
-			+ ": ", M.SelectLanguageNoteMessage);
-		return body;
+		var hideStart = new Button(comp, SWT.CHECK);
+		hideStart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		hideStart.setSelection(
+				Preferences.getBool("hide.welcome.page"));
+		Controls.onSelect(hideStart, e -> Preferences.set(
+				"hide.welcome.page", hideStart.getSelection()));
+	}
+
+	private void createBrowserCheck(Composite comp) {
+		// Edge browser check
+		var edgeLabel = new Label(comp, SWT.NONE);
+		edgeLabel.setText("Use Edge as internal browser");
+		var gd = UI.gridData(edgeLabel, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
+		var useEdge = new Button(comp, SWT.CHECK);
+		useEdge.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		useEdge.setToolTipText("WebView2 needs to be installed for this");
+		useEdge.setSelection(iniFile.useEdgeBrowser());
+		Controls.onSelect(
+				useEdge, $ -> {
+					iniFile.setUseEdgeBrowser(useEdge.getSelection());
+					setDirty();
+				});
+	}
+
+	private void createMemoryText(Composite comp) {
+		var memoryLabel = new Label(comp, SWT.NONE);
+		var gd = UI.gridData(memoryLabel, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+		memoryLabel.setText(M.MaximumMemoryUsage);
+
+		memoryText = new Text(comp, SWT.BORDER);
+		UI.fillHorizontal(memoryText);
+		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
+		memoryText.addModifyListener(e -> setDirty());
 	}
 
 	private void createLanguageCombo(Composite composite) {
-		UI.formLabel(composite, M.Language);
+		var label = new Label(composite, SWT.NONE);
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+		label.setText(M.Language);
+
 		languageCombo = new Combo(composite, SWT.READ_ONLY);
 		UI.gridData(languageCombo, true, false);
 		Language[] languages = Language.values();

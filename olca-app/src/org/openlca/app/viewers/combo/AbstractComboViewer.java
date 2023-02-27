@@ -12,6 +12,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.BaseNameComparator;
@@ -30,6 +31,12 @@ public abstract class AbstractComboViewer<T> extends
 	protected TableComboViewer createViewer(Composite parent) {
 		var combo = new TableCombo(parent,
 				SWT.READ_ONLY | SWT.BORDER | SWT.VIRTUAL);
+
+		combo.setBackground(Colors.widgetBackground());
+		combo.setForeground(Colors.widgetForeground());
+		combo.getTable().setHeaderBackground(Colors.widgetBackground());
+		combo.getTable().setHeaderForeground(Colors.widgetForeground());
+
 		UI.gridData(combo, true, false).widthHint = 350;
 		if (useColumnHeaders()) {
 			if (useColumnBounds())

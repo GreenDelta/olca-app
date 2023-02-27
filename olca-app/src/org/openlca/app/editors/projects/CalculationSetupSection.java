@@ -66,7 +66,8 @@ class CalculationSetupSection {
 
 		// regionalized calculation
 		UI.filler(comp, tk);
-		var regioCheck = tk.createButton(comp, M.RegionalizedLCIA, SWT.CHECK);
+		var regioCheck = UI.formCheckBox(comp, tk);
+		regioCheck.setText(M.RegionalizedLCIA);
 		regioCheck.setSelection(editor.getModel().isWithRegionalization);
 		Controls.onSelect(regioCheck, $ -> {
 			var project = editor.getModel();
@@ -77,7 +78,8 @@ class CalculationSetupSection {
 
 		// LCC calculation
 		UI.filler(comp, tk);
-		var costsCheck = tk.createButton(comp, M.IncludeCostCalculation, SWT.CHECK);
+		var costsCheck = UI.formCheckBox(comp, tk);
+		costsCheck.setText(M.IncludeCostCalculation);
 		costsCheck.setSelection(editor.getModel().isWithCosts);
 		Controls.onSelect(costsCheck, $ -> {
 			var project = editor.getModel();
@@ -89,8 +91,7 @@ class CalculationSetupSection {
 		// report button
 		if (editor.report == null) {
 			var beforeReport = UI.filler(comp, tk);
-			var reportBtn = tk.createButton(
-				comp, "Create report", SWT.NONE);
+			var reportBtn = UI.formButton(comp, tk, "Create report");
 			var afterButton = UI.filler(comp, tk);
 			reportBtn.setImage(Images.get(ModelType.PROJECT));
 			Controls.onSelect(reportBtn, $ -> {

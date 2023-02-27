@@ -102,9 +102,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void createCalculationButton(Composite parent) {
 		UI.filler(parent, toolkit);
-		var comp = toolkit.createComposite(parent);
+		var comp = UI.formComposite(parent, toolkit);
 		UI.gridLayout(comp, 1, 0, 0).marginHeight = 5;
-		var button = toolkit.createButton(comp, M.Calculate, SWT.NONE);
+		var button = UI.formButton(comp, toolkit, M.Calculate);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(Images.get(ModelType.PROJECT));
 		Controls.onSelect(button,

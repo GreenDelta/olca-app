@@ -11,6 +11,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.IDatabase;
@@ -39,6 +40,8 @@ public class ImpactMethodViewer extends
 		if (!withCategories()) {
 			combo.setShowTableLines(false);
 		}
+		combo.setBackground(Colors.widgetBackground());
+		combo.setForeground(Colors.widgetForeground());
 	}
 
 	private boolean withCategories() {

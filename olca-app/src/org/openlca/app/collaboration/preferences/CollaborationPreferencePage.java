@@ -5,6 +5,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
@@ -35,19 +36,37 @@ public class CollaborationPreferencePage extends PreferencePage implements IWork
 	}
 
 	private void createRestrictionsCheckBox(Composite parent) {
-		restrictionsCheckBox = UI.formCheckBox(parent, "Check restrictions before commit");
+		var label = new Label(parent, SWT.NONE);
+		label.setText("Check restrictions before commit");
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
+		restrictionsCheckBox = new Button(parent, SWT.CHECK);
 		UI.gridData(restrictionsCheckBox, true, false).horizontalIndent = 5;
 		restrictionsCheckBox.setSelection(CollaborationPreference.checkRestrictions());
 	}
 
 	private void createReferenceCheckBox(Composite parent) {
-		referenceCheckBox = UI.formCheckBox(parent, "Check referenced changes");
+		var label = new Label(parent, SWT.NONE);
+		label.setText("Check referenced changes");
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
+		referenceCheckBox = new Button(parent, SWT.CHECK);
 		UI.gridData(referenceCheckBox, true, false).horizontalIndent = 5;
 		referenceCheckBox.setSelection(CollaborationPreference.checkReferences());
 	}
 
 	private void createCommentCheckBox(Composite parent) {
-		commentCheckBox = UI.formCheckBox(parent, M.EnableComments);
+		var label = new Label(parent, SWT.NONE);
+		label.setText(M.EnableComments);
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
+		commentCheckBox = new Button(parent, SWT.CHECK);
 		UI.gridData(commentCheckBox, true, false).horizontalIndent = 5;
 		commentCheckBox.setSelection(CollaborationPreference.commentsEnabled());
 	}

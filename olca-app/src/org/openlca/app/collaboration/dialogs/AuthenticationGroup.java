@@ -54,7 +54,7 @@ class AuthenticationGroup {
 
 	AuthenticationGroup render(Composite parent, int flags) {
 		var autoFocus = (flags & SWT.FOCUSED) != 0;
-		var group = new Group(parent, SWT.NONE);
+		var group = UI.formGroup(parent);
 		group.setText("Authentication");
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);

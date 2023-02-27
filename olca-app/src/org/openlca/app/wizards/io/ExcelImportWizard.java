@@ -13,6 +13,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
@@ -174,8 +175,12 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 				}
 			});
 
-			UI.formLabel(body,
-					"When a process with an ID already exists:");
+			var label = new Label(body, SWT.NONE);
+			label.setText("When a process with an ID already exists:");
+			var gd = UI.gridData(label, false, false);
+			gd.verticalAlignment = SWT.TOP;
+			gd.verticalIndent = 2;
+
 			for (int i = 0; i < _updateMode.length; i++) {
 				int id = i;
 				var b = new Button(body, SWT.RADIO);

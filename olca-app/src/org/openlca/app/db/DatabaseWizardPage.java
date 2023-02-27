@@ -49,14 +49,31 @@ public class DatabaseWizardPage extends WizardPage {
 		header.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		setControl(header);
 		UI.gridLayout(header, 2);
-		nameText = UI.formText(header, M.DatabaseName);
-		nameText.addModifyListener((e) -> validateInput());
+
+		createNameText(header);
 		createTypeRadios(header);
 		createStackComposite(root);
 	}
 
+	private void createNameText(Composite comp) {
+		var label = new Label(comp, SWT.NONE);
+		label.setText(M.DatabaseName);
+
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+		var nameText = new Text(comp, SWT.BORDER);
+		UI.fillHorizontal(nameText);
+		nameText.addModifyListener((e) -> validateInput());
+	}
+
 	private void createTypeRadios(Composite headerComposite) {
-		UI.formLabel(headerComposite, M.DatabaseType);
+		var label = new Label(headerComposite, SWT.NONE);
+		label.setText(M.DatabaseType);
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
 		Composite radioGroup = new Composite(headerComposite, SWT.NONE);
 		radioGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		UI.gridLayout(radioGroup, 2, 10, 0);
@@ -99,7 +116,13 @@ public class DatabaseWizardPage extends WizardPage {
 		localComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				false));
 		UI.gridLayout(localComposite, 2);
-		UI.formLabel(localComposite, M.DatabaseContent);
+
+		var label = new Label(localComposite, SWT.NONE);
+		label.setText(M.DatabaseContent);
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
 		createContentRadios(localComposite);
 	}
 

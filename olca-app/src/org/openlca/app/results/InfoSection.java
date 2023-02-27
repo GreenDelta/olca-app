@@ -57,8 +57,7 @@ class InfoSection {
 
 	static void link(Composite comp, FormToolkit tk, String label, Object entity) {
 		UI.formLabel(comp, tk, label);
-		var link = tk.createImageHyperlink(comp, SWT.TOP);
-		link.setForeground(Colors.linkBlue());
+		var link = UI.formImageHyperlink(comp, tk, SWT.TOP);
 		if (entity instanceof RootDescriptor d) {
 			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
@@ -71,14 +70,14 @@ class InfoSection {
 	}
 
 	private static void buttons(Composite comp, FormToolkit tk) {
-		tk.createLabel(comp, "");
-		var inner = tk.createComposite(comp);
+		UI.formLabel(comp, tk, "");
+		var inner = UI.formComposite(comp, tk);
 		UI.gridLayout(inner, 2, 5, 0);
-		var excelBtn = tk.createButton(inner, M.ExportToExcel, SWT.NONE);
+		var excelBtn = UI.formButton(inner, tk, M.ExportToExcel);
 		excelBtn.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(excelBtn,
 				e -> new ExcelExportAction().run());
-		var resultBtn = tk.createButton(inner, "Save result as ...", SWT.NONE);
+		var resultBtn = UI.formButton(inner, tk, "Save result as ...", SWT.NONE);
 		resultBtn.setImage(Icon.SAVE_AS.get());
 		Controls.onSelect(resultBtn, e -> {
 			ResultEditor editor = Editors.getActive();

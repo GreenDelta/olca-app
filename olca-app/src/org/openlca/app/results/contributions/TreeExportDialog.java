@@ -61,7 +61,7 @@ class TreeExportDialog extends FormDialog {
 		var fileText = UI.formText(comp, tk, "Export to file");
 		fileText.setEditable(false);
 		fileText.setBackground(Colors.white());
-		var fileBtn = tk.createButton(comp, M.Browse, SWT.NONE);
+		var fileBtn = UI.formButton(comp, tk, M.Browse);
 		UI.gridData(fileBtn, false, false).horizontalAlignment = SWT.FILL;
 		Controls.onSelect(fileBtn, e -> {
 			var f = FileChooser.forSavingFile(

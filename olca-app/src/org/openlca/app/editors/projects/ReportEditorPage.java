@@ -120,7 +120,7 @@ class ReportEditorPage extends FormPage {
 	private void createAddButton(Composite body) {
 		var comp = UI.formComposite(body, tk);
 		UI.filler(comp);
-		var addButton = tk.createButton(comp, M.AddSection, SWT.NONE);
+		var addButton = UI.formButton(comp, tk, M.AddSection);
 		addButton.setImage(Icon.ADD.get());
 		Controls.onSelect(addButton, e -> sectionList.addNew());
 	}

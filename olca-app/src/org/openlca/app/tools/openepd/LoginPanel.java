@@ -78,7 +78,7 @@ public class LoginPanel {
 
 		// login button
 		UI.filler(comp, tk);
-		button = tk.createButton(comp, "", SWT.NONE);
+		button = UI.formButton(comp, tk, "");
 		updateButton();
 		button.setImage(Icon.CONNECT.get());
 		Controls.onSelect(button, $ -> {
@@ -189,11 +189,11 @@ public class LoginPanel {
 		protected void createFormContent(IManagedForm mForm) {
 			var tk = mForm.getToolkit();
 			var body = UI.formBody(mForm.getForm(), tk);
-			var outer = tk.createComposite(body);
+			var outer = UI.formComposite(body, tk);
 			UI.fillHorizontal(outer);
 			UI.gridLayout(outer, 2);
-			tk.createLabel(outer, "").setImage(Icon.EC3_WIZARD.get());
-			var right = tk.createComposite(outer);
+			UI.formLabel(outer, tk, "").setImage(Icon.EC3_WIZARD.get());
+			var right = UI.formComposite(outer, tk);
 			UI.fillHorizontal(right);
 			UI.gridLayout(right, 2, 10, 0);
 

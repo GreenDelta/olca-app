@@ -120,11 +120,11 @@ public class ProcessResultPage extends FormPage {
 	private void createFlowSection(Composite parent) {
 		var section = UI.section(parent, tk, M.FlowContributionsToProcessResults);
 		UI.gridData(section, true, true);
-		var comp = tk.createComposite(section);
+		var comp = UI.formComposite(section, tk);
 		section.setClient(comp);
 		UI.gridLayout(comp, 1);
 
-		var container = tk.createComposite(comp);
+		var container = UI.formComposite(comp, tk);
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
 		UI.formLabel(container, tk, M.Process);
@@ -137,17 +137,16 @@ public class ProcessResultPage extends FormPage {
 		});
 
 		UI.formLabel(container, tk, M.DontShowSmallerThen);
-		flowSpinner = new Spinner(container, SWT.BORDER);
+		flowSpinner = UI.formSpinner(container, tk, SWT.BORDER);
 		flowSpinner.setValues(1, 0, 10000, 2, 1, 100);
-		tk.adapt(flowSpinner);
-		tk.createLabel(container, "%");
+		UI.formLabel(container, tk, "%");
 		Controls.onSelect(flowSpinner, (e) -> {
 			flowCutOff = flowSpinner.getSelection();
 			inputTable.refresh();
 			outputTable.refresh();
 		});
 
-		var resultComp = tk.createComposite(comp);
+		var resultComp = UI.formComposite(comp, tk);
 		resultComp.setLayout(new GridLayout(2, true));
 		UI.gridData(resultComp, true, true);
 		UI.formLabel(resultComp, tk, M.Inputs);

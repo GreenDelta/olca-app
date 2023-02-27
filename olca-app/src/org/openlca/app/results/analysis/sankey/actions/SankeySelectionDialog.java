@@ -53,10 +53,10 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 	}
 
 	private void createCutoffSpinner(FormToolkit tk, Composite comp) {
-		tk.createLabel(comp, "Min. contribution share");
-		var inner = tk.createComposite(comp);
+		UI.formLabel(comp, tk, "Min. contribution share");
+		var inner = UI.formComposite(comp, tk);
 		UI.gridLayout(inner, 2, 10, 0);
-		var spinner = new Spinner(inner, SWT.BORDER);
+		var spinner = UI.formSpinner(inner, tk, SWT.BORDER);
 		spinner.setIncrement(100);
 		spinner.setMinimum(0);
 		spinner.setMaximum(100000);
@@ -65,14 +65,14 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 		spinner.addModifyListener(
 				e -> config.setCutoff(spinner.getSelection() / 100000d));
 		tk.adapt(spinner);
-		tk.createLabel(inner, "%");
+		UI.formLabel(inner, tk, "%");
 	}
 
 	private void createCountSpinner(FormToolkit tk, Composite comp) {
-		tk.createLabel(comp, "Max. number of processes");
-		var inner = tk.createComposite(comp);
+		UI.formLabel(comp, tk, "Max. number of processes");
+		var inner = UI.formComposite(comp, tk);
 		UI.gridLayout(inner, 2, 10, 0);
-		var spinner = new Spinner(inner, SWT.BORDER);
+		var spinner = UI.formSpinner(inner, tk, SWT.BORDER);
 		spinner.setIncrement(10);
 		spinner.setMinimum(1);
 		spinner.setMaximum(items.techFlows().size());
@@ -133,7 +133,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 		for (var router : connectionRouters) {
 			combo.add(router);
 		}
-		
+
 		combo.select(
 				ArrayUtils.indexOf(connectionRouters, config.connectionRouter()));
 		Controls.onSelect(combo, e -> {

@@ -159,7 +159,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private void createCalcButton(Composite comp, FormToolkit tk) {
 		UI.filler(comp, tk);
-		var btn = tk.createButton(comp, "Calculate factors", SWT.NONE);
+		var btn = UI.formButton(comp, tk, "Calculate factors");
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {
 			var refs = CalculationDialog.of(process());

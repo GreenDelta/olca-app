@@ -67,11 +67,11 @@ class ContributionSection extends LabelProvider implements TableSection,
 		var comp = UI.sectionClient(section, tk, 1);
 		UI.gridLayout(comp, 1);
 
-		var configComp = tk.createComposite(comp);
+		var configComp = UI.formComposite(comp, tk);
 		UI.gridLayout(configComp, 2, 5, 0);
 
 		// create the result selector
-		var selectorComp = tk.createComposite(configComp);
+		var selectorComp = UI.formComposite(configComp, tk);
 		UI.gridLayout(selectorComp, 2, 5, 0);
 		var selector = ResultItemSelector.on(data.items())
 			.withSelectionHandler(this)
@@ -80,6 +80,8 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 		// add the search text and count selector
 		var searchText = tk.createText(configComp, "");
+		searchText.setBackground(Colors.widgetBackground());
+		searchText.setForeground(Colors.widgetForeground());
 		searchText.setMessage("Search a process ...");
 		UI.gridData(searchText, true, false);
 		searchText.addModifyListener($ -> {
@@ -87,11 +89,10 @@ class ContributionSection extends LabelProvider implements TableSection,
 			updateRows();
 		});
 
-		var spinner = new Spinner(configComp, SWT.BORDER);
+		var spinner = UI.formSpinner(configComp, tk, SWT.BORDER);
 		spinner.setIncrement(1);
 		spinner.setMinimum(1);
 		spinner.setSelection(count);
-		tk.adapt(spinner);
 		Controls.onSelect(spinner, $ -> {
 			count = Math.max(1, spinner.getSelection());
 			updateRows();

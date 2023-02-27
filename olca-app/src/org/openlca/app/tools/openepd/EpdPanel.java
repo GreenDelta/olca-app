@@ -66,10 +66,10 @@ public class EpdPanel extends SimpleFormEditor {
 			// direct download
 			var downloadComp = UI.formSection(body, tk, "Direct download");
 			UI.gridLayout(downloadComp, 3);
-			tk.createLabel(downloadComp, "URL or ID");
+			UI.formLabel(downloadComp, tk, "URL or ID");
 			var urlText = tk.createText(downloadComp, "", SWT.BORDER);
 			UI.fillHorizontal(urlText);
-			var downloadBtn = tk.createButton(downloadComp, "Download", SWT.NONE);
+			var downloadBtn = UI.formButton(downloadComp, tk, "Download");
 			Controls.onSelect(downloadBtn, $ -> {
 				var client = loginPanel.login().orElse(null);
 				if (client == null)
@@ -81,15 +81,15 @@ public class EpdPanel extends SimpleFormEditor {
 			var section = UI.section(body, tk, "Find EPDs");
 			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
-			var searchComp = tk.createComposite(comp);
+			var searchComp = UI.formComposite(comp, tk);
 			UI.fillHorizontal(searchComp);
 			UI.gridLayout(searchComp, 4);
 			var searchText = tk.createText(searchComp, "", SWT.BORDER);
 			UI.fillHorizontal(searchText);
-			var searchButton = tk.createButton(searchComp, "Search", SWT.NONE);
+			var searchButton = UI.formButton(searchComp, tk, "Search");
 			searchButton.setImage(Icon.SEARCH.get());
-			tk.createLabel(searchComp, "Max. count:");
-			var spinner = new Spinner(searchComp, SWT.BORDER);
+			UI.formLabel(searchComp, tk, "Max. count:");
+			var spinner = UI.formSpinner(searchComp, tk, SWT.BORDER);
 			spinner.setValues(100, 10, 1000, 0, 50, 100);
 			tk.adapt(spinner);
 

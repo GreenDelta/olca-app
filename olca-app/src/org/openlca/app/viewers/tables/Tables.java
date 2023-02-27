@@ -20,11 +20,8 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.*;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
 import org.openlca.util.Strings;
@@ -72,8 +69,17 @@ public class Tables {
 		var viewer = new TableViewer(parent,
 				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
+
 		Table table = viewer.getTable();
-		table.setLinesVisible(hasColumns);
+		table.setHeaderBackground(Colors.listBackground());
+		table.setHeaderForeground(Colors.listForeground());
+		table.setForeground(Colors.listForeground());
+
+		if (Display.isSystemDarkTheme())
+			table.setBackground(Colors.listBackground());
+		else
+			table.setLinesVisible(hasColumns);
+
 		table.setHeaderVisible(hasColumns);
 		var data = UI.gridData(table, true, true);
 		data.minimumHeight = 120;

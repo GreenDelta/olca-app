@@ -108,7 +108,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 1);
 
-			Composite textComp = tk.createComposite(comp);
+			Composite textComp = UI.formComposite(comp, tk);
 			UI.gridData(textComp, true, false);
 			UI.gridLayout(textComp, 2, 10, 0);
 
@@ -200,13 +200,12 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			if (comp != null) {
 				comp.dispose();
 			}
-			comp = tk.createComposite(body);
+			comp = UI.formComposite(body, tk);
 			GridLayout btnGrid = UI.gridLayout(comp, 1);
 			btnGrid.marginLeft = 0;
 			btnGrid.marginTop = 0;
 			btnGrid.marginBottom = 10;
-			Button addButton = tk.createButton(
-					comp, "Add parameter set", SWT.NONE);
+			Button addButton = UI.formButton(comp, tk, "Add parameter set");
 			addButton.setImage(Icon.ADD.get());
 			Controls.onSelect(addButton, e -> {
 				ParameterRedefSet s = new ParameterRedefSet();

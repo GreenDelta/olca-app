@@ -122,8 +122,8 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		}
 
 		private void check(Composite comp, Icon icon, String message) {
-			tk.createLabel(comp, "").setImage(icon.get());
-			tk.createLabel(comp, message, SWT.WRAP); // TODO WRAP currently does
+			UI.formLabel(comp, tk, "").setImage(icon.get());
+			UI.formLabel(comp, tk, message, SWT.WRAP);  // TODO WRAP currently does
 														// not work
 		}
 

@@ -15,7 +15,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.openlca.app.tools.graphics.BasicGraphicalEditor;
 import org.openlca.app.tools.graphics.edit.RootEditPart;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.UI;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -54,13 +56,15 @@ public class Minimap extends Composite {
 
 	protected void createZoomScale() {
 		var zoomScale = new ZoomScale(this, SWT.NONE);
+		setBackground(Colors.widgetBackground());
+		setForeground(Colors.widgetForeground());
 
 		var zoomScaleLayout = new GridLayout(2, false);
 		zoomScaleLayout.marginHeight = 0;
 		zoomScaleLayout.marginWidth = 0;
 		zoomScale.setLayout(zoomScaleLayout);
 
-		scale = new Scale(zoomScale, SWT.NONE);
+		scale = UI.scale(zoomScale);
 		scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		final double[] values = BasicGraphicalEditor.ZOOM_LEVELS;
@@ -73,10 +77,9 @@ public class Minimap extends Composite {
 				(e) -> zoomManager.setZoom(values[scale.getSelection()], false));
 		scale.setSelection(getIndex(values, zoomManager.getZoom()));
 
-		scaleLabel = new Label(zoomScale, SWT.NONE);
-		scaleLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		int percentage = (int) (100 * zoomManager.getZoom());
-		scaleLabel.setText(percentage + "% ");
+		scaleLabel = UI.formLabel(zoomScale, percentage + "% ");
+		scaleLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 	}
 
 	protected void createCanvas() {
