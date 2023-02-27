@@ -9,8 +9,11 @@ import org.eclipse.ui.internal.IWorkbenchGraphicConstants;
 import org.eclipse.ui.internal.WorkbenchImages;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerPreference;
+import org.openlca.app.util.Colors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
 
 @SuppressWarnings("restriction")
 public class RcpWorkbenchAdvisor extends WorkbenchAdvisor {

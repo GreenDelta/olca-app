@@ -79,7 +79,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		var body = UI.formBody(form, tk);
 		var section = UI.section(body, tk, M.ImpactFactors);
 		UI.gridData(section, true, true);
-		var client = tk.createComposite(section);
+		var client = UI.formComposite(section, tk);
 		section.setClient(client);
 		UI.gridLayout(client, 1);
 		render(client, section);

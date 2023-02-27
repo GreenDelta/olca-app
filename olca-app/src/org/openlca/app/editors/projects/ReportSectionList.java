@@ -19,6 +19,7 @@ import org.openlca.app.editors.projects.reports.model.ReportComponent;
 import org.openlca.app.editors.projects.reports.model.ReportSection;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
@@ -125,6 +126,11 @@ class ReportSectionList {
 		private void createComponentViewer(Composite comp, FormToolkit tk) {
 			UI.formLabel(comp, tk, M.Component);
 			componentCombo = new ComboViewer(comp);
+
+			var combo = componentCombo.getCombo();
+			combo.setBackground(Colors.widgetBackground());
+			combo.setForeground(Colors.widgetForeground());
+
 			UI.gridData(componentCombo.getControl(), false, false).widthHint = 250;
 			componentCombo.setContentProvider(ArrayContentProvider.getInstance());
 			componentCombo.setLabelProvider(new ReportComponentLabel());

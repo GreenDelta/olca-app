@@ -3,13 +3,10 @@ package org.openlca.app.tools;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.ProgressBar;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
@@ -57,29 +54,23 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+	protected void createFormContent(IManagedForm mForm) {
+		var tk = mForm.getToolkit();
+		Composite body = mForm.getForm().getBody();
+		UI.bodyLayout(body, tk);
 		UI.gridLayout(body, 2);
 
 		// types of messages that should be collected
-		combo = UI.formCombo(body, tk, "Validation messages");
-		combo.setItems(
-			"All messages",
-			"Warnings and errors",
-			"Errors only");
-		combo.select(1);
-		UI.gridData(combo, true, false);
+		createValidationMessageCombo(body, tk);
 
 		// max. items
-		UI.formLabel(body, tk, "Maximum message count");
-		spinner = new Spinner(body, SWT.BORDER);
-		tk.adapt(spinner);
-		spinner.setValues(maxItems, 0, Integer.MAX_VALUE, 0, 100, 1000);
-		Controls.onSelect(
-			spinner, e -> maxItems = spinner.getSelection());
+		createCountCombo(body, tk);
 
 		// progress bar and message
+		createProgressBar(body, tk);
+	}
+
+	private void createProgressBar(Composite body, FormToolkit tk) {
 		var progressComp = tk.createComposite(body);
 		UI.gridData(progressComp, true, false).horizontalSpan = 2;
 		UI.gridLayout(progressComp, 1);
@@ -90,6 +81,35 @@ public class ValidationDialog extends FormDialog {
 		progressBar = new ProgressBar(progressComp, SWT.SMOOTH);
 		UI.gridData(progressBar, true, false);
 		progressBar.setVisible(false);
+	}
+
+	private void createCountCombo(Composite body, FormToolkit tk) {
+		var messageLabel = tk.createLabel(body, "Maximum message count", SWT.NONE);
+		var gd = UI.gridData(messageLabel, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
+		spinner = new Spinner(body, SWT.BORDER);
+		tk.adapt(spinner);
+		spinner.setValues(maxItems, 0, Integer.MAX_VALUE, 0, 100, 1000);
+		Controls.onSelect(
+			spinner, e -> maxItems = spinner.getSelection());
+	}
+
+	private void createValidationMessageCombo(Composite comp, FormToolkit tk) {
+		var validationLabel = tk.createLabel(comp, "Validation messages", SWT.NONE);
+		var gd = UI.gridData(validationLabel, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
+		var combo = new Combo(comp, SWT.READ_ONLY);
+		UI.gridData(combo, true, false);
+		combo.setItems(
+				"All messages",
+				"Warnings and errors",
+				"Errors only");
+		combo.select(1);
+		UI.gridData(combo, true, false);
 	}
 
 	@Override

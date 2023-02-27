@@ -75,8 +75,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 																FormToolkit toolkit) {
 		File folder = DatabaseDir.getRootFolder(conf.name());
 		String path = folder.toURI().toString();
-		Hyperlink link = new Hyperlink(parent, SWT.NONE);
-		toolkit.adapt(link);
+		Hyperlink link = UI.formHyperlink(parent, toolkit);
 		link.setText(Strings.cut(path, 75));
 		link.setToolTipText(path);
 		Controls.onClick(link, e -> {

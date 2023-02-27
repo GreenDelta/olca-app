@@ -32,12 +32,12 @@ class ProviderRow {
 
 	ProviderRow(Composite parent, FormToolkit tk) {
 
-		var inner = tk.createComposite(parent);
+		var inner = UI.formComposite(parent, tk);
 		UI.gridLayout(inner, 3, 5, 0);
-		var dbLink = tk.createImageHyperlink(inner, SWT.NONE);
+		var dbLink = UI.formImageHyperlink(inner, tk);
 		dbLink.setImage(Icon.DATABASE.get());
 		dbLink.setToolTipText("Select database");
-		var fileLink = tk.createImageHyperlink(inner, SWT.NONE);
+		var fileLink = UI.formImageHyperlink(inner, tk);
 		fileLink.setImage(Icon.FILE.get());
 		fileLink.setToolTipText("Select file");
 		var label = UI.formLabel(inner, "- none -");

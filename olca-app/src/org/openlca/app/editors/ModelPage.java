@@ -67,8 +67,7 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 
 	protected ImageHyperlink link(Composite parent, String label, String property) {
 		UI.formLabel(parent, getToolkit(), label);
-		var link = getToolkit().createImageHyperlink(parent, SWT.TOP);
-		link.setForeground(Colors.linkBlue());
+		var link = UI.formImageHyperlink(parent, getToolkit(), SWT.TOP);
 		try {
 			var value = Bean.getValue(getModel(), property);
 			if (value == null) {
@@ -92,7 +91,7 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 
 	protected Label readOnly(Composite parent, String label, String property) {
 		UI.formLabel(parent, getToolkit(), label);
-		var widget = getToolkit().createLabel(parent, "");
+		var widget = UI.formLabel(parent, getToolkit(), "");
 		var gridData = UI.gridData(widget, false, false);
 		gridData.verticalAlignment = SWT.TOP;
 		gridData.verticalIndent = 2;
@@ -104,15 +103,14 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	protected CLabel readOnly(
 		Composite parent, String label, Image image, String property) {
 		UI.formLabel(parent, getToolkit(), label);
-		var widget = new CLabel(parent, SWT.NONE);
-		var gridData = UI.gridData(widget, false, false);
+		var cLabel = UI.formCLabel(parent, getToolkit());
+		var gridData = UI.gridData(cLabel, false, false);
 		gridData.verticalAlignment = SWT.TOP;
 		gridData.verticalIndent = 2;
-		widget.setImage(image);
-		getToolkit().adapt(widget);
-		getBinding().readOnly(getModel(), property, widget);
+		cLabel.setImage(image);
+		getBinding().readOnly(getModel(), property, cLabel);
 		new CommentControl(parent, getToolkit(), property, getComments());
-		return widget;
+		return cLabel;
 	}
 
 	protected Text text(Composite parent, String label, String property) {
@@ -178,6 +176,10 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 		Text text = UI.formText(parent, toolkit, label);
 		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
+
+		text.setBackground(Colors.widgetBackground());
+		text.setForeground(Colors.widgetForeground());
+
 		return text;
 	}
 

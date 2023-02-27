@@ -19,10 +19,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.*;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
 
@@ -45,8 +43,17 @@ public class Trees {
 		TreeViewer viewer = new TreeViewer(parent,
 				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		Tree tree = viewer.getTree();
+
+		tree.setHeaderBackground(Colors.listBackground());
+		tree.setHeaderForeground(Colors.listForeground());
+		tree.setForeground(Colors.listForeground());
+
 		boolean hasColumns = headers != null && headers.length > 0;
-		tree.setLinesVisible(hasColumns);
+		if (Display.isSystemDarkTheme())
+			tree.setBackground(Colors.listBackground());
+		else
+			tree.setLinesVisible(hasColumns);
+
 		tree.setHeaderVisible(hasColumns);
 		if (hasColumns) {
 			createColumns(viewer, headers, label);

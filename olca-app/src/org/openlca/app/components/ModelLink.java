@@ -69,21 +69,21 @@ public class ModelLink<T extends RootEntity> {
 	}
 
 	public ModelLink<T> renderOn(Composite parent, FormToolkit tk) {
-		var comp = tk.createComposite(parent, SWT.FILL);
+		var comp = UI.formComposite(parent, SWT.FILL);
 		UI.gridLayout(comp, 3, 10, 0);
 
 		// the selection handler of this widget
 		Runnable doSelect = () -> select(ModelSelector.select(modelType));
 
 		// selection button
-		var btn = tk.createImageHyperlink(comp, SWT.BORDER);
+		var btn = UI.formImageHyperlink(comp, tk, SWT.BORDER);
 		btn.setToolTipText("Select a data set");
 		btn.setImage(Images.get(modelType));
 		btn.setEnabled(editable);
 		Controls.onClick(btn, $ -> doSelect.run());
 
 		// the link
-		link = tk.createImageHyperlink(comp, SWT.NONE);
+		link = UI.formImageHyperlink(comp, tk, SWT.NONE);
 		Controls.onClick(link, $ -> {
 			if (model != null) {
 				App.open(model);
@@ -100,7 +100,7 @@ public class ModelLink<T extends RootEntity> {
 		}
 
 		// the delete button
-		var deleteBtn = tk.createImageHyperlink(comp, SWT.TOP);
+		var deleteBtn = UI.formImageHyperlink(comp, tk, SWT.TOP);
 		deleteBtn.setEnabled(editable);
 		deleteBtn.setToolTipText(M.Remove);
 		deleteBtn.setHoverImage(Icon.DELETE.get());

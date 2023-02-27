@@ -15,7 +15,6 @@ public class ContributionCutoff {
 
 	public static ContributionCutoff create(Composite parent, FormToolkit tk) {
 		var spinner = new ContributionCutoff(parent, tk);
-		tk.adapt(spinner.spinner);
 		return spinner;
 	}
 
@@ -23,10 +22,10 @@ public class ContributionCutoff {
 		var comp = UI.formComposite(parent, tk);
 		UI.gridLayout(comp, 3, 10, 0);
 		UI.gridData(comp, false, false).horizontalAlignment = SWT.RIGHT;
-		tk.createLabel(comp, M.DontShowSmallerThen);
-		spinner = new Spinner(comp, SWT.BORDER);
-		tk.createLabel(comp, "%");
+		UI.formLabel(comp, tk, M.DontShowSmallerThen);
+		spinner = UI.formSpinner(comp, tk, SWT.BORDER);
 		spinner.setValues(1, 0, 100, 0, 1, 10);
+		UI.formLabel(comp, tk, "%");
 	}
 
 	public void register(StructuredViewer viewer) {

@@ -11,6 +11,8 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openlca.util.OS.WINDOWS;
+
 /**
  * Managed SWT colors: the colors are created on demand and disposed when the
  * application is closed.
@@ -170,6 +172,58 @@ public class Colors {
 
 	public static Color systemColor(int swtConstant) {
 		return display.getSystemColor(swtConstant);
+	}
+
+	public static Color widgetBackground() {
+		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
+			return Colors.get(43, 43, 43);
+		else return systemColor(SWT.COLOR_WIDGET_BACKGROUND);
+	}
+
+	public static Color widgetForeground() {
+		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
+			return Colors.white();
+		else return systemColor(SWT.COLOR_WIDGET_FOREGROUND);
+	}
+
+	public static Color widgetBorder() {
+		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
+			return Colors.get(94, 96, 96);
+		else return Colors.get(122, 122, 122);
+	}
+
+	public static Color widgetToggle() {
+		return Colors.get(38, 38, 38);
+	}
+
+	public static Color titleBackground() {
+		if (Display.isSystemDarkTheme())
+			return Colors.get(39, 41, 42);
+		else return Colors.white();
+	}
+
+	public static Color titleForeground() {
+		if (Display.isSystemDarkTheme())
+			return Colors.white();
+		else return Colors.get(38, 38, 38);
+	}
+
+	public static Color listForeground() {
+		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
+			return Colors.get(170, 170, 170);
+		else return systemColor(SWT.COLOR_LIST_FOREGROUND);
+	}
+
+	public static Color listBackground() {
+		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
+			return Colors.get(43, 43, 43);
+		else return widgetBackground();
+	}
+
+	public static Color tagBackground() {
+		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
+			return Colors.get(170, 170, 170);
+		else return fromHex("#e8eaf6");
 	}
 
 	/**

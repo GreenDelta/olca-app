@@ -100,7 +100,8 @@ public class MatrixExportDialog extends FormDialog {
 		// check boxes
 		BiConsumer<String, Consumer<Boolean>> check = (label, fn) -> {
 			UI.filler(body, tk);
-			var button = tk.createButton(body, label, SWT.CHECK);
+			var button = UI.formCheckBox(body, tk);
+			button.setText(label);
 			Controls.onSelect(button, _e -> fn.accept(button.getSelection()));
 		};
 		check.accept("Regionalized", b -> config.regionalized = b);
@@ -111,13 +112,13 @@ public class MatrixExportDialog extends FormDialog {
 
 	private void fileSelection(Composite body, FormToolkit tk) {
 		UI.formLabel(body, tk, M.Folder);
-		var inner = tk.createComposite(body);
+		var inner = UI.formComposite(body);
 		UI.gridData(inner, true, false);
 		UI.gridLayout(inner, 2, 5, 0);
-		var fileText = tk.createText(inner, "");
+		var fileText = UI.formEmptyText(body, tk);
 		UI.gridData(fileText, true, false);
 		fileText.setEditable(false);
-		var browseBtn = tk.createButton(inner, M.Browse, SWT.NONE);
+		var browseBtn = UI.formButton(inner, tk, M.Browse);
 		Controls.onSelect(browseBtn, _e -> {
 			var folder = FileChooser.selectFolder();
 			if (folder == null)
@@ -133,13 +134,13 @@ public class MatrixExportDialog extends FormDialog {
 
 	private void formatSelection(Composite body, FormToolkit tk) {
 		UI.formLabel(body, tk, "Format");
-		var inner = tk.createComposite(body);
+		var inner = UI.formComposite(body);
 		UI.gridData(inner, true, false);
 		var formats = Format.values();
 		UI.gridLayout(inner, formats.length, 10, 0);
 		for (var format : formats) {
-			var radio = tk.createButton(
-				inner, format.toString(), SWT.RADIO);
+			var radio = UI.formButton(
+				inner, tk, format.toString(), SWT.RADIO);
 			if (format == config.format) {
 				radio.setSelection(true);
 			}
@@ -167,10 +168,10 @@ public class MatrixExportDialog extends FormDialog {
 		});
 
 		UI.formLabel(comp, tk, "Parameter set");
-		var combo = new TableCombo(comp,
+		var combo = UI.formTableCombo(comp, tk,
 			SWT.READ_ONLY | SWT.BORDER);
-		tk.adapt(combo);
 		UI.gridData(combo, true, false);
+
 		for (var paramSet : paramSets) {
 			var item = new TableItem(
 				combo.getTable(), SWT.NONE);
@@ -258,7 +259,7 @@ public class MatrixExportDialog extends FormDialog {
 				.withCosts(withCosts)
 				.withRegionalization(regionalized)
 				.withUncertainties(withUncertainties);
-			
+
 			if (system != null) {
 				config.withDemand(Demand.of(system));
 			}

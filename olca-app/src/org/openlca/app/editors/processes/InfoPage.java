@@ -57,7 +57,7 @@ class InfoPage extends ModelPage<Process> {
 
 	private void createButtons(Composite comp, FormToolkit tk) {
 		UI.filler(comp, tk);
-		var inner = tk.createComposite(comp);
+		var inner = UI.formComposite(comp, tk);
 
 		// we can only support direct calculations when no
 		// libraries are bound to the database
@@ -68,20 +68,20 @@ class InfoPage extends ModelPage<Process> {
 		UI.gridLayout(inner, columns, 5, 0);
 
 		// create product system
-		var b = tk.createButton(inner, M.CreateProductSystem, SWT.NONE);
+		var b = UI.formButton(inner, tk, M.CreateProductSystem);
 		b.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(b, e -> ProcessToolbar.createSystem(getModel()));
 
 		// direct calculation
 		if (withDirect) {
-			b = tk.createButton(inner, "Direct calculation", SWT.NONE);
+			b = UI.formButton(inner, tk, "Direct calculation");
 			b.setImage(Icon.RUN.get());
 			Controls.onSelect(
 				b, e -> ProcessToolbar.directCalculation(getModel()));
 		}
 
 		// export to Excel
-		b = tk.createButton(inner, M.ExportToExcel, SWT.NONE);
+		b = UI.formButton(inner, tk, M.ExportToExcel);
 		b.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(b, e -> ProcessToolbar.exportToExcel(getModel()));
 	}
@@ -127,17 +127,14 @@ class InfoPage extends ModelPage<Process> {
 		};
 
 		// start date
-		tk.createLabel(comp, M.StartDate, SWT.NONE);
-		var startBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
-		startBox.setEnabled(isEditable());
-		UI.gridData(startBox, false, false).minimumWidth = 150;
+		UI.formLabel(comp, tk, M.StartDate);
+		var startBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);		UI.gridData(startBox, false, false).minimumWidth = 150;
 		new CommentControl(comp, tk, "documentation.validFrom", getComments());
 		setTime.accept(startBox, true);
 
 		// end date
-		tk.createLabel(comp, M.EndDate, SWT.NONE);
-		var endBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
-		endBox.setEnabled(isEditable());
+		UI.formLabel(comp, tk, M.EndDate);
+		var endBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);		endBox.setEnabled(isEditable());
 		UI.gridData(endBox, false, false).minimumWidth = 150;
 		new CommentControl(comp, tk, "documentation.validUntil", getComments());
 		setTime.accept(endBox, false);

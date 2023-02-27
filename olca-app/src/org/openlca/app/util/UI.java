@@ -3,41 +3,34 @@ package org.openlca.app.util;
 import java.util.function.Function;
 
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.window.IShellProvider;
+import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.*;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.util.Strings;
+import org.python.antlr.ast.For;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +69,7 @@ public class UI {
 	 * given browser.
 	 */
 	public static void bindFunction(Browser browser, String name,
-			Function<Object[], Object> fn) {
+																	Function<Object[], Object> fn) {
 		if (browser == null || name == null || fn == null)
 			return;
 		BrowserFunction func = new BrowserFunction(browser, name) {
@@ -191,6 +184,10 @@ public class UI {
 					.add(new CommentAction("", page.getEditor().getComments()));
 		}
 		Editors.addRefresh(form, page.getEditor());
+
+		form.setBackground(Colors.widgetBackground());
+		form.setForeground(Colors.widgetForeground());
+
 		form.getToolBarManager().update(true);
 		return form;
 	}
@@ -214,19 +211,29 @@ public class UI {
 		if (image != null) {
 			form.setImage(image);
 		}
-		form.setForeground(Colors.get(38, 38, 38));
+		form.setForeground(Colors.widgetForeground());
+		form.setBackground(Colors.widgetBackground());
 		// tk.decorateFormHeading(form.getForm());
 		return form;
 	}
 
+	public static List formList(Composite comp) {
+		var list = new org.eclipse.swt.widgets.List(comp, SWT.BORDER);
+		list.setBackground(Colors.widgetBackground());
+		list.setForeground(Colors.widgetForeground());
+		return list;
+	}
+
 	public static Composite formWizardHeader(IManagedForm mform, FormToolkit toolkit, String title,
-			String description) {
+																					 String description) {
 		var form = UI.formHeader(mform, title);
 		var body = form.getBody();
 		UI.gridLayout(body, 1, 0, 0);
 		toolkit.paintBordersFor(body);
 		UI.gridData(body, true, false);
 		var descriptionComposite = toolkit.createComposite(body);
+		descriptionComposite.setForeground(Colors.widgetForeground());
+		descriptionComposite.setBackground(Colors.widgetBackground());
 		UI.gridLayout(descriptionComposite, 1).marginTop = 0;
 		UI.gridData(descriptionComposite, true, false);
 		UI.formLabel(descriptionComposite, toolkit, description);
@@ -241,7 +248,7 @@ public class UI {
 	}
 
 	public static Composite formSection(Composite parent, FormToolkit tk,
-			String label, int columns) {
+																			String label, int columns) {
 		Section section = section(parent, tk, label);
 		return sectionClient(section, tk, columns);
 	}
@@ -249,16 +256,19 @@ public class UI {
 	public static Section section(Composite comp, FormToolkit tk, String title) {
 		var s = tk.createSection(comp,
 				ExpandableComposite.SHORT_TITLE_BAR
-				|	ExpandableComposite.FOCUS_TITLE
-				| ExpandableComposite.EXPANDED
-				| ExpandableComposite.TWISTIE);
+						| ExpandableComposite.FOCUS_TITLE
+						| ExpandableComposite.EXPANDED
+						| ExpandableComposite.TWISTIE);
 		gridData(s, true, false);
 		s.setText(title);
-		// s.setTitleBarBackground(Colors.get(214, 214, 255));
-		s.setTitleBarBackground(Colors.white());
-		s.setTitleBarBorderColor(Colors.get(122, 122, 122));
-		s.setTitleBarForeground(Colors.get(38, 38, 38));
-		s.setToggleColor(Colors.get(38, 38, 38));
+
+		s.setTitleBarBackground(Colors.titleBackground());
+		s.setTitleBarBorderColor(Colors.widgetBorder());
+		s.setTitleBarForeground(Colors.titleForeground());
+		s.setToggleColor(Colors.widgetToggle());
+
+		s.setBackground(Colors.widgetBackground());
+		s.setForeground(Colors.widgetForeground());
 		return s;
 	}
 
@@ -275,14 +285,17 @@ public class UI {
 	 * The created composite gets a n-column grid-layout.
 	 */
 	public static Composite sectionClient(Section section, FormToolkit tk, int columns) {
-		var composite = tk.createComposite(section);
+		var composite = UI.formComposite(section, tk);
 		section.setClient(composite);
 		gridLayout(composite, columns);
+
+		composite.setBackground(Colors.widgetBackground());
+		composite.setForeground(Colors.widgetForeground());
+
 		return composite;
 	}
 
-	public static Composite formBody(ScrolledForm form, FormToolkit tk) {
-		Composite body = form.getBody();
+	public static void bodyLayout(Composite comp, FormToolkit tk) {
 		GridLayout layout = new GridLayout();
 		layout.marginRight = 10;
 		layout.marginLeft = 10;
@@ -291,9 +304,18 @@ public class UI {
 		layout.marginTop = 10;
 		layout.verticalSpacing = 10;
 		layout.numColumns = 1;
-		body.setLayout(layout);
-		tk.paintBordersFor(body);
-		gridData(body, true, true);
+		comp.setLayout(layout);
+		tk.paintBordersFor(comp);
+		gridData(comp, true, true);
+	}
+
+	public static Composite formBody(ScrolledForm form, FormToolkit tk) {
+		Composite body = form.getBody();
+		bodyLayout(body, tk);
+
+		body.setBackground(Colors.widgetBackground());
+		body.setForeground(Colors.widgetForeground());
+
 		return body;
 	}
 
@@ -302,7 +324,7 @@ public class UI {
 	}
 
 	public static GridLayout gridLayout(Composite composite, int columns,
-			int spacing, int margin) {
+																			int spacing, int margin) {
 		var layout = new GridLayout(columns, false);
 		layout.verticalSpacing = spacing;
 		layout.marginWidth = margin;
@@ -313,26 +335,64 @@ public class UI {
 	}
 
 	public static Composite formComposite(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
+		return formComposite(parent, SWT.NONE);
+	}
+
+	public static Composite formComposite(Composite parent, int style) {
+		Composite composite = new Composite(parent, style);
 		gridLayout(composite, 2);
+		composite.setBackground(Colors.widgetBackground());
+		composite.setForeground(Colors.widgetBackground());
 		return composite;
 	}
 
-	public static Composite formComposite(Composite parent, FormToolkit tk) {
+	public static Composite formComposite(Composite parent, FormToolkit tk, int style) {
 		if (tk == null)
-			return formComposite(parent);
-		var comp = tk.createComposite(parent);
+			return formComposite(parent, style);
+		var comp = tk.createComposite(parent, style);
 		gridLayout(comp, 2);
+		comp.setBackground(Colors.widgetBackground());
+		comp.setForeground(Colors.widgetBackground());
 		return comp;
+	}
+
+	public static Composite formComposite(Composite parent, FormToolkit tk) {
+		return formComposite(parent, tk, SWT.NONE);
+	}
+
+	public static Button formButton(Composite comp, FormToolkit tk, String text) {
+		return formButton(comp, tk, text, SWT.NONE);
+	}
+
+	public static Button formButton(Composite comp, FormToolkit tk, String text, int style) {
+		var button = tk.createButton(comp, text, style);
+		button.setBackground(Colors.widgetBackground());
+		button.setForeground(Colors.widgetForeground());
+		return button;
+	}
+
+	public static Button button(Composite comp, int style) {
+		var button = new Button(comp, style);
+		button.setBackground(Colors.widgetBackground());
+		button.setForeground(Colors.widgetForeground());
+		return button;
 	}
 
 	/**
 	 * Creates a simple check box with the given text.
 	 */
-	public static Button checkBox(Composite parent, String text) {
-		Button button = new Button(parent, SWT.CHECK);
+	public static Button checkBox(Composite comp, FormToolkit tk, String text) {
+		Button button = tk == null
+				? new Button(comp, SWT.CHECK)
+				: tk.createButton(comp, text, SWT.CHECK);
 		button.setText(text);
+		button.setBackground(Colors.widgetBackground());
+		button.setForeground(Colors.widgetForeground());
 		return button;
+	}
+
+	public static Button checkBox(Composite comp, String text) {
+		return checkBox(comp, null, text);
 	}
 
 	/**
@@ -347,24 +407,58 @@ public class UI {
 	 */
 	public static Button formCheckBox(Composite parent, FormToolkit toolkit, String label) {
 		formLabel(parent, toolkit, label);
-		return formCheckbox(parent, toolkit);
+		return formCheckBox(parent, toolkit);
 	}
 
-	public static Button formCheckbox(Composite parent, FormToolkit toolkit) {
+	public static Button formCheckBox(Composite parent, FormToolkit toolkit) {
 		var button = toolkit != null
 				? toolkit.createButton(parent, null, SWT.CHECK)
 				: new Button(parent, SWT.CHECK);
 		var gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		button.setLayoutData(gd);
+		button.setBackground(Colors.widgetBackground());
+		button.setForeground(Colors.widgetForeground());
 		return button;
 	}
 
+	/**
+	 * Create a radio button with a label.
+	 */
 	public static Button formRadio(Composite parent, String label) {
 		var button = new Button(parent, SWT.RADIO);
 		var gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		button.setLayoutData(gd);
 		formLabel(parent, label);
+		button.setBackground(Colors.widgetBackground());
+		button.setForeground(Colors.widgetForeground());
 		return button;
+	}
+
+	/**
+	 * Create a radio button.
+	 */
+	public static Button formRadio(Composite parent) {
+		var button = new Button(parent, SWT.RADIO);
+		button.setBackground(Colors.widgetBackground());
+		button.setForeground(Colors.widgetForeground());
+		return button;
+	}
+
+	/**
+	 * Create a radio button.
+	 */
+	public static Button formRadio(Composite parent, FormToolkit tk, String label) {
+		var button = tk.createButton(parent, label, SWT.RADIO);
+		button.setBackground(Colors.widgetBackground());
+		button.setForeground(Colors.widgetForeground());
+		return button;
+	}
+
+	public static Scale scale(Composite comp) {
+		var scale = new Scale(comp, SWT.NONE);
+		scale.setBackground(Colors.widgetBackground());
+		scale.setForeground(Colors.widgetForeground());
+		return scale;
 	}
 
 	public static Text formText(Composite parent, int flags) {
@@ -380,18 +474,34 @@ public class UI {
 	}
 
 	public static Text formText(Composite parent, FormToolkit toolkit,
-			String label) {
+															String label) {
 		return formText(parent, toolkit, label, SWT.BORDER);
 	}
 
+	public static Text formEmptyText(Composite parent, FormToolkit toolkit) {
+		var text = UI.formText(parent, toolkit, "");
+		text.setBackground(Colors.widgetBackground());
+		text.setForeground(Colors.widgetForeground());
+		return text;
+	}
+
 	public static Text formText(Composite parent, FormToolkit tk,
-			String label, int flags) {
+															String label, int flags) {
 		if (label != null)
 			formLabel(parent, tk, label);
 		Text text = tk != null
 				? tk.createText(parent, null, flags)
 				: new Text(parent, flags);
 		fillHorizontal(text);
+		text.setBackground(Colors.widgetBackground());
+		text.setForeground(Colors.widgetForeground());
+		return text;
+	}
+
+	public static FormText formText(Composite parent, FormToolkit tk, boolean trackFocus) {
+		var text = tk.createFormText(parent, trackFocus);
+		text.setBackground(Colors.widgetBackground());
+		text.setForeground(Colors.widgetForeground());
 		return text;
 	}
 
@@ -415,6 +525,10 @@ public class UI {
 		GridData gd = fillHorizontal(text);
 		gd.minimumHeight = heightHint;
 		gd.heightHint = heightHint;
+
+		text.setBackground(Colors.widgetBackground());
+		text.setForeground(Colors.widgetForeground());
+
 		return text;
 	}
 
@@ -425,8 +539,28 @@ public class UI {
 	public static Combo formCombo(Composite comp, FormToolkit tk, String label) {
 		formLabel(comp, tk, label);
 		var combo = new Combo(comp, SWT.READ_ONLY);
+		combo.setBackground(Colors.widgetBackground());
+		combo.setForeground(Colors.widgetForeground());
 		gridData(combo, true, false);
 		return combo;
+	}
+
+	public static TableCombo formTableCombo(Composite comp, FormToolkit tk, int style) {
+		var combo = new TableCombo(comp, style);
+
+		if (tk != null)
+			tk.adapt(combo);
+		combo.setBackground(Colors.widgetBackground());
+		combo.setForeground(Colors.widgetForeground());
+
+		return combo;
+	}
+
+	public static Label formLabel(Composite comp) {
+		var label = new Label(comp, SWT.NONE);
+		label.setBackground(Colors.widgetBackground());
+		label.setForeground(Colors.widgetForeground());
+		return label;
 	}
 
 	public static Label formLabel(Composite comp, String text) {
@@ -434,18 +568,39 @@ public class UI {
 	}
 
 	public static Label formLabel(Composite comp, FormToolkit tk, String text) {
+		return formLabel(comp, tk, text, SWT.NONE);
+	}
+
+	public static Label formLabel(Composite comp, FormToolkit tk, String text, int flag) {
 		Label label;
 		var s = text != null ? text : "";
 		if (tk != null) {
-			label = tk.createLabel(comp, s, SWT.NONE);
+			label = tk.createLabel(comp, s, flag);
 		} else {
-			label = new Label(comp, SWT.NONE);
+			label = new Label(comp, flag);
 			label.setText(s);
 		}
 		var gd = gridData(label, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
+
+		label.setBackground(Colors.widgetBackground());
+		label.setForeground(Colors.widgetForeground());
+
 		return label;
+	}
+
+	public static CLabel formCLabel(Composite parent, FormToolkit tk, int style) {
+		var cLabel = new CLabel(parent, style);
+		tk.adapt(cLabel);
+		cLabel.setBackground(Colors.widgetBackground());
+		cLabel.setForeground(Colors.widgetForeground());
+		return cLabel;
+	}
+
+
+	public static CLabel formCLabel(Composite parent, FormToolkit tk) {
+		return formCLabel(parent, tk, SWT.NONE);
 	}
 
 	/**
@@ -473,7 +628,75 @@ public class UI {
 		GridData gd = gridData(link, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
+
+		link.setBackground(Colors.widgetBackground());
 		return link;
+	}
+
+	public static ImageHyperlink formCategoryLink(Composite comp, FormToolkit tk, String category,
+																								Image image) {
+		var link = tk.createImageHyperlink(comp, SWT.NONE);
+		link.setImage(image);
+		link.setText(Strings.cutMid(category, 100));
+		link.setToolTipText(category);
+		link.setBackground(Colors.widgetBackground());
+		return link;
+	}
+
+	public static ImageHyperlink formImageHyperlink(Composite comp, FormToolkit tk,
+																									int style) {
+		var link = tk.createImageHyperlink(comp, style);
+		link.setForeground(Colors.linkBlue());
+		link.setBackground(Colors.widgetBackground());
+		return link;
+	}
+
+	public static ImageHyperlink formImageHyperlink(Composite comp, FormToolkit tk) {
+		return formImageHyperlink(comp, tk, SWT.NONE);
+	}
+
+	public static Spinner formSpinner(Composite comp, FormToolkit tk, int style) {
+		var spinner = new Spinner(comp, style);
+		tk.adapt(spinner);
+		return spinner;
+	}
+
+	public static Group formGroup(Composite comp, FormToolkit tk, int style) {
+		var group = new Group(comp, style);
+		if (tk != null)
+			tk.adapt(group);
+		group.setBackground(Colors.widgetBackground());
+		group.setForeground(Colors.widgetForeground());
+		return group;
+	}
+
+	public static Group formGroup(Composite comp, FormToolkit tk) {
+		return formGroup(comp, tk, SWT.NONE);
+	}
+
+	public static Group formGroup(Composite comp) {
+		return formGroup(comp, null, SWT.NONE);
+	}
+
+	public static Hyperlink formHyperlink(Composite comp, FormToolkit tk) {
+		var link = new Hyperlink(comp, SWT.NONE);
+		if (tk != null)
+			tk.adapt(link);
+		link.setBackground(Colors.widgetBackground());
+		link.setForeground(Colors.widgetForeground());
+		return link;
+	}
+
+	public static Hyperlink formHyperlink(Composite comp) {
+		return formHyperlink(comp, null);
+	}
+
+	public static StyledText formStyledText(Composite comp, FormToolkit tk) {
+		var text = new StyledText(comp, SWT.BORDER);
+		tk.adapt(text);
+		text.setBackground(Colors.widgetBackground());
+		text.setForeground(Colors.widgetForeground());
+		return text;
 	}
 
 }

@@ -10,6 +10,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
@@ -150,7 +151,7 @@ public class ResultItemSelector {
 
 	private void initFlowCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
-		flowCheck = tk.createButton(comp, M.Flow, SWT.RADIO);
+		flowCheck = UI.formButton(comp, tk, M.Flow, SWT.RADIO);
 		flowCheck.setSelection(enabled);
 		Controls.onSelect(flowCheck, _e -> {
 			if (flowCheck.getSelection()) {
@@ -174,7 +175,7 @@ public class ResultItemSelector {
 
 	private void initImpactCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.IMPACT_CATEGORY;
-		impactCheck = tk.createButton(comp, M.ImpactCategory, SWT.RADIO);
+		impactCheck = UI.formButton(comp, tk, M.ImpactCategory, SWT.RADIO);
 		impactCheck.setSelection(enabled);
 		Controls.onSelect(impactCheck, _e -> {
 			if (impactCheck.getSelection()) {

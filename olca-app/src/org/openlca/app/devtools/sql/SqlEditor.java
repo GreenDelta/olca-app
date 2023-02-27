@@ -83,8 +83,7 @@ public class SqlEditor extends ScriptingEditor {
 		private void createStatementSection(Composite body, FormToolkit toolkit) {
 			Section section = UI.section(body, toolkit, "SQL Statement");
 			Composite composite = UI.sectionClient(section, toolkit, 1);
-			queryText = new StyledText(composite, SWT.BORDER);
-			toolkit.adapt(queryText);
+			queryText = UI.formStyledText(body, toolkit);
 			UI.gridData(queryText, true, false).heightHint = 150;
 			queryText.setText(script == null ? "" : script);
 			var styler = new SyntaxStyler(queryText);
@@ -107,7 +106,8 @@ public class SqlEditor extends ScriptingEditor {
 			UI.gridData(section, true, true);
 			Composite composite = UI.sectionClient(section, toolkit, 1);
 			composite.setLayout(new FillLayout());
-			resultText = toolkit.createText(composite, null, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+			resultText = UI.formText(composite, toolkit, null,
+					SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		}
 
 		private class RunAction extends Action {

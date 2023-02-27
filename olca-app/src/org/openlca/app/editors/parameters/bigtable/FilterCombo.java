@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.UI;
 
 class FilterCombo {
 
@@ -23,7 +24,7 @@ class FilterCombo {
 
 	static FilterCombo create(Composite comp, FormToolkit tk) {
 		FilterCombo combo = new FilterCombo();
-		Button button = tk.createButton(comp, "All columns", SWT.NONE);
+		Button button = UI.formButton(comp, tk, "All columns");
 		button.setImage(Icon.DOWN.get());
 		Menu menu = new Menu(button);
 		int[] types = {

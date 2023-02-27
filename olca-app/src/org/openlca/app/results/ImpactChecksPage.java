@@ -59,8 +59,8 @@ public class ImpactChecksPage extends FormPage {
 		var body = UI.formBody(form, tk);
 
 		// the grouping check
-		var group = tk.createButton(body,
-				"Group by LCIA category", SWT.CHECK);
+		var group = UI.formCheckBox(body, tk);
+		group.setText("Group by LCIA category");
 		group.setSelection(true);
 		Controls.onSelect(group, e -> tree.setInput(
 				group.getSelection()

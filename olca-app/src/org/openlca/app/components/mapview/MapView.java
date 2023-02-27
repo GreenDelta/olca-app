@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 public class MapView {
 
 	private final Canvas canvas;
-	private final Color white;
 
 	private List<LayerConfig> layers = new ArrayList<>();
 	private List<FeatureCollection> projections = new ArrayList<>();
@@ -45,7 +44,6 @@ public class MapView {
 
 	public MapView(Composite parent) {
 		this.canvas = new Canvas(parent, SWT.NONE);
-		this.white = canvas.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		canvas.addPaintListener(e -> render(e.gc));
 
 		// add mouse listeners
@@ -186,7 +184,7 @@ public class MapView {
 		translation.update(canvasSize, zoom);
 
 		// white background
-		gc.setBackground(white);
+		gc.setBackground(Colors.widgetBackground());
 		gc.fillRectangle(canvasSize);
 
 		if (projections.isEmpty())

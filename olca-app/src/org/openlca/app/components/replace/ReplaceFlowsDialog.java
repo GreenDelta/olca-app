@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -73,7 +74,6 @@ public class ReplaceFlowsDialog extends FormDialog {
 		replacementViewer.setEnabled(false);
 		selectionViewer.setInput(getUsed());
 		toolkit.paintBordersFor(top);
-		toolkit.adapt(top);
 	}
 
 	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label,
@@ -100,19 +100,18 @@ public class ReplaceFlowsDialog extends FormDialog {
 		Composite typeContainer = UI.formComposite(bottom, toolkit);
 		UI.gridLayout(typeContainer, 4, 20, 5);
 		UI.formLabel(typeContainer, toolkit, M.ReplaceIn);
-		replaceFlowsButton = toolkit.createButton(typeContainer, M.InputsOutputs, SWT.RADIO);
+		replaceFlowsButton = UI.formRadio(typeContainer, toolkit, M.InputsOutputs);
 		replaceFlowsButton.setSelection(true);
 		Controls.onSelect(replaceFlowsButton, this::updateSelection);
-		replaceImpactsButton = toolkit.createButton(typeContainer, M.ImpactFactors, SWT.RADIO);
+		replaceImpactsButton = UI.formRadio(typeContainer, toolkit, M.ImpactFactors);
 		Controls.onSelect(replaceImpactsButton, this::updateSelection);
-		replaceBothButton = toolkit.createButton(typeContainer, M.Both, SWT.RADIO);
+		replaceBothButton = UI.formRadio(typeContainer, toolkit, M.Both);
 		Controls.onSelect(replaceBothButton, this::updateSelection);
 		Composite excludeContainer = UI.formComposite(bottom, toolkit);
 		UI.gridLayout(excludeContainer, 2, 20, 5);
-		excludeWithProviders = UI.formCheckbox(excludeContainer, toolkit);
+		excludeWithProviders = UI.formCheckBox(excludeContainer, toolkit);
 		UI.formLabel(excludeContainer, toolkit, M.ExcludeExchangesWithDefaultProviders);
 		toolkit.paintBordersFor(bottom);
-		toolkit.adapt(bottom);
 		createNote(parent, toolkit);
 	}
 
@@ -130,7 +129,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 
 	private void createNote(Composite parent, FormToolkit toolkit) {
 		String note = M.NoteDefaultProviders;
-		Label noteLabel = toolkit.createLabel(parent, note, SWT.WRAP);
+		Label noteLabel = UI.formLabel(parent, toolkit, note, SWT.WRAP);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
 		gd.widthHint = 300;
 		noteLabel.setLayoutData(gd);

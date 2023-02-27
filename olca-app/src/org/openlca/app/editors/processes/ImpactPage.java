@@ -26,11 +26,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Actions;
-import org.openlca.app.util.Controls;
-import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.*;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.trees.Trees;
@@ -76,8 +72,8 @@ class ImpactPage extends ModelPage<Process> {
 		ScrolledForm form = UI.formHeader(this);
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.formBody(form, tk);
-		Composite comp = tk.createComposite(body);
-		UI.gridLayout(comp, 4);
+		Composite comp = UI.formComposite(body, tk);
+		UI.gridLayout(comp, 5);
 		UI.formLabel(comp, tk, M.ImpactAssessmentMethod);
 		combo = new ImpactMethodViewer(comp);
 		List<ImpactMethodDescriptor> list = new ImpactMethodDao(Database.get())
@@ -88,13 +84,14 @@ class ImpactPage extends ModelPage<Process> {
 		combo.setInput(list);
 		combo.addSelectionChangedListener(this::setTreeInput);
 
-		zeroCheck = tk.createButton(comp, M.ExcludeZeroValues, SWT.CHECK);
+		zeroCheck = UI.formCheckBox(comp, tk, M.ExcludeZeroValues);
 		zeroCheck.setSelection(true);
 		Controls.onSelect(
 				zeroCheck, e -> setTreeInput(combo.getSelected()));
 
-		Button reload = tk.createButton(comp, M.Reload, SWT.NONE);
-		reload.setImage(Icon.REFRESH.get());
+		Button reload = UI.formButton(comp, tk, M.Reload);
+		var image = Icon.REFRESH.get();
+		reload.setImage(image);
 		Controls.onSelect(reload, _e -> {
 			result = null;
 			setTreeInput(combo.getSelected());

@@ -13,6 +13,7 @@ import org.openlca.app.M;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.CostResultViewer;
 import org.openlca.app.viewers.combo.FlowViewer;
@@ -131,7 +132,7 @@ class Combo {
 
 	private void initFlowCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
-		Button check = tk.createButton(comp, M.Flow, SWT.RADIO);
+		Button check = UI.formRadio(comp, tk, M.Flow);
 		check.setSelection(enabled);
 		Controls.onSelect(check, _e -> {
 			if (check.getSelection()) {
@@ -158,7 +159,7 @@ class Combo {
 
 	private void initImpactCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.IMPACT_CATEGORY;
-		Button check = tk.createButton(comp, M.ImpactCategory, SWT.RADIO);
+		Button check = UI.formButton(comp, tk, M.ImpactCategory, SWT.RADIO);
 		check.setSelection(enabled);
 		Controls.onSelect(check, _e -> {
 			if (check.getSelection()) {
@@ -185,7 +186,7 @@ class Combo {
 
 	private void initCostCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.CURRENCY;
-		Button check = tk.createButton(comp, M.CostCategory, SWT.RADIO);
+		Button check = UI.formButton(comp, tk, M.CostCategory, SWT.RADIO);
 		check.setSelection(enabled);
 		Controls.onSelect(check, _e -> {
 			if (check.getSelection()) {

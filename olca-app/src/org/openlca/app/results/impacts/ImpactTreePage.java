@@ -11,11 +11,7 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ContributionCutoff;
 import org.openlca.app.results.ResultEditor;
-import org.openlca.app.util.Actions;
-import org.openlca.app.util.Controls;
-import org.openlca.app.util.DQUI;
-import org.openlca.app.util.Labels;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.*;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.TreeClipboard.Provider;
@@ -58,7 +54,7 @@ public class ImpactTreePage extends FormPage {
 		var section = UI.section(body, tk,
 				M.ImpactAnalysis + ": " + Labels.name(setup.impactMethod()));
 		UI.gridData(section, true, true);
-		var comp = tk.createComposite(section);
+		var comp = UI.formComposite(section, tk);
 		section.setClient(comp);
 		UI.gridLayout(comp, 1);
 		createOptions(comp, tk);
@@ -70,16 +66,16 @@ public class ImpactTreePage extends FormPage {
 	private void createOptions(Composite parent, FormToolkit tk) {
 		var comp = UI.formComposite(parent, tk);
 		UI.gridLayout(comp, 5);
-		tk.createLabel(comp, "Sub-group by:");
-		var flowCheck = tk.createButton(comp, M.Flows, SWT.RADIO);
+		UI.formLabel(comp, tk, "Sub-group by:");
+		var flowCheck = UI.formRadio(comp, tk, M.Flows);
 		flowCheck.setSelection(flowsFirst);
-		var processCheck = tk.createButton(comp, M.Processes, SWT.RADIO);
+		var processCheck = UI.formRadio(comp, tk, M.Processes);
 		processCheck.setSelection(!flowsFirst);
 		Controls.onSelect(flowCheck, e -> {
 			flowsFirst = flowCheck.getSelection();
 			setInput();
 		});
-		tk.createLabel(comp, " | ");
+		UI.formLabel(comp, tk, " | ");
 		cutoff = ContributionCutoff.create(comp, tk);
 	}
 
@@ -103,6 +99,8 @@ public class ImpactTreePage extends FormPage {
 		viewer.setContentProvider(new TreeContent(this));
 		tk.adapt(viewer.getTree(), false, false);
 		tk.paintBordersFor(viewer.getTree());
+		viewer.getTree().setBackground(Colors.widgetBackground());
+		viewer.getTree().setForeground(Colors.widgetForeground());
 
 		var onOpen = Actions.onOpen(this::onOpen);
 		var onCopy = TreeClipboard.onCopy(viewer, new ClipboardProvider(label));

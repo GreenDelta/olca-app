@@ -83,9 +83,9 @@ public class LocationPage extends FormPage {
 
 	private void createCombos(Composite body, FormToolkit tk) {
 
-		Composite outer = tk.createComposite(body);
+		Composite outer = UI.formComposite(body, tk);
 		UI.gridLayout(outer, 2, 5, 0);
-		Composite comboComp = tk.createComposite(outer);
+		Composite comboComp = UI.formComposite(outer, tk);
 		UI.gridLayout(comboComp, 2);
 		combos = Combo.on(editor)
 				.onSelected(this::onSelected)
@@ -94,17 +94,16 @@ public class LocationPage extends FormPage {
 			combos.selectWithEvent(editor.items.enviFlows().get(0));
 		}
 
-		Composite cutoffComp = tk.createComposite(outer);
+		Composite cutoffComp = UI.formComposite(outer, tk);
 		UI.gridLayout(cutoffComp, 1, 0, 0);
 		GridData gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
 		cutoffComp.setLayoutData(gd);
 
-		Composite checkComp = tk.createComposite(cutoffComp);
-		tk.createLabel(checkComp, M.DontShowSmallerThen);
-		Spinner spinner = new Spinner(checkComp, SWT.BORDER);
+		Composite checkComp = UI.formComposite(cutoffComp, tk);
+		UI.formLabel(checkComp, tk, M.DontShowSmallerThen);
+		Spinner spinner = UI.formSpinner(checkComp, tk, SWT.BORDER);
 		spinner.setValues(1, 0, 100, 0, 1, 10);
-		tk.adapt(spinner);
-		tk.createLabel(checkComp, "%");
+		UI.formLabel(checkComp, tk, "%");
 		Controls.onSelect(spinner, e -> {
 			cutoff = (spinner.getSelection()) / 100d;
 			refreshSelection();

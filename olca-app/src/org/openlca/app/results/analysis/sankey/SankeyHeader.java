@@ -16,10 +16,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
 import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.frame.Header;
-import org.openlca.app.util.Colors;
-import org.openlca.app.util.Controls;
-import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
+import org.openlca.app.util.*;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -51,12 +48,16 @@ public class SankeyHeader extends Header {
 		headerLayout.marginWidth = 20;
 		headerLayout.horizontalSpacing = 20;
 		setLayout(headerLayout);
+		setBackground(Colors.widgetBackground());
+		setForeground(Colors.widgetForeground());
 
-		button = new Button(this, SWT.NONE);
+		button = UI.button(this, SWT.NONE);
+		button.setBackground(Colors.widgetForeground());
+		button.setForeground(Colors.widgetBackground());
 		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		button.setImage(Icon.PREFERENCES.get());
 
-		info = new Composite(this, SWT.NONE);
+		info = UI.formComposite(this);
 		info.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		var infoLayout = new GridLayout(3, true);
 		infoLayout.marginHeight = 0;

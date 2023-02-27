@@ -85,7 +85,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		});
 
 		UI.formLabel(comp, "Reference process");
-		ImageHyperlink link = new ImageHyperlink(comp, SWT.TOP);
+		ImageHyperlink link = UI.formImageHyperlink(comp, tk, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
 		link.setImage(Images.get(ModelType.PROCESS));
 		Controls.onClick(link, e -> {
@@ -96,7 +96,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		bind(link, l -> l.setText(Labels.name(stats.refProcess)));
 
 		UI.formLabel(comp, "");
-		Button btn = tk.createButton(comp, M.Update, SWT.NONE);
+		Button btn = UI.formButton(comp, tk, M.Update);
 		Controls.onSelect(btn, e -> calculate());
 	}
 

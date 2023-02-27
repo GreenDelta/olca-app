@@ -68,7 +68,7 @@ class FlowUseSection {
 		if (processIds.isEmpty())
 			return;
 		UI.formLabel(parent, tk, label);
-		var composite = tk.createComposite(parent);
+		var composite = UI.formComposite(parent, tk);
 		UI.gridLayout(composite, 1).verticalSpacing = 0;
 		for (var d : loadDescriptors(processIds)) {
 			renderFlowLink(image, composite, d);
@@ -100,7 +100,7 @@ class FlowUseSection {
 	}
 
 	private void renderFlowLink(Image image, Composite comp, ProcessDescriptor d) {
-		var link = tk.createImageHyperlink(comp, SWT.TOP);
+		var link = UI.formImageHyperlink(comp, tk, SWT.TOP);
 		link.setText(Labels.name(d));
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
@@ -114,7 +114,7 @@ class FlowUseSection {
 	private void renderUsageLink(Image image, Composite composite, int rest) {
 		if (rest < 1)
 			return;
-		var link = tk.createImageHyperlink(composite, SWT.TOP);
+		var link = UI.formImageHyperlink(composite, tk, SWT.TOP);
 		link.setText(rest + " more");
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());

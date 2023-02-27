@@ -74,13 +74,10 @@ public class InfoSection {
 			? Categories.path(entity.category)
 			: Collections.emptyList();
 		if (path.isEmpty()) {
-			tk.createLabel(container, "- none -");
+			UI.formLabel(container, tk, "- none -");
 		} else {
 			var category = String.join("/", path);
-			var link = tk.createImageHyperlink(container, SWT.NONE);
-			link.setImage(Images.get(entity.category));
-			link.setText(Strings.cutMid(category, 100));
-			link.setToolTipText(category);
+			var link = UI.formCategoryLink(container, tk, category, Images.get(entity.category));
 			Controls.onClick(link, $ -> Navigator.select(entity.category));
 		}
 		if (editor.hasComment("category")) {
@@ -95,12 +92,13 @@ public class InfoSection {
 
 		// version
 		UI.filler(container, tk);
-		var versionComp = tk.createComposite(container);
+		var versionComp = UI.formComposite(container);
+
 		UI.gridLayout(versionComp, 8, 10, 0);
 		createVersionText(versionComp, tk);
 
 		// last change
-		tk.createLabel(versionComp, " ");
+		UI.formLabel(versionComp, tk, " ");
 		createDateText(versionComp, tk);
 		UI.filler(container, tk);
 
@@ -108,9 +106,9 @@ public class InfoSection {
 		createTags(tk);
 
 		// uuid
-		tk.createLabel(versionComp, " ");
-		tk.createLabel(versionComp, "UUID:");
-		var uuidText = tk.createFormText(versionComp, false);
+		UI.formLabel(versionComp, tk, " ");
+		UI.formLabel(versionComp, tk, "UUID:");
+		var uuidText = UI.formText(versionComp, tk, false);
 		if (entity.refId != null) {
 			uuidText.setText(entity.refId, false, false);
 		}
@@ -127,12 +125,12 @@ public class InfoSection {
 	}
 
 	private void createVersionText(Composite parent, FormToolkit tk) {
-		tk.createLabel(parent, M.Version + ":");
-		var comp = tk.createComposite(parent);
+		UI.formLabel(parent, M.Version + ":");
+		var comp = UI.formComposite(parent, tk);
 		var layout = UI.gridLayout(comp, 3);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
-		versionLabel = tk.createFormText(comp, false);
+		versionLabel = UI.formText(comp, tk, false);
 		versionLabel.setText(Version.asString(entity.version), false, false);
 		editor.onSaved(() -> {
 			entity = editor.getModel();
@@ -143,8 +141,8 @@ public class InfoSection {
 	}
 
 	private void createDateText(Composite parent, FormToolkit tk) {
-		tk.createLabel(parent, M.LastChange + ":");
-		var text = tk.createLabel(parent, "");
+		UI.formLabel(parent, tk, M.LastChange + ":");
+		var text = UI.formLabel(parent, tk, "");
 		if (entity.lastChange != 0) {
 			text.setText(Numbers.asTimestamp(entity.lastChange));
 		} else {
@@ -158,13 +156,13 @@ public class InfoSection {
 
 	private void createTags(FormToolkit tk) {
 		UI.formLabel(container, tk, "Tags");
-		var comp = tk.createComposite(container);
+		var comp = UI.formComposite(container, tk);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
-		var btn = tk.createButton(comp, "Add a tag", SWT.NONE);
+		var btn = UI.formButton(comp, tk, "Add a tag");
 		btn.setEnabled(editor.isEditable());
 
-		var tagComp = tk.createComposite(comp);
+		var tagComp = UI.formComposite(comp, tk);
 		UI.gridLayout(tagComp, 1);
 		UI.gridData(tagComp, true, false);
 
@@ -176,7 +174,7 @@ public class InfoSection {
 			if (inner != null) {
 				inner.dispose();
 			}
-			inner = tk.createComposite(tagComp);
+			inner = UI.formComposite(tagComp, tk);
 			UI.gridData(inner, true, false);
 			innerComp.set(inner);
 
@@ -225,6 +223,7 @@ public class InfoSection {
 			this.type = type;
 			link = toolkit.createImageHyperlink(parent, SWT.TOP);
 			link.addHyperlinkListener(this);
+			link.setBackground(Colors.widgetBackground());
 			configureLink();
 		}
 
@@ -283,7 +282,7 @@ public class InfoSection {
 			link = tk.createImageHyperlink(comp, SWT.NONE);
 			link.setText(text);
 			link.setImage(Icon.DELETE_DISABLED.get());
-			link.setBackground(Colors.fromHex("#e8eaf6"));
+			link.setBackground(Colors.tagBackground());
 
 			link.addMouseTrackListener(new MouseTrackAdapter() {
 				@Override
@@ -337,7 +336,7 @@ public class InfoSection {
 			UI.gridLayout(body, 1, 10, 10);
 
 			// text for new tag
-			var textComp = tk.createComposite(body);
+			var textComp = UI.formComposite(body, tk);
 			UI.gridLayout(textComp, 2, 10, 0);
 			UI.gridData(textComp, true, false);
 			var label = UI.formLabel(textComp, tk, "New tag:");
@@ -347,7 +346,7 @@ public class InfoSection {
 
 			// list with existing tags
 			UI.formLabel(body, tk, "Used tags:");
-			var list = new org.eclipse.swt.widgets.List(body, SWT.BORDER);
+			var list = UI.formList(body);
 			UI.gridData(list, true, true);
 			if (candidates != null) {
 				list.setItems(candidates);

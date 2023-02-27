@@ -2,6 +2,7 @@ package org.openlca.app.preferences;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -45,18 +46,44 @@ public class NumberFormatPage extends PreferencePage implements
 
 	@Override
 	protected Control createContents(Composite body) {
-		Composite parent = UI.formComposite(body);
-		Label description = new Label(parent, SWT.NONE);
+		var comp = new Composite(body, SWT.NONE);
+		UI.gridLayout(comp, 2);
+
+		Label description = new Label(comp, SWT.NONE);
 		description.setText(M.NumberFormatPage_Description);
 		UI.gridData(description, false, false).horizontalSpan = 2;
-		numberText = UI.formText(parent, M.NumberOfDecimalPlaces);
-		UI.gridData(numberText, false, false).widthHint = 80;
-		new DataBinding().onInt(() -> this, "accuracy", numberText);
-		numberText.addModifyListener((e) -> setSampleLabel());
-		createExample(parent);
-		applyFormatCheck = UI.formCheckBox(parent, M.ApplyFormat);
+
+		createNumberText(comp);
+		createExample(comp);
+		createApplyFormatCheck(comp);
+
+		return comp;
+	}
+
+	private void createApplyFormatCheck(Composite comp) {
+		var label = new Label(comp, SWT.NONE);
+		label.setText(M.ApplyFormat);
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
+		applyFormatCheck = new Button(comp, SWT.CHECK);
+		applyFormatCheck.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		new DataBinding().onBoolean(() -> this, "applyFormat", applyFormatCheck);
-		return parent;
+	}
+
+	private void createNumberText(Composite parent) {
+		var label = new Label(parent, SWT.NONE);
+		label.setText(M.NumberOfDecimalPlaces);
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+
+		numberText = new Text(parent, SWT.BORDER);
+		UI.fillHorizontal(numberText);
+		UI.gridData(numberText, false, false).widthHint = 80;
+		new DataBinding().onBoolean(() -> this, "applyFormat", applyFormatCheck);
+		numberText.addModifyListener((e) -> setSampleLabel());
 	}
 
 	private void createExample(Composite parent) {
@@ -104,7 +131,7 @@ public class NumberFormatPage extends PreferencePage implements
 		log.trace("save number of decimal places to {}", accuracy);
 		Numbers.setDefaultAccuracy(accuracy);
 		Preferences.getStore().setValue(Preferences.NUMBER_ACCURACY, accuracy);
-		Preferences.getStore().setValue(Preferences.FORMAT_INPUT_VALUES, applyFormat);		
+		Preferences.getStore().setValue(Preferences.FORMAT_INPUT_VALUES, applyFormat);
 	}
 
 }

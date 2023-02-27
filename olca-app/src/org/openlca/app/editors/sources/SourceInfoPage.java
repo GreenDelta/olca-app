@@ -92,7 +92,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		layout.numColumns = 3;
 		comp.setLayout(layout);
 
-		var browseButton = tk.createButton(comp, M.Browse, SWT.NONE);
+		var browseButton = UI.formButton(comp, tk, M.Browse);
 		var editable = getEditor().isEditable();
 		browseButton.setEnabled(editable);
 		Controls.onSelect(browseButton, e -> selectFile());
@@ -114,7 +114,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	private void fileLink(Composite comp) {
-		fileLink = tk.createImageHyperlink(comp, SWT.TOP);
+		fileLink = UI.formImageHyperlink(comp, tk, SWT.TOP);
 		fileLink.setForeground(Colors.linkBlue());
 		Controls.onClick(fileLink, this::openFile);
 		fileLink.addMouseTrackListener(new DeleteFileVisibility());

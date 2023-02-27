@@ -64,8 +64,8 @@ class FlowInfoPage extends ModelPage<Flow> {
 		if (flow.flowType != FlowType.PRODUCT_FLOW)
 			return;
 		Composite comp = infoSection.composite();
-		toolkit.createLabel(comp, "");
-		Button button = toolkit.createButton(comp, M.CreateProcess, SWT.NONE);
+		UI.formLabel(comp, toolkit, "");
+		Button button = UI.formButton(comp, toolkit, M.CreateProcess);
 		button.setImage(Images.get(ModelType.PROCESS, Overlay.NEW));
 		Controls.onSelect(button, e -> openProcessWizard());
 	}

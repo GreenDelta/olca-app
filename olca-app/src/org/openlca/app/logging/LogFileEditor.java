@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -90,6 +91,8 @@ public class LogFileEditor extends FormEditor {
 			UI.gridData(browser, true, true);
 			try {
 				browser.setUrl(file.toURI().toURL().toString());
+				if (Display.isSystemDarkTheme())
+					browser.execute("document.querySelector(\"body\").style.background=\"#2b2b2b\"");
 			} catch (IOException e) {
 				ErrorReporter.on("Error loading log file: " + file, e);
 			}

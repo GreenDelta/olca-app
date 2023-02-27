@@ -35,7 +35,7 @@ public class ConnectDialog extends FormDialog {
 		var formBody = UI.formWizardHeader(form, form.getToolkit(),
 				"Connect Git repository",
 				"Enter the location of the Git repository.");
-		var body = new Composite(formBody, SWT.NONE);
+		var body = UI.formComposite(formBody);
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
 		createLocationGroup(body);
@@ -49,7 +49,7 @@ public class ConnectDialog extends FormDialog {
 	}
 
 	private void createLocationGroup(Composite parent) {
-		var group = new Group(parent, SWT.NONE);
+		var group = UI.formGroup(parent);
 		group.setText("Location");
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
@@ -150,7 +150,7 @@ public class ConnectDialog extends FormDialog {
 				return false;
 			return true;
 		}
-		
+
 		@Override
 		public String toString() {
 			var url = protocol + "://" + host;

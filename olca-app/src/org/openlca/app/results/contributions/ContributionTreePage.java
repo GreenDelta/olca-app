@@ -19,12 +19,7 @@ import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
-import org.openlca.app.util.Actions;
-import org.openlca.app.util.CostResultDescriptor;
-import org.openlca.app.util.FileType;
-import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.*;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
@@ -60,13 +55,13 @@ public class ContributionTreePage extends FormPage {
 				Labels.name(setup.target()),
 				Icon.ANALYSIS_RESULT.get());
 		var body = UI.formBody(form, tk);
-		var comp = tk.createComposite(body);
+		var comp = UI.formComposite(body, tk);
 		UI.gridLayout(comp, 2);
 		var selector = ResultItemSelector
 				.on(items)
 				.withSelectionHandler(new SelectionHandler())
 				.create(comp, tk);
-		var treeComp = tk.createComposite(body);
+		var treeComp = UI.formComposite(body, tk);
 		UI.gridLayout(treeComp, 1);
 		UI.gridData(treeComp, true, true);
 		createTree(tk, treeComp);
@@ -87,6 +82,9 @@ public class ContributionTreePage extends FormPage {
 		tree.getTree().setLinesVisible(false);
 		tree.setContentProvider(new ContentProvider());
 		tk.adapt(tree.getTree(), false, false);
+		tree.getTree().setBackground(Colors.widgetBackground());
+		tree.getTree().setForeground(Colors.widgetForeground());
+
 		tk.paintBordersFor(tree.getTree());
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);

@@ -78,7 +78,7 @@ class ParameterRedefTable {
 	public void create(FormToolkit tk, Composite comp) {
 		// configure the table
 		table = Tables.createViewer(comp,
-			/* 0 */ M.Context,
+			/*0 */ M.Context,
 			/* 1 */ M.Parameter,
 			/* 2 */ M.Amount,
 			/* 3 */ M.Uncertainty,
