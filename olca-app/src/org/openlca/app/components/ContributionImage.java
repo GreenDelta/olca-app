@@ -61,7 +61,7 @@ public class ContributionImage {
 		var image = imageRegistry.get(key);
 		if (image != null)
 			return image;
-		image = new Image(display, width, 15);
+		image = new Image(display, width, 16);
 		GC gc = new GC(image);
 		gc.setBackground(selectedColor);
 		gc.fillRectangle((int) ((width - barWidth) / 2), 5, filledWidth, 5);
