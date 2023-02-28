@@ -2,7 +2,6 @@ package org.openlca.app.editors.lcia.geo;
 
 import java.io.File;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;

@@ -12,8 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static org.openlca.util.OS.WINDOWS;
-
 public final class Themes {
 
 	public static String MODEL = "model";
