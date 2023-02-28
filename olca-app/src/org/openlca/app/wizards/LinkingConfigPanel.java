@@ -57,11 +57,11 @@ class LinkingConfigPanel {
 
 	private void createCutoffText(Composite comp) {
 		UI.filler(comp);
-		var inner = new Composite(comp, SWT.NONE);
+		var inner = UI.formComposite(comp);
 		UI.fillHorizontal(inner);
 		UI.gridLayout(inner, 2, 5, 0);
 		cutoffCheck = UI.checkBox(inner, M.Cutoff);
-		cutoffText = new Text(inner, SWT.BORDER);
+		cutoffText = UI.formEmptyText(inner, SWT.BORDER);
 		UI.gridData(cutoffText, false, false).widthHint = 100;
 	}
 

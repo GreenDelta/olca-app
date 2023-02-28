@@ -3,7 +3,6 @@ package org.openlca.app.util;
 import java.util.function.Function;
 
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
@@ -30,7 +29,6 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.util.Strings;
-import org.python.antlr.ast.For;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -478,8 +476,19 @@ public class UI {
 		return formText(parent, toolkit, label, SWT.BORDER);
 	}
 
+
 	public static Text formEmptyText(Composite parent, FormToolkit toolkit) {
-		var text = UI.formText(parent, toolkit, "");
+		return formEmptyText(parent, toolkit, SWT.NONE);
+	}
+
+	public static Text formEmptyText(Composite parent, int style) {
+		return formEmptyText(parent, null, style);
+	}
+
+	public static Text formEmptyText(Composite parent, FormToolkit toolkit, int style) {
+		var text = toolkit == null
+				? new Text(parent, style)
+				: UI.formText(parent, toolkit, "", style);
 		text.setBackground(Colors.widgetBackground());
 		text.setForeground(Colors.widgetForeground());
 		return text;
