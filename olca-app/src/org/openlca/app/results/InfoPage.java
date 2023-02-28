@@ -5,7 +5,6 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.contributions.ContributionChartSection;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 

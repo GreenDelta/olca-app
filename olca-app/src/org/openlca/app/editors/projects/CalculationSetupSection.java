@@ -2,7 +2,6 @@ package org.openlca.app.editors.projects;
 
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.FormToolkit;

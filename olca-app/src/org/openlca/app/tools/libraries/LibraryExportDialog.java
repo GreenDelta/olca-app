@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;

@@ -9,7 +9,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;

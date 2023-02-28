@@ -3,7 +3,6 @@ package org.openlca.app.tools.mapping;
 import java.io.File;
 import java.util.function.Consumer;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;

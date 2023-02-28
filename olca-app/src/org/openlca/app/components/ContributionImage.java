@@ -1,7 +1,6 @@
 package org.openlca.app.components;
 
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
