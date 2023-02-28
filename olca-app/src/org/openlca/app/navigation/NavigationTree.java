@@ -10,6 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
+import org.openlca.app.util.Colors;
 import org.openlca.core.model.ModelType;
 
 /**
@@ -41,6 +42,11 @@ public class NavigationTree {
 
 	private static TreeViewer createViewer(Composite parent, int selection) {
 		var viewer = new TreeViewer(parent, SWT.BORDER | selection);
+
+		var tree = viewer.getTree();
+		tree.setBackground(Colors.widgetBackground());
+		tree.setForeground(Colors.widgetForeground());
+
 		viewer.setContentProvider(new NavigationContentProvider());
 		viewer.setLabelProvider(NavigationLabelProvider.withoutRepositoryState());
 		viewer.setComparator(new NavigationComparator());
