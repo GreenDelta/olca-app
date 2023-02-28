@@ -22,6 +22,7 @@ class ConfigIniFile {
 	private static final String EDGE_PROP = "-Dorg.eclipse.swt.browser.DefaultType=edge";
 
 	private Language language = Language.ENGLISH;
+	private Theme theme = Theme.DEFAULT;
 	private int maxMemory = 3584;
 	private boolean useEdgeBrowser = false;
 
@@ -105,6 +106,7 @@ class ConfigIniFile {
 
 		var ini = new ConfigIniFile();
 		boolean nextIsLanguage = false;
+		boolean nextIsTheme = false;
 
 		for (var l : lines) {
 			var line = l.trim();
@@ -117,6 +119,17 @@ class ConfigIniFile {
 			if (nextIsLanguage) {
 				ini.language = Language.getForCode(line);
 				nextIsLanguage = false;
+				continue;
+			}
+
+			// read language code
+			if (line.equals("-theme")) {
+				nextIsTheme = true;
+				continue;
+			}
+			if (nextIsTheme) {
+				ini.theme = Theme.getForCode(line);
+				nextIsTheme = false;
 				continue;
 			}
 
@@ -166,6 +179,17 @@ class ConfigIniFile {
 		this.language = language;
 	}
 
+	void setTheme(Theme theme) {
+		this.theme = theme;
+	}
+
+	public Theme getTheme() {
+		if (theme == null)
+			return Theme.DEFAULT;
+		else
+			return theme;
+	}
+
 	int getMaxMemory() {
 		return maxMemory;
 	}
@@ -181,5 +205,4 @@ class ConfigIniFile {
 	boolean useEdgeBrowser() {
 		return useEdgeBrowser;
 	}
-
 }

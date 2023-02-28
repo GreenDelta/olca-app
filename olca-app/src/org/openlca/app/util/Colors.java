@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.preferences.Theme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +20,18 @@ import static org.openlca.util.OS.WINDOWS;
  */
 public class Colors {
 
-	private static final HashMap<RGBA, Color> createdColors = new HashMap<>();
-
 	private static final Display display;
+
+	private static final HashMap<RGBA, Color> createdColors = new HashMap<>();
+	private static Color widgetBackground;
+	private static Color widgetForeground;
+	private static Color widgetBorder;
+	private static Color titleBackground;
+	private static Color titleForeground;
+	private static Color listForeground;
+	private static Color listBackground;
+	private static Color tagBackground;
+
 	static {
 		display = PlatformUI.getWorkbench().getDisplay();
 		display.disposeExec(() -> {
@@ -175,21 +185,30 @@ public class Colors {
 	}
 
 	public static Color widgetBackground() {
-		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
-			return Colors.get(43, 43, 43);
-		else return systemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		if (widgetBackground == null)
+			widgetBackground = org.openlca.util.OS.get() == WINDOWS
+					&& Theme.isDark()
+					? Colors.get(43, 43, 43)
+					: systemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		return widgetBackground;
 	}
 
 	public static Color widgetForeground() {
-		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
-			return Colors.white();
-		else return systemColor(SWT.COLOR_WIDGET_FOREGROUND);
+		if (widgetForeground == null)
+			widgetForeground = org.openlca.util.OS.get() == WINDOWS
+					&& Theme.isDark()
+					? Colors.white()
+					: systemColor(SWT.COLOR_WIDGET_FOREGROUND);
+		return widgetForeground;
 	}
 
 	public static Color widgetBorder() {
-		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
-			return Colors.get(94, 96, 96);
-		else return Colors.get(122, 122, 122);
+		if (widgetBorder == null)
+			widgetBorder = org.openlca.util.OS.get() == WINDOWS
+					&& Theme.isDark()
+					? Colors.get(94, 96, 96)
+					: Colors.get(122, 122, 122);
+		return widgetBorder;
 	}
 
 	public static Color widgetToggle() {
@@ -197,33 +216,46 @@ public class Colors {
 	}
 
 	public static Color titleBackground() {
-		if (Display.isSystemDarkTheme())
-			return Colors.get(39, 41, 42);
-		else return Colors.white();
+		if (titleBackground == null)
+			titleBackground = Theme.isDark()
+					? Colors.get(39, 41, 42)
+					: Colors.white();
+		return titleBackground;
 	}
 
 	public static Color titleForeground() {
-		if (Display.isSystemDarkTheme())
-			return Colors.white();
-		else return Colors.get(38, 38, 38);
+		if (titleForeground == null)
+			titleForeground = Theme.isDark()
+					? Colors.white()
+					: Colors.get(38, 38, 38);
+		return titleForeground;
 	}
 
 	public static Color listForeground() {
-		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
-			return Colors.get(170, 170, 170);
-		else return systemColor(SWT.COLOR_LIST_FOREGROUND);
+		if (listForeground == null)
+			listForeground = org.openlca.util.OS.get() == WINDOWS
+					&& Theme.isDark()
+					? Colors.get(170, 170, 170)
+					: systemColor(SWT.COLOR_LIST_FOREGROUND);
+		return listForeground;
 	}
 
 	public static Color listBackground() {
-		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
-			return Colors.get(43, 43, 43);
-		else return widgetBackground();
+		if (listBackground == null)
+			listBackground = org.openlca.util.OS.get() == WINDOWS
+					&& Theme.isDark()
+					? Colors.get(43, 43, 43)
+					: widgetBackground();
+		return listBackground;
 	}
 
 	public static Color tagBackground() {
-		if (org.openlca.util.OS.get() == WINDOWS && Display.isSystemDarkTheme())
-			return Colors.get(170, 170, 170);
-		else return fromHex("#e8eaf6");
+		if (tagBackground == null)
+			tagBackground = org.openlca.util.OS.get() == WINDOWS
+					&& Theme.isDark()
+					? Colors.get(170, 170, 170)
+					: fromHex("#e8eaf6");
+		return tagBackground;
 	}
 
 	/**

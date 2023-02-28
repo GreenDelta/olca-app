@@ -2,12 +2,10 @@ package org.openlca.app.rcp;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.Workbench;
 
 public class RcpTheme {
 
-	public static void setTheme(boolean isDarkTheme) {
+	public static void setDarkTheme(boolean isDarkTheme) {
 		Display display = Display.getCurrent();
 
 		if (display == null)

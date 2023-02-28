@@ -21,6 +21,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
+import org.openlca.app.preferences.Theme;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
@@ -75,12 +76,12 @@ public class Tables {
 		table.setHeaderForeground(Colors.listForeground());
 		table.setForeground(Colors.listForeground());
 
-		if (Display.isSystemDarkTheme())
+		if (Theme.isDark())
 			table.setBackground(Colors.listBackground());
-		else
-			table.setLinesVisible(hasColumns);
 
+		table.setLinesVisible(!Theme.isDark() && hasColumns);
 		table.setHeaderVisible(hasColumns);
+
 		var data = UI.gridData(table, true, true);
 		data.minimumHeight = 120;
 		// workaround for this bug:
