@@ -675,6 +675,7 @@ public class M extends NLS {
 	public static String Position;
 	public static String Prefer;
 	public static String PreferDefaultProviders;
+	public static String Preferences;
 	public static String PreferredProcessType;
 	public static String Preparing;
 	public static String Price;

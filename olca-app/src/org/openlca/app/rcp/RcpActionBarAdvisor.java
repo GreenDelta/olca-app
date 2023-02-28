@@ -271,7 +271,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		// preferences
 		preferencesAction = ActionFactory.PREFERENCES.create(window);
 		preferencesAction.setImageDescriptor(Icon.PREFERENCES.descriptor());
-		preferencesAction.setText(M.Settings);
+		preferencesAction.setText(M.Preferences);
 
 		// other
 		exitAction = ActionFactory.QUIT.create(window);
