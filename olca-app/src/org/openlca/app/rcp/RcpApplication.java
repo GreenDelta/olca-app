@@ -5,6 +5,7 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.preferences.Theme;
 import org.openlca.util.OS;
 
 import static org.openlca.util.OS.WINDOWS;
@@ -15,8 +16,9 @@ public class RcpApplication implements IApplication {
 	public Object start(final IApplicationContext context) throws Exception {
 		Object result = null;
 		Display display = PlatformUI.createDisplay();
+
 		if (OS.get() == WINDOWS)
-			RcpTheme.setTheme(Display.isSystemDarkTheme());
+			RcpTheme.setDarkTheme(Theme.isDark());
 
 		try {
 			final int returnCode = PlatformUI.createAndRunWorkbench(display,

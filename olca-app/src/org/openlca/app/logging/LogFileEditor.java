@@ -17,6 +17,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
+import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -91,7 +92,7 @@ public class LogFileEditor extends FormEditor {
 			UI.gridData(browser, true, true);
 			try {
 				browser.setUrl(file.toURI().toURL().toString());
-				if (Display.isSystemDarkTheme())
+				if (Theme.isDark())
 					browser.execute("document.querySelector(\"body\").style.background=\"#2b2b2b\"");
 			} catch (IOException e) {
 				ErrorReporter.on("Error loading log file: " + file, e);

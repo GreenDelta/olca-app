@@ -25,6 +25,7 @@ public class ConfigPage extends PreferencePage implements
 
 	private boolean isDirty = false;
 	private Combo languageCombo;
+	private Combo themeCombo;
 	private Text memoryText;
 	private ConfigIniFile iniFile;
 
@@ -52,9 +53,11 @@ public class ConfigPage extends PreferencePage implements
 		UI.gridLayout(comp, 2);
 		UI.gridData(comp, true, false);
 		createLanguageCombo(comp);
+		if (OS.get() == OS.WINDOWS)
+			createThemeCombo(comp);
 		createMemoryText(comp);
 		if (OS.get() == OS.WINDOWS)
-			createBrowserCheck(comp);
+			createThemeCombo(comp);
 		createShowHidePage(comp);
 
 		UI.filler(comp);
@@ -169,6 +172,28 @@ public class ConfigPage extends PreferencePage implements
 		});
 	}
 
+	private void createThemeCombo(Composite composite) {
+		UI.formLabel(composite, M.Theme);
+		themeCombo = new Combo(composite, SWT.READ_ONLY);
+		UI.gridData(themeCombo, true, false);
+		Theme[] themes = Theme.values();
+		String[] items = new String[themes.length];
+		for (int i = 0; i < themes.length; i++) {
+			items[i] = themes[i].getName();
+		}
+		themeCombo.setItems(items);
+		selectTheme(iniFile.getTheme());
+		Controls.onSelect(themeCombo, (e) -> {
+			int idx = themeCombo.getSelectionIndex();
+			if (idx < 0)
+				return;
+			Theme theme = Theme.values()[idx];
+			if (!Objects.equals(theme, iniFile.getTheme())) {
+				iniFile.setTheme(theme);
+				setDirty();
+			}
+		});
+	}
 
 	private void setDirty() {
 		getApplyButton().setEnabled(true);
@@ -214,6 +239,21 @@ public class ConfigPage extends PreferencePage implements
 		if (item != -1) {
 			languageCombo.select(item);
 		}
+	}
+
+	private void selectTheme(Theme theme) {
+		if (theme == null)
+			return;
+		String[] items = themeCombo.getItems();
+		int item = -1;
+		for (int i = 0; i < items.length; i++) {
+			if (Objects.equals(theme.getName(), items[i])) {
+				item = i;
+				break;
+			}
+		}
+		if (item != -1)
+			themeCombo.select(item);
 	}
 
 	@Override

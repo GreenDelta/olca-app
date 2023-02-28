@@ -896,6 +896,7 @@ public class M extends NLS {
 	public static String Text;
 	public static String TextDropComponent_ToolTipText;
 	public static String TextReference;
+	public static String Theme;
 	public static String ThisWillCompressTheDatabase;
 	public static String Time;
 	public static String TimeAndAuthor;
