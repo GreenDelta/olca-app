@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Python editor</title>
     <link rel="stylesheet" href="lib/codemirror.css">
+    <link rel="stylesheet" href="lib/ayu-mirage.css">
     <style>
         html {
             height: 100%;
@@ -36,8 +37,7 @@
 
         var codeMirror = CodeMirror(document.body, {
             mode: "python",
-            lineNumbers: true,
-            theme: "idea"
+            lineNumbers: true
         });
 
         codeMirror.on("change", function () {
