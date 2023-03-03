@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { ReportIndicator } from "../model";
 import { Chart, ChartConfiguration } from "chart.js";
 
 /**
