@@ -30,7 +30,6 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 	protected void addPages() {
 		try {
 			addPage(new ProductSystemInfoPage(this));
-			// addPage(new ProductSystemParameterPage(this));
 			addPage(new ParameterPage(this));
 
 			var descriptor = getEditorInput().getDescriptor();
