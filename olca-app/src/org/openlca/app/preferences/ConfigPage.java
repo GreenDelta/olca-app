@@ -56,8 +56,6 @@ public class ConfigPage extends PreferencePage implements
 		if (OS.get() == OS.WINDOWS)
 			createThemeCombo(comp);
 		createMemoryText(comp);
-		if (OS.get() == OS.WINDOWS)
-			createThemeCombo(comp);
 		createShowHidePage(comp);
 
 		UI.filler(comp);
