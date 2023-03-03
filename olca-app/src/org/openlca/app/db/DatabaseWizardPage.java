@@ -49,7 +49,6 @@ public class DatabaseWizardPage extends WizardPage {
 		header.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		setControl(header);
 		UI.gridLayout(header, 2);
-
 		createNameText(header);
 		createTypeRadios(header);
 		createStackComposite(root);
@@ -58,11 +57,10 @@ public class DatabaseWizardPage extends WizardPage {
 	private void createNameText(Composite comp) {
 		var label = new Label(comp, SWT.NONE);
 		label.setText(M.DatabaseName);
-
 		var gd = UI.gridData(label, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
-		var nameText = new Text(comp, SWT.BORDER);
+		nameText = new Text(comp, SWT.BORDER);
 		UI.fillHorizontal(nameText);
 		nameText.addModifyListener((e) -> validateInput());
 	}
@@ -98,12 +96,10 @@ public class DatabaseWizardPage extends WizardPage {
 	}
 
 	private void createStackComposite(Composite rootComposite) {
-		Label separator = new Label(rootComposite, SWT.SEPARATOR
-				| SWT.HORIZONTAL);
+		var separator = new Label(rootComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		UI.gridData(separator, true, true);
 		stackComposite = new Composite(rootComposite, SWT.NONE);
-		stackComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true));
+		stackComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		stackLayout = new StackLayout();
 		stackComposite.setLayout(stackLayout);
 		createLocalComposite(stackComposite);
@@ -113,16 +109,13 @@ public class DatabaseWizardPage extends WizardPage {
 	private void createLocalComposite(Composite stackComposite) {
 		localComposite = new Composite(stackComposite, SWT.NONE);
 		stackLayout.topControl = localComposite;
-		localComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				false));
+		localComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		UI.gridLayout(localComposite, 2);
-
 		var label = new Label(localComposite, SWT.NONE);
 		label.setText(M.DatabaseContent);
 		var gd = UI.gridData(label, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
-
 		createContentRadios(localComposite);
 	}
 
@@ -152,16 +145,11 @@ public class DatabaseWizardPage extends WizardPage {
 	private String contentLabel(DbTemplate content) {
 		if (content == null)
 			return null;
-		switch (content) {
-			case EMPTY:
-				return M.EmptyDatabase;
-			case UNITS:
-				return M.UnitsAndFlowProperties;
-			case FLOWS:
-				return M.CompleteReferenceData;
-			default:
-				return null;
-		}
+		return switch (content) {
+			case EMPTY -> M.EmptyDatabase;
+			case UNITS -> M.UnitsAndFlowProperties;
+			case FLOWS -> M.CompleteReferenceData;
+		};
 	}
 
 	private void validateInput() {
@@ -226,11 +214,11 @@ public class DatabaseWizardPage extends WizardPage {
 
 	DatabaseConfig getPageData() {
 		if (buttonLocal.getSelection()) {
-			DerbyConfig derbyConfig = new DerbyConfig();
+			var derbyConfig = new DerbyConfig();
 			derbyConfig.name(getText(nameText));
 			return derbyConfig;
 		} else {
-			MySqlConfig config = new MySqlConfig();
+			var config = new MySqlConfig();
 			config.name(getText(nameText));
 			config.host(getText(hostText));
 			config.port(Integer.parseInt(getText(portText)));
