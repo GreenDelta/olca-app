@@ -51,6 +51,7 @@ class ConfigIniFile {
 			var oldLines = Files.readAllLines(iniFile.toPath());
 			var newLines = new ArrayList<String>();
 			boolean nextIsLanguage = false;
+			boolean nextIsTheme = false;
 
 			for (var l : oldLines) {
 				var line = l.trim();
@@ -64,6 +65,18 @@ class ConfigIniFile {
 				if (nextIsLanguage) {
 					nextIsLanguage = false;
 					newLines.add(getLanguage().getCode());
+					continue;
+				}
+
+				// application theme
+				if (line.equals("-theme")) {
+					nextIsTheme = true;
+					newLines.add(line);
+					continue;
+				}
+				if (nextIsTheme) {
+					nextIsTheme = false;
+					newLines.add(getTheme().getCode());
 					continue;
 				}
 
@@ -122,7 +135,7 @@ class ConfigIniFile {
 				continue;
 			}
 
-			// read language code
+			// read theme code
 			if (line.equals("-theme")) {
 				nextIsTheme = true;
 				continue;
