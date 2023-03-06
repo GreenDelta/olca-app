@@ -13,8 +13,8 @@ public enum Theme {
 	DEFAULT("Default", "default"),
 	DARK("Dark", "dark");
 
-	private String name;
-	private String code;
+	private final String name;
+	private final String code;
 
 	Theme(String name, String code) {
 		this.name = name;
