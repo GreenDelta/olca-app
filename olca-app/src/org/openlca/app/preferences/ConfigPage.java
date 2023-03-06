@@ -171,7 +171,12 @@ public class ConfigPage extends PreferencePage implements
 	}
 
 	private void createThemeCombo(Composite composite) {
-		UI.widgetLabel(composite, M.Theme);
+		var label = new Label(composite, SWT.NONE);
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+		label.setText(M.Theme);
+		
 		themeCombo = new Combo(composite, SWT.READ_ONLY);
 		UI.gridData(themeCombo, true, false);
 		Theme[] themes = Theme.values();
