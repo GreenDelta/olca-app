@@ -138,7 +138,7 @@ class CalculationDialog extends FormDialog {
 			});
 
 			if (method == AllocationMethod.ECONOMIC) {
-				UI.filler(comp);
+				UI.formFiller(comp);
 				var check = tk.createButton(
 					comp, "Calculate from costs/revenues", SWT.CHECK);
 				Controls.onSelect(check, $ -> {

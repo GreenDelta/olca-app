@@ -62,7 +62,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		UI.gridData(fileText, true, false);
 
 		// buttons
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 		var btnComp = UI.formComposite(comp, tk);
 		UI.gridLayout(btnComp, 2, 10, 0);
 		var openBtn = UI.formButton(btnComp, tk, "Open");

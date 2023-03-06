@@ -77,7 +77,7 @@ public class LoginPanel {
 		});
 
 		// login button
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 		button = UI.formButton(comp, tk, "");
 		updateButton();
 		button.setImage(Icon.CONNECT.get());

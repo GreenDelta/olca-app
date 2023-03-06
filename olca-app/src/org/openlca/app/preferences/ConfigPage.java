@@ -58,7 +58,7 @@ public class ConfigPage extends PreferencePage implements
 		createMemoryText(comp);
 		createShowHidePage(comp);
 
-		UI.filler(comp);
+		UI.widgetFiller(comp);
 		Composite bcomp = new Composite(comp, SWT.NONE);
 		UI.gridLayout(bcomp, 1, 5, 0);
 
@@ -66,7 +66,7 @@ public class ConfigPage extends PreferencePage implements
 		if (!NativeLib.isLoaded(Module.UMFPACK))
 			createNativeLib(bcomp);
 
-		UI.filler(comp);
+		UI.widgetFiller(comp);
 
 		createNoteComposite(comp.getFont(), comp, M.Note
 			+ ": ", M.SelectLanguageNoteMessage);
@@ -171,7 +171,7 @@ public class ConfigPage extends PreferencePage implements
 	}
 
 	private void createThemeCombo(Composite composite) {
-		UI.formLabel(composite, M.Theme);
+		UI.widgetLabel(composite, M.Theme);
 		themeCombo = new Combo(composite, SWT.READ_ONLY);
 		UI.gridData(themeCombo, true, false);
 		Theme[] themes = Theme.values();

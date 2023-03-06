@@ -48,12 +48,10 @@ public class SankeyHeader extends Header {
 		headerLayout.marginWidth = 20;
 		headerLayout.horizontalSpacing = 20;
 		setLayout(headerLayout);
-		setBackground(Colors.widgetBackground());
-		setForeground(Colors.widgetForeground());
+		setBackground(Colors.formBackground());
+		setForeground(Colors.formForeground());
 
 		button = UI.button(this, SWT.NONE);
-		button.setBackground(Colors.widgetForeground());
-		button.setForeground(Colors.widgetBackground());
 		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		button.setImage(Icon.PREFERENCES.get());
 

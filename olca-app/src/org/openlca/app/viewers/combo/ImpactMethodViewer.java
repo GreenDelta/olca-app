@@ -40,8 +40,8 @@ public class ImpactMethodViewer extends
 		if (!withCategories()) {
 			combo.setShowTableLines(false);
 		}
-		combo.setBackground(Colors.widgetBackground());
-		combo.setForeground(Colors.widgetForeground());
+		combo.setBackground(Colors.formBackground());
+		combo.setForeground(Colors.formForeground());
 	}
 
 	private boolean withCategories() {

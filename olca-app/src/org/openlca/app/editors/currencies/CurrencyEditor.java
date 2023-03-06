@@ -75,12 +75,12 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		}
 
 		private void createRefButton(Composite comp, FormToolkit tk) {
-			UI.filler(comp, tk);
+			UI.formFiller(comp, tk);
 			Button b = tk.createButton(comp, M.SetAsReferenceCurrency, SWT.NONE);
 			b.setImage(Images.get(ModelType.CURRENCY));
 			b.setEnabled(isEditable());
 			Controls.onSelect(b, e -> RefCurrencyUpdate.run(getModel()));
-			UI.filler(comp, tk);
+			UI.formFiller(comp, tk);
 		}
 	}
 }

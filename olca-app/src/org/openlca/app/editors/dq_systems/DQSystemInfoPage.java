@@ -102,7 +102,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		}
 		createAddIndicatorButton(composite);
 		for (int i = 1; i <= getModel().getScoreCount(); i++) {
-			UI.filler(composite);
+			UI.formFiller(composite);
 			createRemoveScoreButton(composite, i);
 		}
 	}
@@ -131,9 +131,9 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createHeader(Composite composite, boolean editable) {
-		UI.filler(composite);
+		UI.formFiller(composite);
 		if (editable) {
-			UI.filler(composite);
+			UI.formFiller(composite);
 		}
 		for (int i = 1; i <= getModel().getScoreCount(); i++) {
 			String scoreLabel = getModel().getScoreLabel(i);
@@ -160,7 +160,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 					label.setText(scoreText.getText());
 					label.setToolTipText(scoreText.getText());
 				});
-				UI.filler(composite);
+				UI.formFiller(composite);
 			}
 		}
 	}
@@ -269,7 +269,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		if (getEditor().hasComment(path)) {
 			new CommentControl(parent, tk, path, getEditor().getComments());
 		} else {
-			UI.filler(parent);
+			UI.formFiller(parent);
 		}
 	}
 

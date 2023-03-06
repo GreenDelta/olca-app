@@ -83,7 +83,7 @@ public class InfoSection {
 		if (editor.hasComment("category")) {
 			new CommentControl(container, tk, "category", editor.getComments());
 		} else {
-			UI.filler(container);
+			UI.formFiller(container);
 		}
 
 		// description
@@ -91,7 +91,7 @@ public class InfoSection {
 			.setEditable(editor.isEditable());
 
 		// version
-		UI.filler(container, tk);
+		UI.formFiller(container, tk);
 		var versionComp = UI.formComposite(container);
 
 		UI.gridLayout(versionComp, 8, 10, 0);
@@ -100,7 +100,7 @@ public class InfoSection {
 		// last change
 		UI.formLabel(versionComp, tk, " ");
 		createDateText(versionComp, tk);
-		UI.filler(container, tk);
+		UI.formFiller(container, tk);
 
 		// tags
 		createTags(tk);
@@ -206,7 +206,7 @@ public class InfoSection {
 			}).open();
 		});
 
-		UI.filler(container, tk);
+		UI.formFiller(container, tk);
 	}
 
 	private class VersionLink extends HyperlinkAdapter {
@@ -223,7 +223,7 @@ public class InfoSection {
 			this.type = type;
 			link = toolkit.createImageHyperlink(parent, SWT.TOP);
 			link.addHyperlinkListener(this);
-			link.setBackground(Colors.widgetBackground());
+			link.setBackground(Colors.formBackground());
 			configureLink();
 		}
 

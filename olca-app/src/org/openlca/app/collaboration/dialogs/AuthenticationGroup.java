@@ -53,7 +53,7 @@ class AuthenticationGroup {
 
 	AuthenticationGroup render(Composite parent, int flags) {
 		var autoFocus = (flags & SWT.FOCUSED) != 0;
-		var group = UI.formGroup(parent);
+		var group = UI.widgetGroup(parent, SWT.NONE);
 		group.setText("Authentication");
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
@@ -79,7 +79,7 @@ class AuthenticationGroup {
 	}
 
 	private Text createText(Composite parent, int flags, String label, String initialValue, Consumer<String> process) {
-		var text = UI.formText(parent, label, flags);
+		var text = UI.widgetText(parent, label, flags | SWT.BORDER);
 		if (initialValue != null) {
 			text.setText(initialValue);
 		}

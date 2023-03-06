@@ -77,11 +77,11 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		UI.formLabel(comp, toolkit, M.Type);
 		if (getModel().isInputParameter) {
 			UI.formLabel(comp, toolkit, M.InputParameter);
-			UI.filler(comp, toolkit);
+			UI.formFiller(comp, toolkit);
 			forInputParameter(comp);
 		} else {
 			UI.formLabel(comp, toolkit, M.DependentParameter);
-			UI.filler(comp, toolkit);
+			UI.formFiller(comp, toolkit);
 			forDependentParameter(comp);
 		}
 	}
@@ -104,7 +104,7 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 			link.getParent().layout();
 			getEditor().setDirty(true);
 		});
-		UI.filler(comp, toolkit);
+		UI.formFiller(comp, toolkit);
 	}
 
 	private void forDependentParameter(Composite comp) {

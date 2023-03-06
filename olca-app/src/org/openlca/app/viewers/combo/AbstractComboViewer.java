@@ -32,10 +32,10 @@ public abstract class AbstractComboViewer<T> extends
 		var combo = new TableCombo(parent,
 				SWT.READ_ONLY | SWT.BORDER | SWT.VIRTUAL);
 
-		combo.setBackground(Colors.widgetBackground());
-		combo.setForeground(Colors.widgetForeground());
-		combo.getTable().setHeaderBackground(Colors.widgetBackground());
-		combo.getTable().setHeaderForeground(Colors.widgetForeground());
+		combo.setBackground(Colors.formBackground());
+		combo.setForeground(Colors.formForeground());
+		combo.getTable().setHeaderBackground(Colors.formBackground());
+		combo.getTable().setHeaderForeground(Colors.formForeground());
 
 		UI.gridData(combo, true, false).widthHint = 350;
 		if (useColumnHeaders()) {

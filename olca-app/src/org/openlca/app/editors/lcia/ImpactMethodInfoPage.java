@@ -64,7 +64,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 				method.source = source;
 				editor.setDirty();
 			});
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 
 		// code
 		var codeText = UI.formText(comp, tk, "Code");
@@ -72,7 +72,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			getModel().code = code;
 			getEditor().setDirty();
 		});
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 
 		createIndicatorTable(tk, body);
 		body.setFocus();

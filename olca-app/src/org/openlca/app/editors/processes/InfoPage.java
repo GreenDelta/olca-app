@@ -56,7 +56,7 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createButtons(Composite comp, FormToolkit tk) {
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 		var inner = UI.formComposite(comp, tk);
 
 		// we can only support direct calculations when no

@@ -157,7 +157,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		}
 
 		private void createKeepExistingCheck(FormToolkit tk, Composite body) {
-			UI.filler(body, tk);
+			UI.formFiller(body, tk);
 			var check = tk.createButton(
 					body, "Keep all existing links", SWT.CHECK);
 			config.keepExistingLinks(true);
@@ -167,7 +167,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		}
 
 		private void createLocationCheck(FormToolkit tk, Composite body) {
-			UI.filler(body, tk);
+			UI.formFiller(body, tk);
 			var check = tk.createButton(
 					body, "Prefer links within same locations", SWT.CHECK);
 			config.preferLinksInSameLocation(false);

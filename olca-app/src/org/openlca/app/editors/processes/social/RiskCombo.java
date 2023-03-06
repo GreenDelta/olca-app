@@ -34,7 +34,7 @@ class RiskCombo {
 		if (selected >= 0)
 			combo.select(selected);
 		Controls.onSelect(combo, (e) -> selectionChanged());
-		UI.filler(body, tk);
+		UI.formFiller(body, tk);
 	}
 
 	private void selectionChanged() {

@@ -93,7 +93,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			connectionRoutersCombo(tk, body);
 
 			// show elementary flows
-			UI.filler(body, tk);
+			UI.formFiller(body, tk);
 			var elems = tk.createButton(
 				body, "Show elementary flows", SWT.CHECK);
 			elems.setSelection(config.showElementaryFlows());
@@ -101,7 +101,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 					e -> config.setShowElementaryFlows(elems.getSelection()));
 
 			// edit mode
-			UI.filler(body, tk);
+			UI.formFiller(body, tk);
 			var isNodeEditingEnabled = tk.createButton(
 				body, "Enable process editing", SWT.CHECK);
 			isNodeEditingEnabled.setSelection(config.isNodeEditingEnabled());

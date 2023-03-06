@@ -208,7 +208,7 @@ class ValueEditor {
 			}
 
 			// error message
-			UI.filler(comp, tk);
+			UI.formFiller(comp, tk);
 			var errorLabel = tk.createLabel(comp, "");
 			errorLabel.setForeground(Colors.systemColor(SWT.COLOR_RED));
 			Consumer<String> onError = err -> {

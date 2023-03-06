@@ -158,7 +158,7 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	private void createCalcButton(Composite comp, FormToolkit tk) {
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 		var btn = UI.formButton(comp, tk, "Calculate factors");
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {

@@ -39,7 +39,7 @@ class ResultPage extends ModelPage<Result> {
 				editor.getModel().productSystem = system;
 				editor.setDirty();
 			});
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 
 		// LCIA method
 		ModelLink.of(ImpactMethod.class)
@@ -50,7 +50,7 @@ class ResultPage extends ModelPage<Result> {
 				result.impactMethod = method;
 				editor.setDirty();
 			});
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 
 		var sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridLayout(sash, 1);

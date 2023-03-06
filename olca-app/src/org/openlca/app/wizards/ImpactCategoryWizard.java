@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.M;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
@@ -37,7 +38,7 @@ public class ImpactCategoryWizard extends AbstractWizard<ImpactCategory> {
 
 		@Override
 		protected void modelWidgets(Composite container) {
-			refUnit = UI.formText(container, "Reference unit");
+			refUnit = UI.widgetText(container, M.ReferenceUnit);
 		}
 
 		@Override

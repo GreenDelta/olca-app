@@ -128,8 +128,8 @@ class ReportSectionList {
 			componentCombo = new ComboViewer(comp);
 
 			var combo = componentCombo.getCombo();
-			combo.setBackground(Colors.widgetBackground());
-			combo.setForeground(Colors.widgetForeground());
+			combo.setBackground(Colors.formBackground());
+			combo.setForeground(Colors.formForeground());
 
 			UI.gridData(componentCombo.getControl(), false, false).widthHint = 250;
 			componentCombo.setContentProvider(ArrayContentProvider.getInstance());

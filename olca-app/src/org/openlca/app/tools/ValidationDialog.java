@@ -9,10 +9,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.Controls;
-import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.MsgBox;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.*;
 import org.openlca.core.database.IDatabase;
 import org.openlca.validation.Validation;
 
@@ -57,6 +54,8 @@ public class ValidationDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		Composite body = mForm.getForm().getBody();
+		body.setBackground(Colors.widgetBackground());
+		body.setForeground(Colors.widgetForeground());
 		UI.bodyLayout(body, tk);
 		UI.gridLayout(body, 2);
 
@@ -71,10 +70,10 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createProgressBar(Composite body, FormToolkit tk) {
-		var progressComp = tk.createComposite(body);
+		var progressComp = UI.widgetComposite(body);
 		UI.gridData(progressComp, true, false).horizontalSpan = 2;
 		UI.gridLayout(progressComp, 1);
-		infoLabel = tk.createLabel(
+		infoLabel = UI.widgetLabel(
 			progressComp, "Validation is running ...");
 		UI.gridData(infoLabel, true, false);
 		infoLabel.setVisible(false);
@@ -84,7 +83,7 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createCountCombo(Composite body, FormToolkit tk) {
-		var messageLabel = tk.createLabel(body, "Maximum message count", SWT.NONE);
+		var messageLabel = UI.widgetLabel(body, "Maximum message count");
 		var gd = UI.gridData(messageLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
@@ -97,7 +96,7 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createValidationMessageCombo(Composite comp, FormToolkit tk) {
-		var validationLabel = tk.createLabel(comp, "Validation messages", SWT.NONE);
+		var validationLabel = UI.widgetLabel(comp, "Validation messages");
 		var gd = UI.gridData(validationLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
