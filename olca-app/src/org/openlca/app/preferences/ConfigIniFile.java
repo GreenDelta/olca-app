@@ -22,7 +22,7 @@ class ConfigIniFile {
 	private static final String EDGE_PROP = "-Dorg.eclipse.swt.browser.DefaultType=edge";
 
 	private Language language = Language.ENGLISH;
-	private Theme theme = Theme.DARK;
+	private Theme theme = Theme.DEFAULT;
 	private int maxMemory = 3584;
 	private boolean useEdgeBrowser = false;
 
