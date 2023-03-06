@@ -98,7 +98,7 @@ public class MatrixExportDialog extends FormDialog {
 
 		// check boxes
 		BiConsumer<String, Consumer<Boolean>> check = (label, fn) -> {
-			UI.filler(body, tk);
+			UI.formFiller(body, tk);
 			var button = UI.formCheckBox(body, tk);
 			button.setText(label);
 			Controls.onSelect(button, _e -> fn.accept(button.getSelection()));

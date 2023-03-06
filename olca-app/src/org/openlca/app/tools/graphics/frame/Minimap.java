@@ -56,15 +56,15 @@ public class Minimap extends Composite {
 
 	protected void createZoomScale() {
 		var zoomScale = new ZoomScale(this, SWT.NONE);
-		setBackground(Colors.widgetBackground());
-		setForeground(Colors.widgetForeground());
+		setBackground(Colors.formBackground());
+		setForeground(Colors.formForeground());
 
 		var zoomScaleLayout = new GridLayout(2, false);
 		zoomScaleLayout.marginHeight = 0;
 		zoomScaleLayout.marginWidth = 0;
 		zoomScale.setLayout(zoomScaleLayout);
 
-		scale = UI.scale(zoomScale);
+		scale = UI.widgetScale(zoomScale);
 		scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		final double[] values = BasicGraphicalEditor.ZOOM_LEVELS;

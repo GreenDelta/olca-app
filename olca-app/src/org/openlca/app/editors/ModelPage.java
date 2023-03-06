@@ -177,8 +177,8 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 
-		text.setBackground(Colors.widgetBackground());
-		text.setForeground(Colors.widgetForeground());
+		text.setBackground(Colors.formBackground());
+		text.setForeground(Colors.formForeground());
 
 		return text;
 	}

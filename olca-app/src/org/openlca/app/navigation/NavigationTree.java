@@ -44,8 +44,8 @@ public class NavigationTree {
 		var viewer = new TreeViewer(parent, SWT.BORDER | selection);
 
 		var tree = viewer.getTree();
-		tree.setBackground(Colors.widgetBackground());
-		tree.setForeground(Colors.widgetForeground());
+		tree.setBackground(Colors.formBackground());
+		tree.setForeground(Colors.formForeground());
 
 		viewer.setContentProvider(new NavigationContentProvider());
 		viewer.setLabelProvider(NavigationLabelProvider.withoutRepositoryState());

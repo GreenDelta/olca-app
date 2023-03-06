@@ -105,7 +105,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			UI.gridLayout(comp, 2);
 
 			combo = new LibCombo(UI.formCombo(comp, tk, "Library"));
-			UI.filler(comp, tk);
+			UI.formFiller(comp, tk);
 			var importButton = tk.createButton(
 				comp, "Import from file ...", SWT.NONE);
 			Controls.onSelect(importButton, $ -> {

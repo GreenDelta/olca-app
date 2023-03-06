@@ -100,20 +100,20 @@ class ProviderDialog extends Dialog {
 	}
 
 	private void createChecks(Composite comp) {
-		UI.filler(comp);
+		UI.formFiller(comp);
 		Button b = new Button(comp, SWT.RADIO);
 		b.setText("Continue with multi-provider checks");
 		b.setSelection(true);
 
-		UI.filler(comp);
+		UI.formFiller(comp);
 		saveCheck = new Button(comp, SWT.RADIO);
 		saveCheck.setText("Always use this provider for this flow");
 
-		UI.filler(comp);
+		UI.formFiller(comp);
 		autoContinueCheck = new Button(comp, SWT.RADIO);
 		autoContinueCheck.setText("Continue with auto-select");
 
-		UI.filler(comp);
+		UI.formFiller(comp);
 		cancelCheck = new Button(comp, SWT.RADIO);
 		cancelCheck.setText("Cancel the product system creation");
 	}

@@ -30,7 +30,7 @@ public class LibraryDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		var formBody = UI.formWizardHeader(form, form.getToolkit(),
+		var formBody = UI.widgetHeader(form, form.getToolkit(),
 				"Locate library",
 				"Please specify a location for the missing library '" + library + "'");
 		var body = new Composite(formBody, SWT.NONE);

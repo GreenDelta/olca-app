@@ -23,14 +23,18 @@ public class Colors {
 	private static final Display display;
 
 	private static final HashMap<RGBA, Color> createdColors = new HashMap<>();
-	private static Color widgetBackground;
-	private static Color widgetForeground;
-	private static Color widgetBorder;
+	private static Color formBackground;
+	private static Color formForeground;
+	private static Color titleBorder;
 	private static Color titleBackground;
 	private static Color titleForeground;
 	private static Color listForeground;
 	private static Color listBackground;
 	private static Color tagBackground;
+	private static Color navigatorBackground;
+	private static Color navigatorForeground;
+	private static Color widgetBackground;
+	private static Color widgetForeground;
 
 	static {
 		display = PlatformUI.getWorkbench().getDisplay();
@@ -184,12 +188,34 @@ public class Colors {
 		return display.getSystemColor(swtConstant);
 	}
 
-	public static Color widgetBackground() {
-		if (widgetBackground == null)
-			widgetBackground = org.openlca.util.OS.get() == WINDOWS
+	public static Color formBackground() {
+		if (formBackground == null) {
+			if (Theme.isDark())
+				formBackground = org.openlca.util.OS.get() == WINDOWS
+						? Colors.get(43, 43, 43)
+						: systemColor(SWT.COLOR_WIDGET_BACKGROUND);
+			else formBackground = white();
+		}
+		return formBackground;
+	}
+
+	public static Color formForeground() {
+		if (formForeground == null)
+			formForeground = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
-					? Colors.get(43, 43, 43)
-					: systemColor(SWT.COLOR_WIDGET_BACKGROUND);
+					? Colors.white()
+					: systemColor(SWT.COLOR_WIDGET_FOREGROUND);
+		return formForeground;
+	}
+
+	public static Color widgetBackground() {
+		if (widgetBackground == null) {
+			if (Theme.isDark())
+				widgetBackground = org.openlca.util.OS.get() == WINDOWS
+						&& Theme.isDark()
+						? Colors.get(43, 43, 43)
+						: systemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		}
 		return widgetBackground;
 	}
 
@@ -202,16 +228,16 @@ public class Colors {
 		return widgetForeground;
 	}
 
-	public static Color widgetBorder() {
-		if (widgetBorder == null)
-			widgetBorder = org.openlca.util.OS.get() == WINDOWS
+	public static Color titleBorder() {
+		if (titleBorder == null)
+			titleBorder = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.get(94, 96, 96)
 					: Colors.get(122, 122, 122);
-		return widgetBorder;
+		return titleBorder;
 	}
 
-	public static Color widgetToggle() {
+	public static Color sectionToggle() {
 		return Colors.get(38, 38, 38);
 	}
 
@@ -245,8 +271,26 @@ public class Colors {
 			listBackground = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.get(43, 43, 43)
-					: widgetBackground();
+					: formBackground();
 		return listBackground;
+	}
+
+	public static Color navigatorBackground() {
+		if (navigatorBackground == null)
+			navigatorBackground = org.openlca.util.OS.get() == WINDOWS
+					&& Theme.isDark()
+					? Colors.get(43, 43, 43)
+					: systemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		return navigatorBackground;
+	}
+
+	public static Color navigatorForeground() {
+		if (navigatorForeground == null)
+			navigatorForeground = org.openlca.util.OS.get() == WINDOWS
+					&& Theme.isDark()
+					? Colors.white()
+					: systemColor(SWT.COLOR_WIDGET_FOREGROUND);
+		return navigatorForeground;
 	}
 
 	public static Color tagBackground() {

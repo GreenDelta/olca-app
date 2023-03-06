@@ -99,8 +99,8 @@ public class ImpactTreePage extends FormPage {
 		viewer.setContentProvider(new TreeContent(this));
 		tk.adapt(viewer.getTree(), false, false);
 		tk.paintBordersFor(viewer.getTree());
-		viewer.getTree().setBackground(Colors.widgetBackground());
-		viewer.getTree().setForeground(Colors.widgetForeground());
+		viewer.getTree().setBackground(Colors.formBackground());
+		viewer.getTree().setForeground(Colors.formForeground());
 
 		var onOpen = Actions.onOpen(this::onOpen);
 		var onCopy = TreeClipboard.onCopy(viewer, new ClipboardProvider(label));

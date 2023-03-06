@@ -62,7 +62,7 @@ class MappingPage extends FormPage {
 		ProviderRow targetRow = new ProviderRow(comp, tk);
 		targetRow.onSelect = p -> tool.targetSystem = p;
 
-		UI.filler(comp);
+		UI.formFiller(comp);
 		Button checkButton = UI.formButton(comp, tk, "Check mappings");
 		Runnable updateCheckState = () -> {
 			if (tool.checked.get()) {

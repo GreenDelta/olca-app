@@ -72,13 +72,13 @@ class SourceInfoPage extends ModelPage<Source> {
 			Desktop.browse(url);
 		});
 		text(comp, M.TextReference, "textReference");
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 		shortText(comp, M.Year, "year");
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 		fileSection(comp);
 
-		UI.filler(comp, tk);
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
+		UI.formFiller(comp, tk);
 		image = new ImageView(comp, this::getDatabaseFile);
 	}
 

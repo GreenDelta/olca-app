@@ -106,8 +106,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		protected void modelWidgets(Composite comp) {
 			createWasteCheck(comp);
 			createRefFlowCheck(comp);
-			qRefLabel = UI.formLabel(comp, M.QuantitativeReference);
-			flowText = UI.formText(comp, SWT.NONE);
+			qRefLabel = UI.widgetLabel(comp, M.QuantitativeReference);
+			flowText = UI.widgetText(comp);
 			createLabelStack(comp);
 			contentStack = new Composite(comp, SWT.NONE);
 			UI.gridData(contentStack, true, true).heightHint = 200;
@@ -130,8 +130,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		private void createWasteCheck(Composite comp) {
-			UI.filler(comp);
-			wasteCheck = new Button(comp, SWT.CHECK);
+			UI.widgetFiller(comp);
+			wasteCheck = UI.widgetCheckBox(comp, M.CreateAWasteTreatmentProcess);
 			wasteCheck.setText(M.CreateAWasteTreatmentProcess);
 			Controls.onSelect(wasteCheck, e -> {
 				if (wasteCheck.getSelection()) {
@@ -146,9 +146,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		private void createRefFlowCheck(Composite comp) {
-			UI.filler(comp);
-			createRefFlowCheck = new Button(comp, SWT.CHECK);
-			createRefFlowCheck.setText(M.CreateANewFlowForTheProcess);
+			UI.widgetFiller(comp);
+			createRefFlowCheck = UI.widgetCheckBox(comp, M.CreateANewFlowForTheProcess);
 			Controls.onSelect(createRefFlowCheck, e -> {
 				boolean createFlow = createRefFlowCheck.getSelection();
 				StackLayout labelLayout = (StackLayout) labelStack.getLayout();

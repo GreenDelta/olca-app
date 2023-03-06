@@ -209,7 +209,7 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridLayout(commonOptions, 1, 10, 0);
 		addRegioAndCostChecks(commonOptions);
 
-		var dqCheck = UI.checkBox(commonOptions, M.AssessDataQuality);
+		var dqCheck = UI.widgetCheckBox(commonOptions, M.AssessDataQuality);
 		dqCheck.setSelection(setup.withDataQuality);
 		Controls.onSelect(dqCheck, e -> {
 			setup.withDataQuality = dqCheck.getSelection();
@@ -245,12 +245,12 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void addRegioAndCostChecks(Composite comp) {
-		var regioCheck = UI.checkBox(comp, "Regionalized calculation");
+		var regioCheck = UI.widgetCheckBox(comp, "Regionalized calculation");
 		regioCheck.setSelection(setup.calcSetup.hasRegionalization());
 		Controls.onSelect(regioCheck,
 				_e -> setup.calcSetup.withRegionalization(regioCheck.getSelection()));
 
-		var costCheck = UI.checkBox(comp, M.IncludeCostCalculation);
+		var costCheck = UI.widgetCheckBox(comp, M.IncludeCostCalculation);
 		costCheck.setSelection(setup.calcSetup.hasCosts());
 		Controls.onSelect(costCheck,
 				_e -> setup.calcSetup.withCosts(costCheck.getSelection()));

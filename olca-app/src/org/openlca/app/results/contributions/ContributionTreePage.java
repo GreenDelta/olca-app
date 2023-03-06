@@ -82,8 +82,8 @@ public class ContributionTreePage extends FormPage {
 		tree.getTree().setLinesVisible(false);
 		tree.setContentProvider(new ContentProvider());
 		tk.adapt(tree.getTree(), false, false);
-		tree.getTree().setBackground(Colors.widgetBackground());
-		tree.getTree().setForeground(Colors.widgetForeground());
+		tree.getTree().setBackground(Colors.formBackground());
+		tree.getTree().setForeground(Colors.formForeground());
 
 		tk.paintBordersFor(tree.getTree());
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);

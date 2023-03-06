@@ -24,7 +24,7 @@ public class CommentControl {
 
 	private void initControl(Composite parent, FormToolkit tk) {
 		if (!App.isCommentingEnabled() || comments == null || !comments.hasPath(path)) {
-			UI.filler(parent, tk);
+			UI.formFiller(parent, tk);
 			return;
 		}
 		ImageHyperlink control = new ImageHyperlink(parent, SWT.NONE);

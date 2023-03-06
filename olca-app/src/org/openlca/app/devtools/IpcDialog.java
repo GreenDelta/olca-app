@@ -73,8 +73,8 @@ public class IpcDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		Composite body = mForm.getForm().getBody();
-		body.setBackground(Colors.widgetBackground());
-		body.setForeground(Colors.widgetForeground());
+		body.setBackground(Colors.formBackground());
+		body.setForeground(Colors.formForeground());
 		UI.bodyLayout(body, tk);
 
 		// port text
@@ -95,7 +95,7 @@ public class IpcDialog extends FormDialog {
 				onStop();
 			}
 		});
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 		grpcCheck = UI.formButton(comp, tk,
 				"Start as gRPC service (experimental)",
 				SWT.CHECK);

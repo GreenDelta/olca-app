@@ -42,7 +42,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 			var body = UI.formBody(form, tk);
 
 			var info = new InfoSection(editor).render(body, tk);
-			UI.filler(info.composite());
+			UI.formFiller(info.composite());
 			new UploadButton(editor).render(info.composite(), tk);
 
 			new EpdProductSection(editor).render(body, tk);

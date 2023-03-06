@@ -231,7 +231,7 @@ public class ImportLogView extends SimpleFormEditor {
 			Controls.onSelect(typeBtn, e -> typeMenu.setVisible(true));
 
 			// checkboxes
-			UI.filler(comp, tk);
+			UI.formFiller(comp, tk);
 			var optComp = tk.createComposite(comp);
 			UI.gridLayout(optComp, 6, 10, 0);
 			var errCheck = tk.createButton(optComp, "Errors", SWT.CHECK);

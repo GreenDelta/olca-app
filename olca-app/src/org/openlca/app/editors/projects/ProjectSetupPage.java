@@ -100,7 +100,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createCalculationButton(Composite parent) {
-		UI.filler(parent, toolkit);
+		UI.formFiller(parent, toolkit);
 		var comp = UI.formComposite(parent, toolkit);
 		UI.gridLayout(comp, 1, 0, 0).marginHeight = 5;
 		var button = UI.formButton(comp, toolkit, M.Calculate);

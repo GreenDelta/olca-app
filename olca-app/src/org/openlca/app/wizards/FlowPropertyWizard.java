@@ -58,10 +58,10 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 
 		@Override
 		protected void modelWidgets(final Composite container) {
-			UI.formLabel(container, M.FlowPropertyType);
+			UI.widgetLabel(container, M.FlowPropertyType);
 			typeCombo = new FlowPropertyTypeViewer(container);
 			typeCombo.select(FlowPropertyType.PHYSICAL);
-			UI.formLabel(container, M.UnitGroup);
+			UI.widgetLabel(container, M.UnitGroup);
 			unitGroupCombo = new UnitGroupViewer(container);
 			unitGroupCombo.setInput(Database.get());
 		}

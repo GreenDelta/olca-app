@@ -33,12 +33,12 @@ class LinkingConfigPanel {
 
 	private void create(Composite comp) {
 		Composite methodGroup = createRadioGroup(comp, M.ProviderLinking);
-		ignoreProvidersRadio = UI.formRadio(methodGroup, M.IgnoreDefaultProviders);
-		preferProvidersRadio = UI.formRadio(methodGroup, M.PreferDefaultProviders);
-		onlyLinkProvidersRadio = UI.formRadio(methodGroup, M.OnlyLinkDefaultProviders);
+		ignoreProvidersRadio = UI.widgetRadio(methodGroup, M.IgnoreDefaultProviders);
+		preferProvidersRadio = UI.widgetRadio(methodGroup, M.PreferDefaultProviders);
+		onlyLinkProvidersRadio = UI.widgetRadio(methodGroup, M.OnlyLinkDefaultProviders);
 		Composite typeGroup = createRadioGroup(comp, M.PreferredProcessType);
-		preferUnitRadio = UI.formRadio(typeGroup, Labels.of(ProcessType.UNIT_PROCESS));
-		preferSystemRadio = UI.formRadio(typeGroup, Labels.of(ProcessType.LCI_RESULT));
+		preferUnitRadio = UI.widgetRadio(typeGroup, Labels.of(ProcessType.UNIT_PROCESS));
+		preferSystemRadio = UI.widgetRadio(typeGroup, Labels.of(ProcessType.LCI_RESULT));
 		createCutoffText(comp);
 		preferProvidersRadio.setSelection(true);
 		preferSystemRadio.setSelection(true);
@@ -47,21 +47,21 @@ class LinkingConfigPanel {
 	}
 
 	private Composite createRadioGroup(Composite parent, String label) {
-		UI.filler(parent);
-		UI.formLabel(parent, label);
-		UI.filler(parent);
-		Composite group = UI.formComposite(parent);
+		UI.widgetFiller(parent);
+		UI.widgetLabel(parent, label);
+		UI.widgetFiller(parent);
+		Composite group = UI.widgetComposite(parent);
 		UI.gridLayout(group, 2, 10, 0).marginLeft = 10;
 		return group;
 	}
 
 	private void createCutoffText(Composite comp) {
-		UI.filler(comp);
-		var inner = UI.formComposite(comp);
+		UI.widgetFiller(comp);
+		var inner = UI.widgetComposite(comp);
 		UI.fillHorizontal(inner);
 		UI.gridLayout(inner, 2, 5, 0);
-		cutoffCheck = UI.checkBox(inner, M.Cutoff);
-		cutoffText = UI.formEmptyText(inner, SWT.BORDER);
+		cutoffCheck = UI.widgetCheckBox(inner, M.Cutoff);
+		cutoffText = UI.widgetEmptyText(inner, SWT.BORDER);
 		UI.gridData(cutoffText, false, false).widthHint = 100;
 	}
 

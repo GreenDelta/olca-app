@@ -90,20 +90,20 @@ public class ExportDialog extends FormDialog {
 		var comp = UI.formSection(body, tk, "Product information", 3);
 		UI.formLabel(comp, M.Product);
 		UI.formLabel(comp, doc.productName);
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 
 		// declared unit
 		UI.formLabel(comp, tk, "Declared unit");
 		UI.formLabel(comp, tk, doc.declaredUnit != null
 			? doc.declaredUnit.toString()
 			: "?");
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 		new MassField(this).render(comp, tk);
 
 		// category link
 		UI.formLabel(comp, tk, M.Category);
 		new CategoryLink(this).render(comp, tk);
-		UI.filler(comp, tk);
+		UI.formFiller(comp, tk);
 
 		// result sections
 		mappings.forEach(model -> new MappingSection(model).render(body, tk));
@@ -253,7 +253,7 @@ public class ExportDialog extends FormDialog {
 			if (mass != null) {
 				var num = mass.amount() + " kg";
 				UI.formLabel(comp, tk, num);
-				UI.filler(comp, tk);
+				UI.formFiller(comp, tk);
 			} else {
 				var text = tk.createText(comp, "", SWT.BORDER);
 				UI.fillHorizontal(text);

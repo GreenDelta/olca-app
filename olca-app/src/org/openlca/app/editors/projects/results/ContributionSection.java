@@ -75,12 +75,12 @@ class ContributionSection extends LabelProvider implements TableSection,
 		var selector = ResultItemSelector.on(data.items())
 			.withSelectionHandler(this)
 			.create(selectorComp, tk);
-		UI.filler(configComp, tk);
+		UI.formFiller(configComp, tk);
 
 		// add the search text and count selector
 		var searchText = tk.createText(configComp, "");
-		searchText.setBackground(Colors.widgetBackground());
-		searchText.setForeground(Colors.widgetForeground());
+		searchText.setBackground(Colors.formBackground());
+		searchText.setForeground(Colors.formForeground());
 		searchText.setMessage("Search a process ...");
 		UI.gridData(searchText, true, false);
 		searchText.addModifyListener($ -> {
