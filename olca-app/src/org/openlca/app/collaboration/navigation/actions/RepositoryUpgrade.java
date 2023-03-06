@@ -66,7 +66,8 @@ public class RepositoryUpgrade {
 					You were previously connected to a Collaboration Server version 1.
 					openLCA 2 requires Collaboration Server version 2. Do you want to
 					update your server connection? (This requires that the server you are
-					connected to is already updated)"""))
+					connected to is already updated; if that is not the case you will be
+					prompted for the URL of the new server)"""))
 				return;
 			if (!upgrade.run(config)) {
 				Dirs.delete(Repository.gitDir(database.getName()));
