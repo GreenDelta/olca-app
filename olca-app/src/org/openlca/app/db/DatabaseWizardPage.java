@@ -3,7 +3,6 @@ package org.openlca.app.db;
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -12,27 +11,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.DbUtils;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
-import org.openlca.core.database.config.MySqlConfig;
 
 public class DatabaseWizardPage extends WizardPage {
 
 	private Text nameText;
-	private StackLayout stackLayout;
-	private Button buttonLocal;
-	private Button buttonRemote;
-	private Composite localComposite;
 	private Button[] contentRadios;
-	private Composite remoteComposite;
-	private Text hostText;
-	private Text portText;
-	private Text userText;
-	private Text passwordText;
-	private Composite stackComposite;
 
 	public DatabaseWizardPage() {
 		super("database-wizard-page", M.NewDatabase,
@@ -43,15 +30,12 @@ public class DatabaseWizardPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite root = new Composite(parent, SWT.NONE);
-		UI.gridLayout(root, 1);
-		Composite header = new Composite(root, SWT.NONE);
-		header.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		setControl(header);
-		UI.gridLayout(header, 2);
-		createNameText(header);
-		createTypeRadios(header);
-		createStackComposite(root);
+		Composite body = new Composite(parent, SWT.NONE);
+		setControl(body);
+		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		UI.gridLayout(body, 2);
+		createNameText(body);
+		createDatabaseContent(body);
 	}
 
 	private void createNameText(Composite comp) {
@@ -65,70 +49,13 @@ public class DatabaseWizardPage extends WizardPage {
 		nameText.addModifyListener((e) -> validateInput());
 	}
 
-	private void createTypeRadios(Composite headerComposite) {
-		var label = new Label(headerComposite, SWT.NONE);
-		label.setText(M.DatabaseType);
-		var gd = UI.gridData(label, false, false);
-		gd.verticalAlignment = SWT.TOP;
-		gd.verticalIndent = 2;
-
-		Composite radioGroup = new Composite(headerComposite, SWT.NONE);
-		radioGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		UI.gridLayout(radioGroup, 2, 10, 0);
-		buttonLocal = new Button(radioGroup, SWT.RADIO);
-		buttonLocal.setText(M.Local);
-		buttonLocal.setSelection(true);
-		Controls.onSelect(buttonLocal, (e) -> typeChanged());
-		buttonRemote = new Button(radioGroup, SWT.RADIO);
-		buttonRemote.setText(M.Remote);
-		Controls.onSelect(buttonRemote, (e) -> typeChanged());
-	}
-
-	private void typeChanged() {
-		if (buttonLocal.getSelection()) {
-			stackLayout.topControl = localComposite;
-			stackComposite.layout();
-		} else if (buttonRemote.getSelection()) {
-			stackLayout.topControl = remoteComposite;
-			stackComposite.layout();
-		}
-		validateInput();
-	}
-
-	private void createStackComposite(Composite rootComposite) {
-		var separator = new Label(rootComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		UI.gridData(separator, true, true);
-		stackComposite = new Composite(rootComposite, SWT.NONE);
-		stackComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		stackLayout = new StackLayout();
-		stackComposite.setLayout(stackLayout);
-		createLocalComposite(stackComposite);
-		createRemoteComposite(stackComposite);
-	}
-
-	private void createLocalComposite(Composite stackComposite) {
-		localComposite = new Composite(stackComposite, SWT.NONE);
-		stackLayout.topControl = localComposite;
-		localComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		UI.gridLayout(localComposite, 2);
-		var label = new Label(localComposite, SWT.NONE);
+	private void createDatabaseContent(Composite comp) {
+		var label = new Label(comp, SWT.NONE);
 		label.setText(M.DatabaseContent);
 		var gd = UI.gridData(label, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
-		createContentRadios(localComposite);
-	}
-
-	private void createRemoteComposite(Composite stackComposite) {
-		remoteComposite = new Composite(stackComposite, SWT.NONE);
-		UI.gridLayout(remoteComposite, 2);
-		hostText = UI.formText(remoteComposite, M.Host);
-		hostText.addModifyListener((e) -> validateInput());
-		portText = UI.formText(remoteComposite, M.Port);
-		portText.addModifyListener((e) -> validateInput());
-		userText = UI.formText(remoteComposite, M.User);
-		userText.addModifyListener((e) -> validateInput());
-		passwordText = UI.formText(remoteComposite, M.Password);
+		createContentRadios(comp);
 	}
 
 	private void createContentRadios(Composite composite) {
@@ -156,37 +83,8 @@ public class DatabaseWizardPage extends WizardPage {
 		boolean valid = _validateName(nameText.getText());
 		if (!valid)
 			return;
-		if (buttonLocal.getSelection()) {
-			setMessage(null);
-			setPageComplete(true);
-			return;
-		}
-		if (hostText.getText().isEmpty()) {
-			error(M.PleaseSpecifyHost);
-			return;
-		}
-		if (userText.getText().isEmpty()) {
-			error(M.PleaseSpecifyUser);
-			return;
-		}
-		valid = validatePort(portText.getText());
-		if (!valid)
-			return;
 		setMessage(null);
 		setPageComplete(true);
-	}
-
-	private boolean validatePort(String port) {
-		if (port.isEmpty())
-			error(M.PleaseSpecifyPortNumber);
-		else
-			try {
-				Integer.parseInt(port);
-				return true;
-			} catch (NumberFormatException e) {
-				error(M.PleaseSpecifyPortNumber);
-			}
-		return false;
 	}
 
 	private boolean _validateName(String name) {
@@ -213,19 +111,9 @@ public class DatabaseWizardPage extends WizardPage {
 	}
 
 	DatabaseConfig getPageData() {
-		if (buttonLocal.getSelection()) {
-			var derbyConfig = new DerbyConfig();
-			derbyConfig.name(getText(nameText));
-			return derbyConfig;
-		} else {
-			var config = new MySqlConfig();
-			config.name(getText(nameText));
-			config.host(getText(hostText));
-			config.port(Integer.parseInt(getText(portText)));
-			config.password(getText(passwordText));
-			config.user(getText(userText));
-			return config;
-		}
+		var derbyConfig = new DerbyConfig();
+		derbyConfig.name(getText(nameText));
+		return derbyConfig;
 	}
 
 	DbTemplate getSelectedContent() {
