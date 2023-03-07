@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.elements.ModelElement;
@@ -94,7 +95,7 @@ class EpdModuleDialog extends FormDialog {
 		UI.gridLayout(comp, 2, 10, 0);
 
 		// module name
-		UI.formLabel(comp, tk, "Name:");
+		UI.formLabel(comp, tk, M.Name);
 		var nameCombo = new Combo(comp, SWT.BORDER);
 		UI.fillHorizontal(nameCombo);
 		nameCombo.setItems(proposeNames());
@@ -104,11 +105,11 @@ class EpdModuleDialog extends FormDialog {
 		nameCombo.addModifyListener($ -> module.name = nameCombo.getText());
 
 		// result multiplier
-		var factorText = UI.formText(comp, tk, "Result multiplier:");
+		var factorText = UI.formText(comp, tk, "Result multiplier");
 		Controls.set(factorText, module.multiplier, f -> module.multiplier = f);
 
 		// result tree
-		UI.formLabel(comp, tk, "Result:");
+		UI.formLabel(comp, tk, M.Result);
 		var tree = NavigationTree.forSingleSelection(body, ModelType.RESULT);
 		UI.gridData(tree.getTree(), true, true);
 		tree.addSelectionChangedListener(e -> {

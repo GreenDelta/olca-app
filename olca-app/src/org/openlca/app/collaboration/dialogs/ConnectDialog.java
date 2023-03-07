@@ -52,14 +52,14 @@ public class ConnectDialog extends FormDialog {
 		group.setText("Location");
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
-		var urlText = UI.widgetText(group, "URL:", SWT.BORDER);
-		var protocolText = UI.widgetText(group, "Protocol:", SWT.BORDER);
+		var urlText = UI.widgetText(group, M.URL, SWT.BORDER);
+		var protocolText = UI.widgetText(group, "Protocol", SWT.BORDER);
 		protocolText.setEnabled(false);
-		var hostText = UI.widgetText(group, "Host:", SWT.BORDER);
+		var hostText = UI.widgetText(group, M.Host, SWT.BORDER);
 		hostText.setEnabled(false);
-		var portText = UI.widgetText(group, "Port:", SWT.BORDER);
+		var portText = UI.widgetText(group, M.Port, SWT.BORDER);
 		portText.setEnabled(false);
-		var pathText = UI.widgetText(group, "Repository path:", SWT.BORDER);
+		var pathText = UI.widgetText(group, M.RepositoryPath, SWT.BORDER);
 		pathText.setEnabled(false);
 		urlText.addModifyListener(e -> {
 			var text = urlText.getText();

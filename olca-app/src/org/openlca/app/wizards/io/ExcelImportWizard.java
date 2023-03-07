@@ -120,7 +120,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			var body = new Composite(parent, SWT.NONE);
 			UI.gridLayout(body, 1);
 			var link = new Hyperlink(body, SWT.NONE);
-			link.setText("Selected one or more Excel files:");
+			link.setText("Selected one or more Excel files");
 			link.setForeground(Colors.linkBlue());
 
 			var viewer = Tables.createViewer(body, M.File);

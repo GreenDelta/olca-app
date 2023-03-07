@@ -107,7 +107,7 @@ public class InfoSection {
 
 		// uuid
 		UI.formLabel(versionComp, tk, " ");
-		UI.formLabel(versionComp, tk, "UUID:");
+		UI.formLabel(versionComp, tk, "UUID");
 		var uuidText = UI.formText(versionComp, tk, false);
 		if (entity.refId != null) {
 			uuidText.setText(entity.refId, false, false);
@@ -125,7 +125,7 @@ public class InfoSection {
 	}
 
 	private void createVersionText(Composite parent, FormToolkit tk) {
-		UI.formLabel(parent, M.Version + ":");
+		UI.formLabel(parent, M.Version);
 		var comp = UI.formComposite(parent, tk);
 		var layout = UI.gridLayout(comp, 3);
 		layout.marginWidth = 0;
@@ -141,7 +141,7 @@ public class InfoSection {
 	}
 
 	private void createDateText(Composite parent, FormToolkit tk) {
-		UI.formLabel(parent, tk, M.LastChange + ":");
+		UI.formLabel(parent, tk, M.LastChange);
 		var text = UI.formLabel(parent, tk, "");
 		if (entity.lastChange != 0) {
 			text.setText(Numbers.asTimestamp(entity.lastChange));
@@ -339,13 +339,13 @@ public class InfoSection {
 			var textComp = UI.formComposite(body, tk);
 			UI.gridLayout(textComp, 2, 10, 0);
 			UI.gridData(textComp, true, false);
-			var label = UI.formLabel(textComp, tk, "New tag:");
+			var label = UI.formLabel(textComp, tk, "New tag");
 			label.setFont(UI.boldFont());
 			text = UI.formText(textComp, SWT.SEARCH);
 			UI.gridData(text, true, false);
 
 			// list with existing tags
-			UI.formLabel(body, tk, "Used tags:");
+			UI.formLabel(body, tk, "Used tags");
 			var list = UI.formList(body);
 			UI.gridData(list, true, true);
 			if (candidates != null) {
