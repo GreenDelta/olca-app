@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
@@ -187,7 +188,7 @@ class MountLibraryDialog extends FormDialog {
 			var comp = tk.createComposite(group);
 			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 2);
-			var combo = UI.formCombo(comp, tk, "Action:");
+			var combo = UI.formCombo(comp, tk, "Action");
 			var items = new String[actions.size()];
 			var selectedIdx = -1;
 			for (int i = 0; i < actions.size(); i++) {

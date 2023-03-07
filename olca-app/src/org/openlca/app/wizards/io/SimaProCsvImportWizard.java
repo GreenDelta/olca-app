@@ -119,7 +119,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 		public void createControl(Composite parent) {
 			var body = new Composite(parent, SWT.NONE);
 			UI.gridLayout(body, 1);
-			UI.widgetLabel(body, "Selected SimaPro CSV files:");
+			UI.widgetLabel(body, "Selected SimaPro CSV files");
 
 			var viewer = Tables.createViewer(body, M.File);
 			var table = viewer.getTable();
@@ -158,12 +158,12 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			UI.gridData(comp, true, false);
 
 			// flow mapping
-			UI.widgetLabel(comp, "Flow mapping:");
+			UI.widgetLabel(comp, "Flow mapping");
 			MappingFileCombo.create(comp, Database.get())
 				.onSelected(flowMap -> this.flowMap = flowMap);
 
 			// options
-			UI.widgetLabel(comp, "Generate:");
+			UI.widgetLabel(comp, "Generate");
 			option(comp, "Product systems for life cycles",
 				createProductSystems);
 			UI.widgetFiller(comp);

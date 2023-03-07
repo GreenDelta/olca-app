@@ -6,11 +6,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
 
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.Workspace;
@@ -84,7 +86,7 @@ public class SaveScriptDialog extends FormDialog {
 		var tk = mform.getToolkit();
 		var body = UI.formBody(mform.getForm(), tk);
 		UI.gridLayout(body, 2);
-		var text = UI.formText(body, tk, "File name:");
+		var text = UI.formText(body, tk, NLS.bind(M.File, M.Name));
 		text.setText(name);
 		text.addModifyListener(e -> name = text.getText());
 

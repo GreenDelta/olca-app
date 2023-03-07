@@ -266,7 +266,7 @@ public class ImportLogView extends SimpleFormEditor {
 			});
 
 			tk.createLabel(optComp, " | ");
-			tk.createLabel(optComp, "Max. number of messages:");
+			tk.createLabel(optComp, "Max. number of messages");
 			var spinner = new Spinner(optComp, SWT.BORDER);
 			spinner.setValues(maxCount, 1000, 1_000_000, 0, 1000, 5000);
 			spinner.addModifyListener($ -> {

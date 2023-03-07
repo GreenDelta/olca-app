@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -118,9 +119,9 @@ class CalculationDialog extends FormDialog {
 
 		Selector render(Composite comp, FormToolkit tk) {
 			var title = switch (method) {
-				case PHYSICAL -> "Physical allocation:";
-				case ECONOMIC -> "Economic allocation:";
-				default -> "Causal allocation:";
+				case PHYSICAL -> "Physical allocation";
+				case ECONOMIC -> "Economic allocation";
+				default -> M.CausalAllocation;
 			};
 
 			var combo = UI.formCombo(comp, tk, title);
