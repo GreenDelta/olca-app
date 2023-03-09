@@ -240,7 +240,7 @@ class BuildDir:
             bin_dir = self.app_dir / "bin"
             bin_dir.mkdir(exist_ok=True, parents=True)
             for bin in bins:
-                bin_source = PROJECT_DIR / f"bin/${bin}"
+                bin_source = PROJECT_DIR / f"bin/{bin}"
                 bin_target = bin_dir / bin
                 if not bin_source.exists() or bin_target.exists():
                     continue

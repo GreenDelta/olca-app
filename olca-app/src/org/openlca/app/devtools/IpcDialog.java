@@ -111,22 +111,19 @@ public class IpcDialog extends FormDialog {
 	private void onStart() {
 		try {
 			int port = Integer.parseInt(portText.getText());
-			var db = Database.get();
+			var config = ServerConfig.defaultOf(Database.get())
+					.withDataDir(Workspace.dataDir())
+					.withPort(port)
+					.get();
 			var grpc = grpcCheck.getSelection();
 			App.run(
 					"Start server ...",
 					() -> {
 						if (grpc) {
-							grpcServer = new org.openlca.proto.io.server.Server(
-									db, Workspace.dataDir(), port);
+							grpcServer = new org.openlca.proto.io.server.Server(config);
 							new Thread(() -> grpcServer.start()).start();
 						} else {
-							var config = ServerConfig.defaultOf(db)
-									.withDataDir(Workspace.dataDir())
-									.withPort(port)
-									.get();
-							server = new Server(config)
-									.withDefaultHandlers();
+							server = new Server(config).withDefaultHandlers();
 							server.start();
 						}
 					},
