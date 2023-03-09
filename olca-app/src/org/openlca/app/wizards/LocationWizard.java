@@ -43,9 +43,9 @@ public class LocationWizard extends AbstractWizard<Location> {
 
 		@Override
 		protected void modelWidgets(Composite comp) {
-			codeText = UI.widgetText(comp, M.Code);
+			codeText = UI.wizardText(comp, M.Code);
 			codeText.addModifyListener(e -> checkInput());
-			descriptionText = UI.widgetMultiText(comp, M.Description);
+			descriptionText = UI.wizardMultiText(comp, M.Description);
 		}
 
 		@Override

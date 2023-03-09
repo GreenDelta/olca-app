@@ -31,7 +31,7 @@ public class CommitDialog extends FormDialog {
 	private CommitViewer viewer;
 	private TypeRefIdSet initialSelection;
 	private TypeRefIdSet newLibraryDatasets;
-	
+
 	public CommitDialog(DiffNode node, boolean canPush, boolean isStashCommit) {
 		super(UI.shell());
 		this.node = node;

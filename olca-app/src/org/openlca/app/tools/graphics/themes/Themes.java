@@ -1,6 +1,5 @@
 package org.openlca.app.tools.graphics.themes;
 
-import org.eclipse.swt.widgets.Display;
 import org.openlca.app.rcp.Workspace;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +20,7 @@ public final class Themes {
 	}
 
 	public static Theme getDefault(String id) {
-		var name = Display.isSystemDarkTheme() ? "Dark" : "Light";
+		var name = org.openlca.app.preferences.Theme.isDark() ? "Dark" : "Light";
 		return loadFromWorkspace(id)
 			.stream()
 			.filter(theme -> name.equalsIgnoreCase(theme.name()))

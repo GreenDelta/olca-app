@@ -76,7 +76,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 
 		private void createRefButton(Composite comp, FormToolkit tk) {
 			UI.formFiller(comp, tk);
-			Button b = tk.createButton(comp, M.SetAsReferenceCurrency, SWT.NONE);
+			Button b = UI.formButton(comp, tk, M.SetAsReferenceCurrency);
 			b.setImage(Images.get(ModelType.CURRENCY));
 			b.setEnabled(isEditable());
 			Controls.onSelect(b, e -> RefCurrencyUpdate.run(getModel()));

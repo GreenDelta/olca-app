@@ -48,7 +48,7 @@ public class UnitGroupWizard extends AbstractWizard<UnitGroup> {
 
 		@Override
 		protected void modelWidgets(Composite container) {
-			referenceUnitText = UI.widgetText(container, M.ReferenceUnit);
+			referenceUnitText = UI.wizardText(container, M.ReferenceUnit);
 		}
 
 		@Override

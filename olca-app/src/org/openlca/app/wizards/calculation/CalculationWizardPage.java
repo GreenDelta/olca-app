@@ -55,7 +55,7 @@ class CalculationWizardPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite body = UI.formComposite(parent);
+		Composite body = UI.wizardComposite(parent);
 		UI.gridLayout(body, 2, 10, 10);
 		setControl(body);
 
@@ -67,20 +67,20 @@ class CalculationWizardPage extends WizardPage {
 		createTypeRadios(body);
 
 		// separator
-		UI.formLabel(body, null);
+		UI.wizardLabel(body);
 		UI.gridData(new Label(
 						body, SWT.SEPARATOR | SWT.HORIZONTAL),
 				true, false);
-		UI.formLabel(body);
+		UI.wizardLabel(body);
 
 		// options
-		optionStack = UI.formComposite(body);
+		optionStack = UI.wizardComposite(body);
 		var optionsLayout = new StackLayout();
 		optionStack.setLayout(optionsLayout);
 		createMonteCarloOptions(optionStack);
 		createCommonOptions(optionStack);
 		optionsLayout.topControl = commonOptions;
-		UI.formLabel(body);
+		UI.wizardLabel(body);
 
 		updateOptions();
 	}
@@ -101,9 +101,8 @@ class CalculationWizardPage extends WizardPage {
 			return Strings.compare(s1.name, s2.name);
 		});
 
-		UI.formLabel(comp, "Parameter set");
-		var combo = UI.formTableCombo(comp, null,
-				SWT.READ_ONLY | SWT.BORDER);
+		UI.wizardLabel(comp, "Parameter set");
+		var combo = UI.formTableCombo(comp, null, SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
 
 		for (var paramSet : paramSets) {
@@ -121,7 +120,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createAllocationCombo(Composite comp) {
-		UI.formLabel(comp, M.AllocationMethod);
+		UI.wizardLabel(comp, M.AllocationMethod);
 		var combo = new AllocationCombo(
 				comp, AllocationMethod.values());
 		combo.setNullable(false);
@@ -131,7 +130,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createMethodCombo(Composite comp) {
-		UI.formLabel(comp, M.ImpactAssessmentMethod);
+		UI.wizardLabel(comp, M.ImpactAssessmentMethod);
 		var combo = new ImpactMethodViewer(comp);
 		combo.setNullable(true);
 		combo.setInput(Database.get());
@@ -146,7 +145,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createNWSetCombo(Composite parent) {
-		UI.formLabel(parent, M.NormalizationAndWeightingSet);
+		UI.wizardLabel(parent, M.NormalizationAndWeightingSet);
 		nwViewer = new NwSetComboViewer(parent, Database.get());
 		nwViewer.setNullable(true);
 		var method = setup.calcSetup.impactMethod();
@@ -171,13 +170,13 @@ class CalculationWizardPage extends WizardPage {
 				!setup.hasLibraries,
 		};
 
-		UI.formLabel(parent, M.CalculationType);
-		Composite comp = UI.formComposite(parent, SWT.NO_RADIO_GROUP);
+		UI.wizardLabel(parent, M.CalculationType);
+		Composite comp = UI.wizardComposite(parent, SWT.NO_RADIO_GROUP);
 		UI.gridLayout(comp, types.length, 10, 0);
 
 		var radios = new Button[types.length];
 		for (int i = 0; i < types.length; i++) {
-			var radio = UI.formRadio(comp);
+			var radio = UI.wizardRadio(comp);
 			radio.setText(getLabel(types[i]));
 			radio.setSelection(setup.type == types[i]);
 			radio.setEnabled(enabled[i]);
@@ -205,11 +204,11 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createCommonOptions(Composite parent) {
-		commonOptions = UI.formComposite(parent);
+		commonOptions = UI.wizardComposite(parent);
 		UI.gridLayout(commonOptions, 1, 10, 0);
 		addRegioAndCostChecks(commonOptions);
 
-		var dqCheck = UI.widgetCheckBox(commonOptions, M.AssessDataQuality);
+		var dqCheck = UI.wizardCheckBox(commonOptions, M.AssessDataQuality);
 		dqCheck.setSelection(setup.withDataQuality);
 		Controls.onSelect(dqCheck, e -> {
 			setup.withDataQuality = dqCheck.getSelection();
@@ -221,16 +220,16 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void createMonteCarloOptions(Composite parent) {
-		monteCarloOptions = UI.formComposite(parent);
+		monteCarloOptions = UI.wizardComposite(parent);
 		UI.gridLayout(monteCarloOptions, 1, 10, 0);
 		addRegioAndCostChecks(monteCarloOptions);
 
 		// number of iterations
-		var inner = UI.formComposite(monteCarloOptions);
+		var inner = UI.wizardComposite(monteCarloOptions);
 		UI.gridLayout(inner, 2, 10, 0);
-		var label = UI.formLabel(inner, M.NumberOfIterations);
+		var label = UI.wizardLabel(inner, M.NumberOfIterations);
 		UI.gridData(label, false, false);
-		var countText = UI.formText(inner, SWT.BORDER);
+		var countText = UI.wizardText(inner, SWT.BORDER);
 		UI.gridData(countText, false, false).widthHint = 80;
 
 		countText.setText(Integer.toString(setup.simulationRuns));
@@ -245,12 +244,12 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void addRegioAndCostChecks(Composite comp) {
-		var regioCheck = UI.widgetCheckBox(comp, "Regionalized calculation");
+		var regioCheck = UI.wizardCheckBox(comp, "Regionalized calculation");
 		regioCheck.setSelection(setup.calcSetup.hasRegionalization());
 		Controls.onSelect(regioCheck,
 				_e -> setup.calcSetup.withRegionalization(regioCheck.getSelection()));
 
-		var costCheck = UI.widgetCheckBox(comp, M.IncludeCostCalculation);
+		var costCheck = UI.wizardCheckBox(comp, M.IncludeCostCalculation);
 		costCheck.setSelection(setup.calcSetup.hasCosts());
 		Controls.onSelect(costCheck,
 				_e -> setup.calcSetup.withCosts(costCheck.getSelection()));

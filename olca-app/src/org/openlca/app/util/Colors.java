@@ -190,50 +190,57 @@ public class Colors {
 
 	public static Color formBackground() {
 		if (formBackground == null) {
-			if (Theme.isDark())
+			if (Theme.isDark()) {
 				formBackground = org.openlca.util.OS.get() == WINDOWS
-						? Colors.get(43, 43, 43)
+						? Colors.get(47, 47, 47)
 						: systemColor(SWT.COLOR_WIDGET_BACKGROUND);
-			else formBackground = white();
+			}
+			else {
+				formBackground = white();
+			}
 		}
 		return formBackground;
 	}
 
 	public static Color formForeground() {
-		if (formForeground == null)
+		if (formForeground == null) {
 			formForeground = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.white()
 					: systemColor(SWT.COLOR_WIDGET_FOREGROUND);
+		}
 		return formForeground;
 	}
 
-	public static Color widgetBackground() {
+	public static Color wizardBackground() {
 		if (widgetBackground == null) {
-			if (Theme.isDark())
+			if (Theme.isDark()) {
 				widgetBackground = org.openlca.util.OS.get() == WINDOWS
 						&& Theme.isDark()
 						? Colors.get(43, 43, 43)
 						: systemColor(SWT.COLOR_WIDGET_BACKGROUND);
+			}
 		}
 		return widgetBackground;
 	}
 
-	public static Color widgetForeground() {
-		if (widgetForeground == null)
+	public static Color wizardForeground() {
+		if (widgetForeground == null) {
 			widgetForeground = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.white()
 					: systemColor(SWT.COLOR_WIDGET_FOREGROUND);
+		}
 		return widgetForeground;
 	}
 
 	public static Color titleBorder() {
-		if (titleBorder == null)
+		if (titleBorder == null) {
 			titleBorder = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.get(94, 96, 96)
 					: Colors.get(122, 122, 122);
+		}
 		return titleBorder;
 	}
 
@@ -242,63 +249,70 @@ public class Colors {
 	}
 
 	public static Color titleBackground() {
-		if (titleBackground == null)
+		if (titleBackground == null) {
 			titleBackground = Theme.isDark()
 					? Colors.get(39, 41, 42)
 					: Colors.white();
+		}
 		return titleBackground;
 	}
 
 	public static Color titleForeground() {
-		if (titleForeground == null)
+		if (titleForeground == null) {
 			titleForeground = Theme.isDark()
 					? Colors.white()
 					: Colors.get(38, 38, 38);
+		}
 		return titleForeground;
 	}
 
 	public static Color listForeground() {
-		if (listForeground == null)
+		if (listForeground == null) {
 			listForeground = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.get(170, 170, 170)
 					: systemColor(SWT.COLOR_LIST_FOREGROUND);
+		}
 		return listForeground;
 	}
 
 	public static Color listBackground() {
-		if (listBackground == null)
+		if (listBackground == null) {
 			listBackground = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.get(43, 43, 43)
 					: formBackground();
+		}
 		return listBackground;
 	}
 
 	public static Color navigatorBackground() {
-		if (navigatorBackground == null)
+		if (navigatorBackground == null) {
 			navigatorBackground = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.get(43, 43, 43)
 					: systemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		}
 		return navigatorBackground;
 	}
 
 	public static Color navigatorForeground() {
-		if (navigatorForeground == null)
+		if (navigatorForeground == null) {
 			navigatorForeground = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.white()
 					: systemColor(SWT.COLOR_WIDGET_FOREGROUND);
+		}
 		return navigatorForeground;
 	}
 
 	public static Color tagBackground() {
-		if (tagBackground == null)
+		if (tagBackground == null) {
 			tagBackground = org.openlca.util.OS.get() == WINDOWS
 					&& Theme.isDark()
 					? Colors.get(170, 170, 170)
 					: fromHex("#e8eaf6");
+		}
 		return tagBackground;
 	}
 

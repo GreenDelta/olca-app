@@ -37,10 +37,7 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Actions;
-import org.openlca.app.util.Controls;
-import org.openlca.app.util.Labels;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.*;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.io.ImportLog;
@@ -192,26 +189,26 @@ public class ImportLogView extends SimpleFormEditor {
 
 		void render(Composite body, FormToolkit tk) {
 
-			var comp = tk.createComposite(body);
+			var comp = UI.formComposite(body, tk);
 			UI.fillHorizontal(comp);
-			UI.gridLayout(comp, 2);
 
-			var icon = tk.createImageHyperlink(comp, SWT.BORDER);
+			var icon = UI.formImageHyperlink(comp, tk, SWT.BORDER);
 			icon.setToolTipText("Click to search or press enter");
 			icon.setImage(Icon.SEARCH.get());
 			Controls.onClick(icon, $ -> update());
 
 			// search text
 			var searchComp = tk.createComposite(comp);
-			UI.fillHorizontal(searchComp);
+			searchComp.setBackground(Colors.formBackground());
+			searchComp.setForeground(Colors.formForeground());UI.fillHorizontal(searchComp);
 			UI.gridLayout(searchComp, 2, 10, 0);
-			var searchText = tk.createText(searchComp, "", SWT.SEARCH);
+			var searchText = UI.formText(searchComp, tk, null, SWT.SEARCH);
 			UI.fillHorizontal(searchText);
 			searchText.addModifyListener($ -> text = searchText.getText());
 			Controls.onReturn(searchText, $ -> update());
 
 			// type button
-			var typeBtn = tk.createButton(searchComp, "All types", SWT.NONE);
+			var typeBtn = UI.formButton(searchComp, tk, "All types");
 			var typeItems = TypeItem.allOf(messages);
 			typeBtn.setImage(Icon.DOWN.get());
 			var typeMenu = new Menu(typeBtn);
@@ -233,10 +230,12 @@ public class ImportLogView extends SimpleFormEditor {
 			// checkboxes
 			UI.formFiller(comp, tk);
 			var optComp = tk.createComposite(comp);
+			optComp.setBackground(Colors.formBackground());
+			optComp.setForeground(Colors.formForeground());
 			UI.gridLayout(optComp, 6, 10, 0);
-			var errCheck = tk.createButton(optComp, "Errors", SWT.CHECK);
-			var warnCheck = tk.createButton(optComp, "Warnings", SWT.CHECK);
-			var allCheck = tk.createButton(optComp, "All", SWT.CHECK);
+			var errCheck = UI.formButton(optComp, tk, "Errors", SWT.CHECK);
+			var warnCheck = UI.formButton(optComp, tk, "Warnings", SWT.CHECK);
+			var allCheck = UI.formButton(optComp, tk, "All", SWT.CHECK);
 			allCheck.setSelection(true);
 
 			BiConsumer<Button, State> stateCheck = (button, state) -> {
@@ -265,9 +264,9 @@ public class ImportLogView extends SimpleFormEditor {
 				update();
 			});
 
-			tk.createLabel(optComp, " | ");
-			tk.createLabel(optComp, "Max. number of messages");
-			var spinner = new Spinner(optComp, SWT.BORDER);
+			UI.formLabel(optComp, tk, " | ");
+			UI.formLabel(optComp, tk, "Max. number of messages");
+			var spinner = UI.formSpinner(optComp, tk, SWT.BORDER);
 			spinner.setValues(maxCount, 1000, 1_000_000, 0, 1000, 5000);
 			spinner.addModifyListener($ -> {
 				maxCount = spinner.getSelection();

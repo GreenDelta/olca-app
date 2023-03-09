@@ -20,11 +20,11 @@ record UrnLink(EpdEditor editor) {
 	}
 
 	void render(Composite parent, FormToolkit tk) {
-		var comp = tk.createComposite(parent);
+		var comp = UI.formComposite(parent, tk);
 		UI.gridLayout(comp, 2, 10, 0);
 
 		// link text
-		var link = tk.createImageHyperlink(comp, SWT.NONE);
+		var link = UI.formImageHyperlink(comp, tk);
 		update(link);
 		Controls.onClick(link, $ -> {
 			var urn = epd().urn;
@@ -38,7 +38,7 @@ record UrnLink(EpdEditor editor) {
 		});
 
 		// delete button
-		var deleteBtn = tk.createImageHyperlink(comp, SWT.TOP);
+		var deleteBtn = UI.formImageHyperlink(comp, tk, SWT.TOP);
 		deleteBtn.setToolTipText(M.Remove);
 		deleteBtn.setHoverImage(Icon.DELETE.get());
 		deleteBtn.setImage(Icon.DELETE_DISABLED.get());
