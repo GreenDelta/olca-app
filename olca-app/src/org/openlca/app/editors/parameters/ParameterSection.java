@@ -375,8 +375,8 @@ public class ParameterSection {
 			// ask
 			boolean b = Question.ask(
 					"Convert to global parameter?",
-					"Do you want to convert the selected parameter `"
-							+ param.name + "` into a global parameter?");
+					"Do you want to convert the selected parameter '"
+							+ param.name + "' into a global parameter?");
 			if (!b)
 				return;
 
@@ -396,8 +396,8 @@ public class ParameterSection {
 			try {
 				var dao = new ParameterDao(Database.get());
 				if (dao.existsGlobal(param.name)) {
-					return "A global parameter with the name `"
-							+ param.name + "` already exists.";
+					return "A global parameter with the name '"
+							+ param.name + "' already exists.";
 				}
 
 				if (param.isInputParameter)
@@ -413,8 +413,8 @@ public class ParameterSection {
 					String local = localParam.name.trim().toLowerCase();
 					for (var variable : variables) {
 						if (variable.trim().toLowerCase().equals(local)) {
-							return "The parameter `" + param.name
-									+ "` cannot be converted into a global"
+							return "The parameter '" + param.name
+									+ "' cannot be converted into a global"
 									+ " parameter as its formula has references"
 									+ " to non-global parameters.";
 						}

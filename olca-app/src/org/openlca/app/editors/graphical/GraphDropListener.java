@@ -71,8 +71,8 @@ class GraphDropListener extends DropTargetAdapter {
 				if (command.canExecute())
 					commandStack.execute(command);
 				else {
-					MsgBox.info("This item cannot be added to the product system `"
-						+ Labels.name(d) + "`.");
+					MsgBox.info("This item cannot be added to the product system '"
+						+ Labels.name(d) + "'.");
 				}
 			})
 			.filter(d -> graph.getNode(d.id) != null)
@@ -89,8 +89,8 @@ class GraphDropListener extends DropTargetAdapter {
 	private boolean productSystemContains(Descriptor d) {
 		if (editor.getProductSystem().processes.contains(d.id)) {
 			MsgBox.info("The product system already"
-				+ " contains process `"
-				+ Labels.name(d) + "`.");
+				+ " contains process '"
+				+ Labels.name(d) + "'.");
 			return true;
 		}
 		else return false;

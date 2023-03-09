@@ -118,7 +118,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 					+ "between these processes (e.g. every product is only produced "
 					+ "by a single process or every product input has a default "
 					+ "provider set). You can also check the linking properties of "
-					+ "the databases under `Database > Check linking properties`.";
+					+ "the databases under 'Database > Check linking properties'.";
 			String[] buttons = {"Run calculation", "Check linking", "Cancel"};
 
 			MessageDialog dialog = new MessageDialog(

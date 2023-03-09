@@ -190,8 +190,8 @@ public class AddProcessAction extends WorkbenchPartAction {
 			var system = graph.getProductSystem();
 			if (system.processes.contains(d.id)) {
 				MsgBox.info("The product system already"
-					+ " contains process `"
-					+ Labels.name(d) + "`.");
+					+ " contains process '"
+					+ Labels.name(d) + "'.");
 				cancelPressed();
 				return;
 			}
@@ -213,8 +213,8 @@ public class AddProcessAction extends WorkbenchPartAction {
 			if (command.canExecute())
 				execute(command);
 			else {
-				MsgBox.info("This item cannot be added to the product system `"
-					+ Labels.name(d) + "`.");
+				MsgBox.info("This item cannot be added to the product system '"
+					+ Labels.name(d) + "'.");
 				cancelPressed();
 			}
 
