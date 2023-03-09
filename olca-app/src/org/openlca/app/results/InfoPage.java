@@ -7,6 +7,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.contributions.ContributionChartSection;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Overall information page of the analysis editor.
@@ -14,6 +16,7 @@ import org.openlca.app.util.UI;
 public class InfoPage extends FormPage {
 
 	private final ResultEditor editor;
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public InfoPage(ResultEditor editor) {
 		super(editor, "AnalyzeInfoPage", M.GeneralInformation);
@@ -32,11 +35,15 @@ public class InfoPage extends FormPage {
 		if (editor.dqResult != null) {
 			new DQInfoSection(body, tk, editor);
 		}
-		if (result.hasImpacts()) {
-			ContributionChartSection.forImpacts(editor).render(body, tk);
-		}
-		if (result.hasEnviFlows()) {
-			ContributionChartSection.forFlows(editor).render(body, tk);
+		try {
+			if (result.hasImpacts()) {
+				ContributionChartSection.forImpacts(editor).render(body, tk);
+			}
+			if (result.hasEnviFlows()) {
+				ContributionChartSection.forFlows(editor).render(body, tk);
+			}
+		} catch (Exception e) {
+			log.error("Matrix error: the matrix is probably singular.");
 		}
 		form.reflow(true);
 	}
