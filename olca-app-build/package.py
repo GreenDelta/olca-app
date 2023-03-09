@@ -219,7 +219,9 @@ class BuildDir:
         if not license_target.exists():
             shutil.copytree(resources / "licenses", license_target)
 
-        # copy ini files
+        # copy ini and bin files
+        
+        bins: list[str] = []
         if self.osa.is_win():
             Template.apply(
                 PROJECT_DIR / "templates/openLCA_win.ini",
@@ -227,11 +229,22 @@ class BuildDir:
                 encoding="iso-8859-1",
                 lang="en",
             )
+            bins = ["ipc-server.cmd", "grpc-server.cmd"]            
         if self.osa.is_linux():
             shutil.copy2(
                 PROJECT_DIR / "templates/openLCA_linux.ini",
                 self.app_dir / "openLCA.ini",
             )
+            bins = ["ipc-server.sh", "grpc-server.sh"]
+        if len(bins) > 0:
+            bin_dir = self.app_dir / "bin"
+            bin_dir.mkdir(exist_ok=True, parents=True)
+            for bin in bins:
+                bin_source = PROJECT_DIR / f"bin/${bin}"
+                bin_target = bin_dir / bin
+                if not bin_source.exists() or bin_target.exists():
+                    continue
+                shutil.copy2(bin_source, bin_target)
 
         # build the package
         pack_name = f"openLCA_{self.osa.value}_{version.app_suffix}"
