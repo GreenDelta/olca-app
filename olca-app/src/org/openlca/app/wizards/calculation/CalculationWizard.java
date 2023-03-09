@@ -103,7 +103,9 @@ public class CalculationWizard extends Wizard {
 				} catch (OutOfMemoryError err) {
 					MemoryError.show();
 				} catch (MathIllegalArgumentException e) {
-					MsgBox.error("Matrix error", e.getMessage());
+					var error = e.getMessage();
+					var message = error.substring(0, 1).toUpperCase() + error.substring(1);
+					MsgBox.error("Matrix error", message);
 				} finally {
 					monitor.done();
 				}
