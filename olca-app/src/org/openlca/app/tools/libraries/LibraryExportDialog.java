@@ -109,7 +109,7 @@ public class LibraryExportDialog extends FormDialog {
 		BiFunction<String, Consumer<Boolean>, Button> check =
 			(label, onClick) -> {
 				UI.formFiller(body, tk);
-				var button = UI.formCheckBox(body, tk, label);
+				var button = UI.formCheckBox(body, label);
 				Controls.onSelect(button,
 					_e -> onClick.accept(button.getSelection()));
 				return button;

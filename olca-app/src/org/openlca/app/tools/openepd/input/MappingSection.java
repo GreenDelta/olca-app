@@ -41,7 +41,7 @@ class MappingSection {
 			"openEPD method: " + mapping.epdMethod());
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		var top = tk.createComposite(comp);
+		var top = UI.formComposite(comp);
 		UI.gridData(top, true, false);
 		UI.gridLayout(top, 2, 10, 0);
 

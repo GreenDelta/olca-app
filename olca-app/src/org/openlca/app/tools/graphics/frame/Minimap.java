@@ -64,7 +64,7 @@ public class Minimap extends Composite {
 		zoomScaleLayout.marginWidth = 0;
 		zoomScale.setLayout(zoomScaleLayout);
 
-		scale = UI.widgetScale(zoomScale);
+		scale = UI.wizardScale(zoomScale);
 		scale.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		final double[] values = BasicGraphicalEditor.ZOOM_LEVELS;

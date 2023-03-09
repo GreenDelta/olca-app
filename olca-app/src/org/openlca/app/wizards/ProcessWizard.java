@@ -18,6 +18,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.navigation.filters.FlowTypeFilter;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -106,10 +107,10 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		protected void modelWidgets(Composite comp) {
 			createWasteCheck(comp);
 			createRefFlowCheck(comp);
-			qRefLabel = UI.widgetLabel(comp, M.QuantitativeReference);
-			flowText = UI.widgetText(comp);
+			qRefLabel = UI.wizardLabel(comp, M.QuantitativeReference);
+			flowText = UI.wizardText(comp);
 			createLabelStack(comp);
-			contentStack = new Composite(comp, SWT.NONE);
+			contentStack = UI.wizardComposite(comp, SWT.NONE);
 			UI.gridData(contentStack, true, true).heightHint = 200;
 			contentStack.setLayout(new StackLayout());
 			createFlowTree();
@@ -130,8 +131,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		private void createWasteCheck(Composite comp) {
-			UI.widgetFiller(comp);
-			wasteCheck = UI.widgetCheckBox(comp, M.CreateAWasteTreatmentProcess);
+			UI.wizardFiller(comp);
+			wasteCheck = UI.wizardCheckBox(comp, M.CreateAWasteTreatmentProcess);
 			wasteCheck.setText(M.CreateAWasteTreatmentProcess);
 			Controls.onSelect(wasteCheck, e -> {
 				if (wasteCheck.getSelection()) {
@@ -146,8 +147,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		private void createRefFlowCheck(Composite comp) {
-			UI.widgetFiller(comp);
-			createRefFlowCheck = UI.widgetCheckBox(comp, M.CreateANewFlowForTheProcess);
+			UI.wizardFiller(comp);
+			createRefFlowCheck = UI.wizardCheckBox(comp, M.CreateANewFlowForTheProcess);
 			Controls.onSelect(createRefFlowCheck, e -> {
 				boolean createFlow = createRefFlowCheck.getSelection();
 				StackLayout labelLayout = (StackLayout) labelStack.getLayout();
@@ -170,12 +171,12 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		private void createLabelStack(Composite container) {
-			labelStack = new Composite(container, SWT.NONE);
+			labelStack = UI.wizardComposite(container, SWT.NONE);
 			labelStack
 					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 			labelStack.setLayout(new StackLayout());
-			selectProductLabel = new Label(labelStack, SWT.NONE);
-			selectFlowPropertyLabel = new Label(labelStack, SWT.NONE);
+			selectProductLabel = UI.wizardLabel(labelStack);
+			selectFlowPropertyLabel = UI.wizardLabel(labelStack);
 			selectFlowPropertyLabel.setText(M.ReferenceFlowProperty);
 		}
 
@@ -189,11 +190,14 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		private void createFlowTree() {
-			productTreeContainer = new Composite(contentStack, SWT.NONE);
+			productTreeContainer = UI.wizardComposite(contentStack, SWT.NONE);
 			UI.gridData(productTreeContainer, true, false);
 			productTreeContainer.setLayout(gridLayout());
 			flowTree = NavigationTree.forSingleSelection(
 					productTreeContainer, ModelType.FLOW);
+			var tree = flowTree.getTree();
+			tree.setBackground(Colors.wizardBackground());
+			tree.setForeground(Colors.wizardForeground());
 			UI.gridData(flowTree.getTree(), true, true).heightHint = 200;
 			flowTree.addFilter(productFilter);
 			flowTree.addFilter(new EmptyCategoryFilter());
@@ -202,10 +206,13 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		}
 
 		private void createPropertyViewer() {
-			flowPropertyContainer = new Composite(contentStack, SWT.NONE);
+			flowPropertyContainer = UI.wizardComposite(contentStack, SWT.NONE);
 			UI.gridData(flowPropertyContainer, true, false);
 			flowPropertyContainer.setLayout(gridLayout());
 			propertyCombo = new FlowPropertyCombo(flowPropertyContainer);
+			var combo = propertyCombo.getViewer().getTableCombo();
+			combo.setBackground(Colors.wizardBackground());
+			combo.setForeground(Colors.wizardForeground());
 			propertyCombo.setInput(Database.get());
 			propertyCombo.selectFirst();
 		}

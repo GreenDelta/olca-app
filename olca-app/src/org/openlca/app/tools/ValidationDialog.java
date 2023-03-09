@@ -54,8 +54,8 @@ public class ValidationDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		Composite body = mForm.getForm().getBody();
-		body.setBackground(Colors.widgetBackground());
-		body.setForeground(Colors.widgetForeground());
+		body.setBackground(Colors.wizardBackground());
+		body.setForeground(Colors.wizardForeground());
 		UI.bodyLayout(body, tk);
 		UI.gridLayout(body, 2);
 
@@ -70,10 +70,10 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createProgressBar(Composite body, FormToolkit tk) {
-		var progressComp = UI.widgetComposite(body);
+		var progressComp = UI.wizardComposite(body);
 		UI.gridData(progressComp, true, false).horizontalSpan = 2;
 		UI.gridLayout(progressComp, 1);
-		infoLabel = UI.widgetLabel(
+		infoLabel = UI.wizardLabel(
 			progressComp, "Validation is running ...");
 		UI.gridData(infoLabel, true, false);
 		infoLabel.setVisible(false);
@@ -83,7 +83,7 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createCountCombo(Composite body, FormToolkit tk) {
-		var messageLabel = UI.widgetLabel(body, "Maximum message count");
+		var messageLabel = UI.wizardLabel(body, "Maximum message count");
 		var gd = UI.gridData(messageLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
@@ -96,7 +96,7 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createValidationMessageCombo(Composite comp, FormToolkit tk) {
-		var validationLabel = UI.widgetLabel(comp, "Validation messages");
+		var validationLabel = UI.wizardLabel(comp, "Validation messages");
 		var gd = UI.gridData(validationLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;

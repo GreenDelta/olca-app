@@ -17,11 +17,7 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
-import org.openlca.app.util.Actions;
-import org.openlca.app.util.Controls;
-import org.openlca.app.util.MsgBox;
-import org.openlca.app.util.Popup;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.*;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.io.openepd.Api;
@@ -66,7 +62,7 @@ public class EpdPanel extends SimpleFormEditor {
 			var downloadComp = UI.formSection(body, tk, "Direct download");
 			UI.gridLayout(downloadComp, 3);
 			UI.formLabel(downloadComp, tk, "URL or ID");
-			var urlText = tk.createText(downloadComp, "", SWT.BORDER);
+			var urlText = UI.formText(downloadComp, "", SWT.BORDER);
 			UI.fillHorizontal(urlText);
 			var downloadBtn = UI.formButton(downloadComp, tk, "Download");
 			Controls.onSelect(downloadBtn, $ -> {
@@ -84,13 +80,14 @@ public class EpdPanel extends SimpleFormEditor {
 			UI.fillHorizontal(searchComp);
 			UI.gridLayout(searchComp, 4);
 			var searchText = tk.createText(searchComp, "", SWT.BORDER);
+			searchText.setBackground(Colors.formBackground());
+			searchText.setForeground(Colors.formForeground());
 			UI.fillHorizontal(searchText);
 			var searchButton = UI.formButton(searchComp, tk, "Search");
 			searchButton.setImage(Icon.SEARCH.get());
 			UI.formLabel(searchComp, tk, "Max. count:");
 			var spinner = UI.formSpinner(searchComp, tk, SWT.BORDER);
 			spinner.setValues(100, 10, 1000, 0, 50, 100);
-			tk.adapt(spinner);
 
 			// descriptor table
 			table = createTable(comp, loginPanel);

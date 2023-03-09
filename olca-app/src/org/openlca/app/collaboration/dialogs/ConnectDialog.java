@@ -31,10 +31,10 @@ public class ConnectDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		var formBody = UI.widgetHeader(form, form.getToolkit(),
+		var formBody = UI.wizardHeader(form, form.getToolkit(),
 				"Connect Git repository",
 				"Enter the location of the Git repository.");
-		var body = UI.widgetComposite(formBody);
+		var body = UI.wizardComposite(formBody);
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
 		createLocationGroup(body);
@@ -48,18 +48,18 @@ public class ConnectDialog extends FormDialog {
 	}
 
 	private void createLocationGroup(Composite parent) {
-		var group = UI.widgetGroup(parent, SWT.NONE);
+		var group = UI.wizardGroup(parent, SWT.NONE);
 		group.setText("Location");
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
-		var urlText = UI.widgetText(group, M.URL, SWT.BORDER);
-		var protocolText = UI.widgetText(group, "Protocol", SWT.BORDER);
+		var urlText = UI.wizardText(group, M.URL, SWT.BORDER);
+		var protocolText = UI.wizardText(group, "Protocol", SWT.BORDER);
 		protocolText.setEnabled(false);
-		var hostText = UI.widgetText(group, M.Host, SWT.BORDER);
+		var hostText = UI.wizardText(group, M.Host, SWT.BORDER);
 		hostText.setEnabled(false);
-		var portText = UI.widgetText(group, M.Port, SWT.BORDER);
+		var portText = UI.wizardText(group, M.Port, SWT.BORDER);
 		portText.setEnabled(false);
-		var pathText = UI.widgetText(group, M.RepositoryPath, SWT.BORDER);
+		var pathText = UI.wizardText(group, M.RepositoryPath, SWT.BORDER);
 		pathText.setEnabled(false);
 		urlText.addModifyListener(e -> {
 			var text = urlText.getText();

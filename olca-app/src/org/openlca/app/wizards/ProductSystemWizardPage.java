@@ -56,8 +56,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 
 	@Override
 	protected void modelWidgets(Composite comp) {
-		filterText = UI.widgetText(comp, M.ReferenceProcess, SWT.BORDER);
-		UI.widgetFiller(comp);
+		filterText = UI.wizardText(comp, M.ReferenceProcess, SWT.BORDER);
+		UI.wizardFiller(comp);
 		createProcessTree(comp);
 		createOptions(comp);
 		if (refProcess != null) {
@@ -104,11 +104,11 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 	}
 
 	private void createOptions(Composite comp) {
-		UI.widgetFiller(comp);
-		autoLinkCheck = UI.widgetCheckBox(comp, M.AutoLinkProcesses);
+		UI.wizardFiller(comp);
+		autoLinkCheck = UI.wizardCheckBox(comp, M.AutoLinkProcesses);
 		autoLinkCheck.setSelection(true);
-		UI.widgetFiller(comp);
-		checkLinksCheck = UI.widgetCheckBox(comp,
+		UI.wizardFiller(comp);
+		checkLinksCheck = UI.wizardCheckBox(comp,
 				"Check multi-provider links (experimental)");
 		linkingPanel = new LinkingConfigPanel(comp);
 		Controls.onSelect(autoLinkCheck, e -> {

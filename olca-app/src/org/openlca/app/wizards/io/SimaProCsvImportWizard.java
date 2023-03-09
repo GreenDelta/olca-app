@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
@@ -119,7 +118,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 		public void createControl(Composite parent) {
 			var body = new Composite(parent, SWT.NONE);
 			UI.gridLayout(body, 1);
-			UI.widgetLabel(body, "Selected SimaPro CSV files");
+			UI.wizardLabel(body, "Selected SimaPro CSV files");
 
 			var viewer = Tables.createViewer(body, M.File);
 			var table = viewer.getTable();
@@ -158,18 +157,18 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			UI.gridData(comp, true, false);
 
 			// flow mapping
-			UI.widgetLabel(comp, "Flow mapping");
+			UI.wizardLabel(comp, "Flow mapping");
 			MappingFileCombo.create(comp, Database.get())
 				.onSelected(flowMap -> this.flowMap = flowMap);
 
 			// options
-			UI.widgetLabel(comp, "Generate");
+			UI.wizardLabel(comp, "Generate");
 			option(comp, "Product systems for life cycles",
 				createProductSystems);
-			UI.widgetFiller(comp);
+			UI.wizardFiller(comp);
 			option(comp, "Parameters for waste scenarios",
 				createScenarioParameters);
-			UI.widgetFiller(comp);
+			UI.wizardFiller(comp);
 			option(comp, "Characterization factors for sub-compartments",
 				expandImpactFactors);
 

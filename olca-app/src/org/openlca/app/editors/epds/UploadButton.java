@@ -8,6 +8,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.output.ExportDialog;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.UI;
 import org.openlca.core.model.Epd;
 import org.openlca.io.openepd.EpdConverter;
 
@@ -18,7 +19,7 @@ record UploadButton(EpdEditor editor) {
 	}
 
 	void render(Composite parent, FormToolkit tk) {
-		var btn = tk.createButton(parent,"", SWT.NONE);
+		var btn = UI.formButton(parent, tk, "");
 		update(btn);
 		btn.setImage(Icon.BUILDING.get());
 		Controls.onSelect(btn, $ -> {

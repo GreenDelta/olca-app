@@ -27,11 +27,11 @@ abstract class AbstractWizardPage<T extends RootEntity> extends
 	@Override
 	@SuppressWarnings("unchecked")
 	public final void createControl(final Composite parent) {
-		Composite container = UI.widgetComposite(parent);
+		Composite container = UI.wizardComposite(parent);
 		setControl(container);
-		nameText = UI.widgetText(container, M.Name, SWT.BORDER);
+		nameText = UI.wizardText(container, M.Name, SWT.BORDER);
 		if (withDescription)
-			descriptionText = UI.widgetMultiText(container, M.Description);
+			descriptionText = UI.wizardMultiText(container, M.Description);
 		modelWidgets(container);
 		initModifyListeners();
 		AbstractWizard<T> wizard = (AbstractWizard<T>) getWizard();
