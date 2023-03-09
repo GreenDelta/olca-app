@@ -109,8 +109,8 @@ public class FileImport {
 			default -> MsgBox.info("No import found",
 				"Format '" + format + "' was detected but no" +
 					" import wizard could be found. You can" +
-					" try the generic import under `Import >" +
-					" Other...` for selecting a more specific" +
+					" try the generic import under 'Import >" +
+					" Other...' for selecting a more specific" +
 					" option.");
 		}
 	}
