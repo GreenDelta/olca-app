@@ -56,9 +56,7 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 			} catch (OutOfMemoryError e) {
 				MsgBox.error(M.OutOfMemory, M.CouldNotAllocateMemoryError);
 			} catch (MathIllegalArgumentException e) {
-				var error = e.getMessage();
-				var message = error.substring(0, 1).toUpperCase() + error.substring(1);
-				MsgBox.error("Matrix error", message);
+				MsgBox.error("Matrix error", e);
 			} catch (Exception e) {
 				ErrorReporter.on("Calculation failed", e);
 			}

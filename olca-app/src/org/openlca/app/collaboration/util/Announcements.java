@@ -26,7 +26,7 @@ public class Announcements {
 			// ignore, older servers don't provide announcement resource
 			if (e.getErrorCode() == Status.NOT_FOUND.getStatusCode())
 				return;
-			MsgBox.error(e.getMessage());
+			MsgBox.error("Request failed", e);
 		}
 	}
 

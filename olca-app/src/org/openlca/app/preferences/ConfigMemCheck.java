@@ -46,10 +46,7 @@ class ConfigMemCheck {
 		String arch = System.getProperty("os.arch");
 		if (arch == null)
 			return false;
-		if (arch.trim().toLowerCase().equals("x86"))
-			return true;
-		else
-			return false;
+		return arch.trim().equalsIgnoreCase("x86");
 	}
 
 }

@@ -113,11 +113,10 @@ public class MappingMenu extends EditorActionBarContributor {
 			return;
 		}
 
-		Optional<ReplacerConfig> opt = ReplacerDialog.open(
-				tool.mapping, target);
-		if (!opt.isPresent())
+		var opt = ReplacerDialog.open(tool.mapping, target);
+		if (opt.isEmpty())
 			return;
-		Replacer replacer = new Replacer(opt.get());
+		var replacer = new Replacer(opt.get());
 		App.runWithProgress("Replace flows ...", replacer, () -> {
 			tool.refresh();
 			Navigator.refresh();

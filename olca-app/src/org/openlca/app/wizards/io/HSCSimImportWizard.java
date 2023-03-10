@@ -9,10 +9,10 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.io.HSCSim;
-import org.slf4j.LoggerFactory;
 
 /**
  * A wizard for importing HSC Sim flow sheets as process data sets.
@@ -69,10 +69,7 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 			Navigator.refresh();
 			return true;
 		} catch (Exception e) {
-			var log = LoggerFactory.getLogger(getClass());
-			log.error("failed to import as HSC Sim file: " + file, e);
-			MsgBox.error("Import failed",
-					"An import error occurred: " + e.getMessage());
+			ErrorReporter.on("HSC SIM import failed; file: " + file.getPath(), e);
 			return false;
 		}
 	}

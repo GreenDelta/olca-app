@@ -67,7 +67,7 @@ public class MappingTool extends SimpleFormEditor {
 						+ "flow mappings from CSV files and JSON-LD packages.");
 			}
 		} catch (Exception e) {
-			MsgBox.error("Could not open file", e.getMessage());
+			MsgBox.error("Could not open file", e);
 		}
 	}
 

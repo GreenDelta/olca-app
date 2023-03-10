@@ -55,9 +55,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 
 		IDatabase db = Database.get();
 		if (db == null) {
-			MsgBox.error(
-					M.NoDatabaseOpened,
-					M.NeedOpenDatabase);
+			MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return true;
 		}
 

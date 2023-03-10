@@ -139,8 +139,7 @@ public class IpcDialog extends FormDialog {
 						statusLabel.getParent().requestLayout();
 					});
 		} catch (Exception e) {
-			MsgBox.error("Failed to start the IPC server",
-					e.getMessage());
+			MsgBox.error("Failed to start the IPC server", e);
 			if (server != null && server.isAlive()) {
 				try {
 					server.stop();
@@ -175,8 +174,7 @@ public class IpcDialog extends FormDialog {
 						statusLabel.getParent().requestLayout();
 					});
 		} catch (Exception e) {
-			MsgBox.error("Failed to stop the IPC server",
-					e.getMessage());
+			MsgBox.error("Failed to stop the IPC server", e);
 		}
 	}
 
