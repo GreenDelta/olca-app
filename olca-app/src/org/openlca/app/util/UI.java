@@ -645,6 +645,14 @@ public class UI {
 		return combo;
 	}
 
+	public static Combo wizardCombo(Composite comp, FormToolkit tk) {
+		var combo = new Combo(comp, SWT.READ_ONLY);
+		combo.setBackground(Colors.formBackground());
+		combo.setForeground(Colors.formForeground());
+		gridData(combo, true, false);
+		return combo;
+	}
+
 	public static TableCombo formTableCombo(Composite comp, FormToolkit tk, int style) {
 		var combo = new TableCombo(comp, style);
 

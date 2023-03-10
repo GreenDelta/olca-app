@@ -101,7 +101,7 @@ public class ValidationDialog extends FormDialog {
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
 
-		combo = new Combo(comp, SWT.READ_ONLY);
+		combo = UI.wizardCombo(comp, tk);
 		UI.gridData(combo, true, false);
 		combo.setItems(
 				"All messages",
