@@ -46,6 +46,25 @@ public class MsgBox {
 		new BoxJob(title, text, Type.ERROR).schedule();
 	}
 
+	/**
+	 * Show an error box for the given exception. This method should be used for
+	 * "expected" errors (like calculation errors of singular matrices).
+	 * Unexpected errors should be reported via the {@link ErrorReporter}.
+	 */
+	public static void error(String title, Throwable e) {
+		var message = e != null ? e.getMessage() : null;
+		if (message == null || message.isBlank()) {
+			error(title);
+			return;
+		}
+		var text = message.strip();
+		if (text.length() > 1) {
+			error(text, text.substring(0, 1).toUpperCase() + text.substring(1));
+			return;
+		}
+		error(title);
+	}
+
 	private static class BoxJob extends UIJob {
 
 		private final String title;
@@ -76,17 +95,11 @@ public class MsgBox {
 
 		private void openBox(Shell shell) {
 			switch (type) {
-				case ERROR:
-					MessageDialog.openError(shell, title, message);
-					break;
-				case WARNING:
-					MessageDialog.openWarning(shell, title, message);
-					break;
-				case INFO:
-					MessageDialog.openInformation(shell, title, message);
-					break;
-				default:
-					break;
+				case ERROR -> MessageDialog.openError(shell, title, message);
+				case WARNING -> MessageDialog.openWarning(shell, title, message);
+				case INFO -> MessageDialog.openInformation(shell, title, message);
+				default -> {
+				}
 			}
 		}
 	}
