@@ -145,6 +145,7 @@ project and other open source software.
       <plugin id="org.eclipse.ui.console"/>
       <plugin id="org.eclipse.ui.forms"/>
       <plugin id="org.eclipse.ui.navigator"/>
+      <plugin id="org.eclipse.ui.themes"/>
       <plugin id="org.eclipse.ui.views"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
