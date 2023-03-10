@@ -53,9 +53,7 @@ public class ValidationDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		Composite body = mForm.getForm().getBody();
-		body.setBackground(Colors.wizardBackground());
-		body.setForeground(Colors.wizardForeground());
+		var body = mForm.getForm().getBody();
 		UI.bodyLayout(body, tk);
 		UI.gridLayout(body, 2);
 
@@ -70,11 +68,11 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createProgressBar(Composite body, FormToolkit tk) {
-		var progressComp = UI.wizardComposite(body);
+		var progressComp = UI.formComposite(body, tk);
 		UI.gridData(progressComp, true, false).horizontalSpan = 2;
 		UI.gridLayout(progressComp, 1);
-		infoLabel = UI.wizardLabel(
-			progressComp, "Validation is running ...");
+		infoLabel = UI.formLabel(
+			progressComp, tk, "Validation is running ...");
 		UI.gridData(infoLabel, true, false);
 		infoLabel.setVisible(false);
 		progressBar = new ProgressBar(progressComp, SWT.SMOOTH);
@@ -83,12 +81,13 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createCountCombo(Composite body, FormToolkit tk) {
-		var messageLabel = UI.wizardLabel(body, "Maximum message count");
+		var messageLabel = UI.formLabel(body, tk, "Maximum message count");
 		var gd = UI.gridData(messageLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
 
 		spinner = new Spinner(body, SWT.BORDER);
+		UI.fillHorizontal(spinner);
 		tk.adapt(spinner);
 		spinner.setValues(maxItems, 0, Integer.MAX_VALUE, 0, 100, 1000);
 		Controls.onSelect(
@@ -96,19 +95,14 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createValidationMessageCombo(Composite comp, FormToolkit tk) {
-		var validationLabel = UI.wizardLabel(comp, "Validation messages");
-		var gd = UI.gridData(validationLabel, false, false);
-		gd.verticalAlignment = SWT.TOP;
-		gd.verticalIndent = 2;
-
-		combo = UI.wizardCombo(comp, tk);
+		combo = UI.formCombo(comp, tk, "Validation messages");
 		UI.gridData(combo, true, false);
 		combo.setItems(
 				"All messages",
 				"Warnings and errors",
 				"Errors only");
 		combo.select(1);
-		UI.gridData(combo, true, false);
+		UI.fillHorizontal(combo);
 	}
 
 	@Override
