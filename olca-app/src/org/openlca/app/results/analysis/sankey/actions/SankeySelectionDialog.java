@@ -37,7 +37,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var form = UI.formHeader(mform, M.SettingsForTheSankeyDiagram);
+		var form = UI.formHeader(mform, M.SettingsOfTheSankeyDiagram);
 		var body = UI.formBody(form, tk);
 		UI.gridLayout(body, 2);
 		ResultItemSelector.on(items)
