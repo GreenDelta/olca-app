@@ -350,20 +350,13 @@
 			name="Flow mapping"
 			contributorClass="org.openlca.app.tools.mapping.MappingMenu">
 		</editor>
+
 		<editor
 			class="org.openlca.app.tools.openepd.EpdPanel"
 			default="false"
 			icon="icons/building.png"
 			id="EpdPanel"
 			name="openEPD">
-		</editor>
-
-		<editor
-			class="org.openlca.app.tools.openepd.EpdEditor"
-			default="false"
-			icon="icons/building.png"
-			id="EpdEditor"
-			name="New EPD">
 		</editor>
 
 		<editor
@@ -783,7 +776,7 @@
 			class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
 			icon="icons/file/xml_es1.png"
 			id="wizard.import.ecospold1"
-			name="%EcoSpold">
+			name="%EcoSpold">			
 		</wizard>
 		<wizard
 			category="import.category.file"

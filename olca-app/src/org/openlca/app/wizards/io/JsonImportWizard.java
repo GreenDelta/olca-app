@@ -56,6 +56,10 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
+		if (Database.isNoneActive()) {
+			addPage(new NoDatabaseErrorPage());
+			return;
+		}
 		page = new Page(initialFile);
 		addPage(page);
 	}
@@ -150,12 +154,10 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			UI.gridData(group, true, false);
 			UI.gridLayout(group, 1);
 			for (UpdateMode mode : mods) {
-				Button option = new Button(group, SWT.RADIO);
+				var option = new Button(group, SWT.RADIO);
 				option.setText(getText(mode));
 				option.setSelection(mode == updateMode);
-				Controls.onSelect(option, (e) -> {
-					updateMode = mode;
-				});
+				Controls.onSelect(option, (e) -> updateMode = mode);
 			}
 			setControl(body);
 		}

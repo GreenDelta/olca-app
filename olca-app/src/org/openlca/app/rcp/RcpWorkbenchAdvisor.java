@@ -9,7 +9,6 @@ import org.eclipse.ui.internal.IWorkbenchGraphicConstants;
 import org.eclipse.ui.internal.WorkbenchImages;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerPreference;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("restriction")
@@ -58,7 +57,7 @@ public class RcpWorkbenchAdvisor extends WorkbenchAdvisor {
 					RcpActivator.getImageDescriptor("icons/folder_open.png"),
 					true);
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(getClass());
+			var log = LoggerFactory.getLogger(getClass());
 			log.error("failed to patch workbench images", e);
 		}
 	}

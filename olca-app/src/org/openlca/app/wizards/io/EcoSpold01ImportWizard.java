@@ -47,6 +47,11 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
+		if (Database.isNoneActive()) {
+			addPage(new NoDatabaseErrorPage());
+			return;
+		}
+
 		filePage = initialFile != null
 				? new FileImportPage(initialFile)
 				: new FileImportPage("zip", "xml");

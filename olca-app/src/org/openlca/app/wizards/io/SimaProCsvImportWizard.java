@@ -65,6 +65,10 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
+		if (Database.isNoneActive()) {
+			addPage(new NoDatabaseErrorPage());
+			return;
+		}
 		page = new Page();
 		if (initialFile != null) {
 			page.files.add(initialFile);

@@ -30,6 +30,10 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
+		if (Database.isNoneActive()) {
+			addPage(new NoDatabaseErrorPage());
+			return;
+		}
 		page = new FileImportPage("json");
 		page.withMappingFile = true;
 		page.withMultiSelection = false;

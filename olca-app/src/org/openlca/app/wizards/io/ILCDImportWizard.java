@@ -48,6 +48,10 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
+		if (Database.isNoneActive()) {
+			addPage(new NoDatabaseErrorPage());
+			return;
+		}
 		importPage = initialFile != null
 			? new FileImportPage(initialFile)
 			: new FileImportPage(".zip");

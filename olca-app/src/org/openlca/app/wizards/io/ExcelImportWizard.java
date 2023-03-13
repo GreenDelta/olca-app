@@ -54,14 +54,13 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
-		Wizards.forImport("wizard.import.excel",
-				(ExcelImportWizard w) -> {
-					w.initialFile = file;
-					if (w.page != null) {
-						w.page.files.add(file);
-						w.page.setPageComplete(true);
-					}
-				});
+		Wizards.forImport("wizard.import.excel", (ExcelImportWizard w) -> {
+			w.initialFile = file;
+			if (w.page != null) {
+				w.page.files.add(file);
+				w.page.setPageComplete(true);
+			}
+		});
 	}
 
 	@Override
@@ -70,6 +69,10 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
+		if (Database.isNoneActive()) {
+			addPage(new NoDatabaseErrorPage());
+			return;
+		}
 		page = new Page();
 		if (initialFile != null) {
 			page.files.add(initialFile);
