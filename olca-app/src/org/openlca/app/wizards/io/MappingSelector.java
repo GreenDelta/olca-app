@@ -4,7 +4,6 @@ package org.openlca.app.wizards.io;
 import java.io.File;
 import java.util.Arrays;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -18,13 +17,13 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.core.io.maps.FlowMap;
 
-class MappingFileCombo {
+class MappingSelector {
 
 	private final IDatabase db;
 	private final Combo combo;
 	private Consumer<FlowMap> listener;
 
-	private MappingFileCombo(Composite parent, IDatabase db) {
+	private MappingSelector(Composite parent, IDatabase db) {
 		this.db = db;
 		var comp = UI.composite(parent);
 		UI.gridData(comp, true, false);
@@ -37,7 +36,7 @@ class MappingFileCombo {
 			.getNames()
 			.stream()
 			.sorted()
-			.collect(Collectors.toList());
+			.toList();
 		var items = new String[dbFiles.size() + 1];
 		items[0] = "";
 		for (int i = 0; i < dbFiles.size(); i++) {
@@ -65,8 +64,8 @@ class MappingFileCombo {
 
 	}
 
-	static MappingFileCombo create(Composite parent, IDatabase db) {
-		return new MappingFileCombo(parent, db);
+	static MappingSelector create(Composite parent, IDatabase db) {
+		return new MappingSelector(parent, db);
 	}
 
 	void onSelected(Consumer<FlowMap> listener) {

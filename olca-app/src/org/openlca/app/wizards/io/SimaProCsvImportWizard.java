@@ -167,7 +167,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 			// flow mapping
 			UI.label(comp, "Flow mapping");
-			MappingFileCombo.create(comp, Database.get())
+			MappingSelector.create(comp, Database.get())
 				.onSelected(flowMap -> this.flowMap = flowMap);
 
 			// options
