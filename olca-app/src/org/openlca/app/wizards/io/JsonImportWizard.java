@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
-import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
@@ -124,29 +123,14 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			var body = new Composite(parent, SWT.NONE);
 			UI.gridLayout(body, 1);
 
-			var fileComp = UI.formComposite(body);
-			UI.fillHorizontal(fileComp);
-			UI.gridLayout(fileComp, 3);
-			var fileText = UI.formText(fileComp, "File", SWT.READ_ONLY);
-			if (zip != null) {
-				fileText.setText(zip.getName());
-			}
-			UI.fillHorizontal(fileText);
-			var browse = new Button(fileComp, SWT.NONE);
-			browse.setText(M.Browse);
-
-			Controls.onSelect(browse, e -> {
-				var file = FileChooser.openFile()
-						.withTitle("Select a zip file with openLCA data...")
-						.withExtensions("*.zip")
-						.select()
-						.orElse(null);
-				if (file != null) {
-					zip = file;
-					setPageComplete(true);
-					fileText.setText(file.getName());
-				}
-			});
+			FilePicker.on(file -> {
+						zip = file;
+						setPageComplete(true);
+					})
+					.withTitle("Select a zip file with openLCA data...")
+					.withExtensions("*.zip")
+					.withSelection(zip)
+					.renderOn(body);
 
 			// update mode
 			var group = new Group(body, SWT.NONE);
