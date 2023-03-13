@@ -37,9 +37,9 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mform.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		var section = UI.section(body, tk,
 				"Similarity to other impact categories");
 		UI.gridData(section, true, true);

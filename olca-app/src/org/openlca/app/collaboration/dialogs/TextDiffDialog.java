@@ -36,7 +36,7 @@ public class TextDiffDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform, "Compare");
+		var form = UI.header(mform, "Compare");
 		var body = form.getBody();
 		UI.gridLayout(body, 2, 0, 0).makeColumnsEqualWidth = true;
 		UI.gridData(body, true, true);

@@ -50,9 +50,9 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	protected void createFormContent(IManagedForm managedForm) {
 		for (SocialAspect a : getModel().socialAspects)
 			treeModel.addAspect(a);
-		form = UI.formHeader(this);
+		form = UI.header(this);
 		FormToolkit tk = managedForm.getToolkit();
-		Composite body = UI.formBody(form, tk);
+		Composite body = UI.body(form, tk);
 		createEntrySection(tk, body);
 		form.reflow(true);
 	}

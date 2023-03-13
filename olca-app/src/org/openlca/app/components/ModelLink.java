@@ -64,26 +64,26 @@ public class ModelLink<T extends RootEntity> {
 	}
 
 	public ModelLink<T> renderOn(Composite parent, FormToolkit tk, String label) {
-		UI.formLabel(parent, tk, label);
+		UI.label(parent, tk, label);
 		return renderOn(parent, tk);
 	}
 
 	public ModelLink<T> renderOn(Composite parent, FormToolkit tk) {
-		var comp = UI.formComposite(parent, SWT.FILL);
+		var comp = UI.composite(parent, tk, SWT.FILL);
 		UI.gridLayout(comp, 3, 10, 0);
 
 		// the selection handler of this widget
 		Runnable doSelect = () -> select(ModelSelector.select(modelType));
 
 		// selection button
-		var btn = UI.formImageHyperlink(comp, tk, SWT.BORDER);
+		var btn = UI.imageHyperlink(comp, tk, SWT.BORDER);
 		btn.setToolTipText("Select a data set");
 		btn.setImage(Images.get(modelType));
 		btn.setEnabled(editable);
 		Controls.onClick(btn, $ -> doSelect.run());
 
 		// the link
-		link = UI.formImageHyperlink(comp, tk, SWT.NONE);
+		link = UI.imageHyperlink(comp, tk, SWT.NONE);
 		Controls.onClick(link, $ -> {
 			if (model != null) {
 				App.open(model);
@@ -100,7 +100,7 @@ public class ModelLink<T extends RootEntity> {
 		}
 
 		// the delete button
-		var deleteBtn = UI.formImageHyperlink(comp, tk, SWT.TOP);
+		var deleteBtn = UI.imageHyperlink(comp, tk, SWT.TOP);
 		deleteBtn.setEnabled(editable);
 		deleteBtn.setToolTipText(M.Remove);
 		deleteBtn.setHoverImage(Icon.DELETE.get());

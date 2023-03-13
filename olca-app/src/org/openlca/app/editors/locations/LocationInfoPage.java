@@ -21,9 +21,9 @@ class LocationInfoPage extends ModelPage<Location> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this);
+		ScrolledForm form = UI.header(this);
 		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
+		Composite body = UI.body(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, tk);
 		createAdditionalInfo(body, tk);

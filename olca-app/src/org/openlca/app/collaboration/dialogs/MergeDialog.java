@@ -34,9 +34,9 @@ public class MergeDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform, M.Merge);
+		var form = UI.header(mform, M.Merge);
 		var toolkit = mform.getToolkit();
-		var body = UI.formBody(form, toolkit);
+		var body = UI.body(form, toolkit);
 		viewer = new MergeViewer(body);
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));

@@ -55,8 +55,8 @@ public class DQInfoSection {
 		DQSystem system = forProcesses ? dqResult.setup.processSystem : dqResult.setup.exchangeSystem;
 		if (system == null)
 			return;
-		UI.formLabel(parent, tk, label);
-		UI.formLabel(parent, tk, "");
+		UI.label(parent, tk, label);
+		UI.label(parent, tk, "");
 		String[] headers = {M.Indicator, M.Coverage};
 		TreeViewer viewer = Trees.createViewer(parent, headers);
 		viewer.setContentProvider(new ContentProvider(forProcesses));

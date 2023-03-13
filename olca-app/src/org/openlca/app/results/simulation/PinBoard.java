@@ -61,7 +61,7 @@ class PinBoard {
 		Composite filterComp = tk.createComposite(comp);
 		UI.gridLayout(filterComp, 2, 10, 0);
 		UI.gridData(filterComp, true, false);
-		filter = UI.formText(filterComp, tk, M.Filter);
+		filter = UI.labeledText(filterComp, tk, M.Filter);
 		filter.addModifyListener(e -> table.setInput(selectInput()));
 
 		table = Tables.createViewer(comp,

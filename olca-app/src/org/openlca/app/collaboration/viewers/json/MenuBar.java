@@ -37,7 +37,7 @@ class MenuBar extends Composite {
 	private void createLayout() {
 		UI.gridLayout(this, 7, 0, 5);
 		UI.gridData(this, true, false);
-		var dummy = new Composite(this, SWT.NONE);
+		var dummy = UI.composite(this);
 		UI.gridData(dummy, true, false).heightHint = 1;
 	}
 

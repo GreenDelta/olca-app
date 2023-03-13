@@ -55,9 +55,9 @@ public class CommitDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform, M.CommitChangesToRepository);
+		var form = UI.header(mform, M.CommitChangesToRepository);
 		var toolkit = mform.getToolkit();
-		var body = UI.formBody(form, toolkit);
+		var body = UI.body(form, toolkit);
 		if (!isStashCommit) {
 			createCommitMessage(body, toolkit);
 		}

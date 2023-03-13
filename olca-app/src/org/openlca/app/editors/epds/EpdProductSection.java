@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.EpdProduct;
@@ -37,12 +36,10 @@ public record EpdProductSection(EpdEditor editor) {
 			});
 
 		// amount
-		UI.formLabel(comp, M.Amount);
+		UI.label(comp, tk, M.Amount);
 		var amountComp = tk.createComposite(comp);
-		amountComp.setBackground(Colors.formBackground());
-		amountComp.setForeground(Colors.formForeground());
 		UI.gridLayout(amountComp, 3, 5, 0);
-		var amountText = UI.formText(amountComp, tk);
+		var amountText = UI.text(amountComp, tk);
 		UI.gridData(amountText, false, false).widthHint = 100;
 		Controls.set(amountText, product().amount, amount -> {
 			product().amount = amount;
@@ -51,7 +48,7 @@ public record EpdProductSection(EpdEditor editor) {
 		});
 
 		// unit
-		new UnitHandler(this).renderCombo(amountComp);
+		new UnitHandler(this).renderCombo(amountComp, tk);
 		new MassLabel(this).render(amountComp, tk);
 	}
 
@@ -66,11 +63,10 @@ public record EpdProductSection(EpdEditor editor) {
 
 	private record UnitHandler(EpdProductSection section) {
 
-		void renderCombo(Composite comp) {
+		void renderCombo(Composite comp, FormToolkit tk) {
 			var combo = new Combo(comp, SWT.READ_ONLY);
-			combo.setBackground(Colors.formBackground());
-			combo.setForeground(Colors.formForeground());
 			UI.gridData(combo, false, false);
+			tk.adapt(combo);
 			var units = UnitCombo.of(combo);
 			update(units);
 
@@ -100,7 +96,7 @@ public record EpdProductSection(EpdEditor editor) {
 	private record MassLabel(EpdProductSection section) {
 
 		void render(Composite comp, FormToolkit tk) {
-			var label = UI.formLabel(comp, "");
+			var label = UI.label(comp, tk, "");
 
 			Runnable update = () -> {
 				var product = section.product();

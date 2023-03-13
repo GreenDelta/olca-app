@@ -40,11 +40,11 @@ public class TagResultPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform,
+		var form = UI.header(mform,
 			Labels.name(editor.setup.target()),
 			Icon.ANALYSIS_RESULT.get());
 		var tk = mform.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 
 		var section = UI.section(body, tk, "Contributions by tag");
 		UI.gridData(section, true, true);

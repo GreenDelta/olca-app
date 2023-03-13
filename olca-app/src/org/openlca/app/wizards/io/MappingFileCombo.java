@@ -26,7 +26,7 @@ class MappingFileCombo {
 
 	private MappingFileCombo(Composite parent, IDatabase db) {
 		this.db = db;
-		var comp = new Composite(parent, SWT.NONE);
+		var comp = UI.composite(parent);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 5, 0);
 

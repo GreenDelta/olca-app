@@ -34,7 +34,8 @@ class DQSettingsPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite container = UI.formComposite(parent);
+		Composite container = UI.composite(parent);
+		UI.gridLayout(container, 2);
 		setControl(container);
 
 		// DQ systems
@@ -73,7 +74,7 @@ class DQSettingsPage extends WizardPage {
 	}
 
 	private void createDQViewer(Composite comp, boolean forExchanges) {
-		UI.formLabel(comp, forExchanges
+		UI.label(comp, forExchanges
 			? M.FlowSchema
 			: M.ProcessSchema);
 		var combo = new DQSystemViewer(comp);

@@ -1,6 +1,5 @@
 package org.openlca.app.editors.epds;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -19,7 +18,7 @@ record UploadButton(EpdEditor editor) {
 	}
 
 	void render(Composite parent, FormToolkit tk) {
-		var btn = UI.formButton(parent, tk, "");
+		var btn = UI.button(parent, tk, "");
 		update(btn);
 		btn.setImage(Icon.BUILDING.get());
 		Controls.onSelect(btn, $ -> {

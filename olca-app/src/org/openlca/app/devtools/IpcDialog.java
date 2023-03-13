@@ -18,7 +18,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -73,20 +72,18 @@ public class IpcDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		Composite body = mForm.getForm().getBody();
-		body.setBackground(Colors.formBackground());
-		body.setForeground(Colors.formForeground());
 		UI.bodyLayout(body, tk);
 
 		// port text
-		var comp = UI.formComposite(body, tk);
+		var comp = UI.composite(body, tk);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 3);
-		portText = UI.formText(comp, tk, M.Port);
+		portText = UI.labeledText(comp, tk, M.Port);
 		portText.setText("8080");
 		UI.gridData(portText, true, false);
 
 		// start-stop button
-		button = UI.formButton(comp, tk, "");
+		button = UI.button(comp, tk, "");
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, e -> {
 			if (server == null && grpcServer == null) {
@@ -95,16 +92,16 @@ public class IpcDialog extends FormDialog {
 				onStop();
 			}
 		});
-		UI.formFiller(comp, tk);
-		grpcCheck = UI.formButton(comp, tk,
+		UI.filler(comp, tk);
+		grpcCheck = UI.button(comp, tk,
 				"Start as gRPC service (experimental)",
 				SWT.CHECK);
 
 		// status text and grpc check
-		var statComp = UI.formComposite(body, tk);
+		var statComp = UI.composite(body, tk);
 		UI.gridData(statComp, true, true);
 		UI.gridLayout(statComp, 1);
-		statusLabel = UI.formLabel(statComp, tk, M.StartIPCInfo, SWT.WRAP);
+		statusLabel = UI.label(statComp, tk, M.StartIPCInfo, SWT.WRAP);
 		UI.gridData(statusLabel, true, true);
 	}
 

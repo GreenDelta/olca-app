@@ -124,9 +124,9 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 		@Override
 		public void createControl(Composite parent) {
-			var body = new Composite(parent, SWT.NONE);
+			var body = UI.composite(parent);
 			UI.gridLayout(body, 1);
-			UI.wizardLabel(body, "Selected SimaPro CSV files");
+			UI.label(body, "Selected SimaPro CSV files");
 
 			var viewer = Tables.createViewer(body, M.File);
 			var table = viewer.getTable();
@@ -149,7 +149,8 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 				setPageComplete(!files.isEmpty());
 			});
 
-			var removeFile = Actions.create(M.Remove, Icon.DELETE.descriptor(), () -> {
+			var removeFile = Actions.create(M.Remove, Icon.DELETE.descriptor(),
+					() -> {
 				File file = Viewers.getFirstSelected(viewer);
 				if (file == null)
 					return;
@@ -160,23 +161,23 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			Actions.bind(viewer, addFile, removeFile);
 
 			// config panel
-			var comp = new Composite(body, SWT.NONE);
+			var comp = UI.composite(body);
 			UI.gridLayout(comp, 2, 10, 5);
 			UI.gridData(comp, true, false);
 
 			// flow mapping
-			UI.wizardLabel(comp, "Flow mapping");
+			UI.label(comp, "Flow mapping");
 			MappingFileCombo.create(comp, Database.get())
 				.onSelected(flowMap -> this.flowMap = flowMap);
 
 			// options
-			UI.wizardLabel(comp, "Generate");
+			UI.label(comp, "Generate");
 			option(comp, "Product systems for life cycles",
 				createProductSystems);
-			UI.wizardFiller(comp);
+			UI.filler(comp);
 			option(comp, "Parameters for waste scenarios",
 				createScenarioParameters);
-			UI.wizardFiller(comp);
+			UI.filler(comp);
 			option(comp, "Characterization factors for sub-compartments",
 				expandImpactFactors);
 

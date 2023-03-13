@@ -127,10 +127,12 @@ public class AllocationPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(form, tk);
-		var comp = UI.formComposite(body, tk);
+		var body = UI.body(form, tk);
+		var comp = UI.composite(body, tk);
+		UI.gridLayout(comp, 5);
+
 		createDefaultCombo(comp, tk);
 		createCalcButton(comp, tk);
 		createPhysicalEconomicSection(body, tk);
@@ -139,7 +141,7 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	private void createDefaultCombo(Composite comp, FormToolkit tk) {
-		UI.formLabel(comp, tk, M.DefaultMethod);
+		UI.label(comp, tk, M.DefaultMethod);
 		var combo = new AllocationCombo(comp,
 			AllocationMethod.NONE,
 			AllocationMethod.CAUSAL,
@@ -158,8 +160,8 @@ public class AllocationPage extends ModelPage<Process> {
 	}
 
 	private void createCalcButton(Composite comp, FormToolkit tk) {
-		UI.formFiller(comp, tk);
-		var btn = UI.formButton(comp, tk, "Calculate factors");
+		UI.filler(comp, tk);
+		var btn = UI.button(comp, tk, "Calculate factors");
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {
 			var refs = CalculationDialog.of(process());

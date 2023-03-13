@@ -38,9 +38,9 @@ public class CommitReferencesDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform, M.CommitReferenceNotice);
+		var form = UI.header(mform, M.CommitReferenceNotice);
 		var toolkit = mform.getToolkit();
-		var body = UI.formBody(form, toolkit);
+		var body = UI.body(form, toolkit);
 		createModelViewer(body, toolkit);
 		form.reflow(true);
 	}

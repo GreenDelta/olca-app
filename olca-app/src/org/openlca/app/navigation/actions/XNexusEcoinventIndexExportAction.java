@@ -126,8 +126,8 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 		@Override
 		protected void createFormContent(IManagedForm form) {
 			FormToolkit toolkit = form.getToolkit();
-			UI.formHeader(form, "Select system model databases");
-			Composite body = UI.formBody(form.getForm(), toolkit);
+			UI.header(form, "Select system model databases");
+			Composite body = UI.body(form.getForm(), toolkit);
 			viewer = Tables.createViewer(body, "System model", "Database");
 			viewer.setLabelProvider(new Label());
 			entries.add(new Entry("Cut-off"));

@@ -151,7 +151,7 @@ public class ResultItemSelector {
 
 	private void initFlowCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
-		flowCheck = UI.formButton(comp, tk, M.Flow, SWT.RADIO);
+		flowCheck = UI.button(comp, tk, M.Flow, SWT.RADIO);
 		flowCheck.setSelection(enabled);
 		Controls.onSelect(flowCheck, _e -> {
 			if (flowCheck.getSelection()) {
@@ -175,7 +175,7 @@ public class ResultItemSelector {
 
 	private void initImpactCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.IMPACT_CATEGORY;
-		impactCheck = UI.formButton(comp, tk, M.ImpactCategory, SWT.RADIO);
+		impactCheck = UI.button(comp, tk, M.ImpactCategory, SWT.RADIO);
 		impactCheck.setSelection(enabled);
 		Controls.onSelect(impactCheck, _e -> {
 			if (impactCheck.getSelection()) {

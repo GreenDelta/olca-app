@@ -66,9 +66,9 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		toolkit = mform.getToolkit();
-		body = UI.formBody(form, toolkit);
+		body = UI.body(form, toolkit);
 		try {
 			createGlobalSection(body, toolkit);
 			ParameterSection.forInputParameters(this);

@@ -20,7 +20,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
 
@@ -44,17 +43,10 @@ public class Trees {
 				SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		Tree tree = viewer.getTree();
 
-		tree.setHeaderBackground(Colors.listBackground());
-		tree.setHeaderForeground(Colors.listForeground());
-		tree.setForeground(Colors.listForeground());
-
 		boolean hasColumns = headers != null && headers.length > 0;
-		if (Display.isSystemDarkTheme())
-			tree.setBackground(Colors.listBackground());
-		else
-			tree.setLinesVisible(hasColumns);
-
+		tree.setLinesVisible(hasColumns);
 		tree.setHeaderVisible(hasColumns);
+
 		if (hasColumns) {
 			createColumns(viewer, headers, label);
 		}

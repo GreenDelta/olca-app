@@ -41,9 +41,9 @@ class MappingPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, "Flow mapping");
+		ScrolledForm form = UI.header(mform, "Flow mapping");
 		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
+		Composite body = UI.body(form, tk);
 		createInfoSection(tk, body);
 		createTable(body, tk);
 		form.reflow(true);
@@ -51,19 +51,19 @@ class MappingPage extends FormPage {
 
 	private void createInfoSection(FormToolkit tk, Composite body) {
 		var comp = UI.formSection(body, tk, M.GeneralInformation);
-		var name = UI.formText(comp, tk, M.Name);
+		var name = UI.labeledText(comp, tk, M.Name);
 		Controls.set(name, this.tool.mapping.name);
 
-		UI.formLabel(comp, tk, "Source system");
+		UI.label(comp, tk, "Source system");
 		ProviderRow sourceRow = new ProviderRow(comp, tk);
 		sourceRow.onSelect = p -> tool.sourceSystem = p;
 
-		UI.formLabel(comp, tk, "Target system");
+		UI.label(comp, tk, "Target system");
 		ProviderRow targetRow = new ProviderRow(comp, tk);
 		targetRow.onSelect = p -> tool.targetSystem = p;
 
-		UI.formFiller(comp);
-		Button checkButton = UI.formButton(comp, tk, "Check mappings");
+		UI.filler(comp);
+		Button checkButton = UI.button(comp, tk, "Check mappings");
 		Runnable updateCheckState = () -> {
 			if (tool.checked.get()) {
 				checkButton.setImage(Icon.ACCEPT.get());

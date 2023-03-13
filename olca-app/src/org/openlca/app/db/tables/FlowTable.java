@@ -68,14 +68,14 @@ public class FlowTable extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(mform, M.Flows);
+			var form = UI.header(mform, M.Flows);
 			var tk = mform.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 
 			var filterComp = tk.createComposite(body);
 			UI.gridLayout(filterComp, 2);
 			UI.gridData(filterComp, true, false);
-			var filter = UI.formText(filterComp, tk, M.Filter);
+			var filter = UI.labeledText(filterComp, tk, M.Filter);
 
 			var table = Tables.createViewer(body,
 				M.FlowType,

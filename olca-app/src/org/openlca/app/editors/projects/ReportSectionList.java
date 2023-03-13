@@ -19,7 +19,6 @@ import org.openlca.app.editors.projects.reports.model.ReportComponent;
 import org.openlca.app.editors.projects.reports.model.ReportSection;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
@@ -102,7 +101,7 @@ class ReportSectionList {
 		}
 
 		private void createTitleText(Composite comp, FormToolkit tk) {
-			titleText = UI.formText(comp, tk, M.Section);
+			titleText = UI.labeledText(comp, tk, M.Section);
 			if (model.title != null)
 				titleText.setText(model.title);
 			titleText.addModifyListener(e -> {
@@ -114,7 +113,7 @@ class ReportSectionList {
 		}
 
 		private void createDescriptionText(Composite comp, FormToolkit tk) {
-			descriptionText = UI.formMultiText(comp, tk, M.Text);
+			descriptionText = UI.multiText(comp, tk, M.Text);
 			if (model.text != null)
 				descriptionText.setText(model.text);
 			descriptionText.addModifyListener(e -> {
@@ -124,12 +123,8 @@ class ReportSectionList {
 		}
 
 		private void createComponentViewer(Composite comp, FormToolkit tk) {
-			UI.formLabel(comp, tk, M.Component);
+			UI.label(comp, tk, M.Component);
 			componentCombo = new ComboViewer(comp);
-
-			var combo = componentCombo.getCombo();
-			combo.setBackground(Colors.formBackground());
-			combo.setForeground(Colors.formForeground());
 
 			UI.gridData(componentCombo.getControl(), false, false).widthHint = 250;
 			componentCombo.setContentProvider(ArrayContentProvider.getInstance());

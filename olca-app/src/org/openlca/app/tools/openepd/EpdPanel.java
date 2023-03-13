@@ -50,10 +50,10 @@ public class EpdPanel extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
-			var form = UI.formHeader(mForm, "Building Transparency - openEPD",
+			var form = UI.header(mForm, "Building Transparency - openEPD",
 				Icon.EC3_WIZARD.get());
 			var tk = mForm.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 
 			// login
 			var loginPanel = LoginPanel.create(body, tk);
@@ -61,10 +61,10 @@ public class EpdPanel extends SimpleFormEditor {
 			// direct download
 			var downloadComp = UI.formSection(body, tk, "Direct download");
 			UI.gridLayout(downloadComp, 3);
-			UI.formLabel(downloadComp, tk, "URL or ID");
-			var urlText = UI.formText(downloadComp, "", SWT.BORDER);
+			UI.label(downloadComp, tk, "URL or ID");
+			var urlText = UI.labeledText(downloadComp, "", SWT.BORDER);
 			UI.fillHorizontal(urlText);
-			var downloadBtn = UI.formButton(downloadComp, tk, "Download");
+			var downloadBtn = UI.button(downloadComp, tk, "Download");
 			Controls.onSelect(downloadBtn, $ -> {
 				var client = loginPanel.login().orElse(null);
 				if (client == null)
@@ -76,17 +76,15 @@ public class EpdPanel extends SimpleFormEditor {
 			var section = UI.section(body, tk, "Find EPDs");
 			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
-			var searchComp = UI.formComposite(comp, tk);
+			var searchComp = UI.composite(comp, tk);
 			UI.fillHorizontal(searchComp);
 			UI.gridLayout(searchComp, 4);
-			var searchText = tk.createText(searchComp, "", SWT.BORDER);
-			searchText.setBackground(Colors.formBackground());
-			searchText.setForeground(Colors.formForeground());
+			var searchText = UI.emptyText(searchComp, tk, SWT.BORDER);
 			UI.fillHorizontal(searchText);
-			var searchButton = UI.formButton(searchComp, tk, "Search");
+			var searchButton = UI.button(searchComp, tk, "Search");
 			searchButton.setImage(Icon.SEARCH.get());
-			UI.formLabel(searchComp, tk, "Max. count:");
-			var spinner = UI.formSpinner(searchComp, tk, SWT.BORDER);
+			UI.label(searchComp, tk, "Max. count:");
+			var spinner = UI.spinner(searchComp, tk, SWT.BORDER);
 			spinner.setValues(100, 10, 1000, 0, 50, 100);
 
 			// descriptor table

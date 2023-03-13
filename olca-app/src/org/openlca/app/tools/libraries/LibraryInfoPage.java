@@ -64,24 +64,24 @@ public class LibraryInfoPage extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(mform, M.Parameters);
+			var form = UI.header(mform, M.Parameters);
 			var tk = mform.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 
 			var comp = UI.formSection(body, tk, M.GeneralInformation);
-			var name = UI.formText(comp, tk, M.Name);
+			var name = UI.labeledText(comp, tk, M.Name);
 			name.setEditable(false);
 			if (info.name() != null) {
 				name.setText(info.name());
 			}
 
-			var description = UI.formMultiText(comp, tk, M.Description);
+			var description = UI.multiText(comp, tk, M.Description);
 			description.setEditable(false);
 			if (info.description() != null) {
 				description.setText(info.description());
 			}
 
-			var isRegionalized = UI.formCheckBox(comp, tk, "Is regionalized");
+			var isRegionalized = UI.labeledCheckbox(comp, tk, "Is regionalized");
 			isRegionalized.setSelection(info.isRegionalized());
 			isRegionalized.setEnabled(false);
 

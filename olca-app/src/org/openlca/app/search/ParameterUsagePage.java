@@ -100,10 +100,10 @@ public class ParameterUsagePage extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(
+			var form = UI.header(
 				mform, M.UsageOf + " " + tree.param);
 			var tk = mform.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 			ParameterUsageView.show(body, tree);
 		}
 	}

@@ -33,9 +33,9 @@ public class ProcessExchangePage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this);
+		ScrolledForm form = UI.header(this);
 		toolkit = mform.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		Composite body = UI.body(form, toolkit);
 		SashForm sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridData(sash, true, true);
 		toolkit.adapt(sash);

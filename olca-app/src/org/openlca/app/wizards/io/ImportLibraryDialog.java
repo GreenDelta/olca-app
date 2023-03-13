@@ -69,7 +69,7 @@ public class ImportLibraryDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(mForm.getForm(), tk);
+		var body = UI.body(mForm.getForm(), tk);
 		UI.gridLayout(body, 1);
 
 		var comp = tk.createComposite(body);
@@ -77,17 +77,17 @@ public class ImportLibraryDialog extends FormDialog {
 		UI.gridLayout(comp, 2);
 
 		// name & description
-		var name = UI.formText(comp, tk, "Library");
+		var name = UI.labeledText(comp, tk, "Library");
 		name.setEditable(false);
 		Controls.set(name, info.name());
-		var desc = UI.formMultiText(comp, tk, "Description");
+		var desc = UI.multiText(comp, tk, "Description");
 		desc.setEditable(false);
 		Controls.set(desc, info.description());
 
 		// dependencies
 		if (info.dependencies().isEmpty())
 			return;
-		UI.formLabel(comp, tk, "Dependencies");
+		UI.label(comp, tk, "Dependencies");
 		var depText = new StringBuilder("<ul>");
 		var libDir = Workspace.getLibraryDir();
 		for (var dep : info.dependencies()) {

@@ -28,9 +28,9 @@ public class CommentDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		ScrolledForm form = UI.formHeader(mForm,
+		ScrolledForm form = UI.header(mForm,
 				M.Comments + CommentLabels.get(path));
-		Composite body = UI.formBody(form, mForm.getToolkit());
+		Composite body = UI.body(form, mForm.getToolkit());
 		body.setLayout(new FillLayout());
 		Browser browser = new Browser(body, SWT.NONE);
 		browser.setJavascriptEnabled(true);

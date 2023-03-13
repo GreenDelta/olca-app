@@ -34,6 +34,7 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.UI;
 
 /**
  * An abstract cell editor that uses a dialog. Dialog cell editors usually have
@@ -140,7 +141,7 @@ public abstract class DialogCellEditor extends CellEditor {
 
 	/**
 	 * Creates a new dialog cell editor with no control
-	 * 
+	 *
 	 * @since 2.1
 	 */
 	public DialogCellEditor() {
@@ -150,7 +151,7 @@ public abstract class DialogCellEditor extends CellEditor {
 	/**
 	 * Creates a new dialog cell editor parented under the given control. The
 	 * cell editor value is <code>null</code> initially, and has no validator.
-	 * 
+	 *
 	 * @param parent
 	 *            the parent control
 	 */
@@ -161,7 +162,7 @@ public abstract class DialogCellEditor extends CellEditor {
 	/**
 	 * Creates a new dialog cell editor parented under the given control. The
 	 * cell editor value is <code>null</code> initially, and has no validator.
-	 * 
+	 *
 	 * @param parent
 	 *            the parent control
 	 * @param style
@@ -190,7 +191,7 @@ public abstract class DialogCellEditor extends CellEditor {
 	 * Subclasses may reimplement. If you reimplement this method, you should
 	 * also reimplement <code>updateContents</code>.
 	 * </p>
-	 * 
+	 *
 	 * @param cell
 	 *            the control for this cell editor
 	 * @return the underlying control
@@ -211,7 +212,7 @@ public abstract class DialogCellEditor extends CellEditor {
 		Font font = parent.getFont();
 		Color bg = parent.getBackground();
 
-		editor = new Composite(parent, getStyle());
+		editor = UI.composite(parent, getStyle());
 		editor.setFont(font);
 		editor.setBackground(bg);
 		editor.setLayout(new DialogCellLayout());
@@ -225,7 +226,7 @@ public abstract class DialogCellEditor extends CellEditor {
 		hyperlink.addKeyListener(new KeyAdapter() {
 			/*
 			 * (non-Javadoc)
-			 * 
+			 *
 			 * @see
 			 * org.eclipse.swt.events.KeyListener#keyReleased(org.eclipse.swt
 			 * .events.KeyEvent)
@@ -244,7 +245,7 @@ public abstract class DialogCellEditor extends CellEditor {
 
 			/*
 			 * (non-Javadoc)
-			 * 
+			 *
 			 * @see
 			 * org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse
 			 * .swt.events.SelectionEvent)
@@ -283,10 +284,10 @@ public abstract class DialogCellEditor extends CellEditor {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * Override in order to remove the button's focus listener if the celleditor
 	 * is deactivating.
-	 * 
+	 *
 	 * @see org.eclipse.jface.viewers.CellEditor#deactivate()
 	 */
 	@Override
@@ -320,7 +321,7 @@ public abstract class DialogCellEditor extends CellEditor {
 
 	/**
 	 * Return a listener for button focus.
-	 * 
+	 *
 	 * @return FocusListener
 	 */
 	private FocusListener getButtonFocusListener() {
@@ -329,7 +330,7 @@ public abstract class DialogCellEditor extends CellEditor {
 
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see
 				 * org.eclipse.swt.events.FocusListener#focusGained(org.eclipse
 				 * .swt.events.FocusEvent)
@@ -341,7 +342,7 @@ public abstract class DialogCellEditor extends CellEditor {
 
 				/*
 				 * (non-Javadoc)
-				 * 
+				 *
 				 * @see
 				 * org.eclipse.swt.events.FocusListener#focusLost(org.eclipse
 				 * .swt.events.FocusEvent)
@@ -367,7 +368,7 @@ public abstract class DialogCellEditor extends CellEditor {
 
 	/**
 	 * Returns the default label widget created by <code>createContents</code>.
-	 * 
+	 *
 	 * @return the default label widget
 	 */
 	protected Label getDefaultLabel() {
@@ -383,7 +384,7 @@ public abstract class DialogCellEditor extends CellEditor {
 	 * called when the user has pressed the button and the dialog box must pop
 	 * up.
 	 * </p>
-	 * 
+	 *
 	 * @param cellEditorWindow
 	 *            the parent control cell editor's window so that a subclass can
 	 *            adjust the dialog box accordingly
@@ -403,7 +404,7 @@ public abstract class DialogCellEditor extends CellEditor {
 	 * Subclasses may reimplement. If you reimplement this method, you should
 	 * also reimplement <code>createContents</code>.
 	 * </p>
-	 * 
+	 *
 	 * @param value
 	 *            the new value of this cell editor
 	 */

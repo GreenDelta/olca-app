@@ -69,12 +69,12 @@ public class InfoSection {
 		}
 
 		// category
-		UI.formLabel(container, tk, M.Category);
+		UI.label(container, tk, M.Category);
 		List<String> path = entity.category != null
 			? Categories.path(entity.category)
 			: Collections.emptyList();
 		if (path.isEmpty()) {
-			UI.formLabel(container, tk, "- none -");
+			UI.label(container, tk, "- none -");
 		} else {
 			var category = String.join("/", path);
 			var link = UI.formCategoryLink(container, tk, category, Images.get(entity.category));
@@ -83,7 +83,7 @@ public class InfoSection {
 		if (editor.hasComment("category")) {
 			new CommentControl(container, tk, "category", editor.getComments());
 		} else {
-			UI.formFiller(container);
+			UI.filler(container);
 		}
 
 		// description
@@ -91,23 +91,23 @@ public class InfoSection {
 			.setEditable(editor.isEditable());
 
 		// version
-		UI.formFiller(container, tk);
-		var versionComp = UI.formComposite(container);
+		UI.filler(container, tk);
+		var versionComp = UI.composite(container, tk);
 
 		UI.gridLayout(versionComp, 8, 10, 0);
 		createVersionText(versionComp, tk);
 
 		// last change
-		UI.formLabel(versionComp, tk, " ");
+		UI.label(versionComp, tk, " ");
 		createDateText(versionComp, tk);
-		UI.formFiller(container, tk);
+		UI.filler(container, tk);
 
 		// tags
 		createTags(tk);
 
 		// uuid
-		UI.formLabel(versionComp, tk, " ");
-		UI.formLabel(versionComp, tk, "UUID");
+		UI.label(versionComp, tk, " ");
+		UI.label(versionComp, tk, "UUID");
 		var uuidText = UI.formText(versionComp, tk, false);
 		if (entity.refId != null) {
 			uuidText.setText(entity.refId, false, false);
@@ -125,8 +125,8 @@ public class InfoSection {
 	}
 
 	private void createVersionText(Composite parent, FormToolkit tk) {
-		UI.formLabel(parent, M.Version);
-		var comp = UI.formComposite(parent, tk);
+		UI.label(parent, tk, M.Version);
+		var comp = UI.composite(parent, tk);
 		var layout = UI.gridLayout(comp, 3);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
@@ -141,8 +141,8 @@ public class InfoSection {
 	}
 
 	private void createDateText(Composite parent, FormToolkit tk) {
-		UI.formLabel(parent, tk, M.LastChange);
-		var text = UI.formLabel(parent, tk, "");
+		UI.label(parent, tk, M.LastChange);
+		var text = UI.label(parent, tk, "");
 		if (entity.lastChange != 0) {
 			text.setText(Numbers.asTimestamp(entity.lastChange));
 		} else {
@@ -155,14 +155,14 @@ public class InfoSection {
 	}
 
 	private void createTags(FormToolkit tk) {
-		UI.formLabel(container, tk, "Tags");
-		var comp = UI.formComposite(container, tk);
+		UI.label(container, tk, "Tags");
+		var comp = UI.composite(container, tk);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
-		var btn = UI.formButton(comp, tk, "Add a tag");
+		var btn = UI.button(comp, tk, "Add a tag");
 		btn.setEnabled(editor.isEditable());
 
-		var tagComp = UI.formComposite(comp, tk);
+		var tagComp = UI.composite(comp, tk);
 		UI.gridLayout(tagComp, 1);
 		UI.gridData(tagComp, true, false);
 
@@ -174,11 +174,11 @@ public class InfoSection {
 			if (inner != null) {
 				inner.dispose();
 			}
-			inner = UI.formComposite(tagComp, tk);
+			inner = UI.composite(tagComp, tk);
 			UI.gridData(inner, true, false);
 			innerComp.set(inner);
-
 			UI.gridLayout(inner, tags.length, 5, 0);
+
 			for (var t : tags) {
 				new Tag(t, inner, tk)
 						.setEnabled(editor.isEditable())
@@ -206,7 +206,7 @@ public class InfoSection {
 			}).open();
 		});
 
-		UI.formFiller(container, tk);
+		UI.filler(container, tk);
 	}
 
 	private class VersionLink extends HyperlinkAdapter {
@@ -223,7 +223,6 @@ public class InfoSection {
 			this.type = type;
 			link = toolkit.createImageHyperlink(parent, SWT.TOP);
 			link.addHyperlinkListener(this);
-			link.setBackground(Colors.formBackground());
 			configureLink();
 		}
 
@@ -332,21 +331,21 @@ public class InfoSection {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var tk = mform.getToolkit();
-			var body = UI.formBody(mform.getForm(), tk);
+			var body = UI.body(mform.getForm(), tk);
 			UI.gridLayout(body, 1, 10, 10);
 
 			// text for new tag
-			var textComp = UI.formComposite(body, tk);
+			var textComp = UI.composite(body, tk);
 			UI.gridLayout(textComp, 2, 10, 0);
 			UI.gridData(textComp, true, false);
-			var label = UI.formLabel(textComp, tk, "New tag");
+			var label = UI.label(textComp, tk, "New tag");
 			label.setFont(UI.boldFont());
-			text = UI.formText(textComp, SWT.SEARCH);
+			text = UI.text(textComp, SWT.SEARCH);
 			UI.gridData(text, true, false);
 
 			// list with existing tags
-			UI.formLabel(body, tk, "Used tags");
-			var list = UI.formList(body);
+			UI.label(body, tk, "Used tags");
+			var list = UI.list(body);
 			UI.gridData(list, true, true);
 			if (candidates != null) {
 				list.setItems(candidates);

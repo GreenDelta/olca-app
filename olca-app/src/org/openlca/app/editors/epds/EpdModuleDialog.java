@@ -89,13 +89,13 @@ class EpdModuleDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(mForm.getForm(), tk);
+		var body = UI.body(mForm.getForm(), tk);
 		var comp = tk.createComposite(body);
 		UI.fillHorizontal(comp);
 		UI.gridLayout(comp, 2, 10, 0);
 
 		// module name
-		UI.formLabel(comp, tk, M.Name);
+		UI.label(comp, tk, M.Name);
 		var nameCombo = new Combo(comp, SWT.BORDER);
 		UI.fillHorizontal(nameCombo);
 		nameCombo.setItems(proposeNames());
@@ -105,11 +105,11 @@ class EpdModuleDialog extends FormDialog {
 		nameCombo.addModifyListener($ -> module.name = nameCombo.getText());
 
 		// result multiplier
-		var factorText = UI.formText(comp, tk, "Result multiplier");
+		var factorText = UI.labeledText(comp, tk, "Result multiplier");
 		Controls.set(factorText, module.multiplier, f -> module.multiplier = f);
 
 		// result tree
-		UI.formLabel(comp, tk, M.Result);
+		UI.label(comp, tk, M.Result);
 		var tree = NavigationTree.forSingleSelection(body, ModelType.RESULT);
 		UI.gridData(tree.getTree(), true, true);
 		tree.addSelectionChangedListener(e -> {

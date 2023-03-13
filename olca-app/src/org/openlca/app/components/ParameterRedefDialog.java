@@ -169,12 +169,12 @@ public class ParameterRedefDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit toolkit = mform.getToolkit();
-		UI.formHeader(mform, M.SearchParameters);
-		Composite body = UI.formBody(mform.getForm(), mform.getToolkit());
+		UI.header(mform, M.SearchParameters);
+		Composite body = UI.body(mform.getForm(), mform.getToolkit());
 		UI.gridLayout(body, 1);
-		Label filterLabel = UI.formLabel(body, toolkit, M.Filter);
+		Label filterLabel = UI.label(body, toolkit, M.Filter);
 		filterLabel.setFont(UI.boldFont());
-		filterText = UI.formText(body, SWT.SEARCH);
+		filterText = UI.text(body, SWT.SEARCH);
 		filterText.addModifyListener(e -> viewer.refresh());
 
 		Section section = UI.section(body, toolkit, M.Parameters);

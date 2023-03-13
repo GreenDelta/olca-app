@@ -10,7 +10,6 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
@@ -120,7 +119,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 		@Override
 		public void createControl(Composite parent) {
-			var body = new Composite(parent, SWT.NONE);
+			var body = UI.composite(parent);
 			UI.gridLayout(body, 1);
 
 			FilePicker.on(file -> {
@@ -133,7 +132,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 					.renderOn(body);
 
 			// update mode
-			var group = new Group(body, SWT.NONE);
+			var group = UI.group(body);
 			group.setText("Updating existing data sets in the database");
 			UI.gridData(group, true, false);
 			UI.gridLayout(group, 1);

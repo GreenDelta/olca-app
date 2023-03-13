@@ -65,9 +65,8 @@ public class Navigator extends CommonNavigator {
 	@Override
 	protected CommonViewer createCommonViewer(Composite aParent) {
 		var viewer = super.createCommonViewer(aParent);
-		viewer.getTree().setBackground(Colors.navigatorBackground());
-		viewer.getTree().setForeground(Colors.navigatorForeground());
-		viewer.getTree().setHeaderForeground(Colors.listForeground());
+		viewer.getTree().setBackground(
+			Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		return viewer;
 	}
 

@@ -40,14 +40,14 @@ class EditorPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(mform, M.Parameters);
+		ScrolledForm form = UI.header(mform, M.Parameters);
 		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
+		Composite body = UI.body(form, tk);
 
-		Composite filterComp = UI.formComposite(body, tk);
+		Composite filterComp = UI.composite(body, tk);
 		UI.gridLayout(filterComp, 3);
 		UI.gridData(filterComp, true, false);
-		filter = UI.formText(filterComp, tk, M.Filter);
+		filter = UI.labeledText(filterComp, tk, M.Filter);
 		filterCombo = FilterCombo.create(filterComp, tk);
 
 		Runnable doFilter = () -> {

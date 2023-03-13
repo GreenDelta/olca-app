@@ -59,13 +59,13 @@ public class SaveResultDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 
 		// name
-		var nameComp = UI.formComposite(body, tk);
+		var nameComp = UI.composite(body, tk);
 		UI.gridLayout(nameComp, 2);
 		UI.fillHorizontal(nameComp);
-		nameText = UI.formText(nameComp, tk, "Name");
+		nameText = UI.labeledText(nameComp, tk, "Name");
 		Controls.onPainted(nameText, () -> {
 			var name = Labels.name(editor.setup.target());
 			if (name != null) {
@@ -73,7 +73,7 @@ public class SaveResultDialog extends FormDialog {
 			}
 		});
 
-		var groupComp = UI.formComposite(body, tk);
+		var groupComp = UI.composite(body, tk);
 		UI.gridLayout(groupComp, 2, 0, 0).horizontalSpacing = 10;
 		UI.fillHorizontal(groupComp);
 
@@ -81,7 +81,7 @@ public class SaveResultDialog extends FormDialog {
 		var processSelector = Selector.forProcess(groupComp, tk);
 		processRadio = processSelector.button;
 
-		metaCheck = UI.formCheckBox(processSelector.group, tk);
+		metaCheck = UI.checkbox(processSelector.group, tk);
 	  metaCheck.setText(M.CopyMetaDataFromReferenceProcess);
 		metaCheck.setSelection(true);
 		metaCheck.setEnabled(false);
@@ -155,7 +155,7 @@ public class SaveResultDialog extends FormDialog {
 		static Selector forResult(Composite comp, FormToolkit tk) {
 			makeIcon(comp, tk, Images.get(ModelType.RESULT));
 			var group = makeGroup(comp, tk);
-			var button = UI.formRadio(group, tk, "As result");
+			var button = UI.radio(group, tk, "As result");
 			button.setSelection(true);
 			return new Selector(group, button);
 		}
@@ -163,13 +163,13 @@ public class SaveResultDialog extends FormDialog {
 		static Selector forProcess(Composite comp, FormToolkit tk) {
 			makeIcon(comp, tk, Images.get(ProcessType.LCI_RESULT));
 			var group = makeGroup(comp, tk);
-			var button = UI.formRadio(group, tk, "As system process");
+			var button = UI.radio(group, tk, "As system process");
 			button.setSelection(false);
 			return new Selector(group, button);
 		}
 
 		private static Group makeGroup(Composite comp, FormToolkit tk) {
-			var group = UI.formGroup(comp, tk);
+			var group = UI.group(comp, tk);
 			UI.fillHorizontal(group);
 			UI.gridLayout(group, 1).makeColumnsEqualWidth = false;
 			return group;

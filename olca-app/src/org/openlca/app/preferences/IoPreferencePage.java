@@ -39,7 +39,7 @@ public class IoPreferencePage extends PreferencePage implements
 
 	@Override
 	protected Control createContents(Composite parent) {
-		Composite comp = new Composite(parent, SWT.NONE);
+		Composite comp = UI.composite(parent);
 		UI.gridLayout(comp, 1);
 		UI.gridData(comp, true, true);
 		createIlcdNetworkContents(comp);
@@ -51,7 +51,7 @@ public class IoPreferencePage extends PreferencePage implements
 	}
 
 	private void createIlcdNetworkContents(Composite parent) {
-		Group section = new Group(parent, SWT.SHADOW_OUT);
+		Group section = UI.group(parent, SWT.SHADOW_OUT);
 		section.setText(M.ILCDNetworkSettings);
 		StringFieldEditor urlEditor = new StringFieldEditor(
 				IoPreference.ILCD_URL, M.URL, section);

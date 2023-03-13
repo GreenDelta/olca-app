@@ -52,16 +52,16 @@ class TreeExportDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 
 		// file selection
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 3, 10, 5);
-		var fileText = UI.formText(comp, tk, "Export to file");
+		var fileText = UI.labeledText(comp, tk, "Export to file");
 		fileText.setEditable(false);
 		fileText.setBackground(Colors.white());
-		var fileBtn = UI.formButton(comp, tk, M.Browse);
+		var fileBtn = UI.button(comp, tk, M.Browse);
 		UI.gridData(fileBtn, false, false).horizontalAlignment = SWT.FILL;
 		Controls.onSelect(fileBtn, e -> {
 			var f = FileChooser.forSavingFile(
@@ -78,12 +78,12 @@ class TreeExportDialog extends FormDialog {
 
 		// number of levels
 		UI.gridLayout(comp, 3, 10, 5);
-		maxDepthText = UI.formText(comp, tk, "Max. number of levels");
+		maxDepthText = UI.labeledText(comp, tk, "Max. number of levels");
 		maxDepthText.setText("5");
 		var maxDepthBtn = tk.createButton(comp, "Unlimited", SWT.CHECK);
 
 		// minimum contribution
-		minContrText = UI.formText(comp, tk, "Min. contribution %");
+		minContrText = UI.labeledText(comp, tk, "Min. contribution %");
 		minContrText.setText("1e-5");
 		var contrBtn = tk.createButton(comp, "Unlimited", SWT.CHECK);
 		Controls.onSelect(contrBtn, _e -> {
@@ -91,10 +91,10 @@ class TreeExportDialog extends FormDialog {
 		});
 
 		// recursion limit
-		maxRecurText = UI.formText(comp, tk, "Max. recursion depth");
+		maxRecurText = UI.labeledText(comp, tk, "Max. recursion depth");
 		maxRecurText.setText("1");
 		maxRecurText.setEnabled(false);
-		UI.formLabel(comp, tk, "Repetitions");
+		UI.label(comp, tk, "Repetitions");
 
 		Controls.onSelect(maxDepthBtn, _e -> {
 			boolean b = !maxDepthText.isEnabled();

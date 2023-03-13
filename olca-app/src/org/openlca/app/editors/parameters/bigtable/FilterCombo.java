@@ -24,7 +24,7 @@ class FilterCombo {
 
 	static FilterCombo create(Composite comp, FormToolkit tk) {
 		FilterCombo combo = new FilterCombo();
-		Button button = UI.formButton(comp, tk, "All columns");
+		Button button = UI.button(comp, tk, "All columns");
 		button.setImage(Icon.DOWN.get());
 		Menu menu = new Menu(button);
 		int[] types = {

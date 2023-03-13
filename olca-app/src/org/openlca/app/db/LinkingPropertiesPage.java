@@ -86,9 +86,9 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			ScrolledForm form = UI.formHeader(mform, M.LinkingProperties);
+			ScrolledForm form = UI.header(mform, M.LinkingProperties);
 			tk = mform.getToolkit();
-			Composite body = UI.formBody(form, tk);
+			Composite body = UI.body(form, tk);
 			generalPropertiesSection(body);
 			processProviderSection(body);
 			flowProviderSection(body);
@@ -122,8 +122,8 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 		}
 
 		private void check(Composite comp, Icon icon, String message) {
-			UI.formLabel(comp, tk, "").setImage(icon.get());
-			UI.formLabel(comp, tk, message, SWT.WRAP);  // TODO WRAP currently does
+			UI.label(comp, tk, "").setImage(icon.get());
+			UI.label(comp, tk, message, SWT.WRAP);  // TODO WRAP currently does
 														// not work
 		}
 

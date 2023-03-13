@@ -109,7 +109,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var tk = mform.getToolkit();
-			var body = UI.formBody(mform.getForm(), tk);
+			var body = UI.body(mform.getForm(), tk);
 			UI.gridLayout(body, 2);
 			createProviderCombo(tk, body);
 			createTypeCombo(tk, body);
@@ -129,7 +129,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 					selected = i;
 				}
 			}
-			var combo = UI.formCombo(body, tk, "Provider selection");
+			var combo = UI.labeledCombo(body, tk, "Provider selection");
 			combo.setItems(items);
 			combo.select(selected);
 			config.withProviderLinking(options[selected]);
@@ -146,7 +146,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 			String[] items = {
 					Labels.of(ProcessType.UNIT_PROCESS),
 					Labels.of(ProcessType.LCI_RESULT) };
-			var combo = UI.formCombo(body, tk, M.PreferredProcessType);
+			var combo = UI.labeledCombo(body, tk, M.PreferredProcessType);
 			combo.setItems(items);
 			combo.select(1);
 			config.withPreferredType(ProcessType.LCI_RESULT);
@@ -157,7 +157,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		}
 
 		private void createKeepExistingCheck(FormToolkit tk, Composite body) {
-			UI.formFiller(body, tk);
+			UI.filler(body, tk);
 			var check = tk.createButton(
 					body, "Keep all existing links", SWT.CHECK);
 			config.keepExistingLinks(true);
@@ -167,7 +167,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		}
 
 		private void createLocationCheck(FormToolkit tk, Composite body) {
-			UI.formFiller(body, tk);
+			UI.filler(body, tk);
 			var check = tk.createButton(
 					body, "Prefer links within same locations", SWT.CHECK);
 			config.preferLinksInSameLocation(false);

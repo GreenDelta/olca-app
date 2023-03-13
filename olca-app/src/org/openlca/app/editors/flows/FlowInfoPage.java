@@ -34,9 +34,9 @@ class FlowInfoPage extends ModelPage<Flow> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this);
+		ScrolledForm form = UI.header(this);
 		toolkit = mform.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		Composite body = UI.body(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		FlowUseSection useSection = new FlowUseSection(getModel(), Database.get());
@@ -63,8 +63,8 @@ class FlowInfoPage extends ModelPage<Flow> {
 		if (flow.flowType != FlowType.PRODUCT_FLOW)
 			return;
 		Composite comp = infoSection.composite();
-		UI.formLabel(comp, toolkit, "");
-		Button button = UI.formButton(comp, toolkit, M.CreateProcess);
+		UI.label(comp, toolkit, "");
+		Button button = UI.button(comp, toolkit, M.CreateProcess);
 		button.setImage(Images.get(ModelType.PROCESS, Overlay.NEW));
 		Controls.onSelect(button, e -> openProcessWizard());
 	}

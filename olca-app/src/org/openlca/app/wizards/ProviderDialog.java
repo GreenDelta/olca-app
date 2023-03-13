@@ -69,19 +69,19 @@ class ProviderDialog extends Dialog {
 		Composite c = (Composite) super.createDialogArea(parent);
 		UI.gridLayout(c, 2);
 
-		UI.formLabel(c, M.Process);
+		UI.label(c, M.Process);
 		String processLabel = getLabel(
 				ProcessDescriptor.class, exchange.processId);
-		UI.formLabel(c, Strings.cut(processLabel, 120))
+		UI.label(c, Strings.cut(processLabel, 120))
 				.setToolTipText(processLabel);
 
-		UI.formLabel(c, M.Flow);
+		UI.label(c, M.Flow);
 		String flowLabel = getLabel(
 				FlowDescriptor.class, exchange.flowId);
-		UI.formLabel(c, Strings.cut(flowLabel, 120))
+		UI.label(c, Strings.cut(flowLabel, 120))
 				.setToolTipText(flowLabel);
 
-		Combo combo = UI.formCombo(c, M.Provider);
+		Combo combo = UI.labeledCombo(c, M.Provider);
 		UI.gridData(combo, true, false).widthHint = 80;
 		String[] labels = new String[providers.size()];
 		for (int i = 0; i < labels.length; i++) {
@@ -100,20 +100,20 @@ class ProviderDialog extends Dialog {
 	}
 
 	private void createChecks(Composite comp) {
-		UI.formFiller(comp);
+		UI.filler(comp);
 		Button b = new Button(comp, SWT.RADIO);
 		b.setText("Continue with multi-provider checks");
 		b.setSelection(true);
 
-		UI.formFiller(comp);
+		UI.filler(comp);
 		saveCheck = new Button(comp, SWT.RADIO);
 		saveCheck.setText("Always use this provider for this flow");
 
-		UI.formFiller(comp);
+		UI.filler(comp);
 		autoContinueCheck = new Button(comp, SWT.RADIO);
 		autoContinueCheck.setText("Continue with auto-select");
 
-		UI.formFiller(comp);
+		UI.filler(comp);
 		cancelCheck = new Button(comp, SWT.RADIO);
 		cancelCheck.setText("Cancel the product system creation");
 	}

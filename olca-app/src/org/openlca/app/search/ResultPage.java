@@ -57,9 +57,9 @@ class ResultPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		form = UI.formHeader(mform, title);
+		form = UI.header(mform, title);
 		tk = mform.getToolkit();
-		formBody = UI.formBody(form, tk);
+		formBody = UI.body(form, tk);
 		if (rawResults.size() > 10) {
 			createFilter();
 		}
@@ -67,11 +67,11 @@ class ResultPage extends FormPage {
 	}
 
 	private void createFilter() {
-		Composite filterComposite = UI.formComposite(formBody, tk);
+		Composite filterComposite = UI.composite(formBody, tk);
 		UI.gridLayout(filterComposite, 2, 10, 10);
-		Label label = UI.formLabel(filterComposite, tk, M.Filter);
+		Label label = UI.label(filterComposite, tk, M.Filter);
 		label.setFont(UI.boldFont());
-		Text text = UI.formEmptyText(filterComposite, tk);
+		Text text = UI.emptyText(filterComposite, tk);
 		UI.gridData(text, false, false).widthHint = 350;
 		text.addModifyListener(e -> filterResults(text.getText()));
 	}

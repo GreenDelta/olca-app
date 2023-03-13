@@ -38,9 +38,9 @@ class ImpactPage extends ModelPage<Flow> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mform.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		var table = Tables.createViewer(body,
 				M.ImpactCategory,
 				M.Category,

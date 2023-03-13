@@ -54,9 +54,9 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		form = UI.formHeader(this);
+		form = UI.header(this);
 		tk = mForm.getToolkit();
-		body = UI.formBody(form, tk);
+		body = UI.body(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, tk);
 		modelLink(infoSection.composite(), M.Source, "source");
@@ -102,7 +102,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		}
 		createAddIndicatorButton(composite);
 		for (int i = 1; i <= getModel().getScoreCount(); i++) {
-			UI.formFiller(composite);
+			UI.filler(composite);
 			createRemoveScoreButton(composite, i);
 		}
 	}
@@ -131,9 +131,9 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 	}
 
 	private void createHeader(Composite composite, boolean editable) {
-		UI.formFiller(composite);
+		UI.filler(composite);
 		if (editable) {
-			UI.formFiller(composite);
+			UI.filler(composite);
 		}
 		for (int i = 1; i <= getModel().getScoreCount(); i++) {
 			String scoreLabel = getModel().getScoreLabel(i);
@@ -151,7 +151,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 				scoreTexts.put(i, labelText);
 				commentControl(composite, "scores[" + i + "]");
 			} else {
-				Label label = UI.formLabel(composite, tk, scoreLabel);
+				Label label = UI.label(composite, tk, scoreLabel);
 				label.setToolTipText(scoreLabel);
 				setGridData(label, 1, 8);
 				((GridData) label.getLayoutData()).horizontalAlignment = SWT.CENTER;
@@ -160,7 +160,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 					label.setText(scoreText.getText());
 					label.setToolTipText(scoreText.getText());
 				});
-				UI.formFiller(composite);
+				UI.filler(composite);
 			}
 		}
 	}
@@ -269,7 +269,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		if (getEditor().hasComment(path)) {
 			new CommentControl(parent, tk, path, getEditor().getComments());
 		} else {
-			UI.formFiller(parent);
+			UI.filler(parent);
 		}
 	}
 
