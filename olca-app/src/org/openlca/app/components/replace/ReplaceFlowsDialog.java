@@ -36,7 +36,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private Button replaceBothButton;
 
 	public static void openDialog() {
-		if (Database.get() == null) {
+		if (Database.isNoneActive()) {
 			MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}

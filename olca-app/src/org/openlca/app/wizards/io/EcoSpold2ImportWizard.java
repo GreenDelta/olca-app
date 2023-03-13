@@ -13,6 +13,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.IDatabase;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
 import org.openlca.io.ecospold2.input.ImportConfig;
@@ -27,6 +28,10 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 	private File initialFile;
 
 	public static void of(File file) {
+		if (Database.isNoneActive()) {
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			return;
+		}
 		Wizards.forImport(
 				"wizard.import.ecospold2",
 				(EcoSpold2ImportWizard w) -> w.initialFile = file);

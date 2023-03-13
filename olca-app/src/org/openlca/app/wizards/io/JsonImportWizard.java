@@ -21,6 +21,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
@@ -33,6 +34,10 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	private File initialFile;
 
 	public static void of(File file) {
+		if (Database.isNoneActive()) {
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			return;
+		}
 		Wizards.forImport(
 				"wizard.import.json",
 				(JsonImportWizard w) -> w.initialFile = file);

@@ -31,7 +31,7 @@ public class ProcessTable extends SimpleFormEditor {
 	private List<Process> processes;
 
 	public static void show() {
-		if (Database.get() == null) {
+		if (Database.isNoneActive()) {
 			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}

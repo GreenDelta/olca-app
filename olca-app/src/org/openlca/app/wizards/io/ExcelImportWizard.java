@@ -31,6 +31,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
@@ -49,6 +50,10 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 	}
 
 	public static void of(File file) {
+		if (Database.isNoneActive()) {
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			return;
+		}
 		Wizards.forImport("wizard.import.excel",
 				(ExcelImportWizard w) -> {
 					w.initialFile = file;

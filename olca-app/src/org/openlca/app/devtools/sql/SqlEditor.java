@@ -83,7 +83,7 @@ public class SqlEditor extends ScriptingEditor {
 		private void createStatementSection(Composite body, FormToolkit toolkit) {
 			Section section = UI.section(body, toolkit, "SQL Statement");
 			Composite composite = UI.sectionClient(section, toolkit, 1);
-			queryText = UI.formStyledText(body, toolkit);
+			queryText = UI.formStyledText(composite, toolkit);
 			UI.gridData(queryText, true, false).heightHint = 150;
 			queryText.setText(script == null ? "" : script);
 			var styler = new SyntaxStyler(queryText);

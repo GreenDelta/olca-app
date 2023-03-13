@@ -45,6 +45,10 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 	}
 
 	public static void of(File file) {
+		if (Database.isNoneActive()) {
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			return;
+		}
 		Wizards.forImport("wizard.import.simapro.csv",
 			(SimaProCsvImportWizard w) -> {
 				w.initialFile = file;

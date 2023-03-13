@@ -118,7 +118,7 @@ public class FileImport {
 	private void importMappingFile(File file) {
 		var db = Database.get();
 		if (db == null) {
-			MsgBox.error(M.NoDatabaseOpened);
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
 		try {

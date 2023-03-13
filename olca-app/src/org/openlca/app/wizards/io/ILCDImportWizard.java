@@ -13,6 +13,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.ilcd.io.ZipStore;
 import org.openlca.io.ilcd.ILCDImport;
@@ -25,6 +26,10 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 	private File initialFile;
 
 	public static void of(File file) {
+		if (Database.isNoneActive()) {
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			return;
+		}
 		Wizards.forImport(
 			"wizard.import.ilcd",
 			(ILCDImportWizard w) -> w.initialFile = file);

@@ -24,6 +24,10 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 	private File initialFile;
 
 	public static void of(File file) {
+		if (Database.isNoneActive()) {
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			return;
+		}
 		Wizards.forImport(
 				"wizard.import.geojson",
 				(GeoJsonImportWizard w) -> w.initialFile = file);

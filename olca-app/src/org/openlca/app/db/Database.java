@@ -25,6 +25,10 @@ public class Database {
 	private Database() {
 	}
 
+	public static boolean isNoneActive() {
+		return get() == null;
+	}
+
 	public static IDatabase get() {
 		return database;
 	}
