@@ -68,9 +68,9 @@ class SearchPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		form = UI.formHeader(mform, M.SearchResults);
+		form = UI.header(mform, M.SearchResults);
 		tk = mform.getToolkit();
-		formBody = UI.formBody(form, tk);
+		formBody = UI.body(form, tk);
 		renderPage(null);
 	}
 
@@ -100,7 +100,7 @@ class SearchPage extends FormPage {
 	}
 
 	private void createRepositoryViewer() {
-		UI.formLabel(headerComposite, tk, "Repository");
+		UI.label(headerComposite, tk, "Repository");
 		var viewer = new AbstractComboViewer<RepositoryClient>(headerComposite) {
 
 			@Override
@@ -132,7 +132,7 @@ class SearchPage extends FormPage {
 	}
 
 	private void createModelTypeViewer() {
-		UI.formLabel(headerComposite, tk, M.ModelType);
+		UI.label(headerComposite, tk, M.ModelType);
 		var viewer = new AbstractComboViewer<ModelType>(headerComposite) {
 			@Override
 			public Class<ModelType> getType() {
@@ -154,11 +154,11 @@ class SearchPage extends FormPage {
 	}
 
 	private void createQueryText() {
-		UI.formLabel(headerComposite, tk, "Term");
-		var comp = UI.formComposite(headerComposite);
+		UI.label(headerComposite, tk, "Term");
+		var comp = UI.composite(headerComposite, tk);
 		UI.gridData(comp, true, true);
 		UI.gridLayout(comp, 2, 0, 0);
-		var text = UI.formText(comp, tk, null);
+		var text = UI.labeledText(comp, tk, null);
 		Controls.set(text, query.query);
 		text.addModifyListener(e -> query.query = text.getText());
 		var button = tk.createButton(comp, M.Search, SWT.FLAT);

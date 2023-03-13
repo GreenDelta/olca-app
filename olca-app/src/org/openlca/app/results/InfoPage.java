@@ -26,11 +26,11 @@ public class InfoPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var result = editor.result;
-		var form = UI.formHeader(mForm,
+		var form = UI.header(mForm,
 				Labels.name(editor.setup.target()),
 				Icon.ANALYSIS_RESULT.get());
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		InfoSection.create(body, tk, editor.setup);
 		if (editor.dqResult != null) {
 			new DQInfoSection(body, tk, editor);

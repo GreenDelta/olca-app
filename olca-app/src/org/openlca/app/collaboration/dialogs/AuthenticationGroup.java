@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
@@ -52,26 +53,26 @@ class AuthenticationGroup {
 		return this;
 	}
 
-	AuthenticationGroup render(Composite parent, int flags) {
+	AuthenticationGroup render(Composite parent, FormToolkit tk, int flags) {
 		var autoFocus = (flags & SWT.FOCUSED) != 0;
-		var group = UI.wizardGroup(parent, SWT.NONE);
+		var group = UI.group(parent, tk);
 		group.setText("Authentication");
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
 		if (withUser) {
-			var t = createText(group, SWT.NONE, M.User, user, text -> this.user = text);
+			var t = createText(group, tk, SWT.NONE, M.User, user, text -> this.user = text);
 			if (autoFocus && Strings.nullOrEmpty(user)) {
 				t.setFocus();
 			}
 		}
 		if (withPassword) {
-			var t = createText(group, SWT.PASSWORD, M.Password, password, text -> this.password = text);
+			var t = createText(group, tk, SWT.PASSWORD, M.Password, password,	text -> this.password = text);
 			if (autoFocus && !Strings.nullOrEmpty(user) && Strings.nullOrEmpty(password)) {
 				t.setFocus();
 			}
 		}
 		if (withToken) {
-			var t = createText(group, SWT.NONE, "Token", token, text -> this.token = text);
+			var t = createText(group, tk, SWT.NONE, "Token", token, text -> this.token = text);
 			if (autoFocus && !Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password)) {
 				t.setFocus();
 			}
@@ -79,8 +80,9 @@ class AuthenticationGroup {
 		return this;
 	}
 
-	private Text createText(Composite parent, int flags, String label, String initialValue, Consumer<String> process) {
-		var text = UI.wizardText(parent, label, flags | SWT.BORDER);
+	private Text createText(Composite parent, FormToolkit tk, int flags,
+			String label, String initialValue, Consumer<String> process) {
+		var text = UI.labeledText(parent, tk, label, flags);
 		if (initialValue != null) {
 			text.setText(initialValue);
 		}

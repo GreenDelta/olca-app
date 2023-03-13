@@ -67,7 +67,7 @@ public class FileSelection implements SelectionListener {
 		if (toolkit != null)
 			composite = toolkit.createComposite(parent, SWT.NONE);
 		else
-			composite = new Composite(parent, SWT.NONE);
+			composite = UI.composite(parent);
 
 		UI.gridData(composite, true, false);
 		if (toolkit != null)
@@ -80,11 +80,12 @@ public class FileSelection implements SelectionListener {
 			text.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 		}
 		UI.gridData(text, true, false);
-		Button button = null;
-		if (toolkit != null)
-			button = toolkit.createButton(composite, M.Browse, SWT.NONE);
+		Button button;
+		if (toolkit != null) {
+			button = UI.button(composite, M.Browse);
+		}
 		else {
-			button = new Button(composite, SWT.NONE);
+			button = UI.button(composite);
 			button.setText(M.Browse);
 		}
 		button.addSelectionListener(this);

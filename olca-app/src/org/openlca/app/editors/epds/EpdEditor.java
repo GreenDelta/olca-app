@@ -37,12 +37,12 @@ public class EpdEditor extends ModelEditor<Epd> {
 
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
-			var form = UI.formHeader(this);
+			var form = UI.header(this);
 			var tk = mForm.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 
 			var info = new InfoSection(editor).render(body, tk);
-			UI.formFiller(info.composite());
+			UI.filler(info.composite());
 			new UploadButton(editor).render(info.composite(), tk);
 
 			new EpdProductSection(editor).render(body, tk);
@@ -59,7 +59,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 			modelLink(comp, "PCR", "pcr");
 			modelLink(comp, "Verifier", "verifier");
 
-			UI.formLabel(comp, tk, "URN");
+			UI.label(comp, tk, "URN");
 			new UrnLink(editor).render(comp, tk);
 		}
 	}

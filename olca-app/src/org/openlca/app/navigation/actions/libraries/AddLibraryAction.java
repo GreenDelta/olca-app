@@ -97,15 +97,15 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var tk = mform.getToolkit();
-			var body = UI.formBody(mform.getForm(), tk);
+			var body = UI.body(mform.getForm(), tk);
 			UI.gridLayout(body, 1);
 
 			var comp = tk.createComposite(body);
 			UI.fillHorizontal(comp);
 			UI.gridLayout(comp, 2);
 
-			combo = new LibCombo(UI.formCombo(comp, tk, "Library"));
-			UI.formFiller(comp, tk);
+			combo = new LibCombo(UI.labeledCombo(comp, tk, "Library"));
+			UI.filler(comp, tk);
 			var importButton = tk.createButton(
 				comp, "Import from file ...", SWT.NONE);
 			Controls.onSelect(importButton, $ -> {

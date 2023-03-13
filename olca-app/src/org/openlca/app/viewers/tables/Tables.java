@@ -21,8 +21,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
-import org.openlca.app.preferences.Theme;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
 import org.openlca.util.Strings;
@@ -72,14 +70,7 @@ public class Tables {
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 
 		Table table = viewer.getTable();
-		table.setHeaderBackground(Colors.listBackground());
-		table.setHeaderForeground(Colors.listForeground());
-		table.setForeground(Colors.listForeground());
-
-		if (Theme.isDark())
-			table.setBackground(Colors.listBackground());
-
-		table.setLinesVisible(!Theme.isDark() && hasColumns);
+		table.setLinesVisible(hasColumns);
 		table.setHeaderVisible(hasColumns);
 
 		var data = UI.gridData(table, true, true);

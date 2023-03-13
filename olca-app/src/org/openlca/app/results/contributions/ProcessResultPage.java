@@ -77,10 +77,10 @@ public class ProcessResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		tk = mForm.getToolkit();
-		var form = UI.formHeader(mForm,
+		var form = UI.header(mForm,
 				Labels.name(setup.target()),
 				Icon.ANALYSIS_RESULT.get());
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		if (result.hasEnviFlows()) {
 			createFlowSection(body);
 		}
@@ -120,14 +120,14 @@ public class ProcessResultPage extends FormPage {
 	private void createFlowSection(Composite parent) {
 		var section = UI.section(parent, tk, M.FlowContributionsToProcessResults);
 		UI.gridData(section, true, true);
-		var comp = UI.formComposite(section, tk);
+		var comp = UI.composite(section, tk);
 		section.setClient(comp);
 		UI.gridLayout(comp, 1);
 
-		var container = UI.formComposite(comp, tk);
+		var container = UI.composite(comp, tk);
 		UI.gridData(container, true, false);
 		UI.gridLayout(container, 5);
-		UI.formLabel(container, tk, M.Process);
+		UI.label(container, tk, M.Process);
 		flowProcessViewer = new TechFlowCombo(container);
 		flowProcessViewer.setInput(items.techFlows());
 		flowProcessViewer.addSelectionChangedListener((selection) -> {
@@ -136,21 +136,21 @@ public class ProcessResultPage extends FormPage {
 			outputTable.refresh();
 		});
 
-		UI.formLabel(container, tk, M.DontShowSmallerThen);
-		flowSpinner = UI.formSpinner(container, tk, SWT.BORDER);
+		UI.label(container, tk, M.DontShowSmallerThen);
+		flowSpinner = UI.spinner(container, tk, SWT.BORDER);
 		flowSpinner.setValues(1, 0, 10000, 2, 1, 100);
-		UI.formLabel(container, tk, "%");
+		UI.label(container, tk, "%");
 		Controls.onSelect(flowSpinner, (e) -> {
 			flowCutOff = flowSpinner.getSelection();
 			inputTable.refresh();
 			outputTable.refresh();
 		});
 
-		var resultComp = UI.formComposite(comp, tk);
+		var resultComp = UI.composite(comp, tk);
 		resultComp.setLayout(new GridLayout(2, true));
 		UI.gridData(resultComp, true, true);
-		UI.formLabel(resultComp, tk, M.Inputs);
-		UI.formLabel(resultComp, tk, M.Outputs);
+		UI.label(resultComp, tk, M.Inputs);
+		UI.label(resultComp, tk, M.Outputs);
 		inputTable = createFlowTable(resultComp);
 		outputTable = createFlowTable(resultComp);
 	}
@@ -190,14 +190,14 @@ public class ProcessResultPage extends FormPage {
 		var container = tk.createComposite(comp);
 		UI.gridLayout(container, 5);
 		UI.gridData(container, true, false);
-		UI.formLabel(container, tk, M.Process);
+		UI.label(container, tk, M.Process);
 		impactCombo = new TechFlowCombo(container);
 		impactCombo.setInput(items.techFlows());
 		impactCombo.addSelectionChangedListener((selection) -> {
 			impactResult.setTechFlow(selection);
 			impactTable.refresh();
 		});
-		UI.formLabel(container, tk, M.DontShowSmallerThen);
+		UI.label(container, tk, M.DontShowSmallerThen);
 		impactSpinner = new Spinner(container, SWT.BORDER);
 		impactSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		tk.adapt(impactSpinner);

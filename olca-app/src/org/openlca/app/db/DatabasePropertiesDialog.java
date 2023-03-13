@@ -32,9 +32,10 @@ public class DatabasePropertiesDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
 		FormToolkit toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.formHeader(managedForm, M.Properties);
-		Composite body = UI.formBody(form, toolkit);
-		Composite content = UI.formComposite(body, toolkit);
+		ScrolledForm form = UI.header(managedForm, M.Properties);
+		Composite body = UI.body(form, toolkit);
+		Composite content = UI.composite(body, toolkit);
+		UI.gridLayout(content, 2);
 		if (config instanceof DerbyConfig) {
 			DerbyConfig derbyConfig = (DerbyConfig) config;
 			renderDerbyConfig(derbyConfig, content, toolkit);
@@ -46,28 +47,28 @@ public class DatabasePropertiesDialog extends FormDialog {
 
 	private void renderMysqlConfiguration(MySqlConfig conf,
 			Composite parent, FormToolkit toolkit) {
-		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
+		UI.labeledText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
 				M.RemoteDatabase);
-		UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
+		UI.labeledText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
 				conf.name());
-		UI.formText(parent, toolkit, M.Host, SWT.READ_ONLY).setText(
+		UI.labeledText(parent, toolkit, M.Host, SWT.READ_ONLY).setText(
 				conf.host());
-		UI.formText(parent, toolkit, M.Port, SWT.READ_ONLY).setText(
+		UI.labeledText(parent, toolkit, M.Port, SWT.READ_ONLY).setText(
 				Integer.toString(conf.port()));
-		UI.formText(parent, toolkit, M.User, SWT.READ_ONLY).setText(
+		UI.labeledText(parent, toolkit, M.User, SWT.READ_ONLY).setText(
 				conf.user());
 		boolean withPassword = Strings.notEmpty(conf.password());
-		UI.formText(parent, toolkit, M.WithPassword, SWT.READ_ONLY)
+		UI.labeledText(parent, toolkit, M.WithPassword, SWT.READ_ONLY)
 				.setText(Boolean.toString(withPassword));
 	}
 
 	private void renderDerbyConfig(DerbyConfig conf, Composite parent,
 																 FormToolkit toolkit) {
-		UI.formText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
+		UI.labeledText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
 				M.LocalDatabase);
-		UI.formText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
+		UI.labeledText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
 				conf.name());
-		UI.formLabel(parent, toolkit, M.Folder);
+		UI.label(parent, toolkit, M.Folder);
 		renderFolderLink(conf, parent, toolkit);
 	}
 
@@ -75,7 +76,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 																FormToolkit toolkit) {
 		File folder = DatabaseDir.getRootFolder(conf.name());
 		String path = folder.toURI().toString();
-		Hyperlink link = UI.formHyperlink(parent, toolkit);
+		Hyperlink link = UI.hyperlink(parent, toolkit);
 		link.setText(Strings.cut(path, 75));
 		link.setToolTipText(path);
 		Controls.onClick(link, e -> {

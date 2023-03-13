@@ -83,27 +83,27 @@ public class ExportDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(mForm.getForm(), tk);
+		var body = UI.body(mForm.getForm(), tk);
 		loginPanel = LoginPanel.create(body, tk);
 
 		// info section
 		var comp = UI.formSection(body, tk, "Product information", 3);
-		UI.formLabel(comp, M.Product);
-		UI.formLabel(comp, doc.productName);
-		UI.formFiller(comp, tk);
+		UI.label(comp, tk, M.Product);
+		UI.label(comp, tk, doc.productName);
+		UI.filler(comp, tk);
 
 		// declared unit
-		UI.formLabel(comp, tk, "Declared unit");
-		UI.formLabel(comp, tk, doc.declaredUnit != null
+		UI.label(comp, tk, "Declared unit");
+		UI.label(comp, tk, doc.declaredUnit != null
 			? doc.declaredUnit.toString()
 			: "?");
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 		new MassField(this).render(comp, tk);
 
 		// category link
-		UI.formLabel(comp, tk, M.Category);
+		UI.label(comp, tk, M.Category);
 		new CategoryLink(this).render(comp, tk);
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 
 		// result sections
 		mappings.forEach(model -> new MappingSection(model).render(body, tk));
@@ -248,18 +248,18 @@ public class ExportDialog extends FormDialog {
 	record MassField(ExportDialog dialog) {
 
 		void render(Composite comp, FormToolkit tk) {
-			UI.formLabel(comp, tk, "Mass per declared unit");
+			UI.label(comp, tk, "Mass per declared unit");
 			var mass = dialog.doc.kgPerDeclaredUnit;
 			if (mass != null) {
 				var num = mass.amount() + " kg";
-				UI.formLabel(comp, tk, num);
-				UI.formFiller(comp, tk);
+				UI.label(comp, tk, num);
+				UI.filler(comp, tk);
 			} else {
 				var text = tk.createText(comp, "", SWT.BORDER);
 				UI.fillHorizontal(text);
 				update(text);
 				text.addModifyListener($ -> update(text));
-				UI.formLabel(comp, tk, "kg");
+				UI.label(comp, tk, "kg");
 			}
 		}
 

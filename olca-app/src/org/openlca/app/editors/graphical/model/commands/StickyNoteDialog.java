@@ -46,12 +46,12 @@ public class StickyNoteDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 		UI.gridLayout(body, 2);
-		title = UI.formText(body, tk, M.Title);
+		title = UI.labeledText(body, tk, M.Title);
 		title.setText(note.title);
 
-		content = UI.formMultiText(body, tk, M.Content);
+		content = UI.multiText(body, tk, M.Content);
 		content.setText(note.content);
 	}
 

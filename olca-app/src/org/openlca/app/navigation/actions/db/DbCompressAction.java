@@ -82,11 +82,11 @@ public class DbCompressAction extends Action implements INavigationAction {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			FormToolkit toolkit = mform.getToolkit();
-			ScrolledForm form = UI.formHeader(mform, M.CompressDatabase, Icon.DATABASE.get());
-			Composite body = UI.formBody(form, toolkit);
-			UI.formLabel(body, toolkit, M.ThisWillCompressTheDatabase);
-			UI.formLabel(body, toolkit, M.SizeBeforeCompression + ": " + getSize() + " MB");
-			afterLabel = UI.formLabel(body, toolkit, M.SizeAfterCompression + ": -");
+			ScrolledForm form = UI.header(mform, M.CompressDatabase, Icon.DATABASE.get());
+			Composite body = UI.body(form, toolkit);
+			UI.label(body, toolkit, M.ThisWillCompressTheDatabase);
+			UI.label(body, toolkit, M.SizeBeforeCompression + ": " + getSize() + " MB");
+			afterLabel = UI.label(body, toolkit, M.SizeAfterCompression + ": -");
 		}
 
 		@Override

@@ -71,15 +71,15 @@ class FlowRefDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 		UI.gridLayout(body, 1, 10, 10);
 
 		var filterComp = tk.createComposite(body);
 		UI.gridLayout(filterComp, 2, 10, 0);
 		UI.gridData(filterComp, true, false);
-		var filterLabel = UI.formLabel(filterComp, tk, M.Filter);
+		var filterLabel = UI.label(filterComp, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
-		var filterText = UI.formText(filterComp, SWT.SEARCH);
+		var filterText = UI.text(filterComp, SWT.SEARCH);
 		UI.gridData(filterText, true, false);
 
 		var viewer = new TreeViewer(body,

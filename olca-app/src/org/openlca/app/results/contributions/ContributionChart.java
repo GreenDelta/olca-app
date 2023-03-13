@@ -30,7 +30,7 @@ public class ContributionChart {
 	private final Chart chart;
 
 	public static ContributionChart create(Composite parent, FormToolkit tk) {
-		var comp = UI.formComposite(parent, tk);
+		var comp = UI.composite(parent, tk);
 		UI.gridLayout(comp, 2);
 		UI.gridData(comp, true, true);
 
@@ -42,7 +42,6 @@ public class ContributionChart {
 		chart.setLayoutData(gdata);
 		chart.setOrientation(SWT.HORIZONTAL);
 		chart.getLegend().setVisible(false);
-		chart.setBackground(Colors.formBackground());
 
 		// we set a white title just to fix the problem
 		// that the y-axis is cut sometimes

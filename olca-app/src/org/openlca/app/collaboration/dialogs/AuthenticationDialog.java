@@ -107,13 +107,14 @@ public class AuthenticationDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		var formBody = UI.wizardHeader(form, form.getToolkit(),
+		var formBody = UI.header(form, form.getToolkit(),
 				"Authenticate " + url,
 				"Enter your credentials for the Git repository.");
-		var body = UI.wizardComposite(formBody);
-		UI.gridLayout(body, 1);
+		var body = UI.composite(formBody, form.getToolkit());
+		UI.gridLayout(body,  1);
 		UI.gridData(body, true, true).widthHint = 500;
-		auth.onChange(this::updateButtons).render(body, SWT.FOCUSED);
+		auth.onChange(this::updateButtons)
+				.render(body, form.getToolkit(), SWT.FOCUSED);
 		form.getForm().reflow(true);
 	}
 

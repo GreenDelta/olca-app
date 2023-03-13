@@ -62,7 +62,7 @@ public class ContributionChartSection {
 		Section section = UI.section(parent, tk, sectionTitle);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		Composite header = UI.formComposite(comp, tk);
+		Composite header = UI.composite(comp, tk);
 		UI.gridLayout(header, 2);
 		createCombo(tk, header);
 		chart = ContributionChart.create(comp, tk);
@@ -71,7 +71,7 @@ public class ContributionChartSection {
 	}
 
 	private void createCombo(FormToolkit tk, Composite comp) {
-		UI.formLabel(comp, tk, selectionName);
+		UI.label(comp, tk, selectionName);
 		if (forFlows) {
 			var combo = new ResultFlowCombo(comp);
 			combo.setInput(items.enviFlows());

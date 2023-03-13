@@ -1,7 +1,6 @@
 package org.openlca.app.wizards;
 
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
@@ -27,11 +26,12 @@ abstract class AbstractWizardPage<T extends RootEntity> extends
 	@Override
 	@SuppressWarnings("unchecked")
 	public final void createControl(final Composite parent) {
-		Composite container = UI.wizardComposite(parent);
+		Composite container = UI.composite(parent);
+		UI.gridLayout(container, 2);
 		setControl(container);
-		nameText = UI.wizardText(container, M.Name, SWT.BORDER);
+		nameText = UI.labeledText(container, M.Name);
 		if (withDescription)
-			descriptionText = UI.wizardMultiText(container, M.Description);
+			descriptionText = UI.multiText(container, M.Description);
 		modelWidgets(container);
 		initModifyListeners();
 		AbstractWizard<T> wizard = (AbstractWizard<T>) getWizard();

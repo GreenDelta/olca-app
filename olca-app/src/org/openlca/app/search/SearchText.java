@@ -41,7 +41,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		parent.getParent().setRedraw(true); // fix tool-bar size on Windows
 		parent.setLayout(new FillLayout());
 		log.trace("create search text control");
-		Composite composite = new Composite(parent, SWT.NONE);
+		Composite composite = UI.composite(parent);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		layout.horizontalSpacing = 5;

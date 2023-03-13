@@ -62,9 +62,9 @@ class ReplacerDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
-		Composite comp = UI.formBody(mform.getForm(), tk);
+		Composite comp = UI.body(mform.getForm(), tk);
 		UI.gridLayout(comp, 1, 10, 10);
-		UI.formLabel(comp, tk, "This will replace the flows in the database " +
+		UI.label(comp, tk, "This will replace the flows in the database " +
 				"(the source system) with the flows in the target system.");
 		tree = new ModelCheckBoxTree(
 				ModelType.PROCESS,

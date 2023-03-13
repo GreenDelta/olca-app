@@ -87,7 +87,7 @@ public class MatrixExportDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 		UI.gridLayout(body, 2);
 
 		fileSelection(body, tk);
@@ -98,8 +98,8 @@ public class MatrixExportDialog extends FormDialog {
 
 		// check boxes
 		BiConsumer<String, Consumer<Boolean>> check = (label, fn) -> {
-			UI.formFiller(body, tk);
-			var button = UI.formCheckBox(body, tk);
+			UI.filler(body, tk);
+			var button = UI.checkbox(body, tk);
 			button.setText(label);
 			Controls.onSelect(button, _e -> fn.accept(button.getSelection()));
 		};
@@ -110,14 +110,14 @@ public class MatrixExportDialog extends FormDialog {
 	}
 
 	private void fileSelection(Composite body, FormToolkit tk) {
-		UI.formLabel(body, tk, M.Folder);
-		var inner = UI.formComposite(body);
+		UI.label(body, tk, M.Folder);
+		var inner = UI.composite(body, tk);
 		UI.gridData(inner, true, false);
 		UI.gridLayout(inner, 2, 5, 0);
-		var fileText = UI.formEmptyText(body, tk);
+		var fileText = UI.emptyText(body, tk);
 		UI.gridData(fileText, true, false);
 		fileText.setEditable(false);
-		var browseBtn = UI.formButton(inner, tk, M.Browse);
+		var browseBtn = UI.button(inner, tk, M.Browse);
 		Controls.onSelect(browseBtn, _e -> {
 			var folder = FileChooser.selectFolder();
 			if (folder == null)
@@ -132,13 +132,13 @@ public class MatrixExportDialog extends FormDialog {
 	}
 
 	private void formatSelection(Composite body, FormToolkit tk) {
-		UI.formLabel(body, tk, "Format");
-		var inner = UI.formComposite(body);
+		UI.label(body, tk, "Format");
+		var inner = UI.composite(body, tk);
 		UI.gridData(inner, true, false);
 		var formats = Format.values();
 		UI.gridLayout(inner, formats.length, 10, 0);
 		for (var format : formats) {
-			var radio = UI.formButton(
+			var radio = UI.button(
 				inner, tk, format.toString(), SWT.RADIO);
 			if (format == config.format) {
 				radio.setSelection(true);
@@ -166,8 +166,8 @@ public class MatrixExportDialog extends FormDialog {
 			return Strings.compare(s1.name, s2.name);
 		});
 
-		UI.formLabel(comp, tk, "Parameter set");
-		var combo = UI.formTableCombo(comp, tk,
+		UI.label(comp, tk, "Parameter set");
+		var combo = UI.tableCombo(comp, tk,
 			SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
 
@@ -186,7 +186,7 @@ public class MatrixExportDialog extends FormDialog {
 	}
 
 	private void allocationCombo(Composite comp, FormToolkit tk) {
-		UI.formLabel(comp, tk, M.AllocationMethod);
+		UI.label(comp, tk, M.AllocationMethod);
 		var combo = new AllocationCombo(
 			comp, AllocationMethod.values());
 		combo.setNullable(false);
@@ -196,7 +196,7 @@ public class MatrixExportDialog extends FormDialog {
 	}
 
 	private void methodCombo(Composite comp, FormToolkit tk) {
-		UI.formLabel(comp, tk, M.ImpactAssessmentMethod);
+		UI.label(comp, tk, M.ImpactAssessmentMethod);
 		var combo = new ImpactMethodViewer(comp);
 		combo.setNullable(true);
 		combo.setInput(db);

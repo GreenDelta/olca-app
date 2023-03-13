@@ -58,8 +58,8 @@ class CostDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		FormToolkit tk = mform.getToolkit();
-		UI.formHeader(mform, M.Price);
-		Composite body = UI.formBody(mform.getForm(), tk);
+		UI.header(mform, M.Price);
+		Composite body = UI.body(mform.getForm(), tk);
 		UI.gridLayout(body, 3);
 		createCurrencyRow(body, tk);
 		createCostsRow(body, tk);
@@ -68,7 +68,7 @@ class CostDialog extends FormDialog {
 	}
 
 	private void createCurrencyRow(Composite body, FormToolkit tk) {
-		Combo widget = UI.formCombo(body, tk, M.Currency);
+		Combo widget = UI.labeledCombo(body, tk, M.Currency);
 		currencyCombo = new ComboViewer(widget);
 		currencyCombo.setLabelProvider(new LabelProvider() {
 			@Override
@@ -84,7 +84,7 @@ class CostDialog extends FormDialog {
 			exchange.currency = currency;
 			updateCurrencyLabels();
 		});
-		UI.formFiller(body, tk);
+		UI.filler(body, tk);
 	}
 
 	private void setCurrencyContent(ComboViewer combo) {
@@ -104,8 +104,8 @@ class CostDialog extends FormDialog {
 	}
 
 	private void createCostsRow(Composite body, FormToolkit tk) {
-		priceText = UI.formText(body, tk, M.CostsRevenues);
-		currencyLabel = UI.formLabel(body, tk, "");
+		priceText = UI.labeledText(body, tk, M.CostsRevenues);
+		currencyLabel = UI.label(body, tk, "");
 		if (exchange.costFormula != null)
 			priceText.setText(exchange.costFormula);
 		else if (exchange.costs != null)
@@ -148,10 +148,10 @@ class CostDialog extends FormDialog {
 	}
 
 	private void createCostsPerUnitRow(Composite body, FormToolkit tk) {
-		pricePerUnitText = UI.formText(body, tk, M.CostsPerUnit);
+		pricePerUnitText = UI.labeledText(body, tk, M.CostsPerUnit);
 		pricePerUnitText.setEditable(false);
 		pricePerUnitText.setBackground(Colors.get(225, 225, 225));
-		currencyPerUnitLabel = UI.formLabel(body, tk, "");
+		currencyPerUnitLabel = UI.label(body, tk, "");
 		if (exchange.costs != null) {
 			double perUnit = exchange.costs / exchange.amount;
 			pricePerUnitText.setText(Double.toString(perUnit));

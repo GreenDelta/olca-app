@@ -46,15 +46,15 @@ public class ImpactTreePage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.formHeader(mForm,
+		var form = UI.header(mForm,
 				Labels.name(setup.target()),
 				Icon.ANALYSIS_RESULT.get());
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		var section = UI.section(body, tk,
 				M.ImpactAnalysis + ": " + Labels.name(setup.impactMethod()));
 		UI.gridData(section, true, true);
-		var comp = UI.formComposite(section, tk);
+		var comp = UI.composite(section, tk);
 		section.setClient(comp);
 		UI.gridLayout(comp, 1);
 		createOptions(comp, tk);
@@ -64,18 +64,18 @@ public class ImpactTreePage extends FormPage {
 	}
 
 	private void createOptions(Composite parent, FormToolkit tk) {
-		var comp = UI.formComposite(parent, tk);
+		var comp = UI.composite(parent, tk);
 		UI.gridLayout(comp, 5);
-		UI.formLabel(comp, tk, "Sub-group by:");
-		var flowCheck = UI.formRadio(comp, tk, M.Flows);
+		UI.label(comp, tk, "Sub-group by:");
+		var flowCheck = UI.radio(comp, tk, M.Flows);
 		flowCheck.setSelection(flowsFirst);
-		var processCheck = UI.formRadio(comp, tk, M.Processes);
+		var processCheck = UI.radio(comp, tk, M.Processes);
 		processCheck.setSelection(!flowsFirst);
 		Controls.onSelect(flowCheck, e -> {
 			flowsFirst = flowCheck.getSelection();
 			setInput();
 		});
-		UI.formLabel(comp, tk, " | ");
+		UI.label(comp, tk, " | ");
 		cutoff = ContributionCutoff.create(comp, tk);
 	}
 
@@ -99,8 +99,6 @@ public class ImpactTreePage extends FormPage {
 		viewer.setContentProvider(new TreeContent(this));
 		tk.adapt(viewer.getTree(), false, false);
 		tk.paintBordersFor(viewer.getTree());
-		viewer.getTree().setBackground(Colors.formBackground());
-		viewer.getTree().setForeground(Colors.formForeground());
 
 		var onOpen = Actions.onOpen(this::onOpen);
 		var onCopy = TreeClipboard.onCopy(viewer, new ClipboardProvider(label));

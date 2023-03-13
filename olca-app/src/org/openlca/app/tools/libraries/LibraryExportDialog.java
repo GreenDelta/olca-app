@@ -88,17 +88,17 @@ public class LibraryExportDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 		UI.gridLayout(body, 2);
 
-		var name = UI.formText(body, tk, M.Name);
+		var name = UI.labeledText(body, tk, M.Name);
 		name.setText(config.name);
 		name.addModifyListener(_e ->
 			config.name = name.getText().trim());
 
 		// allocation method
 		if (props.hasInventory) {
-			UI.formLabel(body, tk, M.AllocationMethod);
+			UI.label(body, tk, M.AllocationMethod);
 			var allocCombo = new AllocationCombo(
 				body, AllocationMethod.values());
 			allocCombo.select(config.allocation);
@@ -108,8 +108,9 @@ public class LibraryExportDialog extends FormDialog {
 
 		BiFunction<String, Consumer<Boolean>, Button> check =
 			(label, onClick) -> {
-				UI.formFiller(body, tk);
-				var button = UI.formCheckBox(body, label);
+				UI.filler(body, tk);
+				var button = UI.checkbox(body, tk);
+				button.setText(label);
 				Controls.onSelect(button,
 					_e -> onClick.accept(button.getSelection()));
 				return button;

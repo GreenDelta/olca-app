@@ -42,8 +42,8 @@ class JsonErrorDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(mForm.getForm(), tk);
-		UI.formLabel(body, tk, title);
+		var body = UI.body(mForm.getForm(), tk);
+		UI.label(body, tk, title);
 		var text = new GsonBuilder()
 			.setPrettyPrinting()
 			.create()

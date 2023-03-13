@@ -30,7 +30,7 @@ public class DatabaseWizardPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite body = new Composite(parent, SWT.NONE);
+		Composite body = UI.composite(parent);
 		setControl(body);
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		UI.gridLayout(body, 2);
@@ -59,7 +59,7 @@ public class DatabaseWizardPage extends WizardPage {
 	}
 
 	private void createContentRadios(Composite composite) {
-		Composite radioGroup = new Composite(composite, SWT.NONE);
+		Composite radioGroup = UI.composite(composite);
 		radioGroup.setLayout(new RowLayout(SWT.VERTICAL));
 		contentRadios = new Button[DbTemplate.values().length];
 		for (int i = 0; i < DbTemplate.values().length; i++) {

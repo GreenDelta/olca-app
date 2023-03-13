@@ -140,7 +140,7 @@ public class UncertaintyDialog extends Dialog {
 		Composite comp = toolkit.createComposite(parent);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2);
-		combo = UI.formCombo(comp, toolkit,
+		combo = UI.labeledCombo(comp, toolkit,
 			M.UncertaintyDistribution);
 		var types = UncertaintyType.values();
 		String[] items = new String[types.length];
@@ -216,7 +216,7 @@ public class UncertaintyDialog extends Dialog {
 				if (!hasParameter(param))
 					continue;
 				String label = labels[param - 1];
-				Text text = UI.formText(composite, toolkit, label);
+				Text text = UI.labeledText(composite, toolkit, label);
 				text.setText(initialValue(param));
 				texts[param - 1] = text;
 			}

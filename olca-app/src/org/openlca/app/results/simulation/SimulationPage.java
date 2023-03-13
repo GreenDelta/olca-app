@@ -68,7 +68,7 @@ class SimulationPage extends FormPage {
 		FormToolkit tk = mform.getToolkit();
 		form.setText(M.MonteCarloSimulation);
 		tk.decorateFormHeading(form.getForm());
-		Composite body = UI.formBody(form, tk);
+		Composite body = UI.body(form, tk);
 		createSettingsSection(tk, body);
 
 		PinBoard pinBoard = new PinBoard(simulator);
@@ -85,10 +85,10 @@ class SimulationPage extends FormPage {
 
 	private void createSettingsSection(FormToolkit toolkit, Composite body) {
 		Composite settings = UI.formSection(body, toolkit, M.Settings);
-		Text systemText = UI.formText(settings, toolkit, M.ProductSystem);
-		Text processText = UI.formText(settings, toolkit, M.Process);
-		Text qRefText = UI.formText(settings, toolkit, M.QuantitativeReference);
-		Text simCountText = UI.formText(settings, toolkit, M.NumberOfSimulations);
+		Text systemText = UI.labeledText(settings, toolkit, M.ProductSystem);
+		Text processText = UI.labeledText(settings, toolkit, M.Process);
+		Text qRefText = UI.labeledText(settings, toolkit, M.QuantitativeReference);
+		Text simCountText = UI.labeledText(settings, toolkit, M.NumberOfSimulations);
 		if (editor.setup != null) {
 			var setup = editor.setup;
 			systemText.setText(Labels.name(setup.target()));

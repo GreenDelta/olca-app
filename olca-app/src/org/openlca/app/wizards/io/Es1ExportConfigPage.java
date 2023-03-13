@@ -26,7 +26,7 @@ class Es1ExportConfigPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite body = new Composite(parent, SWT.NONE);
+		Composite body = UI.composite(parent);
 		UI.gridLayout(body, 1);
 		createSingleCheck(body);
 		createDefaultCheck(body);

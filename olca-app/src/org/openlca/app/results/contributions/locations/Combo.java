@@ -132,7 +132,7 @@ class Combo {
 
 	private void initFlowCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
-		Button check = UI.formRadio(comp, tk, M.Flow);
+		Button check = UI.radio(comp, tk, M.Flow);
 		check.setSelection(enabled);
 		Controls.onSelect(check, _e -> {
 			if (check.getSelection()) {
@@ -159,7 +159,7 @@ class Combo {
 
 	private void initImpactCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.IMPACT_CATEGORY;
-		Button check = UI.formButton(comp, tk, M.ImpactCategory, SWT.RADIO);
+		Button check = UI.button(comp, tk, M.ImpactCategory, SWT.RADIO);
 		check.setSelection(enabled);
 		Controls.onSelect(check, _e -> {
 			if (check.getSelection()) {
@@ -186,7 +186,7 @@ class Combo {
 
 	private void initCostCombo(FormToolkit tk, Composite comp) {
 		boolean enabled = getType(initialSelection) == ModelType.CURRENCY;
-		Button check = UI.formButton(comp, tk, M.CostCategory, SWT.RADIO);
+		Button check = UI.button(comp, tk, M.CostCategory, SWT.RADIO);
 		check.setSelection(enabled);
 		Controls.onSelect(check, _e -> {
 			if (check.getSelection()) {

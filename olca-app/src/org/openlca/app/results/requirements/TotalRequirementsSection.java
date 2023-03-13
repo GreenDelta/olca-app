@@ -48,11 +48,11 @@ public class TotalRequirementsSection {
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 
-		var searchComp = UI.formComposite(comp, tk);
+		var searchComp = UI.composite(comp, tk);
 		UI.gridData(searchComp, true, false);
 		UI.gridLayout(searchComp, 2, 10, 0);
-		UI.formLabel(searchComp, tk, M.Search);
-		var searchText = UI.formEmptyText(searchComp, tk);
+		UI.label(searchComp, tk, M.Search);
+		var searchText = UI.emptyText(searchComp, tk);
 		UI.gridData(searchText, true, false);
 
 		var label = new LabelProvider(dqResult, costs);

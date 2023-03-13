@@ -42,9 +42,9 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		var info = new InfoSection(getEditor());
 		info.render(body, tk);
 		addCalculationButton(info.composite(), tk);
@@ -56,7 +56,7 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	private void createReferenceSection(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, M.Reference, 3);
 		link(comp, M.Process, "referenceProcess");
-		UI.formLabel(comp, tk, M.Product);
+		UI.label(comp, tk, M.Product);
 		flowCombo = new ExchangeViewer(comp);
 		flowCombo.addSelectionChangedListener(e -> {
 			if (e == null || e.flow == null)
@@ -66,14 +66,14 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		});
 		flowCombo.setInput(getRefCandidates(getModel().referenceProcess));
 		new CommentControl(comp, getToolkit(), "referenceExchange", getComments());
-		UI.formLabel(comp, tk, M.FlowProperty);
+		UI.label(comp, tk, M.FlowProperty);
 		propertyCombo = new FlowPropertyFactorViewer(comp);
 		propertyCombo.addSelectionChangedListener(this::propertyChanged);
 		new CommentControl(comp, getToolkit(), "targetFlowPropertyFactor", getComments());
-		UI.formLabel(comp, tk, M.Unit);
+		UI.label(comp, tk, M.Unit);
 		unitCombo = new UnitCombo(comp);
 		new CommentControl(comp, getToolkit(), "targetUnit", getComments());
-		targetAmountText = UI.formText(comp, getManagedForm().getToolkit(), M.TargetAmount);
+		targetAmountText = UI.labeledText(comp, getManagedForm().getToolkit(), M.TargetAmount);
 		new CommentControl(comp, getToolkit(), "targetAmount", getComments());
 		createBindings();
 	}
@@ -105,11 +105,11 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	}
 
 	private void addCalculationButton(Composite comp, FormToolkit tk) {
-		UI.formLabel(comp, tk, "");
-		var button = UI.formButton(comp, tk, M.Calculate);
+		UI.label(comp, tk, "");
+		var button = UI.button(comp, tk, M.Calculate);
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, e -> CalculationWizard.open(getModel()));
-		UI.formLabel(comp, tk, "");
+		UI.label(comp, tk, "");
 	}
 
 	private void propertyChanged(FlowPropertyFactor f) {

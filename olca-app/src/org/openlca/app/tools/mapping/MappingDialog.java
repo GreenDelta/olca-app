@@ -114,7 +114,7 @@ class MappingDialog extends FormDialog {
 		UI.gridData(comp, true, false);
 
 		// source flow
-		Fn.with(UI.formLabel(comp, tk, "Source flow"), label -> {
+		Fn.with(UI.label(comp, tk, "Source flow"), label -> {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
@@ -124,7 +124,7 @@ class MappingDialog extends FormDialog {
 			comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
 
 		// target flow
-		Fn.with(UI.formLabel(comp, tk, "Target flow"), label -> {
+		Fn.with(UI.label(comp, tk, "Target flow"), label -> {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
@@ -137,7 +137,7 @@ class MappingDialog extends FormDialog {
 		Composite convComp = tk.createComposite(body);
 		UI.gridLayout(convComp, 3);
 		UI.gridData(convComp, true, false);
-		Text convText = UI.formText(convComp, tk, M.ConversionFactor);
+		Text convText = UI.labeledText(convComp, tk, M.ConversionFactor);
 		convText.setText(Double.toString(entry.factor()));
 		convText.addModifyListener(e -> {
 			try {
@@ -147,7 +147,7 @@ class MappingDialog extends FormDialog {
 		});
 
 		UI.gridData(convText, true, false);
-		Label unitLabel = UI.formLabel(convComp, tk, "");
+		Label unitLabel = UI.label(convComp, tk, "");
 		Runnable updateUnit = () -> {
 			String sunit = "?";
 			String tunit = "?";
@@ -192,8 +192,8 @@ class MappingDialog extends FormDialog {
 			UI.gridLayout(comp, 2, 10, 5);
 			UI.gridData(comp, true, false);
 
-			UI.formLabel(comp, tk, M.Flow);
-			flowLink = UI.formLink(comp, tk, "");
+			UI.label(comp, tk, M.Flow);
+			flowLink = UI.hyperLink(comp, tk, "");
 			Controls.onClick(flowLink, _e -> {
 				FlowProvider p = forSource
 					? tool.sourceSystem
@@ -208,16 +208,16 @@ class MappingDialog extends FormDialog {
 				FlowRefDialog.open(p, o -> o.ifPresent(this::updateWith));
 			});
 
-			UI.formLabel(comp, tk, M.Category);
-			categoryLabel = UI.formLabel(comp, tk, "");
-			UI.formLabel(comp, tk, M.FlowProperty);
-			propertyLabel = UI.formLabel(comp, tk, "");
-			UI.formLabel(comp, tk, M.Unit);
-			unitLabel = UI.formLabel(comp, tk, "");
+			UI.label(comp, tk, M.Category);
+			categoryLabel = UI.label(comp, tk, "");
+			UI.label(comp, tk, M.FlowProperty);
+			propertyLabel = UI.label(comp, tk, "");
+			UI.label(comp, tk, M.Unit);
+			unitLabel = UI.label(comp, tk, "");
 
 			// the provider link
 			if (!forSource && tool.targetSystem instanceof DBProvider) {
-				Combo combo = UI.formCombo(comp, tk, M.Provider);
+				Combo combo = UI.labeledCombo(comp, tk, M.Provider);
 				UI.gridData(combo, false, false).widthHint = 400;
 				this.providerCombo = new ProviderCombo(ref, combo);
 			}

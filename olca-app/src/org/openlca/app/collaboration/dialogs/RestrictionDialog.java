@@ -35,9 +35,9 @@ public class RestrictionDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform, "Restricted data sets");
+		var form = UI.header(mform, "Restricted data sets");
 		var toolkit = mform.getToolkit();
-		var body = UI.formBody(form, toolkit);
+		var body = UI.body(form, toolkit);
 		var description = "Some of the selected data sets were identified as restricted data sets (e.g. may underlie license restrictions). If you are allowed to commit changes to these data sets, they are marked with a yellow warning sign, otherwise with a red forbidden sign.";
 		var label = toolkit.createLabel(body, description, SWT.WRAP);
 		UI.gridData(label, true, false).widthHint = 750;

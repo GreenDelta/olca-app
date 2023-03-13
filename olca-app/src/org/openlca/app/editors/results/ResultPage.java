@@ -23,9 +23,9 @@ class ResultPage extends ModelPage<Result> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mform.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 
 		// info section
 		var infoSection = new InfoSection(editor).render(body, tk);
@@ -39,7 +39,7 @@ class ResultPage extends ModelPage<Result> {
 				editor.getModel().productSystem = system;
 				editor.setDirty();
 			});
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 
 		// LCIA method
 		ModelLink.of(ImpactMethod.class)
@@ -50,7 +50,7 @@ class ResultPage extends ModelPage<Result> {
 				result.impactMethod = method;
 				editor.setDirty();
 			});
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 
 		var sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridLayout(sash, 1);

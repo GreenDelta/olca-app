@@ -25,9 +25,9 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		toolkit = mForm.getToolkit();
-		var body = UI.formBody(form, toolkit);
+		var body = UI.body(form, toolkit);
 		createModelingSection(body);
 		createDataSourceSection(body);
 		createReviewSection(body);
@@ -39,8 +39,8 @@ class ProcessModelingPage extends ModelPage<Process> {
 	private void createModelingSection(Composite parent) {
 		var comp = UI.formSection(parent, toolkit, M.ModelingAndValidation, 3);
 
-		UI.formLabel(comp, getToolkit(), M.ProcessType);
-		UI.formLabel(comp, getToolkit(), M.ProcessType);
+		UI.label(comp, getToolkit(), M.ProcessType);
+		UI.label(comp, getToolkit(), M.ProcessType);
 		var typeCombo = new ProcessTypeViewer(comp);
 		getBinding().onModel(this::getModel, "processType", typeCombo);
 		typeCombo.setEnabled(isEditable());
@@ -67,7 +67,7 @@ class ProcessModelingPage extends ModelPage<Process> {
 
 	private void createSourcesSection(Composite parent) {
 		Section section = UI.section(parent, toolkit, M.Sources);
-		Composite comp = UI.formComposite(section, toolkit);
+		Composite comp = UI.composite(section, toolkit);
 		UI.gridLayout(comp, 1);
 		UI.gridData(comp, true, true);
 		section.setClient(comp);

@@ -60,9 +60,9 @@ public class PythonEditor extends ScriptingEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(mform, getTitle(), Icon.PYTHON.get());
+			var form = UI.header(mform, getTitle(), Icon.PYTHON.get());
 			var tk = mform.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 			body.setLayout(new FillLayout());
 			try {
 				browser = new Browser(body, SWT.NONE);

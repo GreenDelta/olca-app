@@ -120,12 +120,12 @@ public class ModelSelector extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		FormToolkit tk = form.getToolkit();
-		UI.formHeader(form, getTitle());
-		Composite body = UI.formBody(form.getForm(), tk);
+		UI.header(form, getTitle());
+		Composite body = UI.body(form.getForm(), tk);
 		UI.gridLayout(body, 1);
-		Label filterLabel = UI.formLabel(body, tk, M.Filter);
+		Label filterLabel = UI.label(body, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
-		filterText = UI.formText(body, SWT.SEARCH);
+		filterText = UI.text(body, SWT.SEARCH);
 		Section section = UI.section(body, tk, M.Content);
 		addSectionActions(section);
 		UI.gridData(section, true, true);

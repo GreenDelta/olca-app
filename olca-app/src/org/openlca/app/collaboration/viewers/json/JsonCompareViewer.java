@@ -66,7 +66,7 @@ public class JsonCompareViewer extends Composite {
 	}
 
 	private void createTreeParts(IJsonNodeLabelProvider labelProvider) {
-		var comp = new Composite(this, SWT.BORDER);
+		var comp = UI.composite(this, toolkit, SWT.BORDER);
 		var layout = UI.gridLayout(comp, 2, 0, 0);
 		layout.makeColumnsEqualWidth = true;
 		UI.gridData(comp, true, true).widthHint = 1;
@@ -82,10 +82,10 @@ public class JsonCompareViewer extends Composite {
 	}
 
 	private JsonViewer createTree(Composite container, Side side) {
-		var composite = UI.formComposite(container, toolkit);
+		var composite = UI.composite(container, toolkit);
 		UI.gridLayout(composite, 1, 0, 0);
 		UI.gridData(composite, true, true);
-		UI.formLabel(composite, toolkit, side == Side.OLD ? "Existing or previous model" : "Updated model");
+		UI.label(composite, toolkit, side == Side.OLD ? "Existing or previous model" : "Updated model");
 		return new JsonViewer(composite, side);
 	}
 

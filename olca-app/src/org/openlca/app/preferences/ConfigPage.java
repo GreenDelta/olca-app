@@ -46,10 +46,10 @@ public class ConfigPage extends PreferencePage implements
 
 	@Override
 	protected Control createContents(Composite parent) {
-		Composite body = new Composite(parent, SWT.NONE);
+		Composite body = UI.composite(parent);
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true);
-		Composite comp = new Composite(body, SWT.NONE);
+		Composite comp = UI.composite(body);
 		UI.gridLayout(comp, 2);
 		UI.gridData(comp, true, false);
 		createLanguageCombo(comp);
@@ -58,15 +58,15 @@ public class ConfigPage extends PreferencePage implements
 		createMemoryText(comp);
 		createShowHidePage(comp);
 
-		UI.wizardFiller(comp);
-		Composite bcomp = new Composite(comp, SWT.NONE);
+		UI.filler(comp);
+		Composite bcomp = UI.composite(comp);
 		UI.gridLayout(bcomp, 1, 5, 0);
 
 		createResetWindow(bcomp);
 		if (!NativeLib.isLoaded(Module.UMFPACK))
 			createNativeLib(bcomp);
 
-		UI.wizardFiller(comp);
+		UI.filler(comp);
 
 		createNoteComposite(comp.getFont(), comp, M.Note
 			+ ": ", M.SelectLanguageNoteMessage);
@@ -130,11 +130,10 @@ public class ConfigPage extends PreferencePage implements
 	}
 
 	private void createMemoryText(Composite comp) {
-		var memoryLabel = new Label(comp, SWT.NONE);
+		var memoryLabel = UI.label(comp, M.MaximumMemoryUsage);
 		var gd = UI.gridData(memoryLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
-		memoryLabel.setText(M.MaximumMemoryUsage);
 
 		memoryText = new Text(comp, SWT.BORDER);
 		UI.fillHorizontal(memoryText);

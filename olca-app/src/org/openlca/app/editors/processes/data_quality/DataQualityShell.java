@@ -193,7 +193,7 @@ public class DataQualityShell extends Shell {
 		valueText = toolkit.createText(composite, "", SWT.NONE);
 		valueText.setEditable(false);
 		UI.gridData(valueText, true, false);
-		Button button = new Button(composite, SWT.NONE);
+		Button button = UI.button(composite, toolkit);
 		button.setText("Use as uncertainty value");
 		Controls.onSelect(button, (e) -> onUseUncertainties.accept(this));
 	}

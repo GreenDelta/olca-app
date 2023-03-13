@@ -73,9 +73,9 @@ public class SqlEditor extends ScriptingEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(mform, "SQL Query Browser", Icon.SQL.get());
+			var form = UI.header(mform, "SQL Query Browser", Icon.SQL.get());
 			var tk = mform.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 			createStatementSection(body, tk);
 			createResultSection(body, tk);
 		}
@@ -83,7 +83,7 @@ public class SqlEditor extends ScriptingEditor {
 		private void createStatementSection(Composite body, FormToolkit toolkit) {
 			Section section = UI.section(body, toolkit, "SQL Statement");
 			Composite composite = UI.sectionClient(section, toolkit, 1);
-			queryText = UI.formStyledText(composite, toolkit);
+			queryText = UI.styledText(composite, toolkit);
 			UI.gridData(queryText, true, false).heightHint = 150;
 			queryText.setText(script == null ? "" : script);
 			var styler = new SyntaxStyler(queryText);
@@ -106,7 +106,7 @@ public class SqlEditor extends ScriptingEditor {
 			UI.gridData(section, true, true);
 			Composite composite = UI.sectionClient(section, toolkit, 1);
 			composite.setLayout(new FillLayout());
-			resultText = UI.formText(composite, toolkit, null,
+			resultText = UI.text(composite, toolkit,
 					SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		}
 

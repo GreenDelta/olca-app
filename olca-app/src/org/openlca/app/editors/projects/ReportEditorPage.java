@@ -45,9 +45,9 @@ class ReportEditorPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform, "Report");
+		var form = UI.header(mform, "Report");
 		tk = mform.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		createInfoSection(body);
 		createProcessesSection(body);
 		createAddButton(body);
@@ -57,7 +57,7 @@ class ReportEditorPage extends FormPage {
 
 	private void createInfoSection(Composite body) {
 		var comp = UI.formSection(body, tk, M.GeneralInformation);
-		var titleText = UI.formText(comp, tk, M.Title);
+		var titleText = UI.labeledText(comp, tk, M.Title);
 		if (report().title != null) {
 			titleText.setText(report().title);
 		}
@@ -117,9 +117,11 @@ class ReportEditorPage extends FormPage {
 	}
 
 	private void createAddButton(Composite body) {
-		var comp = UI.formComposite(body, tk);
-		UI.formFiller(comp);
-		var addButton = UI.formButton(comp, tk, M.AddSection);
+		var comp = UI.composite(body, tk);
+		UI.gridLayout(comp, 5);
+
+		UI.filler(comp);
+		var addButton = UI.button(comp, tk, M.AddSection);
 		addButton.setImage(Icon.ADD.get());
 		Controls.onSelect(addButton, e -> sectionList.addNew());
 	}

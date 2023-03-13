@@ -54,7 +54,7 @@ class DbImportPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite body = new Composite(parent, SWT.NONE);
+		Composite body = UI.composite(parent);
 		UI.gridLayout(body, 1);
 		createExistingSection(body);
 		createFileSection(body);
@@ -67,7 +67,7 @@ class DbImportPage extends WizardPage {
 		check.setText("Existing database");
 		check.setSelection(config.mode == config.EXISTING_MODE);
 		Controls.onSelect(check, e -> setSelection(config.EXISTING_MODE));
-		var comp = new Composite(body, SWT.NONE);
+		var comp = UI.composite(body);
 		UI.gridLayout(comp, 1);
 		UI.gridData(comp, true, false);
 
@@ -107,7 +107,8 @@ class DbImportPage extends WizardPage {
 		check.setText("From exported zolca-File");
 		check.setSelection(config.mode == config.FILE_MODE);
 		Controls.onSelect(check, e -> setSelection(config.FILE_MODE));
-		var comp = UI.formComposite(body);
+		var comp = UI.composite(body);
+		UI.gridLayout(comp, 2);
 		UI.gridData(comp, true, false);
 		fileText = new Text(comp, SWT.READ_ONLY | SWT.BORDER);
 		fileText.setBackground(Colors.white());

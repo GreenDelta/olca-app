@@ -98,7 +98,7 @@ class ModelSelectionPage extends WizardPage {
 
 	@Override
 	public void createControl(final Composite parent) {
-		Composite body = new Composite(parent, SWT.NULL);
+		Composite body = UI.composite(parent);
 		GridLayout bodyLayout = new GridLayout(1, true);
 		bodyLayout.marginHeight = 10;
 		bodyLayout.marginWidth = 10;
@@ -111,7 +111,7 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private void createChooseTargetComposite(final Composite body) {
-		Composite composite = new Composite(body, SWT.NONE);
+		Composite composite = UI.composite(body);
 		GridLayout layout = UI.gridLayout(composite, 3);
 		layout.marginHeight = 0;
 		layout.marginWidth = 5;
@@ -159,7 +159,7 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private Composite createViewerComposite(final Composite body) {
-		Composite composite = new Composite(body, SWT.NONE);
+		Composite composite = UI.composite(body);
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginLeft = 0;
 		layout.marginRight = 0;

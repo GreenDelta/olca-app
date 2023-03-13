@@ -62,9 +62,9 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(this);
+		form = UI.header(this);
 		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		Composite body = UI.body(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		createAdditionalInfo(body);
@@ -74,22 +74,22 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 
 	private void createAdditionalInfo(Composite body) {
 		Composite comp = UI.formSection(body, toolkit, M.AdditionalInformation, 3);
-		UI.formLabel(comp, toolkit, M.Type);
+		UI.label(comp, toolkit, M.Type);
 		if (getModel().isInputParameter) {
-			UI.formLabel(comp, toolkit, M.InputParameter);
-			UI.formFiller(comp, toolkit);
+			UI.label(comp, toolkit, M.InputParameter);
+			UI.filler(comp, toolkit);
 			forInputParameter(comp);
 		} else {
-			UI.formLabel(comp, toolkit, M.DependentParameter);
-			UI.formFiller(comp, toolkit);
+			UI.label(comp, toolkit, M.DependentParameter);
+			UI.filler(comp, toolkit);
 			forDependentParameter(comp);
 		}
 	}
 
 	private void forInputParameter(Composite comp) {
 		doubleText(comp, M.Value, "value");
-		UI.formLabel(comp, toolkit, M.Uncertainty);
-		var link = UI.formLink(
+		UI.label(comp, toolkit, M.Uncertainty);
+		var link = UI.hyperLink(
 				comp, toolkit, Uncertainty.string(getModel().uncertainty));
 		Controls.onClick(link, e -> {
 			var param = getModel();
@@ -104,13 +104,13 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 			link.getParent().layout();
 			getEditor().setDirty(true);
 		});
-		UI.formFiller(comp, toolkit);
+		UI.filler(comp, toolkit);
 	}
 
 	private void forDependentParameter(Composite comp) {
 		Text text = text(comp, M.Formula, "formula");
-		UI.formLabel(comp, toolkit, M.Value);
-		Label label = UI.formLabel(comp, toolkit, Double.toString(getModel().value));
+		UI.label(comp, toolkit, M.Value);
+		Label label = UI.label(comp, toolkit, Double.toString(getModel().value));
 		text.addModifyListener(e -> {
 			support.evaluate();
 			label.setText(Double.toString(getModel().value));

@@ -171,7 +171,7 @@ class ValueEditor {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var tk = mform.getToolkit();
-			var body = UI.formBody(mform.getForm(), tk);
+			var body = UI.body(mform.getForm(), tk);
 			var comp = tk.createComposite(body);
 
 			UI.gridData(comp, true, false);
@@ -208,7 +208,7 @@ class ValueEditor {
 			}
 
 			// error message
-			UI.formFiller(comp, tk);
+			UI.filler(comp, tk);
 			var errorLabel = tk.createLabel(comp, "");
 			errorLabel.setForeground(Colors.systemColor(SWT.COLOR_RED));
 			Consumer<String> onError = err -> {

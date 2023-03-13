@@ -47,7 +47,7 @@ public class LoginPanel {
 		var comp = UI.sectionClient(section, tk, 2);
 
 		// EC3 URL
-		var ec3UrlText = UI.formText(comp, tk, "EC3 Endpoint");
+		var ec3UrlText = UI.labeledText(comp, tk, "EC3 Endpoint");
 		if (Strings.notEmpty(credentials.ec3Url())) {
 			ec3UrlText.setText(credentials.ec3Url());
 		}
@@ -57,7 +57,7 @@ public class LoginPanel {
 		});
 
 		// EPD URL
-		var epdUrlText = UI.formText(comp, tk, "openEPD Endpoint");
+		var epdUrlText = UI.labeledText(comp, tk, "openEPD Endpoint");
 		if (Strings.notEmpty(credentials.epdUrl())) {
 			epdUrlText.setText(credentials.epdUrl());
 		}
@@ -67,7 +67,7 @@ public class LoginPanel {
 		});
 
 		// user
-		var userText = UI.formText(comp, tk, "User");
+		var userText = UI.labeledText(comp, tk, "User");
 		if (Strings.notEmpty(credentials.user())) {
 			userText.setText(credentials.user());
 		}
@@ -77,8 +77,8 @@ public class LoginPanel {
 		});
 
 		// login button
-		UI.formFiller(comp, tk);
-		button = UI.formButton(comp, tk, "");
+		UI.filler(comp, tk);
+		button = UI.button(comp, tk, "");
 		updateButton();
 		button.setImage(Icon.CONNECT.get());
 		Controls.onSelect(button, $ -> {
@@ -188,19 +188,19 @@ public class LoginPanel {
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
 			var tk = mForm.getToolkit();
-			var body = UI.formBody(mForm.getForm(), tk);
-			var outer = UI.formComposite(body, tk);
+			var body = UI.body(mForm.getForm(), tk);
+			var outer = UI.composite(body, tk);
 			UI.fillHorizontal(outer);
 			UI.gridLayout(outer, 2);
-			UI.formLabel(outer, tk, "").setImage(Icon.EC3_WIZARD.get());
-			var right = UI.formComposite(outer, tk);
+			UI.label(outer, tk, "").setImage(Icon.EC3_WIZARD.get());
+			var right = UI.composite(outer, tk);
 			UI.fillHorizontal(right);
 			UI.gridLayout(right, 2, 10, 0);
 
-			var userTxt = UI.formText(right, tk, M.User);
+			var userTxt = UI.labeledText(right, tk, M.User);
 			UI.fillHorizontal(userTxt);
 			Controls.set(userTxt, credentials.user(), credentials::user);
-			var pwTxt = UI.formText(right, tk, M.Password, SWT.PASSWORD | SWT.BORDER);
+			var pwTxt = UI.labeledText(right, tk, M.Password, SWT.PASSWORD | SWT.BORDER);
 			UI.fillHorizontal(pwTxt);
 			pwTxt.addModifyListener($ -> credentials.password(pwTxt.getText()));
 		}

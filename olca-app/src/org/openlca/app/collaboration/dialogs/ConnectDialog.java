@@ -8,6 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.util.UI;
@@ -31,35 +32,35 @@ public class ConnectDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		var formBody = UI.wizardHeader(form, form.getToolkit(),
+		var formBody = UI.header(form, form.getToolkit(),
 				"Connect Git repository",
 				"Enter the location of the Git repository.");
-		var body = UI.wizardComposite(formBody);
-		UI.gridLayout(body, 1);
+		var body = UI.composite(formBody, form.getToolkit());
+		UI.gridLayout(body,  1);
 		UI.gridData(body, true, true).widthHint = 500;
-		createLocationGroup(body);
+		createLocationGroup(body, form.getToolkit());
 		if (withPassword) {
 			auth.withPassword();
 		}
 		auth.withUser()
 				.onChange(this::updateButtons)
-				.render(body, SWT.NONE);
+				.render(body, form.getToolkit(), SWT.NONE);
 		form.getForm().reflow(true);
 	}
 
-	private void createLocationGroup(Composite parent) {
-		var group = UI.wizardGroup(parent, SWT.NONE);
+	private void createLocationGroup(Composite parent, FormToolkit tk) {
+		var group = UI.group(parent, tk);
 		group.setText("Location");
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
-		var urlText = UI.wizardText(group, M.URL, SWT.BORDER);
-		var protocolText = UI.wizardText(group, "Protocol", SWT.BORDER);
+		var urlText = UI.labeledText(group, tk, M.URL);
+		var protocolText = UI.labeledText(group, tk, "Protocol");
 		protocolText.setEnabled(false);
-		var hostText = UI.wizardText(group, M.Host, SWT.BORDER);
+		var hostText = UI.labeledText(group, tk, M.Host);
 		hostText.setEnabled(false);
-		var portText = UI.wizardText(group, M.Port, SWT.BORDER);
+		var portText = UI.labeledText(group, tk, M.Port);
 		portText.setEnabled(false);
-		var pathText = UI.wizardText(group, M.RepositoryPath, SWT.BORDER);
+		var pathText = UI.labeledText(group, tk, M.RepositoryPath);
 		pathText.setEnabled(false);
 		urlText.addModifyListener(e -> {
 			var text = urlText.getText();

@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Item;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
@@ -146,7 +147,7 @@ public abstract class UnitMappingPage extends WizardPage {
 	/**
 	 * Gets a list of files and searches for unit names. Returns the found unit
 	 * names as an array
-	 * 
+	 *
 	 * @param files
 	 *            - the files to be checked
 	 * @return String[] - the names of the units, found in the files
@@ -156,14 +157,14 @@ public abstract class UnitMappingPage extends WizardPage {
 	/**
 	 * Get the files selected previously. (Normally the wizard should provide
 	 * the page with the files)
-	 * 
+	 *
 	 * @return File[] - a list of files
 	 */
 	protected abstract File[] getFiles();
 
 	@Override
 	public void createControl(final Composite parent) {
-		Composite body = new Composite(parent, SWT.NONE);
+		Composite body = UI.composite(parent);
 		body.setLayout(new GridLayout(1, true));
 		tableViewer = Tables.createViewer(body, PROPERTIES);
 		tableViewer.setLabelProvider(new LabelProvider());

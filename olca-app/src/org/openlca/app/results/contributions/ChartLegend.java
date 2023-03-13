@@ -34,7 +34,7 @@ class ChartLegend {
 	ILabelProvider label = new BaseLabelProvider();
 
 	ChartLegend(Composite parent, FormToolkit tk) {
-		composite = UI.formComposite(parent, tk);
+		composite = UI.composite(parent, tk);
 		this.tk = tk;
 		UI.gridData(composite, true, true);
 		UI.gridLayout(composite, 1);
@@ -64,7 +64,7 @@ class ChartLegend {
 		if (model instanceof RootDescriptor
 				|| model instanceof RootEntity
 				|| model instanceof TechFlow) {
-			var link = UI.formImageHyperlink(composite, tk, SWT.TOP);
+			var link = UI.imageHyperlink(composite, tk, SWT.TOP);
 			link.setText(text);
 			link.setImage(getImage(colorIndex));
 			Controls.onClick(link, (e) -> {
@@ -80,7 +80,7 @@ class ChartLegend {
 			});
 			createdLinks.push(link);
 		} else {
-			var label = UI.formCLabel(composite, tk, SWT.TOP);
+			var label = UI.cLabel(composite, tk, SWT.TOP);
 			label.setImage(getImage(colorIndex));
 			label.setText(text);
 			createdLinks.push(label);

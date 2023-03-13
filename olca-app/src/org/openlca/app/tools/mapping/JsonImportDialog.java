@@ -82,16 +82,16 @@ class JsonImportDialog extends Dialog {
 		Composite root = (Composite) super.createDialogArea(parent);
 		UI.gridLayout(root, 1, 10, 10);
 
-		Composite comp = new Composite(root, SWT.NONE);
+		Composite comp = UI.composite(root);
 		UI.gridLayout(comp, 2, 10, 0);
-		UI.formLabel(comp, M.File);
+		UI.label(comp, M.File);
 		String fileText = Strings.cut(provider.file().getParent(), 50)
 				+ File.separator
 				+ Strings.cut(provider.file().getName(), 50);
-		Label label = UI.formLabel(comp, fileText);
+		Label label = UI.label(comp, fileText);
 		label.setForeground(Colors.linkBlue());
 
-		Button openCheck = new Button(root, SWT.RADIO);
+		Button openCheck = UI.radio(root);
 		openCheck.setText("Open mapping definition");
 		Combo combo = new Combo(root, SWT.READ_ONLY);
 		Controls.onSelect(combo, e -> {

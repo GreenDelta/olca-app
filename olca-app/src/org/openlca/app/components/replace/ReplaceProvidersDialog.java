@@ -53,7 +53,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		FormToolkit toolkit = mForm.getToolkit();
-		Composite body = UI.formBody(mForm.getForm(), toolkit);
+		Composite body = UI.body(mForm.getForm(), toolkit);
 		UI.gridLayout(body, 2, 20, 20);
 		UI.gridData(body, true, false);
 		processViewer = createProcessViewer(body, toolkit, M.ReplaceProvider, this::updateProducts);
@@ -66,7 +66,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 
 	private ProcessCombo createProcessViewer(Composite parent, FormToolkit toolkit, String label,
 			Consumer<ProcessDescriptor> onChange) {
-		UI.formLabel(parent, toolkit, label);
+		UI.label(parent, toolkit, label);
 		ProcessCombo viewer = new ProcessCombo(parent);
 		viewer.addSelectionChangedListener(onChange);
 		return viewer;
@@ -74,7 +74,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 
 	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label,
 			Consumer<FlowDescriptor> onChange) {
-		UI.formLabel(parent, toolkit, label);
+		UI.label(parent, toolkit, label);
 		FlowViewer viewer = new FlowViewer(parent);
 		viewer.addSelectionChangedListener(onChange);
 		return viewer;

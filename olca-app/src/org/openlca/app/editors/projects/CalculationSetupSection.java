@@ -40,7 +40,7 @@ class CalculationSetupSection {
 
 	public void render(Composite body, FormToolkit tk) {
 		var rootComp = UI.formSection(body, tk, "Calculation setup", 1);
-		var formComp = UI.formComposite(rootComp, tk);
+		var formComp = UI.composite(rootComp, tk);
 		UI.gridLayout(formComp, 3);
 		UI.gridData(formComp, true, false);
 		createViewers(tk, formComp);
@@ -49,7 +49,7 @@ class CalculationSetupSection {
 	}
 
 	private void createViewers(FormToolkit tk, Composite comp) {
-		UI.formLabel(comp, tk, M.ImpactAssessmentMethod);
+		UI.label(comp, tk, M.ImpactAssessmentMethod);
 
 		// impact method
 		methodCombo = new ImpactMethodViewer(comp);
@@ -58,14 +58,14 @@ class CalculationSetupSection {
 		new CommentControl(comp, tk, "impactMethod", editor.getComments());
 
 		// NW set
-		UI.formLabel(comp, tk, M.NormalizationAndWeightingSet);
+		UI.label(comp, tk, M.NormalizationAndWeightingSet);
 		nwSetCombo = new NwSetComboViewer(comp, Database.get());
 		nwSetCombo.setNullable(true);
 		new CommentControl(comp, tk, "nwSet", editor.getComments());
 
 		// regionalized calculation
-		UI.formFiller(comp, tk);
-		var regioCheck = UI.formCheckBox(comp, tk);
+		UI.filler(comp, tk);
+		var regioCheck = UI.checkbox(comp, tk);
 		regioCheck.setText(M.RegionalizedLCIA);
 		regioCheck.setSelection(editor.getModel().isWithRegionalization);
 		Controls.onSelect(regioCheck, $ -> {
@@ -73,11 +73,11 @@ class CalculationSetupSection {
 			project.isWithRegionalization = !project.isWithRegionalization;
 			editor.setDirty(true);
 		});
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 
 		// LCC calculation
-		UI.formFiller(comp, tk);
-		var costsCheck = UI.formCheckBox(comp, tk);
+		UI.filler(comp, tk);
+		var costsCheck = UI.checkbox(comp, tk);
 		costsCheck.setText(M.IncludeCostCalculation);
 		costsCheck.setSelection(editor.getModel().isWithCosts);
 		Controls.onSelect(costsCheck, $ -> {
@@ -85,13 +85,13 @@ class CalculationSetupSection {
 			project.isWithCosts = !project.isWithCosts;
 			editor.setDirty(true);
 		});
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 
 		// report button
 		if (editor.report == null) {
-			var beforeReport = UI.formFiller(comp, tk);
-			var reportBtn = UI.formButton(comp, tk, "Create report");
-			var afterButton = UI.formFiller(comp, tk);
+			var beforeReport = UI.filler(comp, tk);
+			var reportBtn = UI.button(comp, tk, "Create report");
+			var afterButton = UI.filler(comp, tk);
 			reportBtn.setImage(Images.get(ModelType.PROJECT));
 			Controls.onSelect(reportBtn, $ -> {
 				try {

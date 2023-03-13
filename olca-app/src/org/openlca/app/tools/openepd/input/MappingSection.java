@@ -41,12 +41,12 @@ class MappingSection {
 			"openEPD method: " + mapping.epdMethod());
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		var top = UI.formComposite(comp);
+		var top = UI.composite(comp, tk);
 		UI.gridData(top, true, false);
 		UI.gridLayout(top, 2, 10, 0);
 
 		// method combo
-		var combo = UI.formCombo(top, tk, "Mapped openLCA method");
+		var combo = UI.labeledCombo(top, tk, "Mapped openLCA method");
 		var methods = dialog.db.getAll(ImpactMethod.class);
 		methods.sort(Comparator.comparing(Labels::name));
 		var withNull = new ArrayList<ImpactMethod>(methods.size() + 1);

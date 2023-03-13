@@ -90,10 +90,10 @@ public class FileImportPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite body = new Composite(parent, SWT.NONE);
+		Composite body = UI.composite(parent);
 		UI.gridLayout(body, 1, 10, 10);
 
-		Composite folderComp = new Composite(body, SWT.NONE);
+		Composite folderComp = UI.composite(body);
 		UI.gridLayout(folderComp, 3, 5, 0);
 		UI.gridData(folderComp, true, false);
 		new Label(folderComp, SWT.NONE).setText(M.FromDirectory);
@@ -105,12 +105,11 @@ public class FileImportPage extends WizardPage {
 		folderText.setBackground(Colors.white());
 
 		// create button to open directory dialog
-		Button browseButton = new Button(
-				folderComp, SWT.NONE);
+		Button browseButton = UI.button(folderComp);
 		browseButton.setText(M.Browse);
 		Controls.onSelect(browseButton, e -> selectFolder());
 
-		Composite fileComp = new Composite(body, SWT.NONE);
+		Composite fileComp = UI.composite(body);
 		UI.gridLayout(fileComp, 2, 10, 0);
 		UI.gridData(fileComp, true, true);
 
@@ -149,7 +148,7 @@ public class FileImportPage extends WizardPage {
 		if (db == null)
 			return;
 
-		var comp = new Composite(body, SWT.NONE);
+		var comp = UI.composite(body);
 		UI.gridLayout(comp, 3, 5, 0);
 		UI.gridData(comp, true, false);
 		new Label(comp, SWT.NONE).setText("Flow mapping");

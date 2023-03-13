@@ -103,9 +103,9 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(this);
+			var form = UI.header(this);
 			var tk = mform.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 			var info = new InfoSection(getEditor()).render(body, tk);
 			var comp = info.composite();
 
@@ -115,7 +115,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			text(comp, M.ReferenceUnit, "referenceUnit");
 
 			// impact direction
-			var combo = UI.formCombo(comp, tk, "Impact direction");
+			var combo = UI.labeledCombo(comp, tk, "Impact direction");
 			combo.setItems("Unspecified", M.Input, M.Output);
 			UI.gridData(combo, false, false).widthHint = 150;
 			var dir = getModel().direction;

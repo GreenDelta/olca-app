@@ -125,7 +125,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 		@Override
 		public void createControl(Composite parent) {
-			var body = new Composite(parent, SWT.NONE);
+			var body = UI.composite(parent);
 			UI.gridLayout(body, 1);
 			var link = new Hyperlink(body, SWT.NONE);
 			link.setText("Selected one or more Excel files");

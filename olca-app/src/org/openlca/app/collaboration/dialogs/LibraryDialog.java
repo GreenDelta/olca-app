@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
@@ -30,19 +30,19 @@ public class LibraryDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		var formBody = UI.wizardHeader(form, form.getToolkit(),
+		var formBody = UI.header(form, form.getToolkit(),
 				"Locate library",
 				"Please specify a location for the missing library '" + library + "'");
-		var body = new Composite(formBody, SWT.NONE);
+		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
-		createContent(body);
+		createContent(body, form.getToolkit());
 		form.getForm().reflow(true);
 	}
 
-	private void createContent(Composite parent) {
-		urlCheck = createCheckboxSection(parent, "From url", Mode.URL, (composite, check) -> {
-			var text = UI.formText(composite, SWT.NONE);
+	private void createContent(Composite parent, FormToolkit tk) {
+		urlCheck = createCheckboxSection(parent, tk, "From url", Mode.URL, (composite, check) -> {
+			var text = UI.text(composite, tk);
 			text.addModifyListener(e -> {
 				location = text.getText();
 				updateButtons();
@@ -50,13 +50,12 @@ public class LibraryDialog extends FormDialog {
 			text.addFocusListener(FocusListener.focusGainedAdapter(e -> select(check, text)));
 			return text;
 		});
-		fileCheck = createCheckboxSection(parent, "From file", Mode.FILE, (composite, check) -> {
+		fileCheck = createCheckboxSection(parent, tk, "From file", Mode.FILE, (composite, check) -> {
 			UI.gridLayout(composite, 2);
-			var text = new Text(composite, SWT.READ_ONLY | SWT.BORDER);
-			text.setBackground(Colors.white());
+			var text = UI.text(composite, tk, SWT.READ_ONLY | SWT.BORDER);
 			text.addFocusListener(FocusListener.focusGainedAdapter(e -> select(check, text)));
 			UI.gridData(text, true, false);
-			var browseButton = new Button(composite, SWT.NONE);
+			var browseButton = UI.button(composite, tk);
 			browseButton.setText("Browse");
 			Controls.onSelect(browseButton, e -> {
 				select(check, text);
@@ -80,11 +79,10 @@ public class LibraryDialog extends FormDialog {
 		updateButtons();
 	}
 
-	private Button createCheckboxSection(Composite parent, String label, Mode mode, Renderer renderer) {
-		var check = new Button(parent, SWT.RADIO);
-		check.setText(label);
+	private Button createCheckboxSection(Composite parent, FormToolkit tk, String label, Mode mode, Renderer renderer) {
+		var check = UI.radio(parent, tk, label);
 		check.setSelection(mode == selectedMode);
-		var composite = new Composite(parent, SWT.NONE);
+		var composite = UI.composite(parent, tk);
 		UI.gridLayout(composite, 1);
 		UI.gridData(composite, true, false);
 		var text = renderer.render(composite, check);

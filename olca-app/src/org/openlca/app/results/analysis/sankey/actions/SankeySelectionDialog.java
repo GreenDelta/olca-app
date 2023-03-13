@@ -37,8 +37,8 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var form = UI.formHeader(mform, M.SettingsOfTheSankeyDiagram);
-		var body = UI.formBody(form, tk);
+		var form = UI.header(mform, M.SettingsOfTheSankeyDiagram);
+		var body = UI.body(form, tk);
 		UI.gridLayout(body, 2);
 		ResultItemSelector.on(items)
 				.withSelectionHandler(this)
@@ -52,10 +52,10 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 	}
 
 	private void createCutoffSpinner(FormToolkit tk, Composite comp) {
-		UI.formLabel(comp, tk, "Min. contribution share");
-		var inner = UI.formComposite(comp, tk);
+		UI.label(comp, tk, "Min. contribution share");
+		var inner = UI.composite(comp, tk);
 		UI.gridLayout(inner, 2, 10, 0);
-		var spinner = UI.formSpinner(inner, tk, SWT.BORDER);
+		var spinner = UI.spinner(inner, tk, SWT.BORDER);
 		spinner.setIncrement(100);
 		spinner.setMinimum(0);
 		spinner.setMaximum(100000);
@@ -64,14 +64,14 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 		spinner.addModifyListener(
 				e -> config.setCutoff(spinner.getSelection() / 100000d));
 		tk.adapt(spinner);
-		UI.formLabel(inner, tk, "%");
+		UI.label(inner, tk, "%");
 	}
 
 	private void createCountSpinner(FormToolkit tk, Composite comp) {
-		UI.formLabel(comp, tk, "Max. number of processes");
-		var inner = UI.formComposite(comp, tk);
+		UI.label(comp, tk, "Max. number of processes");
+		var inner = UI.composite(comp, tk);
 		UI.gridLayout(inner, 2, 10, 0);
-		var spinner = UI.formSpinner(inner, tk, SWT.BORDER);
+		var spinner = UI.spinner(inner, tk, SWT.BORDER);
 		spinner.setIncrement(10);
 		spinner.setMinimum(1);
 		spinner.setMaximum(items.techFlows().size());
@@ -83,7 +83,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 	}
 
 	private void themeCombo(FormToolkit tk, Composite comp) {
-		var combo = UI.formCombo(comp, tk, "Theme");
+		var combo = UI.labeledCombo(comp, tk, "Theme");
 		UI.gridData(combo, true, false);
 		var themes = Themes.loadFromWorkspace(Themes.SANKEY);
 		var current = config.getTheme();
@@ -103,7 +103,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 	}
 
 	private void orientationsCombo(FormToolkit tk, Composite comp) {
-		var combo = UI.formCombo(comp, tk, "Orientation");
+		var combo = UI.labeledCombo(comp, tk, "Orientation");
 		UI.gridData(combo, true, false);
 		var orientations = new int[]{
 				NORTH,
@@ -123,7 +123,7 @@ public class SankeySelectionDialog extends FormDialog implements SelectionHandle
 	}
 
 	private void connectionRoutersCombo(FormToolkit tk, Composite comp) {
-		var combo = UI.formCombo(comp, tk, "Connections");
+		var combo = UI.labeledCombo(comp, tk, "Connections");
 		UI.gridData(combo, true, false);
 		var connectionRouters = new String[]{
 				ROUTER_NULL,

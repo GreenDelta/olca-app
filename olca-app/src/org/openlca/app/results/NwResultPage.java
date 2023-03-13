@@ -41,11 +41,11 @@ public class NwResultPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform,
+		var form = UI.header(mform,
 				Labels.name(setup.target()),
 				Icon.ANALYSIS_RESULT.get());
 		toolkit = mform.getToolkit();
-		body = UI.formBody(form, toolkit);
+		body = UI.body(form, toolkit);
 		if (setup.nwSet() == null)
 			return;
 		var nwSet = NwSetTable.of(Database.get(), setup.nwSet());

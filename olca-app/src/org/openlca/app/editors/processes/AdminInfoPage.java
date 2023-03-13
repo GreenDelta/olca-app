@@ -16,9 +16,9 @@ class AdminInfoPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		createAdminInfoSection(body, tk);
 		body.setFocus();
 		form.reflow(true);

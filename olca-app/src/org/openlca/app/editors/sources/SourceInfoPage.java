@@ -50,9 +50,9 @@ class SourceInfoPage extends ModelPage<Source> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		tk = mform.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		new InfoSection(getEditor()).render(body, tk);
 		additionalInfo(body);
 		body.setFocus();
@@ -72,18 +72,18 @@ class SourceInfoPage extends ModelPage<Source> {
 			Desktop.browse(url);
 		});
 		text(comp, M.TextReference, "textReference");
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 		shortText(comp, M.Year, "year");
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 		fileSection(comp);
 
-		UI.formFiller(comp, tk);
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
+		UI.filler(comp, tk);
 		image = new ImageView(comp, this::getDatabaseFile);
 	}
 
 	private void fileSection(Composite parent) {
-		UI.formLabel(parent, M.File);
+		UI.label(parent, tk, M.File);
 		Composite comp = tk.createComposite(parent);
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = 0;
@@ -92,7 +92,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		layout.numColumns = 3;
 		comp.setLayout(layout);
 
-		var browseButton = UI.formButton(comp, tk, M.Browse);
+		var browseButton = UI.button(comp, tk, M.Browse);
 		var editable = getEditor().isEditable();
 		browseButton.setEnabled(editable);
 		Controls.onSelect(browseButton, e -> selectFile());
@@ -114,7 +114,7 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	private void fileLink(Composite comp) {
-		fileLink = UI.formImageHyperlink(comp, tk, SWT.TOP);
+		fileLink = UI.imageHyperlink(comp, tk, SWT.TOP);
 		fileLink.setForeground(Colors.linkBlue());
 		Controls.onClick(fileLink, this::openFile);
 		fileLink.addMouseTrackListener(new DeleteFileVisibility());

@@ -119,13 +119,13 @@ public class AddExchangeCommand extends Command {
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
 			var tk = managedForm.getToolkit();
-			var body = UI.formBody(managedForm.getForm(), tk);
+			var body = UI.body(managedForm.getForm(), tk);
 			UI.gridLayout(body, 1);
 
 			// create new text
-			var nameLabel = UI.formLabel(body, tk, "Create a new flow");
+			var nameLabel = UI.label(body, tk, "Create a new flow");
 			nameLabel.setFont(UI.boldFont());
-			text = UI.formText(body, SWT.NONE);
+			text = UI.text(body, SWT.NONE);
 			text.addModifyListener(e -> {
 				var name = text.getText().trim();
 				getButton(_CREATE).setEnabled(Strings.notEmpty(name));
@@ -160,7 +160,7 @@ public class AddExchangeCommand extends Command {
 				prop -> this.quantity = prop);
 
 			// tree
-			var selectLabel = UI.formLabel(body, tk, "Or select an existing");
+			var selectLabel = UI.label(body, tk, "Or select an existing");
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.FLOW);
 			UI.gridData(tree.getControl(), true, true);

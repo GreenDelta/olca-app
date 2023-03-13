@@ -70,14 +70,14 @@ public class FlowPropertyTable extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(mform, M.FlowProperties);
+			var form = UI.header(mform, M.FlowProperties);
 			var tk = mform.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 
-			var filterComp = UI.formComposite(body, tk);
+			var filterComp = UI.composite(body, tk);
 			UI.gridLayout(filterComp, 2);
 			UI.gridData(filterComp, true, false);
-			var filter = UI.formText(filterComp, tk, M.Filter);
+			var filter = UI.labeledText(filterComp, tk, M.Filter);
 
 			var table = Tables.createViewer(body,
 				M.FlowPropertyType,

@@ -85,8 +85,8 @@ public class LogFileEditor extends FormEditor {
 		protected void createFormContent(IManagedForm mform) {
 			var form = mform.getForm();
 			var toolkit = mform.getToolkit();
-			UI.formHeader(mform, M.OpenLCALog);
-			var body = UI.formBody(form, toolkit);
+			UI.header(mform, M.OpenLCALog);
+			var body = UI.body(form, toolkit);
 			var browser = new Browser(body, SWT.NONE);
 			UI.gridData(browser, true, true);
 			try {

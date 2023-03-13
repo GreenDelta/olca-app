@@ -69,12 +69,12 @@ class ImpactPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.formHeader(this);
+		ScrolledForm form = UI.header(this);
 		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
-		Composite comp = UI.formComposite(body, tk);
+		Composite body = UI.body(form, tk);
+		Composite comp = UI.composite(body, tk);
 		UI.gridLayout(comp, 5);
-		UI.formLabel(comp, tk, M.ImpactAssessmentMethod);
+		UI.label(comp, tk, M.ImpactAssessmentMethod);
 		combo = new ImpactMethodViewer(comp);
 		List<ImpactMethodDescriptor> list = new ImpactMethodDao(Database.get())
 				.getDescriptors()
@@ -84,12 +84,12 @@ class ImpactPage extends ModelPage<Process> {
 		combo.setInput(list);
 		combo.addSelectionChangedListener(this::setTreeInput);
 
-		zeroCheck = UI.formCheckBox(comp, tk, M.ExcludeZeroValues);
+		zeroCheck = UI.labeledCheckbox(comp, tk, M.ExcludeZeroValues);
 		zeroCheck.setSelection(true);
 		Controls.onSelect(
 				zeroCheck, e -> setTreeInput(combo.getSelected()));
 
-		Button reload = UI.formButton(comp, tk, M.Reload);
+		Button reload = UI.button(comp, tk, M.Reload);
 		var image = Icon.REFRESH.get();
 		reload.setImage(image);
 		Controls.onSelect(reload, _e -> {
