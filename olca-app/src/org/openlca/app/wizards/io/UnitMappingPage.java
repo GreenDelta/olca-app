@@ -355,7 +355,7 @@ public abstract class UnitMappingPage extends WizardPage {
 					|| row.unitGroup == null)
 				return "";
 			return "1.0 " + row.unitName + " = "
-					+ row.factor.toString() + " "
+					+ row.factor + " "
 					+ row.unitGroup.referenceUnit.name;
 		}
 	}
