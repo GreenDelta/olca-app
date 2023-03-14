@@ -183,15 +183,13 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 				}
 			});
 
-			var label = new Label(body, SWT.NONE);
-			label.setText("When a process with an ID already exists:");
-			var gd = UI.gridData(label, false, false);
-			gd.verticalAlignment = SWT.TOP;
-			gd.verticalIndent = 2;
-
+			var group = UI.group(body);
+			group.setText("When a process with an ID already exists");
+			UI.fillHorizontal(group);
+			UI.gridLayout(group, 1);
 			for (int i = 0; i < _updateMode.length; i++) {
 				int id = i;
-				var b = new Button(body, SWT.RADIO);
+				var b = new Button(group, SWT.RADIO);
 				b.setText(updateLabel(i));
 				b.setSelection(_updateMode[i]);
 				Controls.onSelect(b, e -> {
@@ -200,6 +198,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 					}
 				});
 			}
+
 			setControl(body);
 		}
 

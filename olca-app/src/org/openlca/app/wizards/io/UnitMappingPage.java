@@ -1,15 +1,12 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -25,6 +22,7 @@ import org.eclipse.swt.widgets.Item;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.FlowPropertyDao;
@@ -45,9 +43,9 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class UnitMappingPage extends WizardPage {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private IDatabase database = Database.get();
+	private final IDatabase database = Database.get();
 
 	private final String CONVERSION_FACTOR = M.ConversionFactor;
 	private final String FLOW_PROPERTY = M.FlowProperty;
@@ -55,8 +53,8 @@ public abstract class UnitMappingPage extends WizardPage {
 	private final String UNIT = M.Unit;
 	private final String FORMULA = M.Formula;
 
-	private final String[] PROPERTIES = new String[] { UNIT, FLOW_PROPERTY,
-			REFERENCE_UNIT, CONVERSION_FACTOR, FORMULA };
+	private final String[] PROPERTIES = new String[]{UNIT, FLOW_PROPERTY,
+			REFERENCE_UNIT, CONVERSION_FACTOR, FORMULA};
 
 	private List<FlowProperty> flowProperties = new ArrayList<>();
 	private ComboBoxCellEditor flowPropertyCellEditor;
@@ -67,7 +65,7 @@ public abstract class UnitMappingPage extends WizardPage {
 	private File[] lastFiles = new File[0];
 
 	private TableViewer tableViewer;
-	private List<UnitMappingEntry> mappings = new ArrayList<>();
+	private final List<UnitMappingEntry> mappings = new ArrayList<>();
 
 	public UnitMappingPage() {
 		super("UnitMappingPage");
@@ -95,21 +93,15 @@ public abstract class UnitMappingPage extends WizardPage {
 			return;
 		try {
 			lastFiles = files;
-			final List<String> unitNames = new ArrayList<>();
+			List<String> unitNames = new ArrayList<>();
 			getWizard().getContainer().run(true, false,
-					new IRunnableWithProgress() {
-						@Override
-						public void run(IProgressMonitor monitor)
-								throws InvocationTargetException,
-								InterruptedException {
-							monitor.beginTask(
-									M.SearchingForUnits,
-									IProgressMonitor.UNKNOWN);
-							String[] names = checkFiles(files);
-							for (String s : names)
-								unitNames.add(s);
-							monitor.done();
-						}
+					monitor -> {
+						monitor.beginTask(
+								M.SearchingForUnits,
+								IProgressMonitor.UNKNOWN);
+						String[] names = checkFiles(files);
+						Collections.addAll(unitNames, names);
+						monitor.done();
 					});
 			mapAndSetUnitInput(unitNames);
 		} catch (final Exception e) {
@@ -148,8 +140,7 @@ public abstract class UnitMappingPage extends WizardPage {
 	 * Gets a list of files and searches for unit names. Returns the found unit
 	 * names as an array
 	 *
-	 * @param files
-	 *            - the files to be checked
+	 * @param files - the files to be checked
 	 * @return String[] - the names of the units, found in the files
 	 */
 	protected abstract String[] checkFiles(File[] files);
@@ -180,12 +171,12 @@ public abstract class UnitMappingPage extends WizardPage {
 			flowPropertyNames[i] = flowProperties.get(i).name;
 		flowPropertyCellEditor = new ComboBoxCellEditor(tableViewer.getTable(),
 				flowPropertyNames, SWT.READ_ONLY);
-		final CellEditor[] editors = new CellEditor[] {
+		final CellEditor[] editors = new CellEditor[]{
 				new TextCellEditor(tableViewer.getTable()),
 				flowPropertyCellEditor,
 				new TextCellEditor(tableViewer.getTable()),
 				new TextCellEditor(tableViewer.getTable()),
-				new TextCellEditor(tableViewer.getTable()) };
+				new TextCellEditor(tableViewer.getTable())};
 		tableViewer.setCellEditors(editors);
 	}
 
@@ -199,17 +190,9 @@ public abstract class UnitMappingPage extends WizardPage {
 			setPageComplete(false);
 		else {
 			try {
-				flowProperties = new FlowPropertyDao(database)
-						.getAll();
+				flowProperties = new FlowPropertyDao(database).getAll();
 				// flow properties are sorted for the combo cell editor
-				Collections.sort(flowProperties,
-						new Comparator<FlowProperty>() {
-							@Override
-							public int compare(FlowProperty o1, FlowProperty o2) {
-								return Strings.compare(o1.name,
-										o2.name);
-							}
-						});
+				flowProperties.sort((o1, o2) -> Strings.compare(o1.name, o2.name));
 				update();
 				checkCompletion();
 			} catch (Exception e) {
@@ -223,11 +206,10 @@ public abstract class UnitMappingPage extends WizardPage {
 
 		@Override
 		public boolean canModify(Object element, String property) {
-			if (element instanceof Item)
-				element = ((Item) element).getData();
-			if (!(element instanceof UnitMappingEntry))
+			if (element instanceof Item item)
+				element = item.getData();
+			if (!(element instanceof UnitMappingEntry entry))
 				return false;
-			UnitMappingEntry entry = (UnitMappingEntry) element;
 			if (property.equals(FLOW_PROPERTY))
 				return true;
 			if (property.equals(CONVERSION_FACTOR)) {
@@ -244,17 +226,16 @@ public abstract class UnitMappingPage extends WizardPage {
 		public Object getValue(Object element, String property) {
 			if (element instanceof Item)
 				element = ((Item) element).getData();
-			if (!(element instanceof UnitMappingEntry))
+			if (!(element instanceof UnitMappingEntry entry))
 				return null;
-			UnitMappingEntry entry = (UnitMappingEntry) element;
 			if (property.equals(CONVERSION_FACTOR))
 				return Double.toString(entry.factor);
 			if (property.equals(FLOW_PROPERTY)) {
 				String[] candidates = getFlowPropertyCandidates(entry.unitName);
 				flowPropertyCellEditor.setItems(candidates);
 				return entry.flowProperty == null
-					? -1
-					: getIndex(entry.flowProperty.name, candidates);
+						? -1
+						: getIndex(entry.flowProperty.name, candidates);
 			}
 			return null;
 		}
@@ -265,9 +246,8 @@ public abstract class UnitMappingPage extends WizardPage {
 				return;
 			if (element instanceof Item)
 				element = ((Item) element).getData();
-			if (!(element instanceof UnitMappingEntry))
+			if (!(element instanceof UnitMappingEntry entry))
 				return;
-			UnitMappingEntry entry = (UnitMappingEntry) element;
 			if (property.equals(FLOW_PROPERTY)) {
 				int val = Integer.parseInt(value.toString());
 				String[] candidates = getFlowPropertyCandidates(entry.unitName);
@@ -294,8 +274,7 @@ public abstract class UnitMappingPage extends WizardPage {
 				for (FlowProperty flowProperty : flowProperties)
 					flowPropertyNames.add(flowProperty.name);
 			}
-			return flowPropertyNames.toArray(new String[flowPropertyNames
-					.size()]);
+			return flowPropertyNames.toArray(new String[0]);
 		}
 
 		private int getIndex(String name, String[] candidates) {
@@ -336,7 +315,7 @@ public abstract class UnitMappingPage extends WizardPage {
 
 	}
 
-	private class LabelProvider extends
+	private static class LabelProvider extends
 			org.eclipse.jface.viewers.BaseLabelProvider implements
 			ITableLabelProvider {
 
@@ -351,31 +330,24 @@ public abstract class UnitMappingPage extends WizardPage {
 
 		@Override
 		public String getColumnText(Object element, int column) {
-			if (!(element instanceof UnitMappingEntry))
+			if (!(element instanceof UnitMappingEntry row))
 				return null;
-			UnitMappingEntry row = (UnitMappingEntry) element;
 			if (column == 0)
 				return row.unitName; // no flow-prop check
-			if (row.flowProperty == null)
+			if (row.flowProperty == null
+					|| row.flowProperty.unitGroup == null)
 				return null;
-			FlowProperty prop = row.flowProperty;
-			UnitGroup unitGroup = prop.unitGroup;
-			switch (column) {
-			case 1:
-				return prop.name;
-			case 2:
-				if (unitGroup.referenceUnit == null)
-					return null;
-				return unitGroup.referenceUnit.name;
-			case 3:
-				if (row.factor == null)
-					return null;
-				return Double.toString(row.factor);
-			case 4:
-				return getFormula(row);
-			default:
-				return null;
-			}
+			var prop = row.flowProperty;
+			var unitGroup = prop.unitGroup;
+			return switch (column) {
+				case 1 -> Labels.name(prop);
+				case 2 -> Labels.name(unitGroup.referenceUnit);
+				case 3 -> row.factor == null
+						? null
+						: Double.toString(row.factor);
+				case 4 -> getFormula(row);
+				default -> null;
+			};
 		}
 
 		private String getFormula(UnitMappingEntry row) {
