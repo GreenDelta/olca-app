@@ -86,7 +86,9 @@ public class SankeyHeader extends Header {
 	@Override
 	public void deactivate() {
 		super.deactivate();
-		button.removeListener(SWT.Selection, listener);
+		if (button != null && !button.isDisposed()) {
+			button.removeListener(SWT.Selection, listener);
+		}
 	}
 
 	private void createTitle() {
