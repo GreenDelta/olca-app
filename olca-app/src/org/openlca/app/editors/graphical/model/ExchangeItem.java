@@ -66,6 +66,8 @@ public class ExchangeItem extends Component {
 
 	/**
 	 * Returns true if this exchange is connected.
+	 * Note that link.exchangeId is compared to exchange.internalId when the
+	 * process is not saved.
 	 */
 	public boolean isConnected() {
 		var node = getNode();
@@ -74,7 +76,11 @@ public class ExchangeItem extends Component {
 		var linkSearch = node.getGraph().linkSearch;
 		var links = linkSearch.getConnectionLinks(node.descriptor.id);
 		for (ProcessLink link : links) {
-			if (link.exchangeId == exchange.id)
+			if (getGraph().getEditor().isDirty(getNode().getEntity())) {
+				if (link.exchangeId == exchange.internalId)
+					return true;
+			}
+			else if (link.exchangeId == exchange.id)
 				return true;
 		}
 		return false;
