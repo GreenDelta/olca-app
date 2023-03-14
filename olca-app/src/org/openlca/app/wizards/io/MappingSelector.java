@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
@@ -20,23 +22,29 @@ import org.openlca.core.io.maps.FlowMap;
 class MappingSelector {
 
 	private final IDatabase db;
-	private final Combo combo;
-	private Consumer<FlowMap> listener;
+	private final Consumer<FlowMap> handler;
 
-	private MappingSelector(Composite parent, IDatabase db) {
-		this.db = db;
-		var comp = UI.composite(parent);
-		UI.gridData(comp, true, false);
-		UI.gridLayout(comp, 2, 5, 0);
+	private MappingSelector(IDatabase db, Consumer<FlowMap> handler) {
+		this.db	 = db;
+		this.handler = handler;
+	}
+
+	static MappingSelector on(Consumer<FlowMap> handler) {
+		return new MappingSelector(Database.get(), handler);
+	}
+
+	void render(Composite comp) {
+		UI.label(comp, "Flow mapping");
 
 		// initialize the combo box
-		combo = new Combo(comp, SWT.READ_ONLY);
-		UI.gridData(combo, true, false);
+		var combo = new Combo(comp, SWT.READ_ONLY);
+		UI.fillHorizontal(combo);
+		UI.fillHorizontal(comp);
 		var dbFiles = new MappingFileDao(db)
-			.getNames()
-			.stream()
-			.sorted()
-			.toList();
+				.getNames()
+				.stream()
+				.sorted()
+				.toList();
 		var items = new String[dbFiles.size() + 1];
 		items[0] = "";
 		for (int i = 0; i < dbFiles.size(); i++) {
@@ -44,11 +52,12 @@ class MappingSelector {
 		}
 		combo.setItems(items);
 		combo.select(0);
-		Controls.onSelect(combo, $ -> onItemSelected());
+		Controls.onSelect(combo, $ -> onItemSelected(combo));
 
 		// add the file button
 		var fileBtn = new Button(comp, SWT.NONE);
 		fileBtn.setText("From file");
+		fileBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		Controls.onSelect(fileBtn, e -> {
 			var file = FileChooser.open("*.csv");
 			if (file == null)
@@ -59,27 +68,19 @@ class MappingSelector {
 			nextItems[idx] = file.getAbsolutePath();
 			combo.setItems(nextItems);
 			combo.select(idx); // does not fire an event
-			onItemSelected();
+			onItemSelected(combo);
 		});
 
 	}
 
-	static MappingSelector create(Composite parent, IDatabase db) {
-		return new MappingSelector(parent, db);
-	}
-
-	void onSelected(Consumer<FlowMap> listener) {
-		this.listener = listener;
-	}
-
-	private void onItemSelected() {
-		if (listener == null)
+	private void onItemSelected(Combo combo) {
+		if (handler == null)
 			return;
 		int idx = combo.getSelectionIndex();
 
 		// none
 		if (idx == 0) {
-			listener.accept(null);
+			handler.accept(null);
 			return;
 		}
 
@@ -89,17 +90,17 @@ class MappingSelector {
 			// db mapping
 			var dbMap = new MappingFileDao(db).getForName(mapping);
 			if (dbMap != null) {
-				listener.accept(FlowMap.of(dbMap));
+				handler.accept(FlowMap.of(dbMap));
 				return;
 			}
 
 			// file mapping
 			var file = new File(mapping);
 			if (file.exists()) {
-				listener.accept(FlowMap.fromCsv(file));
+				handler.accept(FlowMap.fromCsv(file));
 			}
 
-		}catch (Exception e) {
+		} catch (Exception e) {
 			ErrorReporter.on("Failed to open mapping: " + mapping, e);
 		}
 	}

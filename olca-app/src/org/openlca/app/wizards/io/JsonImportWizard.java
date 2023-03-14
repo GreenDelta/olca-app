@@ -120,19 +120,25 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 		@Override
 		public void createControl(Composite parent) {
 			var body = UI.composite(parent);
-			UI.gridLayout(body, 1);
+			UI.gridLayout(body, 1).verticalSpacing = 0;
 
-			FilePicker.on(file -> {
+			var fileComp = UI.composite(body);
+			UI.fillHorizontal(fileComp);
+			UI.gridLayout(fileComp, 3).marginBottom = 0;
+			FileSelector.on(file -> {
 						zip = file;
 						setPageComplete(true);
 					})
 					.withTitle("Select a zip file with openLCA data...")
 					.withExtensions("*.zip")
 					.withSelection(zip)
-					.renderOn(body);
+					.render(fileComp);
 
 			// update mode
-			var group = UI.group(body);
+			var groupComp = UI.composite(body);
+			UI.gridLayout(groupComp, 1).marginTop = 0;
+			UI.fillHorizontal(groupComp);
+			var group = UI.group(groupComp);
 			group.setText("Updating existing data sets in the database");
 			UI.gridData(group, true, false);
 			UI.gridLayout(group, 1);

@@ -114,17 +114,21 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			var body = new Composite(parent, SWT.NONE);
 			UI.gridLayout(body, 1);
 
-			FilePicker.on(file -> {
+			var comp = UI.composite(body);
+			UI.fillHorizontal(comp);
+			UI.gridLayout(comp, 3);
+
+			FileSelector.on(file -> {
 						zip = file;
 						setPageComplete(true);
 					})
 					.withTitle("Select a zip file with ILCD data...")
 					.withExtensions("*.zip")
 					.withSelection(zip)
-					.renderOn(body);
+					.render(comp);
 
-			MappingSelector.create(body, Database.get())
-					.onSelected(fm -> this.flowMap = fm);
+			MappingSelector.on(fm -> this.flowMap = fm)
+					.render(comp);
 
 			setControl(body);
 		}
