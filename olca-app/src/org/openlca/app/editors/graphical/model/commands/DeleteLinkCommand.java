@@ -51,7 +51,7 @@ public class DeleteLinkCommand extends AbstractRemoveCommand {
 					|| graph.isReferenceProcess(provider))
 				continue;
 
-			var b = Question.ask(M.DeleteProcesslink,
+			var b = Question.ask("Deleting the process link...",
 					"Do you also want to delete or hide the supply chain?",
 					List.of("No", "Delete", "Hide").toArray(new String[0]));
 

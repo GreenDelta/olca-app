@@ -10,6 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.actions.*;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
 import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.editors.graphical.model.Graph;
@@ -18,12 +19,16 @@ import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
 import org.openlca.jsonld.Json;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,7 +58,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	// TODO: save this in the same way as the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
 	private final GraphFactory graphFactory = new GraphFactory(this);
-	private final Set<RootEntity> dirtyEntities = new HashSet<>();
+	private final Set<Process> dirtyProcesses = new HashSet<>();
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
@@ -238,14 +243,18 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	 * Set the product system editor dirty and add the eventual other dirty
 	 * entities.
 	 */
-	public void setDirty(RootEntity... entities) {
-		dirtyEntities.addAll(List.of(entities));
+	public void setDirty(Process... processes) {
+		dirtyProcesses.addAll(List.of(processes));
 		systemEditor.setDirty(true);
 	}
 
 	@Override
 	public boolean isDirty() {
 		return systemEditor.isDirty();
+	}
+
+	public boolean isDirty(RootEntity entity) {
+		return dirtyProcesses.contains(entity);
 	}
 
 	public ProductSystem getProductSystem() {
@@ -264,24 +273,49 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	}
 
 	/**
-	 * Save the dirty entities collected along the way and the product system.
+	 * Save the dirty processes collected along the way and the product system.
 	 * Compare to other editor, the GraphEditor is not editing a single type of
 	 * entity.
 	 */
 	public void doSave() {
 		// Copying the set to avoid concurrent modification.
-		var entities = new HashSet<>(dirtyEntities);
-		for (var entity : entities) {
-			saveEntity(entity);
+		var processes = new HashSet<>(dirtyProcesses);
+		for (var process : processes) {
+			saveProcess(process);
 		}
-		dirtyEntities.clear();
+		dirtyProcesses.clear();
 	}
 
-	private void saveEntity(RootEntity model) {
-		model.lastChange = Calendar.getInstance().getTimeInMillis();
-		Version.incUpdate(model);
+	private void saveProcess(Process process) {
+		// Mapping the exchanges of the process with the ProcessLinks.
+		var mapPLinkToExchange = new HashMap<ProcessLink, Exchange>();
+		var links = getModel().getNode(process.id).getAllLinks().stream()
+				.map(GraphLink.class::cast)
+				.map(graphLink -> graphLink.processLink)
+				.toList();
+		for (var link : links) {
+			for (var exchange : process.exchanges) {
+				if (exchange.internalId == link.exchangeId) {
+					mapPLinkToExchange.put(link, exchange);
+				}
+			}
+		}
+
+		process.lastChange = Calendar.getInstance().getTimeInMillis();
+		Version.incUpdate(process);
 		var db = Database.get();
-		db.update(model);
+		db.update(process);
+
+		var newProcess = db.get(Process.class, process.id);
+		// Updating ProcessLink.exchangeId with the updated exchange.id.
+		for (var entry : mapPLinkToExchange.entrySet()) {
+			var oldExchange = entry.getValue();
+			for (var exchange : newProcess.exchanges) {
+				if (oldExchange.internalId == exchange.internalId) {
+					entry.getKey().exchangeId = exchange.id;
+				}
+			}
+		}
 	}
 
 	public boolean promptSaveIfNecessary() throws Exception {

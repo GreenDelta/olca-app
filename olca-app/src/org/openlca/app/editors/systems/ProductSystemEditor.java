@@ -84,11 +84,11 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		super.doSave(monitor);
 		if (graphEditor != null) {
 			graphEditor.doSave();
 			GraphFile.save(graphEditor);
 		}
+		super.doSave(monitor);
 	}
 
 }

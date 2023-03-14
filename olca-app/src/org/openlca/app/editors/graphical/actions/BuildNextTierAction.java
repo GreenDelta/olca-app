@@ -5,11 +5,15 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.commands.MassCreationCommand;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
 
 public class BuildNextTierAction extends BuildAction {
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private ArrayList<RootDescriptor> newProviders;
 	private ArrayList<ProcessLink> newConnections;
@@ -26,12 +30,18 @@ public class BuildNextTierAction extends BuildAction {
 
 		newProviders = new ArrayList<>();
 		newConnections = new ArrayList<>();
-		collect();
+		try {
+			if (editor.promptSaveIfNecessary()) {
+				collect();
+				var command = MassCreationCommand.nextTier(newProviders, newConnections, graph);
 
-		var command = MassCreationCommand.nextTier(newProviders, newConnections, graph);
-
-		if (command.canExecute())
-			execute(command);
+				if (command.canExecute())
+					execute(command);
+			}
+			editor.setDirty();
+		} catch (Exception e) {
+			log.error("Failed to complete product system. ", e);
+		}
 	}
 
 	private void collect() {

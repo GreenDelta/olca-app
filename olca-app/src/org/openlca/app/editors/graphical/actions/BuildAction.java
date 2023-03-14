@@ -86,8 +86,8 @@ public abstract class BuildAction extends WorkbenchPartAction {
 		return processDao.getDescriptors(providerIds);
 	}
 
-	protected ProcessLink getLink(Exchange exchange,
-												 Process process, RootDescriptor provider) {
+	protected ProcessLink getLink(Exchange exchange, Process process,
+			RootDescriptor provider) {
 		var link = new ProcessLink();
 		link.exchangeId = exchange.id;
 		link.flowId = exchange.flow.id;

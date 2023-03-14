@@ -79,7 +79,7 @@ public class AddExchangeCommand extends Command {
 		if (!(node.getEntity() instanceof Process process))
 			return;
 
-		// set the flow amount and update the process
+		// set the flow amount
 		var exchange = forInput
 			? process.input(flow, 1.0)
 			: process.output(flow, 1.0);
