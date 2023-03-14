@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
@@ -13,7 +14,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 
-class FilePicker {
+class FileSelector {
 
 	private final Consumer<File> handler;
 
@@ -21,15 +22,15 @@ class FilePicker {
 	private File selection;
 	private String title;
 
-	private FilePicker(Consumer<File> handler) {
+	private FileSelector(Consumer<File> handler) {
 		this.handler = handler;
 	}
 
-	static FilePicker on(Consumer<File> handler) {
-		return new FilePicker(handler);
+	static FileSelector on(Consumer<File> handler) {
+		return new FileSelector(handler);
 	}
 
-	FilePicker withExtensions(String... exts) {
+	FileSelector withExtensions(String... exts) {
 		if (exts == null || exts.length == 0) {
 			extensions = null;
 			return this;
@@ -41,20 +42,17 @@ class FilePicker {
 		return this;
 	}
 
-	FilePicker withSelection(File file) {
+	FileSelector withSelection(File file) {
 		this.selection = file;
 		return this;
 	}
 
-	FilePicker withTitle(String title) {
+	FileSelector withTitle(String title) {
 		this.title = title;
 		return this;
 	}
 
-	void renderOn(Composite body) {
-		var comp = UI.composite(body);
-		UI.fillHorizontal(comp);
-		UI.gridLayout(comp, 3);
+	void render(Composite comp) {
 		var fileText = UI.labeledText(comp, M.File, SWT.READ_ONLY);
 		if (selection != null) {
 			fileText.setText(selection.getName());
@@ -62,6 +60,7 @@ class FilePicker {
 		UI.fillHorizontal(fileText);
 		var browse = new Button(comp, SWT.NONE);
 		browse.setText(M.Browse);
+		browse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		if (title != null) {
 			browse.setToolTipText(title);
 		}

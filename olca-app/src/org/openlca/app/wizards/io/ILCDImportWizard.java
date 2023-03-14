@@ -4,6 +4,9 @@ import java.io.File;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
@@ -14,6 +17,7 @@ import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.UI;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.ilcd.io.ZipStore;
 import org.openlca.io.ilcd.ILCDImport;
@@ -21,9 +25,8 @@ import org.openlca.io.ilcd.input.ImportConfig;
 
 public class ILCDImportWizard extends Wizard implements IImportWizard {
 
-	private FileImportPage importPage;
-
 	private File initialFile;
+	private Page page;
 
 	public static void of(File file) {
 		if (Database.isNoneActive()) {
@@ -31,15 +34,15 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			return;
 		}
 		Wizards.forImport(
-			"wizard.import.ilcd",
-			(ILCDImportWizard w) -> w.initialFile = file);
+				"wizard.import.ilcd",
+				(ILCDImportWizard w) -> w.initialFile = file);
 	}
 
 	public ILCDImportWizard() {
 		setWindowTitle(M.ImportILCD);
 		setNeedsProgressMonitor(true);
 		setDefaultPageImageDescriptor(
-			Icon.IMPORT_ZIP_WIZARD.descriptor());
+				Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
@@ -52,16 +55,13 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			addPage(new NoDatabaseErrorPage());
 			return;
 		}
-		importPage = initialFile != null
-			? new FileImportPage(initialFile)
-			: new FileImportPage(".zip");
-		importPage.withMappingFile = true;
-		addPage(importPage);
+		page = new Page(initialFile);
+		addPage(page);
 	}
 
 	@Override
 	public boolean performFinish() {
-		File zip = getZip();
+		var zip = page.zip;
 		if (zip == null)
 			return false;
 		try {
@@ -78,29 +78,59 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 		}
 	}
 
-	private File getZip() {
-		File[] files = importPage.getFiles();
-		if (files.length > 0)
-			return files[0];
-		return null;
-	}
-
 	private void doRun(File zip) throws Exception {
 		try (var store = new ZipStore(zip)) {
 			getContainer().run(true, true, m -> {
 				var lang = IoPreference.getIlcdLanguage();
 				var langOrder = !"en".equals(lang)
-					? new String[]{lang, "en"}
-					: new String[]{"en"};
-				var flowMap = importPage.flowMap != null
-					? importPage.flowMap
-					: FlowMap.empty();
-
+						? new String[]{lang, "en"}
+						: new String[]{"en"};
+				var flowMap = page.flowMap != null
+						? page.flowMap
+						: FlowMap.empty();
 				var config = new ImportConfig(store, Database.get(), flowMap)
-					.withAllFlows(true)
-					.withLanguageOrder(langOrder);
+						.withAllFlows(true)
+						.withLanguageOrder(langOrder);
 				ImportMonitor.on(m).run(new ILCDImport(config));
 			});
+		}
+	}
+
+	private static class Page extends WizardPage {
+
+		private File zip;
+		private FlowMap flowMap;
+
+		Page(File initial) {
+			super("ILCDImportWizard.Page");
+			setTitle(M.ImportILCD);
+			setDescription("Import a zip file with ILCD data sets");
+			zip = initial;
+			setPageComplete(zip != null);
+		}
+
+		@Override
+		public void createControl(Composite parent) {
+			var body = new Composite(parent, SWT.NONE);
+			UI.gridLayout(body, 1);
+
+			var comp = UI.composite(body);
+			UI.fillHorizontal(comp);
+			UI.gridLayout(comp, 3);
+
+			FileSelector.on(file -> {
+						zip = file;
+						setPageComplete(true);
+					})
+					.withTitle("Select a zip file with ILCD data...")
+					.withExtensions("*.zip")
+					.withSelection(zip)
+					.render(comp);
+
+			MappingSelector.on(fm -> this.flowMap = fm)
+					.render(comp);
+
+			setControl(body);
 		}
 	}
 

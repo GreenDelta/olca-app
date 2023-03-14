@@ -161,24 +161,26 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			Actions.bind(viewer, addFile, removeFile);
 
 			// config panel
-			var comp = UI.composite(body);
-			UI.gridLayout(comp, 2, 10, 5);
-			UI.gridData(comp, true, false);
-
+			var mappingComp = UI.composite(body);
+			UI.gridLayout(mappingComp, 3, 10, 5).marginBottom = 0;
+			UI.fillHorizontal(mappingComp);
 			// flow mapping
-			UI.label(comp, "Flow mapping");
-			MappingFileCombo.create(comp, Database.get())
-				.onSelected(flowMap -> this.flowMap = flowMap);
+			MappingSelector.on(fm -> this.flowMap = fm)
+					.render(mappingComp);
 
 			// options
-			UI.label(comp, "Generate");
-			option(comp, "Product systems for life cycles",
+			var optComp = UI.composite(body);
+			UI.gridLayout(optComp, 1, 10, 5).marginTop = 0;
+			UI.fillHorizontal(optComp);
+			var group = UI.group(optComp);
+			UI.gridLayout(group, 1, 5, 10);
+			UI.fillHorizontal(group);
+			group.setText("Generate");
+			option(group, "Product systems for life cycles",
 				createProductSystems);
-			UI.filler(comp);
-			option(comp, "Parameters for waste scenarios",
+			option(group, "Parameters for waste scenarios",
 				createScenarioParameters);
-			UI.filler(comp);
-			option(comp, "Characterization factors for sub-compartments",
+			option(group, "Characterization factors for sub-compartments",
 				expandImpactFactors);
 
 			setControl(body);
