@@ -52,10 +52,10 @@ class FilePicker {
 	}
 
 	void renderOn(Composite body) {
-		var comp = UI.formComposite(body);
+		var comp = UI.composite(body);
 		UI.fillHorizontal(comp);
 		UI.gridLayout(comp, 3);
-		var fileText = UI.formText(comp, M.File, SWT.READ_ONLY);
+		var fileText = UI.labeledText(comp, M.File, SWT.READ_ONLY);
 		if (selection != null) {
 			fileText.setText(selection.getName());
 		}
