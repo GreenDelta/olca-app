@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.DbUtils;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 
@@ -80,29 +79,15 @@ public class DatabaseWizardPage extends WizardPage {
 	}
 
 	private void validateInput() {
-		boolean valid = _validateName(nameText.getText());
-		if (!valid)
+		if (nameText == null)
 			return;
-		setMessage(null);
-		setPageComplete(true);
-	}
-
-	private boolean _validateName(String name) {
-		var error = validateName(name);
-		if (error == null)
-			return true;
-		error(error);
-		return false;
-	}
-
-	public static String validateName(String name) {
-		if (name == null || name.length() < 4)
-			return M.NewDatabase_NameToShort;
-		if (!DbUtils.isValidName(name))
-			return M.NewDatabase_InvalidName;
-		if (Database.getConfigurations().nameExists(name))
-			return M.NewDatabase_AlreadyExists;
-		return null;
+		var err = Database.validateNewName(nameText.getText());
+		if (err != null) {
+			error(err);
+		} else {
+			setMessage(null);
+			setPageComplete(true);
+		}
 	}
 
 	private void error(String string) {

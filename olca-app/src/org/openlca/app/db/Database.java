@@ -1,8 +1,10 @@
 package org.openlca.app.db;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Objects;
 
+import org.openlca.app.M;
 import org.openlca.app.navigation.CopyPaste;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
@@ -14,7 +16,9 @@ import org.openlca.core.database.config.MySqlConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Database management of the application. */
+/**
+ * Database management of the application.
+ */
 public class Database {
 
 	private static IDatabase database;
@@ -64,7 +68,9 @@ public class Database {
 		return Objects.equals(config, Database.config);
 	}
 
-	/** Closes the active database. */
+	/**
+	 * Closes the active database.
+	 */
 	public static void close() throws Exception {
 		if (database == null)
 			return;
@@ -131,4 +137,30 @@ public class Database {
 		saveConfig();
 	}
 
+	/**
+	 * Checks if the given string is a valid name for a new (local, file-based)
+	 * database. Such a name is valid if a folder with that name can be created
+	 * in the workspace and when no database with the same name already exists.
+	 *
+	 * @param name the name of the new database
+	 * @return the validation error for display or {@code null} when the name is
+	 * valid
+	 */
+	public static String validateNewName(String name) {
+		if (name == null || name.isBlank() || name.length() < 1)
+			return M.NewDatabase_NameToShort;
+		if (!name.strip().equals(name)) {
+			return "The given database name contains" +
+					" leading or trailing whitespaces.";
+		}
+		try {
+			var vDir = new File(Workspace.dbDir(), name);
+			Paths.get(vDir.getAbsolutePath());
+		} catch (Exception e) {
+			return M.NewDatabase_InvalidName;
+		}
+		return getConfigurations().nameExists(name)
+				? M.NewDatabase_AlreadyExists
+				: null;
+	}
 }
