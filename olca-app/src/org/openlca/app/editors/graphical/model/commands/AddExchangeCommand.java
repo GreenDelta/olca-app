@@ -26,6 +26,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.combo.FlowPropertyCombo;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowType;
@@ -79,11 +80,13 @@ public class AddExchangeCommand extends Command {
 		if (!(node.getEntity() instanceof Process process))
 			return;
 
-		// set the flow amount
+		// create the exchange and add to the process.
 		var exchange = forInput
-			? process.input(flow, 1.0)
-			: process.output(flow, 1.0);
-		ExchangeDialog.open(exchange);
+				? Exchange.input(flow, 1.0)
+				: Exchange.output(flow, 1.0);
+		if (!ExchangeDialog.open(exchange))
+			return;
+		process.add(exchange);
 
 		// If an elementary flow was added, make sure that our graph shows
 		// elementary flow.
@@ -93,8 +96,7 @@ public class AddExchangeCommand extends Command {
 			editor.config.setShowElementaryFlows(true);
 
 		var ioPane = forInput ? node.getInputIOPane() : node.getOutputIOPane();
-		if (exchange != null)
-			ioPane.addChild(new ExchangeItem(exchange));
+		ioPane.addChild(new ExchangeItem(exchange));
 
 		editor.setDirty(process);
 	}
