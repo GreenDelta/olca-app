@@ -1,9 +1,12 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
+import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
@@ -14,7 +17,9 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.io.ecospold2.input.EcoSpold2Import;
 import org.openlca.io.ecospold2.input.ImportConfig;
 
@@ -23,8 +28,7 @@ import org.openlca.io.ecospold2.input.ImportConfig;
  */
 public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
-	private FileImportPage filePage;
-
+	private Page page;
 	private File initialFile;
 
 	public static void of(File file) {
@@ -54,13 +58,8 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 			addPage(new NoDatabaseErrorPage());
 			return;
 		}
-
-		filePage = initialFile != null
-				? new FileImportPage(initialFile)
-				: new FileImportPage(".zip", ".spold");
-		filePage.withMultiSelection = true;
-		filePage.withMappingFile = true;
-		addPage(filePage);
+		page = new Page(initialFile);
+		addPage(page);
 	}
 
 	@Override
@@ -84,22 +83,63 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 	}
 
 	private EcoSpold2Import createImport() {
-		File[] files = filePage.getFiles();
+		var files = page.files();
 		IDatabase db = Database.get();
 		if (files == null || files.length == 0 || db == null)
 			return null;
-		ImportConfig conf = new ImportConfig(db);
+		var conf = new ImportConfig(db);
 		if (App.runsInDevMode()) {
 			conf.checkFormulas = true;
 			conf.skipNullExchanges = true;
 			conf.withParameterFormulas = false;
 			conf.withParameters = false;
 		}
-		if (filePage.flowMap != null) {
-			conf.setFlowMap(filePage.flowMap);
+		if (page.flowMap != null) {
+			conf.setFlowMap(page.flowMap);
 		}
 		EcoSpold2Import pi = new EcoSpold2Import(conf);
 		pi.setFiles(files);
 		return pi;
+	}
+
+	private static class Page extends WizardPage {
+		private List<File> _files;
+		FlowMap flowMap;
+
+		Page(File initial) {
+			super("EcoSpold2ImportWizard.Page");
+			setTitle("Import EcoSpold 2 data sets");
+			setDescription("Import data sets from EcoSpold 2 files");
+			this._files = initial != null
+					? List.of(initial)
+					: List.of();
+			setPageComplete(!_files.isEmpty());
+		}
+
+		File[] files() {
+			return _files.toArray(File[]::new);
+		}
+
+		@Override
+		public void createControl(Composite parent) {
+			var body = UI.composite(parent);
+			UI.gridLayout(body, 1);
+
+			FilePanel.on(files -> {
+						this._files = files;
+						setPageComplete(!files.isEmpty());
+					})
+					.withExtensions("*.xml", "*.zip", "*.spold")
+					.withFiles(_files)
+					.render(body);
+
+			var mapComp = UI.composite(body);
+			UI.gridLayout(mapComp, 3);
+			UI.fillHorizontal(mapComp);
+			MappingSelector.on(fm -> this.flowMap = fm)
+					.render(mapComp);
+
+			setControl(body);
+		}
 	}
 }

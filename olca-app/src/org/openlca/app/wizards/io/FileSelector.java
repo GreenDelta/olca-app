@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
@@ -49,6 +50,7 @@ class FileSelector {
 
 	void render(Composite comp) {
 		var fileText = UI.labeledText(comp, M.File, SWT.READ_ONLY);
+		fileText.setBackground(Colors.systemColor(SWT.COLOR_LIST_BACKGROUND));
 		if (selection != null) {
 			fileText.setText(selection.getName());
 		}

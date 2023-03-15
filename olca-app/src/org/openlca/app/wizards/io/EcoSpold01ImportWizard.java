@@ -57,10 +57,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			return;
 		}
 
-		List<File> initFiles = initialFile != null
-				? List.of(initialFile)
-				: List.of();
-		filePage = new FilePage(initFiles);
+		filePage = new FilePage(initialFile);
 		addPage(filePage);
 
 		mappingPage = new UnitMappingPage() {
@@ -122,12 +119,14 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		private List<File> _files;
 		FlowMap flowMap;
 
-		FilePage(List<File> files) {
+		FilePage(File initial) {
 			super("EcoSpold01ImportWizard.FilePage");
 			setTitle("Import EcoSpold 1 data sets");
 			setDescription("Import data sets from Xml or Zip files");
-			this._files = files;
-			setPageComplete(!files.isEmpty());
+			this._files = initial != null
+				? List.of(initial)
+				: List.of();
+			setPageComplete(!_files.isEmpty());
 		}
 
 		File[] files() {
