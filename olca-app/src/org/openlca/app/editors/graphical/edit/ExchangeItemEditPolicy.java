@@ -4,6 +4,7 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -15,6 +16,9 @@ import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
 import org.openlca.app.editors.graphical.model.commands.ReconnectLinkCommand;
+
+import java.util.Collection;
+import java.util.Collections;
 
 public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 
@@ -119,11 +123,17 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 		var editor = exchangeItem.getGraph().getEditor();
 		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
 		var registry = viewer.getEditPartRegistry();
-		for (var part : registry.values())
-			if (part instanceof ExchangeEditPart exchangePart) {
-				if (exchangeItem.matches(exchangePart.getModel()))
-					((ExchangeFigure) exchangePart.getFigure()).setHighlighted(b);
-			}
+
+		@SuppressWarnings("unchecked")
+		Collection<EditPart> parts = Collections.checkedCollection(registry.values(),
+				EditPart.class);
+
+		parts.stream()
+				.filter(part -> part instanceof ExchangeEditPart)
+				.map(ExchangeEditPart.class::cast)
+				.filter(part -> !part.getModel().isConnected())
+				.filter(part -> exchangeItem.matches(part.getModel()))
+				.forEach(part -> ((ExchangeFigure) part.getFigure()).setHighlighted(b));
 	}
 
 }
