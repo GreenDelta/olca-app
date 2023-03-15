@@ -1,7 +1,6 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
@@ -12,7 +11,6 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
 
 class FileSelector {
 
@@ -35,10 +33,7 @@ class FileSelector {
 			extensions = null;
 			return this;
 		}
-		extensions = Arrays.stream(exts)
-				.filter(Strings::notEmpty)
-				.map(e -> e.startsWith("*.") ? e : "*." + e)
-				.toArray(String[]::new);
+		extensions = exts;
 		return this;
 	}
 

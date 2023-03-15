@@ -59,10 +59,7 @@ class FilePanel {
 			extensions = null;
 			return this;
 		}
-		extensions = Arrays.stream(exts)
-				.filter(Strings::notEmpty)
-				.map(e -> e.startsWith("*.") ? e : "*." + e)
-				.toArray(String[]::new);
+		extensions = exts;
 		return this;
 	}
 
