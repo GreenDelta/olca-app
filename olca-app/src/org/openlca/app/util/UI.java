@@ -32,6 +32,8 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openlca.util.OS.WINDOWS;
+
 public class UI {
 
 	private UI() {
@@ -256,10 +258,12 @@ public class UI {
 		gridData(s, true, false);
 		s.setText(title);
 
-		s.setTitleBarBackground(Colors.white());
-		s.setTitleBarBorderColor(Colors.get(122, 122, 122));
-		s.setTitleBarForeground(Colors.get(38, 38, 38));
-		s.setToggleColor(Colors.get(38, 38, 38));
+		if (org.openlca.util.OS.get() == WINDOWS) {
+			s.setTitleBarBackground(Colors.white());
+			s.setTitleBarBorderColor(Colors.get(122, 122, 122));
+			s.setTitleBarForeground(Colors.get(38, 38, 38));
+			s.setToggleColor(Colors.get(38, 38, 38));
+		}
 
 		return s;
 	}
