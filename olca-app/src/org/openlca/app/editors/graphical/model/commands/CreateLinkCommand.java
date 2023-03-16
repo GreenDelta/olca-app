@@ -56,9 +56,13 @@ public class CreateLinkCommand extends Command {
 		if (target != null) {
 			var descriptor = target.getNode().descriptor;
 			if (type == FlowType.PRODUCT_FLOW) {
-				// setting the exchange ID to the internal ID before saving the process.
 				processLink.processId = descriptor.id;
-				processLink.exchangeId = target.exchange.internalId;
+				// setting the exchange ID to the internal ID if the entity is dirty.
+				var entity = target.getNode().getEntity();
+				var entityIsDirty = getGraph().getEditor().isDirty(entity);
+				processLink.exchangeId = entityIsDirty
+						? target.exchange.internalId
+						: target.exchange.id;
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.providerId = descriptor.id;
 				processLink.setProviderType(descriptor.type);
@@ -71,8 +75,12 @@ public class CreateLinkCommand extends Command {
 				processLink.setProviderType(descriptor.type);
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.processId = descriptor.id;
-				// setting the exchange ID to the internal ID before saving the process.
-				processLink.exchangeId = source.exchange.internalId;
+				// setting the exchange ID to the internal ID if the entity is dirty.
+				var entity = source.getNode().getEntity();
+				var entityIsDirty = getGraph().getEditor().isDirty(entity);
+				processLink.exchangeId = entityIsDirty
+						? source.exchange.internalId
+						: source.exchange.id;
 			}
 		}
 		return processLink;

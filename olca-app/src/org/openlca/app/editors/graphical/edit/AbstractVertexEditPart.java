@@ -120,8 +120,7 @@ public abstract class AbstractVertexEditPart<N extends Component> extends
 			return null;
 
 		// TODO: waste links
-		if (input.exchange.id != link.processLink.exchangeId
-			&& input.isConnected())
+		if (!input.matchesLink(link.processLink) && input.isConnected())
 			return null;
 
 		return new LinkAnchor(getOwner(input), true);
