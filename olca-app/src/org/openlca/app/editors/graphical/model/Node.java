@@ -68,12 +68,19 @@ public class Node extends MinMaxComponent {
 	}
 
 	/**
-	 * The RootEntity of this is not instantiate in the constructor for
+	 * The RootEntity of this is lazily instantiate in the constructor for
 	 * computational reasons.
 	 */
 	public RootEntity getEntity() {
-		if (entity == null)
+		// If the corresponding entity is dirty, the dirty one is return.
+		if (entity == null
+				&& getGraph() != null && getGraph().getEditor() != null) {
+				entity = getGraph().getEditor().getDirty(descriptor.id);
+		}
+		// Otherwise, it is retrieved from the DB.
+		if (entity == null) {
 			entity = db.get(descriptor.type.getModelClass(), descriptor.id);
+		}
 		return entity;
 	}
 
@@ -207,7 +214,7 @@ public class Node extends MinMaxComponent {
 	/**
 	 * isExpanded can be set manually with a quick bit operation when expanding
 	 * or collapsing the node. However, it is sometime necessary that the Node
-	 * updates itself its status when it is not know out of the box.
+	 * updates itself its status when it is not known out of the box.
 	 */
 	public void updateIsExpanded(int side) {
 		var sourceNodeIds = getAllTargetConnections().stream()
