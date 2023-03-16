@@ -1,6 +1,8 @@
 package org.openlca.app.rcp;
 
+import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -35,6 +37,7 @@ public class RcpWorkbenchAdvisor extends WorkbenchAdvisor {
 			Console.show();
 		}
 		changeWorkbenchImages();
+		disableExtensions();
 	}
 
 	/**
@@ -61,4 +64,24 @@ public class RcpWorkbenchAdvisor extends WorkbenchAdvisor {
 			log.error("failed to patch workbench images", e);
 		}
 	}
+
+	private void disableExtensions() {
+
+		// disable unwanted preference pages
+		// a warning "Invalid preference category path: ..." may show up in the
+		// logs because of categories of preference pages that do not exist;
+		var prefs = PlatformUI.getWorkbench().getPreferenceManager();
+		var nodes = prefs.getElements(PreferenceManager.PRE_ORDER);
+		for (var node : nodes) {
+			var id = node.getId();
+			if (id == null) {
+				continue;
+			}
+			if (node.getId().contains("org.eclipse")) {
+				prefs.remove(node);
+				node.disposeResources();
+			}
+		}
+	}
+
 }
