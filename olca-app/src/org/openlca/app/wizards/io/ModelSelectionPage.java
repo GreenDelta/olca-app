@@ -22,9 +22,11 @@ import org.openlca.app.navigation.NavigationComparator;
 import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryDirElement;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.app.util.Colors;
@@ -74,16 +76,16 @@ class ModelSelectionPage extends WizardPage {
 
 	public List<RootDescriptor> getSelectedModels() {
 		return selectionProvider.getSelection()
-			.stream()
-			.filter(elem -> elem instanceof ModelElement)
-			.map(elem -> ((ModelElement) elem).getContent())
-			.toList();
+				.stream()
+				.filter(elem -> elem instanceof ModelElement)
+				.map(elem -> ((ModelElement) elem).getContent())
+				.toList();
 	}
 
 	private void createTexts() {
 		var typeName = types == null || types.length != 1
-			? M.DataSets
-			: Labels.plural(types[0]);
+				? M.DataSets
+				: Labels.plural(types[0]);
 		setTitle(M.bind(M.Select, typeName));
 		var descr = M.bind(M.SelectObjectPage_Description, typeName);
 		setDescription(descr);
@@ -91,19 +93,15 @@ class ModelSelectionPage extends WizardPage {
 
 	void checkCompletion() {
 		setPageComplete(
-			exportDestination != null
-				&& selectionProvider != null
-				&& !selectionProvider.getSelection().isEmpty());
+				exportDestination != null
+						&& selectionProvider != null
+						&& !selectionProvider.getSelection().isEmpty());
 	}
 
 	@Override
 	public void createControl(final Composite parent) {
-		Composite body = UI.composite(parent);
-		GridLayout bodyLayout = new GridLayout(1, true);
-		bodyLayout.marginHeight = 10;
-		bodyLayout.marginWidth = 10;
-		bodyLayout.verticalSpacing = 10;
-		body.setLayout(bodyLayout);
+		var body = UI.composite(parent);
+		UI.gridLayout(body, 1);
 		createChooseTargetComposite(body);
 		createViewer(body);
 		setControl(body);
@@ -111,17 +109,17 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private void createChooseTargetComposite(final Composite body) {
-		Composite composite = UI.composite(body);
-		GridLayout layout = UI.gridLayout(composite, 3);
+		var composite = UI.composite(body);
+		var layout = UI.gridLayout(composite, 3);
 		layout.marginHeight = 0;
 		layout.marginWidth = 5;
-		UI.gridData(composite, true, false);
+		UI.fillHorizontal(composite);
 		String label = targetIsDir ? M.ToDirectory : M.ToFile;
 		new Label(composite, SWT.NONE).setText(label);
 		Text text = createTargetText(composite);
 		text.setEditable(false);
 		text.setBackground(Colors.white());
-		Button button = new Button(composite, SWT.NONE);
+		var button = new Button(composite, SWT.NONE);
 		button.setText(M.Browse);
 		Controls.onSelect(button, (e) -> selectTarget(text));
 	}
@@ -146,8 +144,8 @@ class ModelSelectionPage extends WizardPage {
 
 	private void selectTarget(Text text) {
 		exportDestination = targetIsDir
-			? FileChooser.selectFolder()
-			: FileChooser.forSavingFile(M.Export, defaultName());
+				? FileChooser.selectFolder()
+				: FileChooser.forSavingFile(M.Export, defaultName());
 		if (exportDestination == null)
 			return;
 		String path = exportDestination.getAbsolutePath();
@@ -159,8 +157,8 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private Composite createViewerComposite(final Composite body) {
-		Composite composite = UI.composite(body);
-		GridLayout layout = new GridLayout(2, false);
+		var composite = UI.composite(body);
+		var layout = new GridLayout(2, false);
 		layout.marginLeft = 0;
 		layout.marginRight = 0;
 		layout.marginBottom = 0;
@@ -189,8 +187,8 @@ class ModelSelectionPage extends WizardPage {
 
 	private INavigationElement<?> getInput() {
 		return types != null && types.length == 1
-			? Navigator.findElement(types[0])
-			: Navigator.findElement(Database.getActiveConfiguration());
+				? Navigator.findElement(types[0])
+				: Navigator.findElement(Database.getActiveConfiguration());
 	}
 
 	private Set<INavigationElement<?>> getInitialSelection() {
@@ -199,8 +197,10 @@ class ModelSelectionPage extends WizardPage {
 		if (navigator == null)
 			return new HashSet<>();
 		return new HashSet<>(Navigator.collect(navigator.getAllSelected(),
-			elem -> !(elem instanceof LibraryDirElement),
-			elem -> elem instanceof ModelElement m && fitsType(m) ? elem : null));
+				elem -> !(elem instanceof LibraryDirElement)
+						&& !(elem instanceof DatabaseElement)
+						&& !(elem instanceof ModelTypeElement),
+				elem -> elem instanceof ModelElement m && fitsType(m) ? elem : null));
 	}
 
 	private boolean fitsType(ModelElement element) {
@@ -213,7 +213,7 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private class ModelContentProvider extends
-		TreeCheckStateContentProvider<INavigationElement<?>> {
+			TreeCheckStateContentProvider<INavigationElement<?>> {
 
 		@Override
 		protected List<INavigationElement<?>> childrenOf(INavigationElement<?> element) {
