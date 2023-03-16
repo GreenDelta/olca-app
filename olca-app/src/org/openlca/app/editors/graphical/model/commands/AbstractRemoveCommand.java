@@ -171,6 +171,9 @@ public abstract class AbstractRemoveCommand extends Command {
 		graph.getProductSystem().processes.remove(process);
 		var node = graph.getNode(process);
 		if (node != null) {
+			if (editor.isDirty(node.getEntity())) {
+				editor.removeDirty(node.getEntity());
+			}
 			// Add the deleted node if not already done.
 			nodes.add(node);
 			graph.removeChildQuietly(node);

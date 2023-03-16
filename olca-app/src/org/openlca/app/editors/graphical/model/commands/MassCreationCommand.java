@@ -118,6 +118,9 @@ public class MassCreationCommand extends Command {
 
 	private void removeNodeQuietly(Node node) {
 		graph.getProductSystem().processes.remove(node.descriptor.id);
+		if (editor.isDirty(node.getEntity())) {
+			editor.removeDirty(node.getEntity());
+		}
 		graph.removeChildQuietly(node);
 	}
 

@@ -58,7 +58,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	// TODO: save this in the same way as the layout is currently stored
 	public final GraphConfig config = new GraphConfig();
 	private final GraphFactory graphFactory = new GraphFactory(this);
-	private final Set<Process> dirtyProcesses = new HashSet<>();
+	private final Set<RootEntity> dirtyEntities = new HashSet<>();
 
 	public GraphEditor(ProductSystemEditor editor) {
 		this.systemEditor = editor;
@@ -243,8 +243,8 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	 * Set the product system editor dirty and add the eventual other dirty
 	 * entities.
 	 */
-	public void setDirty(Process... processes) {
-		dirtyProcesses.addAll(List.of(processes));
+	public void setDirty(RootEntity... entities) {
+		dirtyEntities.addAll(List.of(entities));
 		systemEditor.setDirty(true);
 	}
 
@@ -254,7 +254,11 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	}
 
 	public boolean isDirty(RootEntity entity) {
-		return dirtyProcesses.contains(entity);
+		return dirtyEntities.contains(entity);
+	}
+
+	public boolean removeDirty(RootEntity entity) {
+		return dirtyEntities.remove(entity);
 	}
 
 	public ProductSystem getProductSystem() {
@@ -279,38 +283,36 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	 */
 	public void doSave() {
 		// Copying the set to avoid concurrent modification.
-		var processes = new HashSet<>(dirtyProcesses);
-		for (var process : processes) {
-			saveProcess(process);
+		var entities = new HashSet<>(dirtyEntities);
+		for (var entity : entities) {
+			saveEntity(entity);
 		}
-		dirtyProcesses.clear();
+		dirtyEntities.clear();
 	}
 
-	private void saveProcess(Process process) {
+	private void saveEntity(RootEntity entity) {
+		var node = getModel().getNode(entity.id);
+		var exchanges = GraphFactory.getExchanges(entity, node.descriptor.type);
 		// Mapping the exchanges of the process with the ProcessLinks.
 		var mapPLinkToExchange = new HashMap<ProcessLink, Exchange>();
-		var links = getModel().getNode(process.id).getAllLinks().stream()
+		node.getAllLinks().stream()
 				.map(GraphLink.class::cast)
 				.map(graphLink -> graphLink.processLink)
-				.toList();
-		for (var link : links) {
-			for (var exchange : process.exchanges) {
-				if (exchange.internalId == link.exchangeId) {
-					mapPLinkToExchange.put(link, exchange);
-				}
-			}
-		}
+				.forEach(link -> exchanges.stream()
+						.filter(exchange -> exchange.internalId == link.exchangeId)
+						.forEach(exchange -> mapPLinkToExchange.put(link, exchange)));
 
-		process.lastChange = Calendar.getInstance().getTimeInMillis();
-		Version.incUpdate(process);
+		entity.lastChange = Calendar.getInstance().getTimeInMillis();
+		Version.incUpdate(entity);
 		var db = Database.get();
-		db.update(process);
+		db.update(entity);
 
-		var newProcess = db.get(Process.class, process.id);
+		var newEntity = db.get(entity.getClass(), entity.id);
+		var newExchanges = GraphFactory.getExchanges(newEntity, node.descriptor.type);
 		// Updating ProcessLink.exchangeId with the updated exchange.id.
 		for (var entry : mapPLinkToExchange.entrySet()) {
 			var oldExchange = entry.getValue();
-			for (var exchange : newProcess.exchanges) {
+			for (var exchange : newExchanges) {
 				if (oldExchange.internalId == exchange.internalId) {
 					entry.getKey().exchangeId = exchange.id;
 				}
