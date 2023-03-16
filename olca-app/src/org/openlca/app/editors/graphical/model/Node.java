@@ -90,8 +90,7 @@ public class Node extends MinMaxComponent {
 				continue;
 			if (type == FlowType.PRODUCT_FLOW)
 				return exchangeItem;
-			if (type == FlowType.WASTE_FLOW
-					&& exchange.id == link.exchangeId)
+			if (type == FlowType.WASTE_FLOW && exchangeItem.matchesLink(link))
 				return exchangeItem;
 		}
 		return null;
@@ -108,8 +107,7 @@ public class Node extends MinMaxComponent {
 			if (exchange == null || !exchange.isInput ||
 					exchange.flow == null || exchange.flow.id != link.flowId)
 				continue;
-			if (type == FlowType.PRODUCT_FLOW
-					&& exchange.id == link.exchangeId)
+			if (type == FlowType.PRODUCT_FLOW && exchangeItem.matchesLink(link))
 				return exchangeItem;
 			if (type == FlowType.WASTE_FLOW)
 				return exchangeItem;

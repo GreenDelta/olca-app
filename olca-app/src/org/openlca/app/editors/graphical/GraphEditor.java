@@ -301,7 +301,6 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 				.forEach(link -> exchanges.stream()
 						.filter(exchange -> exchange.internalId == link.exchangeId)
 						.forEach(exchange -> mapPLinkToExchange.put(link, exchange)));
-
 		entity.lastChange = Calendar.getInstance().getTimeInMillis();
 		Version.incUpdate(entity);
 		var db = Database.get();

@@ -90,6 +90,9 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 		ExchangeItem other = link.getTargetNode().getInput(link.processLink);
 		if (!toConnect.matches(other))
 			return null;
+		boolean sameNode = toConnect.matchesLink(link.processLink);
+		if (!sameNode && toConnect.isConnected())
+			return null;
 		return new ReconnectLinkCommand(toConnect.getNode(), other, link);
 	}
 
@@ -100,7 +103,7 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 		ExchangeItem other = link.getSourceNode().getOutput(link.processLink);
 		if (!toConnect.matches(other))
 			return null;
-		boolean sameNode = toConnect.exchange.id == link.processLink.exchangeId;
+		boolean sameNode = toConnect.matchesLink(link.processLink);
 		if (!sameNode && toConnect.isConnected())
 			return null;
 		return new ReconnectLinkCommand(link.getSourceNode(), toConnect, link);

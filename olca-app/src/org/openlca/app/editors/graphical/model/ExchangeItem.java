@@ -76,24 +76,34 @@ public class ExchangeItem extends Component {
 		var linkSearch = node.getGraph().linkSearch;
 		var links = linkSearch.getConnectionLinks(node.descriptor.id);
 		for (ProcessLink link : links) {
-			if (getGraph().getEditor().isDirty(getNode().getEntity())) {
-				if (link.exchangeId == exchange.internalId)
-					return true;
-			}
-			else if (link.exchangeId == exchange.id)
+			if (matchesLink(link))
 				return true;
 		}
 		return false;
 	}
 
-	public boolean matches(ExchangeItem exchangeItem) {
-		if (exchangeItem == null
-			|| this.exchange == null
-			|| exchangeItem.exchange == null)
+	/**
+	 * Check if the two exchange items can be linked.
+	 * This method does not check if one of the item is already connected.
+	 */
+	public boolean matches(ExchangeItem other) {
+		if (other == null	|| this.exchange == null || other.exchange == null)
 			return false;
-		if (!Objects.equals(exchange.flow, exchangeItem.exchange.flow))
+		if (!Objects.equals(exchange.flow, other.exchange.flow))
 			return false;
-		return exchange.isInput != exchangeItem.exchange.isInput;
+		return exchange.isInput != other.exchange.isInput;
+	}
+
+	/**
+	 * Check if this <code>ExchangeItem.exchange</code> matches the
+	 * <code>ProcessLink</code> exchange in a saved or unsaved process context.
+	 */
+	public boolean matchesLink(ProcessLink link) {
+		if (getGraph() != null && getGraph().getEditor() != null
+				&& getGraph().getEditor().isDirty(getNode().getEntity())) {
+			return link.exchangeId == exchange.internalId;
+		} else
+			return link.exchangeId == exchange.id;
 	}
 
 	public boolean canBeReferenceFlow() {

@@ -53,16 +53,14 @@ public class GraphLink extends Link {
 	/**
 	 * Getting the deepest representation (in the model tree) of the component.
 	 */
-	private Component adaptComponent(Component component,
-																	 boolean isSource) {
+	private Component adaptComponent(Component component, boolean isSource) {
 		if (component instanceof Node node) {
 			if (!node.isMinimized()) {
 				ExchangeItem newComponent = isSource
-					? node.getOutput(processLink)
-					: node.getInput(processLink);
+						? node.getOutput(processLink)
+						: node.getInput(processLink);
 				return newComponent != null ? newComponent : component;
-			}
-			else return component;
+			} else return component;
 		}
 		if (component instanceof ExchangeItem item)
 			if (item.getNode().isMinimized())
@@ -80,13 +78,13 @@ public class GraphLink extends Link {
 			return null;
 		var sourceNode = getSourceNode();
 		if (sourceNode != null
-			&& sourceNode.descriptor != null
-			&& sourceNode.descriptor.id == processLink.providerId)
+				&& sourceNode.descriptor != null
+				&& sourceNode.descriptor.id == processLink.providerId)
 			return sourceNode;
 		var targetNode = getTargetNode();
 		if (targetNode != null
-			&& targetNode.descriptor != null
-			&& targetNode.descriptor.id == processLink.providerId)
+				&& targetNode.descriptor != null
+				&& targetNode.descriptor.id == processLink.providerId)
 			return targetNode;
 		return null;
 	}
