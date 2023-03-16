@@ -257,6 +257,13 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		return dirtyEntities.contains(entity);
 	}
 
+	public RootEntity getDirty(long id) {
+		return dirtyEntities.stream()
+				.filter(e -> e.id == id)
+				.findFirst()
+				.orElse(null);
+	}
+
 	public boolean removeDirty(RootEntity entity) {
 		return dirtyEntities.remove(entity);
 	}
