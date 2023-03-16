@@ -66,6 +66,9 @@ public class CreateNodeCommand extends Command {
 		// Remove the process from the product system.
 		var system = graph.getProductSystem();
 		system.processes.remove(descriptor.id);
+		if (editor.isDirty(node.getEntity())) {
+			editor.removeDirty(node.getEntity());
+		}
 		// Remove the node from the graph's children.
 		this.graph.removeChild(node);
 

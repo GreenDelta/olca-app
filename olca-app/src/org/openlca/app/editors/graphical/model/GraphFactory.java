@@ -74,7 +74,7 @@ public class GraphFactory {
 		panes.put(INPUT_PROP, new IOPane(true));
 		panes.put(OUTPUT_PROP, new IOPane(false));
 
-		var exchanges = getExchanges(node);
+		var exchanges = getExchanges(node.getEntity(), node.descriptor.type);
 
 		// filter and sort the exchanges
 		exchanges.stream()
@@ -118,22 +118,22 @@ public class GraphFactory {
 			link.reconnect(link.getSource(), newValue);
 	}
 
-	private List<Exchange> getExchanges(Node node) {
-		return switch (node.descriptor.type) {
+	public static List<Exchange> getExchanges(RootEntity entity, ModelType type) {
+		return switch (type) {
 			case PROCESS -> {
-				var process = (Process) node.getEntity();
+				var process = (Process) entity;
 				yield process == null
 						? Collections.emptyList()
 						: process.exchanges;
 			}
 			case PRODUCT_SYSTEM -> {
-				var system = (ProductSystem) node.getEntity();
+				var system = (ProductSystem) entity;
 				yield system == null || system.referenceExchange == null
 						? Collections.emptyList()
 						: Collections.singletonList(system.referenceExchange);
 			}
 			case RESULT -> {
-				var result = (Result) node.getEntity();
+				var result = (Result) entity;
 				var refFlow = result.referenceFlow;
 				if (refFlow == null)
 					yield Collections.emptyList();
