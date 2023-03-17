@@ -2,12 +2,14 @@ package org.openlca.app.db;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.navigation.CopyPaste;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DatabaseConfigList;
@@ -24,7 +26,7 @@ public class Database {
 	private static IDatabase database;
 	private static DatabaseConfig config;
 	private static DatabaseListener listener;
-	private static final DatabaseConfigList configurations = loadConfigs();
+	private static final DatabaseConfigList configurations = readConfigs();
 
 	private Database() {
 	}
@@ -83,11 +85,46 @@ public class Database {
 		Repository.close();
 	}
 
-	private static DatabaseConfigList loadConfigs() {
+	private static DatabaseConfigList readConfigs() {
 		var file = new File(Workspace.root(), "databases.json");
-		return !file.exists()
-				? new DatabaseConfigList()
-				: DatabaseConfigList.read(file);
+		if (!file.exists())
+			return new DatabaseConfigList();
+
+		var configs = DatabaseConfigList.read(file);
+
+		// sync local databases with workspace; the databases.json file
+		// could be out-of-sync with the databases folder
+		var found = new HashSet<String>();
+		for (var local : configs.getDerbyConfigs()) {
+			var dbDir = DatabaseDir.getRootFolder(local.name());
+			found.add(local.name());
+			if (!dbDir.exists()) {
+				// we do not delete the config currently
+				LoggerFactory.getLogger(Database.class).warn(
+						"registered database '{}' does not exist in workspace",
+						local.name());
+			}
+		}
+
+		// add configs for non-registered databases
+		var dbDirs = Workspace.dbDir().listFiles();
+		var updated = false;
+		if (dbDirs != null) {
+			for (var dbDir : dbDirs) {
+				var name = dbDir.getName();
+				if (!found.contains(name) && Derby.isDerbyFolder(dbDir)) {
+					var config = new DerbyConfig().name(name);
+					configs.getDerbyConfigs().add(config);
+					updated = true;
+				}
+			}
+		}
+
+		if (updated) {
+			configs.write(file);
+		}
+
+		return configs;
 	}
 
 	private static void saveConfig() {

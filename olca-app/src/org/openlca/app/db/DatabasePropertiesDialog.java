@@ -1,14 +1,11 @@
 package org.openlca.app.db;
 
-import java.io.File;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
@@ -22,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class DatabasePropertiesDialog extends FormDialog {
 
-	private DatabaseConfig config;
+	private final DatabaseConfig config;
 
 	public DatabasePropertiesDialog(DatabaseConfig config) {
 		super(UI.shell());
@@ -30,53 +27,54 @@ public class DatabasePropertiesDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
-		FormToolkit toolkit = managedForm.getToolkit();
-		ScrolledForm form = UI.header(managedForm, M.Properties);
-		Composite body = UI.body(form, toolkit);
-		Composite content = UI.composite(body, toolkit);
+	protected void createFormContent(IManagedForm mForm) {
+		var tk = mForm.getToolkit();
+		var form = UI.header(mForm, M.Database + ": " + config.name());
+		var body = UI.body(form, tk);
+		var content = UI.composite(body, tk);
 		UI.gridLayout(content, 2);
-		if (config instanceof DerbyConfig) {
-			DerbyConfig derbyConfig = (DerbyConfig) config;
-			renderDerbyConfig(derbyConfig, content, toolkit);
-		} else if (config instanceof MySqlConfig) {
-			MySqlConfig mysqlConfig = (MySqlConfig) config;
-			renderMysqlConfiguration(mysqlConfig, content, toolkit);
+		if (config instanceof DerbyConfig derbyConfig) {
+			renderDerbyConfig(derbyConfig, content, tk);
+		} else if (config instanceof MySqlConfig mysqlConfig) {
+			renderMysqlConfiguration(mysqlConfig, content, tk);
 		}
 	}
 
-	private void renderMysqlConfiguration(MySqlConfig conf,
-			Composite parent, FormToolkit toolkit) {
-		UI.labeledText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
-				M.RemoteDatabase);
-		UI.labeledText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
-				conf.name());
-		UI.labeledText(parent, toolkit, M.Host, SWT.READ_ONLY).setText(
-				conf.host());
-		UI.labeledText(parent, toolkit, M.Port, SWT.READ_ONLY).setText(
-				Integer.toString(conf.port()));
-		UI.labeledText(parent, toolkit, M.User, SWT.READ_ONLY).setText(
-				conf.user());
+	private void renderMysqlConfiguration(
+			MySqlConfig conf, Composite parent, FormToolkit tk
+	) {
+		UI.labeledText(parent, tk, M.Type, SWT.READ_ONLY)
+				.setText(M.RemoteDatabase);
+		UI.labeledText(parent, tk, M.Name, SWT.READ_ONLY)
+				.setText(conf.name());
+		UI.labeledText(parent, tk, M.Host, SWT.READ_ONLY)
+				.setText(conf.host());
+		UI.labeledText(parent, tk, M.Port, SWT.READ_ONLY)
+				.setText(Integer.toString(conf.port()));
+		UI.labeledText(parent, tk, M.User, SWT.READ_ONLY)
+				.setText(conf.user());
 		boolean withPassword = Strings.notEmpty(conf.password());
-		UI.labeledText(parent, toolkit, M.WithPassword, SWT.READ_ONLY)
-				.setText(Boolean.toString(withPassword));
+		UI.labeledText(parent, tk, M.WithPassword, SWT.READ_ONLY)
+				.setText(withPassword ? M.Yes : M.No);
 	}
 
-	private void renderDerbyConfig(DerbyConfig conf, Composite parent,
-																 FormToolkit toolkit) {
-		UI.labeledText(parent, toolkit, M.Type, SWT.READ_ONLY).setText(
-				M.LocalDatabase);
-		UI.labeledText(parent, toolkit, M.Name, SWT.READ_ONLY).setText(
-				conf.name());
-		UI.label(parent, toolkit, M.Folder);
-		renderFolderLink(conf, parent, toolkit);
+	private void renderDerbyConfig(
+			DerbyConfig conf, Composite parent, FormToolkit tk
+	) {
+		UI.labeledText(parent, tk, M.Type, SWT.READ_ONLY)
+				.setText(M.LocalDatabase);
+		UI.labeledText(parent, tk, M.Name, SWT.READ_ONLY)
+				.setText(conf.name());
+		UI.label(parent, tk, M.Folder);
+		renderFolderLink(conf, parent, tk);
 	}
 
-	private void renderFolderLink(DerbyConfig conf, Composite parent,
-																FormToolkit toolkit) {
-		File folder = DatabaseDir.getRootFolder(conf.name());
-		String path = folder.toURI().toString();
-		Hyperlink link = UI.hyperlink(parent, toolkit);
+	private void renderFolderLink(
+			DerbyConfig conf, Composite parent, FormToolkit tk
+	) {
+		var folder = DatabaseDir.getRootFolder(conf.name());
+		var path = folder.toURI().toString();
+		var link = UI.hyperlink(parent, tk);
 		link.setText(Strings.cut(path, 75));
 		link.setToolTipText(path);
 		Controls.onClick(link, e -> {
