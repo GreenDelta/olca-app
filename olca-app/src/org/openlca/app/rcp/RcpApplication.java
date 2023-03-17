@@ -1,12 +1,11 @@
 package org.openlca.app.rcp;
 
+import static org.openlca.util.OS.WINDOWS;
+
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.preferences.Theme;
 import org.openlca.util.OS;
-
-import static org.openlca.util.OS.WINDOWS;
 
 public class RcpApplication implements IApplication {
 
@@ -15,7 +14,7 @@ public class RcpApplication implements IApplication {
 		var display = PlatformUI.createDisplay();
 		if (OS.get() == WINDOWS) {
 			// TODO: check if we would need that
-			// RcpTheme.setDarkTheme(Theme.isDark());
+			// RcpTheme.setDarkTheme(Display.isSystemDarkTheme());
 		}
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(
