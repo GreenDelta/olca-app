@@ -12,7 +12,6 @@ public final class Preferences extends AbstractPreferenceInitializer {
 
 	public static final String NUMBER_ACCURACY = "NUMBER_ACCURACY";
 	public static final String FORMAT_INPUT_VALUES = "FORMAT_INPUT_VALUES";
-	public static final String LAST_IMPORT_FOLDER = "LAST_IMPORT_FOLDER";
 	public static final String LAST_EXPORT_FOLDER = "LAST_EXPORT_FOLDER";
 
 	@Override

@@ -81,12 +81,12 @@ public class RenameParameterDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
 
-		text = UI.formText(comp, tk, "New name");
+		text = UI.labeledText(comp, tk, "New name");
 		if (newName != null) {
 			text.setText(newName);
 		} else if (param.name != null) {
@@ -108,13 +108,13 @@ public class RenameParameterDialog extends FormDialog {
 		});
 
 		if (usageTree.nodes.isEmpty()) {
-			UI.formLabel(body, tk,
+			UI.label(body, tk,
 					"The parameter is currently not used"
 							+ " so it is save to rename it.");
 			return;
 		}
 
-		UI.formLabel(body, tk,
+		UI.label(body, tk,
 				"The parameter will be also renamed where it is used:")
 				.setFont(UI.boldFont());
 

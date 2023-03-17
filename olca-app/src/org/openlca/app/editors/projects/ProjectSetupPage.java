@@ -77,9 +77,9 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ScrolledForm form = UI.formHeader(this);
+		ScrolledForm form = UI.header(this);
 		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		Composite body = UI.body(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		createCalculationButton(infoSection.composite());
@@ -100,10 +100,10 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private void createCalculationButton(Composite parent) {
-		UI.formFiller(parent, toolkit);
-		var comp = UI.formComposite(parent, toolkit);
+		UI.filler(parent, toolkit);
+		var comp = UI.composite(parent, toolkit);
 		UI.gridLayout(comp, 1, 0, 0).marginHeight = 5;
-		var button = UI.formButton(comp, toolkit, M.Calculate);
+		var button = UI.button(comp, toolkit, M.Calculate);
 		UI.gridData(button, false, false).widthHint = 100;
 		button.setImage(Images.get(ModelType.PROJECT));
 		Controls.onSelect(button,

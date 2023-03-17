@@ -37,7 +37,14 @@
 
         var codeMirror = CodeMirror(document.body, {
             mode: "python",
-            lineNumbers: true
+            lineNumbers: true,
+            extraKeys: {
+                "Ctrl-S": function() {
+                    if (window._onSave) {
+                        window._onSave();
+                    }
+                }
+            }
         });
 
         codeMirror.on("change", function () {

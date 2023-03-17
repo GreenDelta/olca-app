@@ -52,9 +52,10 @@ public class BuildSupplyChainAction extends BuildAction {
 			return;
 		var system = editor.getProductSystem();
 		try {
-			if (editor.promptSaveIfNecessary())
+			if (editor.promptSaveIfNecessary()) {
 				new ProgressMonitorDialog(
 						UI.shell()).run(true, false, new Runner(system));
+			}
 			graph = editor.updateModel();
 			editor.setDirty();
 			expandInputs();

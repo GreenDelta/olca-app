@@ -83,7 +83,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
 			var tk = managedForm.getToolkit();
-			var body = UI.formBody(managedForm.getForm(), tk);
+			var body = UI.body(managedForm.getForm(), tk);
 			UI.gridLayout(body, 2);
 
 			// Theme
@@ -93,7 +93,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			connectionRoutersCombo(tk, body);
 
 			// show elementary flows
-			UI.formFiller(body, tk);
+			UI.filler(body, tk);
 			var elems = tk.createButton(
 				body, "Show elementary flows", SWT.CHECK);
 			elems.setSelection(config.showElementaryFlows());
@@ -101,7 +101,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 					e -> config.setShowElementaryFlows(elems.getSelection()));
 
 			// edit mode
-			UI.formFiller(body, tk);
+			UI.filler(body, tk);
 			var isNodeEditingEnabled = tk.createButton(
 				body, "Enable process editing", SWT.CHECK);
 			isNodeEditingEnabled.setSelection(config.isNodeEditingEnabled());
@@ -111,7 +111,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		}
 
 		private void connectionRoutersCombo(FormToolkit tk, Composite comp) {
-			var combo = UI.formCombo(comp, tk, "Connections");
+			var combo = UI.labeledCombo(comp, tk, "Connections");
 			UI.gridData(combo, true, false);
 			var connectionRouters = new String[]{
 				ROUTER_NULL,
@@ -130,7 +130,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		}
 
 		private void themeCombo(FormToolkit tk, Composite comp) {
-			var combo = UI.formCombo(comp, tk, "Theme");
+			var combo = UI.labeledCombo(comp, tk, "Theme");
 			UI.gridData(combo, true, false);
 			var themes = Themes.loadFromWorkspace(Themes.MODEL);
 			var current = config.getTheme();

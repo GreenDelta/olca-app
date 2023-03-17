@@ -84,9 +84,9 @@ public class SaveScriptDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 		UI.gridLayout(body, 2);
-		var text = UI.formText(body, tk, NLS.bind(M.File, M.Name));
+		var text = UI.labeledText(body, tk, NLS.bind(M.File, M.Name));
 		text.setText(name);
 		text.addModifyListener(e -> name = text.getText());
 
@@ -96,14 +96,14 @@ public class SaveScriptDialog extends FormDialog {
 		if (db == null)
 			return;
 
-		UI.formFiller(body, tk);
+		UI.filler(body, tk);
 		var global = tk.createButton(
 				body, "As global script", SWT.RADIO);
 		global.setSelection(true);
 		Controls.onSelect(
 				global, e -> asGlobal = global.getSelection());
 
-		UI.formFiller(body, tk);
+		UI.filler(body, tk);
 		var local = tk.createButton(
 				body, "As script in database " + db.getName(),
 				SWT.RADIO);

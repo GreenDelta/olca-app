@@ -25,9 +25,9 @@ public class CollaborationPreferencePage extends PreferencePage implements IWork
 
 	@Override
 	protected Control createContents(Composite parent) {
-		var body = new Composite(parent, SWT.NONE);
+		var body = UI.composite(parent);
 		UI.gridLayout(body, 1);
-		var general = new Composite(body, SWT.NONE);
+		var general = UI.composite(body);
 		UI.gridLayout(general, 2, 0, 0);
 		createRestrictionsCheckBox(general);
 		createReferenceCheckBox(general);

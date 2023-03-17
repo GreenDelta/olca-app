@@ -49,9 +49,9 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 
 		// info section with source link
 		var info = new InfoSection(getEditor()).render(body, tk);
@@ -64,15 +64,15 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 				method.source = source;
 				editor.setDirty();
 			});
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 
 		// code
-		var codeText = UI.formText(comp, tk, "Code");
+		var codeText = UI.labeledText(comp, tk, "Code");
 		Controls.set(codeText, getModel().code, code -> {
 			getModel().code = code;
 			getEditor().setDirty();
 		});
-		UI.formFiller(comp, tk);
+		UI.filler(comp, tk);
 
 		createIndicatorTable(tk, body);
 		body.setFocus();

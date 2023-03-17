@@ -49,13 +49,13 @@ class MemoryError {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var tk = mform.getToolkit();
-			var comp = UI.formBody(mform.getForm(), tk);
+			var comp = UI.body(mform.getForm(), tk);
 			mform.getForm().setText(M.OutOfMemory);
 			UI.gridLayout(comp, 1);
 			var label = tk.createLabel(
 					comp, M.CouldNotAllocateMemoryError, SWT.WRAP);
 			UI.fillHorizontal(label);
-			var link = UI.formLink(comp, tk, "Open preference dialog");
+			var link = UI.hyperLink(comp, tk, "Open preference dialog");
 			Controls.onClick(link, $ -> openPreferences());
 		}
 

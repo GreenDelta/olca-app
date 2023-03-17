@@ -68,10 +68,10 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createProgressBar(Composite body, FormToolkit tk) {
-		var progressComp = UI.formComposite(body, tk);
+		var progressComp = UI.composite(body, tk);
 		UI.gridData(progressComp, true, false).horizontalSpan = 2;
 		UI.gridLayout(progressComp, 1);
-		infoLabel = UI.formLabel(
+		infoLabel = UI.label(
 			progressComp, tk, "Validation is running ...");
 		UI.gridData(infoLabel, true, false);
 		infoLabel.setVisible(false);
@@ -81,7 +81,7 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createCountCombo(Composite body, FormToolkit tk) {
-		var messageLabel = UI.formLabel(body, tk, "Maximum message count");
+		var messageLabel = UI.label(body, tk, "Maximum message count");
 		var gd = UI.gridData(messageLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
@@ -95,7 +95,7 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createValidationMessageCombo(Composite comp, FormToolkit tk) {
-		combo = UI.formCombo(comp, tk, "Validation messages");
+		combo = UI.labeledCombo(comp, tk, "Validation messages");
 		UI.gridData(combo, true, false);
 		combo.setItems(
 				"All messages",

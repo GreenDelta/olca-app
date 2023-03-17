@@ -32,7 +32,9 @@ class GeoImport {
 		if (file == null)
 			return;
 		System.out.println("  ... import ei3 geographies ...");
-		new GeoJsonImport(file, db).run();
+		new GeoJsonImport(file, db)
+				.withMode(GeoJsonImport.Mode.NEW_AND_UPDATE)
+				.run();
 	}
 
 	private File getFile() {

@@ -98,7 +98,7 @@ class GroupResultSection {
 	}
 
 	private void createCombos(FormToolkit toolkit, Composite client) {
-		Composite composite = UI.formComposite(client, toolkit);
+		Composite composite = UI.composite(client, toolkit);
 		UI.gridData(composite, true, false);
 		UI.gridLayout(composite, 2);
 		createFlowViewer(toolkit, composite);

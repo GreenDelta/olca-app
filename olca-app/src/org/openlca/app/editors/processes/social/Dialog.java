@@ -47,8 +47,8 @@ class Dialog extends FormDialog {
 		String title = aspect.indicator.name;
 		if (title == null)
 			title = M.SocialAspect;
-		UI.formHeader(mform, title);
-		Composite body = UI.formBody(mform.getForm(), tk);
+		UI.header(mform, title);
+		Composite body = UI.body(mform.getForm(), tk);
 		UI.gridLayout(body, 3);
 		amountRow(body, tk);
 		activityRow(body, tk);
@@ -60,21 +60,21 @@ class Dialog extends FormDialog {
 	}
 
 	private void amountRow(Composite body, FormToolkit tk) {
-		Text t = UI.formText(body, tk, M.RawValue);
+		Text t = UI.labeledText(body, tk, M.RawValue);
 		if (aspect.rawAmount != null)
 			t.setText(aspect.rawAmount);
 		t.addModifyListener(e -> aspect.rawAmount = t.getText());
 		String unit = aspect.indicator.unitOfMeasurement;
 		if (unit == null)
 			unit = "";
-		UI.formLabel(body, tk, unit);
+		UI.label(body, tk, unit);
 	}
 
 	private void activityRow(Composite body, FormToolkit tk) {
 		String label = M.ActivityVariable;
 		if (aspect.indicator.activityVariable != null)
 			label += " (" + aspect.indicator.activityVariable + ")";
-		Text t = UI.formText(body, tk, label);
+		Text t = UI.labeledText(body, tk, label);
 		t.setText(Double.toString(aspect.activityValue));
 		t.addModifyListener(e -> {
 			try {
@@ -85,7 +85,7 @@ class Dialog extends FormDialog {
 		String unit = "";
 		if (aspect.indicator.activityUnit != null)
 			unit = aspect.indicator.activityUnit.name;
-		UI.formLabel(body, tk, unit);
+		UI.label(body, tk, unit);
 	}
 
 	private void sourceRow(Composite body, FormToolkit tk) {
@@ -93,21 +93,21 @@ class Dialog extends FormDialog {
 			.setModel(aspect.source)
 			.renderOn(body, tk, M.Source)
 			.onChange(source -> aspect.source = source);
-		UI.formFiller(body, tk);
+		UI.filler(body, tk);
 	}
 
 	private void commentRow(Composite body, FormToolkit tk) {
-		Text t = UI.formMultiText(body, tk, M.Comment);
+		Text t = UI.multiText(body, tk, M.Comment);
 		if (aspect.comment != null)
 			t.setText(aspect.comment);
 		t.addModifyListener(e -> aspect.comment = t.getText());
-		UI.formFiller(body, tk);
+		UI.filler(body, tk);
 	}
 
 	private void qualityRow(Composite body, FormToolkit tk) {
-		UI.formLabel(body, tk, M.DataQuality);
+		UI.label(body, tk, M.DataQuality);
 		new QualityPanel(aspect, system).create(body, tk);
-		UI.formFiller(body, tk);
+		UI.filler(body, tk);
 	}
 
 	@Override

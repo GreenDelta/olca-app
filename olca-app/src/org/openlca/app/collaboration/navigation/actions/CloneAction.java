@@ -13,7 +13,6 @@ import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
-import org.openlca.app.db.DatabaseWizardPage;
 import org.openlca.app.db.DbTemplate;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -121,7 +120,7 @@ public class CloneAction extends Action implements INavigationAction {
 				"Please enter a name for the database",
 				name,
 				v -> v,
-				DatabaseWizardPage::validateName);
+				Database::validateNewName);
 		if (Strings.nullOrEmpty(name))
 			return null;
 		return getDbDir(name);

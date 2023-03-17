@@ -36,7 +36,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private Button replaceBothButton;
 
 	public static void openDialog() {
-		if (Database.get() == null) {
+		if (Database.isNoneActive()) {
 			MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
@@ -58,14 +58,14 @@ public class ReplaceFlowsDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		FormToolkit toolkit = mForm.getToolkit();
-		Composite body = UI.formBody(mForm.getForm(), toolkit);
+		Composite body = UI.body(mForm.getForm(), toolkit);
 		UI.gridLayout(body, 1, 0, 20);
 		createTop(body, toolkit);
 		createBottom(body, toolkit);
 	}
 
 	private void createTop(Composite parent, FormToolkit toolkit) {
-		Composite top = UI.formComposite(parent, toolkit);
+		Composite top = UI.composite(parent, toolkit);
 		UI.gridLayout(top, 2, 20, 5);
 		UI.gridData(top, true, false);
 		selectionViewer = createFlowViewer(top, toolkit, M.ReplaceFlow, this::updateReplacementCandidates);
@@ -77,7 +77,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 
 	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label,
 			Consumer<FlowDescriptor> onChange) {
-		UI.formLabel(parent, toolkit, label);
+		UI.label(parent, toolkit, label);
 		FlowViewer viewer = new FlowViewer(parent);
 		viewer.addSelectionChangedListener(onChange);
 		return viewer;
@@ -94,22 +94,22 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private void createBottom(Composite parent, FormToolkit toolkit) {
-		Composite bottom = UI.formComposite(parent, toolkit);
+		Composite bottom = UI.composite(parent, toolkit);
 		UI.gridLayout(bottom, 1, 0, 0);
-		Composite typeContainer = UI.formComposite(bottom, toolkit);
+		Composite typeContainer = UI.composite(bottom, toolkit);
 		UI.gridLayout(typeContainer, 4, 20, 5);
-		UI.formLabel(typeContainer, toolkit, M.ReplaceIn);
-		replaceFlowsButton = UI.formRadio(typeContainer, toolkit, M.InputsOutputs);
+		UI.label(typeContainer, toolkit, M.ReplaceIn);
+		replaceFlowsButton = UI.radio(typeContainer, toolkit, M.InputsOutputs);
 		replaceFlowsButton.setSelection(true);
 		Controls.onSelect(replaceFlowsButton, this::updateSelection);
-		replaceImpactsButton = UI.formRadio(typeContainer, toolkit, M.ImpactFactors);
+		replaceImpactsButton = UI.radio(typeContainer, toolkit, M.ImpactFactors);
 		Controls.onSelect(replaceImpactsButton, this::updateSelection);
-		replaceBothButton = UI.formRadio(typeContainer, toolkit, M.Both);
+		replaceBothButton = UI.radio(typeContainer, toolkit, M.Both);
 		Controls.onSelect(replaceBothButton, this::updateSelection);
-		Composite excludeContainer = UI.formComposite(bottom, toolkit);
+		Composite excludeContainer = UI.composite(bottom, toolkit);
 		UI.gridLayout(excludeContainer, 2, 20, 5);
-		excludeWithProviders = UI.formCheckBox(excludeContainer, toolkit);
-		UI.formLabel(excludeContainer, toolkit, M.ExcludeExchangesWithDefaultProviders);
+		excludeWithProviders = UI.checkbox(excludeContainer, toolkit);
+		UI.label(excludeContainer, toolkit, M.ExcludeExchangesWithDefaultProviders);
 		toolkit.paintBordersFor(bottom);
 		createNote(parent, toolkit);
 	}
@@ -128,7 +128,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 
 	private void createNote(Composite parent, FormToolkit toolkit) {
 		String note = M.NoteDefaultProviders;
-		Label noteLabel = UI.formLabel(parent, toolkit, note, SWT.WRAP);
+		Label noteLabel = UI.label(parent, toolkit, note, SWT.WRAP);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
 		gd.widthHint = 300;
 		noteLabel.setLayoutData(gd);

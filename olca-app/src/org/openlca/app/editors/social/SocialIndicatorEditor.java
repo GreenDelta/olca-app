@@ -48,9 +48,9 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
-			var form = UI.formHeader(this);
+			var form = UI.header(this);
 			var toolkit = mForm.getToolkit();
-			var body = UI.formBody(form, toolkit);
+			var body = UI.body(form, toolkit);
 			var infoSection = new InfoSection(getEditor());
 			infoSection.render(body, toolkit);
 			createAdditionalInfo(body, toolkit);
@@ -73,7 +73,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 		}
 
 		private void createQuantityCombo(FormToolkit tk, Composite comp) {
-			UI.formLabel(comp, tk, M.Quantity);
+			UI.label(comp, tk, M.Quantity);
 			FlowPropertyCombo quantityCombo = new FlowPropertyCombo(comp);
 			quantityCombo.setInput(Database.get());
 			FlowProperty aq = getModel().activityQuantity;
@@ -85,7 +85,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 		}
 
 		private void createUnitCombo(FormToolkit tk, Composite comp) {
-			UI.formLabel(comp, tk, M.Unit);
+			UI.label(comp, tk, M.Unit);
 			unitCombo = new UnitCombo(comp);
 			FlowProperty fp = getModel().activityQuantity;
 			if (fp != null && fp.unitGroup != null)

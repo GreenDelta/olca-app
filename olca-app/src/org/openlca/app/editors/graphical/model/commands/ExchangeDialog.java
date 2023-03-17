@@ -99,11 +99,11 @@ class ExchangeDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 		UI.gridLayout(body, 2);
-		text = UI.formText(body, tk, M.Amount);
+		text = UI.labeledText(body, tk, M.Amount);
 		text.setText(Double.toString(exchange.amount));
-		combo = UI.formCombo(body, tk, M.Unit);
+		combo = UI.labeledCombo(body, tk, M.Unit);
 
 		// fill the combo items
 

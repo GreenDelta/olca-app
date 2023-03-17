@@ -73,7 +73,7 @@ public class ImportDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(mForm.getForm(), tk);
+		var body = UI.body(mForm.getForm(), tk);
 		createProductSection(body, tk);
 		MappingSection.initAllOf(this)
 			.forEach(section -> section.render(body, tk));
@@ -83,12 +83,12 @@ public class ImportDialog extends FormDialog {
 		var comp = UI.formSection(body, tk, "Declared product");
 
 		// name
-		var nameText = UI.formText(comp, tk, M.Product);
+		var nameText = UI.labeledText(comp, tk, M.Product);
 		nameText.setEditable(false);
 		Controls.set(nameText, epdDoc.productName);
 
 		// category
-		var categoryText = UI.formText(comp, tk, M.Category);
+		var categoryText = UI.labeledText(comp, tk, M.Category);
 		categoryText.setEditable(false);
 		Controls.set(categoryText,
 			EpdImport.categoryOf(epdDoc)
@@ -96,7 +96,7 @@ public class ImportDialog extends FormDialog {
 				.orElse("- none -"));
 
 		// amount
-		var amountText = UI.formText(comp, tk, "Declared unit");
+		var amountText = UI.labeledText(comp, tk, "Declared unit");
 		amountText.setEditable(false);
 		amountText.setText(getDeclaredUnit());
 	}

@@ -83,10 +83,10 @@ public class ProjectResultEditor extends FormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(mform,
+			var form = UI.header(mform,
 				"Results of: " + Labels.name(data.project()));
 			var tk = mform.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 
 			// create the sections
 			ProjectVariantSection.of(data).renderOn(body, tk);

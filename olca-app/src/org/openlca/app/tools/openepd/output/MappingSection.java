@@ -23,8 +23,9 @@ record MappingSection(MethodMapping mapping) {
 	}
 
 	private void createCombo(Composite parent, FormToolkit tk) {
-		var comp = UI.formComposite(parent, tk);
-		var combo = UI.formCombo(comp, tk, "openEPD LCIA Method");
+		var comp = UI.composite(parent, tk);
+		UI.gridLayout(comp, 2);
+		var combo = UI.labeledCombo(comp, tk, "openEPD LCIA Method");
 		var methods = Method.values();
 		var items = new String[methods.length];
 		int selectionIdx = -1;

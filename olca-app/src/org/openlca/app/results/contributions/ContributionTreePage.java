@@ -51,17 +51,17 @@ public class ContributionTreePage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var form = UI.formHeader(mForm,
+		var form = UI.header(mForm,
 				Labels.name(setup.target()),
 				Icon.ANALYSIS_RESULT.get());
-		var body = UI.formBody(form, tk);
-		var comp = UI.formComposite(body, tk);
+		var body = UI.body(form, tk);
+		var comp = UI.composite(body, tk);
 		UI.gridLayout(comp, 2);
 		var selector = ResultItemSelector
 				.on(items)
 				.withSelectionHandler(new SelectionHandler())
 				.create(comp, tk);
-		var treeComp = UI.formComposite(body, tk);
+		var treeComp = UI.composite(body, tk);
 		UI.gridLayout(treeComp, 1);
 		UI.gridData(treeComp, true, true);
 		createTree(tk, treeComp);
@@ -82,8 +82,6 @@ public class ContributionTreePage extends FormPage {
 		tree.getTree().setLinesVisible(false);
 		tree.setContentProvider(new ContentProvider());
 		tk.adapt(tree.getTree(), false, false);
-		tree.getTree().setBackground(Colors.formBackground());
-		tree.getTree().setForeground(Colors.formForeground());
 
 		tk.paintBordersFor(tree.getTree());
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);

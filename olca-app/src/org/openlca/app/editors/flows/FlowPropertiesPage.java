@@ -30,9 +30,9 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(this);
+		form = UI.header(this);
 		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		Composite body = UI.body(form, toolkit);
 		Section section = UI.section(body, toolkit, M.FlowProperties);
 		UI.gridData(section, true, true);
 		Composite client = UI.sectionClient(section, toolkit, 1);

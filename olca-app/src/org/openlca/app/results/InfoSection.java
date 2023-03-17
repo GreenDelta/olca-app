@@ -47,7 +47,7 @@ class InfoSection {
 	}
 
 	static void text(Composite comp, FormToolkit tk, String label, String val) {
-		Text text = UI.formText(comp, tk, label);
+		Text text = UI.labeledText(comp, tk, label);
 		if (val != null) {
 			text.setText(val);
 		}
@@ -55,8 +55,8 @@ class InfoSection {
 	}
 
 	static void link(Composite comp, FormToolkit tk, String label, Object entity) {
-		UI.formLabel(comp, tk, label);
-		var link = UI.formImageHyperlink(comp, tk, SWT.TOP);
+		UI.label(comp, tk, label);
+		var link = UI.imageHyperlink(comp, tk, SWT.TOP);
 		if (entity instanceof RootDescriptor d) {
 			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
@@ -69,14 +69,14 @@ class InfoSection {
 	}
 
 	private static void buttons(Composite comp, FormToolkit tk) {
-		UI.formLabel(comp, tk, "");
-		var inner = UI.formComposite(comp, tk);
+		UI.label(comp, tk, "");
+		var inner = UI.composite(comp, tk);
 		UI.gridLayout(inner, 2, 5, 0);
-		var excelBtn = UI.formButton(inner, tk, M.ExportToExcel);
+		var excelBtn = UI.button(inner, tk, M.ExportToExcel);
 		excelBtn.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(excelBtn,
 				e -> new ExcelExportAction().run());
-		var resultBtn = UI.formButton(inner, tk, "Save result as ...", SWT.NONE);
+		var resultBtn = UI.button(inner, tk, "Save result as ...", SWT.NONE);
 		resultBtn.setImage(Icon.SAVE_AS.get());
 		Controls.onSelect(resultBtn, e -> {
 			ResultEditor editor = Editors.getActive();

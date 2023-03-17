@@ -350,6 +350,7 @@
 				name="Flow mapping"
 				contributorClass="org.openlca.app.tools.mapping.MappingMenu">
 		</editor>
+
 		<editor
 				class="org.openlca.app.tools.openepd.EpdPanel"
 				default="false"
@@ -367,11 +368,11 @@
 		</editor>
 
 		<editor
-				class="org.openlca.app.tools.libraries.LibraryInfoPage"
-				default="false"
-				icon="icons/library.png"
-				id="LibraryInfoPage"
-				name="Library">
+			class="org.openlca.app.tools.libraries.LibraryInfoPage"
+			default="false"
+			icon="icons/library.png"
+			id="LibraryInfoPage"
+			name="Library">
 		</editor>
 
 		<editor
@@ -779,11 +780,11 @@
 				name="%ILCDNetworkImport">
 		</category>
 		<wizard
-				category="import.category.file"
-				class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
-				icon="icons/file/xml_es1.png"
-				id="wizard.import.ecospold1"
-				name="%EcoSpold">
+			category="import.category.file"
+			class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
+			icon="icons/file/xml_es1.png"
+			id="wizard.import.ecospold1"
+			name="%EcoSpold">
 		</wizard>
 		<wizard
 				category="import.category.file"

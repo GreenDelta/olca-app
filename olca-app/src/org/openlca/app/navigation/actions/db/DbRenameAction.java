@@ -20,8 +20,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.DbUtils;
-import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,34 +40,31 @@ public class DbRenameAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
+		if (!(first instanceof DatabaseElement e))
 			return false;
-		var e = (DatabaseElement) first;
-		var config = e.getContent();
-		if (!(config instanceof DerbyConfig))
+		if (!(e.getContent() instanceof DerbyConfig conf))
 			return false;
-		this.config = (DerbyConfig) config;
+		this.config = conf;
 		return true;
 	}
 
 	@Override
 	public void run() {
 		if (config == null) {
-			DatabaseConfig conf = Database.getActiveConfiguration();
-			if (!(conf instanceof DerbyConfig))
+			if (!(Database.getActiveConfiguration() instanceof DerbyConfig conf))
 				return;
-			config = (DerbyConfig) conf;
+			config = conf;
 		}
-		InputDialog dialog = new InputDialog(UI.shell(),
+		var dialog = new InputDialog(UI.shell(),
 				M.Rename,
 				M.PleaseEnterANewName,
 				config.name(), null);
 		if (dialog.open() != Window.OK)
 			return;
-		String newName = dialog.getValue();
-		if (!DbUtils.isValidName(newName) || Database.getConfigurations()
-				.nameExists(newName.trim())) {
-			MsgBox.error(M.DatabaseRenameError);
+		var newName = dialog.getValue();
+		var err = Database.validateNewName(newName);
+		if (err != null) {
+			MsgBox.error(M.DatabaseRenameError, err);
 			return;
 		}
 		doRename(newName);
@@ -93,8 +88,9 @@ public class DbRenameAction extends Action implements INavigationAction {
 			Database.remove(config);
 			config.name(newName);
 			Database.register(config);
-			if (isActive)
+			if (isActive) {
 				Database.activate(config);
+			}
 			Navigator.refresh();
 			HistoryView.refresh();
 			CompareView.clear();

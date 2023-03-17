@@ -46,7 +46,7 @@ public class NumberFormatPage extends PreferencePage implements
 
 	@Override
 	protected Control createContents(Composite body) {
-		var comp = new Composite(body, SWT.NONE);
+		var comp = UI.composite(body);
 		UI.gridLayout(comp, 2);
 
 		Label description = new Label(comp, SWT.NONE);
@@ -73,8 +73,7 @@ public class NumberFormatPage extends PreferencePage implements
 	}
 
 	private void createNumberText(Composite parent) {
-		var label = new Label(parent, SWT.NONE);
-		label.setText(M.NumberOfDecimalPlaces);
+		var label = UI.label(parent, M.NumberOfDecimalPlaces);
 		var gd = UI.gridData(label, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;

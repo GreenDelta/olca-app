@@ -17,9 +17,9 @@ class ActorPage extends ModelPage<Actor> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mform.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		var infoSection = new InfoSection(getEditor());
 		infoSection.render(body, tk);
 		createAdditionalInfo(body, tk);

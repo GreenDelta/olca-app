@@ -65,9 +65,8 @@ public class Navigator extends CommonNavigator {
 	@Override
 	protected CommonViewer createCommonViewer(Composite aParent) {
 		var viewer = super.createCommonViewer(aParent);
-		viewer.getTree().setBackground(Colors.navigatorBackground());
-		viewer.getTree().setForeground(Colors.navigatorForeground());
-		viewer.getTree().setHeaderForeground(Colors.listForeground());
+		viewer.getTree().setBackground(
+				Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		return viewer;
 	}
 
@@ -111,14 +110,14 @@ public class Navigator extends CommonNavigator {
 						return;
 					List<INavigationElement<?>> elems = Selections.allOf(selection);
 					Stream.of(
-							new DbDeleteAction(),
-							new DeleteLibraryAction(),
-							new DeleteModelAction(),
-							new DeleteMappingAction(),
-							new DeleteScriptAction())
-						.filter((INavigationAction a) -> a.accept(elems))
-						.findFirst()
-						.ifPresent(INavigationAction::run);
+									new DbDeleteAction(),
+									new DeleteLibraryAction(),
+									new DeleteModelAction(),
+									new DeleteMappingAction(),
+									new DeleteScriptAction())
+							.filter((INavigationAction a) -> a.accept(elems))
+							.findFirst()
+							.ifPresent(INavigationAction::run);
 				}
 			}
 		});
@@ -195,7 +194,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static void updateLabels(CommonViewer viewer,
-	                                 INavigationElement<?> element) {
+			INavigationElement<?> element) {
 		TreeItem item = findItem(viewer, element);
 		if (item == null)
 			return;
@@ -206,7 +205,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static TreeItem findItem(CommonViewer viewer,
-	                                 INavigationElement<?> element) {
+			INavigationElement<?> element) {
 		Stack<TreeItem> items = new Stack<>();
 		items.addAll(Arrays.asList(viewer.getTree().getItems()));
 		while (!items.empty()) {
@@ -219,7 +218,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static boolean itemEqualsElement(TreeItem item,
-	                                         INavigationElement<?> element) {
+			INavigationElement<?> element) {
 		INavigationElement<?> data = (INavigationElement<?>) item.getData();
 		if (data == null)
 			return false;
@@ -231,7 +230,7 @@ public class Navigator extends CommonNavigator {
 	 * elements of the <code>oldExpansion</code> array.
 	 */
 	private static void setRefreshedExpansion(
-		CommonViewer viewer, Object[] oldExpansion) {
+			CommonViewer viewer, Object[] oldExpansion) {
 		if (viewer == null || oldExpansion == null)
 			return;
 		var newExpanded = new ArrayList<INavigationElement<?>>();
@@ -262,12 +261,10 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static CommonViewer getNavigationViewer() {
-		CommonViewer viewer = null;
-		Navigator instance = getInstance();
-		if (instance != null) {
-			viewer = instance.getCommonViewer();
-		}
-		return viewer;
+		var instance = getInstance();
+		return instance != null
+				? instance.getCommonViewer()
+				: null;
 	}
 
 	/**
@@ -286,8 +283,8 @@ public class Navigator extends CommonNavigator {
 			return null;
 		var part = page.findView(ID);
 		return part instanceof Navigator navi
-			? navi
-			: null;
+				? navi
+				: null;
 	}
 
 	/**
@@ -297,8 +294,8 @@ public class Navigator extends CommonNavigator {
 	public static NavigationRoot getNavigationRoot() {
 		var navigator = getInstance();
 		return navigator != null
-			? navigator.getRoot()
-			: null;
+				? navigator.getRoot()
+				: null;
 	}
 
 	/**
@@ -322,8 +319,8 @@ public class Navigator extends CommonNavigator {
 	public INavigationElement<?> getFirstSelected() {
 		var all = getAllSelected();
 		return all.isEmpty()
-			? null
-			: all.get(0);
+				? null
+				: all.get(0);
 	}
 
 	public List<INavigationElement<?>> getAllSelected() {
@@ -335,8 +332,8 @@ public class Navigator extends CommonNavigator {
 	 * null in the unwrap function
 	 */
 	public static <T> Set<T> collect(Collection<INavigationElement<?>> elements,
-	                                 Predicate<INavigationElement<?>> filter,
-	                                 Function<INavigationElement<?>, T> unwrap) {
+			Predicate<INavigationElement<?>> filter,
+			Function<INavigationElement<?>, T> unwrap) {
 		Set<T> set = new HashSet<>();
 		for (INavigationElement<?> element : elements) {
 			if (filter != null && !filter.test(element))

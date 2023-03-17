@@ -56,8 +56,8 @@ public class CommentsPage extends FormPage {
 			title += ": " + model.name;
 			image = Images.get(model);
 		}
-		ScrolledForm form = UI.formHeader(mForm, title, image);
-		Composite body = UI.formBody(form, mForm.getToolkit());
+		ScrolledForm form = UI.header(mForm, title, image);
+		Composite body = UI.body(form, mForm.getToolkit());
 		body.setLayout(new FillLayout());
 		Browser browser = new Browser(body, SWT.NONE);
 		browser.setJavascriptEnabled(true);

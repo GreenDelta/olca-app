@@ -1,6 +1,5 @@
 package org.openlca.app.editors.currencies;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -46,9 +45,9 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 
 		@Override
 		protected void createFormContent(IManagedForm managedForm) {
-			ScrolledForm form = UI.formHeader(this);
+			ScrolledForm form = UI.header(this);
 			FormToolkit tk = managedForm.getToolkit();
-			Composite body = UI.formBody(form, tk);
+			Composite body = UI.body(form, tk);
 			InfoSection infoSection = new InfoSection(getEditor());
 			infoSection.render(body, tk);
 			createAdditionalInfo(body, tk);
@@ -75,12 +74,12 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		}
 
 		private void createRefButton(Composite comp, FormToolkit tk) {
-			UI.formFiller(comp, tk);
-			Button b = UI.formButton(comp, tk, M.SetAsReferenceCurrency);
+			UI.filler(comp, tk);
+			Button b = UI.button(comp, tk, M.SetAsReferenceCurrency);
 			b.setImage(Images.get(ModelType.CURRENCY));
 			b.setEnabled(isEditable());
 			Controls.onSelect(b, e -> RefCurrencyUpdate.run(getModel()));
-			UI.formFiller(comp, tk);
+			UI.filler(comp, tk);
 		}
 	}
 }

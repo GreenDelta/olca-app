@@ -81,11 +81,12 @@ class CalculationDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(mForm.getForm(), tk);
+		var body = UI.body(mForm.getForm(), tk);
 		tk.createLabel(body,
 			"Select the flow properties that should be used for" +
 				" calculating the respective allocation factors.");
-		var comp = UI.formComposite(body, tk);
+		var comp = UI.composite(body, tk);
+		UI.gridLayout(comp, 5);
 		UI.fillHorizontal(comp);
 
 		Function<AllocationMethod, Selector> selector =
@@ -124,7 +125,7 @@ class CalculationDialog extends FormDialog {
 				default -> M.CausalAllocation;
 			};
 
-			var combo = UI.formCombo(comp, tk, title);
+			var combo = UI.labeledCombo(comp, tk, title);
 			UI.fillHorizontal(combo);
 			var items = props
 				.stream()
@@ -139,7 +140,7 @@ class CalculationDialog extends FormDialog {
 			});
 
 			if (method == AllocationMethod.ECONOMIC) {
-				UI.formFiller(comp);
+				UI.filler(comp);
 				var check = tk.createButton(
 					comp, "Calculate from costs/revenues", SWT.CHECK);
 				Controls.onSelect(check, $ -> {

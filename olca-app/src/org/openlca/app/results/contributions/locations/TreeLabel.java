@@ -53,12 +53,14 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 			return image.get(c.share);
 		if (col != 0)
 			return null;
-		if (c.item instanceof Descriptor)
-			return Images.get((Descriptor) c.item);
-		if (c.item instanceof RootEntity)
-			return Images.get((RootEntity) c.item);
-		if (c.item instanceof EnviFlow)
-			return Images.get(((EnviFlow) c.item).flow());
+		if (c.item instanceof Descriptor d)
+			return Images.get(d);
+		if (c.item instanceof RootEntity e)
+			return Images.get(e);
+		if (c.item instanceof EnviFlow ef)
+			return Images.get(ef);
+		if (c.item instanceof TechFlow tf)
+			return Images.get(tf);
 		return null;
 	}
 

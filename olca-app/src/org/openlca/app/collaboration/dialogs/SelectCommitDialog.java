@@ -28,7 +28,7 @@ public class SelectCommitDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var body = UI.formBody(mform.getForm(), mform.getToolkit());
+		var body = UI.body(mform.getForm(), mform.getToolkit());
 		viewer = new HistoryViewer(body);
 		UI.gridData(viewer.getViewer().getTable(), true, true);
 		Tables.bindColumnWidths(viewer.getViewer(), 0.1, 0.7, 0.1, 0.1);

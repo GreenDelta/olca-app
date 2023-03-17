@@ -19,13 +19,13 @@ public class ContributionCutoff {
 	}
 
 	private ContributionCutoff(Composite parent, FormToolkit tk) {
-		var comp = UI.formComposite(parent, tk);
+		var comp = UI.composite(parent, tk);
 		UI.gridLayout(comp, 3, 10, 0);
 		UI.gridData(comp, false, false).horizontalAlignment = SWT.RIGHT;
-		UI.formLabel(comp, tk, M.DontShowSmallerThen);
-		spinner = UI.formSpinner(comp, tk, SWT.BORDER);
+		UI.label(comp, tk, M.DontShowSmallerThen);
+		spinner = UI.spinner(comp, tk, SWT.BORDER);
 		spinner.setValues(1, 0, 100, 0, 1, 10);
-		UI.formLabel(comp, tk, "%");
+		UI.label(comp, tk, "%");
 	}
 
 	public void register(StructuredViewer viewer) {

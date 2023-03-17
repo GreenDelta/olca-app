@@ -31,35 +31,8 @@ public class FileChooser {
 			return null;
 		var folder = new File(path);
 		return folder.isDirectory()
-			? folder
-			: null;
-	}
-
-	private static String openFileDialog(
-		String extension, String defaultName, String filterPath, int swtFlag) {
-		var dialog = new FileDialog(UI.shell(), swtFlag);
-		var text = swtFlag == SWT.SAVE
-			? M.SelectTheExportFile
-			: M.Import;
-		dialog.setText(text);
-		String ext = null;
-		if (extension != null) {
-			ext = extension.trim();
-			if (ext.contains("|"))
-				ext = ext.substring(0, ext.indexOf("|")).trim();
-			dialog.setFilterExtensions(new String[]{ext});
-		}
-		dialog.setFileName(defaultName);
-		if (filterPath != null)
-			dialog.setFilterPath(filterPath);
-		if (extension != null) {
-			if (extension.contains("|")) {
-				String label = extension.substring(extension.indexOf("|") + 1);
-				label += " (" + ext + ")";
-				dialog.setFilterNames(new String[]{label});
-			}
-		}
-		return dialog.open();
+				? folder
+				: null;
 	}
 
 	/**
@@ -91,7 +64,7 @@ public class FileChooser {
 		var file = new File(path);
 		if (file.exists()) {
 			boolean write = MessageDialog.openQuestion(
-				UI.shell(), M.FileAlreadyExists, M.OverwriteFileQuestion);
+					UI.shell(), M.FileAlreadyExists, M.OverwriteFileQuestion);
 			if (!write)
 				return null;
 		}
@@ -99,16 +72,14 @@ public class FileChooser {
 	}
 
 	/**
-	 * Selects a file for reading. Returns null if the user cancelled the dialog.
+	 * Selects a file for reading. Returns {@code null} if the user cancelled the
+	 * dialog.
 	 */
 	public static File open(String extension) {
-		String path = openFileDialog(extension, null, null, SWT.OPEN);
-		if (path == null)
-			return null;
-		File file = new File(path);
-		if (!file.exists())
-			return null;
-		return file;
+		return openFile()
+				.withExtensions(extension)
+				.select()
+				.orElse(null);
 	}
 
 	public static OpenBuilder openFile() {
@@ -133,24 +104,20 @@ public class FileChooser {
 		public Optional<File> select() {
 			var dialog = new FileDialog(UI.shell(), SWT.OPEN);
 			dialog.setText(this.title == null ? M.Open : this.title);
-			if (extensions != null && extensions.length > 0) {
-				dialog.setFilterExtensions(extensions);
-			}
+			applyExtensionFilter(dialog);
 			var path = dialog.open();
 			if (Strings.nullOrEmpty(path))
 				return Optional.empty();
 			var file = new File(path);
 			return file.exists()
-				? Optional.of(file)
-				: Optional.empty();
+					? Optional.of(file)
+					: Optional.empty();
 		}
 
 		public List<File> selectMultiple() {
 			var dialog = new FileDialog(UI.shell(), SWT.OPEN | SWT.MULTI);
 			dialog.setText(this.title == null ? M.Open : this.title);
-			if (extensions != null && extensions.length > 0) {
-				dialog.setFilterExtensions(extensions);
-			}
+			applyExtensionFilter(dialog);
 			var firstPath = dialog.open();
 			if (firstPath == null)
 				return List.of();
@@ -167,6 +134,25 @@ public class FileChooser {
 					.map(fi -> new File(dir, fi))
 					.filter(File::exists)
 					.toList();
+		}
+
+		private void applyExtensionFilter(FileDialog d) {
+			if (extensions == null || extensions.length == 0)
+				return;
+			var extFilter = "";
+			for (var ext : extensions) {
+				if (Strings.nullOrEmpty(ext))
+					continue;
+				var e = ext.startsWith("*.")
+						? ext
+						: "*." + ext;
+				extFilter = extFilter.isEmpty()
+						? e
+						: extFilter + ";" + e;
+			}
+			if (!extFilter.isEmpty()) {
+				d.setFilterExtensions(new String[]{extFilter});
+			}
 		}
 	}
 }

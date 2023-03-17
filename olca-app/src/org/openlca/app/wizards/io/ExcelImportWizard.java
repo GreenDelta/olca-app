@@ -1,39 +1,25 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
-import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Actions;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.FileType;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
-import org.openlca.app.viewers.tables.Tables;
 import org.openlca.io.xls.process.XlsProcessReader;
 import org.openlca.jsonld.input.UpdateMode;
 
@@ -49,14 +35,17 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 	}
 
 	public static void of(File file) {
-		Wizards.forImport("wizard.import.excel",
-				(ExcelImportWizard w) -> {
-					w.initialFile = file;
-					if (w.page != null) {
-						w.page.files.add(file);
-						w.page.setPageComplete(true);
-					}
-				});
+		if (Database.isNoneActive()) {
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			return;
+		}
+		Wizards.forImport("wizard.import.excel", (ExcelImportWizard w) -> {
+			w.initialFile = file;
+			if (w.page != null) {
+				w.page.files.add(file);
+				w.page.setPageComplete(true);
+			}
+		});
 	}
 
 	@Override
@@ -65,11 +54,11 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
-		page = new Page();
-		if (initialFile != null) {
-			page.files.add(initialFile);
-			page.setPageComplete(true);
+		if (Database.isNoneActive()) {
+			addPage(new NoDatabaseErrorPage());
+			return;
 		}
+		page = new Page(initialFile);
 		addPage(page);
 	}
 
@@ -104,86 +93,41 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	private static class Page extends WizardPage {
 
-		final List<File> files = new ArrayList<>();
+		List<File> files;
 		private final boolean[] _updateMode = {false, true, false};
 
-		Page() {
+		Page(File initial) {
 			super("ExcelImportWizard.Page");
 			setTitle("Import processes from Excel files");
 			setDescription(
 					"Note that only files in the openLCA process format are supported");
-			setPageComplete(false);
+			files = initial != null
+					? List.of(initial)
+					: List.of();
+			setPageComplete(!files.isEmpty());
 		}
 
 		@Override
 		public void createControl(Composite parent) {
-			var body = new Composite(parent, SWT.NONE);
+			var body = UI.composite(parent);
 			UI.gridLayout(body, 1);
-			var link = new Hyperlink(body, SWT.NONE);
-			link.setText("Selected one or more Excel files");
-			link.setForeground(Colors.linkBlue());
 
-			var viewer = Tables.createViewer(body, M.File);
-			var table = viewer.getTable();
-			table.setHeaderVisible(false);
-			table.setLinesVisible(false);
-			Tables.bindColumnWidths(table, 1.0);
-			viewer.setLabelProvider(new FileLabel());
-			viewer.setInput(files);
+			FilePanel.on(files -> {
+						this.files = files;
+						setPageComplete(!files.isEmpty());
+					})
+					.withTitle("Selected one or more Excel files")
+					.withExtensions("*.xlsx")
+					.withFiles(files)
+					.render(body);
 
-			var addFiles = Actions.create(M.Add, Icon.ADD.descriptor(), () -> {
-				var next = FileChooser.openFile()
-						.withExtensions("*.xlsx")
-						.withTitle("Select one or more Excel files...")
-						.selectMultiple();
-				if (next.isEmpty())
-					return;
-				for (var f : next) {
-					if (!files.contains(f)) {
-						files.add(f);
-					}
-				}
-				viewer.setInput(files);
-				setPageComplete(!files.isEmpty());
-			});
-
-			var removeFiles = Actions.create(M.Remove, Icon.DELETE.descriptor(), () -> {
-				List<File> removals = Viewers.getAllSelected(viewer);
-				if (removals.isEmpty())
-					return;
-				files.removeAll(removals);
-				viewer.setInput(files);
-				setPageComplete(!files.isEmpty());
-			});
-
-			Actions.bind(viewer, addFiles, removeFiles);
-
-			link.addHyperlinkListener(new HyperlinkAdapter() {
-				@Override
-				public void linkActivated(HyperlinkEvent e) {
-					addFiles.run();
-				}
-
-				@Override
-				public void linkEntered(HyperlinkEvent e) {
-					link.setUnderlined(true);
-				}
-
-				@Override
-				public void linkExited(HyperlinkEvent e) {
-					link.setUnderlined(false);
-				}
-			});
-
-			var label = new Label(body, SWT.NONE);
-			label.setText("When a process with an ID already exists:");
-			var gd = UI.gridData(label, false, false);
-			gd.verticalAlignment = SWT.TOP;
-			gd.verticalIndent = 2;
-
+			var group = UI.group(body);
+			group.setText("When a process with an ID already exists");
+			UI.fillHorizontal(group);
+			UI.gridLayout(group, 1);
 			for (int i = 0; i < _updateMode.length; i++) {
 				int id = i;
-				var b = new Button(body, SWT.RADIO);
+				var b = new Button(group, SWT.RADIO);
 				b.setText(updateLabel(i));
 				b.setSelection(_updateMode[i]);
 				Controls.onSelect(b, e -> {
@@ -192,6 +136,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 					}
 				});
 			}
+
 			setControl(body);
 		}
 
@@ -216,22 +161,6 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 				}
 			}
 			return UpdateMode.IF_NEWER;
-		}
-	}
-
-	private static class FileLabel extends BaseLabelProvider implements
-			ITableLabelProvider {
-
-		@Override
-		public Image getColumnImage(Object obj, int col) {
-			return Images.get(FileType.EXCEL);
-		}
-
-		@Override
-		public String getColumnText(Object obj, int col) {
-			return obj instanceof File file
-					? file.getAbsolutePath()
-					: null;
 		}
 	}
 }

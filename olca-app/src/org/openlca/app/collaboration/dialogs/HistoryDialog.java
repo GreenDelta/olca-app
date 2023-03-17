@@ -35,8 +35,8 @@ public class HistoryDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform, title);
-		var body = UI.formBody(form, mform.getToolkit());
+		var form = UI.header(mform, title);
+		var body = UI.body(form, mform.getToolkit());
 		var viewer = new AbstractTableViewer<Commit>(body) {
 			@Override
 			protected IBaseLabelProvider getLabelProvider() {

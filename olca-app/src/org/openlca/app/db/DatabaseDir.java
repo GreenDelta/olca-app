@@ -31,11 +31,10 @@ public class DatabaseDir {
 	 * Get the general location for storing additional files for a database (in
 	 * general this is database_name/_olca_)
 	 */
-	static File getFileStorageLocation(IDatabase db) {
-		if (db.getFileStorageLocation() != null)
-			return db.getFileStorageLocation();
-		else
-			return new File(getRootFolder(db.getName()), FILE_STORAGE);
+	public static File getFileStorageLocation(IDatabase db) {
+		return db.getFileStorageLocation() != null
+				? db.getFileStorageLocation()
+				: new File(getRootFolder(db.getName()), FILE_STORAGE);
 	}
 
 	public static File getDir(Descriptor d) {

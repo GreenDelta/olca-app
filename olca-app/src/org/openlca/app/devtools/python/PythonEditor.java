@@ -3,6 +3,7 @@ package org.openlca.app.devtools.python;
 import java.io.File;
 import java.util.UUID;
 
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.FillLayout;
@@ -59,10 +60,10 @@ public class PythonEditor extends ScriptingEditor {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var form = UI.formHeader(mform, getTitle(), Icon.PYTHON.get());
-			var tk = mform.getToolkit();
-			var body = UI.formBody(form, tk);
+		protected void createFormContent(IManagedForm mForm) {
+			var form = UI.header(mForm, getTitle(), Icon.PYTHON.get());
+			var tk = mForm.getToolkit();
+			var body = UI.body(form, tk);
 			body.setLayout(new FillLayout());
 			try {
 				browser = new Browser(body, SWT.NONE);
@@ -73,8 +74,10 @@ public class PythonEditor extends ScriptingEditor {
 
 					// set the theme
 					if (Theme.isDark()) {
-						browser.execute("codeMirror.setOption(\"theme\", \"ayu-mirage\")");
-						browser.execute("document.querySelector(\"body\").style.background=\"#2b2b2b\"");
+						browser.execute(
+								"codeMirror.setOption(\"theme\", \"ayu-mirage\")");
+						browser.execute(
+								"document.querySelector(\"body\").style.background=\"#2b2b2b\"");
 					}
 
 					// set the script content
@@ -93,6 +96,22 @@ public class PythonEditor extends ScriptingEditor {
 							script = arg;
 							setDirty();
 						}
+						return null;
+					});
+
+					// add the _onSave listener, called when Ctrl+s is pressed
+					UI.bindFunction(browser, "_onSave", (args) -> {
+						var editor = PythonEditor.this;
+						if (!editor.isDirty()) {
+							if (editor.file == null) {
+								editor.doSaveAs();
+							}
+							return null;
+						}
+						var progress = new ProgressMonitorDialog(UI.shell());
+						progress.setOpenOnRun(true);
+						editor.doSave(progress.getProgressMonitor());
+						progress.close();
 						return null;
 					});
 				});

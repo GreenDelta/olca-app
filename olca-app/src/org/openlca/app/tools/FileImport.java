@@ -118,7 +118,7 @@ public class FileImport {
 	private void importMappingFile(File file) {
 		var db = Database.get();
 		if (db == null) {
-			MsgBox.error(M.NoDatabaseOpened);
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
 		try {
@@ -205,7 +205,7 @@ public class FileImport {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var tk = mform.getToolkit();
-			var body = UI.formBody(mform.getForm(), tk);
+			var body = UI.body(mform.getForm(), tk);
 			UI.gridLayout(body, 1);
 			tk.createLabel(body,
 				"Import file " + zolca.getName());

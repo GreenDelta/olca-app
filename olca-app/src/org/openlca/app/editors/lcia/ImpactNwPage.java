@@ -36,12 +36,12 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var toolkit = managedForm.getToolkit();
-		var body = UI.formBody(form, toolkit);
+		var body = UI.body(form, toolkit);
 		var section = UI.section(body, toolkit, M.NormalizationWeightingSets);
 		UI.gridData(section, true, true);
-		var client = UI.formComposite(section, toolkit);
+		var client = UI.composite(section, toolkit);
 		section.setClient(client);
 		UI.gridLayout(client, 1);
 		var sashForm = createSash(client);

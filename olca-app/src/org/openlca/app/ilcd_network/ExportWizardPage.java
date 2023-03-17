@@ -34,7 +34,7 @@ public class ExportWizardPage extends WizardPage implements ICheckStateListener 
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NULL);
+		Composite container = UI.composite(parent);
 		setControl(container);
 		container.setLayout(new GridLayout(1, false));
 		createAddressControl(container);
@@ -42,14 +42,14 @@ public class ExportWizardPage extends WizardPage implements ICheckStateListener 
 	}
 
 	private void createAddressControl(Composite container) {
-		Composite composite = new Composite(container, SWT.NONE);
+		Composite composite = UI.composite(container);
 		composite.setLayout(new GridLayout(3, false));
 		UI.gridData(composite, true, false);
 		new ConnectionText(composite);
 	}
 
 	private void createProcessTree(Composite container) {
-		Composite composite = new Composite(container, SWT.NONE);
+		Composite composite = UI.composite(container);
 		composite.setLayout(new FillLayout());
 		UI.gridData(composite, true, true);
 		viewer = new CheckboxTreeViewer(composite, SWT.MULTI | SWT.BORDER);

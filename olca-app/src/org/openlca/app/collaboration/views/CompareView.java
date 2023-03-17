@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -47,7 +46,7 @@ public class CompareView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		var body = new Composite(parent, SWT.NONE);
+		var body = UI.composite(parent);
 		UI.gridLayout(body, 1, 0, 0);
 		viewer = new CompareViewer(body);
 	}

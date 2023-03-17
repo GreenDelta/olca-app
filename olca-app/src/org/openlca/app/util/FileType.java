@@ -8,15 +8,15 @@ public enum FileType {
 
 	CSV("csv"),
 
-	EXCEL("xls","xlsx", "ods"),
+	EXCEL("xls", "xlsx", "ods"),
 
 	IMAGE("png", "jpg", "jpeg", "gif"),
 
-	MARKUP("html", "spold", "htm", "xhtml"),
+	MARKUP("html", "htm", "xhtml"),
 
 	PDF("pdf"),
 
-	POWERPOINT("ppt", "pptx","odp"),
+	POWERPOINT("ppt", "pptx", "odp"),
 
 	PYTHON("py", "pyc"),
 
@@ -24,20 +24,20 @@ public enum FileType {
 
 	WORD("doc", "docx", "odt"),
 
-	XML("xml"),
+	XML("xml", "spold"),
 
 	ZIP("zip");
 
 	private final String[] extensions;
-	
+
 	FileType(String... extensions) {
 		this.extensions = extensions;
 	}
-	
+
 	public static FileType of(File file) {
-		if (file == null)
-			return DEFAULT;
-		return forName(file.getName());
+		return file != null
+				? forName(file.getName())
+				: DEFAULT;
 	}
 
 	public static FileType forName(String fileName) {

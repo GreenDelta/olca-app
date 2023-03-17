@@ -65,11 +65,11 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 
 		@Override
 		protected void modelWidgets(Composite parent) {
-			UI.wizardLabel(parent, M.Type);
-			var comp = UI.wizardComposite(parent);
+			UI.label(parent, M.Type);
+			var comp = UI.composite(parent);
 			UI.gridLayout(comp, 4);
-			inputButton = UI.wizardRadio(comp, M.InputParameter);
-			dependentButton = UI.wizardRadio(comp, M.DependentParameter);
+			inputButton = UI.labeledRadio(comp, M.InputParameter);
+			dependentButton = UI.labeledRadio(comp, M.DependentParameter);
 			inputButton.setSelection(true);
 			Controls.onSelect(inputButton, (e) -> {
 				formulaLabels.switchControls();
@@ -86,9 +86,9 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 		private void createFormulaAndAmount(Composite container) {
 			formulaLabels = new TwoControlStack(container);
 			UI.gridData(formulaLabels, true, false);
-			formulaLabels.initControls(UI.wizardLabel(formulaLabels, M.Amount),
-					UI.wizardLabel(formulaLabels, M.Formula));
-			formulaText = UI.wizardText(container, SWT.NONE);
+			formulaLabels.initControls(UI.label(formulaLabels, M.Amount),
+					UI.label(formulaLabels, M.Formula));
+			formulaText = UI.text(container, SWT.NONE);
 			formulaText.addModifyListener((e) -> checkInput());
 		}
 

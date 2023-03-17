@@ -837,7 +837,7 @@ public class M extends NLS {
 	public static String SetReferenceCurrencyQuestion;
 	public static String SetSankeyDiagramOptions;
 	public static String Settings;
-	public static String SettingsForTheSankeyDiagram;
+	public static String SettingsOfTheSankeyDiagram;
 	public static String Show;
 	public static String ShowComments;
 	public static String ShowElementaryFlows;

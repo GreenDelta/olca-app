@@ -16,7 +16,6 @@ import org.openlca.app.components.ModelLink;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Bean;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
@@ -66,8 +65,8 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected ImageHyperlink link(Composite parent, String label, String property) {
-		UI.formLabel(parent, getToolkit(), label);
-		var link = UI.formImageHyperlink(parent, getToolkit(), SWT.TOP);
+		UI.label(parent, getToolkit(), label);
+		var link = UI.imageHyperlink(parent, getToolkit(), SWT.TOP);
 		try {
 			var value = Bean.getValue(getModel(), property);
 			if (value == null) {
@@ -90,8 +89,8 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected Label readOnly(Composite parent, String label, String property) {
-		UI.formLabel(parent, getToolkit(), label);
-		var widget = UI.formLabel(parent, getToolkit(), "");
+		UI.label(parent, getToolkit(), label);
+		var widget = UI.label(parent, getToolkit(), "");
 		var gridData = UI.gridData(widget, false, false);
 		gridData.verticalAlignment = SWT.TOP;
 		gridData.verticalIndent = 2;
@@ -102,8 +101,8 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 
 	protected CLabel readOnly(
 		Composite parent, String label, Image image, String property) {
-		UI.formLabel(parent, getToolkit(), label);
-		var cLabel = UI.formCLabel(parent, getToolkit());
+		UI.label(parent, getToolkit(), label);
+		var cLabel = UI.cLabel(parent, getToolkit());
 		var gridData = UI.gridData(cLabel, false, false);
 		gridData.verticalAlignment = SWT.TOP;
 		gridData.verticalIndent = 2;
@@ -120,7 +119,7 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected Text doubleText(Composite parent, String label, String property) {
-		var text = UI.formText(parent, getToolkit(), label);
+		var text = UI.labeledText(parent, getToolkit(), label);
 		getBinding().onDouble(this::getModel, property, text);
 		text.setEditable(isEditable());
 		new CommentControl(parent, getToolkit(), property, getComments());
@@ -128,7 +127,7 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected Text shortText(Composite parent, String label, String property) {
-		var text = UI.formText(parent, getToolkit(), label);
+		var text = UI.labeledText(parent, getToolkit(), label);
 		getBinding().onShort(this::getModel, property, text);
 		text.setEditable(isEditable());
 		new CommentControl(parent, getToolkit(), property, getComments());
@@ -141,14 +140,14 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	protected void multiText(Composite parent, String label, String property, int heightHint) {
-		var text = UI.formMultiText(parent, getToolkit(), label, heightHint);
+		var text = UI.labeledMultiText(parent, getToolkit(), label, heightHint);
 		getBinding().onString(this::getModel, property, text);
 		text.setEditable(isEditable());
 		new CommentControl(parent, getToolkit(), property, getComments());
 	}
 
 	protected Button checkBox(Composite parent, String label, String property) {
-		var btn = UI.formCheckBox(parent, getToolkit(), label);
+		var btn = UI.labeledCheckbox(parent, getToolkit(), label);
 		getBinding().onBoolean(this::getModel, property, btn);
 		btn.setEnabled(isEditable());
 		new CommentControl(parent, getToolkit(), property, getComments());
@@ -173,19 +172,15 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 
 	public static Text text(Composite parent, String label, String property,
 		ModelEditor<?> editor, FormToolkit toolkit) {
-		Text text = UI.formText(parent, toolkit, label);
+		Text text = UI.labeledText(parent, toolkit, label);
 		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
-
-		text.setBackground(Colors.formBackground());
-		text.setForeground(Colors.formForeground());
-
 		return text;
 	}
 
 	public static Text multiText(Composite parent, String label, String property,
 		ModelEditor<?> editor, FormToolkit toolkit) {
-		Text text = UI.formMultiText(parent, toolkit, label);
+		Text text = UI.multiText(parent, toolkit, label);
 		editor.getBinding().onString(editor::getModel, property, text);
 		new CommentControl(parent, toolkit, property, editor.getComments());
 		return text;

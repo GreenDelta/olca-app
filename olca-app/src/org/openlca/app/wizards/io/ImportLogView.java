@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -81,9 +80,9 @@ public class ImportLogView extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
-			var form = UI.formHeader(mForm, "Import details", Icon.IMPORT.get());
+			var form = UI.header(mForm, "Import details", Icon.IMPORT.get());
 			var tk = mForm.getToolkit();
-			var body = UI.formBody(form, tk);
+			var body = UI.body(form, tk);
 
 			// filter
 			var filter = new Filter(messages);
@@ -189,26 +188,26 @@ public class ImportLogView extends SimpleFormEditor {
 
 		void render(Composite body, FormToolkit tk) {
 
-			var comp = UI.formComposite(body, tk);
+			var comp = UI.composite(body, tk);
+			UI.gridLayout(comp, 2);
 			UI.fillHorizontal(comp);
 
-			var icon = UI.formImageHyperlink(comp, tk, SWT.BORDER);
+			var icon = UI.imageHyperlink(comp, tk, SWT.BORDER);
 			icon.setToolTipText("Click to search or press enter");
 			icon.setImage(Icon.SEARCH.get());
 			Controls.onClick(icon, $ -> update());
 
 			// search text
-			var searchComp = tk.createComposite(comp);
-			searchComp.setBackground(Colors.formBackground());
-			searchComp.setForeground(Colors.formForeground());UI.fillHorizontal(searchComp);
+			var searchComp = UI.composite(comp, tk);
+			UI.fillHorizontal(searchComp);
 			UI.gridLayout(searchComp, 2, 10, 0);
-			var searchText = UI.formText(searchComp, tk, null, SWT.SEARCH);
+			var searchText = UI.text(searchComp, tk, SWT.SEARCH);
 			UI.fillHorizontal(searchText);
 			searchText.addModifyListener($ -> text = searchText.getText());
 			Controls.onReturn(searchText, $ -> update());
 
 			// type button
-			var typeBtn = UI.formButton(searchComp, tk, "All types");
+			var typeBtn = UI.button(searchComp, tk, "All types");
 			var typeItems = TypeItem.allOf(messages);
 			typeBtn.setImage(Icon.DOWN.get());
 			var typeMenu = new Menu(typeBtn);
@@ -228,14 +227,12 @@ public class ImportLogView extends SimpleFormEditor {
 			Controls.onSelect(typeBtn, e -> typeMenu.setVisible(true));
 
 			// checkboxes
-			UI.formFiller(comp, tk);
-			var optComp = tk.createComposite(comp);
-			optComp.setBackground(Colors.formBackground());
-			optComp.setForeground(Colors.formForeground());
+			UI.filler(comp, tk);
+			var optComp = UI.composite(comp, tk);
 			UI.gridLayout(optComp, 6, 10, 0);
-			var errCheck = UI.formButton(optComp, tk, "Errors", SWT.CHECK);
-			var warnCheck = UI.formButton(optComp, tk, "Warnings", SWT.CHECK);
-			var allCheck = UI.formButton(optComp, tk, "All", SWT.CHECK);
+			var errCheck = UI.button(optComp, tk, "Errors", SWT.CHECK);
+			var warnCheck = UI.button(optComp, tk, "Warnings", SWT.CHECK);
+			var allCheck = UI.button(optComp, tk, "All", SWT.CHECK);
 			allCheck.setSelection(true);
 
 			BiConsumer<Button, State> stateCheck = (button, state) -> {
@@ -264,9 +261,9 @@ public class ImportLogView extends SimpleFormEditor {
 				update();
 			});
 
-			UI.formLabel(optComp, tk, " | ");
-			UI.formLabel(optComp, tk, "Max. number of messages");
-			var spinner = UI.formSpinner(optComp, tk, SWT.BORDER);
+			UI.label(optComp, tk, " | ");
+			UI.label(optComp, tk, "Max. number of messages");
+			var spinner = UI.spinner(optComp, tk, SWT.BORDER);
 			spinner.setValues(maxCount, 1000, 1_000_000, 0, 1000, 5000);
 			spinner.addModifyListener($ -> {
 				maxCount = spinner.getSelection();

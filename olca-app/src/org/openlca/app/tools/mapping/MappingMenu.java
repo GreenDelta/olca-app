@@ -1,7 +1,5 @@
 package org.openlca.app.tools.mapping;
 
-import java.util.Optional;
-
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.ui.part.EditorActionBarContributor;
@@ -14,7 +12,6 @@ import org.openlca.app.tools.mapping.generator.Generator;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.tools.mapping.replacer.Replacer;
-import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;

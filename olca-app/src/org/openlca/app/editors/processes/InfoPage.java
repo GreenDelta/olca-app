@@ -38,9 +38,9 @@ class InfoPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mForm.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		var info = new InfoSection(getEditor());
 		info.render(body, tk);
 		checkBox(info.composite(),
@@ -56,8 +56,9 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createButtons(Composite comp, FormToolkit tk) {
-		UI.formFiller(comp, tk);
-		var inner = UI.formComposite(comp, tk);
+		UI.filler(comp, tk);
+		var inner = UI.composite(comp, tk);
+		UI.gridLayout(inner, 5);
 
 		// we can only support direct calculations when no
 		// libraries are bound to the database
@@ -68,20 +69,20 @@ class InfoPage extends ModelPage<Process> {
 		UI.gridLayout(inner, columns, 5, 0);
 
 		// create product system
-		var b = UI.formButton(inner, tk, M.CreateProductSystem);
+		var b = UI.button(inner, tk, M.CreateProductSystem);
 		b.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(b, e -> ProcessToolbar.createSystem(getModel()));
 
 		// direct calculation
 		if (withDirect) {
-			b = UI.formButton(inner, tk, "Direct calculation");
+			b = UI.button(inner, tk, "Direct calculation");
 			b.setImage(Icon.RUN.get());
 			Controls.onSelect(
 				b, e -> ProcessToolbar.directCalculation(getModel()));
 		}
 
 		// export to Excel
-		b = UI.formButton(inner, tk, M.ExportToExcel);
+		b = UI.button(inner, tk, M.ExportToExcel);
 		b.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(b, e -> ProcessToolbar.exportToExcel(getModel()));
 	}
@@ -127,13 +128,13 @@ class InfoPage extends ModelPage<Process> {
 		};
 
 		// start date
-		UI.formLabel(comp, tk, M.StartDate);
+		UI.label(comp, tk, M.StartDate);
 		var startBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);		UI.gridData(startBox, false, false).minimumWidth = 150;
 		new CommentControl(comp, tk, "documentation.validFrom", getComments());
 		setTime.accept(startBox, true);
 
 		// end date
-		UI.formLabel(comp, tk, M.EndDate);
+		UI.label(comp, tk, M.EndDate);
 		var endBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);		endBox.setEnabled(isEditable());
 		UI.gridData(endBox, false, false).minimumWidth = 150;
 		new CommentControl(comp, tk, "documentation.validUntil", getComments());
@@ -152,14 +153,14 @@ class InfoPage extends ModelPage<Process> {
 	}
 
 	private void createDqEntryRow(Composite parent, FormToolkit tk) {
-		UI.formLabel(parent, tk, M.DataQualityEntry);
+		UI.label(parent, tk, M.DataQualityEntry);
 		Supplier<String> dqLabel = () -> {
 			Process p = getModel();
 			return p.dqSystem == null || Strings.nullOrEmpty(p.dqEntry)
 				? "(not specified)"
 				: p.dqSystem.applyScoreLabels(p.dqEntry);
 		};
-		Hyperlink link = UI.formLink(parent, tk, dqLabel.get());
+		Hyperlink link = UI.hyperLink(parent, tk, dqLabel.get());
 		Controls.onClick(link, e -> {
 			if (getModel().dqSystem == null) {
 				MsgBox.info("No data quality system is selected");

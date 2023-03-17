@@ -52,23 +52,23 @@ class TreeContentProvider implements ITreeContentProvider {
 		// leaf of the contribution tree
 		if (!(c.item instanceof Location loc))
 			return null;
+		double total = c.amount;
 
 		Object selection = page.getSelection();
 		Stream<Contribution<?>> stream = null;
-		if (selection instanceof FlowDescriptor) {
-			stream = contributions(loc, (FlowDescriptor) selection);
-		} else if (selection instanceof CostResultDescriptor) {
-			stream = contributions(loc, (CostResultDescriptor) selection);
-		} else if (selection instanceof ImpactDescriptor) {
-			stream = contributions(loc, (ImpactDescriptor) selection);
+		if (selection instanceof FlowDescriptor flow) {
+			stream = contributions(loc, total, flow);
+		} else if (selection instanceof CostResultDescriptor costs) {
+			stream = contributions(loc, total, costs);
+		} else if (selection instanceof ImpactDescriptor impact) {
+			stream = contributions(loc, total, impact);
 		}
 
 		if (stream == null)
 			return null;
 
-		// TODO apply cutoff
 		c.childs = stream
-				.filter(con -> con.amount != 0)
+				.filter(page::applyFilter)
 				.sorted((c1, c2) -> Double.compare(c2.amount, c1.amount))
 				.collect(Collectors.toList());
 		return c.childs.toArray();
@@ -93,13 +93,12 @@ class TreeContentProvider implements ITreeContentProvider {
 	}
 
 	@Override
-	public void inputChanged(
-			Viewer viewer, Object old, Object newInput) {
+	public void inputChanged(Viewer viewer, Object old, Object newInput) {
 	}
 
 	private Stream<Contribution<?>> contributions(
-			Location loc, FlowDescriptor flow) {
-
+			Location loc, double total, FlowDescriptor flow
+	) {
 		// get the matrix row => IndexFlow
 		var enviIndex = result.enviIndex();
 		int idx = enviIndex.isRegionalized()
@@ -110,9 +109,6 @@ class TreeContentProvider implements ITreeContentProvider {
 		var enviFlow = enviIndex.at(idx);
 		if (enviFlow == null)
 			return null;
-
-		// prepare the stream
-		double total = result.getTotalFlowValueOf(enviFlow);
 
 		// in a regionalized result, the flow with the
 		// given location can occur in processes that
@@ -136,10 +132,8 @@ class TreeContentProvider implements ITreeContentProvider {
 	}
 
 	private Stream<Contribution<?>> contributions(
-			Location loc, CostResultDescriptor c) {
-		double total = c.forAddedValue
-				? -result.getTotalCosts()
-				: result.getTotalCosts();
+			Location loc, double total, CostResultDescriptor c
+	) {
 		return techFlows(loc).stream().map(p -> {
 			var con = Contribution.of(p);
 			con.amount = c.forAddedValue
@@ -151,11 +145,12 @@ class TreeContentProvider implements ITreeContentProvider {
 	}
 
 	private Stream<Contribution<?>> contributions(
-			Location loc, ImpactDescriptor impact) {
-
-		double total = result.getTotalImpactValueOf(impact);
+			Location loc, double total, ImpactDescriptor impact
+	) {
 		if (!result.enviIndex().isRegionalized()) {
-			return techFlows(loc).stream().map(techFlow -> {
+			return techFlows(loc)
+					.stream()
+					.map(techFlow -> {
 				var c = Contribution.of(techFlow);
 				c.amount = result.getDirectImpactOf(impact, techFlow);
 				c.computeShare(total);

@@ -29,9 +29,9 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.formHeader(this);
+		form = UI.header(this);
 		toolkit = managedForm.getToolkit();
-		Composite body = UI.formBody(form, toolkit);
+		Composite body = UI.body(form, toolkit);
 		InfoSection infoSection = new InfoSection(getEditor());
 		infoSection.render(body, toolkit);
 		createAdditionalInfo(infoSection, body);

@@ -86,20 +86,20 @@ public class AddProcessAction extends WorkbenchPartAction {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var tk = mform.getToolkit();
-			var body = UI.formBody(mform.getForm(), tk);
+			var body = UI.body(mform.getForm(), tk);
 			UI.gridLayout(body, 1);
 
 			// create new text
-			var nameLabel = UI.formLabel(body, tk, "Create with name");
+			var nameLabel = UI.label(body, tk, "Create with name");
 			nameLabel.setFont(UI.boldFont());
-			text = UI.formText(body, SWT.NONE);
+			text = UI.text(body, SWT.NONE);
 			text.addModifyListener(e -> {
 				var name = text.getText().trim();
 				getButton(_CREATE).setEnabled(Strings.notEmpty(name));
 			});
 
 			// tree
-			var selectLabel = UI.formLabel(body, tk, "Or select existing");
+			var selectLabel = UI.label(body, tk, "Or select existing");
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.PROCESS);
 			UI.gridData(tree.getControl(), true, true);

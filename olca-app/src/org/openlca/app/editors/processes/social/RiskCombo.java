@@ -21,7 +21,7 @@ class RiskCombo {
 	}
 
 	void create(Composite body, FormToolkit tk) {
-		combo = UI.formCombo(body, tk, M.RiskLevel);
+		combo = UI.labeledCombo(body, tk, M.RiskLevel);
 		levels = RiskLevel.values();
 		String[] labels = new String[levels.length];
 		int selected = -1;
@@ -34,7 +34,7 @@ class RiskCombo {
 		if (selected >= 0)
 			combo.select(selected);
 		Controls.onSelect(combo, (e) -> selectionChanged());
-		UI.formFiller(body, tk);
+		UI.filler(body, tk);
 	}
 
 	private void selectionChanged() {

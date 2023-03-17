@@ -35,7 +35,7 @@ public class CategoryDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
+		Composite composite = UI.composite(parent);
 		composite.setLayout(new GridLayout());
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		new Label(composite, SWT.NONE).setText(title);

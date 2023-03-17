@@ -85,7 +85,7 @@ public class ErrorReporter extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var tk = mform.getToolkit();
-		var body = UI.formBody(mform.getForm(), tk);
+		var body = UI.body(mform.getForm(), tk);
 		body.setLayout(new FillLayout());
 		var comp = tk.createComposite(body);
 		UI.gridLayout(comp, 1);

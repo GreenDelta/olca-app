@@ -60,6 +60,10 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
+		if (Database.isNoneActive()) {
+			addPage(new NoDatabaseErrorPage());
+			return;
+		}
 		page = initialFile != null
 				? new DbImportPage(initialFile)
 				: new DbImportPage();
@@ -80,7 +84,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 				connectionDispatch.close();
 				return false;
 			}
-			ImportDispatch importDispatch = new ImportDispatch(connectionDispatch);
+			var importDispatch = new ImportDispatch(connectionDispatch);
 			getContainer().run(true, true, importDispatch);
 			return true;
 		} catch (Exception e) {

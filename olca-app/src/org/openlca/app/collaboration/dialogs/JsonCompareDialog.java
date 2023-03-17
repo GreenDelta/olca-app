@@ -61,12 +61,12 @@ public class JsonCompareDialog extends FormDialog {
 		if (this.title != null) {
 			title += ": " + this.title;
 		}
-		var form = UI.formHeader(mform, title);
+		var form = UI.header(mform, title);
 		if (logo != null) {
 			form.setImage(logo);
 		}
 		var toolkit = mform.getToolkit();
-		var body = UI.formBody(form, toolkit);
+		var body = UI.body(form, toolkit);
 		viewer = canMerge
 				? JsonCompareViewer.forMerging(body, toolkit, root)
 				: JsonCompareViewer.forComparison(body, toolkit, root);

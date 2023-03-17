@@ -48,11 +48,11 @@ public class InventoryPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(mform,
+		var form = UI.header(mform,
 				Labels.name(editor.setup.target()),
 				Icon.ANALYSIS_RESULT.get());
 		toolkit = mform.getToolkit();
-		var body = UI.formBody(form, toolkit);
+		var body = UI.body(form, toolkit);
 		var sash = new SashForm(body, SWT.VERTICAL);
 		UI.gridData(sash, true, true);
 		toolkit.adapt(sash);

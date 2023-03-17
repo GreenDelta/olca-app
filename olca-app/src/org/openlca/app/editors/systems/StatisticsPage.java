@@ -53,9 +53,9 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		form = UI.formHeader(this);
+		form = UI.header(this);
 		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.formBody(form, tk);
+		Composite body = UI.body(form, tk);
 		generalSection(tk, body);
 		providerSection(tk, body);
 		linkDegreeTable(body, tk, true);
@@ -68,24 +68,24 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		Composite comp = UI.formSection(body, tk, "General statistics");
 		UI.gridLayout(comp, 2, 15, 10);
 
-		UI.formLabel(comp, "Number of processes");
-		bind(UI.formLabel(comp, ""),
+		UI.label(comp, tk, "Number of processes");
+		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.processCount)));
 
-		UI.formLabel(comp, "Number of process links");
-		bind(UI.formLabel(comp, ""),
+		UI.label(comp, tk, "Number of process links");
+		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.linkCount)));
 
-		UI.formLabel(comp, "Connected graph / can calculate?");
-		bind(UI.formLabel(comp, ""), label -> {
+		UI.label(comp, tk, "Connected graph / can calculate?");
+		bind(UI.label(comp, tk, ""), label -> {
 			String text = stats.connectedGraph
 				? "yes"
 				: "no";
 			label.setText(text);
 		});
 
-		UI.formLabel(comp, "Reference process");
-		ImageHyperlink link = UI.formImageHyperlink(comp, tk, SWT.TOP);
+		UI.label(comp, tk, "Reference process");
+		ImageHyperlink link = UI.imageHyperlink(comp, tk, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
 		link.setImage(Images.get(ModelType.PROCESS));
 		Controls.onClick(link, e -> {
@@ -95,8 +95,8 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		});
 		bind(link, l -> l.setText(Labels.name(stats.refProcess)));
 
-		UI.formLabel(comp, "");
-		Button btn = UI.formButton(comp, tk, M.Update);
+		UI.label(comp, tk, "");
+		Button btn = UI.button(comp, tk, M.Update);
 		Controls.onSelect(btn, e -> calculate());
 	}
 
@@ -104,16 +104,16 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		Composite comp = UI.formSection(body, tk, "Provider linking");
 		UI.gridLayout(comp, 2, 15, 10);
 
-		UI.formLabel(comp, "Links that are linked with default providers");
-		bind(UI.formLabel(comp, ""),
+		UI.label(comp, tk, "Links that are linked with default providers");
+		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.defaultProviderLinkCount)));
 
-		UI.formLabel(comp, "Links with exactly one possible provider");
-		bind(UI.formLabel(comp, ""),
+		UI.label(comp, tk, "Links with exactly one possible provider");
+		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.singleProviderLinkCount)));
 
-		UI.formLabel(comp, "Links with multiple possible providers");
-		bind(UI.formLabel(comp, ""),
+		UI.label(comp, tk, "Links with multiple possible providers");
+		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.multiProviderLinkCount)));
 	}
 

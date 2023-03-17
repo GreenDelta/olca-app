@@ -86,7 +86,7 @@ class GroupSetAction extends Action {
 			Composite container = toolkit.createComposite(area);
 			UI.gridData(container, true, true);
 			UI.gridLayout(container, 2);
-			combo = UI.formCombo(container, toolkit, M.Grouping);
+			combo = UI.labeledCombo(container, toolkit, M.Grouping);
 			UI.gridData(combo, false, false).widthHint = 250;
 			combo.addSelectionListener(this);
 			getShell().pack();

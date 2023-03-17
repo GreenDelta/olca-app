@@ -45,9 +45,9 @@ class ParameterPage extends ModelPage<ProductSystem> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		form = UI.formHeader(this);
+		form = UI.header(this);
 		tk = mform.getToolkit();
-		body = UI.formBody(form, tk);
+		body = UI.body(form, tk);
 
 		// create the baseline scenario if necessary
 		var base = getModel().parameterSets
@@ -107,12 +107,12 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 1);
 
-			Composite textComp = UI.formComposite(comp, tk);
+			Composite textComp = UI.composite(comp, tk);
 			UI.gridData(textComp, true, false);
 			UI.gridLayout(textComp, 2, 10, 0);
 
 			// name
-			Text nameText = UI.formText(textComp, tk, M.Name);
+			Text nameText = UI.labeledText(textComp, tk, M.Name);
 			if (paramSet.name != null) {
 				nameText.setText(paramSet.name);
 			}
@@ -123,7 +123,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			});
 
 			// description
-			Text descrText = UI.formMultiText(
+			Text descrText = UI.labeledMultiText(
 					textComp, tk, M.Description, 40);
 			if (paramSet.description != null) {
 				descrText.setText(paramSet.description);
@@ -139,8 +139,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			UI.gridData(paramSection, true, false);
 			paramTable = new ParameterRedefTable(
 					editor, () -> paramSet.parameters);
-			paramTable.create(tk,
-					UI.sectionClient(paramSection, tk));
+			paramTable.create(UI.sectionClient(paramSection, tk));
 			paramTable.bindActions(paramSection);
 
 			// only non-baseline scenarios can be removed
@@ -199,12 +198,12 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			if (comp != null) {
 				comp.dispose();
 			}
-			comp = UI.formComposite(body, tk);
+			comp = UI.composite(body, tk);
 			GridLayout btnGrid = UI.gridLayout(comp, 1);
 			btnGrid.marginLeft = 0;
 			btnGrid.marginTop = 0;
 			btnGrid.marginBottom = 10;
-			Button addButton = UI.formButton(comp, tk, "Add parameter set");
+			Button addButton = UI.button(comp, tk, "Add parameter set");
 			addButton.setImage(Icon.ADD.get());
 			Controls.onSelect(addButton, e -> {
 				ParameterRedefSet s = new ParameterRedefSet();

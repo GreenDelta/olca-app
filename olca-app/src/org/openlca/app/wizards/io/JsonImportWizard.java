@@ -10,17 +10,16 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
-import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
@@ -33,6 +32,10 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	private File initialFile;
 
 	public static void of(File file) {
+		if (Database.isNoneActive()) {
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			return;
+		}
 		Wizards.forImport(
 				"wizard.import.json",
 				(JsonImportWizard w) -> w.initialFile = file);
@@ -51,6 +54,10 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void addPages() {
+		if (Database.isNoneActive()) {
+			addPage(new NoDatabaseErrorPage());
+			return;
+		}
 		page = new Page(initialFile);
 		addPage(page);
 	}
@@ -112,45 +119,34 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 		@Override
 		public void createControl(Composite parent) {
-			var body = new Composite(parent, SWT.NONE);
-			UI.gridLayout(body, 1);
+			var body = UI.composite(parent);
+			UI.gridLayout(body, 1).verticalSpacing = 0;
 
-			var fileComp = UI.formComposite(body);
+			var fileComp = UI.composite(body);
 			UI.fillHorizontal(fileComp);
-			UI.gridLayout(fileComp, 3);
-			var fileText = UI.formText(fileComp, "File", SWT.READ_ONLY);
-			if (zip != null) {
-				fileText.setText(zip.getName());
-			}
-			UI.fillHorizontal(fileText);
-			var browse = new Button(fileComp, SWT.NONE);
-			browse.setText(M.Browse);
-
-			Controls.onSelect(browse, e -> {
-				var file = FileChooser.openFile()
-						.withTitle("Select a zip file with openLCA data...")
-						.withExtensions("*.zip")
-						.select()
-						.orElse(null);
-				if (file != null) {
-					zip = file;
-					setPageComplete(true);
-					fileText.setText(file.getName());
-				}
-			});
+			UI.gridLayout(fileComp, 3).marginBottom = 0;
+			FileSelector.on(file -> {
+						zip = file;
+						setPageComplete(true);
+					})
+					.withTitle("Select a zip file with openLCA data...")
+					.withExtensions("*.zip")
+					.withSelection(zip)
+					.render(fileComp);
 
 			// update mode
-			var group = new Group(body, SWT.NONE);
+			var groupComp = UI.composite(body);
+			UI.gridLayout(groupComp, 1).marginTop = 0;
+			UI.fillHorizontal(groupComp);
+			var group = UI.group(groupComp);
 			group.setText("Updating existing data sets in the database");
 			UI.gridData(group, true, false);
 			UI.gridLayout(group, 1);
 			for (UpdateMode mode : mods) {
-				Button option = new Button(group, SWT.RADIO);
+				var option = new Button(group, SWT.RADIO);
 				option.setText(getText(mode));
 				option.setSelection(mode == updateMode);
-				Controls.onSelect(option, (e) -> {
-					updateMode = mode;
-				});
+				Controls.onSelect(option, (e) -> updateMode = mode);
 			}
 			setControl(body);
 		}

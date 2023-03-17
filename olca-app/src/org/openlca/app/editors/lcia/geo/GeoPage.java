@@ -39,9 +39,9 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.formHeader(this);
+		var form = UI.header(this);
 		var tk = mform.getToolkit();
-		var body = UI.formBody(form, tk);
+		var body = UI.body(form, tk);
 		setupSection(body, tk);
 		paramSection = new GeoPropertySection(this);
 		paramSection.drawOn(body, tk);
@@ -56,20 +56,20 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 
 		// file text
 		UI.gridData(comp, true, false);
-		UI.formLabel(comp, tk, "GeoJSON or setup file");
-		fileText = UI.formEmptyText(comp, tk);
+		UI.label(comp, tk, "GeoJSON or setup file");
+		fileText = UI.emptyText(comp, tk);
 		fileText.setEditable(false);
 		UI.gridData(fileText, true, false);
 
 		// buttons
-		UI.formFiller(comp, tk);
-		var btnComp = UI.formComposite(comp, tk);
+		UI.filler(comp, tk);
+		var btnComp = UI.composite(comp, tk);
 		UI.gridLayout(btnComp, 2, 10, 0);
-		var openBtn = UI.formButton(btnComp, tk, "Open");
+		var openBtn = UI.button(btnComp, tk, "Open");
 		openBtn.setImage(Icon.FOLDER_OPEN.get());
 		UI.gridData(openBtn, false, false).widthHint = 80;
 		Controls.onSelect(openBtn, _e -> onOpenFile());
-		saveBtn = UI.formButton(btnComp, tk, "Save");
+		saveBtn = UI.button(btnComp, tk, "Save");
 		saveBtn.setImage(Icon.SAVE.get());
 		UI.gridData(saveBtn, false, false).widthHint = 80;
 		saveBtn.setEnabled(false);

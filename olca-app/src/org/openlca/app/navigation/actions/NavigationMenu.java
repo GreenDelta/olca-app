@@ -154,7 +154,7 @@ public class NavigationMenu extends CommonActionProvider {
 			List<INavigationElement<?>> selection,
 			IMenuManager menu) {
 		menu.add(new Separator());
-		MenuManager subMenu = createImportMenu();
+		var subMenu = createImportMenu();
 		menu.add(subMenu);
 		addActions(selection, menu,
 				new ExportAction(),
