@@ -66,9 +66,16 @@ class TreeContentProvider implements ITreeContentProvider {
 		if (stream == null)
 			return null;
 
-		// TODO apply cutoff
+		var cutoff = page.cutoff;
 		c.childs = stream
-				.filter(con -> con.amount != 0)
+				.filter(con -> {
+					if (con.amount == 0 && page.skipZeros)
+						return false;
+					if (cutoff > 0) {
+						return Math.abs(con.share) >= cutoff;
+					}
+					return true;
+				})
 				.sorted((c1, c2) -> Double.compare(c2.amount, c1.amount))
 				.collect(Collectors.toList());
 		return c.childs.toArray();
@@ -98,8 +105,8 @@ class TreeContentProvider implements ITreeContentProvider {
 	}
 
 	private Stream<Contribution<?>> contributions(
-			Location loc, FlowDescriptor flow) {
-
+			Location loc, FlowDescriptor flow
+	) {
 		// get the matrix row => IndexFlow
 		var enviIndex = result.enviIndex();
 		int idx = enviIndex.isRegionalized()
@@ -151,11 +158,14 @@ class TreeContentProvider implements ITreeContentProvider {
 	}
 
 	private Stream<Contribution<?>> contributions(
-			Location loc, ImpactDescriptor impact) {
-
+			Location loc, ImpactDescriptor impact
+	) {
 		double total = result.getTotalImpactValueOf(impact);
+
 		if (!result.enviIndex().isRegionalized()) {
-			return techFlows(loc).stream().map(techFlow -> {
+			return techFlows(loc)
+					.stream()
+					.map(techFlow -> {
 				var c = Contribution.of(techFlow);
 				c.amount = result.getDirectImpactOf(impact, techFlow);
 				c.computeShare(total);

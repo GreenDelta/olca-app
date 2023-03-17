@@ -3,7 +3,6 @@ package org.openlca.app.results.contributions.locations;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -14,7 +13,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -48,8 +46,6 @@ public class LocationPage extends FormPage {
 	private Combo combos;
 	private TreeViewer tree;
 	private TreeLabel label;
-
-	// private LocationMap map;
 	private ResultMap map;
 	boolean skipZeros = true;
 	double cutoff = 0.01;
@@ -120,9 +116,9 @@ public class LocationPage extends FormPage {
 	}
 
 	private void createTree(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, M.ContributionTreeLocations);
+		var section = UI.section(body, tk, M.ContributionTreeLocations);
 		UI.gridData(section, true, true);
-		Composite comp = UI.sectionClient(section, tk);
+		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 		label = new TreeLabel();
 		String[] labels = { M.Location, M.Amount, M.Unit };
@@ -131,7 +127,7 @@ public class LocationPage extends FormPage {
 		Trees.bindColumnWidths(tree.getTree(), 0.4, 0.3, 0.3);
 
 		// tree actions
-		Action onOpen = Actions.onOpen(() -> {
+		var onOpen = Actions.onOpen(() -> {
 			Object obj = Viewers.getFirstSelected(tree);
 			if (obj == null)
 				return;
