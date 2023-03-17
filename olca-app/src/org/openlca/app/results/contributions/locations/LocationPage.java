@@ -33,6 +33,7 @@ import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.LocationResult;
+import org.openlca.util.Strings;
 
 /**
  * Shows the contributions of the locations in the product system to an analysis
@@ -121,7 +122,7 @@ public class LocationPage extends FormPage {
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 		label = new TreeLabel();
-		String[] labels = { M.Location, M.Amount, M.Unit };
+		String[] labels = {M.Location, M.Amount, M.Unit};
 		tree = Trees.createViewer(comp, labels, label);
 		tree.setContentProvider(new TreeContentProvider(this));
 		Trees.bindColumnWidths(tree.getTree(), 0.4, 0.3, 0.3);
@@ -174,8 +175,13 @@ public class LocationPage extends FormPage {
 
 	private void update(List<Contribution<Location>> items) {
 		var sorted = items.stream()
-				.filter(c -> c.amount != 0)
-				.sorted((c1, c2) -> Double.compare(c2.amount, c1.amount))
+				.filter(this::applyFilter)
+				.sorted((c1, c2) -> {
+					int c = Double.compare(c2.amount, c1.amount);
+					return c == 0
+							? Strings.compare(Labels.name(c1.item), Labels.name(c2.item))
+							: c;
+				})
 				.collect(Collectors.toList());
 		if (tree != null) {
 			tree.setInput(sorted);
@@ -183,5 +189,15 @@ public class LocationPage extends FormPage {
 		if (map != null) {
 			map.update(getSelection(), sorted);
 		}
+	}
+
+	boolean applyFilter(Contribution<?> c) {
+		if (c == null || c.item == null)
+			return false;
+		if (c.amount == 0 && skipZeros)
+			return false;
+		if (cutoff > 0)
+			return Math.abs(c.share) >= cutoff;
+		return true;
 	}
 }
