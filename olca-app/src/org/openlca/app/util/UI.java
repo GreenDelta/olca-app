@@ -1,5 +1,7 @@
 package org.openlca.app.util;
 
+import static org.openlca.util.OS.WINDOWS;
+
 import java.util.function.Function;
 
 import org.eclipse.jface.resource.JFaceResources;
@@ -8,6 +10,8 @@ import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
+import org.eclipse.swt.browser.LocationAdapter;
+import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.custom.CLabel;
@@ -18,21 +22,36 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.*;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
+import org.eclipse.ui.forms.widgets.FormText;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openlca.util.OS.WINDOWS;
 
 public class UI {
 
@@ -72,21 +91,34 @@ public class UI {
 			Function<Object[], Object> fn) {
 		if (browser == null || name == null || fn == null)
 			return;
-		BrowserFunction func = new BrowserFunction(browser, name) {
+		var func = new BrowserFunction(browser, name) {
 			@Override
 			public Object function(Object[] args) {
 				try {
 					return fn.apply(args);
 				} catch (Exception e) {
-					Logger log = LoggerFactory.getLogger(UI.class);
+					var log = LoggerFactory.getLogger(UI.class);
 					log.error("failed to execute browser function " + name, e);
 					return null;
 				}
 			}
 		};
-		browser.addDisposeListener(e -> {
-			if (!func.isDisposed()) {
-				func.dispose();
+
+		// note that disposing a browser will automatically dispose its
+		// browser functions; but we dispose functions when the browser
+		// location (page) changed
+		browser.addLocationListener(new LocationAdapter() {
+			@Override
+			public void changed(LocationEvent e) {
+				try {
+					if (!func.isDisposed()) {
+						func.dispose();
+					}
+					browser.removeLocationListener(this);
+				} catch (Exception ex) {
+					LoggerFactory.getLogger(UI.class)
+							.error("failed to dispose browser function " + name, e);
+				}
 			}
 		});
 	}
@@ -383,7 +415,7 @@ public class UI {
 	}
 
 	/**
-	 *  Creates a checkbox without label.
+	 * Creates a checkbox without label.
 	 */
 	public static Button checkbox(Composite comp, FormToolkit tk) {
 		return checkbox(comp, tk, null);
@@ -539,7 +571,7 @@ public class UI {
 		return new Text(comp, style);
 	}
 
-		/**
+	/**
 	 * Creates a multi text as one component.
 	 */
 	public static Text multiText(Composite comp, FormToolkit tk, String label) {
