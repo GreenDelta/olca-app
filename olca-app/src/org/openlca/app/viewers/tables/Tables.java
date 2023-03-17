@@ -42,7 +42,6 @@ public class Tables {
 	 * <li>content provider = {@link ArrayContentProvider}
 	 * <li>lines and header are visible
 	 * <li>grid data with horizontal and vertical fill
-	 *
 	 */
 	public static TableViewer createViewer(Composite parent, String[] properties,
 			IBaseLabelProvider labelProvider) {
@@ -106,22 +105,14 @@ public class Tables {
 		bindColumnWidths(viewer.getTable(), percents);
 	}
 
-	public static void bindColumnWidths(TableViewer viewer, int minimum, double... percents) {
-		bindColumnWidths(viewer.getTable(), minimum, percents);
-	}
-
 	/**
 	 * Binds the given percentage values (values between 0 and 1) to the column
 	 * widths of the given table
 	 */
 	public static void bindColumnWidths(Table table, double... percents) {
-		bindColumnWidths(table, 0, percents);
-	}
-
-	public static void bindColumnWidths(Table table, int minimum, double... percents) {
 		if (table == null || percents == null)
 			return;
-		var tabResizer = new TableResizeListener(table, percents, minimum);
+		var tabResizer = new TableResizeListener(table, percents);
 		// see resize listener declaration for comment on why this is done
 		var colResizer = new ColumnResizeListener(tabResizer);
 		for (var column : table.getColumns()) {
@@ -130,7 +121,9 @@ public class Tables {
 		table.addControlListener(tabResizer);
 	}
 
-	/** Add an event handler for double clicks on the given table viewer. */
+	/**
+	 * Add an event handler for double clicks on the given table viewer.
+	 */
 	public static void onDoubleClick(TableViewer viewer, Consumer<MouseEvent> handler) {
 		if (viewer == null || viewer.getTable() == null || handler == null)
 			return;
@@ -223,13 +216,11 @@ public class Tables {
 	private static class TableResizeListener extends ControlAdapter {
 		private final Table table;
 		private final double[] percents;
-		private final int minimum;
 		private boolean enabled = true;
 
-		private TableResizeListener(Table table, double[] percents, int mininmum) {
+		private TableResizeListener(Table table, double[] percents) {
 			this.table = table;
 			this.percents = percents;
-			this.minimum = mininmum;
 		}
 
 		@Override
@@ -237,10 +228,11 @@ public class Tables {
 			if (!enabled)
 				return;
 			double width = table.getSize().x - 25;
+			if (width < 50)
+				return;
 			TableColumn[] columns = table.getColumns();
 			int longest = -1;
 			double max = 0;
-			double additional = 0;
 			for (int i = 0; i < columns.length; i++) {
 				if (i >= percents.length)
 					break;
@@ -249,19 +241,13 @@ public class Tables {
 					max = colWidth;
 					longest = i;
 				}
-				if (minimum > 0 && colWidth < minimum) {
-					additional += minimum - colWidth;
-					colWidth = minimum;
-				}
 				if (colWidth == 0)
 					continue;
 				columns[i].setWidth((int) colWidth);
 			}
-			if (additional == 0 || longest == -1)
+			if (longest == -1)
 				return;
-			columns[longest].setWidth((int) (percents[longest] * width - additional));
+			columns[longest].setWidth((int) (percents[longest] * width));
 		}
-
 	}
-
 }

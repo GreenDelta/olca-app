@@ -139,8 +139,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			UI.gridData(paramSection, true, false);
 			paramTable = new ParameterRedefTable(
 					editor, () -> paramSet.parameters);
-			paramTable.create(tk,
-					UI.sectionClient(paramSection, tk));
+			paramTable.create(UI.sectionClient(paramSection, tk));
 			paramTable.bindActions(paramSection);
 
 			// only non-baseline scenarios can be removed
