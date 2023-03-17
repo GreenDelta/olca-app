@@ -6,11 +6,9 @@ import org.eclipse.swt.widgets.Display;
 public class RcpTheme {
 
 	public static void setDarkTheme(boolean isDarkTheme) {
-		Display display = Display.getCurrent();
-
+		var display = Display.getCurrent();
 		if (display == null)
-			throw new NullPointerException(
-					"Display must be already created before you call RcpTheme.setTheme()");
+			return;
 
 		display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", isDarkTheme);
 		display.setData("org.eclipse.swt.internal.win32.menuBarForegroundColor",

@@ -55,7 +55,6 @@ public class ConfigPage extends PreferencePage implements
 		UI.gridData(comp, true, false);
 
 		createLanguageCombo(comp);
-		createThemeCombo(comp);
 		if (OS.get() == OS.WINDOWS) {
 			createEdgeCheck(comp);
 		}
@@ -172,6 +171,7 @@ public class ConfigPage extends PreferencePage implements
 		});
 	}
 
+	// TODO: we may do not need that; and all the theming related hacks?
 	private void createThemeCombo(Composite composite) {
 		var label = new Label(composite, SWT.NONE);
 		var gd = UI.gridData(label, false, false);

@@ -14,7 +14,8 @@ public class RcpApplication implements IApplication {
 	public Object start(IApplicationContext context) throws Exception {
 		var display = PlatformUI.createDisplay();
 		if (OS.get() == WINDOWS) {
-			RcpTheme.setDarkTheme(Theme.isDark());
+			// TODO: check if we would need that
+			// RcpTheme.setDarkTheme(Theme.isDark());
 		}
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(
