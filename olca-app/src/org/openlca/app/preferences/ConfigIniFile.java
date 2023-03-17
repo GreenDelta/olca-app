@@ -3,6 +3,7 @@ package org.openlca.app.preferences;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,44 +40,72 @@ class ConfigIniFile {
 		}
 	}
 
+	// region: accessors
+	Language language() {
+		return language == null
+				? Language.ENGLISH
+				: language;
+	}
+
+	void language(Language language) {
+		this.language = language;
+	}
+
+	void theme(Theme theme) {
+		this.theme = theme;
+	}
+
+	public Theme theme() {
+		return theme == null
+				? Theme.DEFAULT
+				: theme;
+	}
+
+	int maxMemory() {
+		return maxMemory;
+	}
+
+	void maxMemory(int maxMemory) {
+		this.maxMemory = maxMemory;
+	}
+
+	void useEdgeBrowser(boolean useEdge) {
+		this.useEdgeBrowser = useEdge;
+	}
+
+	boolean useEdgeBrowser() {
+		return useEdgeBrowser;
+	}
+
+	// endregion
+
 	public void write() {
 		try {
-			File iniFile = getIniFile();
+			var iniFile = getIniFile();
 			if (!iniFile.exists()) {
-				MsgBox.error("Could not find *.ini file",
-						iniFile + " does not exist.");
+				MsgBox.error(
+						"Could not find *.ini file", iniFile + " does not exist.");
 				return;
 			}
 
 			var oldLines = Files.readAllLines(iniFile.toPath());
-			var newLines = new ArrayList<String>();
-			boolean nextIsLanguage = false;
-			boolean nextIsTheme = false;
+			var newLines = new ArrayList<>(List.of(
+					"-nl", language.getCode(),
+					"-theme", theme().getCode()
+			));
+			if (theme() == Theme.DARK) {
+				newLines.add("-applicationCSS");
+				newLines.add("platform:/plugin/olca-app/css/" + osDarkCss());
+			}
 
-			for (var l : oldLines) {
-				var line = l.trim();
+			for (int i = 0; i < oldLines.size(); i++) {
 
-				// application language
-				if (line.equals("-nl")) {
-					nextIsLanguage = true;
-					newLines.add(line);
-					continue;
-				}
-				if (nextIsLanguage) {
-					nextIsLanguage = false;
-					newLines.add(getLanguage().getCode());
-					continue;
-				}
+				var line = oldLines.get(i).strip();
 
-				// application theme
-				if (line.equals("-theme")) {
-					nextIsTheme = true;
-					newLines.add(line);
-					continue;
-				}
-				if (nextIsTheme) {
-					nextIsTheme = false;
-					newLines.add(getTheme().getCode());
+				if (line.equals("-nl")
+						|| line.equals("-theme")
+						|| line.equals("-applicationCSS")) {
+					i++;
 					continue;
 				}
 
@@ -106,12 +135,22 @@ class ConfigIniFile {
 		}
 	}
 
+	private String osDarkCss() {
+		var os = OS.get();
+		if (os == null)
+			return "win-dark.css";
+		return switch (os) {
+			case LINUX -> "linux-dark.css";
+			case MAC -> "macos-dark.css";
+			default -> "win-dark.css";
+		};
+	}
+
 	private static File getIniFile() {
-		File dir = App.getInstallLocation();
-		if (OS.get() == OS.MAC)
-			return new File(dir, "eclipse.ini");
-		else
-			return new File(dir, "openLCA.ini");
+		var dir = App.getInstallLocation();
+		return OS.get() == OS.MAC
+				? new File(dir, "eclipse.ini")
+				: new File(dir, "openLCA.ini");
 	}
 
 	private static ConfigIniFile parseFile(File iniFile) throws Exception {
@@ -174,48 +213,12 @@ class ConfigIniFile {
 		}
 		try {
 			int val = Integer.parseInt(matcher.group(1));
-			ini.setMaxMemory(val);
+			ini.maxMemory(val);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(ConfigIniFile.class);
 			log.error("failed to parse memory value from ini: " + memStr, e);
 		}
 	}
 
-	Language getLanguage() {
-		if (language == null)
-			return Language.ENGLISH;
-		else
-			return language;
-	}
 
-	void setLanguage(Language language) {
-		this.language = language;
-	}
-
-	void setTheme(Theme theme) {
-		this.theme = theme;
-	}
-
-	public Theme getTheme() {
-		if (theme == null)
-			return Theme.DEFAULT;
-		else
-			return theme;
-	}
-
-	int getMaxMemory() {
-		return maxMemory;
-	}
-
-	void setMaxMemory(int maxMemory) {
-		this.maxMemory = maxMemory;
-	}
-
-	void setUseEdgeBrowser(boolean useEdge) {
-		this.useEdgeBrowser = useEdge;
-	}
-
-	boolean useEdgeBrowser() {
-		return useEdgeBrowser;
-	}
 }

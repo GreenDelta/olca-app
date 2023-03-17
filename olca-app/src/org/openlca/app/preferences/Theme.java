@@ -10,6 +10,7 @@ import static org.openlca.util.OS.WINDOWS;
  * Enumeration of supported themes.
  */
 public enum Theme {
+
 	DEFAULT("Default", "default"),
 	DARK("Dark", "dark");
 
@@ -46,13 +47,13 @@ public enum Theme {
 	}
 
 	public static Theme getApplicationTheme() {
-		return ConfigIniFile.read().getTheme();
+		return ConfigIniFile.read().theme();
 	}
 
 	public static boolean isDark() {
-		if (org.openlca.util.OS.get() == WINDOWS)
-			return ConfigIniFile.read().getTheme().equals(DARK);
-		else return Display.isSystemDarkTheme();
+		return org.openlca.util.OS.get() == WINDOWS
+				? ConfigIniFile.read().theme().equals(DARK)
+				: Display.isSystemDarkTheme();
 	}
 
 }

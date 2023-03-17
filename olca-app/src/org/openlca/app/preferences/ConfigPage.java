@@ -46,28 +46,31 @@ public class ConfigPage extends PreferencePage implements
 
 	@Override
 	protected Control createContents(Composite parent) {
-		Composite body = UI.composite(parent);
+
+		var body = UI.composite(parent);
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true);
-		Composite comp = UI.composite(body);
+		var comp = UI.composite(body);
 		UI.gridLayout(comp, 2);
 		UI.gridData(comp, true, false);
+
 		createLanguageCombo(comp);
-		if (OS.get() == OS.WINDOWS)
-			createThemeCombo(comp);
+		createThemeCombo(comp);
+		if (OS.get() == OS.WINDOWS) {
+			createEdgeCheck(comp);
+		}
 		createMemoryText(comp);
 		createShowHidePage(comp);
 
 		UI.filler(comp);
-		Composite bcomp = UI.composite(comp);
-		UI.gridLayout(bcomp, 1, 5, 0);
-
-		createResetWindow(bcomp);
-		if (!NativeLib.isLoaded(Module.UMFPACK))
-			createNativeLib(bcomp);
+		var bComp = UI.composite(comp);
+		UI.gridLayout(bComp, 1, 5, 0);
+		createResetWindow(bComp);
+		if (!NativeLib.isLoaded(Module.UMFPACK)) {
+			createNativeLib(bComp);
+		}
 
 		UI.filler(comp);
-
 		createNoteComposite(comp.getFont(), comp, M.Note
 			+ ": ", M.SelectLanguageNoteMessage);
 
@@ -110,10 +113,10 @@ public class ConfigPage extends PreferencePage implements
 				"hide.welcome.page", hideStart.getSelection()));
 	}
 
-	private void createBrowserCheck(Composite comp) {
+	private void createEdgeCheck(Composite comp) {
 		// Edge browser check
 		var edgeLabel = new Label(comp, SWT.NONE);
-		edgeLabel.setText("Use Edge as internal browser");
+		edgeLabel.setText("Use Edge Browser");
 		var gd = UI.gridData(edgeLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
@@ -124,7 +127,7 @@ public class ConfigPage extends PreferencePage implements
 		useEdge.setSelection(iniFile.useEdgeBrowser());
 		Controls.onSelect(
 				useEdge, $ -> {
-					iniFile.setUseEdgeBrowser(useEdge.getSelection());
+					iniFile.useEdgeBrowser(useEdge.getSelection());
 					setDirty();
 				});
 	}
@@ -137,7 +140,7 @@ public class ConfigPage extends PreferencePage implements
 
 		memoryText = new Text(comp, SWT.BORDER);
 		UI.fillHorizontal(memoryText);
-		memoryText.setText(Integer.toString(iniFile.getMaxMemory()));
+		memoryText.setText(Integer.toString(iniFile.maxMemory()));
 		memoryText.addModifyListener(e -> setDirty());
 	}
 
@@ -156,14 +159,14 @@ public class ConfigPage extends PreferencePage implements
 			items[i] = languages[i].getDisplayName();
 		}
 		languageCombo.setItems(items);
-		selectLanguage(iniFile.getLanguage());
+		selectLanguage(iniFile.language());
 		Controls.onSelect(languageCombo, (e) -> {
 			int idx = languageCombo.getSelectionIndex();
 			if (idx < 0)
 				return;
 			Language language = Language.values()[idx];
-			if (!Objects.equals(language, iniFile.getLanguage())) {
-				iniFile.setLanguage(language);
+			if (!Objects.equals(language, iniFile.language())) {
+				iniFile.language(language);
 				setDirty();
 			}
 		});
@@ -174,7 +177,7 @@ public class ConfigPage extends PreferencePage implements
 		var gd = UI.gridData(label, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
-		label.setText(M.Theme);
+		label.setText(M.Theme + " ( experimental)");
 
 		themeCombo = new Combo(composite, SWT.READ_ONLY);
 		UI.gridData(themeCombo, true, false);
@@ -184,14 +187,14 @@ public class ConfigPage extends PreferencePage implements
 			items[i] = themes[i].getName();
 		}
 		themeCombo.setItems(items);
-		selectTheme(iniFile.getTheme());
+		selectTheme(iniFile.theme());
 		Controls.onSelect(themeCombo, (e) -> {
 			int idx = themeCombo.getSelectionIndex();
 			if (idx < 0)
 				return;
 			Theme theme = Theme.values()[idx];
-			if (!Objects.equals(theme, iniFile.getTheme())) {
-				iniFile.setTheme(theme);
+			if (!Objects.equals(theme, iniFile.theme())) {
+				iniFile.theme(theme);
 				setDirty();
 			}
 		});
@@ -208,7 +211,7 @@ public class ConfigPage extends PreferencePage implements
 		if (memVal < 256) {
 			memVal = 256;
 		}
-		iniFile.setMaxMemory(memVal);
+		iniFile.maxMemory(memVal);
 		iniFile.write();
 		getApplyButton().setEnabled(false);
 		isDirty = false;
@@ -220,8 +223,8 @@ public class ConfigPage extends PreferencePage implements
 		int maxMem = ConfigMemCheck.getDefault();
 		selectLanguage(defaultLang);
 		memoryText.setText(Integer.toString(maxMem));
-		iniFile.setLanguage(defaultLang);
-		iniFile.setMaxMemory(maxMem);
+		iniFile.language(defaultLang);
+		iniFile.maxMemory(maxMem);
 		super.performDefaults();
 		performApply();
 

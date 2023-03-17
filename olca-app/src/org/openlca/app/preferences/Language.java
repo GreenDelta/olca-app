@@ -22,7 +22,7 @@ public enum Language {
 	GERMAN("German", "de"),
 
 	HUNGARIAN("Hungarian", "hu"),
-	
+
 	ITALIAN("Italian", "it"),
 
 	PORTUGUESE("Portuguese", "pt"),
@@ -31,10 +31,10 @@ public enum Language {
 
 	TURKISH("Turkish", "tr");
 
-	private String code;
-	private String displayName;
+	private final String code;
+	private final String displayName;
 
-	private Language(String displayName, String code) {
+	Language(String displayName, String code) {
 		this.displayName = displayName;
 		this.code = code;
 	}
@@ -64,7 +64,7 @@ public enum Language {
 	}
 
 	public static Language getApplicationLanguage() {
-		return ConfigIniFile.read().getLanguage();
+		return ConfigIniFile.read().language();
 	}
 
 }
