@@ -50,7 +50,7 @@ public class CommitDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(500, 600);
+		return new Point(600, 600);
 	}
 
 	@Override
