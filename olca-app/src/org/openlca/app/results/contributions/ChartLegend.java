@@ -99,20 +99,22 @@ class ChartLegend {
 		Image image = imageRegistry.get(key);
 		if (image != null)
 			return image;
-		// Create a transparent image
+
+		// init image data for a transparent background
 		var src = new Image(null, 30, 15);
-		var imageData = src.getImageData();
-		imageData.transparentPixel =
-				imageData.palette.getPixel(new RGB(255,255,255));
+		var data = src.getImageData();
+		data.transparentPixel = data.palette.getPixel(new RGB(255, 255, 255));
 		src.dispose();
-		image = new Image(Display.getCurrent(), imageData);
 
-
+		// create the image
+		image = new Image(Display.getCurrent(), data);
 		GC gc = new GC(image);
-		if (index != -1)
-			gc.setBackground(Colors.getForChart(index));
-		else
-			gc.setBackground(Colors.gray());
+		gc.setBackground(Colors.get(255, 255, 255, 255));
+		gc.fillRectangle(0, 0, 30, 15);
+		var bgColor = index != -1
+				? Colors.getForChart(index)
+				: Colors.gray();
+		gc.setBackground(bgColor);
 		gc.fillRectangle(5, 5, 25, 5);
 		gc.dispose();
 		imageRegistry.put(key, image);

@@ -63,17 +63,19 @@ public class ContributionImage {
 		if (image != null)
 			return image;
 
-		// Create a transparent image
+		// init image data for a transparent background
 		var src = new Image(null, width, 15);
-		var imageData = src.getImageData();
-		imageData.transparentPixel = imageData.palette.getPixel(new RGB(255,255,255));
+		var data = src.getImageData();
+		data.transparentPixel = data.palette.getPixel(new RGB(255, 255, 255));
 		src.dispose();
-		image = new Image(display, imageData);
 
+		// create the image
+		image = new Image(display, data);
 		GC gc = new GC(image);
+		gc.setBackground(Colors.get(255, 255, 255, 255));
+		gc.fillRectangle(0, 0, 60, 15);
 		gc.setBackground(selectedColor);
 		gc.fillRectangle((int) ((width - barWidth) / 2), 5, filledWidth, 5);
-
 		gc.dispose();
 
 		imageRegistry.put(key, image);
