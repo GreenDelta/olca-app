@@ -1,6 +1,8 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowType;
 
 import java.util.List;
 
@@ -19,6 +21,15 @@ public class IOPane extends Component {
 
 	public boolean isForInputs() {
 		return forInputs;
+	}
+
+	public boolean accepts(Flow flow) {
+		if ((forInputs && flow.flowType == FlowType.WASTE_FLOW)
+				|| (!forInputs && flow.flowType == FlowType.PRODUCT_FLOW)) {
+			return getExchangeItems().stream()
+					.noneMatch(item -> item.exchange.flow.id == flow.id);
+		} else
+			return true;
 	}
 
 	public boolean hasOnlyElementary() {

@@ -69,8 +69,8 @@ public class AddExchangeCommand extends Command {
 		var node = pane.getNode();
 		if (node == null)
 			return;
-		var d = node.descriptor;
-		if (d == null || d.type != ModelType.PROCESS)
+
+		if (!(node.getEntity() instanceof Process process))
 			return;
 
 		// add the flow
@@ -78,8 +78,14 @@ public class AddExchangeCommand extends Command {
 		if (dialog.open() != Window.OK || dialog.flow == null)
 			return;
 		var flow = dialog.flow;
-		if (!(node.getEntity() instanceof Process process))
+
+		if (!pane.accepts(flow)) {
+			MsgBox.info("This flow cannot be added twice to the "
+					+ (pane.isForInputs() ? "inputs" : "outputs")
+					+ " of " + Labels.name(node.descriptor)
+					+ ".");
 			return;
+		}
 
 		// create the exchange and add to the process.
 		var exchange = forInput
