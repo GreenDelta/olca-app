@@ -125,7 +125,7 @@ class Search implements Runnable {
 
 			double factor = 0;
 			for (var word : s.words) {
-				factor += wordMatch(d.name, word);
+				factor += wordMatch(Labels.name(d), word);
 				factor += wordMatch(d.tags, word);
 			}
 
