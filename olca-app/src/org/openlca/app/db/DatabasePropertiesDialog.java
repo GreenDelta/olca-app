@@ -30,7 +30,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var form = UI.header(mForm, M.Database + ": " + config.name());
-		var body = UI.body(form, tk);
+		var body = UI.dialogBody(form, tk);
 		var content = UI.composite(body, tk);
 		UI.gridLayout(content, 2);
 		if (config instanceof DerbyConfig derbyConfig) {

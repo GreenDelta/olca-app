@@ -51,10 +51,9 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mForm) {
-		var tk = mForm.getToolkit();
-		var body = mForm.getForm().getBody();
-		UI.bodyLayout(body, tk);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 2);
 
 		// types of messages that should be collected

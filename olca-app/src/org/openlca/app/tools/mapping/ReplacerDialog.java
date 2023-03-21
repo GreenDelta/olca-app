@@ -6,11 +6,9 @@ import java.util.Optional;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.ModelCheckBoxTree;
 import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
@@ -60,9 +58,9 @@ class ReplacerDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		FormToolkit tk = mform.getToolkit();
-		Composite comp = UI.body(mform.getForm(), tk);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		var comp = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(comp, 1, 10, 10);
 		UI.label(comp, tk, "This will replace the flows in the database " +
 				"(the source system) with the flows in the target system.");

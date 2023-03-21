@@ -79,9 +79,9 @@ public class RenameParameterDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		var tk = mform.getToolkit();
-		var body = UI.body(mform.getForm(), tk);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		var body = UI.dialogBody(form.getForm(), tk);
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
@@ -153,6 +153,6 @@ public class RenameParameterDialog extends FormDialog {
 		App.runWithProgress(
 				"Rename parameter",
 				() -> Parameters.rename(Database.get(), param, name),
-				() -> Navigator.refresh());
+				Navigator::refresh);
 	}
 }

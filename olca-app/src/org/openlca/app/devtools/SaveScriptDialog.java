@@ -82,9 +82,9 @@ public class SaveScriptDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		var tk = mform.getToolkit();
-		var body = UI.body(mform.getForm(), tk);
+	protected void createFormContent(IManagedForm mForm) {
+		var tk = mForm.getToolkit();
+		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 2);
 		var text = UI.labeledText(body, tk, NLS.bind(M.File, M.Name));
 		text.setText(name);

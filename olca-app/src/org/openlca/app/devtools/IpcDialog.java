@@ -71,8 +71,7 @@ public class IpcDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		Composite body = mForm.getForm().getBody();
-		UI.bodyLayout(body, tk);
+		var body = UI.dialogBody(mForm.getForm(), mForm.getToolkit());
 
 		// port text
 		var comp = UI.composite(body, tk);

@@ -69,8 +69,7 @@ public class ImportLibraryDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.body(mForm.getForm(), tk);
-		UI.gridLayout(body, 1);
+		var body = UI.dialogBody(mForm.getForm(), tk);
 
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, false);

@@ -203,12 +203,10 @@ public class FileImport {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var tk = mform.getToolkit();
-			var body = UI.body(mform.getForm(), tk);
-			UI.gridLayout(body, 1);
-			tk.createLabel(body,
-				"Import file " + zolca.getName());
+		protected void createFormContent(IManagedForm form) {
+			var tk = form.getToolkit();
+			var body = UI.dialogBody(form.getForm(), tk);
+			tk.createLabel(body, "Import file " + zolca.getName());
 
 			var opt1 = tk.createButton(body,
 				"As standalone database", SWT.RADIO);
@@ -224,7 +222,7 @@ public class FileImport {
 			Controls.onSelect(opt2,
 				_e -> intoActiveDB = opt2.getSelection());
 
-			mform.reflow(true);
+			form.reflow(true);
 		}
 
 		@Override

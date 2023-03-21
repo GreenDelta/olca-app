@@ -11,10 +11,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
@@ -125,9 +123,9 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 		@Override
 		protected void createFormContent(IManagedForm form) {
-			FormToolkit toolkit = form.getToolkit();
+			var tk = form.getToolkit();
 			UI.header(form, "Select system model databases");
-			Composite body = UI.body(form.getForm(), toolkit);
+			var body = UI.dialogBody(form.getForm(), tk);
 			viewer = Tables.createViewer(body, "System model", "Database");
 			viewer.setLabelProvider(new Label());
 			entries.add(new Entry("Cut-off"));

@@ -23,22 +23,22 @@ import java.util.Objects;
 import static org.eclipse.draw2d.PositionConstants.*;
 import static org.openlca.app.tools.graphics.figures.Connection.*;
 
-public class SankeySelectionDialog extends FormDialog implements SelectionHandler {
+class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 
 	private final SankeyConfig config;
 	private final ResultItemOrder items;
 
-	public SankeySelectionDialog(SankeyConfig config, ResultItemOrder items) {
+	SankeySelectionDialog(SankeyConfig config, ResultItemOrder items) {
 		super(UI.shell());
 		this.items = items;
 		this.config = config;
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		var tk = mform.getToolkit();
-		var form = UI.header(mform, M.SettingsOfTheSankeyDiagram);
-		var body = UI.body(form, tk);
+	protected void createFormContent(IManagedForm mForm) {
+		var tk = mForm.getToolkit();
+		var form = UI.header(mForm, M.SettingsOfTheSankeyDiagram);
+		var body = UI.dialogBody(form, tk);
 		UI.gridLayout(body, 2);
 		ResultItemSelector.on(items)
 				.withSelectionHandler(this)

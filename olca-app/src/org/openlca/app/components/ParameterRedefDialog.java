@@ -17,12 +17,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
@@ -149,8 +147,7 @@ public class ParameterRedefDialog extends FormDialog {
 			return Collections.emptyList();
 		List<ParameterRedef> selection = new ArrayList<>();
 		for (Object element : list) {
-			if (element instanceof ParameterNode) {
-				ParameterNode node = (ParameterNode) element;
+			if (element instanceof ParameterNode node) {
 				selection.add(node.parameter);
 			}
 		}
@@ -167,19 +164,19 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		FormToolkit toolkit = mform.getToolkit();
-		UI.header(mform, M.SearchParameters);
-		Composite body = UI.body(mform.getForm(), mform.getToolkit());
+	protected void createFormContent(IManagedForm mForm) {
+		var tk = mForm.getToolkit();
+		UI.header(mForm, M.SearchParameters);
+		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 1);
-		Label filterLabel = UI.label(body, toolkit, M.Filter);
+		var filterLabel = UI.label(body, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
 		filterText = UI.text(body, SWT.SEARCH);
 		filterText.addModifyListener(e -> viewer.refresh());
 
-		Section section = UI.section(body, toolkit, M.Parameters);
+		Section section = UI.section(body, tk, M.Parameters);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, toolkit, 1);
+		Composite composite = UI.sectionClient(section, tk, 1);
 		createViewer(composite);
 	}
 
@@ -208,20 +205,16 @@ public class ParameterRedefDialog extends FormDialog {
 	}
 
 	private int compareNodes(Object e1, Object e2) {
-		if (e1 instanceof ParameterNode) {
-			ParameterNode node1 = (ParameterNode) e1;
-			if (e2 instanceof ParameterNode) {
-				ParameterNode node2 = (ParameterNode) e2;
+		if (e1 instanceof ParameterNode node1) {
+			if (e2 instanceof ParameterNode node2) {
 				return Strings.compare(
 						node1.parameter.name,
 						node2.parameter.name);
 			}
 			return -1; // global parameters before processes
 		}
-		if (e1 instanceof ModelNode) {
-			ModelNode node1 = (ModelNode) e1;
-			if (e2 instanceof ModelNode) {
-				ModelNode node2 = (ModelNode) e2;
+		if (e1 instanceof ModelNode node1) {
+			if (e2 instanceof ModelNode node2) {
 				return Strings.compare(
 						node1.model.name,
 						node2.model.name);
@@ -295,9 +288,8 @@ public class ParameterRedefDialog extends FormDialog {
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			if (!(inputElement instanceof TreeModel))
+			if (!(inputElement instanceof TreeModel model))
 				return new Object[0];
-			TreeModel model = (TreeModel) inputElement;
 			List<Object> elements = new ArrayList<>();
 			elements.addAll(model.globalParameters);
 			elements.addAll(model.modelNodes);
@@ -306,17 +298,15 @@ public class ParameterRedefDialog extends FormDialog {
 
 		@Override
 		public Object[] getChildren(Object parentElement) {
-			if (!(parentElement instanceof ModelNode))
+			if (!(parentElement instanceof ModelNode node))
 				return null;
-			ModelNode node = (ModelNode) parentElement;
 			return node.parameters.toArray();
 		}
 
 		@Override
 		public Object getParent(Object element) {
-			if (!(element instanceof ParameterNode))
+			if (!(element instanceof ParameterNode node))
 				return null;
-			ParameterNode node = (ParameterNode) element;
 			return node.modelNode;
 		}
 
@@ -333,8 +323,7 @@ public class ParameterRedefDialog extends FormDialog {
 		public Image getImage(Object element) {
 			if (element instanceof ParameterNode)
 				return Images.get(ModelType.PARAMETER);
-			if (element instanceof ModelNode) {
-				ModelNode node = (ModelNode) element;
+			if (element instanceof ModelNode node) {
 				return Images.get(node.model);
 			}
 			return null;
@@ -342,12 +331,10 @@ public class ParameterRedefDialog extends FormDialog {
 
 		@Override
 		public String getText(Object element) {
-			if (element instanceof ModelNode) {
-				ModelNode node = (ModelNode) element;
+			if (element instanceof ModelNode node) {
 				return Labels.name(node.model);
 			}
-			if (element instanceof ParameterNode) {
-				ParameterNode node = (ParameterNode) element;
+			if (element instanceof ParameterNode node) {
 				return node.parameter.name;
 			}
 			return null;

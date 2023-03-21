@@ -81,7 +81,7 @@ class CalculationDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.body(mForm.getForm(), tk);
+		var body = UI.dialogBody(mForm.getForm(), tk);
 		tk.createLabel(body,
 			"Select the flow properties that should be used for" +
 				" calculating the respective allocation factors.");

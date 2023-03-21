@@ -69,9 +69,9 @@ class FlowRefDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		var tk = mform.getToolkit();
-		var body = UI.body(mform.getForm(), tk);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 1, 10, 10);
 
 		var filterComp = tk.createComposite(body);
@@ -186,17 +186,15 @@ class FlowRefDialog extends FormDialog {
 
 		@Override
 		public Object[] getElements(Object obj) {
-			if (!(obj instanceof Tree))
+			if (!(obj instanceof Tree tree))
 				return null;
-			Tree tree = (Tree) obj;
 			return getChildren(tree.root);
 		}
 
 		@Override
 		public Object[] getChildren(Object obj) {
-			if (!(obj instanceof Node))
+			if (!(obj instanceof Node n))
 				return null;
-			Node n = (Node) obj;
 			return Stream.concat(
 					n.childs.stream(), n.refs.stream()).toArray();
 		}
@@ -208,9 +206,8 @@ class FlowRefDialog extends FormDialog {
 
 		@Override
 		public boolean hasChildren(Object obj) {
-			if (!(obj instanceof Node))
+			if (!(obj instanceof Node node))
 				return false;
-			Node node = (Node) obj;
 			return !node.childs.isEmpty()
 					|| !node.refs.isEmpty();
 		}
@@ -228,9 +225,8 @@ class FlowRefDialog extends FormDialog {
 		public Image getImage(Object obj) {
 			if (obj instanceof Node)
 				return Images.getForCategory(ModelType.FLOW);
-			if (!(obj instanceof FlowRef))
+			if (!(obj instanceof FlowRef ref))
 				return null;
-			FlowRef ref = (FlowRef) obj;
 			if (ref.flow == null || ref.flow.flowType == null)
 				return Images.get(ModelType.FLOW);
 			return Images.get(ref.flow.flowType);
@@ -299,9 +295,8 @@ class FlowRefDialog extends FormDialog {
 			if (obj instanceof FlowRef)
 				return label((FlowRef) obj)
 						.toLowerCase().contains(term);
-			if (!(obj instanceof Node))
+			if (!(obj instanceof Node node))
 				return false;
-			Node node = (Node) obj;
 			for (FlowRef ref : node.refs) {
 				if (matches(ref))
 					return true;

@@ -144,9 +144,9 @@ class MountLibraryDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mForm) {
-		var tk = mForm.getToolkit();
-		var body = UI.body(mForm.getForm(), tk);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
 		sections.forEach(s -> s.render(body, tk));
 	}

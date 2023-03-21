@@ -73,7 +73,7 @@ public class ImportDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.body(mForm.getForm(), tk);
+		var body = UI.dialogBody(mForm.getForm(), tk);
 		createProductSection(body, tk);
 		MappingSection.initAllOf(this)
 			.forEach(section -> section.render(body, tk));

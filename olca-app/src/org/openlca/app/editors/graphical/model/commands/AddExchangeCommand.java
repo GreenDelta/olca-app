@@ -133,9 +133,9 @@ public class AddExchangeCommand extends Command {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm managedForm) {
-			var tk = managedForm.getToolkit();
-			var body = UI.body(managedForm.getForm(), tk);
+		protected void createFormContent(IManagedForm form) {
+			var tk = form.getToolkit();
+			var body = UI.dialogBody(form.getForm(), tk);
 			UI.gridLayout(body, 1);
 
 			// create new text

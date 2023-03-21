@@ -58,7 +58,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		FormToolkit toolkit = mForm.getToolkit();
-		Composite body = UI.body(mForm.getForm(), toolkit);
+		Composite body = UI.dialogBody(mForm.getForm(), toolkit);
 		UI.gridLayout(body, 1, 0, 20);
 		createTop(body, toolkit);
 		createBottom(body, toolkit);

@@ -1,6 +1,5 @@
 package org.openlca.app.editors.processes.exchanges;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -32,9 +31,8 @@ import org.openlca.util.Strings;
 
 class CostDialog extends FormDialog {
 
-	private Process process;
-	private Exchange exchange;
-	private ComboViewer currencyCombo;
+	private final Process process;
+	private final Exchange exchange;
 	private Text priceText;
 	private Label currencyLabel;
 	private Text pricePerUnitText;
@@ -56,10 +54,10 @@ class CostDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		FormToolkit tk = mform.getToolkit();
-		UI.header(mform, M.Price);
-		Composite body = UI.body(mform.getForm(), tk);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		UI.header(form, M.Price);
+		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 3);
 		createCurrencyRow(body, tk);
 		createCostsRow(body, tk);
@@ -69,7 +67,7 @@ class CostDialog extends FormDialog {
 
 	private void createCurrencyRow(Composite body, FormToolkit tk) {
 		Combo widget = UI.labeledCombo(body, tk, M.Currency);
-		currencyCombo = new ComboViewer(widget);
+		ComboViewer currencyCombo = new ComboViewer(widget);
 		currencyCombo.setLabelProvider(new LabelProvider() {
 			@Override
 			public String getText(Object obj) {
@@ -91,8 +89,7 @@ class CostDialog extends FormDialog {
 		combo.setContentProvider(ArrayContentProvider.getInstance());
 		CurrencyDao dao = new CurrencyDao(Database.get());
 		List<Currency> all = dao.getAll();
-		Collections.sort(all,
-				(c1, c2) -> Strings.compare(c1.name, c2.name));
+		all.sort((c1, c2) -> Strings.compare(c1.name, c2.name));
 		combo.setInput(all);
 		currency = exchange.currency;
 		if (currency == null)

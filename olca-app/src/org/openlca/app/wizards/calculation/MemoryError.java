@@ -1,6 +1,5 @@
 package org.openlca.app.wizards.calculation;
 
-import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
@@ -47,10 +46,10 @@ class MemoryError {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var tk = mform.getToolkit();
-			var comp = UI.body(mform.getForm(), tk);
-			mform.getForm().setText(M.OutOfMemory);
+		protected void createFormContent(IManagedForm form) {
+			var tk = form.getToolkit();
+			var comp = UI.dialogBody(form.getForm(), tk);
+			form.getForm().setText(M.OutOfMemory);
 			UI.gridLayout(comp, 1);
 			var label = tk.createLabel(
 					comp, M.CouldNotAllocateMemoryError, SWT.WRAP);
@@ -61,7 +60,7 @@ class MemoryError {
 
 		private void openPreferences() {
 			close();
-			PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(
+			var dialog = PreferencesUtil.createPreferenceDialogOn(
 					null, "preferencepages.config", null, null);
 			dialog.open();
 		}

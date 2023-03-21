@@ -83,9 +83,9 @@ public class ErrorReporter extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		var tk = mform.getToolkit();
-		var body = UI.body(mform.getForm(), tk);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		var body = UI.dialogBody(form.getForm(), tk);
 		body.setLayout(new FillLayout());
 		var comp = tk.createComposite(body);
 		UI.gridLayout(comp, 1);
@@ -96,7 +96,7 @@ public class ErrorReporter extends FormDialog {
 
 		var text = tk.createText(comp, "", SWT.MULTI | SWT.V_SCROLL);
 		UI.gridData(text, true, true);
-		mform.reflow(true);
+		form.reflow(true);
 		var message = details != null
 				? "# Error details: \n" + details + "\n\n" + reportTemplate()
 				: reportTemplate();

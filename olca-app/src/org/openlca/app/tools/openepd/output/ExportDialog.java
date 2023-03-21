@@ -83,7 +83,7 @@ public class ExportDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var body = UI.body(mForm.getForm(), tk);
+		var body = UI.dialogBody(mForm.getForm(), tk);
 		loginPanel = LoginPanel.create(body, tk);
 
 		// info section

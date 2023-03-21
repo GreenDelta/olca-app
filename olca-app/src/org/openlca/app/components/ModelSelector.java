@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.navigation.ModelTextFilter;
@@ -119,9 +118,9 @@ public class ModelSelector extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		FormToolkit tk = form.getToolkit();
+		var tk = form.getToolkit();
 		UI.header(form, getTitle());
-		Composite body = UI.body(form.getForm(), tk);
+		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
 		Label filterLabel = UI.label(body, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());

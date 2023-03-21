@@ -118,7 +118,7 @@ record ImportMonitor(IProgressMonitor monitor) {
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
 			var tk = mForm.getToolkit();
-			var body = UI.body(mForm.getForm(), tk);
+			var body = UI.dialogBody(mForm.getForm(), tk);
 			UI.gridLayout(body, 1, 10, 25);
 
 			long count = log.messages().stream()

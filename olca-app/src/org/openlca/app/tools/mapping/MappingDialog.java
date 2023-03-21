@@ -104,12 +104,11 @@ class MappingDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		this.mform = mform;
-		FormToolkit tk = mform.getToolkit();
-		Composite body = mform.getForm().getBody();
-		UI.gridLayout(body, 1);
-		Composite comp = tk.createComposite(body);
+	protected void createFormContent(IManagedForm form) {
+		this.mform = form;
+		var tk = form.getToolkit();
+		var body = UI.dialogBody(form.getForm(), tk);
+		var comp = tk.createComposite(body);
 		UI.gridLayout(comp, 1);
 		UI.gridData(comp, true, false);
 

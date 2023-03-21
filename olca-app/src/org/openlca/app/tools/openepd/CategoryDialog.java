@@ -52,9 +52,9 @@ public class CategoryDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mForm) {
-		var tk = mForm.getToolkit();
-		var body = UI.body(mForm.getForm(), tk);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		var body = UI.dialogBody(form.getForm(), tk);
 		var tree = new TreeViewer(body, SWT.SINGLE | SWT.BORDER);
 		UI.gridData(tree.getControl(), true, true);
 		tree.setAutoExpandLevel(2);

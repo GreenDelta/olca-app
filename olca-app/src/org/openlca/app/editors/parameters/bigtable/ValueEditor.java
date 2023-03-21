@@ -169,9 +169,9 @@ class ValueEditor {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var tk = mform.getToolkit();
-			var body = UI.body(mform.getForm(), tk);
+		protected void createFormContent(IManagedForm form) {
+			var tk = form.getToolkit();
+			var body = UI.dialogBody(form.getForm(), tk);
 			var comp = tk.createComposite(body);
 
 			UI.gridData(comp, true, false);

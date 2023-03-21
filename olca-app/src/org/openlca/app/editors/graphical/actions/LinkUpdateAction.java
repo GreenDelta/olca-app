@@ -107,14 +107,13 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var tk = mform.getToolkit();
-			var body = UI.body(mform.getForm(), tk);
+		protected void createFormContent(IManagedForm form) {
+			var tk = form.getToolkit();
+			var body = UI.dialogBody(form.getForm(), tk);
 			UI.gridLayout(body, 2);
 			createProviderCombo(tk, body);
 			createTypeCombo(tk, body);
 			createKeepExistingCheck(tk, body);
-
 			createLocationCheck(tk, body);
 		}
 

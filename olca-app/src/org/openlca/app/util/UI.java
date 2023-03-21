@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -339,6 +340,18 @@ public class UI {
 		Composite body = form.getBody();
 		bodyLayout(body, tk);
 		return body;
+	}
+
+	/**
+	 * This method is currently used to fix the white backgrounds in FormDialog
+	 * instances in dark-mode on Windows.
+	 */
+	public static Composite dialogBody(ScrolledForm form, FormToolkit tk) {
+		var body = form.getBody();
+		body.setLayout(new FillLayout());
+		var comp = tk.createComposite(body);
+		bodyLayout(comp, tk);
+		return comp;
 	}
 
 	public static GridLayout gridLayout(Composite comp, int columns) {

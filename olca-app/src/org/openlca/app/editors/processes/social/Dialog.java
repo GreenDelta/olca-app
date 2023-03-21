@@ -42,13 +42,13 @@ class Dialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		FormToolkit tk = mform.getToolkit();
-		String title = aspect.indicator.name;
-		if (title == null)
-			title = M.SocialAspect;
-		UI.header(mform, title);
-		Composite body = UI.body(mform.getForm(), tk);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		var title = aspect.indicator.name != null
+				? aspect.indicator.name
+				: M.SocialAspect;
+		UI.header(form, title);
+		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 3);
 		amountRow(body, tk);
 		activityRow(body, tk);

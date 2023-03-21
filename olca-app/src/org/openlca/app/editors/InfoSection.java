@@ -329,10 +329,9 @@ public class InfoSection {
 		}
 
 		@Override
-		protected void createFormContent(IManagedForm mform) {
-			var tk = mform.getToolkit();
-			var body = UI.body(mform.getForm(), tk);
-			UI.gridLayout(body, 1, 10, 10);
+		protected void createFormContent(IManagedForm mForm) {
+			var tk = mForm.getToolkit();
+			var body = UI.dialogBody(mForm.getForm(), tk);
 
 			// text for new tag
 			var textComp = UI.composite(body, tk);

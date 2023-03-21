@@ -115,7 +115,7 @@ public record ExportState(State state, String id) {
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
 			var tk = mForm.getToolkit();
-			var body = UI.body(mForm.getForm(), tk);
+			var body = UI.dialogBody(mForm.getForm(), tk);
 			var comp = tk.createComposite(body);
 			UI.fillHorizontal(comp);
 			UI.gridLayout(comp, 2);
