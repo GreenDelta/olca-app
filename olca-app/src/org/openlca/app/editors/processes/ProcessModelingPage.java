@@ -40,7 +40,6 @@ class ProcessModelingPage extends ModelPage<Process> {
 		var comp = UI.formSection(parent, toolkit, M.ModelingAndValidation, 3);
 
 		UI.label(comp, getToolkit(), M.ProcessType);
-		UI.label(comp, getToolkit(), M.ProcessType);
 		var typeCombo = new ProcessTypeViewer(comp);
 		getBinding().onModel(this::getModel, "processType", typeCombo);
 		typeCombo.setEnabled(isEditable());
