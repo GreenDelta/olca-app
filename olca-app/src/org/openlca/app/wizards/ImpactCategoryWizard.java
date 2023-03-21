@@ -38,7 +38,7 @@ public class ImpactCategoryWizard extends AbstractWizard<ImpactCategory> {
 
 		@Override
 		protected void modelWidgets(Composite container) {
-			refUnit = UI.text(container, M.ReferenceUnit);
+			refUnit = UI.labeledText(container, M.ReferenceUnit);
 		}
 
 		@Override
