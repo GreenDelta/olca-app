@@ -98,7 +98,7 @@ public class GraphFactory {
 	 * adding the new one.
 	 */
 	public static void updateExchangeItem(ExchangeItem oldValue,
-																				ExchangeItem newValue) {
+			ExchangeItem newValue) {
 		var ioPane = oldValue.getIOPane();
 
 		var sourceLink = oldValue.getSourceConnections();
@@ -169,7 +169,7 @@ public class GraphFactory {
 	}
 
 	public Graph createGraph(GraphEditor editor, JsonArray nodeArray,
-													 JsonArray stickyNoteArray) {
+			JsonArray stickyNoteArray) {
 		if ((nodeArray == null) || (stickyNoteArray == null))
 			return createGraph(editor);
 
