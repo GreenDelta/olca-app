@@ -3,7 +3,6 @@ package org.openlca.app.search;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -32,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public class SearchText extends WorkbenchWindowControlContribution {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	private Text text;
 	private DropDownAction action;
 
@@ -83,8 +82,8 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			ParameterUsagePage.show(term);
 			return;
 		}
-		Search search = new Search(Database.get(), text.getText());
-		search.typeFilter = typeFilter;
+		var search = new Search(Database.get(), text.getText())
+				.withTypeFilter(typeFilter);
 		App.run(M.Searching, search,
 				() -> SearchPage.show(term, search.getResult()));
 	}
@@ -143,7 +142,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			if (menu != null)
 				menu.dispose();
 			menu = new Menu(parent);
-			ModelType[] types = { null,
+			ModelType[] types = {null,
 					ModelType.PROJECT,
 					ModelType.PRODUCT_SYSTEM,
 					ModelType.PROCESS,
@@ -160,9 +159,8 @@ public class SearchText extends WorkbenchWindowControlContribution {
 					ModelType.LOCATION,
 					ModelType.DQ_SYSTEM
 			};
-			for (int i = 0; i < types.length; i++) {
-				ModelType type = types[i];
-				createItem(menu, getSeachLabel(type), type);
+			for (ModelType type : types) {
+				createItem(menu, getSearchLabel(type), type);
 			}
 			if (!RepositoryClients.get().isEmpty()) {
 				createSearchOnlineItem(menu);
@@ -170,43 +168,27 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			return menu;
 		}
 
-		private String getSeachLabel(ModelType type) {
+		private String getSearchLabel(ModelType type) {
 			if (type == null)
 				return M.SearchAllTypes;
-			switch (type) {
-				case PROJECT:
-					return M.SearchInProjects;
-				case PRODUCT_SYSTEM:
-					return M.SearchInProductSystems;
-				case IMPACT_METHOD:
-					return M.SearchInLCIAMethods;
-				case IMPACT_CATEGORY:
-					return M.SearchInLCIACategories;
-				case PROCESS:
-					return M.SearchInProcesses;
-				case FLOW:
-					return M.SearchInFlows;
-				case SOCIAL_INDICATOR:
-					return M.SearchInSocialIndicators;
-				case PARAMETER:
-					return M.SearchInParameters;
-				case FLOW_PROPERTY:
-					return M.SearchInFlowProperties;
-				case UNIT_GROUP:
-					return M.SearchInUnitGroups;
-				case CURRENCY:
-					return M.SearchInCurrencies;
-				case ACTOR:
-					return M.SearchInActors;
-				case SOURCE:
-					return M.SearchInSources;
-				case LOCATION:
-					return M.SearchInLocations;
-				case DQ_SYSTEM:
-					return M.SearchInDataQualitySystems;
-				default:
-					return M.Unknown;
-			}
+			return switch (type) {
+				case PROJECT -> M.SearchInProjects;
+				case PRODUCT_SYSTEM -> M.SearchInProductSystems;
+				case IMPACT_METHOD -> M.SearchInLCIAMethods;
+				case IMPACT_CATEGORY -> M.SearchInLCIACategories;
+				case PROCESS -> M.SearchInProcesses;
+				case FLOW -> M.SearchInFlows;
+				case SOCIAL_INDICATOR -> M.SearchInSocialIndicators;
+				case PARAMETER -> M.SearchInParameters;
+				case FLOW_PROPERTY -> M.SearchInFlowProperties;
+				case UNIT_GROUP -> M.SearchInUnitGroups;
+				case CURRENCY -> M.SearchInCurrencies;
+				case ACTOR -> M.SearchInActors;
+				case SOURCE -> M.SearchInSources;
+				case LOCATION -> M.SearchInLocations;
+				case DQ_SYSTEM -> M.SearchInDataQualitySystems;
+				default -> M.Unknown;
+			};
 		}
 
 		private void createItem(Menu menu, final String text,
@@ -224,18 +206,16 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 		private void updateSelection(String text, ModelType type) {
 			setText(text);
-			ImageDescriptor imageDescriptor = null;
-			if (type == null)
-				imageDescriptor = Icon.SEARCH.descriptor();
-			else
-				imageDescriptor = Images.descriptor(type);
-			setImageDescriptor(imageDescriptor);
+			var image = type == null
+					? Icon.SEARCH.descriptor()
+					: Images.descriptor(type);
+			setImageDescriptor(image);
 			typeFilter = type;
 			searchOnline = false;
 		}
 
 		private void createSearchOnlineItem(Menu menu) {
-			MenuItem item = new MenuItem(menu, SWT.NONE);
+			var item = new MenuItem(menu, SWT.NONE);
 			item.setText("Search in Collaboration Server");
 			item.setImage(Icon.COLLABORATION_SERVER_LOGO.get());
 			Controls.onSelect(item, e -> onSearchOnlineSelection());
