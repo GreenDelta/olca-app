@@ -121,8 +121,8 @@ public class ExchangeItem extends Component {
 		if (exchange == null || exchange.flow == null)
 			return false;
 		var flowType = exchange.flow.flowType;
-		return getIOPane().isForInputs() == (flowType == FlowType.WASTE_FLOW)
-			|| !getIOPane().isForInputs() == (flowType == FlowType.PRODUCT_FLOW);
+		return (getIOPane().isForInputs() && flowType == FlowType.WASTE_FLOW)
+			|| (!getIOPane().isForInputs() && flowType == FlowType.PRODUCT_FLOW);
 	}
 
 	public boolean isElementary() {
