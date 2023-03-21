@@ -51,15 +51,15 @@ public class ReplaceProvidersDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mForm) {
-		FormToolkit toolkit = mForm.getToolkit();
-		Composite body = UI.body(mForm.getForm(), toolkit);
+	protected void createFormContent(IManagedForm form) {
+		var tk = form.getToolkit();
+		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 2, 20, 20);
 		UI.gridData(body, true, false);
-		processViewer = createProcessViewer(body, toolkit, M.ReplaceProvider, this::updateProducts);
-		productViewer = createFlowViewer(body, toolkit, M.OfProduct, this::updateReplacementCandidates);
+		processViewer = createProcessViewer(body, tk, M.ReplaceProvider, this::updateProducts);
+		productViewer = createFlowViewer(body, tk, M.OfProduct, this::updateReplacementCandidates);
 		productViewer.setEnabled(false);
-		replacementViewer = createProcessViewer(body, toolkit, M.With, selected -> updateButtons());
+		replacementViewer = createProcessViewer(body, tk, M.With, selected -> updateButtons());
 		replacementViewer.setEnabled(false);
 		processViewer.setInput(getUsedInExchanges());
 	}
@@ -125,19 +125,16 @@ public class ReplaceProvidersDialog extends FormDialog {
 			return Collections.emptyList();
 		ProcessDao dao = new ProcessDao(Database.get());
 		List<FlowDescriptor> products = dao.getTechnologyOutputs(process);
-		for (FlowDescriptor flow : new ArrayList<>(products))
-			if (flow.flowType != FlowType.PRODUCT_FLOW)
-				products.remove(flow);
+		products.removeIf(flow -> flow.flowType != FlowType.PRODUCT_FLOW);
 		return products;
 	}
 
 	private List<ProcessDescriptor> getProviders(FlowDescriptor product) {
-		List<ProcessDescriptor> result = new ArrayList<>();
 		// TODO: search for processes and waste flows
 		FlowDao flowDao = new FlowDao(Database.get());
 		Set<Long> ids = flowDao.getWhereOutput(product.id);
 		ProcessDao processDao = new ProcessDao(Database.get());
-		result.addAll(processDao.getDescriptors(ids));
+		var result = new ArrayList<>(processDao.getDescriptors(ids));
 		result.remove(processViewer.getSelected());
 		return result;
 	}

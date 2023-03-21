@@ -86,7 +86,7 @@ class CalculationDialog extends FormDialog {
 			"Select the flow properties that should be used for" +
 				" calculating the respective allocation factors.");
 		var comp = UI.composite(body, tk);
-		UI.gridLayout(comp, 5);
+		UI.gridLayout(comp, 2);
 		UI.fillHorizontal(comp);
 
 		Function<AllocationMethod, Selector> selector =
