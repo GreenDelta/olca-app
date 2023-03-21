@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
@@ -29,7 +30,7 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.io.CategoryPath;
+import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
 class ResultPage extends FormPage {
@@ -37,6 +38,7 @@ class ResultPage extends FormPage {
 	private final int PAGE_SIZE = 50;
 	private final List<Descriptor> rawResults;
 	private final String title;
+	private final Categories.PathBuilder categories;
 
 	private List<Descriptor> results;
 	private int currentPage = 0;
@@ -53,13 +55,14 @@ class ResultPage extends FormPage {
 		this.results = rawResults;
 		this.title = title;
 		pageCount = (int) Math.ceil((double) results.size() / (double) PAGE_SIZE);
+		categories = Categories.pathsOf(Database.get());
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		form = UI.header(mform, title);
-		tk = mform.getToolkit();
-		formBody = UI.body(form, tk);
+	protected void createFormContent(IManagedForm form) {
+		this.form = UI.header(form, title);
+		tk = form.getToolkit();
+		formBody = UI.body(this.form, tk);
 		if (rawResults.size() > 10) {
 			createFilter();
 		}
@@ -67,7 +70,7 @@ class ResultPage extends FormPage {
 	}
 
 	private void createFilter() {
-		Composite filterComposite = UI.composite(formBody, tk);
+		var filterComposite = UI.composite(formBody, tk);
 		UI.gridLayout(filterComposite, 2, 10, 10);
 		Label label = UI.label(filterComposite, tk, M.Filter);
 		label.setFont(UI.boldFont());
@@ -120,18 +123,19 @@ class ResultPage extends FormPage {
 	}
 
 	private void createItems() {
-		LinkClick click = new LinkClick();
-		for (Descriptor d : getPageResults()) {
-			Composite comp = tk.createComposite(pageComposite);
+		var click = new LinkClick();
+		for (var d : getPageResults()) {
+			var comp = tk.createComposite(pageComposite);
 			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 1).verticalSpacing = 3;
-			ImageHyperlink link = tk.createImageHyperlink(comp, SWT.TOP);
+			var link = tk.createImageHyperlink(comp, SWT.TOP);
 			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
 			link.setForeground(Colors.linkBlue());
 			link.setData(d);
 			link.addHyperlinkListener(click);
-			renderCategory(tk, d, comp);
+			renderCategory(tk, comp, d);
+			renderTags(tk, comp, d);
 		}
 	}
 
@@ -148,18 +152,25 @@ class ResultPage extends FormPage {
 		return results.subList(start, end);
 	}
 
-	private void renderCategory(FormToolkit tk, Descriptor d, Composite comp) {
-		if (!(d instanceof RootDescriptor cd))
+	private void renderCategory(FormToolkit tk, Composite comp, Descriptor d) {
+		if (!(d instanceof RootDescriptor e) || e.category == null)
 			return;
-		Long id = cd.category;
-		if (id == null)
-			return;
-		Category cat = Cache.getEntityCache().get(Category.class, id);
-		if (cat == null)
-			return;
-		String path = CategoryPath.getFull(cat);
-		Label label = tk.createLabel(comp, path);
+		var path = categories.pathOf(e.category);
+		var label = tk.createLabel(comp, path);
 		label.setForeground(Colors.get(0, 128, 42));
+	}
+
+	private void renderTags(FormToolkit tk, Composite parent, Descriptor d) {
+		if (Strings.nullOrEmpty(d.tags))
+			return;
+		var tags = d.tags.split(",");
+		if (tags.length == 0)
+			return;
+		var comp = tk.createComposite(parent);
+		UI.gridLayout(comp, tags.length, 5, 0);
+		for (var tag : tags) {
+			tk.createLabel(comp, "#" + tag).setForeground(Colors.darkGray());
+		}
 	}
 
 	private void renderPager() {
