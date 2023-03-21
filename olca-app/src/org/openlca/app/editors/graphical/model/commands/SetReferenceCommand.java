@@ -8,8 +8,6 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 
-import java.util.Objects;
-
 import static org.openlca.app.editors.graphical.model.GraphFactory.updateExchangeItem;
 
 public class SetReferenceCommand extends Command {
@@ -38,9 +36,11 @@ public class SetReferenceCommand extends Command {
 			return false;
 
 		process = (Process) node.getEntity();
-		this.oldRefExchangeItem = node.getRefExchangeItem();
-		if (oldRefExchangeItem != null)
-			this.oldRefExchange = getExchange(process, oldRefExchangeItem);
+
+		oldRefExchangeItem = node.getRefExchangeItem();
+		if (oldRefExchangeItem != null) {
+			oldRefExchange = oldRefExchangeItem.exchange;
+		}
 
 		return process != null;
 	}
@@ -72,13 +72,13 @@ public class SetReferenceCommand extends Command {
 
 		// Getting the old reference Exchange.
 		var oldRefExchangeItem = node.getExchangeItem(oldRefExchange);
-		var oldExchange = getExchange(process, oldRefExchangeItem);
-		update(oldRefExchangeItem, oldExchange);
+		update(oldRefExchangeItem, oldRefExchange);
 
 		editor.setDirty(process);
 	}
 
-	private void update(ExchangeItem newRefExchangeItem, Exchange oldRefExchange) {
+	private void update(ExchangeItem newRefExchangeItem,
+			Exchange oldRefExchange) {
 		var newRefExchange = newRefExchangeItem.exchange;
 		if (newRefExchange == null)
 			return;
@@ -88,15 +88,6 @@ public class SetReferenceCommand extends Command {
 			updateExchangeItem(oldRefExchangeItem, new ExchangeItem(oldRefExchange));
 
 		updateExchangeItem(newRefExchangeItem, new ExchangeItem(newRefExchange));
-	}
-
-	private Exchange getExchange(Process process, ExchangeItem item) {
-		if (process == null)
-			return null;
-		return process.exchanges.stream()
-			.filter(e -> Objects.equals(e.id, item.exchange.id))
-			.findFirst()
-			.orElse(null);
 	}
 
 }
