@@ -19,6 +19,7 @@ import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.filters.FlowTypeFilter;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
@@ -68,8 +69,8 @@ public class AddExchangeCommand extends Command {
 		var node = pane.getNode();
 		if (node == null)
 			return;
-		var d = node.descriptor;
-		if (d == null || d.type != ModelType.PROCESS)
+
+		if (!(node.getEntity() instanceof Process process))
 			return;
 
 		// add the flow
@@ -77,8 +78,14 @@ public class AddExchangeCommand extends Command {
 		if (dialog.open() != Window.OK || dialog.flow == null)
 			return;
 		var flow = dialog.flow;
-		if (!(node.getEntity() instanceof Process process))
+
+		if (!pane.accepts(flow)) {
+			MsgBox.info("This flow cannot be added twice to the "
+					+ (pane.isForInputs() ? "inputs" : "outputs")
+					+ " of " + Labels.name(node.descriptor)
+					+ ".");
 			return;
+		}
 
 		// create the exchange and add to the process.
 		var exchange = forInput
@@ -113,6 +120,13 @@ public class AddExchangeCommand extends Command {
 		FlowType type = FlowType.PRODUCT_FLOW;
 		FlowProperty quantity;
 
+		private final FlowTypeFilter wasteFilter = new FlowTypeFilter(
+				FlowType.ELEMENTARY_FLOW, FlowType.PRODUCT_FLOW);
+		private final FlowTypeFilter productFilter = new FlowTypeFilter(
+				FlowType.ELEMENTARY_FLOW, FlowType.WASTE_FLOW);
+		private final FlowTypeFilter elemFilter = new FlowTypeFilter(
+				FlowType.PRODUCT_FLOW, FlowType.WASTE_FLOW);
+
 		Dialog() {
 			super(UI.shell());
 			setBlockOnOpen(true);
@@ -134,7 +148,7 @@ public class AddExchangeCommand extends Command {
 			});
 
 			// flow type selection
-			var typeComp = tk.createComposite(body);
+			var typeComp = UI.composite(body, tk);
 			UI.gridData(typeComp, true, false);
 			UI.gridLayout(typeComp, 3, 5, 0).makeColumnsEqualWidth = true;
 			var types = new FlowType[]{
@@ -143,15 +157,27 @@ public class AddExchangeCommand extends Command {
 				FlowType.ELEMENTARY_FLOW,
 			};
 			for (var type : types) {
-				var btn = tk.createButton(typeComp, Labels.of(type), SWT.RADIO);
+				var btn = UI.radio(typeComp, tk, Labels.of(type));
 				if (type == FlowType.PRODUCT_FLOW) {
 					btn.setSelection(true);
 				}
-				Controls.onSelect(btn, e -> this.type = type);
+				Controls.onSelect(btn, e -> {
+					this.type = type;
+					tree.removeFilter(productFilter);
+					tree.removeFilter(wasteFilter);
+					tree.removeFilter(elemFilter);
+					if (type == FlowType.PRODUCT_FLOW) {
+						tree.addFilter(productFilter);
+					} else if (type == FlowType.ELEMENTARY_FLOW) {
+						tree.addFilter(elemFilter);
+					} else if (type == FlowType.WASTE_FLOW) {
+						tree.addFilter(wasteFilter);
+					}
+				});
 			}
 
 			// flow property
-			var propComp = tk.createComposite(body);
+			var propComp = UI.composite(body, tk);
 			UI.gridData(propComp, true, false);
 			UI.gridLayout(propComp, 1, 5, 0);
 			var propViewer = new FlowPropertyCombo(propComp);
@@ -165,6 +191,7 @@ public class AddExchangeCommand extends Command {
 			var selectLabel = UI.label(body, tk, "Or select an existing");
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.FLOW);
+			tree.addFilter(productFilter);
 			UI.gridData(tree.getControl(), true, true);
 			tree.addFilter(new ModelTextFilter(text, tree));
 
@@ -207,9 +234,9 @@ public class AddExchangeCommand extends Command {
 
 		@Override
 		protected void createButtonsForButtonBar(Composite comp) {
-			createButton(comp, _CREATE, "Create new", false)
+			createButton(comp, _CREATE, M.CreateNew, false)
 				.setEnabled(false);
-			createButton(comp, _SELECT, "Select extisting", false)
+			createButton(comp, _SELECT, "Select existing", false)
 				.setEnabled(false);
 			createButton(comp, _CANCEL, M.Cancel, true);
 		}

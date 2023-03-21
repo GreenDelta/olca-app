@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class ExchangeItem extends Component {
 
-	public final Exchange exchange;
+	public Exchange exchange;
 
 	public ExchangeItem(Exchange exchange) {
 		this.exchange = exchange;
@@ -64,22 +64,29 @@ public class ExchangeItem extends Component {
 		return exchange;
 	}
 
+	public void setExchange(Exchange exchange) {
+		this.exchange = exchange;
+	}
+
 	/**
 	 * Returns true if this exchange is connected.
-	 * Note that link.exchangeId is compared to exchange.internalId when the
-	 * process is not saved.
 	 */
 	public boolean isConnected() {
 		var node = getNode();
 		if (node == null || node.descriptor == null || exchange == null)
 			return false;
+
 		var linkSearch = node.getGraph().linkSearch;
-		var links = linkSearch.getConnectionLinks(node.descriptor.id);
-		for (ProcessLink link : links) {
-			if (matchesLink(link))
-				return true;
+		var isInput = getIOPane().isForInputs();
+
+		if ((isInput && flowType() == FlowType.WASTE_FLOW)
+				|| (!isInput && flowType() == FlowType.PRODUCT_FLOW))  {
+			return linkSearch.getProviderLinks(node.descriptor.id).stream()
+					.anyMatch(link -> link.providerId == getNode().descriptor.id);
+		} else {
+			return linkSearch.getConnectionLinks(node.descriptor.id).stream()
+					.anyMatch(this::matchesLink);
 		}
-		return false;
 	}
 
 	/**
@@ -99,11 +106,15 @@ public class ExchangeItem extends Component {
 	 * <code>ProcessLink</code> exchange in a saved or unsaved process context.
 	 */
 	public boolean matchesLink(ProcessLink link) {
-		if (getGraph() != null && getGraph().getEditor() != null
-				&& getGraph().getEditor().isDirty(getNode().getEntity())) {
-			return link.exchangeId == exchange.internalId;
-		} else
-			return link.exchangeId == exchange.id;
+		if (link.exchangeId == exchange.id)
+			return true;
+
+		if (getGraph() == null || getGraph().getEditor() == null)
+			return false;
+
+		// In case the entity is dirty, the internal ID is also checked.
+		return getGraph().getEditor().isDirty(getNode().getEntity())
+				&& link.exchangeId == exchange.internalId;
 	}
 
 	public boolean canBeReferenceFlow() {
@@ -155,8 +166,13 @@ public class ExchangeItem extends Component {
 
 	public String toString() {
 		var name = Labels.name(exchange.flow);
+		var amount = exchange.formula != null
+				? exchange.formula
+				: exchange.amount;
 		return "ExchangeItem("
-				+ name.substring(0, Math.min(name.length(), 20)) + ")";
+				+ name.substring(0, Math.min(name.length(), 20))
+				+ "=" + amount + " " + exchange.unit
+				+ ")";
 	}
 
 }

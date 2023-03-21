@@ -37,8 +37,10 @@ public class LinkSearchMap {
 	private ArrayList<Long> wasExplored = new ArrayList<>();
 
 	public LinkSearchMap(Collection<ProcessLink> links) {
-		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
-		connectionIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1L);
+		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
+				Constants.DEFAULT_LOAD_FACTOR, -1L);
+		connectionIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
+				Constants.DEFAULT_LOAD_FACTOR, -1L);
 		data = new ArrayList<>(links);
 		for (int i = 0; i < data.size(); i++) {
 			ProcessLink link = data.get(i);
@@ -67,7 +69,8 @@ public class LinkSearchMap {
 		// presentations of product systems and there can be a lot of links
 		// in some kind of product systems (e.g. from IO-databases) we do
 		// not just merge the incoming and outgoing links here
-		TIntHashSet intSet = new TIntHashSet(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+		TIntHashSet intSet = new TIntHashSet(Constants.DEFAULT_CAPACITY,
+				Constants.DEFAULT_LOAD_FACTOR, -1);
 		TIntArrayList list = providerIndex.get(processId);
 		if (list != null)
 			intSet.addAll(list);
@@ -97,7 +100,7 @@ public class LinkSearchMap {
 
 	/**
 	 * Returns all links where the process with the given ID is connected (has
-	 * an product input or waste output).
+	 * a product input or waste output).
 	 */
 	public List<ProcessLink> getConnectionLinks(long processId) {
 		return getLinks(processId, connectionIndex);
@@ -112,7 +115,7 @@ public class LinkSearchMap {
 	}
 
 	private List<ProcessLink> getLinks(long processId,
-																		 TLongObjectHashMap<TIntArrayList> map) {
+			TLongObjectHashMap<TIntArrayList> map) {
 		TIntArrayList list = map.get(processId);
 		if (list == null)
 			return Collections.emptyList();
@@ -164,7 +167,7 @@ public class LinkSearchMap {
 	}
 
 	private void remove(long id, int index,
-											TLongObjectHashMap<TIntArrayList> map) {
+			TLongObjectHashMap<TIntArrayList> map) {
 		TIntArrayList list = map.get(id);
 		if (list == null)
 			return;

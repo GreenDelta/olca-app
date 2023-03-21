@@ -66,6 +66,9 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 	@Override
 	protected Command getConnectionCreateCommand(CreateConnectionRequest req) {
 		ExchangeItem toConnect = (ExchangeItem) req.getTargetEditPart().getModel();
+		if (toConnect.isConnected())
+			return null;
+
 		long flowId = toConnect.exchange.flow.id;
 		if (!toConnect.exchange.isInput) {
 			CreateLinkCommand cmd = new CreateLinkCommand(flowId);
@@ -90,8 +93,8 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 		ExchangeItem other = link.getTargetNode().getInput(link.processLink);
 		if (!toConnect.matches(other))
 			return null;
-		boolean sameNode = toConnect.matchesLink(link.processLink);
-		if (!sameNode && toConnect.isConnected())
+		boolean matchingItem = toConnect.matchesLink(link.processLink);
+		if (!matchingItem && toConnect.isConnected())
 			return null;
 		return new ReconnectLinkCommand(toConnect.getNode(), other, link);
 	}

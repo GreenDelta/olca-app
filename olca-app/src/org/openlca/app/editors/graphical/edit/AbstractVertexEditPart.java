@@ -64,9 +64,8 @@ public abstract class AbstractVertexEditPart<N extends Component> extends
 
 	private ConnectionAnchor sourceAnchor(CreateConnectionRequest req) {
 		var command = req.getStartCommand();
-		if (!(command instanceof CreateLinkCommand))
+		if (!(command instanceof CreateLinkCommand cmd))
 			return null;
-		var cmd = (CreateLinkCommand) req.getStartCommand();
 		if (cmd.source != null) {
 			return new LinkAnchor(getOwner(cmd.source), false);
 		}

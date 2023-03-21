@@ -84,6 +84,10 @@ public class Node extends MinMaxComponent {
 		return entity;
 	}
 
+	public void setEntity(RootEntity entity) {
+		this.entity = entity;
+	}
+
 	public ExchangeItem getOutput(ProcessLink link) {
 		if (link == null)
 			return null;

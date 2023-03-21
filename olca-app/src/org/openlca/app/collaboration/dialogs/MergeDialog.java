@@ -29,7 +29,7 @@ public class MergeDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(800, 600);
+		return new Point(1000, 800);
 	}
 
 	@Override

@@ -299,8 +299,10 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 
 	private void saveEntity(RootEntity entity) {
 		var node = getModel().getNode(entity.id);
-		var exchanges = GraphFactory.getExchanges(entity, node.descriptor.type);
-		// Mapping the exchanges of the process with the ProcessLinks.
+		var type = node.descriptor.type;
+		var exchanges = GraphFactory.getExchanges(entity, type);
+
+		// Map the exchanges of the process with the ProcessLinks.
 		var mapPLinkToExchange = new HashMap<ProcessLink, Exchange>();
 		node.getAllLinks().stream()
 				.map(GraphLink.class::cast)
@@ -308,19 +310,32 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 				.forEach(link -> exchanges.stream()
 						.filter(exchange -> exchange.internalId == link.exchangeId)
 						.forEach(exchange -> mapPLinkToExchange.put(link, exchange)));
+
+		// Update the entity
 		entity.lastChange = Calendar.getInstance().getTimeInMillis();
 		Version.incUpdate(entity);
 		var db = Database.get();
 		db.update(entity);
 
 		var newEntity = db.get(entity.getClass(), entity.id);
-		var newExchanges = GraphFactory.getExchanges(newEntity, node.descriptor.type);
-		// Updating ProcessLink.exchangeId with the updated exchange.id.
-		for (var entry : mapPLinkToExchange.entrySet()) {
-			var oldExchange = entry.getValue();
-			for (var exchange : newExchanges) {
+		node.setEntity(newEntity);
+
+		var newExchanges = GraphFactory.getExchanges(newEntity, type);
+		// Update ProcessLink.exchangeId with the updated exchange.id.
+		for (var exchange : newExchanges) {
+
+			// Update the ProcessLink.exchangeId
+			for (var entry : mapPLinkToExchange.entrySet()) {
+				var oldExchange = entry.getValue();
 				if (oldExchange.internalId == exchange.internalId) {
 					entry.getKey().exchangeId = exchange.id;
+				}
+			}
+
+			// Update the ExchangeItem.exchange
+			for (var exchangeItem : node.getExchangeItems()) {
+				if (exchangeItem.exchange.internalId == exchange.internalId) {
+					exchangeItem.setExchange(exchange);
 				}
 			}
 		}
