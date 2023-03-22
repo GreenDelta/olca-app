@@ -27,7 +27,6 @@ class CalculationPreferences {
 	private boolean withRegionalization;
 	private boolean withCosts;
 	private boolean withDataQuality;
-	private boolean withLinkingCheck;
 
 	private String processDqSystem;
 	private String exchangeDqSystem;
@@ -201,7 +200,6 @@ class CalculationPreferences {
 		Json.put(json, "dqAggregation", dqAggregation);
 		Json.put(json, "dqNaHandling", dqNaHandling);
 		Json.put(json, "dqCeiling", dqCeiling);
-		Json.put(json, "withLinkingCheck", withLinkingCheck);
 		return json;
 	}
 
@@ -224,7 +222,6 @@ class CalculationPreferences {
 		Json.getInt(obj, "simulationRuns").ifPresent(i -> prefs.simulationRuns = i);
 		prefs.withRegionalization = Json.getBool(obj, "withRegionalization", false);
 		prefs.withCosts = Json.getBool(obj, "withCosts", false);
-		prefs.withLinkingCheck = Json.getBool(obj, "withLinkingCheck", false);
 
 		prefs.withDataQuality = Json.getBool(obj, "withDataQuality", false);
 		prefs.processDqSystem = Json.getString(obj, "processDqSystem");

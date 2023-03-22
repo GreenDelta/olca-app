@@ -1,5 +1,6 @@
 package org.openlca.app.editors.systems;
 
+import org.openlca.app.App;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.util.Question;
 import org.openlca.app.wizards.calculation.CalculationWizard;
@@ -28,7 +29,9 @@ class CalculationDispatch {
 		if (shouldCheckSystem()) {
 			LoggerFactory.getLogger(getClass())
 					.info("check if system {} is linked", system);
-			boolean linked = ProductSystems.isConnected(system);
+			boolean linked = App.exec(
+					"Check product system ...",
+					() -> ProductSystems.isConnected(system));
 			updateMarker(linked);
 			if (!linked) {
 				var b = Question.ask(
