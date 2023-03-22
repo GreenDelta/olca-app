@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
@@ -67,6 +68,7 @@ public class Navigator extends CommonNavigator {
 		var viewer = super.createCommonViewer(aParent);
 		viewer.getTree().setBackground(
 				Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
+		viewer.getTree().addKeyListener(new RefreshListener());
 		return viewer;
 	}
 
@@ -110,11 +112,11 @@ public class Navigator extends CommonNavigator {
 						return;
 					List<INavigationElement<?>> elems = Selections.allOf(selection);
 					Stream.of(
-									new DbDeleteAction(),
-									new DeleteLibraryAction(),
-									new DeleteModelAction(),
-									new DeleteMappingAction(),
-									new DeleteScriptAction())
+							new DbDeleteAction(),
+							new DeleteLibraryAction(),
+							new DeleteModelAction(),
+							new DeleteMappingAction(),
+							new DeleteScriptAction())
 							.filter((INavigationAction a) -> a.accept(elems))
 							.findFirst()
 							.ifPresent(INavigationAction::run);
@@ -390,4 +392,23 @@ public class Navigator extends CommonNavigator {
 		}
 		return null;
 	}
+
+	private class RefreshListener implements KeyListener {
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (e.keyCode == SWT.F5) {
+				for (var elem : getAllSelected()) {
+					refresh(elem);
+				}
+			}
+		}
+
+	}
+
 }
