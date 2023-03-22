@@ -5,6 +5,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.commands.MassCreationCommand;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.util.ProductSystems;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +34,11 @@ public class BuildNextTierAction extends BuildAction {
 		try {
 			if (editor.promptSaveIfNecessary()) {
 				collect();
-				var command = MassCreationCommand.nextTier(newProviders, newConnections, graph);
-
-				if (command.canExecute())
+				var command = MassCreationCommand.nextTier(
+						newProviders, newConnections, graph);
+				if (command.canExecute()) {
 					execute(command);
+				}
 			}
 			editor.setDirty();
 		} catch (Exception e) {
@@ -45,7 +47,11 @@ public class BuildNextTierAction extends BuildAction {
 	}
 
 	private void collect() {
+		var alreadyLinked = ProductSystems.linkedExchangesOf(
+				graph.getProductSystem());
 		for (var exchange : mapExchangeToProcess.keySet()) {
+			if (alreadyLinked.contains(exchange.id))
+				continue;
 			var process = mapExchangeToProcess.get(exchange);
 			var provider = findProvider(exchange);
 			if (provider == null)
@@ -53,8 +59,7 @@ public class BuildNextTierAction extends BuildAction {
 			if (!newProviders.contains(provider)) {
 				newProviders.add(provider);
 			}
-			var link = getLink(exchange, process, provider);
-
+			var link = createLink(exchange, process, provider);
 			if (!newConnections.contains(link)) {
 				newConnections.add(link);
 			}

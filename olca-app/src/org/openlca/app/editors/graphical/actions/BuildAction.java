@@ -86,15 +86,17 @@ public abstract class BuildAction extends WorkbenchPartAction {
 		return processDao.getDescriptors(providerIds);
 	}
 
-	protected ProcessLink getLink(Exchange exchange, Process process,
-			RootDescriptor provider) {
+	protected ProcessLink createLink(
+			Exchange exchange, Process process, RootDescriptor provider
+	) {
 		var link = new ProcessLink();
 		link.exchangeId = exchange.id;
 		link.flowId = exchange.flow.id;
 		link.processId = process.id;
 		link.providerId = provider.id;
-		if (provider.type == null)
+		if (provider.type == null) {
 			link.providerType = ProcessLink.ProviderType.PROCESS;
+		}
 		else {
 			link.providerType = switch (provider.type) {
 				case PRODUCT_SYSTEM -> ProcessLink.ProviderType.SUB_SYSTEM;

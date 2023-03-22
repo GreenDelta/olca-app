@@ -15,6 +15,7 @@ import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.util.ProductSystems;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,17 +82,20 @@ public class BuildSupplyChainAction extends BuildAction {
 		public void run(IProgressMonitor monitor) {
 			monitor.beginTask(M.BuildSupplyChain, IProgressMonitor.UNKNOWN);
 			var builder = new ProductSystemBuilder(Cache.getMatrixCache(), config);
-
+			var alreadyLinked = ProductSystems.linkedExchangesOf(
+					graph.getProductSystem());
 			for (var exchange : mapExchangeToProcess.keySet()) {
+				if (alreadyLinked.contains(exchange.id))
+					continue;
 				var process = mapExchangeToProcess.get(exchange);
 				var provider = findProvider(exchange);
+				if (provider == null)
+					continue;
 				var techFlow = TechFlow.of(provider, Descriptor.of(exchange.flow));
 				builder.autoComplete(system, techFlow);
-
-				var link = getLink(exchange, process, provider);
+				var link = createLink(exchange, process, provider);
 				system.processLinks.add(link);
 				system.processes.add(provider.id);
-
 				system = ProductSystemBuilder.update(Database.get(), system);
 			}
 
