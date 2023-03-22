@@ -70,7 +70,7 @@
                 wrote on <span class="date"></span><span class="dataset-info"></span>
             </small>
         </span>
-        <div>
+        <div id="dataset-details" style="display:none">
             <img class="dataset-icon">
             <a class="dataset-link" href="#"></a>
         </div>
@@ -78,7 +78,7 @@
     </div>
     <script src="lib/jquery.min.js"></script>
     <script>
-        function add(comment, inDialog, fullPath) {
+        function add(comment) {
             if ($('.comment-entry').length > 1) {
                 $('body').append('<hr>');
             }
@@ -87,16 +87,14 @@
             $('.username', template).html(comment.user);
             $('.date', template).html(comment.date);
             $('.comment-text', template).html(comment.text);
-            if (!inDialog) {
-                var label = window.getLabel(comment.path);
-                if (label) {
-                    $('.dataset-info', template).html(" on '" + label + "'");
-                }
-                if (fullPath) {
-                    $('.dataset-link', template).html(fullPath);
-                    $('.dataset-icon', template).attr('src', 'images/' + comment.type.toLowerCase() + '.png');
-                }
-            }
+			if (comment.label) {
+				$('.dataset-info', template).html(" on '" + comment.label + "'");
+			}
+			if (comment.fullPath) {
+				$('.dataset-link', template).html(comment.fullPath);
+				$('.dataset-icon', template).attr('src', 'images/' + comment.type.toLowerCase() + '.png');
+				$('.dataset-details', template).removeAttr('style');
+			}
             if (comment.released) {
                 template.addClass('released');
             }

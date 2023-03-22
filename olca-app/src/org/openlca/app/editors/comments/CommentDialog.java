@@ -2,13 +2,11 @@ package org.openlca.app.editors.comments;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.model.Comment;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.util.UI;
@@ -17,6 +15,7 @@ import com.google.gson.Gson;
 
 public class CommentDialog extends FormDialog {
 
+	private static final Gson gson = new Gson();
 	private final String path;
 	private final Comments comments;
 
@@ -27,26 +26,20 @@ public class CommentDialog extends FormDialog {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mForm) {
-		ScrolledForm form = UI.header(mForm,
-				M.Comments + CommentLabels.get(path));
-		Composite body = UI.body(form, mForm.getToolkit());
-		body.setLayout(new FillLayout());
-		Browser browser = new Browser(body, SWT.NONE);
-		browser.setJavascriptEnabled(true);
-		UI.bindFunction(browser, "getLabel", (args) -> {
-			if (args == null || args.length == 0)
-				return "";
-			Object path = args[0];
-			if (path == null)
-				return "";
-			return CommentLabels.get(path.toString());
-		});
+	protected Point getInitialSize() {
+		return new Point(600, 400);
+	}
 
+	@Override
+	protected void createFormContent(IManagedForm mForm) {
+		var form = UI.header(mForm, M.Comments + ": " + CommentLabels.get(path));
+		var body = UI.body(form, mForm.getToolkit());
+		body.setLayout(new FillLayout());
+		var browser = new Browser(body, SWT.NONE);
+		browser.setJavascriptEnabled(true);
 		UI.onLoaded(browser, HtmlFolder.getUrl("comments.html"), () -> {
-			Gson gson = new Gson();
-			for (Comment comment : comments.getForPath(path)) {
-				browser.execute("add(" + gson.toJson(comment) + ", true);");
+			for (var comment : comments.getForPath(path)) {
+				browser.execute("add(" + gson.toJson(comment) + ");");
 			}
 		});
 		form.reflow(true);

@@ -3,43 +3,65 @@ package org.openlca.app.editors.comments;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openlca.core.model.ModelType;
+
 class CommentLabels {
 
 	private static final Map<String, String> map = new HashMap<>();
 
 	static {
 		map.put("id", "UUID");
-		map.put("telephone", "Phone");
-		map.put("telefax", "Fax");
 		map.put("url", "URL");
+		map.put("email", "e-mail");
+		map.put("cas", "CAS number");
 		map.put("externalFile", "File");
-		map.put("inputParameter", "Type");
-		map.put("referenceProcess", "Process");
-		map.put("referenceExchange", "Product");
-		map.put("targetFlowPropertyFactor", "Flow property");
-		map.put("targetUnit", "Unit");
-		map.put("activityUnit", "Activity unit");
+		map.put("isInputParameter", "Type");
+		map.put("isQuantitativeReference", "Quantitative reference");
+		map.put("refExchange.flow", "Reference product");
+		map.put("targetUnit.name", "Target unit");
+		map.put("activityUnit.name", "Activity unit");
 		map.put("parameterRedefs", "Parameters");
-		map.put("copyright", "Copyright");
+		map.put("isCopyrightProtected", "Copyright protected");
 		map.put("exchanges", "Inputs/Outputs");
-		map.put("documentation.time", "Time description");
-		map.put("documentation.validFrom", "Start date");
-		map.put("documentation.validUntil", "End date");
-		map.put("documentation.technology", "Technology description");
-		map.put("documentation.reviewDetails", "Data set other evaluation");
-		map.put("documentation.inventoryMethod", "LCI method");
-		map.put("documentation.restrictions", "Access and use restrictions");
-		map.put("documentation.sampling", "Sampling procedure");
-		map.put("documentation.geography", "Geography description");
-		map.put("dqSystem", "Process data quality schema");
-		map.put("exchangeDqSystem", "Flow data quality schema");
-		map.put("socialDqSystem", "Social data quality schema");
+		map.put("processDocumentation.restrictionsDescription", "Access and use restrictions");
+		map.put("processDocumentation.inventoryMethodDescription", "LCI method");
+		map.put("processDocumentation.modelingConstantsDescription", "Modeling constants");
+		map.put("processDocumentation.completenessDescription", "Data completeness");
+		map.put("processDocumentation.dataSelectionDescription", "Data selection");
+		map.put("processDocumentation.dataTreatmentDescription", "Data treatment");
+		map.put("processDocumentation.samplingDescription", "Sampling procedure");
+		map.put("processDocumentation.dataCollectionDescription", "Data collection period");
+		map.put("processDocumentation.projectDescription", "Project");
+		map.put("dqSystem", "Process data quality scheme");
+		map.put("exchangeDqSystem", "Input/Output data quality scheme");
+		map.put("targetFlowProperty", "Flow property");
+		map.put("targetUnit", "Unit");
+		map.put("refExchange.name", "Reference product");
+		map.put("impactMethod", "LCIA method");
+		map.put("impactCategories.refUnit", "Reference unit");
+		map.put("socialDqSystem", "Social data quality scheme");
+		map.put("exchanges.dqEntry", "Data quality");
+		map.put("exchanges.defaultProvider", "Provider");
+		map.put("exchanges.costs", "Costs/Revenue");
+		map.put("socialAspects.quality", "Data quality");
 		map.put("nwSet", "Normalisation & Weighting set");
-		map.put("casNumber", "CAS number");
+		map.put("nwSets", "Normalisation & Weighting sets");
+		map.put("product.flow", "Declared product");
+		map.put("pcr", "PCR");
+		map.put("modules.name", "Module");
+		map.put("impactResults.indicator", "Impact category");
 	}
 
 	static String get(String path) {
-		if ("dqEntry".equals(path))
+		return get(null, path);
+	}
+
+	static String get(ModelType type, String path) {
+		if (path == null || path.strip().isEmpty())
+			return null;
+		if (type == ModelType.CURRENCY && "code".equals(path))
+			return "Currency code";
+		if (type == ModelType.PROCESS && "dqEntry".equals(path))
 			return "Data quality entry";
 		String mapped = path;
 		while (mapped.contains("[")) {
@@ -51,40 +73,35 @@ class CommentLabels {
 	}
 
 	private static String toLabel(String path) {
-		if (path == null)
+		if (path == null || path.strip().isEmpty())
 			return null;
-		if (path.contains(".")) {
-			path = path.substring(path.lastIndexOf(".") + 1);
+		if (path.indexOf('.') != -1) {
+			path = path.substring(path.lastIndexOf('.') + 1);
 		}
-		if (path.contains("[")) {
-			path = path.substring(0, path.lastIndexOf("["));
-			path = transformArrayPath(path);
+		if (path.indexOf('[') != -1) {
+			path = path.substring(0, path.lastIndexOf('['));
+			if (path.equals("impactCategories")) {
+				path = "impactCategory";
+			} else if (path.equals("processes")) {
+				path = "process";
+			} else if (path.equals("flowProperties")) {
+				path = "flowProperty";
+			} else if (path.charAt(path.length() - 1) == 's') {
+				path = path.substring(0, path.length() - 1);
+			}
 		}
-		String result = "";
-		for (int i = 0; i < path.length(); i++) {
-			char character = path.charAt(i);
-			if (i == 0) {
+		var result = "";
+		for (var index = 0; index < path.length(); index++) {
+			var character = path.charAt(index);
+			if (index == 0) {
 				result += Character.toUpperCase(character);
-			} else if (Character.isLowerCase(character)) {
+			} else if (Character.toLowerCase(character) == character) {
 				result += character;
 			} else {
-				result += " " + Character.toLowerCase(character);
+				result += ' ' + Character.toLowerCase(character);
 			}
 		}
 		return result;
 	}
-	
-	private static String transformArrayPath(String path) {
-		if ("impactCategories".equals(path)) {
-			path = "impactCategory";
-		} else if ("processes".equals(path)) {
-			path = "process";
-		} else if ("flowProperties".equals(path)) {
-			path = "flowProperty";
-		} else if (path.charAt(path.length() - 1) == 's') {
-			path = path.substring(0, path.length() - 1);
-		}
-		return path;
-	}
-	
+
 }

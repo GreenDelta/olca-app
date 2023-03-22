@@ -218,15 +218,13 @@ public class Json {
 		if (!value.isJsonPrimitive())
 			return defaultValue;
 		var primitive = value.getAsJsonPrimitive();
-		if (primitive.isNumber())
+		if (primitive.isBoolean())
 			return primitive.getAsBoolean();
-		if (!primitive.isString())
-			return defaultValue;
-		try {
+		if (primitive.isNumber())
+			return primitive.getAsDouble() == 1;
+		if (primitive.isString())
 			return Boolean.parseBoolean(primitive.getAsString());
-		} catch (NumberFormatException e) {
-			return defaultValue;
-		}
+		return defaultValue;
 	}
 
 	public static JsonElement getValue(JsonElement element, String property) {
