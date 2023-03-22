@@ -176,7 +176,7 @@
 				icon="icons/model/product_system.png"
 				id="editors.productsystem"
 				name="%ProductSystemEditor"
-				contributorClass="org.openlca.app.editors.systems.ProductSystemBarContributor">
+				contributorClass="org.openlca.app.editors.systems.ProductSystemToolBar">
 		</editor>
 		<editor
 				class="org.openlca.app.editors.social.SocialIndicatorEditor"

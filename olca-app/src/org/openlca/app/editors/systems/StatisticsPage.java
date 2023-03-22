@@ -52,15 +52,15 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		form = UI.header(this);
-		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.body(form, tk);
+	protected void createFormContent(IManagedForm form) {
+		this.form = UI.header(this);
+		var tk = form.getToolkit();
+		var body = UI.body(this.form, tk);
 		generalSection(tk, body);
 		providerSection(tk, body);
 		linkDegreeTable(body, tk, true);
 		linkDegreeTable(body, tk, false);
-		form.reflow(true);
+		this.form.reflow(true);
 		calculate();
 	}
 

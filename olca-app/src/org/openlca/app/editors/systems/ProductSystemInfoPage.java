@@ -19,7 +19,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowPropertyFactorViewer;
 import org.openlca.app.viewers.combo.UnitCombo;
-import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
@@ -108,7 +107,7 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		UI.label(comp, tk, "");
 		var button = UI.button(comp, tk, M.Calculate);
 		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, e -> CalculationWizard.open(getModel()));
+		Controls.onSelect(button, e -> CalculationDispatch.call(getModel()));
 		UI.label(comp, tk, "");
 	}
 

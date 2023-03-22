@@ -23,7 +23,7 @@ class ParameterClipboard {
 	static List<ParameterRedef> read(String text) {
 		if (text == null)
 			return Collections.emptyList();
-		String[] lines = text.toString().split("\n");
+		String[] lines = text.split("\n");
 		List<ParameterRedef> list = new ArrayList<>();
 		Mapper mapper = new Mapper();
 		for (String line : lines) {

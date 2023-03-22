@@ -131,15 +131,11 @@ public class ProcessToolbar extends EditorActionBarContributor {
 					buttons);
 
 			switch (dialog.open()) {
-				case 0 -> runCalculation(process);
+				case 0 -> CalculationWizard.open(process);
 				case 1 -> checkLinking(process);
 				default -> {
 				}
 			}
-		}
-
-		static void runCalculation(Process p) {
-			CalculationWizard.open(p);
 		}
 
 		static void checkLinking(Process process) {
@@ -181,8 +177,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		private static void handleUnambiguousLinks(
 				Process process, LinkingProperties props) {
-			String msg = "The processes in the database can be"
-					+ " linked unambiguously";
+			var msg = "The processes in the database can be linked unambiguously";
 			String[] buttons = {"Run calculation", "Show details", "Cancel"};
 			var dialog = new MessageDialog(
 					UI.shell(),
@@ -193,7 +188,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 					0, // default button
 					buttons);
 			switch (dialog.open()) {
-				case 0 -> runCalculation(process);
+				case 0 -> CalculationWizard.open(process);
 				case 1 -> LinkingPropertiesPage.show(props);
 				default -> {
 				}

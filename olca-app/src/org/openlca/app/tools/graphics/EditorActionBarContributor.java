@@ -63,7 +63,7 @@ public abstract class EditorActionBarContributor extends
 	}
 
 	/**
-	 * @return Sets the bar manager for the graphical editor.
+	 * Sets the bar manager for the graphical editor.
 	 */
 	public void setGraphicalSubActionBars() {
 		if (getPage() != null && actionBars2 != null)
