@@ -69,7 +69,7 @@ public class CommitAction extends Action implements INavigationAction {
 					.changes(changes)
 					.withMessage(input.message())
 					.as(user)
-					.update(repo.workspaceIds));
+					.update(repo.gitIndex));
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
 				return true;
 			var result = Actions.run(credentials,

@@ -191,10 +191,8 @@ public class DbActivateAction extends Action implements INavigationAction {
 
 		private void runUpgrades(IDatabase db, AtomicBoolean failed) {
 			try {
-				Database.getWorkspaceIdUpdater().disable();
 				Upgrades.on(db);
 				db.getEntityFactory().getCache().evictAll();
-				Database.getWorkspaceIdUpdater().enable();
 			} catch (Exception e) {
 				failed.set(true);
 				log.error("Failed to update database", e);

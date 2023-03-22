@@ -25,7 +25,6 @@ public class Database {
 
 	private static IDatabase database;
 	private static DatabaseConfig config;
-	private static DatabaseListener listener;
 	private static final DatabaseConfigList configurations = readConfigs();
 
 	private Database() {
@@ -39,15 +38,9 @@ public class Database {
 		return database;
 	}
 
-	public static WorkspaceIdUpdater getWorkspaceIdUpdater() {
-		return listener.getWorkspaceIdUpdater();
-	}
-
 	public static IDatabase activate(DatabaseConfig config) {
 		try {
 			database = config.connect(Workspace.dbDir());
-			listener = new DatabaseListener();
-			database.addListener(listener);
 			Cache.create(database);
 			Database.config = config;
 			Logger log = LoggerFactory.getLogger(Database.class);
@@ -80,7 +73,6 @@ public class Database {
 		CopyPaste.clearCache();
 		database.close();
 		database = null;
-		listener = null;
 		config = null;
 		Repository.close();
 	}

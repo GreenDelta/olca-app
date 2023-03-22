@@ -81,16 +81,12 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 				.expandImpactFactors(page.expandImpactFactors.get());
 
 		try {
-			Database.getWorkspaceIdUpdater().beginTransaction();
-			getContainer().run(
-					true, true, monitor -> ImportMonitor.on(monitor).run(imp));
+			getContainer().run(true, true, monitor -> ImportMonitor.on(monitor).run(imp));
 			Navigator.refresh();
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("SimaPro CSV import failed", e);
 			return false;
-		} finally {
-			Database.getWorkspaceIdUpdater().endTransaction();
 		}
 	}
 

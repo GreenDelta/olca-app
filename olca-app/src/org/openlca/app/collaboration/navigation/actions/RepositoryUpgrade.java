@@ -173,7 +173,7 @@ public class RepositoryUpgrade {
 			Actions.run(GitMerge.from(repo.git)
 					.into(database)
 					.as(credentials.ident)
-					.update(repo.workspaceIds)
+					.update(repo.gitIndex)
 					.resolveLibrariesWith(libraryResolver)
 					.resolveConflictsWith(new EqualResolver(descriptors)));
 			if (!wasStashed)
@@ -189,7 +189,7 @@ public class RepositoryUpgrade {
 			TypeRefIdMap<RootDescriptor> descriptors)
 			throws IOException, InvocationTargetException, InterruptedException, GitAPIException {
 		var differences = Diffs.of(repo.git, commit)
-				.with(Database.get(), repo.workspaceIds).stream()
+				.with(Database.get(), repo.gitIndex).stream()
 				.filter(diff -> !equalsDescriptor(diff, descriptors.get(diff)))
 				.map(diff -> new Change(diff))
 				.collect(Collectors.toList());
@@ -199,7 +199,7 @@ public class RepositoryUpgrade {
 				.to(repo.git)
 				.as(user)
 				.reference(commit)
-				.update(repo.workspaceIds)
+				.update(repo.gitIndex)
 				.changes(differences));
 		return true;
 	}

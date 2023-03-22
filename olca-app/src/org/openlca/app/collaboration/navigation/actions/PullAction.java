@@ -34,7 +34,6 @@ public class PullAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
 			var credentials = AuthenticationDialog.promptCredentials(repo);
@@ -56,7 +55,7 @@ public class PullAction extends Action implements INavigationAction {
 			var changed = Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
-					.update(repo.workspaceIds)
+					.update(repo.gitIndex)
 					.as(credentials.ident)
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
@@ -73,7 +72,6 @@ public class PullAction extends Action implements INavigationAction {
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error pulling data", e);
 		} finally {
-			Database.getWorkspaceIdUpdater().enable();
 			Cache.evictAll();
 			Actions.refresh();
 		}

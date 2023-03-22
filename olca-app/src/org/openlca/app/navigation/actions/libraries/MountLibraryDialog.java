@@ -63,15 +63,13 @@ class MountLibraryDialog extends FormDialog {
 		var dialog = new MountLibraryDialog(library, checkResult);
 		if (dialog.open() != Window.OK)
 			return;
-		Database.getWorkspaceIdUpdater().disable();
 		var previousTags = getCurrentTags();
 		App.runWithProgress("Add library " + library.name() + " ...",
 				() -> Mounter.of(Database.get(), library)
 						.apply(dialog.collectActions())
 						.run(),
 				() -> {
-					Database.getWorkspaceIdUpdater().enable();
-					updateWorkspaceIds(previousTags);
+					updateGitIndex(previousTags);
 					Navigator.refresh();
 				});
 	}
@@ -88,14 +86,14 @@ class MountLibraryDialog extends FormDialog {
 		return tags;
 	}
 
-	private static void updateWorkspaceIds(TypeRefIdMap<String> previousTags) {
+	private static void updateGitIndex(TypeRefIdMap<String> previousTags) {
 		if (!Repository.isConnected())
 			return;
 		var pathBuilder = Categories.pathsOf(Database.get());
 		for (var type : ModelType.values()) {
 			Daos.root(Database.get(), type).getDescriptors().forEach(d -> {
 				if (!Strings.nullOrEmpty(d.library) && !previousTags.contains(type, d.refId)) {
-					Repository.get().workspaceIds.invalidate(pathBuilder, d);
+					Repository.get().gitIndex.invalidate(pathBuilder, d);
 				}
 			});
 		}

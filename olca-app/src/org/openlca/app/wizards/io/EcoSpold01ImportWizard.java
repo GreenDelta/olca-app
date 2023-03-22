@@ -85,7 +85,6 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean performFinish() {
 		try {
-			Database.getWorkspaceIdUpdater().beginTransaction();
 			getContainer().run(true, true, m -> {
 				var imp = new EcoSpold01Import(config());
 				imp.setFiles(filePage.files());
@@ -96,7 +95,6 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			ErrorReporter.on("EcoSpold 1 import failed", e);
 			return false;
 		} finally {
-			Database.getWorkspaceIdUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}

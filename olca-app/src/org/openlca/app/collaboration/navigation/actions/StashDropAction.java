@@ -7,7 +7,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -38,14 +37,12 @@ public class StashDropAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
 			GitStashDrop.from(repo.git).run();
 		} catch (IOException e) {
 			Actions.handleException("Error dropping stash", e);
 		} finally {
-			Database.getWorkspaceIdUpdater().enable();
 			Cache.evictAll();
 			Actions.refresh();
 		}

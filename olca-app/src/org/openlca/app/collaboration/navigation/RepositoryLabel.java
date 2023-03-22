@@ -1,15 +1,12 @@
 package org.openlca.app.collaboration.navigation;
 
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
-import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
-import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
@@ -24,43 +21,11 @@ public class RepositoryLabel {
 	public static Image getWithOverlay(INavigationElement<?> elem) {
 		if (!(elem instanceof ModelElement e)
 				|| !Repository.isConnected()
-				|| elem.getLibrary().isPresent()
+				|| e.getLibrary().isPresent()
 				|| e.isFromLibrary()
-				|| !isZero(getRepositoryId(elem)))
+				|| !isNew(e))
 			return null;
 		return Images.get(e.getContent(), Overlay.ADDED);
-	}
-
-	private static ObjectId getRepositoryId(INavigationElement<?> elem) {
-		if (elem instanceof DatabaseElement)
-			return Repository.get().workspaceIds.getHead("");
-		if (elem instanceof ModelTypeElement e)
-			return Repository.get().workspaceIds.getHead(e.getContent().name());
-		if (elem instanceof CategoryElement e) {
-			var path = Repository.get().workspaceIds.getPath(e.getContent());
-			return Repository.get().workspaceIds.getHead(path);
-		}
-		if (elem instanceof ModelElement e) {
-			var path = Repository.get().workspaceIds.getPath(Cache.getPathCache(), e.getContent());
-			return Repository.get().workspaceIds.getHead(path);
-		}
-		return ObjectId.zeroId();
-	}
-
-	private static ObjectId getWorkspaceId(INavigationElement<?> elem) {
-		if (elem instanceof DatabaseElement)
-			return Repository.get().workspaceIds.get("");
-		if (elem instanceof ModelTypeElement e)
-			return Repository.get().workspaceIds.get(e.getContent());
-		if (elem instanceof CategoryElement e)
-			return Repository.get().workspaceIds.get(e.getContent());
-		if (elem instanceof ModelElement e)
-			return Repository.get().workspaceIds.get(Cache.getPathCache(), e.getContent());
-		return ObjectId.zeroId();
-	}
-
-	private static boolean isZero(ObjectId id) {
-		return ObjectId.zeroId().equals(id);
 	}
 
 	public static String getRepositoryText(DatabaseConfig dbConfig) {
@@ -89,10 +54,6 @@ public class RepositoryLabel {
 	public static String getStateIndicator(INavigationElement<?> elem) {
 		if (!hasChanged(elem))
 			return null;
-		// if (!hasNonLibraryContent(elem))
-		// return null;
-		if (elem instanceof ModelElement && isZero(getRepositoryId(elem)))
-			return null;
 		return CHANGED_STATE;
 	}
 
@@ -105,26 +66,24 @@ public class RepositoryLabel {
 			return false;
 		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
 			return false;
-		var repositoryId = getRepositoryId(elem);
-		var workspaceId = getWorkspaceId(elem);
-		var isNew = isZero(repositoryId);
-		if (isNew) {
-			if (elem instanceof ModelElement m && !m.isFromLibrary())
-				return true;
-			if (elem instanceof CategoryElement) {
-				for (var child : elem.getChildren())
-					if (hasChanged(child))
-						return true;
-				return false;
-			}
-		}
-		var hasChanged = !repositoryId.equals(workspaceId);
-		if (!isNew && hasChanged)
-			return true;
+		if (elem instanceof ModelElement e)
+			return hasChanged(e);
 		for (var child : elem.getChildren())
-			if (hasChanged(child))
+			if (hasChanged(child) || ((child instanceof ModelElement e) && isNew(e)))
 				return true;
 		return false;
+	}
+
+	private static boolean isNew(ModelElement e) {
+		return !Repository.get().gitIndex.has(Cache.getPathCache(), e.getContent());
+	}
+
+	private static boolean hasChanged(ModelElement e) {
+		if (isNew(e))
+			return false;
+		var entry = Repository.get().gitIndex.get(Cache.getPathCache(), e.getContent());
+		return e.getContent().lastChange != entry.lastChange()
+				|| e.getContent().version != entry.version();
 	}
 
 }

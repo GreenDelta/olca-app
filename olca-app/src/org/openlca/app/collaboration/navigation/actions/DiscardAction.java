@@ -46,22 +46,20 @@ public class DiscardAction extends Action implements INavigationAction {
 	public void run() {
 		if (!Question.ask("Discard changes", "Do you really want to discard the selected changes? This action can not be undone."))
 			return;
-		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
 			var selected = Diffs.of(repo.git)
 					.filter(PathFilters.of(selection))
-					.with(Database.get(), repo.workspaceIds)
+					.with(Database.get(), repo.gitIndex)
 					.stream().map(Change::new).toList();
 			Actions.run(GitStashCreate.from(Database.get())
 					.to(repo.git)
 					.changes(selected)
-					.update(repo.workspaceIds)
+					.update(repo.gitIndex)
 					.discard());
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error discarding changes", e);
 		} finally {
-			Database.getWorkspaceIdUpdater().enable();
 			Cache.evictAll();
 			Actions.refresh();
 		}

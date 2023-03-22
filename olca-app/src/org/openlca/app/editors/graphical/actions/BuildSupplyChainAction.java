@@ -99,7 +99,6 @@ public class BuildSupplyChainAction extends BuildAction {
 				system = ProductSystemBuilder.update(Database.get(), system);
 			}
 
-			Database.get().notifyUpdate(Descriptor.of(system));
 			monitor.done();
 		}
 

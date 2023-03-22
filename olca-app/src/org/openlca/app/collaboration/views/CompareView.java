@@ -80,7 +80,7 @@ public class CompareView extends ViewPart {
 		var repo = Repository.get();
 		var localHistory = repo.commits.find().refs(Constants.LOCAL_REF).all();
 		if (localHistory.contains(commit)) {
-			var diffs = Diffs.of(repo.git, commit).with(Database.get(), repo.workspaceIds);
+			var diffs = Diffs.of(repo.git, commit).with(Database.get(), repo.gitIndex);
 			return diffs.stream()
 					.map(local -> new TriDiff(local, null))
 					.toList();
@@ -88,7 +88,7 @@ public class CompareView extends ViewPart {
 		var localCommit = getCommonParent(localHistory, commit);
 		var remoteDiffs = Diffs.of(repo.git, localCommit).with(commit);
 		var diffs = new ArrayList<TriDiff>();
-		var localDiffs = Diffs.of(repo.git, localCommit).with(Database.get(), repo.workspaceIds);
+		var localDiffs = Diffs.of(repo.git, localCommit).with(Database.get(), repo.gitIndex);
 		localDiffs.forEach(local -> {
 			var remote = remoteDiffs.stream()
 					.filter(e -> e.path.equals(local.path))

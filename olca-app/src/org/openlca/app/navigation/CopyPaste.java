@@ -136,16 +136,11 @@ public class CopyPaste {
 			return;
 		if (!canPasteTo(categoryElement))
 			return;
-		boolean started = false;
 		try {
-			Database.getWorkspaceIdUpdater().beginTransaction();
-			started = true;
-			for (INavigationElement<?> element : cache)
+			for (INavigationElement<?> element : cache) {
 				paste(element, categoryElement);
-		} finally {
-			if (started) {
-				Database.getWorkspaceIdUpdater().endTransaction();
 			}
+		} finally {
 			clearCache();
 			var root = Navigator.findElement(Database.getActiveConfiguration());
 			Navigator.refresh(root);

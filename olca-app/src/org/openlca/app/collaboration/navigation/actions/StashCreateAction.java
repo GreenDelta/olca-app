@@ -48,7 +48,6 @@ public class StashCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
 			var input = Datasets.select(selection, false, true);
@@ -64,11 +63,10 @@ public class StashCreateAction extends Action implements INavigationAction {
 					.to(repo.git)
 					.as(user)
 					.changes(changes)
-					.update(repo.workspaceIds));
+					.update(repo.gitIndex));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);
 		} finally {
-			Database.getWorkspaceIdUpdater().enable();
 			Cache.evictAll();
 			Actions.refresh();
 		}

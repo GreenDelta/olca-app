@@ -68,14 +68,12 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 		if (zip == null || !zip.exists())
 			return false;
 		try {
-			Database.getWorkspaceIdUpdater().beginTransaction();
 			doRun(zip);
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("JSON import failed", e);
 			return false;
 		} finally {
-			Database.getWorkspaceIdUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}

@@ -128,7 +128,7 @@ class Actions {
 			return false;
 		Actions.run(GitStashApply.from(repo.git)
 				.to(Database.get())
-				.update(repo.workspaceIds)
+				.update(repo.gitIndex)
 				.resolveConflictsWith(conflictResult.resolutions())
 				.resolveLibrariesWith(libraryResolver));
 		return true;

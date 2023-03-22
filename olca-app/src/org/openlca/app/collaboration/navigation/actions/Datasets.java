@@ -25,7 +25,7 @@ class Datasets {
 
 	static DialogResult select(List<INavigationElement<?>> selection, boolean canPush, boolean isStashCommit) {
 		var repo = Repository.get();
-		var diffs = Diffs.of(repo.git).with(Database.get(), repo.workspaceIds);
+		var diffs = Diffs.of(repo.git).with(Database.get(), repo.gitIndex);
 		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
 		if (dialog == null)
 			return null;

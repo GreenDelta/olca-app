@@ -68,7 +68,6 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 		if (files.isEmpty())
 			return false;
 		try {
-			Database.getWorkspaceIdUpdater().beginTransaction();
 			getContainer().run(true, true, monitor -> {
 				monitor.beginTask(M.Import, files.size());
 				var reader = XlsProcessReader.of(Database.get())
@@ -85,7 +84,6 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			ErrorReporter.on("Failed to import Excel file(s)", e);
 			return false;
 		} finally {
-			Database.getWorkspaceIdUpdater().endTransaction();
 			Navigator.refresh();
 			Cache.evictAll();
 		}

@@ -112,7 +112,7 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	private static Conflicts workspaceDiffs(Commit commit, Commit commonParent) throws IOException {
 		var repo = Repository.get();
-		var workspaceChanges = Diffs.of(repo.git).with(Database.get(), repo.workspaceIds);
+		var workspaceChanges = Diffs.of(repo.git).with(Database.get(), repo.gitIndex);
 		if (workspaceChanges.isEmpty())
 			return Conflicts.none();
 		var remoteChanges = Diffs.of(repo.git, commonParent).with(commit);
@@ -182,7 +182,7 @@ class ConflictResolutionMap implements ConflictResolver {
 		}
 		var stashCreate = GitStashCreate.from(Database.get())
 				.to(repo.git)
-				.update(repo.workspaceIds);
+				.update(repo.gitIndex);
 		if (discard) {
 			stashCreate = stashCreate.discard();
 		} else {

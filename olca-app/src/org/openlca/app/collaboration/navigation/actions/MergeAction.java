@@ -38,7 +38,6 @@ public class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Database.getWorkspaceIdUpdater().disable();
 		var repo = Repository.get();
 		try {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
@@ -53,7 +52,7 @@ public class MergeAction extends Action implements INavigationAction {
 			var changed = Actions.run(GitMerge
 					.from(repo.git)
 					.into(Database.get())
-					.update(repo.workspaceIds)
+					.update(repo.gitIndex)
 					.as(user)
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
@@ -66,7 +65,6 @@ public class MergeAction extends Action implements INavigationAction {
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during Git merge", e);
 		} finally {
-			Database.getWorkspaceIdUpdater().enable();
 			Cache.evictAll();
 			Actions.refresh();
 		}

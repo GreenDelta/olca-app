@@ -10,7 +10,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.git.ObjectIdStore;
+import org.openlca.git.GitIndex;
 import org.openlca.git.find.Commits;
 import org.openlca.git.find.Datasets;
 import org.openlca.git.find.Entries;
@@ -27,7 +27,7 @@ public class Repository {
 	public static final String GIT_DIR = "repositories";
 	public final org.eclipse.jgit.lib.Repository git;
 	public final RepositoryClient client;
-	public final ObjectIdStore workspaceIds;
+	public final GitIndex gitIndex;
 	public final Commits commits;
 	public final Datasets datasets;
 	public final References references;
@@ -38,8 +38,8 @@ public class Repository {
 	private Repository(File gitDir) throws IOException {
 		git = new FileRepository(gitDir);
 		client = client(git);
-		var storeFile = new File(gitDir, "object-id.store");
-		workspaceIds = ObjectIdStore.fromFile(storeFile);
+		var storeFile = new File(gitDir, "git.index");
+		gitIndex = GitIndex.fromFile(storeFile);
 		commits = Commits.of(git);
 		datasets = Datasets.of(git);
 		references = References.of(git);
