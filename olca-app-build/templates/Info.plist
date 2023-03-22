@@ -3,13 +3,13 @@
 
 	<dict>
 		<key>CFBundleExecutable</key>
-		<string>eclipse</string>
+		<string>openLCA</string>
 		<key>CFBundleGetInfoString</key>
-		<string>openLCA 1.10</string>
+		<string>openLCA 2.0.0.beta3</string>
 		<key>CFBundleIconFile</key>
 		<string>logo.icns</string>
 		<key>CFBundleIdentifier</key>
-		<string>Eclipse</string>
+		<string>org.openlca.app</string>
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
