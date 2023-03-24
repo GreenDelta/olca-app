@@ -324,7 +324,6 @@ import org.openlca.core.database.config.MySqlConfig as MySqlConfig
 import org.openlca.core.math.data_quality.NAHandling as NAHandling
 import org.openlca.core.matrix.solvers.NativeSolver as NativeSolver
 import org.openlca.core.database.NativeSql as NativeSql
-import org.openlca.core.database.Notifiable as Notifiable
 import org.openlca.core.matrix.io.NpyMatrix as NpyMatrix
 import org.openlca.core.math.NumberGenerator as NumberGenerator
 import org.openlca.core.model.NwFactor as NwFactor
