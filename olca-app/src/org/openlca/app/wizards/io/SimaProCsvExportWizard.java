@@ -13,7 +13,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Popup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.io.simapro.csv.ProcessWriter;
+import org.openlca.io.simapro.csv.output.SimaProExport;
 
 public class SimaProCsvExportWizard extends Wizard implements IExportWizard {
 
@@ -50,8 +50,9 @@ public class SimaProCsvExportWizard extends Wizard implements IExportWizard {
 				monitor.beginTask(
 						M.ExportingProcesses,
 						IProgressMonitor.UNKNOWN);
-				var exp = new ProcessWriter(Database.get());
-				exp.write(models, page.getExportDestination());
+				SimaProExport.of(Database.get(), models)
+						.withLongNames(true)
+						.writeTo(file);
 				monitor.done();
 			});
 			Popup.info("Export done", "Wrote "
