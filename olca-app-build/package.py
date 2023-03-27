@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import urllib.request
+import xml.etree.ElementTree as ElementTree
 import zipfile
 
 from enum import Enum
@@ -190,8 +191,25 @@ class BuildDir:
             return self.root / "openLCA"
 
     @property
+    def licenses_dir(self) -> Path:
+        if self.osa.is_mac():
+            return self.app_dir / "Contents/licences"
+        else:
+            return self.app_dir / "licences"
+
+    @property
+    def readme_dir(self) -> Path:
+        if self.osa.is_mac():
+            return self.app_dir / "Contents/Eclipse"
+        else:
+            return self.app_dir
+
+    @property
     def jre_dir(self) -> Path:
-        return self.app_dir / "jre"
+        if self.osa.is_mac():
+            return self.root / "openLCA/openLCA.app/Contents/PlugIns/jre.plugin"
+        else:
+            return self.app_dir / "jre"
 
     @property
     def native_lib_dir(self) -> Path:
@@ -214,8 +232,8 @@ class BuildDir:
         # copy licenses
         print("  copy licenses")
         resources = PROJECT_DIR / "resources"
-        shutil.copy2(resources / "OPENLCA_README.txt", self.app_dir)
-        license_target = self.app_dir / "licenses"
+        shutil.copy2(resources / "OPENLCA_README.txt", self.readme_dir)
+        license_target = self.licenses_dir
         if not license_target.exists():
             shutil.copytree(resources / "licenses", license_target)
 
@@ -239,9 +257,9 @@ class BuildDir:
         if len(bins) > 0:
             bin_dir = self.app_dir / "bin"
             bin_dir.mkdir(exist_ok=True, parents=True)
-            for bin in bins:
-                bin_source = PROJECT_DIR / f"bin/{bin}"
-                bin_target = bin_dir / bin
+            for binary in bins:
+                bin_source = PROJECT_DIR / f"bin/{binary}"
+                bin_target = bin_dir / binary
                 if not bin_source.exists() or bin_target.exists():
                     continue
                 shutil.copy2(bin_source, bin_target)
@@ -417,7 +435,8 @@ class MacDir:
         app_dir = build_dir.app_dir
         eclipse_dir = app_dir / "Contents/Eclipse"
         macos_dir = app_dir / "Contents/MacOS"
-        for d in (app_dir, eclipse_dir, macos_dir):
+        plugins_dir = app_dir / "Contents/PlugIns"
+        for d in (app_dir, eclipse_dir, macos_dir, plugins_dir):
             d.mkdir(parents=True, exist_ok=True)
 
         # move files and folders
@@ -432,10 +451,7 @@ class MacDir:
             if source.exists():
                 shutil.move(str(source), str(target))
 
-        shutil.copyfile(
-            PROJECT_DIR / "templates/Info.plist",
-            app_dir / "Contents/Info.plist",
-        )
+        MacDir.add_info_plist(app_dir / "Contents/Info.plist")
 
         # create the ini file
         plugins_dir = eclipse_dir / "plugins"
@@ -452,6 +468,29 @@ class MacDir:
         delete(app_root / "MacOS")
         delete(app_root / "Info.plist")
         delete(macos_dir / "openLCA.ini")
+
+    @staticmethod
+    def add_info_plist(path: Path):
+        product = ElementTree.parse(PROJECT_DIR.parent / "olca-app/openLCA.product")
+        version = product.getroot().attrib.get("version")
+
+        # set version of the app
+        info_dict = {
+            "CFBundleGetInfoString": "openLCA " + version,
+            "CFBundleShortVersionString": version,
+            "CFBundleVersion": version,
+        }
+        info = ElementTree.parse(PROJECT_DIR / "templates/Info.plist")
+        iterator = info.getroot().find("dict").iter()
+        for elem in iterator:
+            if elem.text in info_dict.keys():
+                string = next(iterator, None)
+                if string is not None:
+                    string.text = info_dict[elem.text]
+
+        with open(path, 'wb') as out:
+            out.write(b'<?xml version="1.0" encoding="UTF-8" standalone = "no" ?>\n')
+            info.write(out, encoding='UTF-8', xml_declaration=False)
 
 
 class Nsis:
