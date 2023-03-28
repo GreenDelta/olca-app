@@ -444,6 +444,7 @@ import org.openlca.core.matrix.solvers.SequentialSolver as SequentialSolver
 import org.openlca.proto.io.server.Server as Server
 import org.openlca.core.services.ServerConfig as ServerConfig
 import org.openlca.io.simapro.csv.input.SimaProCsvImport as SimaProCsvImport
+import org.openlca.io.simapro.csv.output.SimaProExport as SimaProExport
 import org.openlca.io.simapro.csv.SimaProUnit as SimaProUnit
 import org.openlca.core.matrix.io.SimpleBin as SimpleBin
 import org.openlca.expressions.SimpleCharStream as SimpleCharStream
