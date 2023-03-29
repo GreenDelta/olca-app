@@ -53,3 +53,16 @@ python package.py
 ```
 
 7. Test it
+
+#### Sign the Mac app
+
+In order to pass the Gatekeeper protection the Mac app is signed with an Apple
+Development certificate on macOS.
+
+* Add Green Delta signing certificate to __Xcode__:
+  * Open `Settings > Accounts > +` and sign in with Green Delta Apple ID.
+  * Add the developer certificate in `Manage Certificates...`.
+* Copy the name of the certificate in __Keychain Access__. In 
+`login > My Certificates` copy the full name of the _Ap
+
+
