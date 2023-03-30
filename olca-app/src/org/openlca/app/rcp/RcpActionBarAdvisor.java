@@ -266,14 +266,17 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		// preferences
 		preferencesAction = ActionFactory.PREFERENCES.create(window);
+		register(preferencesAction);
 		preferencesAction.setImageDescriptor(Icon.PREFERENCES.descriptor());
 		preferencesAction.setText(M.Preferences);
 
 		// other
 		exitAction = ActionFactory.QUIT.create(window);
+		register(exitAction);
 		exitAction.setText(M.Exit);
 		showViews = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
 		aboutAction = ActionFactory.ABOUT.create(window);
+		register(aboutAction);
 		aboutAction.setText(M.AboutOpenLCA);
 	}
 
