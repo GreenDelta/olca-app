@@ -104,6 +104,8 @@ public class MassExpansionAction extends StackAction {
 			execute(getCommand());
 			graph.firePropertyChange(CHILDREN_PROP, null, null);
 		}
+
+		editor.updateStackActions();
 	}
 
 }

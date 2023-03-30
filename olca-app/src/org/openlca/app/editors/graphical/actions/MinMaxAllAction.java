@@ -47,6 +47,7 @@ public class MinMaxAllAction extends StackAction {
 	@Override
 	public void run() {
 		execute(getCommand());
+		editor.updateStackActions();
 	}
 
 	private Command getCommand() {

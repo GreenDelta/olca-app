@@ -1,5 +1,8 @@
 package org.openlca.app.tools.graphics;
 
+import java.util.EventObject;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.ViewportAwareConnectionLayerClippingStrategy;
@@ -24,9 +27,6 @@ import org.openlca.app.tools.graphics.model.BaseComponent;
 import org.openlca.app.tools.graphics.tools.PanningSelectionTool;
 import org.openlca.app.tools.graphics.zoom.MouseWheelZoomHandler;
 import org.openlca.app.tools.graphics.zoom.ZoomManager;
-
-import java.util.EventObject;
-import java.util.List;
 
 abstract public class BasicGraphicalEditor extends GraphicalEditor {
 
@@ -199,6 +199,13 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 			action.run();
 			return true;
 		} else return false;
+	}
+
+	/**
+	 * Update the status of all stack actions.
+	 */
+	public void updateStackActions() {
+		updateActions(getStackActions());
 	}
 
 }
