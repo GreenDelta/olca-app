@@ -32,37 +32,50 @@ and native libraries if these are missing.
 ### Steps when building a release package
 
 1. Check that the `olca-app` and `olca-modules` repositories are on the master
-   branch and are in sync with our Github repository
+   branch and are in sync with our GitHub repository.
 
 2. Run the `prepare-release.py` script that updates the olca-modules libraries
    in the olca-app, creates fresh database templates, updates the html-pages,
-   creates the Jython bindings from the current modules, etc:
+   creates the Jython bindings from the current modules, etc.:
 
-```bash
-cd olca-app
-python prepare-release.py
-```
+   ```bash
+   cd olca-app
+   python prepare-release.py
+   ```
 
-5. Run the PDE export as described above
+3. Run the PDE export as described above.
 
-6. Run the packaging script `package.py`
+4. Run the packaging script `package.py`.
 
-```bash
-cd olca-app-build
-python package.py
-```
+   ```bash
+   cd olca-app-build
+   python package.py
+   ```
 
-7. Test it
+5. Sign the Mac app.
 
-#### Sign the Mac app
+   In order to pass the Gatekeeper protection the Mac app is signed with an Apple
+   Development certificate on macOS. The app should not be opened before and after 
+   signing. When testing, one should make a test copy after signing.
 
-In order to pass the Gatekeeper protection the Mac app is signed with an Apple
-Development certificate on macOS.
+   * Add Green Delta signing certificate to __Xcode__:
+     * Open `Settings > Accounts > +` and sign in with Green Delta Apple ID.
+     * Add the developer certificate in `Manage Certificates...`.
+   * Copy the name of the certificate in __Keychain Access__. In 
+   `login > My Certificates` copy the full name `Apple Development: 
+   <email> (<code>)`.
+   * Run the following command to sign the app:
+     ```bash
+     codesign -f -s "CERTIFICATE_NAME" path/to/openLCA.app
+     ```
+   * To check if it was successful:
+     ```bash
+     codesign -vv path/to/openLCA.app
+     ```
+     It should output:
+       ```bash
+       openLCA.app: valid on disk
+       openLCA.app: satisfies its Designated Requirement
+       ```
 
-* Add Green Delta signing certificate to __Xcode__:
-  * Open `Settings > Accounts > +` and sign in with Green Delta Apple ID.
-  * Add the developer certificate in `Manage Certificates...`.
-* Copy the name of the certificate in __Keychain Access__. In 
-`login > My Certificates` copy the full name of the _Ap
-
-
+6. Test the apps!
