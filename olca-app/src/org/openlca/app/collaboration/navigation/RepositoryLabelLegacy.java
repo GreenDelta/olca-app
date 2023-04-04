@@ -3,52 +3,40 @@ package org.openlca.app.collaboration.navigation;
 import java.util.stream.Collectors;
 
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.App;
-import org.openlca.app.collaboration.navigation.NavElement.ElementType;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
+import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.elements.ModelTypeElement;
+import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.core.database.config.DatabaseConfig;
-import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.GitIndex;
 import org.openlca.git.util.Constants;
 import org.openlca.util.Strings;
 
-public class RepositoryLabel {
+public class RepositoryLabelLegacy {
 
 	public static final String CHANGED_STATE = "> ";
-	private static NavRoot root = NavRoot.build(null);
-
-	public static void init() {
-		root = NavRoot.build(Database.get());
-	}
-
-	public static void refresh(Runnable navigatorRefresh) {
-		navigatorRefresh.run();
-		new Thread(() -> {
-			init();
-			App.runInUI("Refreshing navigator", navigatorRefresh);
-		}).start();
-	}
 
 	public static Image getWithOverlay(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected())
-			return null;
 		if (!(elem instanceof ModelElement e)
+				|| !Repository.isConnected()
 				|| e.getLibrary().isPresent()
 				|| e.isFromLibrary()
-				|| !isNew(root.get(elem)))
+				|| !isNew(e))
 			return null;
 		return Images.get(e.getContent(), Overlay.ADDED);
 	}
 
 	public static String getRepositoryText(DatabaseConfig dbConfig) {
-		if (!Database.isActive(dbConfig) || !Repository.isConnected())
+		if (!Database.isActive(dbConfig))
+			return null;
+		if (!Repository.isConnected())
 			return null;
 		var repo = Repository.get();
 		var ahead = repo.localHistory.getAheadOf(Constants.REMOTE_REF);
@@ -69,60 +57,66 @@ public class RepositoryLabel {
 	}
 
 	public static String getStateIndicator(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected())
-			return null;
-		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
-			return null;
-		if (!hasChanged(root.get(elem)))
+		if (!hasChanged(elem))
 			return null;
 		return CHANGED_STATE;
 	}
 
 	public static boolean hasChanged(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected())
+		if (elem.getLibrary().isPresent())
 			return false;
-		return hasChanged(root.get(elem));
-	}
-
-	public static boolean hasChanged(NavElement elem) {
-		if (Database.get() == null || !Repository.isConnected() || elem == null)
+		if (!Repository.isConnected())
 			return false;
-		if (elem.is(ElementType.MODEL)) {
-			if (isNew(elem))
-				return false;
-			var d = (RootDescriptor) elem.content();
-			var entry = index().get(Cache.getPathCache(), d);
-			return d.lastChange != entry.lastChange()
-					|| d.version != entry.version();
-		}
-		for (var child : elem.children())
-			if (hasChanged(child) || (child.is(ElementType.MODEL) && isNew(elem)))
+		if (elem instanceof NavigationRoot)
+			return false;
+		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
+			return false;
+		if (elem instanceof ModelElement e)
+			return hasChanged(e);
+		for (var child : elem.getChildren())
+			if (hasChanged(child) || ((child instanceof ModelElement e) && isNew(e)))
 				return true;
 		return containsDeleted(elem);
 	}
 
-	private static boolean isNew(NavElement elem) {
-		if (elem == null || !elem.is(ElementType.MODEL))
-			return false;
-		return !index().has(Cache.getPathCache(), (RootDescriptor) elem.content());
+	private static boolean isNew(ModelElement e) {
+		return !index().has(Cache.getPathCache(), e.getContent());
 	}
 
-	private static boolean containsDeleted(NavElement elem) {
-		if (elem.is(ElementType.MODEL))
+	private static boolean hasChanged(ModelElement e) {
+		if (isNew(e))
 			return false;
-		for (var child : elem.children())
+		var entry = index().get(Cache.getPathCache(), e.getContent());
+		return e.getContent().lastChange != entry.lastChange()
+				|| e.getContent().version != entry.version();
+	}
+
+	private static boolean containsDeleted(INavigationElement<?> elem) {
+		if (elem instanceof ModelElement)
+			return false;
+		for (var child : elem.getChildren())
 			if (containsDeleted(child))
 				return true;
-		if (!elem.is(ElementType.MODEL_TYPE, ElementType.CATEGORY))
+		if (!(elem instanceof ModelTypeElement) && !(elem instanceof CategoryElement))
 			return false;
-		var fromIndex = index().getSubPaths(elem.getPath(index()));
-		var fromNavigation = elem.children()
-				.stream().map(e -> e.getPath(index()))
+		var fromIndex = index().getSubPaths(getPath(elem));
+		var fromNavigation = elem.getChildren()
+				.stream().map(e -> getPath(e))
 				.collect(Collectors.toSet());
 		for (var entry : fromIndex)
 			if (!fromNavigation.contains(entry))
 				return true;
 		return false;
+	}
+
+	private static String getPath(INavigationElement<?> elem) {
+		if (elem instanceof ModelTypeElement e)
+			return index().getPath(e.getContent());
+		if (elem instanceof CategoryElement e)
+			return index().getPath(e.getContent());
+		if (elem instanceof ModelElement e)
+			return index().getPath(Cache.getPathCache(), e.getContent());
+		return null;
 	}
 
 	private static GitIndex index() {

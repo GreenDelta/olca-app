@@ -25,6 +25,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
+import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.DeleteMappingAction;
 import org.openlca.app.navigation.actions.DeleteModelAction;
@@ -140,10 +141,12 @@ public class Navigator extends CommonNavigator {
 		var root = getNavigationRoot();
 		if (viewer == null || root == null)
 			return;
-		var oldExpansion = viewer.getExpandedElements();
-		root.update();
-		viewer.refresh();
-		setRefreshedExpansion(viewer, oldExpansion);
+		RepositoryLabel.refresh(() -> {
+			var oldExpansion = viewer.getExpandedElements();
+			root.update();
+			viewer.refresh();
+			setRefreshedExpansion(viewer, oldExpansion);
+		});
 	}
 
 	/**
@@ -153,23 +156,25 @@ public class Navigator extends CommonNavigator {
 		var viewer = getNavigationViewer();
 		if (viewer == null || element == null)
 			return;
-		element.update();
-		Object[] oldExpansion = viewer.getExpandedElements();
-		viewer.refresh(element);
-		updateLabels(viewer, element);
-		setRefreshedExpansion(viewer, oldExpansion);
+		RepositoryLabel.refresh(() -> {
+			element.update();
+			Object[] oldExpansion = viewer.getExpandedElements();
+			viewer.refresh(element);
+			updateLabels(viewer, element);
+			setRefreshedExpansion(viewer, oldExpansion);
 
-		// clear the category content cache for the respective model type
-		var modelType = modelTypeOf(element);
-		if (modelType == null)
-			return;
-		var dbElem = databaseElementOf(element);
-		if (dbElem == null)
-			return;
-		var contentTest = dbElem.categoryContentTest();
-		if (contentTest != null) {
-			contentTest.clearCacheOf(modelType);
-		}
+			// clear the category content cache for the respective model type
+			var modelType = modelTypeOf(element);
+			if (modelType == null)
+				return;
+			var dbElem = databaseElementOf(element);
+			if (dbElem == null)
+				return;
+			var contentTest = dbElem.categoryContentTest();
+			if (contentTest != null) {
+				contentTest.clearCacheOf(modelType);
+			}
+		});
 	}
 
 	private static ModelType modelTypeOf(INavigationElement<?> elem) {

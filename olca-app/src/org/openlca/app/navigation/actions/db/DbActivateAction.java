@@ -9,6 +9,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.collaboration.navigation.actions.RepositoryUpgrade;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.collaboration.views.CompareView;
@@ -95,6 +96,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 				Database.close();
 				log.trace("Activate selected database");
 				var db = Database.activate(config);
+				RepositoryLabel.init();
 				log.trace("Get version state");
 				versionState = VersionState.get(db);
 				monitor.done();

@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -221,14 +222,20 @@ public class App {
 			log.error("Error while running progress " + name, e);
 		}
 	}
-
 	public static void runWithProgress(String name, Runnable fn,
 			Runnable callback) {
+		runWithProgress(name, fn, callback, null);
+	}
+
+	public static void runWithProgress(String name, Runnable fn,
+			Runnable callback, Runnable onError) {
 		var service = PlatformUI.getWorkbench().getProgressService();
+		AtomicBoolean fnSucceeded = new AtomicBoolean(false);
 		try {
 			service.run(true, false, m -> {
 				m.beginTask(name, IProgressMonitor.UNKNOWN);
 				fn.run();
+				fnSucceeded.set(true);
 				m.done();
 				if (callback != null) {
 					WrappedUIJob uiJob = new WrappedUIJob(name, callback);
@@ -237,6 +244,9 @@ public class App {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			log.error("Error while running progress " + name, e);
+			if (!fnSucceeded.get() && onError != null) {
+				onError.run();
+			}
 		}
 	}
 
