@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.NavElement.ElementType;
-import org.openlca.app.db.Repository;
+import org.openlca.app.db.Database;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
@@ -48,26 +50,47 @@ public class NavRoot {
 			FLOW_PROPERTY, UNIT_GROUP, CURRENCY, ACTOR, SOURCE, LOCATION
 	};
 
+	private static NavRoot INSTANCE = new NavRoot(null);
+	private Boolean changes;
 	private final IDatabase database;
 	private final Map<Long, Category> categoryMap = new HashMap<>();
 	private final EnumMap<ModelType, Map<Long, List<Category>>> categories = new EnumMap<>(ModelType.class);
 	private final EnumMap<ModelType, Map<Long, List<RootDescriptor>>> descriptors = new EnumMap<>(ModelType.class);
 	private final NavElement root = new NavElement(ElementType.DATABASE, null);
 
-	static NavRoot build(IDatabase database) {
-		var root = new NavRoot(database);
-		if (database == null || !Repository.isConnected())
-			return root;
-		root.build();
-		return root;
-	}
-
 	private NavRoot(IDatabase database) {
 		this.database = database;
 	}
 
-	NavElement get(INavigationElement<?> elem) {
-		return new NavFinder(this.categoryMap).find(this.root, elem);
+	public static NavRoot get() {
+		return INSTANCE;
+	}
+
+	public static void init() {
+		var database = Database.get();
+		INSTANCE = new NavRoot(database);
+		if (database != null) {
+			INSTANCE.build();
+		}
+	}
+
+	public static void refresh(Runnable navigatorRefresh) {
+		navigatorRefresh.run();
+		new Thread(() -> {
+			init();
+			App.runInUI("Refreshing navigator", navigatorRefresh);
+		}).start();
+	}
+
+	static NavElement get(INavigationElement<?> elem) {
+		return new NavFinder(NavRoot.get().categoryMap).find(NavRoot.get().root, elem);
+	}
+
+	public boolean hasChanges() {
+		if (changes == null) {
+			changes = RepositoryLabel.hasChanged(Navigator.findElement(Database.getActiveConfiguration()));
+		}
+		return changes;
 	}
 
 	private void build() {

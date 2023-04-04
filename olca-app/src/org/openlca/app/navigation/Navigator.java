@@ -25,7 +25,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
-import org.openlca.app.collaboration.navigation.RepositoryLabel;
+import org.openlca.app.collaboration.navigation.NavRoot;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.DeleteMappingAction;
 import org.openlca.app.navigation.actions.DeleteModelAction;
@@ -47,11 +47,11 @@ import org.openlca.app.tools.libraries.LibraryInfoPage;
 import org.openlca.app.util.Colors;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
-
-import com.google.common.base.Objects;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
+
+import com.google.common.base.Objects;
 
 public class Navigator extends CommonNavigator {
 
@@ -141,7 +141,7 @@ public class Navigator extends CommonNavigator {
 		var root = getNavigationRoot();
 		if (viewer == null || root == null)
 			return;
-		RepositoryLabel.refresh(() -> {
+		NavRoot.refresh(() -> {
 			var oldExpansion = viewer.getExpandedElements();
 			root.update();
 			viewer.refresh();
@@ -156,7 +156,7 @@ public class Navigator extends CommonNavigator {
 		var viewer = getNavigationViewer();
 		if (viewer == null || element == null)
 			return;
-		RepositoryLabel.refresh(() -> {
+		NavRoot.refresh(() -> {
 			element.update();
 			Object[] oldExpansion = viewer.getExpandedElements();
 			viewer.refresh(element);

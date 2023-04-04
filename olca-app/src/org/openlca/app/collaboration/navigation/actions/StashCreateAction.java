@@ -9,11 +9,10 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
-import org.openlca.app.collaboration.navigation.RepositoryLabel;
+import org.openlca.app.collaboration.navigation.NavRoot;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
@@ -38,9 +37,9 @@ public class StashCreateAction extends Action implements INavigationAction {
 	public boolean isEnabled() {
 		try {
 			var repo = Repository.get();
-			if (!RepositoryLabel.hasChanged(Navigator.findElement(Database.getActiveConfiguration())))
+			if (Actions.getStashCommit(repo.git) != null)
 				return false;
-			return Actions.getStashCommit(repo.git) == null;
+			return NavRoot.get().hasChanges();
 		} catch (GitAPIException e) {
 			return false;
 		}

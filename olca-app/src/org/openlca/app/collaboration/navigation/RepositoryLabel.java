@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.navigation;
 import java.util.stream.Collectors;
 
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.App;
 import org.openlca.app.collaboration.navigation.NavElement.ElementType;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -22,19 +21,6 @@ import org.openlca.util.Strings;
 public class RepositoryLabel {
 
 	public static final String CHANGED_STATE = "> ";
-	private static NavRoot root = NavRoot.build(null);
-
-	public static void init() {
-		root = NavRoot.build(Database.get());
-	}
-
-	public static void refresh(Runnable navigatorRefresh) {
-		navigatorRefresh.run();
-		new Thread(() -> {
-			init();
-			App.runInUI("Refreshing navigator", navigatorRefresh);
-		}).start();
-	}
 
 	public static Image getWithOverlay(INavigationElement<?> elem) {
 		if (Database.get() == null || !Repository.isConnected())
@@ -42,7 +28,7 @@ public class RepositoryLabel {
 		if (!(elem instanceof ModelElement e)
 				|| e.getLibrary().isPresent()
 				|| e.isFromLibrary()
-				|| !isNew(root.get(elem)))
+				|| !isNew(NavRoot.get(elem)))
 			return null;
 		return Images.get(e.getContent(), Overlay.ADDED);
 	}
@@ -73,7 +59,7 @@ public class RepositoryLabel {
 			return null;
 		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
 			return null;
-		if (!hasChanged(root.get(elem)))
+		if (!hasChanged(NavRoot.get(elem)))
 			return null;
 		return CHANGED_STATE;
 	}
@@ -81,7 +67,7 @@ public class RepositoryLabel {
 	public static boolean hasChanged(INavigationElement<?> elem) {
 		if (Database.get() == null || !Repository.isConnected())
 			return false;
-		return hasChanged(root.get(elem));
+		return hasChanged(NavRoot.get(elem));
 	}
 
 	public static boolean hasChanged(NavElement elem) {
