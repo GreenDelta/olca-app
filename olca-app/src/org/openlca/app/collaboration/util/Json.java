@@ -297,7 +297,7 @@ public class Json {
 	}
 
 	public static ModelType getModelType(JsonElement element) {
-		var type = getValue(element, "@id");
+		var type = getValue(element, "@type");
 		if (type == null)
 			return null;
 		for (var mType : ModelType.values())
