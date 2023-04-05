@@ -231,7 +231,7 @@ class PropertyLabels {
 		put(type, path + ".amountFormula", "Amount formula");
 		put(type, path + ".isQuantitativeReference", M.QuantitativeReference);
 		put(type, path + ".isAvoidedProduct", M.AvoidedProduct);
-		put(type, path + ".defaultProvider", M.DefaultProvider);
+		put(type, path + ".defaultProvider", M.DefaultProvider, ModelType.PROCESS);
 		put(type, path + ".dqEntry", M.DataQualityEntry);
 		put(type, path + ".costCategory", M.CostCategory);
 		put(type, path + ".costFormula", M.CostFormula);

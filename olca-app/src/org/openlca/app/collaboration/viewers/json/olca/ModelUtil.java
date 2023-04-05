@@ -75,8 +75,8 @@ class ModelUtil {
 		var path = !parentPath.isEmpty()
 				? parentPath + "." + property
 				: property;
-		var hiddenProps = Arrays.asList("@id", "@type", "@context", "lastChange", "version", "internalId", "lastInternalId",
-				"precedingDataSet", "position", "parameterScope", "context");
+		var hiddenProps = Arrays.asList("@id", "@type", "@context", "lastChange", "version", "internalId",
+				"lastInternalId", "precedingDataSet", "position", "parameterScope", "context");
 		var hiddenPaths = Arrays.asList("flowProperties.flowProperty", "impactFactors.flow", "product.flow",
 				"nwSets.name", "nwSet.name", "nwSets.factors.impactCategory", "socialAspects.socialIndicator",
 				"variants.productSystem", "inputs.isInput", "outputs.isInput", "inputs.flow", "outputs.flow",
@@ -88,9 +88,11 @@ class ModelUtil {
 		if (hiddenProps.contains(property) || hiddenPaths.contains(path) || hiddenRefs.contains(parentPath))
 			return false;
 		if (parentPath.contains(".uncertainty") || parentPath.startsWith("uncertainty")
-				|| parentPath.equals("geometry"))
+				|| parentPath.equals("geometry") || parentPath.endsWith(".defaultProvider")
+				|| parentPath.equals("inputs.unit") || parentPath.equals("outputs.unit"))
 			return false;
-		if (property.equals("refUnit") && parentPath.endsWith(".flowProperty") || parentPath.equals("defaultFlowProperty"))
+		if (property.equals("refUnit")
+				&& (parentPath.endsWith(".flowProperty") || parentPath.equals("defaultFlowProperty")))
 			return false;
 		if ((property.equals("name") || property.equals("category")) && PropertyLabels.getImageType(node) != null)
 			return false;
