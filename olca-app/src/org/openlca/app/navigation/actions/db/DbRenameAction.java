@@ -11,6 +11,7 @@ import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
+import org.openlca.app.db.Repository;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -84,6 +85,12 @@ public class DbRenameAction extends Action implements INavigationAction {
 			if (!success) {
 				log.error("failed to rename folder");
 				return;
+			}
+			File oldRepoFolder = Repository.gitDir(config.name());
+			File newRepoFolder = Repository.gitDir(newName);			
+			success = oldRepoFolder.renameTo(newRepoFolder);
+			if (!success) {
+				log.error("failed to rename repository folder");
 			}
 			Database.remove(config);
 			config.name(newName);
