@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.persistence.indirection.IndirectCollection;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.RcpActivator;
@@ -38,6 +39,7 @@ class Jython {
 			try (var py = new PythonInterpreter()) {
 				py.set("log", LoggerFactory.getLogger(Jython.class));
 				py.set("db", Database.get());
+				py.set("direct", new EagerCollector());
 
 				// first try to execute the imports
 				if (!execImports(py, "mod_bindings.py")
@@ -103,4 +105,24 @@ class Jython {
 		}
 	}
 
+	/**
+	 * Jython fails with IndirectCollection instances. It tries to install an
+	 * `iter` magic on them but this crashes. The only solution so far is, to
+	 * let Jython never see these collections by getting the delegate collection
+	 * via reflection. In Jython this then looks like
+	 * {@code direct.of(system, 'processes')} for example.
+	 */
+	public static class EagerCollector {
+
+		public Object of(Object obj, String field) {
+			try {
+				var value = obj.getClass().getField(field).get(obj);
+				return value instanceof IndirectCollection<?, ?> coll
+						? coll.getDelegateObject()
+						: value;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
 }
