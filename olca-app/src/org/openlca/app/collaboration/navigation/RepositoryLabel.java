@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.navigation;
 
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.swt.graphics.Image;
@@ -16,6 +17,7 @@ import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.GitIndex;
 import org.openlca.git.util.Constants;
+import org.openlca.git.util.GitUtil;
 import org.openlca.util.Strings;
 
 public class RepositoryLabel {
@@ -101,7 +103,9 @@ public class RepositoryLabel {
 				return true;
 		if (!elem.is(ElementType.MODEL_TYPE, ElementType.CATEGORY))
 			return false;
-		var fromIndex = index().getSubPaths(elem.getPath(index()));
+		var fromIndex = index().getSubPaths(elem.getPath(index()))
+				.stream().filter(Predicate.not(GitUtil::isBinDir))
+				.toList();
 		var fromNavigation = elem.children()
 				.stream().map(e -> e.getPath(index()))
 				.collect(Collectors.toSet());
