@@ -78,7 +78,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 
 	private void doRun(File zip) throws Exception {
 		try (var store = new ZipStore(zip)) {
-			getContainer().run(true, true, m -> {
+			getContainer().run(true, true, monitor -> {
 				var lang = IoPreference.getIlcdLanguage();
 				var langOrder = !"en".equals(lang)
 						? new String[]{lang, "en"}
@@ -89,7 +89,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 				var config = new ImportConfig(store, Database.get(), flowMap)
 						.withAllFlows(true)
 						.withLanguageOrder(langOrder);
-				ImportMonitor.on(m).run(new ILCDImport(config));
+				ImportMonitor.on(monitor).run(new ILCDImport(config));
 			});
 		}
 	}

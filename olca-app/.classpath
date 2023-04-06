@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.jgit-6.4.0.202211300538-r.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
@@ -58,7 +59,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/jsr305-3.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr311-api-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jts-core-1.19.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/logback-classic-1.2.11.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/logback-core-1.2.11.jar"/>
