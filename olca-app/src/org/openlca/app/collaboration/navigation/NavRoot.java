@@ -34,6 +34,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -139,8 +140,14 @@ public class NavRoot {
 
 	private void loadDescriptors() {
 		for (var type : ModelType.values()) {
-			for (var descriptor : database.getDescriptors(type.getModelClass())) {
-				put(descriptors, type, descriptor.category, descriptor);
+			if (type == PARAMETER) {
+				for (var descriptor : new ParameterDao(database).getGlobalDescriptors()) {
+					put(descriptors, type, descriptor.category, descriptor);
+				}
+			} else {
+				for (var descriptor : database.getDescriptors(type.getModelClass())) {
+					put(descriptors, type, descriptor.category, descriptor);
+				}
 			}
 		}
 	}
