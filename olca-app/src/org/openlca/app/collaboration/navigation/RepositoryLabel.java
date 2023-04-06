@@ -82,7 +82,7 @@ public class RepositoryLabel {
 					|| d.version != entry.version();
 		}
 		for (var child : elem.children())
-			if (hasChanged(child) || (child.is(ElementType.MODEL) && isNew(elem)))
+			if (hasChanged(child) || (child.is(ElementType.MODEL) && isNew(child)))
 				return true;
 		return containsDeleted(elem);
 	}
