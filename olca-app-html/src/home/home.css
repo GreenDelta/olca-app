@@ -30,7 +30,7 @@ body {
     font-family: 'TheSans', Helvetica, Arial, sans-serif;
     color: #fbfbfb;
     line-height: 1.42857143;
-    background-image: url('images/background_start_page.jpg');
+    background-image: url('images/background.jpg');
     background-attachment: fixed;
     background-size: cover;
 }
@@ -41,30 +41,21 @@ h2 {
     margin: 0;
 }
 
-header {
-    background-color: rgba(18, 89, 133, 0.7);
+.header {
     min-width: 100%;
-    margin-bottom: 50px;
-    padding: 10px 0;
+    padding: 20px 0;
+    display: flex;
+    justify-content: flex-end;
 }
 
-header .subtext {
-    font-size: 22px;
-}
-
-header .header-title {
-    margin-left: 250px;
-}
-
-img.logo {
-    margin: 15px 25px 15px 25px;
+.header .img-link {
     height: 126px;
-    position: absolute;
+    margin-right: 20px;
 }
 
-img.chevron {
-    margin: 0 0 -3px 10px;
-    display: none;
+.header .img-link img.logo {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .gd-logo {
@@ -93,28 +84,64 @@ a {
     overflow: hidden;
 }
 
+.block.expanded img.chevron-right {
+    display: none;
+}
+
+.block.expanded span.title {
+    font-size: 40px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
 .block:not(.expanded) {
     cursor: pointer;
 }
 
-.block.whats-new {
+.block.expanded .content {
+    display: block;
+    color: #000;
+}
+
+.block .content {
+    display: none;
+}
+
+.block .content.first-steps {
+    background-color: #6feef1
+}
+
+.block .content.whats-new-2 {
     background-color: rgba(0, 177, 241, 0.7);
 }
 
-.block.getting-started {
-    background-color: rgba(112, 187, 40, 0.7);
+.block .content.community-forum {
+    background-color: #ba68be;
 }
 
-.block.manuals {
-    background-color: rgba(164, 95, 65, 0.7);
+.block .content.comprehensive-dbs {
+    background-color: #cd8374;
 }
 
-.block.community {
-    background-color: rgba(37, 152, 126, 0.7);
+.block .content.case-studies {
+    background-color: #4889d7;
 }
 
-.block.experts {
-    background-color: rgba(128, 0, 128, 0.7);
+.block .content.trainings {
+    background-color: #eeed70;
+}
+
+.block .content.work-with-olca {
+    background-color: #83bc50;
+}
+
+.block.passive-enabled img.chevron-right {
+    display: none;
+}
+
+.block.passive-enabled .title {
+    color: #00813a;
 }
 
 .block .block-content {

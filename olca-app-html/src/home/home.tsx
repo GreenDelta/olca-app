@@ -28,22 +28,29 @@ const Page = (props: Props) => {
         bindLinks();
     });
 
-    const blockConfig = [
-        ["whats-new", "whatsNew"],
-        ["getting-started", "gettingStarted"],
-        ["manuals", "manuals"],
-        ["community", "community"],
-        ["experts", "experts"],
+    const newBlockConfig = [
+        ["first-steps", "firstSteps"],
+        ["whats-new-2", "whatsNew2"],
+        ["community-forum", "communityForum"],
+        ["comprehensive-dbs", "comprehensiveDBs"],
+        ["case-studies", "caseStudies"],
+        ["trainings", "trainings"],
+        ["work-with-olca", "workWithOLCA"]
     ];
-    const blocks = blockConfig.map(([className, msgKey]) => (
+
+    const blocks = newBlockConfig.map(([className, msgKey]) => (
         <Block
-            open={className === openedBlock}
+            open={msgKey === openedBlock}
             key={className}
-            className={className}
+            className={
+                msgKey === 'workWithOLCA'
+                ? `${className} passive-enabled`
+                : className
+            }
             msgKey={msgKey}
             messages={props.messages}
             onClick={onBlockClicked} />
-    ));
+        ));
     return (
         <>
             <Header {...props} />
@@ -58,19 +65,10 @@ const Page = (props: Props) => {
 };
 
 const Header = ({ data, messages }: Props) => (
-    <header>
-        <a href="http://www.openlca.org" title="http://www.openlca.org">
+    <header className="header">
+        <a href="http://www.openlca.org" title="http://www.openlca.org" className="img-link">
             <img className="logo" src="images/logo_start_page.png" />
         </a>
-        <div className="header-title">
-            <div className="subtext">
-                <div>{messages["title1"]}</div>
-                <div>{messages["title2"]}</div>
-                <div>{messages["title3"]}</div>
-                <div>{messages["title4"]}</div>
-            </div>
-            <h2 id="version">{data.version}</h2>
-        </div>
     </header>
 );
 
@@ -98,6 +96,7 @@ const LibHint = (props: Props) => {
     );
 };
 
+
 type BlockProps = {
     className: string;
     msgKey: string;
@@ -120,19 +119,16 @@ const Block = (props: BlockProps) => {
 
     return (
         <div>
-            <div className={"block " + props.className + (props.open ? " expanded" : "")}
+            <div className={`block ${props.className}` + (props.open ? " expanded" : "")}
                 style={elemStyle}
-                onClick={() => props.onClick(props.className)}>
-                <span className="block-content">
-                    <span className="title"
-                        style={props.open ? { display: "none" } : { display: "inline" }}>
+                onClick={() => props.onClick(props.msgKey)}>
+                <span className="block-content" >
+                    <span className="title">
                         {props.messages[`${props.msgKey}.title`]}
                         <img className="chevron-right" src="images/chevron_right.png" />
                     </span>
-                    <span className="content"
-                        style={props.open ? { display: "inline" } : { display: "none" }}>
-                        <span
-                            dangerouslySetInnerHTML={{ __html: content }} />
+                    <span className={"content " + props.className }>
+                        <span dangerouslySetInnerHTML={{ __html: content }} />
                     </span>
                 </span>
             </div>
