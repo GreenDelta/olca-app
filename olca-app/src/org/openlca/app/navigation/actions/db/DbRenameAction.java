@@ -86,11 +86,13 @@ public class DbRenameAction extends Action implements INavigationAction {
 				log.error("failed to rename folder");
 				return;
 			}
-			File oldRepoFolder = Repository.gitDir(config.name());
-			File newRepoFolder = Repository.gitDir(newName);			
-			success = oldRepoFolder.renameTo(newRepoFolder);
-			if (!success) {
-				log.error("failed to rename repository folder");
+			if (Repository.isConnected()) {
+				File oldRepoFolder = Repository.gitDir(config.name());
+				File newRepoFolder = Repository.gitDir(newName);
+				success = oldRepoFolder.renameTo(newRepoFolder);
+				if (!success) {
+					log.error("failed to rename repository folder");
+				}
 			}
 			Database.remove(config);
 			config.name(newName);
