@@ -96,7 +96,6 @@ public class DbActivateAction extends Action implements INavigationAction {
 				Database.close();
 				log.trace("Activate selected database");
 				var db = Database.activate(config);
-				NavRoot.init();
 				log.trace("Get version state");
 				versionState = VersionState.get(db);
 				monitor.done();
@@ -145,6 +144,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 
 		private void refresh() {
 			log.trace("Refresh navigation");
+			NavRoot.init();
 			Navigator.refresh();
 			if (Database.get() == null)
 				return;
