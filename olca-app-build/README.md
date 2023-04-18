@@ -31,6 +31,8 @@ and native libraries if these are missing.
 
 ### Steps when building a release package
 
+#### Export and package the release (Win, Linux, macOS)
+
 1. Check that the `olca-app` and `olca-modules` repositories are on the master
    branch and are in sync with our GitHub repository.
 
@@ -52,30 +54,52 @@ and native libraries if these are missing.
    python package.py
    ```
 
-5. Sign the Mac app.
+#### Prepare the independent distribution of the Mac app (`.dmg`) (only on macOS)
 
-   In order to pass the Gatekeeper protection the Mac app is signed with an Apple
-   Development certificate on macOS. The app should not be opened before and after 
-   signing. When testing, one should make a test copy after signing.
+In order to pass the Gatekeeper protection, the Mac bundle freshly packaged has
+to be signed in depth with an Apple Development certificate, notarized and 
+stapled. When testing, one should make a test copy after running the script.
 
-   * Add Green Delta signing certificate to __Xcode__:
-     * Open `Settings > Accounts > +` and sign in with Green Delta Apple ID.
-     * Add the developer certificate in `Manage Certificates...`.
-   * Copy the name of the certificate in __Keychain Access__. In 
-   `login > My Certificates` copy the full name `Apple Development: 
-   <email> (<code>)`.
-   * Run the following command to sign the app:
-     ```bash
-     codesign -f -s "CERTIFICATE_NAME" path/to/openLCA.app
-     ```
-   * To check if it was successful:
-     ```bash
-     codesign -vv path/to/openLCA.app
-     ```
-     It should output:
-       ```bash
-       openLCA.app: valid on disk
-       openLCA.app: satisfies its Designated Requirement
-       ```
+Prerequisites:
+ * __Xcode__ (version > 13),
+ * __Keychain Access__,
+ * [create-dmg](https://github.com/create-dmg/create-dmg) (version > 1.1.0):
+   `brew install create-dmg`,
 
-6. Test the apps!
+1. Set up the signing certificate:
+   * Open `Settings > Accounts > +` and sign in with the Green Delta Apple ID.
+   * Add the _Developer ID Application Certificate_ in `Manage Certificates...`.
+   * Get the name of the certificate:
+      * Open __Keychain Access__,
+      * In `login > My Certificates` copy the full name `Developer ID 
+        Application: GreenDelta GmbH (<code>)`.
+
+2. Set up the `notarytool`credentials:
+   * Go to https://appleid.apple.com/ and sign in with the Green Delta Apple ID.
+   * Select Application password and create a new password named 
+     `notarytool-<pseudo>` and copy it.
+   * Add the password to your system:
+     * Run the following command `xcrun notarytool store-credentials`:
+     * Profile name: <password name>
+     * Path to...: <blank>
+     * Developer Apple ID: <Apple Developer e-mail>
+     * App-specific password: <password>
+     * Developer Team ID: <code of the certificate (cf. `Developer ID
+       Application: GreenDelta GmbH (<code>)`)>
+
+3. Run the following command to sign, notarized, staple the app and embellish 
+  the disk image:
+
+    ```bash
+    cd olca-app-build
+    ./mac_dist.sh dmg --dev-id-app <certificate full name> --keychain <password name>
+    ```
+
+#### Prepare the App store distribution of the Mac app (`.pkg`) (only on macOS)
+
+To be continued...
+
+#### Test the apps!
+
+1. Open every package, open a database and eventually a product system.
+2. Test the DMG on a different computer than the one used to sign and notarize.

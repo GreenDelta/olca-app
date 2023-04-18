@@ -44,8 +44,7 @@ public class App {
 	/**
 	 * Get the folder where openLCA is installed. This is where our native math
 	 * libraries and the openLCA.ini file are located. On macOS this is the
-	 * folder `openLCA.app/Contents/Eclipse`. Also, the name of the ini file is
-	 * `eclipse.ini` on macOS.
+	 * folder `openLCA.app/Contents/Eclipse`.
 	 */
 	public static File getInstallLocation() {
 		URL url = Platform.getInstallLocation().getURL();
