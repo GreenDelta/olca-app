@@ -207,7 +207,7 @@ class BuildDir:
     @property
     def jre_dir(self) -> Path:
         if self.osa.is_mac():
-            return self.root / "openLCA/openLCA.app/Contents/PlugIns/jre.plugin"
+            return self.root / "openLCA/openLCA.app/Contents/Eclipse/jre"
         else:
             return self.app_dir / "jre"
 
@@ -435,8 +435,7 @@ class MacDir:
         app_dir = build_dir.app_dir
         eclipse_dir = app_dir / "Contents/Eclipse"
         macos_dir = app_dir / "Contents/MacOS"
-        plugins_dir = app_dir / "Contents/PlugIns"
-        for d in (app_dir, eclipse_dir, macos_dir, plugins_dir):
+        for d in (app_dir, eclipse_dir, macos_dir):
             d.mkdir(parents=True, exist_ok=True)
 
         # move files and folders
@@ -445,12 +444,14 @@ class MacDir:
             (app_root / "plugins", eclipse_dir),
             (app_root / ".eclipseproduct", eclipse_dir),
             (app_root / "Resources", app_dir / "Contents"),
-            (app_root / "MacOS/openLCA", macos_dir / "eclipse"),
+            (app_root / "MacOS/openLCA", macos_dir / "openLCA"),
         ]
         for (source, target) in moves:
             if source.exists():
                 shutil.move(str(source), str(target))
 
+        resources = PROJECT_DIR / "resources"
+        shutil.copy2(resources / "openLCA.entitlements", app_dir / "Contents")
         MacDir.add_info_plist(app_dir / "Contents/Info.plist")
 
         # create the ini file
@@ -459,7 +460,7 @@ class MacDir:
         launcher_lib = next(plugins_dir.glob("*launcher.cocoa.macosx*")).name
         Template.apply(
             PROJECT_DIR / "templates/openLCA_mac.ini",
-            eclipse_dir / "eclipse.ini",
+            eclipse_dir / "openLCA.ini",
             launcher_jar=launcher_jar,
             launcher_lib=launcher_lib,
         )
@@ -471,14 +472,11 @@ class MacDir:
 
     @staticmethod
     def add_info_plist(path: Path):
-        product = ElementTree.parse(PROJECT_DIR.parent / "olca-app/openLCA.product")
-        version = product.getroot().attrib.get("version")
-
         # set version of the app
+        # (version must be composed of one to three period-separated integers.)
         info_dict = {
-            "CFBundleGetInfoString": "openLCA " + version,
-            "CFBundleShortVersionString": version,
-            "CFBundleVersion": version,
+            "CFBundleShortVersionString": Version.get().base,
+            "CFBundleVersion": Version.get().base,
         }
         info = ElementTree.parse(PROJECT_DIR / "templates/Info.plist")
         iterator = info.getroot().find("dict").iter()
@@ -489,7 +487,8 @@ class MacDir:
                     string.text = info_dict[elem.text]
 
         with open(path, 'wb') as out:
-            out.write(b'<?xml version="1.0" encoding="UTF-8" standalone = "no" ?>\n')
+            out.write(b'<?xml version="1.0" encoding="UTF-8" standalone = '
+                      b'"no" ?>\n')
             info.write(out, encoding='UTF-8', xml_declaration=False)
 
 

@@ -148,9 +148,7 @@ class ConfigIniFile {
 
 	private static File getIniFile() {
 		var dir = App.getInstallLocation();
-		return OS.get() == OS.MAC
-				? new File(dir, "eclipse.ini")
-				: new File(dir, "openLCA.ini");
+		return new File(dir, "openLCA.ini");
 	}
 
 	private static ConfigIniFile parseFile(File iniFile) throws Exception {
