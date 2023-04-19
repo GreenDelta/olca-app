@@ -130,6 +130,7 @@ public class ModelSelector extends FormDialog {
 		UI.gridData(section, true, true);
 		Composite composite = UI.sectionClient(section, tk, 1);
 		createViewer(composite);
+		filterText.setFocus();
 	}
 
 	private String getTitle() {
