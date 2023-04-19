@@ -73,7 +73,7 @@ public class RepositoryLabel {
 	}
 
 	public static boolean hasChanged(NavElement elem) {
-		if (Database.get() == null || !Repository.isConnected() || elem == null)
+		if (Database.get() == null || !Repository.isConnected() || elem == null || elem.isFromLibrary())
 			return false;
 		if (elem.is(ElementType.MODEL)) {
 			if (isNew(elem))
@@ -90,7 +90,7 @@ public class RepositoryLabel {
 	}
 
 	private static boolean isNew(NavElement elem) {
-		if (elem == null || !elem.is(ElementType.MODEL))
+		if (elem == null || !elem.is(ElementType.MODEL) || elem.isFromLibrary())
 			return false;
 		return !index().has(Cache.getPathCache(), (RootDescriptor) elem.content());
 	}

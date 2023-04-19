@@ -12,13 +12,18 @@ import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.GitIndex;
 
-record NavElement(ElementType type, Object content, List<NavElement> children) {
+record NavElement(ElementType type, Object content, boolean isFromLibrary, List<NavElement> children) {
+
+	NavElement(ElementType type, Object content, List<NavElement> children) {
+		this(type, content, false, children);
+	}
 
 	NavElement(ElementType type, Object content) {
-		this(type, content, new ArrayList<>());
+		this(type, content, content instanceof Descriptor d && d.isFromLibrary(), new ArrayList<>());
 	}
 
 	boolean is(ElementType... types) {
