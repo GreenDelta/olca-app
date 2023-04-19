@@ -108,7 +108,7 @@ type BlockProps = {
 const Block = (props: BlockProps) => {
 
     const elemStyle: CSSProperties = {
-        marginBottom: 50,
+        marginBottom: 10,
         width: props.open ? "100%" : "auto",
     };
     if (!props.open) {

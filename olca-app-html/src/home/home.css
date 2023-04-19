@@ -18,6 +18,7 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 html {
@@ -26,11 +27,11 @@ html {
 }
 
 body {
-    font-size: 25px;
+    font-size: 28px;
     font-family: 'TheSans', Helvetica, Arial, sans-serif;
     color: #fbfbfb;
     line-height: 1.42857143;
-    background-image: url('images/background.jpg');
+    background-image: url('images/background_start_page.jpg');
     background-attachment: fixed;
     background-size: cover;
 }
@@ -81,6 +82,7 @@ a {
 }
 
 .block {
+    margin-left: 20px;
     overflow: hidden;
 }
 
@@ -89,7 +91,7 @@ a {
 }
 
 .block.expanded span.title {
-    font-size: 40px;
+    font-size: 35px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -102,6 +104,7 @@ a {
 .block.expanded .content {
     display: block;
     color: #000;
+    font-size: 20px;
 }
 
 .block .content {
