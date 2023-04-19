@@ -12,9 +12,12 @@ import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
+import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
+import org.openlca.core.model.Category;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypeRefIdSet;
@@ -101,6 +104,36 @@ class Datasets {
 			Actions.handleException("Error performing restriction check", e);
 			return false;
 		}
+	}
+
+	public static void deleteEmptyCategories(List<INavigationElement<?>> elements) {
+		for (var element : elements) {
+			if (element instanceof CategoryElement c) {
+				if (hasModelElements(c))
+					continue;
+				delete(c.getContent());
+			} else {
+				deleteEmptyCategories(element.getChildren());
+			}
+		}
+	}
+
+	private static boolean hasModelElements(INavigationElement<?> element) {
+		for (var child : element.getChildren()) {
+			if (child instanceof ModelElement)
+				return true;
+			if (hasModelElements(child))
+				return true;
+		}
+		return false;
+	}
+
+	private static boolean delete(Category category) {
+		for (var child : category.childCategories) {
+			delete(child);
+		}
+		Database.get().delete(category);
+		return true;
 	}
 
 	static record DialogResult(int action, String message, Set<TriDiff> datasets) {
