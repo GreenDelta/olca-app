@@ -30,6 +30,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.NavElement.ElementType;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.core.database.CategoryDao;
@@ -70,9 +71,9 @@ public class NavRoot {
 	public static void init() {
 		var database = Database.get();
 		INSTANCE = new NavRoot(database);
-		if (database != null) {
-			INSTANCE.build();
-		}
+		if (database == null || !Repository.isConnected())
+			return;
+		INSTANCE.build();
 	}
 
 	public static void refresh(Runnable navigatorRefresh) {
@@ -132,6 +133,8 @@ public class NavRoot {
 
 	private void loadCategories() {
 		for (var category : new CategoryDao(database).getAll()) {
+			if (category.modelType == null)
+				continue;
 			var parentId = category.category != null ? category.category.id : null;
 			put(categories, category.modelType, parentId, category);
 			categoryMap.put(category.id, category);
