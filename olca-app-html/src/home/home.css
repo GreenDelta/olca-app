@@ -82,7 +82,7 @@ a {
 }
 
 .block {
-    margin-left: 20px;
+    padding: 0 20px;
     overflow: hidden;
 }
 
@@ -150,6 +150,17 @@ a {
 .block .block-content {
     display: inline-block;
     padding: 10px;
+}
+
+.libhint {
+    font-size: 18px;
+    margin-bottom: 20px ;
+    margin-left: 30px;
+}
+
+.libhint .info{
+    background: rgba(255, 153, 0, 0.8);
+    padding: 2px 4px;
 }
 
 img.chevron-right {

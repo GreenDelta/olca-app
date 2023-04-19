@@ -38,8 +38,9 @@ const Page = (props: Props) => {
         ["work-with-olca", "workWithOLCA"]
     ];
 
-    const blocks = newBlockConfig.map(([className, msgKey]) => (
+    const blocks = newBlockConfig.map(([className, msgKey], index) => (
         <Block
+            isLast={index === newBlockConfig.length - 1}
             open={msgKey === openedBlock}
             key={className}
             className={
@@ -82,14 +83,10 @@ const LibHint = (props: Props) => {
         }
     };
     return (
-        <div style={{ marginBottom: 20 , marginLeft: "20px",}}>
-            <span style={{
-                background: "rgba(255, 153, 0, 0.8)",
-                padding: "2px 4px",
-            }}>
+        <div className="libhint">
+            <span className="info">
                 You can make the calculation in openLCA faster. {" "}
-                <a href="#" onClick={() => handleClick()}  style={{
-                }}>
+                <a href="#" onClick={() => handleClick()}>
                     Learn more.
                 </a>
             </span>
@@ -104,13 +101,14 @@ type BlockProps = {
     messages: Record<string, string>;
     open: boolean;
     onClick: (id: string) => void;
+    isLast: boolean
 };
 
 const Block = (props: BlockProps) => {
 
     const elemStyle: CSSProperties = {
-        marginBottom: 5,
-        width: props.open ? "100%" : "auto",
+        marginBottom: props.isLast ? 30 : 5,
+        maxWidth: '100%'
     };
     if (!props.open) {
         elemStyle.display = "inline-block";
@@ -183,7 +181,7 @@ const setData = (data: Data) => {
 setData({
     version: "Version 1.9.0",
     lang: "en",
-    showLibHint: false,
+    showLibHint: true,
 });
 
 // expose the setData function by binding it to the window object
