@@ -236,7 +236,6 @@ import org.openlca.core.matrix.InventoryBuilder as InventoryBuilder
 import org.openlca.core.results.providers.InversionResult as InversionResult
 import org.openlca.core.results.providers.InversionResultProvider as InversionResultProvider
 import org.openlca.io.ecospold2.input.IsicCategoryTreeSync as IsicCategoryTreeSync
-import org.openlca.core.database.validation.Issue as Issue
 import org.openlca.validation.Item as Item
 import org.openlca.core.matrix.io.index.IxContext as IxContext
 import org.openlca.core.matrix.io.index.IxEnviIndex as IxEnviIndex
@@ -442,6 +441,7 @@ import org.openlca.core.database.internal.ScriptRunner as ScriptRunner
 import org.openlca.core.matrix.solvers.SeqAgg as SeqAgg
 import org.openlca.core.matrix.solvers.SequentialSolver as SequentialSolver
 import org.openlca.proto.io.server.Server as Server
+import org.openlca.ipc.Server2 as Server2
 import org.openlca.core.services.ServerConfig as ServerConfig
 import org.openlca.io.simapro.csv.input.SimaProCsvImport as SimaProCsvImport
 import org.openlca.io.simapro.csv.output.SimaProExport as SimaProExport
@@ -520,7 +520,7 @@ import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree
 import org.openlca.jsonld.output.Util as Util
-import org.openlca.core.database.validation.Validation as Validation
+import org.openlca.validation.Validation as Validation
 import org.openlca.expressions.VariableFunction as VariableFunction
 import org.openlca.core.model.Version as Version
 import org.openlca.core.database.upgrades.VersionState as VersionState
