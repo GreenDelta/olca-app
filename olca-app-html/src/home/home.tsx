@@ -82,13 +82,14 @@ const LibHint = (props: Props) => {
         }
     };
     return (
-        <div style={{ marginBottom: 70 }}>
+        <div style={{ marginBottom: 20 , marginLeft: "20px",}}>
             <span style={{
-                backgroundColor: "rgba(255, 153, 0, 0.8)",
-                padding: "10px",
+                background: "rgba(255, 153, 0, 0.8)",
+                padding: "2px 4px",
             }}>
                 You can make the calculation in openLCA faster. {" "}
-                <a href="#" onClick={() => handleClick()}>
+                <a href="#" onClick={() => handleClick()}  style={{
+                }}>
                     Learn more.
                 </a>
             </span>
@@ -108,7 +109,7 @@ type BlockProps = {
 const Block = (props: BlockProps) => {
 
     const elemStyle: CSSProperties = {
-        marginBottom: 10,
+        marginBottom: 5,
         width: props.open ? "100%" : "auto",
     };
     if (!props.open) {
