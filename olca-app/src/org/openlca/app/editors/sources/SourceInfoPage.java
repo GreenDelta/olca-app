@@ -1,6 +1,8 @@
 package org.openlca.app.editors.sources;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -30,11 +32,10 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.model.Source;
+import org.openlca.util.Dirs;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.io.Files;
 
 class SourceInfoPage extends ModelPage<Source> {
 
@@ -49,9 +50,9 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
+	protected void createFormContent(IManagedForm mForm) {
 		var form = UI.header(this);
-		tk = mform.getToolkit();
+		tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		new InfoSection(getEditor()).render(body, tk);
 		additionalInfo(body);
@@ -146,11 +147,13 @@ class SourceInfoPage extends ModelPage<Source> {
 	private void copyAndSetFile(File file, File dbFile) {
 		try {
 			log.trace("copy file {} to database folder", file);
-			File dir = dbFile.getParentFile();
-			if (!dir.exists())
-				dir.mkdirs();
-			Files.copy(file, dbFile);
-			Source source = getModel();
+			var dir = dbFile.getParentFile();
+			Dirs.createIfAbsent(dir);
+			Files.copy(
+					file.toPath(),
+					dbFile.toPath(),
+					StandardCopyOption.REPLACE_EXISTING);
+			var source = getModel();
 			source.externalFile = dbFile.getName();
 			getEditor().setDirty(true);
 			updateFileLink();
@@ -197,16 +200,16 @@ class SourceInfoPage extends ModelPage<Source> {
 	private void deleteFile(HyperlinkEvent e) {
 		if (getModel().externalFile == null)
 			return;
-		File file = getDatabaseFile();
+		var file = getDatabaseFile();
 		if (file == null)
 			return;
-		boolean doIt = Question.ask(M.DeleteFile,
-				M.SourceFileDeleteQuestion);
+		boolean doIt = Question.ask(M.DeleteFile, M.SourceFileDeleteQuestion);
 		if (!doIt)
 			return;
 		try {
-			if (file.exists())
-				file.delete();
+			if (file.exists()) {
+				Files.delete(file.toPath());
+			}
 			getModel().externalFile = null;
 			updateFileLink();
 			getEditor().setDirty(true);

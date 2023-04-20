@@ -2,7 +2,6 @@ package org.openlca.app.editors.sources;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -41,17 +40,17 @@ class ImageView {
 		}
 
 		// check that we have an image file
-		if (file == null)
+		if (file == null || !file.exists())
 			return;
-		String[] parts = file.getName().split("\\.");
-		String ext = parts[parts.length - 1].toLowerCase();
-		List<String> exts = Arrays.asList(
+		var parts = file.getName().split("\\.");
+		var ext = parts[parts.length - 1].toLowerCase();
+		var exts = Arrays.asList(
 				"gif", "jpg", "jpeg", "png", "bmp");
 		if (!exts.contains(ext))
 			return;
 
 		// create the image
-		Image img = new Image(comp.getDisplay(), file.getAbsolutePath());
+		var img = new Image(comp.getDisplay(), file.getAbsolutePath());
 		label = new Label(comp, SWT.NONE);
 		label.setImage(img);
 		label.addDisposeListener(e -> {
@@ -59,7 +58,7 @@ class ImageView {
 				img.dispose();
 			}
 		});
-		label.getParent().layout();
+		comp.getParent().layout();
 	}
 
 }
