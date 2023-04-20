@@ -63,7 +63,6 @@ public class StashCreateAction extends Action implements INavigationAction {
 					.as(user)
 					.changes(changes)
 					.update(repo.gitIndex));
-			Datasets.deleteEmptyCategories(selection);
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);
 		} finally {

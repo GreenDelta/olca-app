@@ -61,7 +61,6 @@ public class DiscardAction extends Action implements INavigationAction {
 					.changes(selected)
 					.update(repo.gitIndex)
 					.discard());
-			Datasets.deleteEmptyCategories(selection);
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error discarding changes", e);
 		} finally {
