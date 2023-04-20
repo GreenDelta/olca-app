@@ -81,7 +81,6 @@ public class CommentsPage extends FormPage {
 				var json = gson.fromJson(gson.toJson(comment), JsonObject.class);
 				Json.put(json, "label", CommentLabels.get(comment.type(), comment.path()));
 				Json.put(json, "fullPath", getFullPath(comment));
-				System.out.println(json);
 				browser.execute("add(" + gson.toJson(json) + ");");
 			}
 		});
