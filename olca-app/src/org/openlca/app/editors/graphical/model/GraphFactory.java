@@ -150,6 +150,13 @@ public class GraphFactory {
 		};
 	}
 
+	public static List<Exchange> getConsumers(RootEntity entity, ModelType type) {
+		return getExchanges(entity, type).stream()
+				.filter(e -> (e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW)
+						|| (!e.isInput && e.flow.flowType == FlowType.WASTE_FLOW))
+				.toList();
+	}
+
 	public static void createGraphLink(Graph graph, ProcessLink pLink) {
 		var provider = graph.getNode(pLink.providerId);
 		var recipient = graph.getNode(pLink.processId);

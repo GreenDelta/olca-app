@@ -70,20 +70,17 @@ public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 			return null;
 
 		long flowId = toConnect.exchange.flow.id;
+
+		var cmd = new CreateLinkCommand(flowId);
 		if (!toConnect.exchange.isInput) {
-			CreateLinkCommand cmd = new CreateLinkCommand(flowId);
 			cmd.source = toConnect;
 			cmd.startedFromSource = true;
-			req.setStartCommand(cmd);
-			return cmd;
-		} else if (!toConnect.isConnected()) {
-			CreateLinkCommand cmd = new CreateLinkCommand(flowId);
+		} else {
 			cmd.target = toConnect;
 			cmd.startedFromSource = false;
-			req.setStartCommand(cmd);
-			return cmd;
 		}
-		return null;
+		req.setStartCommand(cmd);
+		return cmd;
 	}
 
 	@Override

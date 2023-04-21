@@ -79,14 +79,12 @@ public class ExchangeItem extends Component {
 		var linkSearch = node.getGraph().linkSearch;
 		var isInput = getIOPane().isForInputs();
 
-		if ((isInput && flowType() == FlowType.WASTE_FLOW)
-				|| (!isInput && flowType() == FlowType.PRODUCT_FLOW))  {
-			return linkSearch.getProviderLinks(node.descriptor.id).stream()
-					.anyMatch(link -> link.providerId == getNode().descriptor.id);
-		} else {
-			return linkSearch.getConnectionLinks(node.descriptor.id).stream()
-					.anyMatch(this::matchesLink);
-		}
+		var links = ((isInput && flowType() == FlowType.WASTE_FLOW)
+				|| (!isInput && flowType() == FlowType.PRODUCT_FLOW))
+				? linkSearch.getProviderLinks(node.descriptor.id)
+				: linkSearch.getConnectionLinks(node.descriptor.id);
+		return links.stream()
+				.anyMatch(this::matchesLink);
 	}
 
 	/**
