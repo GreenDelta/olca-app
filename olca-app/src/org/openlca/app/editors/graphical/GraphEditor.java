@@ -299,15 +299,15 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	private void saveEntity(RootEntity entity) {
 		var node = getModel().getNode(entity.id);
 		var type = node.descriptor.type;
-		var exchanges = GraphFactory.getExchanges(entity, type);
 
 		// Map the exchanges of the process with the ProcessLinks.
 		var mapPLinkToExchange = new HashMap<ProcessLink, Exchange>();
 		node.getAllLinks().stream()
 				.map(GraphLink.class::cast)
 				.map(graphLink -> graphLink.processLink)
-				.forEach(link -> exchanges.stream()
-						.filter(exchange -> exchange.internalId == link.exchangeId)
+				.forEach(link ->  GraphFactory.getConsumers(entity, type).stream()
+						.filter(exchange -> exchange.internalId == link.exchangeId
+								&& exchange.flow.id == link.flowId)
 						.forEach(exchange -> mapPLinkToExchange.put(link, exchange)));
 
 		// Update the entity
@@ -322,7 +322,6 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		var newExchanges = GraphFactory.getExchanges(newEntity, type);
 		// Update ProcessLink.exchangeId with the updated exchange.id.
 		for (var exchange : newExchanges) {
-
 			// Update the ProcessLink.exchangeId
 			for (var entry : mapPLinkToExchange.entrySet()) {
 				var oldExchange = entry.getValue();
