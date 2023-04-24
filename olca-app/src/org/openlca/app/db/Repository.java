@@ -110,6 +110,10 @@ public class Repository {
 		current = null;
 	}
 
+	public String url() {
+		return url(git);
+	}
+	
 	private static String url(org.eclipse.jgit.lib.Repository repo) {
 		try (var git = new Git(repo)) {
 			var configs = git.remoteList().call();
