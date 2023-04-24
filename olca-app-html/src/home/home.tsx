@@ -1,6 +1,5 @@
-import React, { useState, useEffect, CSSProperties } from "react";
-import { render } from "react-dom";
-import messages from "./messages";
+import React, { useState, useEffect, CSSProperties } from 'react';
+import { render } from 'react-dom';
 
 type Data = {
     version: string;
@@ -10,69 +9,125 @@ type Data = {
 
 type Props = {
     data: Data;
-    messages: Record<string, string>;
 };
 
-const Page = (props: Props) => {
 
-    const [openedBlock, setOpenedBlock] = useState<string | null>(null);
-    const onBlockClicked = (id: string) => {
-        if (id === openedBlock) {
-            setOpenedBlock(null);
-        } else {
-            setOpenedBlock(id);
-        }
+const NAV_CONFIGURATION = [
+    {
+        navLabel: 'Getting Started',
+        navId: 'getting-started',
+    },
+    {
+        navLabel: "What'new in openLCA 2.0",
+        navId: 'whats-new',
+    },
+    {
+        navLabel: 'Collaboration tool for openLCA ',
+        navId: 'collaboration-tool',
+    },
+
+    {
+        navLabel: 'Community forum',
+        navId: 'community-forum',
+    },
+    {
+        navLabel: 'Comprehensive database',
+        navId: 'databases',
+    },
+    {
+        navLabel: 'Case studies',
+        navId: 'case-studies',
+    },
+    {
+        navLabel: 'Certified trainings',
+        navId: 'certified-training',
+    },
+    {
+        navLabel: 'Work with openLCA experts',
+        navId: 'experts',
+    },
+
+];
+
+type SupportedLanguages = 'en' | 'de';
+
+const messages: {
+    [k in SupportedLanguages]?: {
+        [key: string]: string;
     };
-
-    useEffect(() => {
-        bindLinks();
-    });
-
-    const blockConfig = [
-        ["whats-new", "whatsNew"],
-        ["getting-started", "gettingStarted"],
-        ["manuals", "manuals"],
-        ["community", "community"],
-        ["experts", "experts"],
-    ];
-    const blocks = blockConfig.map(([className, msgKey]) => (
-        <Block
-            open={className === openedBlock}
-            key={className}
-            className={className}
-            msgKey={msgKey}
-            messages={props.messages}
-            onClick={onBlockClicked} />
-    ));
-    return (
-        <>
-            <Header {...props} />
-            <LibHint {...props} />
-            {blocks}
-            <div className="placeholder" />
-            <a className="gd-logo"
-                href="http://www.greendelta.com"
-                title="http://www.greendelta.com" />
-        </>
-    );
+} = {
+    en: {
+        'getting-started.text':
+            "<a id=\"openlca\">openLCA</a> is a powerful, "
+            + "<a id=\"opensource\">open source</a>, feature-rich software for "
+            + "LCA and Sustainability modelling. "
+            + "\nCreate, import existing databases which contain life cycle "
+            + "processes, import assessment methods, create your own "
+            + "processes, build your own life cycle models, calculate and "
+            + "analyse it. These steps are explained on "
+            + "<a id=\"channel\">YouTube</a>, and in the openLCA "
+            + "<a id=\"manuals\">handbook</a>.",
+        'whats-new.text':
+            "openLCA 2 is major step forward, with a lot of new features and "
+            + "usability improvements. \n"
+            + "New features include: new maps and "
+            + "better regionalised modelling, broader support for various data "
+            + "formats, natural modelling on an LCA canvas, libraries, EPDs "
+            + "and results as new elements. For usability, the former model "
+            + "graph and Sankey diagram are completely redesigned, many "
+            + "editors have been improved, openLCA can now run in dark mode "
+            + "and the installation on Mac is easier.",
+        'community-forum.text':
+            "Visit <a id=\"forum\">ask.openLCA.org</a> for questions and "
+            + "answers around openLCA",
+        'collaboration-tool.text':
+            "The <a id=\"collaboration\">LCA Collaboration Server</a> is "
+            + "developed for team work in LCA modelling, dataset "
+            + "review and distribution. It is very similar to software code "
+            + "development and it is inspired by the world-known Git software. "
+            + "It is available for free, on the "
+            + "<a id=\"collaboration-download\">openLCA website</a>. "
+            + "GreenDelta also offers support and "
+            + "<a id=\"collaboration-hosting\">hosting services</a>.",
+        'databases.text':
+            "Find a wide range of free and for-purchase databases for LCA and "
+            + "sustainability modelling on "
+            + "<a id=\"nexus\">openLCA Nexus</a>, which currently boasts "
+            + "several hundred thousand datasets. If you have data that you "
+            + "would like to share with other users, either for free or for a "
+            + "fee, please do not hesitate to contact us. We would be more "
+            + "than happy to help you make your valuable contribution "
+            + "accessible to a broader audience.",
+        'case-studies.text':
+            "<a id=\"nexus\">Nexus</a> houses a repository of "
+            + "<a id=\"casestudies\">case studies</a> comprising full openLCA "
+            + "models and accompanying reports for documentation purposes."
+            + "\nContact us if you like to share your case study, either for "
+            + "free or a fee.",
+        'certified-training.text':
+            "Trainings on LCA, social LCA, Sustainability and of course "
+            + "openLCA are available on a regular basis, provided by "
+            + "GreenDelta and also by other certified trainers worldwide. They "
+            + "are posted and can be booked on "
+            + "<a id=\"trainings\">Nexus</a>.",
+        'experts.text':
+           "openLCA is developed by <a id=\"greendelta\">GreenDelta</a> in "
+           + "Berlin, Germany. If you're passionate about making a positive "
+           + "impact through your work - whether it's in IT development, data "
+           + "development, research, or consultancy - GreenDelta offers "
+           + "various open positions (available in German or English). We also "
+           + "welcome applications for internships. Check out our current "
+           + "opportunities <a id=\"openpositions\">here</a>.",
+    },
 };
 
-const Header = ({ data, messages }: Props) => (
-    <header>
-        <a href="http://www.openlca.org" title="http://www.openlca.org">
-            <img className="logo" src="images/logo_start_page.png" />
-        </a>
-        <div className="header-title">
-            <div className="subtext">
-                <div>{messages["title1"]}</div>
-                <div>{messages["title2"]}</div>
-                <div>{messages["title3"]}</div>
-                <div>{messages["title4"]}</div>
-            </div>
-            <h2 id="version">{data.version}</h2>
-        </div>
-    </header>
-);
+const getMessage = (
+    key: string,
+    lang: SupportedLanguages = 'en'
+): string | undefined => {
+    const langMessages = messages[lang] || messages['en'];
+    return langMessages[key];
+};
 
 const LibHint = (props: Props) => {
     if (!props || !props.data || !props.data.showLibHint) {
@@ -84,57 +139,111 @@ const LibHint = (props: Props) => {
         }
     };
     return (
-        <div style={{ marginBottom: 70 }}>
-            <span style={{
-                backgroundColor: "rgba(255, 153, 0, 0.8)",
-                padding: "10px",
-            }}>
-                You can make the calculation in openLCA faster. {" "}
-                <a href="#" onClick={() => handleClick()}>
-                    Learn more.
-                </a>
-            </span>
+        <p className="nav-info" onClick={() => handleClick()}>
+            <img className="info-icon" src="images/info-32.png"></img>
+            Make the calculations in openLCA faster. Click here to know more.
+        </p>
+    );
+};
+
+const Navigation = (props: Props) => {
+    return (
+        <div className="navigation">
+            <a
+                href="http://www.openlca.org"
+                title="http://www.openlca.org"
+                className="img-link"
+            >
+                <img
+                    className="openlca-logo"
+                    src="images/logo_start_page.png"
+                />
+            </a>
+            <div className="nav-info-container">
+                <LibHint {...props} />
+            </div>
         </div>
     );
 };
 
-type BlockProps = {
-    className: string;
-    msgKey: string;
-    messages: Record<string, string>;
-    open: boolean;
-    onClick: (id: string) => void;
+const LeftSection = (props: {
+    activeMenu: string;
+    setActiveMenu: (value: string) => void;
+}) => {
+    return (
+        <nav className="nav-container">
+            <ul className="nav">
+                {NAV_CONFIGURATION.map((navItem, index) => (
+                    <li
+                        key={index}
+                        className={`nav-item ${
+                            props.activeMenu == navItem.navId ? 'active' : ''
+                        }`}
+                        onClick={() => props.setActiveMenu(navItem.navId)}
+                    >
+                        {' '}
+                        {navItem.navLabel}
+                    </li>
+                ))}
+            </ul>
+        </nav>
+    );
 };
 
-const Block = (props: BlockProps) => {
+const RightSection = (props: { activeMenu: string }) => {
+    const content = getMessage(`${props.activeMenu}.text`);
+    return (
+        <div className="right-section-container">
+            <div className="content-box">
+                <p>
+                    <span dangerouslySetInnerHTML={{ __html: content }} />
+                </p>
+            </div>
+        </div>
+    );
+};
 
-    const elemStyle: CSSProperties = {
-        marginBottom: 50,
-        width: props.open ? "100%" : "auto",
-    };
-    if (!props.open) {
-        elemStyle.display = "inline-block";
-    }
-    const content = props.messages[props.msgKey + ".text"] + " " +
-        props.messages[props.msgKey + ".link"];
+const Footer = () => {
+    return (
+        <div className="footer-container">
+            <a
+                className="gd-logo"
+                href="http://www.greendelta.com"
+                title="http://www.greendelta.com"
+            />
+        </div>
+    );
+};
+
+const Page = (props: Props) => {
+    const [activeMenu, setActiveMenu] = useState('getting-started');
+
+    useEffect(() => {
+        bindLinks();
+    }, [activeMenu]);
 
     return (
-        <div>
-            <div className={"block " + props.className + (props.open ? " expanded" : "")}
-                style={elemStyle}
-                onClick={() => props.onClick(props.className)}>
-                <span className="block-content">
-                    <span className="title"
-                        style={props.open ? { display: "none" } : { display: "inline" }}>
-                        {props.messages[`${props.msgKey}.title`]}
-                        <img className="chevron-right" src="images/chevron_right.png" />
-                    </span>
-                    <span className="content"
-                        style={props.open ? { display: "inline" } : { display: "none" }}>
-                        <span
-                            dangerouslySetInnerHTML={{ __html: content }} />
-                    </span>
-                </span>
+        <div className="container">
+            <div className="max-width-container">
+                <header className="header">
+                    <Navigation {...props} />
+                </header>
+                <section className="section">
+                    <section className="left-section">
+                        <LeftSection
+                            activeMenu={activeMenu}
+                            setActiveMenu={(value: string) =>
+                                setActiveMenu(value)
+                            }
+                        />
+                    </section>
+                    <section className="right-section">
+                        <RightSection activeMenu={activeMenu} />
+                    </section>
+                </section>
+                <footer className="footer">
+                    <Footer />
+                </footer>
             </div>
         </div>
     );
@@ -142,34 +251,45 @@ const Block = (props: BlockProps) => {
 
 const bindLinks = () => {
     const config = [
-        ["news", "http://www.openlca.org/new"],
-        ["video", "https://www.youtube.com/watch?v=FqVMbwhAEW4"],
-        ["channel", "https://www.youtube.com/c/openLCA"],
-        ["forum", "http://ask.openlca.org/"],
-        ["linkedin", "https://www.linkedin.com/showcase/openlca/"],
-        ["manuals", "http://www.openlca.org/learning"],
-        ["greendelta", "http://www.greendelta.com"],
-        ["github", "http://www.greendelta.com"],
-        ["twitter", "https://twitter.com/openLCA"],
-        ["blog", "http://www.openlca.org/blog/"],
-        ["dataopenlca", "https://data.openlca.org/"],
-        ["trainings", "https://www.openlca.org/trainings/"],
-        ["services", "https://www.openlca.org/service-contracts/"],
-        ["lcacs", "https://www.openlca.org/collaboration-server/"],
-        ["hosting", "https://www.openlca.org/lca-collaboration-server-hosting-and-services/"],
+        ['openlca', 'https://www.openlca.org/'],
+        ['news', 'https://www.openlca.org/new'],
+        ['opensource', 'https://www.openlca.org/open-source/'],
+        ['nexus', 'https://nexus.openlca.org/'],
+        ['channel', 'https://www.youtube.com/c/openLCA'],
+        ['forum', 'https://ask.openlca.org/'],
+        ['linkedin', 'https://www.linkedin.com/showcase/openlca/'],
+        ['manuals', 'https://www.openlca.org/learning'],
+        ['greendelta', 'https://www.greendelta.com'],
+        ['twitter', 'https://twitter.com/openLCA'],
+        ['blog', 'https://www.openlca.org/blog/'],
+        ['trainings', 'https://nexus.openlca.org/service/openLCA%20Trainings'],
+        ['services', 'https://www.openlca.org/helpdesk'],
+        ['collaboration', 'https://www.openlca.org/collaboration-server/'],
+        ['collaboration-download', 'https://www.openlca.org/download/'],
+        [
+            'collaboration-hosting',
+            'https://www.openlca.org/lca-collaboration-server-hosting-and-services/'
+        ],
+        ['casestudies','https://www.openlca.org/case-studies/'],
+        [
+            'hosting',
+            'https://www.openlca.org/lca-collaboration-server-hosting-and-services/',
+        ],
+        ['openpositions','https://www.greendelta.com/about-us/open-positions']
     ];
     config.forEach(([id, link]) => {
         const elem = document.getElementById(id);
+        console.log("id",id ,link)
         if (!elem) {
             return;
         }
-        if (elem.getAttribute("href")) {
+        if (elem.getAttribute('href')) {
             // avoid adding multiple event handlers
             return;
         }
-        elem.setAttribute("href", link);
-        elem.setAttribute("title", link);
-        elem.addEventListener("click", (e) => {
+        elem.setAttribute('href', link);
+        elem.setAttribute('title', link);
+        elem.addEventListener('click', (e) => {
             if (window.onOpenLink) {
                 e.preventDefault();
                 window.onOpenLink(link);
@@ -179,14 +299,13 @@ const bindLinks = () => {
 };
 
 const setData = (data: Data) => {
-    render(<Page data={data} messages={messages[data.lang]} />,
-        document.getElementById("react-root"));
+    render(<Page data={data} />, document.getElementById('react-root'));
 };
 
 setData({
-    version: "Version 1.9.0",
-    lang: "en",
-    showLibHint: false,
+    version: 'Version 1.9.0',
+    lang: 'en',
+    showLibHint: true,
 });
 
 // expose the setData function by binding it to the window object
