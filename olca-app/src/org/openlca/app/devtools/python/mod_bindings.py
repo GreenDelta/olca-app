@@ -441,7 +441,6 @@ import org.openlca.core.database.internal.ScriptRunner as ScriptRunner
 import org.openlca.core.matrix.solvers.SeqAgg as SeqAgg
 import org.openlca.core.matrix.solvers.SequentialSolver as SequentialSolver
 import org.openlca.proto.io.server.Server as Server
-import org.openlca.ipc.Server2 as Server2
 import org.openlca.core.services.ServerConfig as ServerConfig
 import org.openlca.io.simapro.csv.input.SimaProCsvImport as SimaProCsvImport
 import org.openlca.io.simapro.csv.output.SimaProExport as SimaProExport

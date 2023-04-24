@@ -65,7 +65,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/mapdb-2.0-beta7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mariadb-java-client-2.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.13.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/nanohttpd-2.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/npy-0.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-2.0.0.jar"/>

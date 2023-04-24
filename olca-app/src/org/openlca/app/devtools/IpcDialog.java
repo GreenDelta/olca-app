@@ -136,7 +136,7 @@ public class IpcDialog extends FormDialog {
 					});
 		} catch (Exception e) {
 			MsgBox.error("Failed to start the IPC server", e);
-			if (server != null && server.isAlive()) {
+			if (server != null) {
 				try {
 					server.stop();
 				} catch (Exception ex) {
@@ -177,7 +177,7 @@ public class IpcDialog extends FormDialog {
 	@Override
 	public boolean close() {
 		try {
-			if (server != null && server.isAlive()) {
+			if (server != null) {
 				server.stop();
 			}
 			if (grpcServer != null) {
