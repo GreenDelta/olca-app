@@ -39,14 +39,8 @@ project and other open source software.
       startupForegroundColor="000000" />
    <launcher name="openLCA">
       <macosx icon="/olca-app/icons/logo/logo.icns"/>
-      <win useIco="false">
-         <bmp
-            winSmallHigh="/olca-app/icons/logo/16_32bit.bmp"
-            winSmallLow="/olca-app/icons/logo/16_8bit.bmp"
-            winMediumHigh="/olca-app/icons/logo/32_32bit.bmp"
-            winMediumLow="/olca-app/icons/logo/32_8bit.bmp"
-            winLargeHigh="/olca-app/icons/logo/48_32bit.bmp"
-            winLargeLow="/olca-app/icons/logo/48_8bit.bmp"/>
+      <win useIco="true">
+         <ico path="/olca-app/icons/logo/logo.ico"/>
       </win>
    </launcher>
 
