@@ -22,13 +22,8 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.CategoryDao;
-import org.openlca.core.database.Daos;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.usage.UsageSearch;
-import org.openlca.core.model.Category;
-import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
@@ -50,14 +45,14 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		for (var elem : elements) {
 			if (elem.getLibrary().isPresent())
 				return false;
-			if (elem instanceof CategoryElement catElem) {
-				if (catElem.hasLibraryContent())
+			if (elem instanceof CategoryElement cat) {
+				if (cat.hasLibraryContent())
 					return false;
-				categories.add(catElem);
-			} else if (elem instanceof ModelElement modElem) {
-				if (modElem.isFromLibrary())
+				categories.add(cat);
+			} else if (elem instanceof ModelElement mod) {
+				if (mod.isFromLibrary())
 					return false;
-				models.add(modElem);
+				models.add(mod);
 			}
 		}
 		return !models.isEmpty() || !categories.isEmpty();
@@ -75,67 +70,83 @@ public class DeleteModelAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		boolean canceled = false;
-		boolean dontAsk = false;
 		showInUseMessage = true;
-		for (ModelElement element : models) {
-			var descriptor = element.getContent();
-			if (descriptor == null)
-				continue;
-			String name = Labels.name(descriptor);
-			int answer = dontAsk ? IDialogConstants.YES_ID : askDelete(name);
-			if (answer == IDialogConstants.CANCEL_ID) {
-				canceled = true;
-				break;
-			}
-			if (answer == IDialogConstants.NO_TO_ALL_ID)
-				break;
-			if (answer == IDialogConstants.NO_ID)
-				continue;
-			if (answer == IDialogConstants.YES_TO_ALL_ID)
-				dontAsk = true;
-			if (isUsed(descriptor))
-				continue;
-			App.close(descriptor);
-			delete(descriptor);
-			Navigator.refresh(element.getParent());
-		}
+		int continuationFlag = deleteModels();
+		deleteCategories(continuationFlag);
 		models.clear();
-		if (canceled) {
-			categories.clear();
+		categories.clear();
+	}
+
+	private int deleteModels() {
+		boolean dontAsk = false;
+		for (var elem : models) {
+			var model = elem.getContent();
+			if (model == null)
+				continue;
+			int a = dontAsk
+					? IDialogConstants.YES_ID
+					: askDelete(Labels.name(model));
+
+			if (a == IDialogConstants.CANCEL_ID
+					|| a == IDialogConstants.NO_TO_ALL_ID) {
+				return IDialogConstants.CANCEL_ID;
+			}
+			if (a == IDialogConstants.NO_ID || isUsed(model))
+				continue;
+			if (a == IDialogConstants.YES_TO_ALL_ID) {
+				dontAsk = true;
+			}
+
+			// delete the model
+			App.close(model);
+			delete(model);
+			Navigator.refresh(elem.getParent());
+		}
+
+		return dontAsk
+				? IDialogConstants.YES_TO_ALL_ID
+				: IDialogConstants.YES_ID;
+	}
+
+	private void deleteCategories(int continuationFlag) {
+		if (continuationFlag != IDialogConstants.YES_ID
+				&& continuationFlag != IDialogConstants.YES_TO_ALL_ID) {
 			return;
 		}
-		boolean dontAskEmpty = false;
-		for (CategoryElement element : categories) {
-			Category category = element.getContent();
+
+		boolean dontAsk = continuationFlag == IDialogConstants.YES_TO_ALL_ID;
+		boolean askWhenNotEmpty = true;
+		for (var elem : categories) {
+			var category = elem.getContent();
 			if (category == null)
 				continue;
-			boolean empty = element.getChildren().isEmpty();
-			int answer;
-			if (!empty) {
-				answer = dontAskEmpty ? IDialogConstants.YES_ID : askNotEmptyDelete(category.name);
+
+			int a;
+			if (elem.getChildren().isEmpty()) {
+				a = dontAsk
+						? IDialogConstants.YES_ID
+						: askDelete(category.name);
 			} else {
-				answer = dontAsk ? IDialogConstants.YES_ID : askDelete(category.name);
-			}
-			if (answer == IDialogConstants.NO_TO_ALL_ID)
-				break;
-			if (answer == IDialogConstants.CANCEL_ID)
-				break;
-			if (answer == IDialogConstants.NO_ID)
-				continue;
-			if (answer == IDialogConstants.YES_TO_ALL_ID) {
-				if (empty) {
-					dontAskEmpty = true;
-				} else {
+				a = askWhenNotEmpty
+						? askNotEmptyDelete(category.name)
+						: IDialogConstants.YES_ID;
+				if (a == IDialogConstants.YES_TO_ALL_ID) {
+					askWhenNotEmpty = false;
 					dontAsk = true;
 				}
 			}
-			if (delete(element)) {
-				INavigationElement<?> typeElement = Navigator.findElement(category.modelType);
+
+			if (a == IDialogConstants.NO_TO_ALL_ID
+					|| a == IDialogConstants.CANCEL_ID)
+				return;
+			if (a == IDialogConstants.NO_ID)
+				continue;
+
+			if (delete(elem)) {
+				var typeElement = Navigator.findElement(category.modelType);
 				Navigator.refresh(typeElement);
 			}
 		}
-		categories.clear();
 	}
 
 	private boolean isUsed(RootDescriptor d) {
@@ -144,57 +155,62 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		if (descriptors.isEmpty())
 			return false;
 		if (showInUseMessage) {
-			MessageDialogWithToggle dialog = MessageDialogWithToggle.openError(UI.shell(), M.CannotDelete,
+			var dialog = MessageDialogWithToggle.openError(
+					UI.shell(),
+					M.CannotDelete,
 					d.name + ": " + M.CannotDeleteMessage,
-					M.DoNotShowThisMessageAgain, false, null, null);
+					M.DoNotShowThisMessageAgain,
+					false,
+					null,
+					null);
 			showInUseMessage = !dialog.getToggleState();
 		}
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T extends RootEntity> void delete(Descriptor d) {
+	private void delete(Descriptor d) {
 		try {
 			log.trace("delete model {}", d);
-			IDatabase database = Database.get();
-			Class<T> clazz = (Class<T>) d.type.getModelClass();
-			BaseDao<T> dao = Daos.base(database, clazz);
-			T instance = dao.getForId(d.id);
-			dao.delete(instance);
+			var db = Database.get();
+			var instance = db.get(d.type.getModelClass(), d.id);
+			db.delete(instance);
 			Cache.evict(d);
 			DatabaseDir.deleteDir(d);
-			log.trace("element deleted");
 		} catch (Exception e) {
 			ErrorReporter.on("failed to delete " + d, e);
 		}
 	}
 
 	private boolean delete(CategoryElement element) {
+
+		// delete the category content
 		boolean canBeDeleted = true;
 		for (INavigationElement<?> child : element.getChildren()) {
-			if (child instanceof CategoryElement) {
-				boolean deleted = delete((CategoryElement) child);
+			if (child instanceof CategoryElement cat) {
+				boolean deleted = delete(cat);
 				if (!deleted) {
 					canBeDeleted = false;
 				}
-			} else if (child instanceof ModelElement) {
-				var descriptor = ((ModelElement) child).getContent();
-				if (isUsed(descriptor)) {
+			} else if (child instanceof ModelElement mod) {
+				var model = mod.getContent();
+				if (isUsed(model)) {
 					canBeDeleted = false;
 					continue;
 				}
-				App.close(descriptor);
-				delete(descriptor);
+				App.close(model);
+				delete(model);
 			}
 		}
+
+		// delete the category
 		if (!canBeDeleted) {
 			Navigator.refresh(element);
 			return false;
 		}
-		Category category = element.getContent();
+		var category = element.getContent();
 		try {
-			CategoryDao dao = new CategoryDao(Database.get());
-			Category parent = category.category;
+			var dao = new CategoryDao(Database.get());
+			var parent = category.category;
 			if (parent != null) {
 				parent.childCategories.remove(category);
 				category.category = null;
