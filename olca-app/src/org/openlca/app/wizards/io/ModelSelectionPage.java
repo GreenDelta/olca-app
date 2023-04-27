@@ -31,7 +31,6 @@ import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
@@ -83,12 +82,8 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private void createTexts() {
-		var typeName = types == null || types.length != 1
-				? M.DataSets
-				: Labels.plural(types[0]);
-		setTitle(M.bind(M.Select, typeName));
-		var descr = M.bind(M.SelectObjectPage_Description, typeName);
-		setDescription(descr);
+		setTitle("Select data sets");
+		setDescription(M.SelectObjectPage_Description);
 	}
 
 	void checkCompletion() {
