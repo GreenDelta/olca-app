@@ -89,7 +89,7 @@ class Jython {
 				Dirs.delete(pyDir);
 			}
 			Files.createDirectories(pyDir.toPath());
-			var pyJar = "libs/jython-standalone-2.7.2.jar";
+			var pyJar = "libs/jython-standalone-2.7.3.jar";
 			try (var is = RcpActivator.getStream(pyJar)) {
 				ZipUtil.unpack(is, pyDir, (entry) -> {
 					if (entry.startsWith("Lib/") && entry.length() > 4) {
