@@ -859,6 +859,10 @@
 				id="openlca.export.category"
 				name="openLCA">
 		</category>
+		<category
+				id="export.category.simapro"
+				name="SimaPro CSV">
+		</category>
 		<wizard
 				category="export.category.ecospold"
 				class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
@@ -915,12 +919,24 @@
 		</wizard>
 
 		<wizard
+				category="export.category.simapro"
 				id="org.openlca.app.wizards.io.SimaProCsvExportWizard"
-				class="org.openlca.app.wizards.io.SimaProCsvExportWizard"
-				name="SimaPro CSV"
+				class="org.openlca.app.wizards.io.SimaProProcessExportWizard"
+				name="Processes to SimaPro CSV"
 				icon="icons/simapro.png">
 			<description>
-				Export processes into a SimaPro CSV file
+				Export processes to a SimaPro CSV file
+			</description>
+		</wizard>
+
+		<wizard
+				category="export.category.simapro"
+				id="org.openlca.app.wizards.io.SimaProMethodExportWizard"
+				class="org.openlca.app.wizards.io.SimaProMethodExportWizard"
+				name="LCIA methods to SimaPro CSV"
+				icon="icons/simapro.png">
+			<description>
+				Export LCIA methods to a SimaPro CSV file
 			</description>
 		</wizard>
 	</extension>
