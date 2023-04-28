@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jython-standalone-2.7.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.jgit-6.4.0.202211300538-r.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.21.jar"/>
@@ -79,7 +80,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-process-xls-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-io-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-9.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-3.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-3.0.3.jar"/>
