@@ -309,6 +309,7 @@ import org.openlca.jsonld.MemStore as MemStore
 import org.openlca.proto.io.Messages as Messages
 import org.openlca.io.ecospold2.input.MethodImport as MethodImport
 import org.openlca.io.openepd.io.MethodMapping as MethodMapping
+import org.openlca.io.simapro.csv.output.MethodWriter as MethodWriter
 import org.openlca.io.ilcd.input.models.ModelImport as ModelImport
 import org.openlca.jsonld.ModelPath as ModelPath
 import org.openlca.core.model.ModelType as ModelType
