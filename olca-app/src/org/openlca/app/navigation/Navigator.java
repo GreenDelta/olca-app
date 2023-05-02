@@ -142,6 +142,8 @@ public class Navigator extends CommonNavigator {
 		if (viewer == null || root == null)
 			return;
 		NavRoot.refresh(() -> {
+			if (viewer.getTree().isDisposed())
+				return;
 			var oldExpansion = viewer.getExpandedElements();
 			root.update();
 			viewer.refresh();
