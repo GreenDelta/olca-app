@@ -21,6 +21,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Categories;
 import org.openlca.app.util.ErrorReporter;
@@ -36,7 +37,7 @@ import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 public abstract class ModelEditor<T extends RootEntity>
-	extends FormEditor {
+		extends FormEditor {
 
 	/**
 	 * An event that is emitted by the model editor by default after the model
@@ -63,19 +64,23 @@ public abstract class ModelEditor<T extends RootEntity>
 
 	public boolean hasComment(String path) {
 		return App.isCommentingEnabled() && comments != null
-			&& comments.hasPath(path);
+				&& comments.hasPath(path);
 	}
 
 	public boolean hasAnyComment(String path) {
 		return App.isCommentingEnabled() && comments != null
-			&& comments.hasAnyPath(path);
+				&& comments.hasAnyPath(path);
 	}
 
-	protected void addCommentPage() throws PartInitException {
-		if (!App.isCommentingEnabled() || comments == null
-			|| !comments.hasRefId(model.refId))
-			return;
-		addPage(new CommentsPage(this, comments, model));
+	protected void addExtensionPages() throws PartInitException {
+		if (App.isCommentingEnabled()
+				&& comments != null
+				&& comments.hasRefId(model.refId)) {
+			addPage(new CommentsPage(this, comments, model));
+		}
+		if (FeatureFlag.ADDITIONAL_PROPERTIES.isEnabled()) {
+			addPage(new AdditionalPropertiesPage<>(this));
+		}
 	}
 
 	public void emitEvent(String eventId) {
@@ -113,7 +118,7 @@ public abstract class ModelEditor<T extends RootEntity>
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-		throws PartInitException {
+			throws PartInitException {
 		super.init(site, input);
 		ModelEditorInput i = (ModelEditorInput) input;
 		setPartName(input.getName());
@@ -122,17 +127,17 @@ public abstract class ModelEditor<T extends RootEntity>
 			dao = Daos.base(Database.get(), modelClass);
 			model = dao.getForId(i.getDescriptor().id);
 			loadComments(i.getDescriptor().type,
-				i.getDescriptor().refId);
+					i.getDescriptor().refId);
 		} catch (Exception e) {
 			ErrorReporter.on("failed to load " + modelClass.getSimpleName()
-				+ " from editor input", e);
+					+ " from editor input", e);
 		}
 	}
 
 	private void loadComments(ModelType type, String refId) {
 		if (!App.isCommentingEnabled()
-			|| !Repository.isConnected()
-			|| !Repository.get().isCollaborationServer())
+				|| !Repository.isConnected()
+				|| !Repository.get().isCollaborationServer())
 			return;
 		try {
 			comments = Repository.get().client.getComments(type, refId);
@@ -146,7 +151,7 @@ public abstract class ModelEditor<T extends RootEntity>
 		try {
 			if (monitor != null) {
 				monitor.beginTask(M.Save + " " + modelClass.getSimpleName()
-					+ "...", IProgressMonitor.UNKNOWN);
+						+ "...", IProgressMonitor.UNKNOWN);
 			}
 			model.lastChange = Calendar.getInstance().getTimeInMillis();
 			Version.incUpdate(model);
@@ -157,7 +162,7 @@ public abstract class ModelEditor<T extends RootEntity>
 			}
 		} catch (Exception e) {
 			ErrorReporter.on(
-				"failed to update " + modelClass.getSimpleName(), e);
+					"failed to update " + modelClass.getSimpleName(), e);
 		}
 	}
 
@@ -213,7 +218,7 @@ public abstract class ModelEditor<T extends RootEntity>
 	@SuppressWarnings("unchecked")
 	public void doSaveAs() {
 		var diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs,
-			model.name + " - Copy", (name) -> {
+				model.name + " - Copy", (name) -> {
 			if (Strings.nullOrEmpty(name))
 				return M.NameCannotBeEmpty;
 			if (Strings.nullOrEqual(name, model.name))

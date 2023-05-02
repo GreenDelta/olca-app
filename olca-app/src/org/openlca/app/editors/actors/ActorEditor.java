@@ -16,7 +16,7 @@ public class ActorEditor extends ModelEditor<Actor> {
 	protected void addPages() {
 		try {
 			addPage(new ActorPage(this));
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to open actor", e);
 		}

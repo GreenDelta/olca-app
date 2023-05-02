@@ -29,7 +29,7 @@ public class FlowEditor extends ModelEditor<Flow> {
 			if (getModel().flowType == FlowType.ELEMENTARY_FLOW) {
 				addPage(new ImpactPage(this));
 			}
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add page", e);
 		}

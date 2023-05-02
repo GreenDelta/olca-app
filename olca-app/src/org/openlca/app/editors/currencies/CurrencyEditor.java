@@ -27,7 +27,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 	protected void addPages() {
 		try {
 			addPage(new Page());
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add page", e);
 		}

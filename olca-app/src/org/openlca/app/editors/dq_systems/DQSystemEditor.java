@@ -17,7 +17,7 @@ public class DQSystemEditor extends ModelEditor<DQSystem> {
 	protected void addPages() {
 		try {
 			addPage(infoPage = new DQSystemInfoPage(this));
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to init editor");
 		}
