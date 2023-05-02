@@ -52,10 +52,10 @@ public class RepositoryLabel {
 			text += "local";
 		}
 		if (!ahead.isEmpty()) {
-			text += " ↑" + ahead.size();
+			text += " \u2191" + ahead.size();
 		}
 		if (!behind.isEmpty()) {
-			text += " ↓" + behind.size();
+			text += " \u2193" + behind.size();
 		}
 		return text + "]";
 	}
