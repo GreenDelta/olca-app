@@ -78,6 +78,7 @@ public class CommitDialog extends FormDialog {
 			message = commitText.getText();
 			updateButtons();
 		});
+		commitText.setFocus();
 	}
 
 	private void createModelViewer(Composite parent, FormToolkit toolkit) {
