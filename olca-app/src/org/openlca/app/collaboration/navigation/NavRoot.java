@@ -80,7 +80,10 @@ public class NavRoot {
 		navigatorRefresh.run();
 		new Thread(() -> {
 			init();
-			App.runInUI("Refreshing navigator", navigatorRefresh);
+			App.runInUI("Refreshing navigator", () -> {
+				navigatorRefresh.run();
+				INSTANCE.changes = null;
+			});
 		}).start();
 	}
 
