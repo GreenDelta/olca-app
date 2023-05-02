@@ -61,7 +61,7 @@ public class RepositoryLabel {
 	}
 
 	public static String getStateIndicator(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected())
+		if (Database.get() == null || !Repository.isConnected() || elem.getLibrary().isPresent())
 			return null;
 		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
 			return null;
@@ -71,7 +71,7 @@ public class RepositoryLabel {
 	}
 
 	public static boolean hasChanged(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected())
+		if (Database.get() == null || !Repository.isConnected() || elem.getLibrary().isPresent())
 			return false;
 		return hasChanged(NavRoot.get(elem));
 	}
