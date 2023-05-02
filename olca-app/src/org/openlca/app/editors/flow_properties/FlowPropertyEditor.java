@@ -19,7 +19,7 @@ public class FlowPropertyEditor extends ModelEditor<FlowProperty> {
 	protected void addPages() {
 		try {
 			addPage(new FlowPropertyInfoPage(this));
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add page", e);
 		}

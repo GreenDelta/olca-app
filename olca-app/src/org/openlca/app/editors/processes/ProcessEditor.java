@@ -81,7 +81,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 			addPage(new AllocationPage(this));
 			addPage(new SocialAspectsPage(this));
 			addPage(new ImpactPage(this));
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add page", e);
 		}

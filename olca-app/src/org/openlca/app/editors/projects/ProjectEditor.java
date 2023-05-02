@@ -48,7 +48,7 @@ public class ProjectEditor extends ModelEditor<Project> {
 			if (report != null) {
 				addPage(new ReportEditorPage(this));
 			}
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to add project pages", e);
 		}
