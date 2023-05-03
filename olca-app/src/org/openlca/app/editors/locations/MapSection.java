@@ -18,7 +18,6 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
-import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
 
@@ -55,9 +54,8 @@ class MapSection {
 		// bind actions
 		if (!editor.isEditable())
 			return;
-		var edit = Actions.onEdit(() -> {
-			new GeoJSONDialog().open();
-		});
+		var edit = Actions.onEdit(
+				() -> new GeoJSONDialog().open());
 		Actions.bind(section, edit);
 	}
 
@@ -94,7 +92,7 @@ class MapSection {
 		@Override
 		protected Control createDialogArea(Composite root) {
 			getShell().setText("Enter GeoJSON");
-			Composite area = (Composite) super.createDialogArea(root);
+			var area = (Composite) super.createDialogArea(root);
 			UI.gridLayout(area, 1);
 			new Label(area, SWT.NONE).setText(
 					"See e.g. http://geojson.io for examples");
@@ -111,7 +109,7 @@ class MapSection {
 				return "";
 			if (feature.features.isEmpty())
 				return "";
-			Feature f = feature.features.get(0);
+			var f = feature.features.get(0);
 			if (f.geometry == null)
 				return "";
 			return new GsonBuilder()
