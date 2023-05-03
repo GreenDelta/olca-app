@@ -13,6 +13,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Image;
@@ -43,39 +44,39 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 		tree.setLabelProvider(new JsonLabel());
 		tree.setAutoExpandLevel(2);
 		tree.setContentProvider(new JsonContent());
+		tree.setInput(getModel().readOtherProperties());
 		UI.gridData(tree.getTree(), true, true);
 		Trees.bindColumnWidths(tree.getTree(), .25, .75);
 		if (isEditable()) {
 			var onEdit = Actions.onEdit(
-					() -> new JsonDialog().open());
+					() -> new JsonDialog(tree).open());
 			Actions.bind(tree, onEdit);
 		}
 	}
 
 	private class JsonDialog extends Dialog {
 
+		private final TreeViewer tree;
 		private StyledText text;
 
-		JsonDialog() {
+		JsonDialog(TreeViewer tree) {
 			super(UI.shell());
+			this.tree = tree;
 		}
 
 		@Override
 		protected Control createDialogArea(Composite root) {
 			getShell().setText("Edit additional properties");
-			var area = (Composite) super.createDialogArea(root);
-			UI.gridLayout(area, 1);
-			new Label(area, SWT.NONE).setText(
+			var comp = (Composite) super.createDialogArea(root);
+			UI.gridLayout(comp, 1);
+			new Label(comp, SWT.NONE).setText(
 					"The content must be a valid JSON object, see json.org");
-			text = new StyledText(area, SWT.MULTI | SWT.BORDER
-					| SWT.V_SCROLL | SWT.H_SCROLL);
+			text = new StyledText(comp,
+					SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 			text.setAlwaysShowScrollBars(false);
 			UI.gridData(text, true, true);
-
-
 			text.setText(getJsonText());
-
-			return super.createDialogArea(root);
+			return comp;
 		}
 
 		private String getJsonText() {
@@ -104,13 +105,12 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 			var json = text.getText();
 			var model = getModel();
 			try {
-				if (Strings.nullOrEmpty(json)) {
-					model.otherProperties = null;
-				} else {
-					var obj = new Gson().fromJson(json, JsonObject.class);
-					model.writeOtherProperties(obj);
-				}
+				var obj = Strings.notEmpty(json)
+						? new Gson().fromJson(json, JsonObject.class)
+						: new JsonObject();
+				model.writeOtherProperties(obj);
 				getEditor().setDirty(true);
+				tree.setInput(obj);
 				super.okPressed();
 			} catch (Exception e) {
 				MsgBox.error("Failed to parse JSON",
@@ -119,13 +119,10 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 		}
 	}
 
-	private record Entry (String key, JsonElement value) {
+	private record Entry(String key, JsonElement value) {
+
 		static Entry of(String key, JsonElement value) {
 			return new Entry(key, value);
-		}
-
-		static Entry of(JsonElement value) {
-			return new Entry(null, value);
 		}
 
 		static List<Entry> membersOf(JsonObject obj) {
@@ -144,8 +141,9 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 			if (array == null)
 				return List.of();
 			var members = new ArrayList<Entry>();
-			for (var elem : array) {
-				members.add(Entry.of(elem));
+			for (int i = 0; i < array.size(); i++) {
+				var elem = array.get(i);
+				members.add(Entry.of(Integer.toString(i), elem));
 			}
 			return members;
 		}
@@ -202,10 +200,17 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 				return e.key();
 			if (col != 1)
 				return null;
-			var v = e.value();
-			if (v instanceof JsonPrimitive p)
-				return p.toString();
-			return null;
+			if (!(e.value() instanceof JsonPrimitive p))
+				return null;
+			if (p.isBoolean())
+				return Boolean.toString(p.getAsBoolean());
+			if (p.isNumber())
+				return Double.toString(p.getAsDouble());
+			if (p.isString())
+				return p.getAsString();
+			if (p.isJsonNull())
+				return "null";
+			return p.toString();
 		}
 
 	}
