@@ -82,8 +82,8 @@
     {
       "project": "Jython",
       "projectUrl": "https://www.jython.org/",
-      "license": "https://raw.githubusercontent.com/jython/jython/master/LICENSE.txt",
-      "licenseUrl": "PSF License v2"
+      "license": "PSF License v2",
+      "licenseUrl": "https://raw.githubusercontent.com/jython/jython/master/LICENSE.txt"
     },
     {
       "project": "Leaflet",
@@ -156,24 +156,6 @@
       "projectUrl": "https://github.com/zeroturnaround/zt-zip",
       "license": "APL 2.0",
       "licenseUrl": "https://raw.githubusercontent.com/zeroturnaround/zt-zip/master/LICENSE"
-    },
-    {
-      "project": "",
-      "projectUrl": "",
-      "license": "",
-      "licenseUrl": ""
-    },
-    {
-      "project": "",
-      "projectUrl": "",
-      "license": "",
-      "licenseUrl": ""
-    },
-    {
-      "project": "",
-      "projectUrl": "",
-      "license": "",
-      "licenseUrl": ""
     }
   ]
 }
