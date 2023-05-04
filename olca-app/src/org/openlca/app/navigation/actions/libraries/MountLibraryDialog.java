@@ -30,7 +30,7 @@ import org.openlca.core.library.Mounter;
 import org.openlca.core.library.PreMountCheck;
 import org.openlca.core.library.PreMountState;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.util.TypeRefIdMap;
+import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
@@ -74,8 +74,8 @@ class MountLibraryDialog extends FormDialog {
 				});
 	}
 
-	private static TypeRefIdMap<String> getCurrentTags() {
-		var tags = new TypeRefIdMap<String>();
+	private static TypedRefIdMap<String> getCurrentTags() {
+		var tags = new TypedRefIdMap<String>();
 		for (var type : ModelType.values()) {
 			Database.get().getDescriptors(type.getModelClass()).forEach(d -> {
 				if (!Strings.nullOrEmpty(d.library)) {
@@ -86,7 +86,7 @@ class MountLibraryDialog extends FormDialog {
 		return tags;
 	}
 
-	private static void updateGitIndex(TypeRefIdMap<String> previousTags) {
+	private static void updateGitIndex(TypedRefIdMap<String> previousTags) {
 		if (!Repository.isConnected())
 			return;
 		var pathBuilder = Categories.pathsOf(Database.get());

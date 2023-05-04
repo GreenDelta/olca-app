@@ -12,7 +12,7 @@ import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.MergeViewer;
 import org.openlca.app.util.UI;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
-import org.openlca.git.util.TypeRefIdMap;
+import org.openlca.git.util.TypedRefIdMap;
 
 public class MergeDialog extends FormDialog {
 
@@ -70,7 +70,7 @@ public class MergeDialog extends FormDialog {
 		}
 	}
 
-	public TypeRefIdMap<ConflictResolution> getResolvedConflicts() {
+	public TypedRefIdMap<ConflictResolution> getResolvedConflicts() {
 		return viewer.getResolvedConflicts();
 	}
 

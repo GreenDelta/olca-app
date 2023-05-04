@@ -31,7 +31,7 @@ import org.openlca.git.model.ModelRef;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.Diffs;
-import org.openlca.git.util.TypeRefIdMap;
+import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.jsonld.Json;
 
 import com.google.common.base.Predicates;
@@ -39,9 +39,9 @@ import com.google.gson.JsonObject;
 
 class ConflictResolutionMap implements ConflictResolver {
 
-	private final TypeRefIdMap<ConflictResolution> resolutions;
+	private final TypedRefIdMap<ConflictResolution> resolutions;
 
-	ConflictResolutionMap(TypeRefIdMap<ConflictResolution> resolutions) {
+	ConflictResolutionMap(TypedRefIdMap<ConflictResolution> resolutions) {
 		this.resolutions = resolutions;
 	}
 
@@ -193,10 +193,10 @@ class ConflictResolutionMap implements ConflictResolver {
 		return true;
 	}
 
-	private static TypeRefIdMap<ConflictResolution> solve(List<TriDiff> conflicts) {
+	private static TypedRefIdMap<ConflictResolution> solve(List<TriDiff> conflicts) {
 		if (conflicts.isEmpty())
-			return new TypeRefIdMap<>();
-		var resolved = new TypeRefIdMap<ConflictResolution>();
+			return new TypedRefIdMap<>();
+		var resolved = new TypedRefIdMap<ConflictResolution>();
 		if (conflicts.isEmpty())
 			return resolved;
 		var node = new DiffNodeBuilder(Database.get()).build(conflicts);
@@ -213,7 +213,7 @@ class ConflictResolutionMap implements ConflictResolver {
 	private static Conflicts check(List<TriDiff> conflicts) {
 		var equal = new ArrayList<TriDiff>();
 		var remaining = new ArrayList<TriDiff>();
-		var descriptors = new TypeRefIdMap<RootDescriptor>();
+		var descriptors = new TypedRefIdMap<RootDescriptor>();
 		for (var type : ModelType.values()) {
 			Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
 		}

@@ -19,7 +19,7 @@ import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
-import org.openlca.git.util.TypeRefIdSet;
+import org.openlca.git.util.TypedRefIdSet;
 
 public class CommitDialog extends FormDialog {
 
@@ -29,8 +29,8 @@ public class CommitDialog extends FormDialog {
 	private final boolean isStashCommit;
 	private String message;
 	private CommitViewer viewer;
-	private TypeRefIdSet initialSelection;
-	private TypeRefIdSet newLibraryDatasets;
+	private TypedRefIdSet initialSelection;
+	private TypedRefIdSet newLibraryDatasets;
 
 	public CommitDialog(DiffNode node, boolean canPush, boolean isStashCommit) {
 		super(UI.shell());
@@ -40,11 +40,11 @@ public class CommitDialog extends FormDialog {
 		setBlockOnOpen(true);
 	}
 
-	public void setInitialSelection(TypeRefIdSet initialSelection) {
+	public void setInitialSelection(TypedRefIdSet initialSelection) {
 		this.initialSelection = initialSelection;
 	}
 
-	public void setNewLibraryDatasets(TypeRefIdSet newLibraryDatasets) {
+	public void setNewLibraryDatasets(TypedRefIdSet newLibraryDatasets) {
 		this.newLibraryDatasets = newLibraryDatasets;
 	}
 
