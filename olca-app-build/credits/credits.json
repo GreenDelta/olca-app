@@ -2,10 +2,148 @@
   "$schema": "./.schema.json",
   "credits": [
     {
+      "project": "Apache Projects",
+      "projectUrl": "http://www.apache.org/",
+      "license": "APL 2.0",
+      "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "project": "Chart.js",
+      "projectUrl": "http://www.chartjs.org/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/chartjs/Chart.js/master/LICENSE.md"
+    },
+    {
+      "project": "Codemirror",
+      "projectUrl": "https://codemirror.net/",
+      "license": "MIT",
+      "licenseUrl": "https://codemirror.net/LICENSE"
+    },
+    {
       "project": "Eclipse Platform",
       "projectUrl": "https://projects.eclipse.org/projects/eclipse.platform",
       "license": "EPL 2.0",
       "licenseUrl": "https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.common/master/LICENSE"
+    },
+    {
+      "project": "GeoTools",
+      "projectUrl": "http://geotools.org/",
+      "license": "LGPL",
+      "licenseUrl": "https://raw.githubusercontent.com/geotools/geotools/main/LICENSE.md"
+    },
+    {
+      "project": "GNU Trove",
+      "projectUrl": "https://trove4j.sourceforge.net/html/overview.html",
+      "license": "LGPL",
+      "licenseUrl": "https://www.gnu.org/licenses/lgpl-3.0.txt"
+    },
+    {
+      "project": "Gson",
+      "projectUrl": "https://github.com/google/gson",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/google/gson/master/LICENSE"
+    },
+    {
+      "project": "Guava",
+      "projectUrl": "https://github.com/google/guava",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/google/guava/master/LICENSE"
+    },
+    {
+      "project": "heatmap.js",
+      "projectUrl": "https://github.com/pa7/heatmap.js",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/pa7/heatmap.js/master/LICENSE"
+    },
+    {
+      "project": "HikaryCP",
+      "projectUrl": "https://github.com/brettwooldridge/HikariCP",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/brettwooldridge/HikariCP/dev/LICENSE"
+    },
+    {
+      "project": "Jersey",
+      "projectUrl": "https://eclipse-ee4j.github.io/jersey/",
+      "license": "EPL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/eclipse-ee4j/jersey/master/LICENSE.md"
+    },
+    {
+      "project": "JDOM",
+      "projectUrl": "http://www.jdom.org",
+      "license": "BSD style",
+      "licenseUrl": "https://raw.githubusercontent.com/hunterhacker/jdom/master/LICENSE.txt"
+    },
+    {
+      "project": "jQuery",
+      "projectUrl": "https://jquery.com/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/jquery/jquery/main/LICENSE.txt"
+    },
+    {
+      "project": "Jython",
+      "projectUrl": "https://www.jython.org/",
+      "license": "https://raw.githubusercontent.com/jython/jython/master/LICENSE.txt",
+      "licenseUrl": "PSF License v2"
+    },
+    {
+      "project": "Leaflet",
+      "projectUrl": "https://leafletjs.com/",
+      "license": "BSD",
+      "licenseUrl": "https://raw.githubusercontent.com/Leaflet/Leaflet/main/LICENSE"
+    },
+    {
+      "project": "MapDB",
+      "projectUrl": "http://www.mapdb.org/",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/jankotek/mapdb/master/LICENSE.txt"
+    },
+    {
+      "project": "Milligram",
+      "projectUrl": "https://milligram.io/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/milligram/milligram/master/license"
+    },
+    {
+      "project": "NanoHTTPD",
+      "projectUrl": "https://github.com/NanoHttpd/nanohttpd",
+      "license": "BSD",
+      "licenseUrl": "https://raw.githubusercontent.com/NanoHttpd/nanohttpd/master/LICENSE.md"
+    },
+    {
+      "project": "Normalize.css",
+      "projectUrl": "https://necolas.github.io/normalize.css/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/necolas/normalize.css/master/LICENSE.md"
+    },
+    {
+      "project": "OpenBLAS",
+      "projectUrl": "https://www.openblas.net/",
+      "license": "BSD",
+      "licenseUrl": "https://raw.githubusercontent.com/xianyi/OpenBLAS/develop/LICENSE"
+    },
+    {
+      "project": "OpenLayers",
+      "projectUrl": "http://openlayers.org/",
+      "license": "BSD",
+      "licenseUrl": "https://raw.githubusercontent.com/openlayers/ol3/master/LICENSE.md"
+    },
+    {
+      "project": "React",
+      "projectUrl": "https://reactjs.org/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/facebook/react/master/LICENSE"
+    },
+    {
+      "project": "SLF4J",
+      "projectUrl": "http://www.slf4j.org/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/qos-ch/slf4j/master/LICENSE.txt"
+    },
+    {
+      "project": "SuperCSV",
+      "projectUrl": "http://super-csv.github.io/super-csv/index.html",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/super-csv/super-csv/master/LICENSE.txt"
     },
     {
       "project": "Temurin OpenJDK",
@@ -14,10 +152,28 @@
       "licenseUrl": "https://raw.githubusercontent.com/adoptium/jdk/master/LICENSE"
     },
     {
-      "project": "OpenBLAS",
-      "projectUrl": "https://www.openblas.net/",
-      "license": "BSD",
-      "licenseUrl": "https://raw.githubusercontent.com/xianyi/OpenBLAS/develop/LICENSE"
+      "project": "zt-zip",
+      "projectUrl": "https://github.com/zeroturnaround/zt-zip",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/zeroturnaround/zt-zip/master/LICENSE"
+    },
+    {
+      "project": "",
+      "projectUrl": "",
+      "license": "",
+      "licenseUrl": ""
+    },
+    {
+      "project": "",
+      "projectUrl": "",
+      "license": "",
+      "licenseUrl": ""
+    },
+    {
+      "project": "",
+      "projectUrl": "",
+      "license": "",
+      "licenseUrl": ""
     }
   ]
 }
