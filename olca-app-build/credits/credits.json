@@ -1,0 +1,23 @@
+{
+  "$schema": "./.schema.json",
+  "credits": [
+    {
+      "project": "Eclipse Platform",
+      "projectUrl": "https://projects.eclipse.org/projects/eclipse.platform",
+      "license": "EPL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.common/master/LICENSE"
+    },
+    {
+      "project": "Temurin OpenJDK",
+      "projectUrl": "https://adoptium.net/",
+      "license": "GPL v2 with classpath exception",
+      "licenseUrl": "https://raw.githubusercontent.com/adoptium/jdk/master/LICENSE"
+    },
+    {
+      "project": "OpenBLAS",
+      "projectUrl": "https://www.openblas.net/",
+      "license": "BSD",
+      "licenseUrl": "https://raw.githubusercontent.com/xianyi/OpenBLAS/develop/LICENSE"
+    }
+  ]
+}
