@@ -110,17 +110,58 @@
       "licenseUrl": "https://raw.githubusercontent.com/jakartaee/persistence/master/LICENSE.md"
     },
     {
-      "project": "GNU Trove",
-      "projectUrl": "https://trove4j.sourceforge.net/html/overview.html",
+      "project": "Trove",
+      "projectUrl": "https://bitbucket.org/trove4j/trove/src/master/",
       "license": "LGPL",
-      "licenseUrl": "https://www.gnu.org/licenses/lgpl-3.0.txt"
+      "licenseUrl": "https://bitbucket.org/trove4j/trove/raw/d4433e656b9eba5b1ed713ffe8e15660af37dfb4/LICENSE.txt"
     },
-
     {
-      "project": "JDOM",
-      "projectUrl": "http://www.jdom.org",
-      "license": "BSD style",
-      "licenseUrl": "https://raw.githubusercontent.com/hunterhacker/jdom/master/LICENSE.txt"
+      "project": "Apache Derby",
+      "projectUrl": "https://db.apache.org/derby/",
+      "license": "APL 2.0",
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "project": "Apache POI",
+      "projectUrl": "https://poi.apache.org/",
+      "license": "APL 2.0",
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "project": "checker-equal",
+      "projectUrl": "https://checkerframework.org/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt"
+    },
+    {
+      "project": "Eclipse JGit",
+      "projectUrl": "https://www.eclipse.org/jgit/",
+      "license": "BSD 3",
+      "licenseUrl": "https://git.eclipse.org/c/jgit/jgit.git/plain/LICENSE"
+    },
+    {
+      "project": "EclipseLink",
+      "projectUrl": "https://www.eclipse.org/eclipselink/",
+      "license": "EPL v2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/eclipse-ee4j/eclipselink/master/LICENSE.md"
+    },
+    {
+      "project": "hk2",
+      "projectUrl": "https://github.com/eclipse-ee4j/glassfish-hk2",
+      "license": "EPL v2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/eclipse-ee4j/glassfish-hk2/master/LICENSE.md"
+    },
+    {
+      "project": "Javassist",
+      "projectUrl": "https://github.com/jboss-javassist/javassist",
+      "license": "APL 2.0",
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "project": "SLF4J",
+      "projectUrl": "http://www.slf4j.org/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/qos-ch/slf4j/master/LICENSE.txt"
     },
     {
       "project": "jQuery",
@@ -165,12 +206,6 @@
       "licenseUrl": "https://raw.githubusercontent.com/facebook/react/master/LICENSE"
     },
     {
-      "project": "SLF4J",
-      "projectUrl": "http://www.slf4j.org/",
-      "license": "MIT",
-      "licenseUrl": "https://raw.githubusercontent.com/qos-ch/slf4j/master/LICENSE.txt"
-    },
-    {
       "project": "Temurin OpenJDK",
       "projectUrl": "https://adoptium.net/",
       "license": "GPL v2 with classpath exception",
@@ -181,6 +216,12 @@
       "projectUrl": "https://github.com/zeroturnaround/zt-zip",
       "license": "APL 2.0",
       "licenseUrl": "https://raw.githubusercontent.com/zeroturnaround/zt-zip/master/LICENSE"
+    },
+    {
+      "project": "JTS Topology Suite",
+      "projectUrl": "https://github.com/locationtech/jts",
+      "license": "EPL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/locationtech/jts/master/LICENSES.md"
     }
   ]
 }
