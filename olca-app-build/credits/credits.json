@@ -222,6 +222,18 @@
       "projectUrl": "https://github.com/locationtech/jts",
       "license": "EPL 2.0",
       "licenseUrl": "https://raw.githubusercontent.com/locationtech/jts/master/LICENSES.md"
+    },
+    {
+      "project": "Inter Google Font",
+      "projectUrl": "https://fonts.google.com/specimen/Inter",
+      "license": "OFL 1.1",
+      "licenseUrl": "https://raw.githubusercontent.com/rsms/inter/master/LICENSE.txt"
+    },
+    {
+      "project": "Iosevka Font",
+      "projectUrl": "https://github.com/be5invis/Iosevka",
+      "license": "OFL 1.1",
+      "licenseUrl": "https://raw.githubusercontent.com/be5invis/Iosevka/main/LICENSE.md"
     }
   ]
 }
