@@ -58,9 +58,7 @@ class ProjectInfo:
 
 def main():
     about_html = _dir / "about.html"
-    if about_html.exists():
-        print("about.html alread exists; did nothing")
-        return
+    print(f"generate the credits file {about_html}")
 
     credits = ""
     for info in ProjectInfo.read_all():
