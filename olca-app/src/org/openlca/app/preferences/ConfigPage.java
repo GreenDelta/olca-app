@@ -172,6 +172,7 @@ public class ConfigPage extends PreferencePage implements
 	}
 
 	// TODO: we may do not need that; and all the theming related hacks?
+	//  (see org.openlca.app.preferences.Theme).
 	private void createThemeCombo(Composite composite) {
 		var label = new Label(composite, SWT.NONE);
 		var gd = UI.gridData(label, false, false);
