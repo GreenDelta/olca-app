@@ -242,9 +242,9 @@ class BuildDir:
         about_page = PROJECT_DIR / "credits/about.html"
         if about_page.exists():
             shutil.copy2(about_page, self.readme_dir)
-        plugin_dir = self.olca_plugin_dir
-        if plugin_dir:
-            shutil.copy(about_page, plugin_dir)
+            plugin_dir = self.olca_plugin_dir
+            if plugin_dir:
+                shutil.copy2(about_page, plugin_dir)
 
         # copy ini and bin files
         bins: list[str] = []
