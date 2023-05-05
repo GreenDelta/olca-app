@@ -4,32 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.Viewer;
 
 class TreeContent implements ITreeContentProvider {
 
 	@Override
-	public void dispose() {
-	}
-
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput,
-			Object newInput) {
-	}
-
-	@Override
 	public Object[] getElements(Object obj) {
-		if (!(obj instanceof TreeModel))
+		if (!(obj instanceof TreeModel tm))
 			return null;
-		TreeModel tm = (TreeModel) obj;
 		return getChildren(tm.root);
 	}
 
 	@Override
 	public Object[] getChildren(Object obj) {
-		if (!(obj instanceof CategoryNode))
+		if (!(obj instanceof CategoryNode cn))
 			return null;
-		CategoryNode cn = (CategoryNode) obj;
 		List<Object> list = new ArrayList<>();
 		list.addAll(cn.childs);
 		list.addAll(cn.aspects);

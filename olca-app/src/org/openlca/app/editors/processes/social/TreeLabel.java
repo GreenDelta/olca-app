@@ -23,11 +23,10 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 	public Image getColumnImage(Object obj, int col) {
 		if (obj instanceof CategoryNode)
 			return col == 0 ? Images.getForCategory(ModelType.SOCIAL_INDICATOR) : null;
-		if (!(obj instanceof SocialAspect))
+		if (!(obj instanceof SocialAspect a))
 			return null;
 		if (col == 0)
 			return Images.get(ModelType.SOCIAL_INDICATOR);
-		SocialAspect a = (SocialAspect) obj;
 		if (col == 6 && a.source != null)
 			return Images.get(ModelType.SOURCE);
 		if (col == 7)
@@ -51,24 +50,16 @@ class TreeLabel extends BaseLabelProvider implements ITableLabelProvider {
 	}
 
 	private String text(SocialAspect a, int col) {
-		switch (col) {
-		case 0:
-			return a.indicator != null ? a.indicator.name : null;
-		case 1:
-			return getRawAmount(a);
-		case 2:
-			return Labels.of(a.riskLevel);
-		case 3:
-			return getActivityValue(a);
-		case 4:
-			return a.quality;
-		case 5:
-			return a.comment;
-		case 6:
-			return Labels.name(a.source);
-		default:
-			return null;
-		}
+		return switch (col) {
+			case 0 -> a.indicator != null ? a.indicator.name : null;
+			case 1 -> getRawAmount(a);
+			case 2 -> Labels.of(a.riskLevel);
+			case 3 -> getActivityValue(a);
+			case 4 -> a.quality;
+			case 5 -> a.comment;
+			case 6 -> Labels.name(a.source);
+			default -> null;
+		};
 	}
 
 	private String getRawAmount(SocialAspect a) {
