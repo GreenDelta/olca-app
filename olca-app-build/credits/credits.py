@@ -58,24 +58,40 @@ class ProjectInfo:
 
 def main():
     about_html = _dir / "about.html"
-    if about_html.exists():
-        print("about.html alread exists; did nothing")
-        return
+    print(f"generate the credits file {about_html}")
 
     credits = ""
     for info in ProjectInfo.read_all():
         license = info.get_license_text()
-        credits += (
-            f"<h2>{info.name}</h2>\n"
-            f"<p><a href='{info.url}'>{info.name}</a> is licensed under the "
-            f"<a href='{info.license_url}'>{info.license}</a>. Below is a "
-            "full copy of the license which is also available from the "
-            f"project's website <a href='{info.url}'>{info.url}</a>.<p>\n"
-            f"<pre><code>\n{license}\n</pre></code>"
-        )
+        credits += f"""
+        <div style='width: 100%; margin-bottom: 10px;'>
+            <div class='block'>
+                <div class='mr-pd'>
+                <span>
+                    {info.name}
+                    (licensed under <a target="_blank" href="{info.license_url}">{info.license}</a>)
+                </span>
+                </div>
+                <div style='display: flex; flex-direction: row;'>
+                <div class='mr-pd pointer'>
+                    <span data-action-id='{info.name}'>
+                    show licence
+                    </span>
+                </div>
+                <div class='mr-pd'>
+                    <a target='_blank' href='{info.url}'>homepage</a>
+                </div>
+                </div>
+            </div>
+            <div data-description='licence-content' data-id='{info.name}' class='licence-details hide'>
+                <div>
+                <pre style='word-wrap: break-word; white-space: pre-wrap;'>{license}</pre>
+                </div>
+            </div>
+        </div>"""
 
     about_template = _dir / "about_template.html"
-    about_text = about_template.read_text().format(credits=credits)
+    about_text = about_template.read_text().replace("#{credits}#", credits)
     about_html.write_text(about_text)
 
 
