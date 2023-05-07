@@ -18,7 +18,7 @@ const NAV_CONFIGURATION = [
         navId: 'getting-started',
     },
     {
-        navLabel: "What'new in openLCA 2.0",
+        navLabel: "What's new in openLCA 2.0",
         navId: 'whats-new',
     },
     {
@@ -59,16 +59,16 @@ const messages: {
     en: {
         'getting-started.text':
             "<a id=\"openlca\">openLCA</a> is a powerful, "
-            + "<a id=\"opensource\">open source</a>, feature-rich software for "
+            + "<a target=\"_blank\" id=\"opensource\">open source</a>, feature-rich software for "
             + "LCA and Sustainability modelling. "
             + "\nCreate, import existing databases which contain life cycle "
             + "processes, import assessment methods, create your own "
             + "processes, build your own life cycle models, calculate and "
             + "analyse it. These steps are explained on "
-            + "<a id=\"channel\">YouTube</a>, and in the openLCA "
-            + "<a id=\"manuals\">handbook</a>.",
+            + "<a target=\"_blank\" id=\"channel\">YouTube</a>, and in the openLCA "
+            + "<a target=\"_blank\" id=\"manuals\">handbook</a>.",
         'whats-new.text':
-            "openLCA 2 is major step forward, with a lot of new features and "
+            "openLCA 2 is a major step forward, with a lot of new features and "
             + "usability improvements. \n"
             + "New features include: new maps and "
             + "better regionalised modelling, broader support for various data "
@@ -78,29 +78,29 @@ const messages: {
             + "editors have been improved, openLCA can now run in dark mode "
             + "and the installation on Mac is easier.",
         'community-forum.text':
-            "Visit <a id=\"forum\">ask.openLCA.org</a> for questions and "
+            "Visit <a target=\"_blank\" id=\"forum\">ask.openLCA.org</a> for questions and "
             + "answers around openLCA",
         'collaboration-tool.text':
-            "The <a id=\"collaboration\">LCA Collaboration Server</a> is "
+            "The <a target=\"_blank\" id=\"collaboration\">LCA Collaboration Server</a> is "
             + "developed for team work in LCA modelling, dataset "
             + "review and distribution. It is very similar to software code "
             + "development and it is inspired by the world-known Git software. "
             + "It is available for free, on the "
-            + "<a id=\"collaboration-download\">openLCA website</a>. "
+            + "<a target=\"_blank\" id=\"collaboration-download\">openLCA website</a>. "
             + "GreenDelta also offers support and "
-            + "<a id=\"collaboration-hosting\">hosting services</a>.",
+            + "<a target=\"_blank\" id=\"collaboration-hosting\">hosting services</a>.",
         'databases.text':
             "Find a wide range of free and for-purchase databases for LCA and "
             + "sustainability modelling on "
-            + "<a id=\"nexus\">openLCA Nexus</a>, which currently boasts "
+            + "<a target=\"_blank\" id=\"nexus\">openLCA Nexus</a>, which currently boasts "
             + "several hundred thousand datasets. If you have data that you "
             + "would like to share with other users, either for free or for a "
             + "fee, please do not hesitate to contact us. We would be more "
             + "than happy to help you make your valuable contribution "
             + "accessible to a broader audience.",
         'case-studies.text':
-            "<a id=\"nexus\">Nexus</a> houses a repository of "
-            + "<a id=\"casestudies\">case studies</a> comprising full openLCA "
+            "<a target=\"_blank\" id=\"nexus\">Nexus</a> houses a repository of "
+            + "<a target=\"_blank\" id=\"casestudies\">case studies</a> comprising full openLCA "
             + "models and accompanying reports for documentation purposes."
             + "\nContact us if you like to share your case study, either for "
             + "free or a fee.",
@@ -109,15 +109,15 @@ const messages: {
             + "openLCA are available on a regular basis, provided by "
             + "GreenDelta and also by other certified trainers worldwide. They "
             + "are posted and can be booked on "
-            + "<a id=\"trainings\">Nexus</a>.",
+            + "<a target=\"_blank\" id=\"trainings\">Nexus</a>.",
         'experts.text':
-           "openLCA is developed by <a id=\"greendelta\">GreenDelta</a> in "
+           "openLCA is developed by <a target=\"_blank\" id=\"greendelta\">GreenDelta</a> in "
            + "Berlin, Germany. If you're passionate about making a positive "
            + "impact through your work - whether it's in IT development, data "
            + "development, research, or consultancy - GreenDelta offers "
            + "various open positions (available in German or English). We also "
            + "welcome applications for internships. Check out our current "
-           + "opportunities <a id=\"openpositions\">here</a>.",
+           + "opportunities <a target=\"_blank\" id=\"openpositions\">here</a>.",
     },
 };
 
@@ -305,7 +305,7 @@ const setData = (data: Data) => {
 setData({
     version: 'Version 1.9.0',
     lang: 'en',
-    showLibHint: true,
+    showLibHint: false,
 });
 
 // expose the setData function by binding it to the window object

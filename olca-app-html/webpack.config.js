@@ -32,6 +32,7 @@ const config = {
                 { from: 'src/**/*.css', to: () => `${dist}/[name][ext]` },
                 { from: 'images', to: dist + "/images" },
                 { from: 'fonts', to: dist + "/fonts" },
+                { from: 'cache/fonts', to: dist + "/fonts" },
                 { from: 'node_modules/react/umd/react.production.min.js', to: dist + '/lib/react.js' },
                 { from: 'node_modules/react-dom/umd/react-dom.production.min.js', to: dist + '/lib/react-dom.js' },
                 { from: 'node_modules/chart.js/dist/chart.min.js', to: dist + '/lib/chart.min.js' },
