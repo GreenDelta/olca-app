@@ -86,11 +86,11 @@ public class GraphFactory {
 				})
 				.map(ExchangeItem::new)
 				.sorted(ExchangeItem::compareTo)
-				.forEach(e -> panes.get(panelOf(e)).addChild(e));
+				.forEach(e -> panes.get(paneOf(e)).addChild(e));
 		return panes;
 	}
 
-	private String panelOf(ExchangeItem item) {
+	private String paneOf(ExchangeItem item) {
 		if (item == null || item.exchange == null)
 			return OUTPUT_PROP;
 		var e = item.exchange;
