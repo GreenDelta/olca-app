@@ -279,7 +279,6 @@ const bindLinks = () => {
     ];
     config.forEach(([id, link]) => {
         const elem = document.getElementById(id);
-        console.log("id",id ,link)
         if (!elem) {
             return;
         }
