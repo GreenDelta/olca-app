@@ -191,7 +191,7 @@ class BuildDir:
             return self.root / "openLCA"
 
     @property
-    def readme_dir(self) -> Path:
+    def about_dir(self) -> Path:
         if self.osa.is_mac():
             return self.app_dir / "Contents/Eclipse"
         else:
@@ -241,7 +241,7 @@ class BuildDir:
         print("  copy credits")
         about_page = PROJECT_DIR / "credits/about.html"
         if about_page.exists():
-            shutil.copy2(about_page, self.readme_dir)
+            shutil.copy2(about_page, self.about_dir)
             plugin_dir = self.olca_plugin_dir
             if plugin_dir:
                 shutil.copy2(about_page, plugin_dir)
