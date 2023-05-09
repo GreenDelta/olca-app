@@ -92,9 +92,7 @@ public class UI {
 			Function<Object[], Object> fn) {
 		if (browser == null || name == null || fn == null)
 			return;
-		System.out.println("binding " + name);
-		System.out.println(" url: " + browser.getUrl());
-		var func = new BrowserFunction(browser, name) {
+		new BrowserFunction(browser, name) {
 			@Override
 			public Object function(Object[] args) {
 				try {
