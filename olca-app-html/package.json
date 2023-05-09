@@ -4,7 +4,9 @@
   "description": "HTML pages of the openLCA application",
   "main": "index.js",
   "scripts": {
+    "prebuild": "node scripts/prepare-fonts.js",
     "build": "webpack --config webpack.config.js --mode=production",
+    "predev": "node scripts/prepare-fonts.js",
     "dev": "webpack --config webpack.config.js --mode=development --watch",
     "server": "py -m http.server --directory ./dist 8080"
   },
@@ -13,7 +15,9 @@
     "@types/codemirror": "5.60.7",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "axios": "^1.4.0",
     "copy-webpack-plugin": "^11.0.0",
+    "decompress": "^4.2.1",
     "prettier": "^2.8.8",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",

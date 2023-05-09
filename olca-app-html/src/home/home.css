@@ -27,8 +27,8 @@
     font-weight: 400;
     font-stretch: normal;
     font-style: normal;
-    src: url('ttf/iosevka-regular.ttf') format('truetype'),
-        url('woff2/iosevka-regular.woff2') format('woff2');
+    src: url('fonts/iosevka-regular.ttf') format('truetype'),
+        url('fonts/iosevka-regular.woff2') format('woff2');
 }
 
 html,
