@@ -22,6 +22,7 @@ public class SearchView extends SimpleFormEditor {
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
+		setTitleImage(Icon.SEARCH.get());
 		this.input = (Input) input;
 	}
 

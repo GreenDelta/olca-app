@@ -15,6 +15,7 @@ import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Commit;
 import org.openlca.git.util.Constants;
@@ -28,6 +29,11 @@ public class CompareView extends ViewPart {
 	private final static Logger log = LoggerFactory.getLogger(CompareView.class);
 	private CompareViewer viewer;
 	private DiffNode input;
+
+	public CompareView() {
+		super();
+		setTitleImage(Icon.COMPARE_VIEW.get());
+	}
 
 	public static void clear() {
 		var page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();

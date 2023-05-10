@@ -52,6 +52,7 @@ public class FlowTable extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Images.get(ModelType.FLOW));
 		return new Page(this);
 	}
 

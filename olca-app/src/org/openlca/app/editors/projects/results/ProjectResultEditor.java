@@ -16,9 +16,11 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.projects.ProjectResultData;
 import org.openlca.app.rcp.HtmlFolder;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,7 @@ public class ProjectResultEditor extends FormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		super.init(site, input);
+		setTitleImage(Images.get(ModelType.PROJECT));
 		var simpleInput = (SimpleEditorInput) input;
 		var obj = Cache.getAppCache().remove(simpleInput.id);
 		if (!(obj instanceof ProjectResultData))

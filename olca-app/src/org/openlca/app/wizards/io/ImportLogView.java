@@ -69,6 +69,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Icon.IMPORT.get());
 		return new Page();
 	}
 

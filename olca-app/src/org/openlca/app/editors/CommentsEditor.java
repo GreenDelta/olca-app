@@ -12,6 +12,7 @@ import org.openlca.app.collaboration.model.Comment;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.comments.CommentsPage;
+import org.openlca.app.rcp.images.Icon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public class CommentsEditor extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Icon.COMMENTS_VIEW.get());
 		List<Comment> comments = new ArrayList<>();
 		if (Repository.get().isCollaborationServer()) {
 			RepositoryClient client = Repository.get().client;

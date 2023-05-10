@@ -17,6 +17,7 @@ import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.UI;
@@ -45,6 +46,7 @@ public class HistoryView extends ViewPart {
 
 	public HistoryView() {
 		instance = this;
+		setTitleImage(Icon.HISTORY_VIEW.get());
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package org.openlca.app.rcp.images;
 
-enum ModelIcon {
+public enum ModelIcon {
 
 	ACTOR("model/actor.png"),
 	ACTOR_CATEGORY("category/actor.png"),
