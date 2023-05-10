@@ -389,7 +389,7 @@
 		<view
 				allowMultiple="false"
 				class="org.openlca.app.navigation.Navigator"
-				icon="icons/categories.png"
+				icon="icons/immutable/navigator.png"
 				id="views.navigation"
 				name="%Navigation">
 		</view>
@@ -662,21 +662,21 @@
 		<wizard
 				category="import.category.file"
 				class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
-				icon="icons/file/xml_es1.png"
+				icon="icons/immutable/xml_es1.png"
 				id="wizard.import.ecospold1"
 				name="%EcoSpold">
 		</wizard>
 		<wizard
 				category="import.category.file"
 				class="org.openlca.app.wizards.io.HSCSimImportWizard"
-				icon="icons/file/javascript.png"
+				icon="icons/immutable/javascript.png"
 				id="wizard.import.hsc"
 				name="HSC Sim Flow Sheet"/>
 		<!--
 		<wizard
 					category="import.category.file"
 					class="org.openlca.app.wizards.io.EcoSpold2ImportWizard"
-					icon="icons/file/xml_es2.png"
+					icon="icons/immutable/xml_es2.png"
 					id="wizard.import.ecospold2"
 					name="EcoSpold 2">
 			 <description>
@@ -687,21 +687,21 @@
 		<wizard
 				category="import.category.file"
 				class="org.openlca.app.wizards.io.ILCDImportWizard"
-				icon="icons/file/ilcd.png"
+				icon="icons/immutable/ilcd.png"
 				id="wizard.import.ilcd"
 				name="ILCD">
 		</wizard>
 		<wizard
 				category="import.category.file"
 				class="org.openlca.app.wizards.io.ExcelImportWizard"
-				icon="icons/file/excel.png"
+				icon="icons/immutable/excel.png"
 				id="wizard.import.excel"
 				name="Excel">
 		</wizard>
 		<wizard
 				category="import.category.ilcdnetwork"
 				class="org.openlca.app.ilcd_network.ImportWizard"
-				icon="icons/file/network.png"
+				icon="icons/immutable/network.png"
 				id="wizard.import.ilcdnetwork"
 				name="%ILCDNetworkImport">
 		</wizard>
@@ -720,13 +720,13 @@
 		</wizard>
 		<wizard category="import.category.file"
 						class="org.openlca.app.wizards.io.SimaProCsvImportWizard"
-						icon="icons/file/simapro.png"
+						icon="icons/immutable/simapro.png"
 						id="wizard.import.simapro.csv"
 						name="SimaPro CSV">
 		</wizard>
 		<wizard
 				class="org.openlca.app.wizards.io.GeoJsonImportWizard"
-				icon="icons/file/location.png"
+				icon="icons/immutable/location.png"
 				id="wizard.import.geojson"
 				name="Geometries from GeoJSON">
 		</wizard>
@@ -759,14 +759,14 @@
 		<wizard
 				category="export.category.ecospold"
 				class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
-				icon="icons/file/xml_es1.png"
+				icon="icons/immutable/xml_es1.png"
 				id="wizard.export.ecospold.process"
 				name="%Processes">
 		</wizard>
 		<wizard
 				category="export.category.excel"
 				class="org.openlca.app.wizards.io.ExcelExportWizard"
-				icon="icons/file/excel.png"
+				icon="icons/immutable/excel.png"
 				id="wizard.export.excel.process"
 				name="%Processes">
 		</wizard>
@@ -774,7 +774,7 @@
 		<wizard
 				 category="export.category.ecospold"
 				 class="org.openlca.app.wizards.io.EcoSpold2ExportWizard"
-				 icon="icons/file/xml_es2.png"
+				 icon="icons/immutable/xml_es2.png"
 				 id="wizard.export.ecospold.process"
 				 name="EcoSpold 2">
 			<description>
@@ -785,21 +785,21 @@
 		<wizard
 				category="export.category.ecospold"
 				class="org.openlca.app.wizards.io.EcoSpold01ExportMethodWizard"
-				icon="icons/file/xml_es1.png"
+				icon="icons/immutable/xml_es1.png"
 				id="wizard.export.ecospold.impactmethod"
 				name="%ImpactMethods">
 		</wizard>
 		<wizard
 				category="export.category.ilcd"
 				class="org.openlca.app.wizards.io.ILCDExportWizard"
-				icon="icons/file/ilcd.png"
+				icon="icons/immutable/ilcd.png"
 				id="wizard.export.source"
 				name="ILCD Zip-File">
 		</wizard>
 		<wizard
 				category="export.category.ilcd"
 				class="org.openlca.app.ilcd_network.ExportWizard"
-				icon="icons/file/network.png"
+				icon="icons/immutable/network.png"
 				id="org.openlca.ilcd.network.ExportWizard"
 				name="%ILCDNetworkExport">
 		</wizard>
@@ -816,7 +816,7 @@
 				id="org.openlca.app.wizards.io.SimaProCsvExportWizard"
 				class="org.openlca.app.wizards.io.SimaProProcessExportWizard"
 				name="Processes to SimaPro CSV"
-				icon="icons/file/simapro.png">
+				icon="icons/immutable/simapro.png">
 			<description>
 				Export processes to a SimaPro CSV file
 			</description>
@@ -827,7 +827,7 @@
 				id="org.openlca.app.wizards.io.SimaProMethodExportWizard"
 				class="org.openlca.app.wizards.io.SimaProMethodExportWizard"
 				name="LCIA methods to SimaPro CSV"
-				icon="icons/file/simapro.png">
+				icon="icons/immutable/simapro.png">
 			<description>
 				Export LCIA methods to a SimaPro CSV file
 			</description>
