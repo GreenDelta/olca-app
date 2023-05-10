@@ -19,6 +19,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -26,6 +27,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.MappingFile;
+import org.openlca.core.model.ModelType;
 import org.openlca.io.Format;
 import org.openlca.util.Strings;
 
@@ -104,6 +106,7 @@ public class MappingTool extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
+		setTitleImage(Images.get(ModelType.FLOW));
 		try {
 			var inp = (SimpleEditorInput) input;
 			var raw = Cache.getAppCache().remove(inp.id);

@@ -59,6 +59,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		super.init(site, input);
+		setTitleImage(Icon.LINK.get());
 		if (!(input instanceof Input pin)) {
 			tree = ParameterUsageTree.empty();
 		} else {

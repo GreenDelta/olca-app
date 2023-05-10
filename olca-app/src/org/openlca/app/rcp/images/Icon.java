@@ -2,11 +2,6 @@ package org.openlca.app.rcp.images;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.preferences.Theme;
-import org.openlca.util.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public enum Icon {
 
@@ -97,8 +92,6 @@ public enum Icon {
 	INPUT("model/input.png"),
 	IPC("ipc.png"),
 
-	JAVASCRIPT("javascript.png"),
-
 	LAYOUT("graphical/layout.png"),
 	LIBRARY("library.png"),
 	LINK("link.png"),
@@ -184,45 +177,11 @@ public enum Icon {
 	}
 
 	public Image get() {
-		if (Theme.isDark()) {
-			return ImageManager.get(DarkIcon.of(this));
-		} else {
-			return ImageManager.get(this);
-		}
+		return ImageManager.get(this);
 	}
 
 	public ImageDescriptor descriptor() {
-		if (Theme.isDark()) {
-			return ImageManager.descriptor(DarkIcon.of(this));
-		} else {
-			return ImageManager.descriptor(this);
-		}
-	}
-
-	protected static class DarkIcon {
-
-		protected static final List<Pair<Icon, Icon>> PAIRS = List.of(
-				new Pair<>(DOWN, DOWN_DISABLED),
-				new Pair<>(DOWN_DISABLED, DOWN),
-				new Pair<>(SAVE, SAVE_DISABLED),
-				new Pair<>(SAVE_DISABLED, SAVE),
-				new Pair<>(SAVE_ALL, SAVE_ALL_DISABLED),
-				new Pair<>(SAVE_ALL_DISABLED, SAVE_ALL),
-				new Pair<>(SAVE_AS, SAVE_AS_DISABLED),
-				new Pair<>(SAVE_AS_DISABLED, SAVE_AS),
-				new Pair<>(UP, UP_DISABLED),
-				new Pair<>(UP_DISABLED, UP),
-				new Pair<>(UP_DOUBLE, UP_DOUBLE_DISABLED),
-				new Pair<>(UP_DOUBLE_DISABLED, UP_DOUBLE)
-				);
-
-		protected static Icon of(Icon icon) {
-			return PAIRS.stream()
-					.filter(p -> icon == p.first)
-					.findFirst()
-					.map(p -> p.second)
-					.orElse(icon);
-		}
+		return ImageManager.descriptor(this);
 	}
 
 }

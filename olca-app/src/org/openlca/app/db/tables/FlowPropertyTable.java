@@ -54,6 +54,7 @@ public class FlowPropertyTable extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Images.get(ModelType.FLOW_PROPERTY));
 		return new Page(this);
 	}
 

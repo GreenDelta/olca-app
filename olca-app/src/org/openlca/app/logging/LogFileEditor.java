@@ -9,6 +9,8 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -18,6 +20,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -33,6 +36,13 @@ public class LogFileEditor extends FormEditor {
 		}
 		var input = new SimpleEditorInput("Log files", "Log file");
 		Editors.open(input, "editors.LogFileEditor");
+	}
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
+		super.init(site, input);
+		setTitleImage(Icon.FILE.get());
 	}
 
 	private static List<File> logFiles() {

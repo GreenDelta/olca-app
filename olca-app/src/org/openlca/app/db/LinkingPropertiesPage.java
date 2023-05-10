@@ -33,6 +33,7 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
@@ -64,6 +65,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
+		setTitleImage(Icon.DATABASE.get());
 		SimpleEditorInput in = (SimpleEditorInput) input;
 		props = Cache.getAppCache().remove(
 				in.id, LinkingProperties.class);

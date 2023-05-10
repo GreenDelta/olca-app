@@ -54,6 +54,7 @@ public class SearchPage extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
+		setTitleImage(Icon.SEARCH.get());
 		if (!(input instanceof Input)) {
 			this.input = new Input("", "");
 			results = Collections.emptyList();

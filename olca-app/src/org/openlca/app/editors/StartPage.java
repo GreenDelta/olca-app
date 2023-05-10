@@ -14,6 +14,7 @@ import org.openlca.app.AppArg;
 import org.openlca.app.M;
 import org.openlca.app.preferences.LibraryDownload;
 import org.openlca.app.rcp.HtmlFolder;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
 import org.openlca.nativelib.Module;
@@ -32,6 +33,7 @@ public class StartPage extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Icon.HOME.get());
 		return new Page();
 	}
 

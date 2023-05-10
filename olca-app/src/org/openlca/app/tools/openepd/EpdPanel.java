@@ -37,6 +37,7 @@ public class EpdPanel extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Icon.BUILDING.get());
 		return new Page(this);
 	}
 

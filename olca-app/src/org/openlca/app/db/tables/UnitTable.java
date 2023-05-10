@@ -64,6 +64,7 @@ public class UnitTable extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Images.get(ModelType.UNIT_GROUP));
 		return new Page(this);
 	}
 

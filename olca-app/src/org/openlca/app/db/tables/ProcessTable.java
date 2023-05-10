@@ -52,6 +52,7 @@ public class ProcessTable extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Images.get(ModelType.PROCESS));
 		return new Page(this);
 	}
 
