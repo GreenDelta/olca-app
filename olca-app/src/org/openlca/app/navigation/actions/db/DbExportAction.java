@@ -61,51 +61,73 @@ public class DbExportAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var config = element == null || element.getContent() == null
-				? Database.getActiveConfiguration()
+		var config = element == null || element.getContent() == null ? Database.getActiveConfiguration()
 				: element.getContent();
 		if (config == null)
 			return;
-		var file = FileChooser.forSavingFile(
-				M.Export, config.name() + ".zolca");
-		if (file == null)
-			return;
-		run(config, file, Database.isActive(config));
+		run(config);
 	}
 
-	private void run(DatabaseConfig config, final File zip, final boolean active) {
+	public boolean run(DatabaseConfig config) {
+		var file = FileChooser.forSavingFile(M.Export, config.name() + ".zolca");
+		if (file == null)
+			return false;
+		return run(config, file, Database.isActive(config));
+	}
+
+	private boolean run(DatabaseConfig config, final File zip, final boolean active) {
 		if (zip.exists()) {
 			log.trace("delete existing file {}", zip);
 			boolean deleted = zip.delete();
 			if (!deleted) {
 				MsgBox.error(M.CouldNotOverwriteFile + ": " + zip.getName());
-				return;
+				return false;
 			}
 		}
 		if (active)
 			if (!Editors.closeAll())
-				return;
+				return false;
 		log.trace("run database export to file {}", zip);
-		App.runWithProgress(M.ExportDatabase, () -> realExport(config, zip, active));
+		var runner = new ExportRunner(config, zip, active);
+		App.runWithProgress(M.ExportDatabase, runner);
 		updateUI(zip, active);
+		return !runner.failed;
 	}
 
-	private void realExport(DatabaseConfig config, File zip, boolean active) {
-		try {
-			if (active)
-				Database.close();
-			if (config instanceof DerbyConfig) {
-				File folder = DatabaseDir.getRootFolder(config.name());
-				ZipEntrySource[] toPack = collectFileSources(folder);
-				ZipUtil.pack(toPack, zip);
-			} else if (config instanceof MySqlConfig) {
-				MySQLDatabaseExport export = new MySQLDatabaseExport((MySqlConfig) config, zip);
-				export.run();
-			}
-		} catch (Exception e) {
-			ErrorReporter.on("Export of database " + config.name() + " failed", e);
+	private class ExportRunner implements Runnable {
+
+		private final DatabaseConfig config;
+		private final File zip;
+		private final boolean active;
+		private boolean failed;
+
+		private ExportRunner(DatabaseConfig config, File zip, boolean active) {
+			this.config = config;
+			this.zip = zip;
+			this.active = active;
 		}
+
+		@Override
+		public void run() {
+			try {
+				if (active)
+					Database.close();
+				if (config instanceof DerbyConfig) {
+					File folder = DatabaseDir.getRootFolder(config.name());
+					ZipEntrySource[] toPack = collectFileSources(folder);
+					ZipUtil.pack(toPack, zip);
+				} else if (config instanceof MySqlConfig) {
+					MySQLDatabaseExport export = new MySQLDatabaseExport((MySqlConfig) config, zip);
+					export.run();
+				}
+			} catch (Exception e) {
+				failed = true;
+				ErrorReporter.on("Export of database " + config.name() + " failed", e);
+			}
+		}
+
 	}
+
 
 	private ZipEntrySource[] collectFileSources(File folder) throws IOException {
 		List<ZipEntrySource> fileSources = new ArrayList<>();
@@ -123,8 +145,7 @@ public class DbExportAction extends Action implements INavigationAction {
 	}
 
 	private boolean exclude(String relativePath) {
-		return relativePath.startsWith(
-				DatabaseDir.FILE_STORAGE + File.separator + Repository.GIT_DIR);
+		return relativePath.startsWith(DatabaseDir.FILE_STORAGE + File.separator + Repository.GIT_DIR);
 	}
 
 	private void updateUI(File zip, boolean active) {

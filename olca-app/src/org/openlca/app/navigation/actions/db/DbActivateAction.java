@@ -5,7 +5,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -21,8 +24,9 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
-import org.openlca.app.util.Question;
+import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.upgrades.Upgrades;
@@ -37,7 +41,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private DatabaseConfig config;
-
+	
 	public DbActivateAction() {
 		setText(M.OpenDatabase);
 		setImageDescriptor(Icon.CONNECT.descriptor());
@@ -75,9 +79,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 		// App.run does not work as we have to show a modal dialog in the
 		// callback
 		try {
-			PlatformUI.getWorkbench()
-					.getProgressService()
-					.busyCursorWhile(activation);
+			PlatformUI.getWorkbench().getProgressService().busyCursorWhile(activation);
 			new ActivationCallback(activation).run();
 		} catch (Exception e) {
 			log.error("Database activation failed", e);
@@ -128,17 +130,17 @@ public class DbActivateAction extends Action implements INavigationAction {
 		private void handleVersionState(VersionState state) {
 			log.trace("Check version state");
 			switch (state) {
-				case HIGHER_VERSION:
-					error(M.DatabaseNewerThanThisError);
-					break;
-				case NEEDS_UPGRADE:
-					askRunUpgrades();
-					break;
-				case UP_TO_DATE:
-					refresh();
-					break;
-				default:
-					break;
+			case HIGHER_VERSION:
+				error(M.DatabaseNewerThanThisError);
+				break;
+			case NEEDS_UPGRADE:
+				askRunUpgrades();
+				break;
+			case UP_TO_DATE:
+				refresh();
+				break;
+			default:
+				break;
 			}
 		}
 
@@ -172,23 +174,31 @@ public class DbActivateAction extends Action implements INavigationAction {
 
 		private void askRunUpgrades() {
 			var db = Database.get();
-			boolean doIt = Question.ask(M.UpdateDatabase, M.UpdateDatabaseQuestion);
+			var upgradeDialog = new UpgradeQuestionDialog();
+			var doIt = upgradeDialog.open() == UpgradeQuestionDialog.OK;
 			if (!doIt) {
 				closeDatabase();
 				return;
 			}
+			if (upgradeDialog.backupDatabase) {
+				var dbExportAction = new DbExportAction();
+				var backupSuccess = dbExportAction.run(config);
+				if (!backupSuccess) {
+					closeDatabase();
+					return;
+				}
+				db = Database.activate(config);
+			}
+			var finalDb = db;
 			log.trace("Run database updates");
 			AtomicBoolean failed = new AtomicBoolean(false);
-			App.runWithProgress(
-					M.UpdateDatabase,
-					() -> runUpgrades(db, failed),
-					() -> {
-						if (!failed.get()) {
-							RepositoryUpgrade.on(db);
-						}
-						closeDatabase();
-						DbActivateAction.this.run();
-					});
+			App.runWithProgress(M.UpdateDatabase, () -> runUpgrades(finalDb, failed), () -> {
+				if (!failed.get()) {
+					RepositoryUpgrade.on(finalDb);
+				}
+				closeDatabase();
+				DbActivateAction.this.run();
+			});
 		}
 
 		private void runUpgrades(IDatabase db, AtomicBoolean failed) {
@@ -210,6 +220,27 @@ public class DbActivateAction extends Action implements INavigationAction {
 				Navigator.refresh();
 			}
 		}
+	}
+
+	private class UpgradeQuestionDialog extends Dialog {
+
+		private boolean backupDatabase = true;
+		
+		public UpgradeQuestionDialog() {
+			super(UI.shell());
+		}
+
+		@Override
+		protected Control createDialogArea(Composite parent) {
+			getShell().setText(M.UpdateDatabase);
+			var comp = (Composite) super.createDialogArea(parent);
+			UI.label(comp, M.UpdateDatabaseQuestion);
+			var backupCheckbox = UI.checkbox(comp, "Create a backup of the current database first");
+			backupCheckbox.setSelection(true);
+			Controls.onSelect(backupCheckbox, e -> backupDatabase = backupCheckbox.getSelection());
+			return comp;
+		}
+
 	}
 
 }
