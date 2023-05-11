@@ -17,7 +17,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.Diffs;
-import org.openlca.git.util.TypeRefIdSet;
+import org.openlca.git.util.TypedRefIdSet;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.util.Strings;
 
@@ -55,7 +55,7 @@ class Datasets {
 		var dialog = new CommitDialog(node, canPush, isStashCommit);
 		var paths = PathFilters.of(selection);
 		var newLibraryDatasets = determineLibraryDatasets(diffs);
-		var initialSelection = new TypeRefIdSet();
+		var initialSelection = new TypedRefIdSet();
 		diffs.stream()
 				.filter(ref -> selectionContainsPath(paths, ref.path) || newLibraryDatasets.contains(ref))
 				.forEach(initialSelection::add);
@@ -64,10 +64,10 @@ class Datasets {
 		return dialog;
 	}
 
-	private static TypeRefIdSet determineLibraryDatasets(List<Diff> diffs) {
-		var all = new TypeRefIdSet();
+	private static TypedRefIdSet determineLibraryDatasets(List<Diff> diffs) {
+		var all = new TypedRefIdSet();
 		diffs.forEach(all::add);
-		var fromLibrary = new TypeRefIdSet();
+		var fromLibrary = new TypedRefIdSet();
 		all.types().forEach(type -> {
 			fromLibrary.addAll(Daos.root(Database.get(), type).getDescriptors().stream()
 					.filter(d -> !Strings.nullOrEmpty(d.library))

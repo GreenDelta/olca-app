@@ -92,7 +92,7 @@ public class UI {
 			Function<Object[], Object> fn) {
 		if (browser == null || name == null || fn == null)
 			return;
-		var func = new BrowserFunction(browser, name) {
+		new BrowserFunction(browser, name) {
 			@Override
 			public Object function(Object[] args) {
 				try {
@@ -104,24 +104,6 @@ public class UI {
 				}
 			}
 		};
-
-		// note that disposing a browser will automatically dispose its
-		// browser functions; but we dispose functions when the browser
-		// location (page) changed
-		browser.addLocationListener(new LocationAdapter() {
-			@Override
-			public void changed(LocationEvent e) {
-				try {
-					if (!func.isDisposed()) {
-						func.dispose();
-					}
-					browser.removeLocationListener(this);
-				} catch (Exception ex) {
-					LoggerFactory.getLogger(UI.class)
-							.error("failed to dispose browser function " + name, e);
-				}
-			}
-		});
 	}
 
 	public static Shell shell() {

@@ -9,13 +9,13 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
-import org.openlca.git.util.TypeRefIdSet;
+import org.openlca.git.util.TypedRefIdSet;
 
 public class CommitViewer extends DiffNodeViewer {
 
 	// The option lockedElements will prevent the user to uncheck certain
 	// elements
-	private TypeRefIdSet lockedElements;
+	private TypedRefIdSet lockedElements;
 	private DiffNodeCheckedContentProvider selectionProvider;
 	private final Runnable onCheckStateChanged;
 
@@ -44,11 +44,11 @@ public class CommitViewer extends DiffNodeViewer {
 		return (CheckboxTreeViewer) super.getViewer();
 	}
 
-	public void setLockedElements(TypeRefIdSet value) {
+	public void setLockedElements(TypedRefIdSet value) {
 		this.lockedElements = value;
 	}
 
-	public void setSelection(TypeRefIdSet initialSelection, DiffNode root) {
+	public void setSelection(TypedRefIdSet initialSelection, DiffNode root) {
 		var selection = collectChildren(initialSelection, root);
 		selectionProvider.setSelection(selection);
 	}
@@ -60,7 +60,7 @@ public class CommitViewer extends DiffNodeViewer {
 	}
 
 	// if models is null, select all
-	private Set<DiffNode> collectChildren(TypeRefIdSet models, DiffNode node) {
+	private Set<DiffNode> collectChildren(TypedRefIdSet models, DiffNode node) {
 		var nodes = new HashSet<DiffNode>();
 		for (var child : node.children) {
 			if (child.isModelNode()) {

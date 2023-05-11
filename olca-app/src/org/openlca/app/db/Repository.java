@@ -17,6 +17,7 @@ import org.openlca.git.find.Entries;
 import org.openlca.git.find.References;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.History;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,7 @@ public class Repository {
 		if (current == null)
 			return null;
 		try {
-			current.isCollaborationServer(current.client.isCollaborationServer());
+			current.isCollaborationServer(current.client != null && current.client.isCollaborationServer());
 		} catch (WebRequestException e) {
 			current = null;
 			throw e;
@@ -84,6 +85,8 @@ public class Repository {
 
 	public static RepositoryClient client(org.eclipse.jgit.lib.Repository git) throws IOException {
 		var url = url(git);
+		if (Strings.nullOrEmpty(url))
+			return null;
 		if (url.startsWith("git@")) {
 			var splitIndex = url.lastIndexOf(":");
 			var serverUrl = url.substring(0, splitIndex);
@@ -105,7 +108,9 @@ public class Repository {
 	public static void close() {
 		if (current == null)
 			return;
-		current.client.close();
+		if (current.client != null) {
+			current.client.close();
+		}
 		current.git.close();
 		current = null;
 	}
@@ -113,7 +118,7 @@ public class Repository {
 	public String url() {
 		return url(git);
 	}
-	
+
 	private static String url(org.eclipse.jgit.lib.Repository repo) {
 		try (var git = new Git(repo)) {
 			var configs = git.remoteList().call();
@@ -122,7 +127,7 @@ public class Repository {
 					.findFirst()
 					.orElse(null);
 			if (config == null || config.getURIs().isEmpty())
-				throw new IllegalStateException("No remote URI configured");
+				return null;
 			var uri = config.getURIs().get(0);
 			return uri.toString();
 		} catch (GitAPIException e) {
@@ -173,14 +178,14 @@ public class Repository {
 	}
 
 	public boolean isCollaborationServer() {
-		return isCollaborationServer(git.getConfig());
+		return isCollaborationServer(git.getConfig()) && client != null;
 	}
 
 	public void isCollaborationServer(boolean value) {
 		git.getConfig().setBoolean("remote", "origin", "isCollaborationServer", value);
 		saveConfig();
 	}
-
+	
 	private void saveConfig() {
 		try {
 			git.getConfig().save();

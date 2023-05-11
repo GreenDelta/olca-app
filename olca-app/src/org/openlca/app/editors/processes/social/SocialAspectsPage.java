@@ -35,10 +35,10 @@ import org.openlca.core.model.descriptors.Descriptor;
 
 public class SocialAspectsPage extends ModelPage<Process> {
 
-	private ProcessEditor editor;
+	private final ProcessEditor editor;
 
 	private TreeViewer tree;
-	private TreeModel treeModel = new TreeModel();
+	private final TreeModel treeModel = new TreeModel();
 	private ScrolledForm form;
 
 	public SocialAspectsPage(ProcessEditor editor) {
@@ -95,7 +95,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		tree.setContentProvider(new TreeContent());
 		tree.setAutoExpandLevel(3);
 		tree.setInput(treeModel);
-		new ModifySupport<SocialAspect>(tree).bind("", new CommentDialogModifier<SocialAspect>(
+		new ModifySupport<SocialAspect>(tree).bind("", new CommentDialogModifier<>(
 				editor.getComments(), CommentPaths::get));
 		Trees.bindColumnWidths(tree.getTree(), 0.2, 0.15, 0.15, 0.15, 0.12, 0.1, 0.1);
 	}

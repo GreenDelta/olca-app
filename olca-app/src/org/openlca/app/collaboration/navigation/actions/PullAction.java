@@ -33,6 +33,11 @@ public class PullAction extends Action implements INavigationAction {
 	}
 
 	@Override
+	public boolean isEnabled() {
+		return Repository.get().client != null;
+	}
+	
+	@Override
 	public void run() {
 		var repo = Repository.get();
 		try {

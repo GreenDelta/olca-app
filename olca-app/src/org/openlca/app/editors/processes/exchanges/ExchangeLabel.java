@@ -56,7 +56,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 						ProcessDescriptor.class, e.defaultProviderId);
 				yield d != null ? Images.get(d) : null;
 			}
-			case 10 -> Images.get(editor.getComments(), CommentPaths.get(e));
+			case 11 -> Images.get(editor.getComments(), CommentPaths.get(e));
 			default -> null;
 		};
 	}

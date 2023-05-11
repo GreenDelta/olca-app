@@ -112,6 +112,7 @@ import org.openlca.io.openepd.Ec3Response as Ec3Response
 import org.openlca.io.ecospold1.input.EcoSpold01Import as EcoSpold01Import
 import org.openlca.io.ecospold1.output.EcoSpold1Export as EcoSpold1Export
 import org.openlca.io.ecospold2.output.EcoSpold2Export as EcoSpold2Export
+import org.openlca.io.ecospold2.output.EcoSpold2ExportConfig as EcoSpold2ExportConfig
 import org.openlca.io.ecospold2.input.EcoSpold2Import as EcoSpold2Import
 import org.openlca.core.database.EntityCache as EntityCache
 import org.openlca.jsonld.Enums as Enums

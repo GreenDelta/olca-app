@@ -86,11 +86,17 @@ public class GraphFactory {
 				})
 				.map(ExchangeItem::new)
 				.sorted(ExchangeItem::compareTo)
-				.forEach(e -> {
-					var key = e.exchange.isInput ? INPUT_PROP : OUTPUT_PROP;
-					panes.get(key).addChild(e);
-				});
+				.forEach(e -> panes.get(paneOf(e)).addChild(e));
 		return panes;
+	}
+
+	private String paneOf(ExchangeItem item) {
+		if (item == null || item.exchange == null)
+			return OUTPUT_PROP;
+		var e = item.exchange;
+		if (e.isAvoided)
+			return e.isInput ? OUTPUT_PROP : INPUT_PROP;
+		return e.isInput ? INPUT_PROP : OUTPUT_PROP;
 	}
 
 	/**

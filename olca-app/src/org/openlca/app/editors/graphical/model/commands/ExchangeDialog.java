@@ -84,10 +84,10 @@ class ExchangeDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		var prefix = exchange.isInput
-				? "Input of "
-				: "Output of ";
-		var title = prefix + Labels.name(exchange.flow);
+		var infix = exchange.isInput ^ exchange.isAvoided
+				? "input "
+				: "output ";
+		var title = "Parameters of the " + infix + Labels.name(exchange.flow);
 		newShell.setText(title);
 	}
 

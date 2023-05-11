@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.util.TypeRefIdMap;
+import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.util.Strings;
 
 class ModelReferences {
 
 	private IDatabase database;
-	private TypeRefIdMap<Long> refIdToId = new TypeRefIdMap<>();
+	private TypedRefIdMap<Long> refIdToId = new TypedRefIdMap<>();
 	private EnumMap<ModelType, Map<Long, String>> idToRefId = new EnumMap<>(ModelType.class);
 	private ReferenceMap references = new ReferenceMap();
 	private ReferenceMap usages = new ReferenceMap();

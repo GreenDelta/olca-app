@@ -8,6 +8,9 @@ import static org.openlca.util.OS.WINDOWS;
 
 /**
  * Enumeration of supported themes.
+ * TODO: Theme cannot be modified within the config. This class is thus not
+ *  necessary. It is kept anyway as we might implement it later on.
+ *  (see org.openlca.app.preferences.ConfigPage)
  */
 public enum Theme {
 
@@ -51,9 +54,7 @@ public enum Theme {
 	}
 
 	public static boolean isDark() {
-		return org.openlca.util.OS.get() == WINDOWS
-				? ConfigIniFile.read().theme().equals(DARK)
-				: Display.isSystemDarkTheme();
+		return Display.isSystemDarkTheme();
 	}
 
 }

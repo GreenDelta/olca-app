@@ -12,7 +12,7 @@ import zipfile
 from enum import Enum
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import cast, Optional
 
 # the version of the native library package
 NATIVE_LIB_VERSION = "0.0.1"
@@ -191,14 +191,7 @@ class BuildDir:
             return self.root / "openLCA"
 
     @property
-    def licenses_dir(self) -> Path:
-        if self.osa.is_mac():
-            return self.app_dir / "Contents/licences"
-        else:
-            return self.app_dir / "licences"
-
-    @property
-    def readme_dir(self) -> Path:
+    def about_dir(self) -> Path:
         if self.osa.is_mac():
             return self.app_dir / "Contents/Eclipse"
         else:
@@ -210,6 +203,21 @@ class BuildDir:
             return self.root / "openLCA/openLCA.app/Contents/Eclipse/jre"
         else:
             return self.app_dir / "jre"
+
+    @property
+    def olca_plugin_dir(self) -> Path | None:
+        if self.osa.is_mac():
+            plugin_dir = self.app_dir / "Contents/Eclipse/plugins"
+        else:
+            plugin_dir = self.app_dir / "plugins"
+        if not plugin_dir.exists() or not plugin_dir.is_dir():
+            print(f"warning: could not locate plugin folder: {plugin_dir}")
+            return None
+        for p in plugin_dir.iterdir():
+            if p.name.startswith("olca-app") and p.is_dir():
+                return p
+        print(f"warning: olca-app plugin folder not found in: {plugin_dir}")
+        return None
 
     @property
     def native_lib_dir(self) -> Path:
@@ -229,16 +237,16 @@ class BuildDir:
         JRE.extract_to(self)
         NativeLib.extract_to(self, repo=NativeLib.REPO_GITHUB)
 
-        # copy licenses
-        print("  copy licenses")
-        resources = PROJECT_DIR / "resources"
-        shutil.copy2(resources / "OPENLCA_README.txt", self.readme_dir)
-        license_target = self.licenses_dir
-        if not license_target.exists():
-            shutil.copytree(resources / "licenses", license_target)
+        # copy credits
+        print("  copy credits")
+        about_page = PROJECT_DIR / "credits/about.html"
+        if about_page.exists():
+            shutil.copy2(about_page, self.about_dir)
+            plugin_dir = self.olca_plugin_dir
+            if plugin_dir:
+                shutil.copy2(about_page, plugin_dir)
 
         # copy ini and bin files
-        
         bins: list[str] = []
         if self.osa.is_win():
             Template.apply(
@@ -247,7 +255,7 @@ class BuildDir:
                 encoding="iso-8859-1",
                 lang="en",
             )
-            bins = ["ipc-server.cmd", "grpc-server.cmd"]            
+            bins = ["ipc-server.cmd", "grpc-server.cmd"]
         if self.osa.is_linux():
             shutil.copy2(
                 PROJECT_DIR / "templates/openLCA_linux.ini",
@@ -486,10 +494,12 @@ class MacDir:
                 if string is not None:
                     string.text = info_dict[elem.text]
 
-        with open(path, 'wb') as out:
-            out.write(b'<?xml version="1.0" encoding="UTF-8" standalone = '
-                      b'"no" ?>\n')
-            info.write(out, encoding='UTF-8', xml_declaration=False)
+        with open(path, "wb") as out:
+            out.write(
+                b'<?xml version="1.0" encoding="UTF-8" standalone = '
+                b'"no" ?>\n'
+            )
+            info.write(out, encoding="UTF-8", xml_declaration=False)
 
 
 class Nsis:

@@ -16,7 +16,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.util.TypeRefIdSet;
+import org.openlca.git.util.TypedRefIdSet;
 
 public class CommitReferencesDialog extends FormDialog {
 
@@ -45,8 +45,8 @@ public class CommitReferencesDialog extends FormDialog {
 		form.reflow(true);
 	}
 
-	private TypeRefIdSet getNewElements(DiffNode node) {
-		var newElements = new TypeRefIdSet();
+	private TypedRefIdSet getNewElements(DiffNode node) {
+		var newElements = new TypedRefIdSet();
 		var diff = node.contentAsTriDiff();
 		if (diff != null && diff.leftDiffType == DiffType.ADDED) {
 			newElements.add(diff);

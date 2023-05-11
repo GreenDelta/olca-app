@@ -46,18 +46,22 @@ public class RepositoryLabel {
 		if (!Strings.nullOrEmpty(user)) {
 			text += user + "@";
 		}
-		text += repo.client.serverUrl + "/" + repo.client.repositoryId;
+		if (repo.client != null) {
+			text += repo.client.serverUrl + "/" + repo.client.repositoryId;
+		} else {
+			text += "local";
+		}
 		if (!ahead.isEmpty()) {
-			text += " ↑" + ahead.size();
+			text += " \u2191" + ahead.size();
 		}
 		if (!behind.isEmpty()) {
-			text += " ↓" + behind.size();
+			text += " \u2193" + behind.size();
 		}
 		return text + "]";
 	}
 
 	public static String getStateIndicator(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected())
+		if (Database.get() == null || !Repository.isConnected() || elem == null || elem.getLibrary().isPresent())
 			return null;
 		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
 			return null;
@@ -67,7 +71,7 @@ public class RepositoryLabel {
 	}
 
 	public static boolean hasChanged(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected())
+		if (Database.get() == null || !Repository.isConnected() || elem == null || elem.getLibrary().isPresent())
 			return false;
 		return hasChanged(NavRoot.get(elem));
 	}

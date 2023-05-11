@@ -49,7 +49,6 @@ Var StartMenuGroup
 
 # Installer pages
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE openlca\OPENLCA_README.txt
 !insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
@@ -65,17 +64,17 @@ Var StartMenuGroup
 # a macro for using the WriteToFile function (see below)
 # NewLine indicates if a carriage return should be added at the end of the text
 !macro WriteToFile NewLine File Text
-  
+
   # push the text on the stack
   !if `${{NewLine}}` == true
     Push `${{Text}}$\r$\n`
   !else
     Push `${{Text}}`
   !endif
-  
+
   # push the file on the stack
   Push `${{File}}`
-  
+
   # call the function
   Call WriteToFile
 !macroend
@@ -88,12 +87,12 @@ Function WriteToFile
   Exch $0 # put the file to register $0
   Exch	# change the top two stack values
   Exch $1 # put the text to register $1
- 
+
   FileOpen $0 $0 a 	# open the file
   FileSeek $0 0 END # go to end
   FileWrite $0 $1 	# write to file
   FileClose $0		# close the file
- 
+
 Pop $1	# remove the text and the file from the stack
 Pop $0
 FunctionEnd
@@ -195,7 +194,7 @@ SectionEnd
 Function setInstallDir
 	Push $0
 	# replace InstallDirRegKey call with SHCTX-compatible code
-	
+
 	ReadRegStr $0 SHCTX "${{REGKEY}}\Path" ""
 	${{If}} $0 != ""
 		StrCpy $INSTDIR $0
@@ -206,7 +205,7 @@ FunctionEnd
 Function un.setInstallDir
 	Push $0
 	# replace InstallDirRegKey call with SHCTX-compatible code
-	
+
 	ReadRegStr $0 SHCTX "${{REGKEY}}\Path" ""
 	${{If}} $0 != ""
 		StrCpy $INSTDIR $0
@@ -217,7 +216,7 @@ FunctionEnd
 # Installer functions
 Function .onInit
 	Call setInstallDir
-	
+
     InitPluginsDir
     !insertmacro MUI_LANGDLL_DISPLAY
     !insertmacro MULTIUSER_INIT
@@ -226,7 +225,7 @@ FunctionEnd
 # Uninstaller functions
 Function un.onInit
 	Call un.setInstallDir
-	
+
     SetAutoClose true
     !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
     !insertmacro MUI_UNGETLANGUAGE

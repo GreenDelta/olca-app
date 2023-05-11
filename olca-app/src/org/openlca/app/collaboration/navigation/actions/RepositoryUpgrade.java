@@ -36,7 +36,7 @@ import org.openlca.git.model.ModelRef;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.Diffs;
-import org.openlca.git.util.TypeRefIdMap;
+import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Dirs;
 import org.openlca.util.Strings;
@@ -164,7 +164,7 @@ public class RepositoryUpgrade {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return false;
-			var descriptors = new TypeRefIdMap<RootDescriptor>();
+			var descriptors = new TypedRefIdMap<RootDescriptor>();
 			for (var type : ModelType.values()) {
 				Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
 			}
@@ -186,7 +186,7 @@ public class RepositoryUpgrade {
 	}
 
 	private boolean stashDifferences(Repository repo, Commit commit, PersonIdent user,
-			TypeRefIdMap<RootDescriptor> descriptors)
+			TypedRefIdMap<RootDescriptor> descriptors)
 			throws IOException, InvocationTargetException, InterruptedException, GitAPIException {
 		var differences = Diffs.of(repo.git, commit)
 				.with(Database.get(), repo.gitIndex).stream()
@@ -244,9 +244,9 @@ public class RepositoryUpgrade {
 
 	private class EqualResolver implements ConflictResolver {
 
-		private final TypeRefIdMap<RootDescriptor> descriptors;
+		private final TypedRefIdMap<RootDescriptor> descriptors;
 
-		private EqualResolver(TypeRefIdMap<RootDescriptor> descriptors) {
+		private EqualResolver(TypedRefIdMap<RootDescriptor> descriptors) {
 			this.descriptors = descriptors;
 		}
 

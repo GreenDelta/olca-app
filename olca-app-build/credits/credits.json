@@ -1,0 +1,239 @@
+{
+  "$schema": "./.schema.json",
+  "credits": [
+    {
+      "project": "Logback",
+      "projectUrl": "https://github.com/qos-ch/logback",
+      "license": "EPL v1.0",
+      "licenseUrl": "https://raw.githubusercontent.com/qos-ch/logback/master/LICENSE.txt"
+    },
+    {
+      "project": " Jackson",
+      "projectUrl": "https://github.com/FasterXML/jackson-core",
+      "license": "APL v2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/FasterXML/jackson-core/2.16/LICENSE"
+    },
+    {
+      "project": " blockingMap4j",
+      "projectUrl": "https://github.com/sarveswaran-m/blockingMap4j",
+      "license": "APL v2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/sarveswaran-m/blockingMap4j/master/LICENSE"
+    },
+    {
+      "project": " curvesapi",
+      "projectUrl": "https://github.com/virtuald/curvesapi",
+      "license": "BSD",
+      "licenseUrl": "https://raw.githubusercontent.com/virtuald/curvesapi/master/license.txt"
+    },
+    {
+      "project": "Codemirror",
+      "projectUrl": "https://codemirror.net/",
+      "license": "MIT",
+      "licenseUrl": "https://codemirror.net/LICENSE"
+    },
+    {
+      "project": "Eclipse Platform",
+      "projectUrl": "https://projects.eclipse.org/projects/eclipse.platform",
+      "license": "EPL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.common/master/LICENSE"
+    },
+    {
+      "project": "Gson",
+      "projectUrl": "https://github.com/google/gson",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/google/gson/master/LICENSE"
+    },
+    {
+      "project": "Guava",
+      "projectUrl": "https://github.com/google/guava",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/google/guava/master/LICENSE"
+    },
+    {
+      "project": "Protocol Buffers",
+      "projectUrl": "https://github.com/protocolbuffers/protobuf",
+      "license": "BSD 3",
+      "licenseUrl": "https://raw.githubusercontent.com/protocolbuffers/protobuf/main/LICENSE"
+    },
+    {
+      "project": "JavaEWAH",
+      "projectUrl": "https://github.com/lemire/javaewah",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/lemire/javaewah/master/LICENSE"
+    },
+    {
+      "project": "ph-commons",
+      "projectUrl": "https://github.com/phax/ph-commons",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/phax/ph-commons/master/LICENSE.txt"
+    },
+    {
+      "project": "Jakarta XML Binding",
+      "projectUrl": "https://eclipse-ee4j.github.io/jaxb-ri/",
+      "license": "BSD 3",
+      "licenseUrl": "https://raw.githubusercontent.com/eclipse-ee4j/jaxb-ri/master/LICENSE.md"
+    },
+    {
+      "project": "Eclipse Jersey",
+      "projectUrl": "https://eclipse-ee4j.github.io/jersey/",
+      "license": "EPL v2",
+      "licenseUrl": "https://raw.githubusercontent.com/eclipse-ee4j/jersey/master/LICENSE.md"
+    },
+    {
+      "project": "HikaryCP",
+      "projectUrl": "https://github.com/brettwooldridge/HikariCP",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/brettwooldridge/HikariCP/dev/LICENSE"
+    },
+    {
+      "project": "SparseBitSet",
+      "projectUrl": "https://github.com/brettwooldridge/SparseBitSetP",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/brettwooldridge/SparseBitSet/master/LICENSE"
+    },
+    {
+      "project": "Apache Commons",
+      "projectUrl": "https://commons.apache.org/",
+      "license": "APL 2.0",
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "project": "gRPC-Java",
+      "projectUrl": "https://github.com/grpc/grpc-java",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/grpc/grpc-java/master/LICENSE"
+    },
+    {
+      "project": "Jakarta Persistence",
+      "projectUrl": "https://github.com/jakartaee/persistence",
+      "license": "EPL-2.0 OR BSD-3-Clause",
+      "licenseUrl": "https://raw.githubusercontent.com/jakartaee/persistence/master/LICENSE.md"
+    },
+    {
+      "project": "Trove",
+      "projectUrl": "https://bitbucket.org/trove4j/trove/src/master/",
+      "license": "LGPL",
+      "licenseUrl": "https://bitbucket.org/trove4j/trove/raw/d4433e656b9eba5b1ed713ffe8e15660af37dfb4/LICENSE.txt"
+    },
+    {
+      "project": "Apache Derby",
+      "projectUrl": "https://db.apache.org/derby/",
+      "license": "APL 2.0",
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "project": "Apache POI",
+      "projectUrl": "https://poi.apache.org/",
+      "license": "APL 2.0",
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "project": "checker-equal",
+      "projectUrl": "https://checkerframework.org/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt"
+    },
+    {
+      "project": "Eclipse JGit",
+      "projectUrl": "https://www.eclipse.org/jgit/",
+      "license": "BSD 3",
+      "licenseUrl": "https://git.eclipse.org/c/jgit/jgit.git/plain/LICENSE"
+    },
+    {
+      "project": "EclipseLink",
+      "projectUrl": "https://www.eclipse.org/eclipselink/",
+      "license": "EPL v2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/eclipse-ee4j/eclipselink/master/LICENSE.md"
+    },
+    {
+      "project": "hk2",
+      "projectUrl": "https://github.com/eclipse-ee4j/glassfish-hk2",
+      "license": "EPL v2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/eclipse-ee4j/glassfish-hk2/master/LICENSE.md"
+    },
+    {
+      "project": "Javassist",
+      "projectUrl": "https://github.com/jboss-javassist/javassist",
+      "license": "APL 2.0",
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "project": "SLF4J",
+      "projectUrl": "http://www.slf4j.org/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/qos-ch/slf4j/master/LICENSE.txt"
+    },
+    {
+      "project": "jQuery",
+      "projectUrl": "https://jquery.com/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/jquery/jquery/main/LICENSE.txt"
+    },
+    {
+      "project": "Jython",
+      "projectUrl": "https://www.jython.org/",
+      "license": "PSF License v2",
+      "licenseUrl": "https://raw.githubusercontent.com/jython/jython/master/LICENSE.txt"
+    },
+    {
+      "project": "MapDB",
+      "projectUrl": "http://www.mapdb.org/",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/jankotek/mapdb/master/LICENSE.txt"
+    },
+    {
+      "project": "Milligram",
+      "projectUrl": "https://milligram.io/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/milligram/milligram/master/license"
+    },
+    {
+      "project": "Normalize.css",
+      "projectUrl": "https://necolas.github.io/normalize.css/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/necolas/normalize.css/master/LICENSE.md"
+    },
+    {
+      "project": "OpenBLAS",
+      "projectUrl": "https://www.openblas.net/",
+      "license": "BSD",
+      "licenseUrl": "https://raw.githubusercontent.com/xianyi/OpenBLAS/develop/LICENSE"
+    },
+    {
+      "project": "React",
+      "projectUrl": "https://reactjs.org/",
+      "license": "MIT",
+      "licenseUrl": "https://raw.githubusercontent.com/facebook/react/master/LICENSE"
+    },
+    {
+      "project": "Temurin OpenJDK",
+      "projectUrl": "https://adoptium.net/",
+      "license": "GPL v2 with classpath exception",
+      "licenseUrl": "https://raw.githubusercontent.com/adoptium/jdk/master/LICENSE"
+    },
+    {
+      "project": "zt-zip",
+      "projectUrl": "https://github.com/zeroturnaround/zt-zip",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/zeroturnaround/zt-zip/master/LICENSE"
+    },
+    {
+      "project": "JTS Topology Suite",
+      "projectUrl": "https://github.com/locationtech/jts",
+      "license": "EPL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/locationtech/jts/master/LICENSES.md"
+    },
+    {
+      "project": "Inter Google Font",
+      "projectUrl": "https://fonts.google.com/specimen/Inter",
+      "license": "OFL 1.1",
+      "licenseUrl": "https://raw.githubusercontent.com/rsms/inter/master/LICENSE.txt"
+    },
+    {
+      "project": "Iosevka Font",
+      "projectUrl": "https://github.com/be5invis/Iosevka",
+      "license": "OFL 1.1",
+      "licenseUrl": "https://raw.githubusercontent.com/be5invis/Iosevka/main/LICENSE.md"
+    }
+  ]
+}

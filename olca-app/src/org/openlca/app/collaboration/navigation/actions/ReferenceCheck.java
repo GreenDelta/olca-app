@@ -18,24 +18,24 @@ import org.openlca.app.db.Database;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.util.TypeRefIdMap;
+import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.git.util.TypedRefId;
-import org.openlca.git.util.TypeRefIdSet;
+import org.openlca.git.util.TypedRefIdSet;
 
 class ReferenceCheck {
 
 	private final IDatabase database;
-	private final TypeRefIdMap<Diff> diffs;
+	private final TypedRefIdMap<Diff> diffs;
 	private final ModelReferences references;
 	private final Set<TriDiff> input;
-	private final TypeRefIdSet selection;
-	private final TypeRefIdSet visited = new TypeRefIdSet();
+	private final TypedRefIdSet selection;
+	private final TypedRefIdSet visited = new TypedRefIdSet();
 
 	private ReferenceCheck(IDatabase database, List<Diff> all, Set<TriDiff> input) {
 		this.database = database;
-		this.diffs = TypeRefIdMap.of(all);
+		this.diffs = TypedRefIdMap.of(all);
 		this.input = input;
-		this.selection = new TypeRefIdSet(input);
+		this.selection = new TypedRefIdSet(input);
 		this.references = App.exec("Collecting references", () -> ModelReferences.scan(Database.get()));
 	}
 
@@ -69,7 +69,7 @@ class ReferenceCheck {
 	}
 
 	private Set<TriDiff> collect() {
-		var referenced = new TypeRefIdSet();
+		var referenced = new TypedRefIdSet();
 		var stack = new Stack<TypedRefId>();
 		selection.forEach(selected -> stack.add(selected));
 		while (!stack.isEmpty()) {
