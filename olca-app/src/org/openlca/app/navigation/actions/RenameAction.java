@@ -20,10 +20,10 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
-import org.openlca.core.database.ParameterDao;
 import org.openlca.core.database.RootEntityDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Parameter;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -62,11 +62,10 @@ class RenameAction extends Action implements INavigationAction {
 	public void run() {
 
 		// for parameters, open another dialog
-		if (element instanceof ModelElement) {
-			var d = ((ModelElement) element).getContent();
+		if (element instanceof ModelElement modElem) {
+			var d = modElem.getContent();
 			if (d.type == ModelType.PARAMETER) {
-				var param = new ParameterDao(Database.get())
-					.getForId(d.id);
+				var param = Database.get().get(Parameter.class, d.id);
 				RenameParameterDialog.open(param);
 				return;
 			}
@@ -79,7 +78,7 @@ class RenameAction extends Action implements INavigationAction {
 		var validator = element instanceof CategoryElement
 			? new CategoryNameValidator()
 			: null;
-		
+
 		var dialog = new InputDialog(UI.shell(), M.Rename,
 			M.PleaseEnterANewName, name, validator);
 		if (dialog.open() != Window.OK)
@@ -109,13 +108,12 @@ class RenameAction extends Action implements INavigationAction {
 
 	@SuppressWarnings("unchecked")
 	private <T extends RootEntity> void doUpdate(
-		RootDescriptor d, String newName) {
-		var dao = (RootEntityDao<T, ?>) Daos.root(
-			Database.get(), d.type);
+			RootDescriptor d, String newName) {
+		var dao = (RootEntityDao<T, ?>) Daos.root(Database.get(), d.type);
 		T entity = dao.getForId(d.id);
 		entity.name = newName.trim();
 		dao.update(entity);
+		Cache.evict(d);
 		Navigator.refresh(element.getParent());
 	}
-
 }
