@@ -170,12 +170,12 @@ body {
 
 .nav-item.active,
 .nav-item.active::after {
-    color: #00ff38;
+    color: #98c72b;
 }
 
 .nav-item.active::after {
     display: block;
-    background: #00ff38;
+    background: #98c72b;
 }
 
 .nav-item:hover::after {
@@ -244,7 +244,7 @@ body {
 }
 
 .content-box a {
-    color: #00ff38;
+    color: #98c72b;
     cursor: pointer;
 }
 @media (max-width: 995px) {

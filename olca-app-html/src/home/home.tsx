@@ -31,7 +31,7 @@ const NAV_CONFIGURATION = [
         navId: 'community-forum',
     },
     {
-        navLabel: 'Comprehensive database',
+        navLabel: 'Comprehensive databases',
         navId: 'databases',
     },
     {
@@ -43,8 +43,8 @@ const NAV_CONFIGURATION = [
         navId: 'certified-training',
     },
     {
-        navLabel: 'Work with openLCA experts',
-        navId: 'experts',
+        navLabel: 'Working with the developers of openLCA ',
+        navId: 'developers',
     },
 
 ];
@@ -110,7 +110,7 @@ const messages: {
             + "GreenDelta and also by other certified trainers worldwide. They "
             + "are posted and can be booked on "
             + "<a id=\"trainings\">Nexus</a>.",
-        'experts.text':
+        'developers.text':
            "openLCA is developed by <a id=\"greendelta\">GreenDelta</a> in "
            + "Berlin, Germany. If you're passionate about making a positive "
            + "impact through your work - whether it's in IT development, data "
