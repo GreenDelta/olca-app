@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIST="openLCA_macOS_x64_2.0.0.RC_$(date '+%Y-%m-%d')"
+DIST="openLCA_macOS_x64_2.0.0_$(date '+%Y-%m-%d')"
 APP_ID="org.openlca.app"
 JRE_ID="org.openlca.jre"
 APP_DMG="build/tmp/macosx.cocoa.x86_64/openLCA_dmg/openLCA.app"
