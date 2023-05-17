@@ -4,7 +4,7 @@
 <product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="2.0.0" useFeatures="false" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
-      <image path="/olca-app/icons/about.png"/>
+      <image path="/olca-app/icons/logo/about.png"/>
       <text>
          openLCA 2.0.0
 
