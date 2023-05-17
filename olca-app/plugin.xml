@@ -471,7 +471,7 @@
 			</property>
 			<property
 					name="aboutImage"
-					value="icons/logo/about.png">
+					value="icons/about.png">
 			</property>
 			<property
 					name="appName"
@@ -495,10 +495,6 @@
 					name="startupMessageRect"
 					value="7,525,445,20">
 			</property>
-   <property
-         name="preferenceCustomization"
-         value="plugin_customization.ini">
-   </property>
 		</product>
 	</extension>
 
