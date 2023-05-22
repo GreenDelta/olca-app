@@ -303,7 +303,7 @@ const setData = (data: Data) => {
 setData({
     version: 'Version 1.9.0',
     lang: 'en',
-    showLibHint: false,
+    showLibHint: true,
 });
 
 // expose the setData function by binding it to the window object
