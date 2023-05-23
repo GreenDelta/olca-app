@@ -138,6 +138,7 @@ body {
     display: flex;
     align-content: center;
     align-items: center;
+    overflow-y: hidden;
 }
 
 .nav {
@@ -189,6 +190,7 @@ body {
 .right-section {
     width: 65%;
     height: 100%;
+    overflow-y:hidden;
 }
 
 .right-section-container {
