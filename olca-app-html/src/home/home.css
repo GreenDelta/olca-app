@@ -356,3 +356,13 @@ body {
         height: 48px;
     }
 }
+
+@media (max-height: 700px){
+    .footer{
+        margin-top: 20px
+    }
+
+    .header{
+        margin-bottom: 20px;
+    }
+}
