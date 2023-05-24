@@ -77,7 +77,8 @@ public final class Themes {
 				// move the file
 				var target = new File(subDir, file.getName());
 				try {
-					Files.move(file.toPath(), target.toPath());
+					Files.move(file.toPath(), target.toPath(),
+							StandardCopyOption.REPLACE_EXISTING);
 				} catch (Exception e) {
 					var log = LoggerFactory.getLogger(Themes.class);
 					log.error("failed to move old themes " + file.getName()
