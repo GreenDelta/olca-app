@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.db.Repository;
+import org.openlca.app.tools.authentification.AuthenticationGroup;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 
