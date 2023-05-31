@@ -262,9 +262,9 @@
 		</editor>
 
 		<editor
-				class="org.openlca.app.tools.libraries.LibraryInfoPage"
+				class="org.openlca.app.editors.libraries.LibraryEditor"
 				default="false"
-				id="LibraryInfoPage"
+				id="editors.LibraryEditor"
 				name="Library">
 		</editor>
 

@@ -8,7 +8,7 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.libraries.LibraryInfoPage;
+import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.core.library.Library;
 
 public class OpenLibraryAction extends Action implements INavigationAction {
@@ -35,6 +35,6 @@ public class OpenLibraryAction extends Action implements INavigationAction {
 	public void run() {
 		if (library == null)
 			return;
-		LibraryInfoPage.show(library);
+		LibraryEditor.open(library);
 	}
 }

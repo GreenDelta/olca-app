@@ -38,7 +38,7 @@ public class AuthenticationDialog extends FormDialog {
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
 				"Authenticate " + library,
-				"Enter your credentials for the library.");
+				"Enter your credentials to open the library.");
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body,  1);
 		UI.gridData(body, true, true).widthHint = 500;

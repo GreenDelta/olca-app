@@ -4,6 +4,9 @@
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/aopalliance-repackaged-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/bcpkix-jdk15on-1.70.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/bcprov-jdk15on-1.70.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/bcutil-jdk15on-1.70.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/checker-qual-3.33.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.9.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.13.jar"/>
@@ -74,6 +77,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.0.3-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.0.3-SNAPSHOT.jar"/>
+    <classpathentry exported="true" kind="lib" path="libs/olca-license-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-native-0.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-process-xls-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-2.0.1.jar"/>
