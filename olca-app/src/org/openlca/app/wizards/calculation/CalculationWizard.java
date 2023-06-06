@@ -9,11 +9,12 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IEditorPart;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.simulation.SimulationEditor;
 import org.openlca.app.util.ErrorReporter;
@@ -127,7 +128,8 @@ public class CalculationWizard extends Wizard {
 		// run the calculation
 		log.trace("run calculation");
 		var calc = new SystemCalculator(Database.get())
-				.withLibraryDir(Workspace.getLibraryDir());
+				.withSolver(App.getSolver());
+		Libraries.forCalculation().ifPresent(calc::withLibraries);
 		var result = setup.type == CalculationType.LAZY
 				? calc.calculateLazy(setup.calcSetup)
 				: calc.calculateEager(setup.calcSetup);

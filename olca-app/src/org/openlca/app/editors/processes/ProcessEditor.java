@@ -6,6 +6,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
@@ -14,7 +15,6 @@ import org.openlca.app.editors.processes.allocation.AllocationPage;
 import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.LibraryUtil;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessDocumentation;
@@ -45,7 +45,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 		parameterSupport = new ParameterChangeSupport();
 		parameterSupport.onEvaluation(this::evalFormulas);
 		if (process.isFromLibrary()) {
-			LibraryUtil.fillExchangesOf(process);
+			Libraries.fillExchangesOf(process);
 		}
 	}
 
