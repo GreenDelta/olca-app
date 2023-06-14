@@ -51,6 +51,7 @@ public class CurrencyTable extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Images.get(ModelType.CURRENCY));
 		return new Page(this);
 	}
 

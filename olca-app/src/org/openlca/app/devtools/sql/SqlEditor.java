@@ -54,6 +54,7 @@ public class SqlEditor extends ScriptingEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Icon.SQL.get());
 		return page = new Page();
 	}
 

@@ -1,40 +1,41 @@
-<?xml version="1.0" encoding="UTF-8" standalone = "no" ?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-
-	<dict>
-		<key>CFBundleExecutable</key>
-            <string>openLCA</string>
-		<key>CFBundleGetInfoString</key>
-            <string>The open source Life Cycle and Sustainability Assessment software</string>
-        <key>LSApplicationCategoryType</key>
-           <string>public.app-category.utilities</string>
-		<key>CFBundleIconFile</key>
-            <string>logo.icns</string>
-		<key>CFBundleIdentifier</key>
-            <string>org.openlca.app</string>
-		<key>CFBundleInfoDictionaryVersion</key>
-            <string>6.0</string>
-		<key>CFBundleName</key>
-            <string>openLCA</string>
-		<key>CFBundlePackageType</key>
-            <string>APPL</string>
-		<key>CFBundleShortVersionString</key>
-            <string>_VERSION_</string>
-		<key>CFBundleSignature</key>
-            <string>????</string>
-		<key>CFBundleVersion</key>
-            <string>_VERSION_</string>
-		<key>NSHighResolutionCapable</key>
-            <true />
-		<key>CFBundleDevelopmentRegion</key>
-            <string>English</string>
-		<key>Eclipse</key>
-            <array>
-                <string>-keyring</string>
-                <string>~/.eclipse_keyring</string>
-            </array>
-		<key>CFBundleDisplayName</key>
-            <string>openLCA</string>
-	</dict>
-
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDisplayName</key>
+	<string>openLCA</string>
+	<key>CFBundleExecutable</key>
+	<string>openLCA</string>
+	<key>CFBundleGetInfoString</key>
+	<string>The open source Life Cycle and Sustainability Assessment software</string>
+	<key>CFBundleIconFile</key>
+	<string>logo.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.openlca.app</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>openLCA</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>_VERSION_</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>_VERSION_</string>
+	<key>Eclipse</key>
+	<array>
+		<string>-keyring</string>
+		<string>~/.eclipse_keyring</string>
+	</array>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.14</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+</dict>
 </plist>

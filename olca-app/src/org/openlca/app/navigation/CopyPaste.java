@@ -8,11 +8,11 @@ import java.util.Queue;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
-import org.openlca.app.util.LibraryUtil;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;
@@ -279,9 +279,9 @@ public class CopyPaste {
 			return;
 		if (entity.isFromLibrary()) {
 			if (entity instanceof Process p) {
-				LibraryUtil.fillExchangesOf(p);
+				Libraries.fillExchangesOf(p);
 			} else if (entity instanceof ImpactCategory i) {
-				LibraryUtil.fillFactorsOf(i);
+				Libraries.fillFactorsOf(i);
 			}
 		}
 		var copy = (RootEntity) entity.copy();

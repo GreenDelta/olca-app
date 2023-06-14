@@ -12,10 +12,13 @@ import zipfile
 from enum import Enum
 from dataclasses import dataclass
 from pathlib import Path
-from typing import cast, Optional
+from typing import Optional
 
 # the version of the native library package
 NATIVE_LIB_VERSION = "0.0.1"
+
+# the bundle ID of the JRE
+JRE_ID = "org.openlca.jre"
 
 # the root of the build project olca-app/olca-app-build
 PROJECT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -134,8 +137,8 @@ class Zip:
 
         # package the folder
         if Zip.get().is_z7:
-            tar = base.with_suffix(".tar")
-            gz = base.with_suffix(".tar.gz")
+            tar = target.parent / (base_name + ".tar")
+            gz = target.parent / (base_name + ".tar.gz")
             subprocess.call(
                 [Zip.z7(), "a", "-ttar", str(tar), folder.as_posix() + "/*"]
             )
@@ -236,6 +239,10 @@ class BuildDir:
         # JRE and native libraries
         JRE.extract_to(self)
         NativeLib.extract_to(self, repo=NativeLib.REPO_GITHUB)
+
+        # edit the JRE Info.plist
+        if self.osa.is_mac():
+            MacDir.edit_jre_info(self)
 
         # copy credits
         print("  copy credits")
@@ -458,9 +465,7 @@ class MacDir:
             if source.exists():
                 shutil.move(str(source), str(target))
 
-        resources = PROJECT_DIR / "resources"
-        shutil.copy2(resources / "openLCA.entitlements", app_dir / "Contents")
-        MacDir.add_info_plist(app_dir / "Contents/Info.plist")
+        MacDir.add_app_info(app_dir / "Contents/Info.plist")
 
         # create the ini file
         plugins_dir = eclipse_dir / "plugins"
@@ -479,27 +484,40 @@ class MacDir:
         delete(macos_dir / "openLCA.ini")
 
     @staticmethod
-    def add_info_plist(path: Path):
+    def add_app_info(path: Path):
         # set version of the app
         # (version must be composed of one to three period-separated integers.)
         info_dict = {
             "CFBundleShortVersionString": Version.get().base,
             "CFBundleVersion": Version.get().base,
         }
-        info = ElementTree.parse(PROJECT_DIR / "templates/Info.plist")
-        iterator = info.getroot().find("dict").iter()
+        MacDir.edit_plist(PROJECT_DIR / "templates/Info.plist", path, info_dict)
+
+    @staticmethod
+    def edit_jre_info(build_dir: BuildDir):
+        path = build_dir.jre_dir / "Contents/Info.plist"
+        info_dict = {
+            "CFBundleIdentifier": JRE_ID,
+        }
+        MacDir.edit_plist(path, path, info_dict)
+
+    @staticmethod
+    def edit_plist(path_in: Path, path_out: Path, info: dict):
+        plist = ElementTree.parse(path_in)
+        iterator = plist.getroot().find("dict").iter()
         for elem in iterator:
-            if elem.text in info_dict.keys():
+            if elem.text in info.keys():
                 string = next(iterator, None)
                 if string is not None:
-                    string.text = info_dict[elem.text]
+                    string.text = info[elem.text]
 
-        with open(path, "wb") as out:
+        with open(path_out, "wb") as out:
             out.write(
                 b'<?xml version="1.0" encoding="UTF-8" standalone = '
                 b'"no" ?>\n'
             )
-            info.write(out, encoding="UTF-8", xml_declaration=False)
+            plist.write(out, encoding="UTF-8", xml_declaration=False)
+
 
 
 class Nsis:
@@ -569,7 +587,7 @@ class Nsis:
         if not dist_dir.exists():
             dist_dir.mkdir(parents=True, exist_ok=True)
         app_file = (
-            dist_dir / f"openLCA_{build_dir.osa.name}"
+            dist_dir / f"openLCA_{build_dir.osa.value}"
             f"_{version.app_suffix}.exe"
         )
         shutil.move(build_dir.root / "setup.exe", app_file)

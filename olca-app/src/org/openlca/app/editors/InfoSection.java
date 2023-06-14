@@ -12,6 +12,8 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -100,18 +102,22 @@ public class InfoSection {
 		// last change
 		UI.label(versionComp, tk, " ");
 		createDateText(versionComp, tk);
+
+		// uuid
+		if (entity.refId != null) {
+			UI.label(versionComp, tk, " ");
+			UI.label(versionComp, tk, "UUID");
+			var uuidText = UI.text(versionComp, null, entity.refId,
+					SWT.READ_ONLY);
+			uuidText.setBackground(versionComp.getBackground());
+			var gridData = new GridData(GridData.FILL_HORIZONTAL);
+			uuidText.setLayoutData(gridData);
+		}
+
 		UI.filler(container, tk);
 
 		// tags
 		createTags(tk);
-
-		// uuid
-		UI.label(versionComp, tk, " ");
-		UI.label(versionComp, tk, "UUID");
-		var uuidText = UI.formText(versionComp, tk, false);
-		if (entity.refId != null) {
-			uuidText.setText(entity.refId, false, false);
-		}
 
 		return this;
 	}

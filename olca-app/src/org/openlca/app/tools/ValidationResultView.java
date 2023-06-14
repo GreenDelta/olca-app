@@ -52,6 +52,7 @@ public class ValidationResultView extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Icon.VALIDATE.get());
 		return new Page(this);
 	}
 

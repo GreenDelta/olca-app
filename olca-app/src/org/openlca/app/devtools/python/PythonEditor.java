@@ -49,6 +49,7 @@ public class PythonEditor extends ScriptingEditor {
 
 	@Override
 	protected FormPage getPage() {
+		setTitleImage(Icon.PYTHON.get());
 		return page = new Page();
 	}
 

@@ -1,12 +1,17 @@
 #!/bin/bash
 
-DIST="openLCA_macOS_x64_2.0.0.beta3_$(date '+%Y-%m-%d')"
-BUNDLE_ID="org.openlca.app"
+DIST="openLCA_macOS_x64_2.0.0_$(date '+%Y-%m-%d')"
+APP_ID="org.openlca.app"
+JRE_ID="org.openlca.jre"
 APP_DMG="build/tmp/macosx.cocoa.x86_64/openLCA_dmg/openLCA.app"
 APP_PKG="build/tmp/macosx.cocoa.x86_64/openLCA_pkg/openLCA.app"
 APP_UNSIGNED="build/macosx.cocoa.x86_64/openLCA/openLCA.app"
 DMG="build/dist/${DIST}.dmg"
 PKG="build/dist/${DIST}.pkg"
+ENTITLEMENTS_DMG="resources/dmg.entitlements"
+ENTITLEMENTS_PKG="resources/pkg.entitlements"
+KEY_NOTARYTOOL="notarytool"
+KEY_ALTOOL="altool"
 
 # Image disk parameters
 BACKGROUND_DMG="resources/background_dmg.png"
@@ -30,19 +35,57 @@ cp_app() {
   printf " Done.\n"
 }
 
-sign_lib() {
+sign_lib_pkg() {
   printf "\nSigning the frameworks and libraries with codesign...\n"
   find "${APP}/" -depth \
-   -name "*.framework" \
-   -or -name "*.dylib" \
+   -not -path "*jre/Contents*" \
+   -name "*.dylib" \
    -or -name "*.bundle" \
    -or -name "*.so" \
    -or -name "*.jnilib" |
     while read -r file;
     do
-      codesign -f -v --entitlements "${APP}/Contents/openLCA.entitlements" \
-        --timestamp --options runtime  -i "$BUNDLE_ID" -s "$APP_ID" "$file";
+      codesign -f -v --timestamp --options runtime -i "$APP_ID" \
+       -s "$APP_CERT" "$file";
     done
+
+    find "${APP}/Contents/Eclipse/jre" -depth \
+     -name "*.framework" \
+     -or -name "*.dylib" \
+     -or -name "*.bundle" \
+     -or -name "*.so" \
+     -or -name "*.jnilib" \
+     -or -name "*jspawnhelper" |
+      while read -r file;
+      do
+        codesign -f -v --options runtime --entitlements "$ENTITLEMENTS" \
+         -i "$JRE_ID" -s "$APP_CERT" "$file";
+      done
+
+  printf "\nSigning the JRE binaries with codesign...\n"
+  JRE="${APP}/Contents/Eclipse/jre/Contents/Home/bin/"
+  find "$JRE" -type f |
+    while read -r file;
+      do
+        codesign -f -v --timestamp --options runtime \
+         --entitlements "$ENTITLEMENTS" \
+         -i "net.java.openjdk.$(basename "$file")" -s "$APP_CERT" "$file";
+      done
+}
+
+sign_lib_dmg() {
+   printf "\nSigning the frameworks and libraries with codesign...\n"
+   find "${APP}/" -depth \
+    -name "*.framework" \
+    -or -name "*.dylib" \
+    -or -name "*.bundle" \
+    -or -name "*.so" \
+    -or -name "*.jnilib" |
+     while read -r file;
+     do
+       codesign -f -v --timestamp --options runtime  -i "$APP_ID" \
+        -s "$APP_CERT" "$file";
+     done
 }
 
 sign_jar() {
@@ -69,9 +112,8 @@ sign_jar() {
           jar xf "../${p}" "$file"
           cd ..
           # Sign the library
-          codesign -f -v --entitlements "${APP}/Contents/openLCA.entitlements" \
-           --timestamp --options runtime  -i "$BUNDLE_ID" -s "$APP_ID" \
-            "tmp/${file}"
+          codesign -f -v --timestamp --options runtime  -i "$APP_ID" \
+           -s "$APP_CERT" "tmp/${file}"
           # Update the JAR with the signed library
           jar uf "$p" "tmp/${file}"
           rm -r tmp
@@ -85,7 +127,7 @@ sign_jar() {
 
 build_pkg() {
   printf "\nCreating the package installer file...\n"
-  productbuild --sign "$STORE_INSTALLER_ID" --component "$APP" /Applications \
+  productbuild --sign "$STORE_INSTALLER_CERT" --component "$APP" /Applications \
    "$PKG"
 }
 
@@ -98,8 +140,8 @@ build_dmg() {
    -volname "$(basename "NOTARIZATION_DMG")" -fs "HFS+" "$NOTARIZATION_DMG"
 
   printf "\nNotarization of the DMG...\n"
-  xcrun notarytool submit "$NOTARIZATION_DMG" --keychain-profile "$KEYCHAIN" \
-   --wait
+  xcrun notarytool submit "$NOTARIZATION_DMG" \
+   --keychain-profile "$KEY_NOTARYTOOL" --wait
 
   printf "\nStapling the app...\n"
   xcrun stapler staple "$APP"
@@ -122,34 +164,39 @@ notarize() {
   if [ "$1" = "pkg" ]; then
     APP="$APP_PKG"
     PRODUCT="$PKG"
-    APP_ID="$STORE_APP_ID"
+    APP_CERT="$STORE_APP_CERT"
+    ENTITLEMENTS="$ENTITLEMENTS_PKG"
   elif [ "$1" = "dmg" ]; then
     APP="$APP_DMG"
     PRODUCT="$DMG"
-    APP_ID="$DEV_APP_ID"
+    APP_CERT="$DEV_APP_CERT"
+    ENTITLEMENTS="$ENTITLEMENTS_DMG"
   fi
 
   clean
   cp_app
 
   printf "\nConverting the XML files to the right format...\n"
-  plutil -convert xml1 "${APP}/Contents/openLCA.entitlements"
+  plutil -convert xml1 "$ENTITLEMENTS"
   plutil -convert xml1 "${APP}/Contents/Info.plist"
 
   printf "\nRemoving eventual quarantine attribute...\n"
-  xattr -d com.apple.quarantine "$APP"
+  xattr -rc "$APP"
 
-  sign_lib
+  if [ "$1" = "pkg" ]; then
+      sign_lib_pkg
+    elif [ "$1" = "dmg" ]; then
+      sign_lib_dmg
+  fi
   sign_jar
 
   printf "\nSigning the openLCA executable at runtime...\n"
-  codesign -f -v --deep --entitlements "${APP}/Contents/openLCA.entitlements" \
-    --timestamp --options runtime -i "$BUNDLE_ID" -s "$APP_ID" \
-    "${APP}/Contents/MacOS/openLCA"
+  codesign -f -v --deep --entitlements "$ENTITLEMENTS" --timestamp \
+   --options runtime -i "$APP_ID" -s "$APP_CERT" "${APP}/Contents/MacOS/openLCA"
 
   printf "\nSigning the app bundle with the certificate...\n"
-  codesign -f -v --entitlements "${APP}/Contents/openLCA.entitlements" \
-    --timestamp --options runtime  -i "$BUNDLE_ID" -s "$APP_ID" "$APP"
+  codesign -f -v --entitlements "$ENTITLEMENTS" --timestamp --options runtime \
+   -i "$APP_ID" -s "$APP_CERT" "$APP"
   printf "\nChecking signature of the bundle...\n"
   codesign -dvv "$APP"
 
@@ -159,16 +206,16 @@ notarize() {
     build_dmg
   fi
 
-  printf "\nEnd of building of %s. Please test before distributing.\n" "$PRODUCT"
+  printf "\nEnd of packaging %s. Please test before distributing.\n" "$PRODUCT"
 }
 
 upload_pkg() {
   printf "\nValidating and uploading the app to the App Store...\n"
-  xcrun altool --validate-app -f "$PKG" -t osx -u andreas.ciroth@web.de \
-    -p @keychain:"$KEYCHAIN"
+  xcrun altool --validate-app -f "$PKG" -t osx -u "$USER" \
+    -p @keychain:"$KEY_ALTOOL"
 
-  xcrun altool --upload-app -f "$ZIP" -t osx -u andreas.ciroth@web.de \
-    -p @keychain:"$KEYCHAIN"
+  xcrun altool --upload-app -f "$PKG" -t osx -u "$USER" \
+    -p @keychain:"$KEY_ALTOOL"
 }
 
 usage() {
@@ -178,9 +225,6 @@ Create Mac distributions for openLCA.
 
 Usage:  $0 [args] [<pkg>|<dmg>|<upload>]
 
-  --keychain <password name>
-    Apple password stored in Keychain Access.
-
 <pkg> sign the code to create a .pkg installer, validate and upload the app to
  the App Store.
   --store-id-app <id>
@@ -189,6 +233,8 @@ Usage:  $0 [args] [<pkg>|<dmg>|<upload>]
   --store-id-installer <id>
       Apple ID to sign the installer for the Apple Store ("3rd Party Mac
       Developer Installer: GreenDelta GmbH (<code>)")
+  --user <Apple Developer ID>
+      E-mail address of the Apple developer account.
 
 <dmg> sign the code to create a .dmg disk image, notarize and staple the app.
   --dev-id-app <id>
@@ -205,16 +251,16 @@ EOHELP
 while [[ "${1:0:1}" = "-" ]]; do
 	case $1 in
 		--store-id-app)
-			STORE_APP_ID="$2"
+			STORE_APP_CERT="$2"
 			shift; shift;;
 		--store-id-installer)
-			STORE_INSTALLER_ID="$2"
+			STORE_INSTALLER_CERT="$2"
 			shift; shift;;
 		--dev-id-app)
-		  DEV_APP_ID="$2"
+		  DEV_APP_CERT="$2"
       shift; shift;;
-    --keychain)
-      KEYCHAIN="$2"
+    --user)
+      USER="$2"
       shift; shift;;
     --help | -h)
       usage;;
@@ -225,18 +271,15 @@ while [[ "${1:0:1}" = "-" ]]; do
 done
 
 
-if [ -z "$KEYCHAIN" ]; then
-    echo "Missing keychain argument. Run $0 --help to see usage."
-fi
-
 if [ "$1" = "pkg" ]; then
-  if [ -z "$STORE_APP_ID" ] || [ -z "$STORE_INSTALLER_ID" ]; then
-    echo "Missing argument. Run $0 --help to see usage."
+  if [ -z "$STORE_APP_CERT" ] || [ -z "$STORE_INSTALLER_CERT" ] \
+   || [ -z "$USER" ]; then
+    echo "Missing argument. Run $0 --help to see usage." && exit 1
   fi
   notarize "pkg"
 elif [ "$1" = "dmg" ]; then
-  if [ -z "$DEV_APP_ID" ]; then
-    echo "Missing argument. Run $0 --help to see usage."
+  if [ -z "$DEV_APP_CERT" ]; then
+    echo "Missing argument. Run $0 --help to see usage." && exit 1
   fi
   notarize "dmg"
 elif [ -z "$1" ]; then
@@ -245,6 +288,7 @@ fi
 
 if [ "$1" = "pkg" ] || [ "$1" = "upload" ]; then
   while true; do
+      printf "\n"
       read -rp "Do you wish to upload openLCA to the App Store? (Y/n)" answer
       case $answer in
           Y ) upload_pkg; break;;

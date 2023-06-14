@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.RcpActivator;
 
 /**
@@ -108,7 +109,8 @@ class ImageManager {
 	}
 
 	private static String toPath(String filename) {
-		return ROOT + File.separator + filename;
+		var mode = Theme.isDark() ? "dark" : "light";
+		return ROOT + File.separator + mode + File.separator + filename;
 	}
 
 	private static class OverlayImageDescriptor extends CompositeImageDescriptor {

@@ -25,6 +25,7 @@ import org.openlca.app.results.impacts.ImpactTreePage;
 import org.openlca.app.util.Labels;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,7 @@ public class ResultEditor extends FormEditor {
 	public void init(IEditorSite site, IEditorInput iInput)
 			throws PartInitException {
 		super.init(site, iInput);
+		setTitleImage(Icon.ANALYSIS_RESULT.get());
 		var inp = (ResultEditorInput) iInput;
 		result = Cache.getAppCache().remove(inp.resultKey, LcaResult.class);
 		if (inp.dqResultKey != null) {

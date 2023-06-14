@@ -15,6 +15,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
@@ -27,7 +28,6 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.LibraryUtil;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -65,7 +65,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		parameterSupport.onEvaluation(this::evalFormulas);
 		var impact = getModel();
 		if (impact.isFromLibrary()) {
-			LibraryUtil.fillFactorsOf(impact);
+			Libraries.fillFactorsOf(impact);
 		}
 	}
 

@@ -111,9 +111,8 @@ body {
 }
 
 .info-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
+    max-width: 16px;
+    margin-right: 8px;
 }
 
 .libhint-link {
@@ -139,6 +138,7 @@ body {
     display: flex;
     align-content: center;
     align-items: center;
+    overflow-y: hidden;
 }
 
 .nav {
@@ -170,12 +170,12 @@ body {
 
 .nav-item.active,
 .nav-item.active::after {
-    color: #00ff38;
+    color: #98c72b;
 }
 
 .nav-item.active::after {
     display: block;
-    background: #00ff38;
+    background: #98c72b;
 }
 
 .nav-item:hover::after {
@@ -190,6 +190,7 @@ body {
 .right-section {
     width: 65%;
     height: 100%;
+    overflow-y: hidden;
 }
 
 .right-section-container {
@@ -244,35 +245,25 @@ body {
 }
 
 .content-box a {
-    color: #00ff38;
+    color: #98c72b;
     cursor: pointer;
-}
-@media (max-width: 995px) {
-    .nav-item {
-        font-size: 18px;
-    }
-
-    .content-box {
-        font-size: 18px;
-        padding: 15px;
-    }
-
-    .nav-info-container {
-        font-size: 12px;
-    }
-
-    .img-link {
-        width: 120px;
-        height: 80px;
-    }
-
-    .gd-logo {
-        width: 150px;
-        height: 18px;
-    }
 }
 
 @media (max-width: 768px) {
+    .navigation {
+        flex-direction: column;
+        gap: 10px
+    }
+
+    .nav-info {
+        font-size: 16px;
+        line-height: 16px;
+    }
+
+    .info-icon {
+        max-width: 16px;
+    }
+
     .nav-item {
         font-size: 14px;
     }
@@ -280,10 +271,6 @@ body {
     .content-box {
         font-size: 14px;
         padding: 10px;
-    }
-
-    .nav-info-container {
-        font-size: 12px;
     }
 
     .img-link {
@@ -302,30 +289,55 @@ body {
     }
 }
 
-@media (max-width: 548px) {
-    .navigation {
-        flex-direction: column;
+@media (max-width: 1024px) {
+    .nav-item {
+        font-size: 18px;
     }
 
-    .nav-info-container {
-        font-size: 12px;
-        margin-top: 10px;
+    .content-box {
+        font-size: 18px;
+        padding: 15px;
+    }
+
+    .img-link {
+        width: 120px;
+        height: 80px;
+    }
+
+    .gd-logo {
+        width: 150px;
+        height: 18px;
     }
 }
 
-@media (min-width: 2000px) {
+@media (min-width: 1280px) {
+    .content-box {
+        margin: 0 auto;
+    }
+}
+
+@media (min-width: 1440px) {
+    .nav-info {
+        font-size: 22px;
+        line-height: 22px;
+    }
+
+    .info-icon {
+        max-width: 22px;
+    }
+
     .container {
         overflow: hidden;
     }
     .nav-item {
-        font-size: 28px;
+        font-size: 22px;
     }
 
     .section {
         height: calc(100vh - 186px);
     }
     .content-box {
-        font-size: 28px;
+        font-size: 22px;
         width: 800px;
         height: 350px;
     }
@@ -342,5 +354,15 @@ body {
     .gd-logo {
         width: 200px;
         height: 48px;
+    }
+}
+
+@media (max-height: 700px){
+    .footer{
+        margin-top: 20px
+    }
+
+    .header{
+        margin-bottom: 20px;
     }
 }

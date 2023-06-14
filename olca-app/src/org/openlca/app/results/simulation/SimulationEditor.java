@@ -49,6 +49,7 @@ public class SimulationEditor extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput editorInput)
 			throws PartInitException {
 		super.init(site, editorInput);
+		setTitleImage(Icon.SIMULATE.get());
 		var input = (SimulationInput) editorInput;
 		setup = Cache.getAppCache().remove(input.setupKey, CalculationSetup.class);
 		setPartName(Strings.cut(Labels.name(setup.target()), 75));
