@@ -116,18 +116,8 @@ class UpstreamTreeExport implements Runnable {
 		var ref = tree.ref;
 		if (ref == null)
 			return "";
-
-		if (ref instanceof EnviFlow) {
-			var enviFlow = (EnviFlow) ref;
-			if (enviFlow.flow() == null
-					|| enviFlow.flow().name == null)
-				return "";
-			if (enviFlow.location() == null
-					|| enviFlow.location().code == null)
-				return enviFlow.flow().name;
-			return enviFlow.flow().name + " - " + enviFlow.location().code;
-		}
-
+		if (ref instanceof EnviFlow enviFlow)
+			return Labels.name(enviFlow);
 		return ref instanceof Descriptor
 				? ((Descriptor) ref).name
 				: "";
