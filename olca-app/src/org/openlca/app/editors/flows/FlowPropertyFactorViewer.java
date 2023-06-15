@@ -1,7 +1,5 @@
 package org.openlca.app.editors.flows;
 
-import java.util.Objects;
-
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -18,6 +16,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
@@ -34,13 +33,15 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
 
+import java.util.Objects;
+
 class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	private final EntityCache cache;
 	private final FlowEditor editor;
 
-	public FlowPropertyFactorViewer(Composite parent, EntityCache cache,
-			FlowEditor editor) {
+	public FlowPropertyFactorViewer(
+			Composite parent, EntityCache cache, FlowEditor editor) {
 		super(parent);
 		this.editor = editor;
 		this.cache = cache;
@@ -54,7 +55,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 					.bind(M.ConversionFactor, new ConversionModifier())
 					.bind(M.IsReference, new ReferenceModifier())
 					.bind("", new CommentDialogModifier<>(
-						editor.getComments(), CommentPaths::get));
+							editor.getComments(), CommentPaths::get));
 		}
 	}
 
@@ -72,10 +73,11 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	}
 
 	public void setInput(Flow flow) {
-		if (flow == null)
+		if (flow == null) {
 			setInput(new FlowPropertyFactor[0]);
-		else
+		} else {
 			setInput(flow.flowPropertyFactors);
+		}
 	}
 
 	@Override
@@ -85,13 +87,13 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] {
+		return new String[]{
 				M.Name,
 				M.ConversionFactor,
 				M.ReferenceUnit,
 				M.Formula,
 				M.IsReference,
-				"" };
+				""};
 	}
 
 	@OnAdd
@@ -150,8 +152,9 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 
 	@OnDrop
 	protected void onDrop(Descriptor d) {
-		if (d != null)
+		if (d != null) {
 			add(d);
+		}
 	}
 
 	private class FactorLabelProvider extends LabelProvider implements
@@ -167,11 +170,11 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 				Flow flow = editor.getModel();
 				if (flow == null || flow.getReferenceFactor() == null)
 					return Images.get(false);
-				FlowPropertyFactor refFactor = flow.getReferenceFactor();
+				var refFactor = flow.getReferenceFactor();
 				boolean isRef = refFactor != null && refFactor.equals(obj);
 				return Images.get(isRef);
 			} else if (col == 5) {
-				String path = CommentPaths.get((FlowPropertyFactor) obj);
+				var path = CommentPaths.get((FlowPropertyFactor) obj);
 				return Images.get(editor.getComments(), path);
 			}
 			return null;
@@ -181,26 +184,15 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		public String getColumnText(Object obj, int col) {
 			if (!(obj instanceof FlowPropertyFactor factor))
 				return null;
-			switch (col) {
-			case 0:
-				if (factor.flowProperty == null)
-					return null;
-				return factor.flowProperty.name;
-			case 1:
-				return Double.toString(factor.conversionFactor);
-			case 2:
-				if (factor.flowProperty == null)
-					return null;
-				if (factor.flowProperty.unitGroup == null)
-					return null;
-				if (factor.flowProperty.unitGroup.referenceUnit == null)
-					return null;
-				return factor.flowProperty.unitGroup.referenceUnit.name;
-			case 3:
-				return getFormula(factor);
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> Labels.name(factor.flowProperty);
+				case 1 -> Double.toString(factor.conversionFactor);
+				case 2 -> factor.flowProperty != null
+						? Labels.name(factor.flowProperty.getReferenceUnit())
+						: null;
+				case 3 -> getFormula(factor);
+				default -> null;
+			};
 		}
 
 		private String getFormula(FlowPropertyFactor f) {
@@ -279,7 +271,5 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 		public boolean affectsOtherElements() {
 			return true;
 		}
-
 	}
-
 }

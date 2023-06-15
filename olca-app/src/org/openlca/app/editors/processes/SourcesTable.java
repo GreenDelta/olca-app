@@ -22,19 +22,19 @@ import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.Descriptor;
 
-class SourceViewer extends AbstractTableViewer<Source> {
+class SourcesTable extends AbstractTableViewer<Source> {
 
 	private final ProcessEditor editor;
 	private final SourceDao sourceDao;
 
-	public SourceViewer(ProcessEditor editor, Composite parent, IDatabase db) {
+	public SourcesTable(ProcessEditor editor, Composite parent, IDatabase db) {
 		super(parent);
 		getViewer().getTable().setLinesVisible(false);
 		getViewer().getTable().setHeaderVisible(false);
 		getViewer().setLabelProvider(new LabelProvider());
 		this.sourceDao = new SourceDao(db);
 		this.editor = editor;
-		getModifySupport().bind("", new CommentDialogModifier<Source>(
+		getModifySupport().bind("", new CommentDialogModifier<>(
 				editor.getComments(), CommentPaths::get));
 		Tables.bindColumnWidths(getViewer(), 0.97);
 		Tables.onDoubleClick(getViewer(), e -> {
@@ -89,9 +89,8 @@ class SourceViewer extends AbstractTableViewer<Source> {
 			doc = new ProcessDocumentation();
 			p.documentation = doc;
 		}
-		if (doc.sources.contains(source)) {
+		if (doc.sources.contains(source))
 			return false;
-		}
 		return doc.sources.add(source);
 	}
 
@@ -113,9 +112,9 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	protected void onDrop(Descriptor d) {
 		if (!editor.isEditable())
 			return;
-		if (!add(d))
-			return;
-		update();
+		if (add(d)) {
+			update();
+		}
 	}
 
 	private void update() {

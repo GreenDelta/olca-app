@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract implementation of AbstractViewer for SWT table viewer.
- *
+ * <p>
  * There are three extensions that can be implemented by annotating the methods
  * of implementing classes. To enable creation and removal actions use
  * annotations {@link OnAdd} and {@link OnRemove}. The run methods of each
@@ -60,9 +61,9 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 		if (supports(OnDrop.class))
 			addDropSupport(viewer);
 		if (useColumnHeaders())
-			cellModifySupport = new ModifySupport<>(viewer);		
+			cellModifySupport = new ModifySupport<>(viewer);
 	}
-	
+
 	private void createActions(TableViewer viewer) {
 		actions = new ArrayList<>();
 		if (supports(OnAdd.class))
@@ -102,30 +103,37 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 							tryInvoke(method, event.data);
 			}
 
-			private void tryInvoke(Method method, Object value) {
-				Class<?> parameterType = method.getParameterTypes().length > 0 ? method
-						.getParameterTypes()[0]
-						: null;
-				Class<?> dataType = value.getClass();
-				if (dataType.isArray()) {
-					for (Object object : (Object[]) value)
-						if (parameterType == object.getClass()) {
-							try {
-								boolean accessible = method.isAccessible();
-								method.setAccessible(true);
-								method.invoke(thisObject, object);
-								method.setAccessible(accessible);
-							} catch (Exception e) {
-								log.error("Error invoking OnDrop method", e);
-							}
-						}
+			private void tryInvoke(Method method, Object arg) {
+				if (method == null || arg == null)
+					return;
+				var paramTypes = method.getParameterTypes();
+				if (paramTypes.length != 1) {
+					log.error("OnDrop methods must have a single parameter: {}", method);
+					return;
+				}
+				var paramType = paramTypes[0];
+
+				Consumer<Object> invoke = val -> {
+					var argType = val.getClass();
+					if (!paramType.isAssignableFrom(argType)) {
+						log.error("called OnDrop with {} on {}", argType, paramType);
+						return;
+					}
+					try {
+						method.setAccessible(true);
+						method.invoke(thisObject, val);
+					} catch (Exception e) {
+						log.error("invoking OnDrop method failed", e);
+					}
+				};
+
+				var argType = arg.getClass();
+				if (argType.isArray()) {
+					for (Object ai : (Object[]) arg) {
+						invoke.accept(ai);
+					}
 				} else {
-					if (parameterType == dataType)
-						try {
-							method.invoke(thisObject, value);
-						} catch (Exception e) {
-							log.error("Error invoking OnDrop method", e);
-						}
+					invoke.accept(arg);
 				}
 			}
 		});
