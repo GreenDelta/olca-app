@@ -1,19 +1,13 @@
 package org.openlca.app.editors.processes.social;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelector;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
@@ -26,12 +20,14 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.trees.Trees;
-import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.descriptors.Descriptor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SocialAspectsPage extends ModelPage<Process> {
 
@@ -39,7 +35,6 @@ public class SocialAspectsPage extends ModelPage<Process> {
 
 	private TreeViewer tree;
 	private final TreeModel treeModel = new TreeModel();
-	private ScrolledForm form;
 
 	public SocialAspectsPage(ProcessEditor editor) {
 		super(editor, "SocialAspectsPage", M.SocialAspects);
@@ -48,35 +43,41 @@ public class SocialAspectsPage extends ModelPage<Process> {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		for (SocialAspect a : getModel().socialAspects)
-			treeModel.addAspect(a);
-		form = UI.header(this);
-		FormToolkit tk = managedForm.getToolkit();
-		Composite body = UI.body(form, tk);
+		for (var aspect : getModel().socialAspects) {
+			treeModel.addAspect(aspect);
+		}
+		var form = UI.header(this);
+		var tk = managedForm.getToolkit();
+		var body = UI.body(form, tk);
 		createEntrySection(tk, body);
 		form.reflow(true);
 	}
 
 	private void createEntrySection(FormToolkit tk, Composite body) {
-		Section section = UI.section(body, tk, M.SocialAssessment);
-		Composite comp = UI.sectionClient(section, tk, 1);
+		var section = UI.section(body, tk, M.SocialAssessment);
+		var comp = UI.sectionClient(section, tk, 1);
 		UI.gridData(section, true, true);
 		createTree(comp);
 		if (!isEditable())
 			return;
 		Trees.onDoubleClick(tree, (e) -> editAspect());
-		Action add = Actions.onAdd(this::addIndicator);
-		Action edit = Actions.create(M.Edit, Icon.EDIT.descriptor(), this::editAspect);
-		Action delete = Actions.onRemove(this::deleteAspect);
-		CommentAction.bindTo(section, "socialAspects", editor.getComments(), add, edit, delete);
+		var add = Actions.onAdd(() -> addIndicators(
+				ModelSelector.multiSelect(ModelType.SOCIAL_INDICATOR)));
+		var edit = Actions.create(M.Edit, Icon.EDIT.descriptor(), this::editAspect);
+		var delete = Actions.onRemove(this::deleteAspect);
+		CommentAction.bindTo(
+				section, "socialAspects", editor.getComments(), add, edit, delete);
 		Actions.bind(tree, add, edit, delete);
+		ModelTransfer.onDrop(tree.getTree(), this::addIndicators);
 	}
 
 	private void editAspect() {
-		Object o = Viewers.getFirstSelected(tree);
-		if (!(o instanceof SocialAspect))
+		var o = Viewers.getFirstSelected(tree);
+		if (!(o instanceof SocialAspect aspect)) {
+			addIndicators(ModelSelector.multiSelect(ModelType.SOCIAL_INDICATOR));
 			return;
-		var copy = ((SocialAspect) o).copy();
+		}
+		var copy = aspect.copy();
 		if (Dialog.open(copy, editor.getModel().socialDqSystem) == Window.OK) {
 			Aspects.update(getModel(), copy);
 			treeModel.update(copy);
@@ -86,50 +87,53 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void createTree(Composite comp) {
-		List<String> headers = new ArrayList<>(Arrays.asList(M.Name, M.RawValue, M.RiskLevel, M.ActivityVariable,
+		var headers = new ArrayList<>(List.of(
+				M.Name, M.RawValue, M.RiskLevel, M.ActivityVariable,
 				M.DataQuality, M.Comment, M.Source));
 		if (editor.hasAnyComment("socialAspects")) {
 			headers.add("");
 		}
-		tree = Trees.createViewer(comp, headers.toArray(new String[headers.size()]), new TreeLabel(editor));
+		tree = Trees.createViewer(
+				comp, headers.toArray(new String[0]), new TreeLabel(editor));
 		tree.setContentProvider(new TreeContent());
 		tree.setAutoExpandLevel(3);
 		tree.setInput(treeModel);
-		new ModifySupport<SocialAspect>(tree).bind("", new CommentDialogModifier<>(
-				editor.getComments(), CommentPaths::get));
+		new ModifySupport<SocialAspect>(tree).bind(
+				"", new CommentDialogModifier<>(editor.getComments(), CommentPaths::get));
 		Trees.bindColumnWidths(tree.getTree(), 0.2, 0.15, 0.15, 0.15, 0.12, 0.1, 0.1);
 	}
 
-	private void addIndicator() {
-		var list = ModelSelector.multiSelect(ModelType.SOCIAL_INDICATOR);
-		if (list.isEmpty())
+	private void addIndicators(List<? extends Descriptor> ds) {
+		if (ds == null || ds.isEmpty())
 			return;
-		for (var d : list) {
-			SocialAspect aspect = Aspects.find(getModel(), d);
-			if (aspect != null)
+		for (var d : ds) {
+			if (d.type != ModelType.SOCIAL_INDICATOR)
 				continue;
-			addIndicator(d);
+			var aspect = Aspects.find(getModel(), d);
+			if (aspect == null) {
+				addIndicator(d);
+			}
 		}
 	}
 
 	private void addIndicator(Descriptor d) {
-		SocialIndicatorDao dao = new SocialIndicatorDao(Database.get());
-		SocialIndicator i = dao.getForId(d.id);
-		SocialAspect a = new SocialAspect();
-		a.indicator = i;
-		getModel().socialAspects.add(a);
-		treeModel.addAspect(a);
+		var indicator = Database.get().get(SocialIndicator.class, d.id);
+		if (indicator == null)
+			return;
+		var aspect = new SocialAspect();
+		aspect.indicator = indicator;
+		getModel().socialAspects.add(aspect);
+		treeModel.addAspect(aspect);
 		tree.refresh();
 		editor.setDirty(true);
 	}
 
 	private void deleteAspect() {
-		Object o = Viewers.getFirstSelected(tree);
-		if (!(o instanceof SocialAspect))
+		var o = Viewers.getFirstSelected(tree);
+		if (!(o instanceof SocialAspect aspect))
 			return;
-		SocialAspect a = (SocialAspect) o;
-		Aspects.remove(getModel(), a);
-		treeModel.remove(a);
+		Aspects.remove(getModel(), aspect);
+		treeModel.remove(aspect);
 		tree.refresh();
 		editor.setDirty(true);
 	}

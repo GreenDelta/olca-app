@@ -41,6 +41,8 @@ class SourcesTable extends AbstractTableViewer<Source> {
 			Source s = Viewers.getFirstSelected(getViewer());
 			if (s != null) {
 				App.open(s);
+			} else {
+				onCreate();
 			}
 		});
 	}
@@ -72,9 +74,9 @@ class SourcesTable extends AbstractTableViewer<Source> {
 				added = true;
 			}
 		}
-		if (!added)
-			return;
-		update();
+		if (added) {
+			update();
+		}
 	}
 
 	private boolean add(Descriptor d) {
@@ -124,20 +126,21 @@ class SourcesTable extends AbstractTableViewer<Source> {
 		editor.setDirty(true);
 	}
 
-	private class LabelProvider extends BaseLabelProvider implements ITableLabelProvider {
+	private class LabelProvider extends BaseLabelProvider
+			implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
-			if (column == 0)
-				return getImage(element);
-			return Images.get(editor.getComments(), CommentPaths.get((Source) element));
+			return column == 0
+					? getImage(element)
+					: Images.get(editor.getComments(), CommentPaths.get((Source) element));
 		}
 
 		@Override
 		public String getColumnText(Object element, int column) {
-			if (column == 0)
-				return getText(element);
-			return null;
+			return column == 0
+					? getText(element)
+					: null;
 		}
 
 	}
