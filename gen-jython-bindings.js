@@ -85,15 +85,9 @@ let main = () => {
   // the order of the folders is important
   let modFolders = [
     `${modPath}/olca-core/src/main/java`,
-    `${modPath}/olca-formula/src/main/java`,
     `${modPath}/olca-io/src/main/java`,
     `${modPath}/olca-proto-io/src/main/java`,
     `${modPath}/olca-ipc/src/main/java`,
-    // `${modPath}/olca-ilcd/src/main/java`,
-    // `${modPath}/olca-simapro-csv/src/main/java`,
-    // `${modPath}/olca-ecospold-1/src/main/java`,
-    // `${modPath}/olca-ecospold-2/src/main/java`,
-	  // 'olca-app/src',
   ]
   generate(modFolders, 'mod_bindings.py')
 }
