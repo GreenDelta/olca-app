@@ -216,11 +216,12 @@ public class ContributionTreePage extends FormPage {
 		public Image getColumnImage(Object obj, int col) {
 			if (!(obj instanceof UpstreamNode node))
 				return null;
-			if (col == 1 && node.provider() != null)
-				return Images.get(node.provider().provider());
-			if (col == 3)
-				return image.get(getContribution(node));
-			return null;
+			return switch (col) {
+				case 1 -> Images.get(node.provider());
+				case 3 -> image.get(shareOf(node.result()));
+				case 4 -> image.get(shareOf(node.directContribution()));
+				default -> null;
+			};
 		}
 
 		@Override
@@ -228,7 +229,7 @@ public class ContributionTreePage extends FormPage {
 			if (!(obj instanceof UpstreamNode node))
 				return null;
 			return switch (col) {
-				case 0 -> Numbers.percent(getContribution(node));
+				case 0 -> Numbers.percent(shareOf(node.result()));
 				case 1 -> Labels.name(node.provider().provider());
 				case 2 -> Numbers.format(node.requiredAmount()) + " "
 						+ Labels.refUnit(node.provider());
@@ -252,15 +253,15 @@ public class ContributionTreePage extends FormPage {
 			return null;
 		}
 
-		private double getContribution(UpstreamNode node) {
-			if (node.result() == 0)
+		private double shareOf(double result) {
+			if (result == 0)
 				return 0;
 			double total = ((UpstreamTree) tree.getInput()).root.result();
 			if (total == 0)
 				return 0;
-			return total < 0 && node.result() > 0
-					? -node.result() / total
-					: node.result() / total;
+			return total < 0 && result > 0
+					? -result / total
+					: result / total;
 		}
 	}
 
@@ -277,8 +278,9 @@ public class ContributionTreePage extends FormPage {
 				case 0 -> M.Contribution + " [%]";
 				case 1 -> M.Process;
 				case 2 -> "Required amount";
-				case 3, 5 -> M.Unit;
-				case 4 -> M.Result;
+				case 3 -> M.Unit;
+				case 4 -> "Total result [" + label.getUnit() + "]";
+				case 5 -> "Direct contribution [" + label.getUnit() + "]";
 				default -> null;
 			};
 		}
@@ -288,12 +290,12 @@ public class ContributionTreePage extends FormPage {
 			if (!(item.getData() instanceof UpstreamNode node))
 				return null;
 			return switch (col) {
-				case 0 -> Numbers.format(label.getContribution(node) * 100, 2);
+				case 0 -> Numbers.format(label.shareOf(node.result()) * 100, 2);
 				case 1 -> label.getColumnText(node, 1);
 				case 2 -> Double.toString(node.requiredAmount());
 				case 3 -> Labels.refUnit(node.provider());
 				case 4 -> Double.toString(node.result());
-				case 5 -> label.getUnit();
+				case 5 -> Double.toString(node.directContribution());
 				default -> null;
 			};
 		}
