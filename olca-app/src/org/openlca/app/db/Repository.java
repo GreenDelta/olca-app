@@ -13,8 +13,6 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.git.GitIndex;
 import org.openlca.git.find.Commits;
 import org.openlca.git.find.Datasets;
-import org.openlca.git.find.Entries;
-import org.openlca.git.find.References;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.History;
 import org.openlca.util.Strings;
@@ -31,8 +29,6 @@ public class Repository {
 	public final GitIndex gitIndex;
 	public final Commits commits;
 	public final Datasets datasets;
-	public final References references;
-	public final Entries entries;
 	public final History localHistory;
 	private String password;
 
@@ -43,8 +39,6 @@ public class Repository {
 		gitIndex = GitIndex.fromFile(storeFile);
 		commits = Commits.of(git);
 		datasets = Datasets.of(git);
-		references = References.of(git);
-		entries = Entries.of(git);
 		localHistory = History.localOf(git);
 	}
 
