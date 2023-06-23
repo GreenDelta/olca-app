@@ -1,10 +1,5 @@
 package org.openlca.app.search;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.Daos;
@@ -15,6 +10,11 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 class Search implements Runnable {
 
@@ -103,6 +103,7 @@ class Search implements Runnable {
 			if (d == null)
 				return _empty;
 
+			// matching ref-ids
 			if (s.words.size() == 1
 					&& d.refId != null
 					&& d.refId.equalsIgnoreCase(s.words.get(0)))
@@ -125,22 +126,23 @@ class Search implements Runnable {
 
 			double factor = 0;
 			for (var word : s.words) {
-				factor += wordMatch(Labels.name(d), word);
-				factor += wordMatch(d.tags, word);
+				var nameMatch = wordMatch(Labels.name(d), word);
+				var tagMatch = wordMatch(d.tags, word);
+				if (nameMatch == 0 && tagMatch == 0)
+					return _empty;
+				factor += nameMatch + tagMatch ;
 			}
 
-			return !s.tags.isEmpty() || factor > 0
-					? new Match(d, factor)
-					: _empty;
+			return new Match(d, factor);
 		}
 
 		private static double wordMatch(String phrase, String word) {
 			if (Strings.nullOrEmpty(phrase))
 				return 0;
 			double pos = phrase.toLowerCase().indexOf(word);
-			if (pos < 0)
-				return 0;
-			return word.length() * Math.sqrt(1.0 / (42.0 + pos));
+			return pos >= 0
+					? word.length() * Math.sqrt(1.0 / (42.0 + pos))
+					: 0;
 		}
 	}
 }

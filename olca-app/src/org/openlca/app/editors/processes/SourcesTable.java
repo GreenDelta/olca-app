@@ -22,25 +22,27 @@ import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.Descriptor;
 
-class SourceViewer extends AbstractTableViewer<Source> {
+class SourcesTable extends AbstractTableViewer<Source> {
 
 	private final ProcessEditor editor;
 	private final SourceDao sourceDao;
 
-	public SourceViewer(ProcessEditor editor, Composite parent, IDatabase db) {
+	public SourcesTable(ProcessEditor editor, Composite parent, IDatabase db) {
 		super(parent);
 		getViewer().getTable().setLinesVisible(false);
 		getViewer().getTable().setHeaderVisible(false);
 		getViewer().setLabelProvider(new LabelProvider());
 		this.sourceDao = new SourceDao(db);
 		this.editor = editor;
-		getModifySupport().bind("", new CommentDialogModifier<Source>(
+		getModifySupport().bind("", new CommentDialogModifier<>(
 				editor.getComments(), CommentPaths::get));
 		Tables.bindColumnWidths(getViewer(), 0.97);
 		Tables.onDoubleClick(getViewer(), e -> {
 			Source s = Viewers.getFirstSelected(getViewer());
 			if (s != null) {
 				App.open(s);
+			} else {
+				onCreate();
 			}
 		});
 	}
@@ -72,9 +74,9 @@ class SourceViewer extends AbstractTableViewer<Source> {
 				added = true;
 			}
 		}
-		if (!added)
-			return;
-		update();
+		if (added) {
+			update();
+		}
 	}
 
 	private boolean add(Descriptor d) {
@@ -89,9 +91,8 @@ class SourceViewer extends AbstractTableViewer<Source> {
 			doc = new ProcessDocumentation();
 			p.documentation = doc;
 		}
-		if (doc.sources.contains(source)) {
+		if (doc.sources.contains(source))
 			return false;
-		}
 		return doc.sources.add(source);
 	}
 
@@ -113,9 +114,9 @@ class SourceViewer extends AbstractTableViewer<Source> {
 	protected void onDrop(Descriptor d) {
 		if (!editor.isEditable())
 			return;
-		if (!add(d))
-			return;
-		update();
+		if (add(d)) {
+			update();
+		}
 	}
 
 	private void update() {
@@ -125,20 +126,21 @@ class SourceViewer extends AbstractTableViewer<Source> {
 		editor.setDirty(true);
 	}
 
-	private class LabelProvider extends BaseLabelProvider implements ITableLabelProvider {
+	private class LabelProvider extends BaseLabelProvider
+			implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object element, int column) {
-			if (column == 0)
-				return getImage(element);
-			return Images.get(editor.getComments(), CommentPaths.get((Source) element));
+			return column == 0
+					? getImage(element)
+					: Images.get(editor.getComments(), CommentPaths.get((Source) element));
 		}
 
 		@Override
 		public String getColumnText(Object element, int column) {
-			if (column == 0)
-				return getText(element);
-			return null;
+			return column == 0
+					? getText(element)
+					: null;
 		}
 
 	}

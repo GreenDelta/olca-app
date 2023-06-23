@@ -1,10 +1,6 @@
 package org.openlca.app.results.contributions;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Objects;
-
+import gnu.trove.list.array.TDoubleArrayList;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openlca.app.util.CostResultDescriptor;
@@ -21,7 +17,10 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gnu.trove.list.array.TDoubleArrayList;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Objects;
 
 class UpstreamTreeExport implements Runnable {
 
@@ -53,7 +52,8 @@ class UpstreamTreeExport implements Runnable {
 	private int row;
 	private int maxColumn;
 	private double totalResult;
-	private final TDoubleArrayList values = new TDoubleArrayList(100);
+	private final TDoubleArrayList results = new TDoubleArrayList(100);
+	private final TDoubleArrayList direct = new TDoubleArrayList(100);
 
 	UpstreamTreeExport(File file, UpstreamTree tree) {
 		this.file = file;
@@ -72,7 +72,7 @@ class UpstreamTreeExport implements Runnable {
 
 			var bold = Excel.createBoldStyle(wb);
 			Excel.cell(sheet, 0, 0,
-					"Upstream contributions to: " + refName())
+							"Upstream contributions to: " + refName())
 					.ifPresent(c -> c.setCellStyle(bold));
 			Excel.cell(sheet, 1, 0, "Processes")
 					.ifPresent(c -> c.setCellStyle(bold));
@@ -84,15 +84,24 @@ class UpstreamTreeExport implements Runnable {
 			Path path = new Path(tree.root);
 			traverse(path);
 
-			// write the values
+			// write the result values
 			var unit = unit();
 			var resultHeader = Strings.nullOrEmpty(unit)
 					? "Result"
 					: "Result [" + unit + "]";
+			var directHeader = Strings.notEmpty(unit)
+					? "Direct contribution [" + unit + "]"
+					: "Direct contribution";
 			Excel.cell(sheet, 1, maxColumn + 1, resultHeader)
 					.ifPresent(c -> c.setCellStyle(bold));
-			for (int i = 0; i < values.size(); i++) {
-				Excel.cell(sheet, i + 2, maxColumn + 1, values.get(i));
+			Excel.cell(sheet, 1, maxColumn + 2, directHeader)
+					.ifPresent(c -> c.setCellStyle(bold));
+			for (int i = 0; i < results.size(); i++) {
+				Excel.cell(sheet, i + 2, maxColumn + 1, results.get(i));
+				var d = direct.get(i);
+				if (d != 0) {
+					Excel.cell(sheet, i + 2, maxColumn + 2, d);
+				}
 			}
 
 			// set the column widths
@@ -100,10 +109,12 @@ class UpstreamTreeExport implements Runnable {
 				sheet.setColumnWidth(col, 750);
 			}
 			sheet.setColumnWidth(maxColumn, 50 * 255);
+			sheet.setColumnWidth(maxColumn + 1, 25 * 255);
+			sheet.setColumnWidth(maxColumn + 2, 25 * 255);
 
 			// write the file
 			try (var fout = new FileOutputStream(file);
-					var buff = new BufferedOutputStream(fout)) {
+					 var buff = new BufferedOutputStream(fout)) {
 				wb.write(buff);
 			}
 		} catch (Exception e) {
@@ -116,18 +127,8 @@ class UpstreamTreeExport implements Runnable {
 		var ref = tree.ref;
 		if (ref == null)
 			return "";
-
-		if (ref instanceof EnviFlow) {
-			var enviFlow = (EnviFlow) ref;
-			if (enviFlow.flow() == null
-					|| enviFlow.flow().name == null)
-				return "";
-			if (enviFlow.location() == null
-					|| enviFlow.location().code == null)
-				return enviFlow.flow().name;
-			return enviFlow.flow().name + " - " + enviFlow.location().code;
-		}
-
+		if (ref instanceof EnviFlow enviFlow)
+			return Labels.name(enviFlow);
 		return ref instanceof Descriptor
 				? ((Descriptor) ref).name
 				: "";
@@ -190,7 +191,8 @@ class UpstreamTreeExport implements Runnable {
 
 	private void write(Path path) {
 		row++;
-		values.add(path.node.result());
+		results.add(path.node.result());
+		direct.add(path.node.directContribution());
 		int col = path.length;
 		maxColumn = Math.max(col, maxColumn);
 		var node = path.node;

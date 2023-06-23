@@ -109,8 +109,15 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		Actions.bind(indicatorTable, add, remove, open, copy);
 		CommentAction.bindTo(section, "impactCategories",
 			editor.getComments(), add, remove);
-		Tables.onDeletePressed(indicatorTable, _e -> onRemove());
-		Tables.onDoubleClick(indicatorTable, _e -> open.run());
+		Tables.onDeletePressed(indicatorTable, $ -> onRemove());
+		Tables.onDoubleClick(indicatorTable, $ -> {
+			var obj = Viewers.getFirstSelected(indicatorTable);
+			if (obj instanceof ImpactCategory i) {
+				App.open(i);
+			} else {
+				add.run();
+			}
+		});
 	}
 
 	private void onAdd(List<? extends Descriptor> ds) {

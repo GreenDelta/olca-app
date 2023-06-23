@@ -19,7 +19,12 @@ import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
-import org.openlca.app.util.*;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.CostResultDescriptor;
+import org.openlca.app.util.FileType;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
@@ -30,6 +35,7 @@ import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
+import org.openlca.util.Strings;
 
 public class ContributionTreePage extends FormPage {
 
@@ -74,7 +80,9 @@ public class ContributionTreePage extends FormPage {
 				M.Contribution,
 				M.Process,
 				"Required amount",
-				M.Result};
+				"Total result",
+				"Direct contribution"
+		};
 		var label = new Label();
 		tree = Trees.createViewer(comp, headers, label);
 
@@ -84,10 +92,11 @@ public class ContributionTreePage extends FormPage {
 		tk.adapt(tree.getTree(), false, false);
 
 		tk.paintBordersFor(tree.getTree());
-		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
-		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
+		for (int i = 2; i < 5; i++) {
+			tree.getTree().getColumns()[i].setAlignment(SWT.RIGHT);
+		}
 		Trees.bindColumnWidths(tree.getTree(),
-				0.20, 0.40, 0.20, 0.20);
+				0.15, 0.40, 0.15, 0.15, 0.15);
 
 		// action bindings
 		var onOpen = Actions.onOpen(() -> {
@@ -116,6 +125,7 @@ public class ContributionTreePage extends FormPage {
 			selection = flow;
 			var model = UpstreamTree.of(result.provider(), flow);
 			tree.setInput(model);
+			updateUnit(Labels.refUnit(flow));
 		}
 
 		@Override
@@ -123,6 +133,7 @@ public class ContributionTreePage extends FormPage {
 			selection = impact;
 			var model = UpstreamTree.of(result.provider(), impact);
 			tree.setInput(model);
+			updateUnit(impact.referenceUnit);
 		}
 
 		@Override
@@ -132,6 +143,19 @@ public class ContributionTreePage extends FormPage {
 					? UpstreamTree.addedValuesOf(result.provider())
 					: UpstreamTree.costsOf(result.provider());
 			tree.setInput(model);
+			updateUnit(Labels.getReferenceCurrencyCode());
+		}
+
+		private void updateUnit(String unit) {
+			var totalLabel = Strings.notEmpty(unit)
+					? "Total result [" + unit + "]"
+					: "Total result";
+			var directLabel = Strings.notEmpty(unit)
+					? "Direct contribution [" + unit + "]"
+					: "Direct contribution";
+			var t = tree.getTree();
+			t.getColumn(3).setText(totalLabel);
+			t.getColumn(4).setText(directLabel);
 		}
 	}
 
@@ -176,10 +200,6 @@ public class ContributionTreePage extends FormPage {
 			tree = (UpstreamTree) input;
 		}
 
-		@Override
-		public void dispose() {
-		}
-
 	}
 
 	private class Label extends BaseLabelProvider implements ITableLabelProvider {
@@ -196,11 +216,12 @@ public class ContributionTreePage extends FormPage {
 		public Image getColumnImage(Object obj, int col) {
 			if (!(obj instanceof UpstreamNode node))
 				return null;
-			if (col == 1 && node.provider() != null)
-				return Images.get(node.provider().provider());
-			if (col == 3)
-				return image.get(getContribution(node));
-			return null;
+			return switch (col) {
+				case 1 -> Images.get(node.provider());
+				case 3 -> image.get(shareOf(node.result()));
+				case 4 -> image.get(shareOf(node.directContribution()));
+				default -> null;
+			};
 		}
 
 		@Override
@@ -208,11 +229,15 @@ public class ContributionTreePage extends FormPage {
 			if (!(obj instanceof UpstreamNode node))
 				return null;
 			return switch (col) {
-				case 0 -> Numbers.percent(getContribution(node));
+				case 0 -> Numbers.percent(shareOf(node.result()));
 				case 1 -> Labels.name(node.provider().provider());
 				case 2 -> Numbers.format(node.requiredAmount()) + " "
 						+ Labels.refUnit(node.provider());
-				case 3 -> Numbers.format(node.result()) + " " + getUnit();
+				case 3 -> Numbers.format(node.result());
+				case 4 -> {
+					double d = node.directContribution();
+					yield d != 0 ? Numbers.format(d) : null;
+				}
 				default -> null;
 			};
 		}
@@ -228,15 +253,15 @@ public class ContributionTreePage extends FormPage {
 			return null;
 		}
 
-		private double getContribution(UpstreamNode node) {
-			if (node.result() == 0)
+		private double shareOf(double result) {
+			if (result == 0)
 				return 0;
 			double total = ((UpstreamTree) tree.getInput()).root.result();
 			if (total == 0)
 				return 0;
-			return total < 0 && node.result() > 0
-					? -node.result() / total
-					: node.result() / total;
+			return total < 0 && result > 0
+					? -result / total
+					: result / total;
 		}
 	}
 
@@ -253,8 +278,9 @@ public class ContributionTreePage extends FormPage {
 				case 0 -> M.Contribution + " [%]";
 				case 1 -> M.Process;
 				case 2 -> "Required amount";
-				case 3, 5 -> M.Unit;
-				case 4 -> M.Result;
+				case 3 -> M.Unit;
+				case 4 -> "Total result [" + label.getUnit() + "]";
+				case 5 -> "Direct contribution [" + label.getUnit() + "]";
 				default -> null;
 			};
 		}
@@ -264,12 +290,12 @@ public class ContributionTreePage extends FormPage {
 			if (!(item.getData() instanceof UpstreamNode node))
 				return null;
 			return switch (col) {
-				case 0 -> Numbers.format(label.getContribution(node) * 100, 2);
+				case 0 -> Numbers.format(label.shareOf(node.result()) * 100, 2);
 				case 1 -> label.getColumnText(node, 1);
 				case 2 -> Double.toString(node.requiredAmount());
 				case 3 -> Labels.refUnit(node.provider());
 				case 4 -> Double.toString(node.result());
-				case 5 -> label.getUnit();
+				case 5 -> Double.toString(node.directContribution());
 				default -> null;
 			};
 		}

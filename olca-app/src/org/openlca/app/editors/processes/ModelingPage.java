@@ -3,7 +3,6 @@ package org.openlca.app.editors.processes;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
@@ -13,12 +12,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ProcessTypeViewer;
 import org.openlca.core.model.Process;
 
-class ProcessModelingPage extends ModelPage<Process> {
+class ModelingPage extends ModelPage<Process> {
 
 	private FormToolkit toolkit;
 	private final ProcessEditor editor;
 
-	ProcessModelingPage(ProcessEditor editor) {
+	ModelingPage(ProcessEditor editor) {
 		super(editor, "ProcessInfoPage", M.ModelingAndValidation);
 		this.editor = editor;
 	}
@@ -65,12 +64,12 @@ class ProcessModelingPage extends ModelPage<Process> {
 	}
 
 	private void createSourcesSection(Composite parent) {
-		Section section = UI.section(parent, toolkit, M.Sources);
-		Composite comp = UI.composite(section, toolkit);
+		var section = UI.section(parent, toolkit, M.Sources);
+		var comp = UI.composite(section, toolkit);
 		UI.gridLayout(comp, 1);
 		UI.gridData(comp, true, true);
 		section.setClient(comp);
-		SourceViewer viewer = new SourceViewer(editor, comp, Database.get());
+		var viewer = new SourcesTable(editor, comp, Database.get());
 		viewer.setInput(getModel());
 		CommentAction.bindTo(section, viewer, "documentation.sources", editor.getComments());
 		editor.onSaved(() -> viewer.setInput(getModel()));
