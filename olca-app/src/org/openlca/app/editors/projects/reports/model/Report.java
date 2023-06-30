@@ -175,7 +175,6 @@ public class Report {
 				ReportComponent.INDICATOR_DESCRIPTION_TABLE,
 				ReportComponent.IMPACT_RESULT_TABLE,
 				ReportComponent.INDICATOR_BAR_CHART,
-				ReportComponent.PROCESS_CONTRIBUTION_CHART,
 				ReportComponent.RELATIVE_INDICATOR_BAR_CHART
 			);
 			int idx = 1;

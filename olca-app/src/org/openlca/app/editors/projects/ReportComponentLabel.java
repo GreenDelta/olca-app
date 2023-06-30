@@ -8,13 +8,8 @@ class ReportComponentLabel extends LabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		if (!(element instanceof ReportComponent))
+		if (!(element instanceof ReportComponent component))
 			return null;
-		var component = (ReportComponent) element;
-		return getLabel(component);
-	}
-
-	private String getLabel(ReportComponent component) {
 		return switch (component) {
 			case NONE -> M.None;
 			case VARIANT_DESCRIPTION_TABLE -> M.VariantDescriptionTable;
@@ -22,8 +17,6 @@ class ReportComponentLabel extends LabelProvider {
 			case PARAMETER_DESCRIPTION_TABLE -> M.ParameterDescriptionTable;
 			case PARAMETER_VALUE_TABLE -> M.ParameterValueTable;
 			case IMPACT_RESULT_TABLE -> M.LciaResultTable;
-			case PROCESS_CONTRIBUTION_CHART -> M.ProcessContributionChart;
-			case PROCESS_CONTRIBUTION_TABLE -> "Process contribution table";
 			case NORMALISATION_RESULT_TABLE -> M.NormalisationResultTable;
 			case SINGLE_SCORE_TABLE -> M.SingleScoreTable;
 			case INDICATOR_BAR_CHART -> M.IndicatorBarChart;
