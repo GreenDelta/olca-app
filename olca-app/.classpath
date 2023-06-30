@@ -4,7 +4,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/aopalliance-repackaged-3.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/checker-qual-3.12.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/checker-qual-3.33.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-beanutils-1.9.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-codec-1.13.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-collections-3.2.2.jar"/>
@@ -18,7 +18,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/curvesapi-1.06.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derby-10.16.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derbyshared-10.16.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/error_prone_annotations-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/error_prone_annotations-2.18.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/failureaccess-1.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-api-1.53.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-context-1.53.0.jar"/>
@@ -28,12 +28,12 @@
 	<classpathentry exported="true" kind="lib" path="libs/grpc-protobuf-lite-1.53.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/grpc-stub-1.53.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.10.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/guava-31.1-jre.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/guava-32.0.0-jre.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/HikariCP-5.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/hk2-api-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/hk2-locator-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/hk2-utils-3.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/j2objc-annotations-1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/j2objc-annotations-2.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-core-2.12.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.annotation-api-2.0.0.jar"/>
