@@ -73,6 +73,12 @@ public class ResultEditor extends FormEditor {
 	}
 
 	@Override
+	public void dispose() {
+		result.dispose();
+		super.dispose();
+	}
+
+	@Override
 	protected void addPages() {
 		try {
 			addPage(new InfoPage(this));
