@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
@@ -137,6 +138,10 @@ public class App {
 			log.error("model is null, could not open editor");
 			return;
 		}
+
+		if (!Libraries.checkValidity(d))
+			return;
+
 		log.trace("open editor for {} ", d);
 		String editorId = "editors." + d.type.getModelClass()
 				.getSimpleName().toLowerCase();

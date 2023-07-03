@@ -493,7 +493,14 @@ public class M extends NLS {
 	public static String LciaResultTable;
 	public static String LibgfortanInfo;
 	public static String Library;
+	public static String LicenseCorrupted;
+	public static String LicenseExpired;
 	public static String LicenseInformation;
+	public static String LicenseNotYetValid;
+	public static String LicenseUntrusted;
+	public static String LicenseValid;
+	public static String LicenseWrongPassword;
+	public static String LicenseWrongUser;
 	public static String Line;
 	public static String LinkingProperties;
 	public static String LoadingRepositoryList;

@@ -1,18 +1,20 @@
 package org.openlca.app.licence;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jgit.lib.PersonIdent;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.tools.authentification.AuthenticationGroup;
 import org.openlca.app.util.UI;
+import org.openlca.license.access.Credentials;
 import org.openlca.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AuthenticationDialog extends FormDialog {
 
+	static Logger log = LoggerFactory.getLogger(AuthenticationDialog.class);
 	private final AuthenticationGroup auth = new AuthenticationGroup();
 	private final String library;
 
@@ -22,7 +24,7 @@ public class AuthenticationDialog extends FormDialog {
 		setBlockOnOpen(true);
 	}
 
-	static LibraryCredentialsProvider promptCredentials(String library) {
+	public static Credentials promptCredentials(String library) {
 		var dialog = new AuthenticationDialog(library);
 		var auth = dialog.auth;
 		auth.withUser().withPassword();
@@ -31,7 +33,7 @@ public class AuthenticationDialog extends FormDialog {
 		if (Strings.nullOrEmpty(auth.user())
 				|| Strings.nullOrEmpty(auth.password()))
 			return null;
-		return new LibraryCredentialsProvider(auth.user(), auth.password());
+		return new Credentials(auth.user(), auth.password().toCharArray());
 	}
 
 	@Override
@@ -59,22 +61,6 @@ public class AuthenticationDialog extends FormDialog {
 				IDialogConstants.OK_LABEL, true);
 		ok.setEnabled(auth.isComplete());
 		setButtonLayoutData(ok);
-	}
-
-	public static class LibraryCredentialsProvider extends
-			UsernamePasswordCredentialsProvider {
-
-		public final String user;
-		public final PersonIdent ident;
-		public final String password;
-
-		private LibraryCredentialsProvider(String user, String password) {
-			super(user, password);
-			this.user = user;
-			this.ident = new PersonIdent(user, "");
-			this.password = password;
-		}
-
 	}
 
 }
