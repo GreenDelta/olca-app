@@ -16,14 +16,12 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryInfo;
-import org.openlca.core.model.ModelType;
 
 public class LibraryInfoPage extends SimpleFormEditor {
 
