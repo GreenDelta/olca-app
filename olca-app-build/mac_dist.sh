@@ -1,6 +1,15 @@
 #!/bin/bash
 
-DIST="openLCA_macOS_x64_2.0.0_$(date '+%Y-%m-%d')"
+APP_SUFFIX=$(python3 -c "
+import package, sys, os
+# Silencing the prints in the script
+sys.stdout = open(os.devnull, 'w')
+suffix = package.Version.get().app_suffix
+# Restoring the prints
+sys.stdout = sys.__stdout__
+print(suffix)
+")
+DIST="openLCA_macOS_x64_${APP_SUFFIX}"
 APP_ID="org.openlca.app"
 JRE_ID="org.openlca.jre"
 APP_DMG="build/tmp/macosx.cocoa.x86_64/openLCA_dmg/openLCA.app"
