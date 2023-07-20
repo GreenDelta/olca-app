@@ -23,10 +23,12 @@ public class Diagram extends BaseComponent {
 	}
 
 	public SankeyNode getNode(Sankey.Node node) {
-		for (var child : getChildren())
-			if (child instanceof SankeyNode sankeyNode)
-				if (sankeyNode.node == node)
+		for (var child : getChildren()) {
+			if (child instanceof SankeyNode sankeyNode) {
+				if (sankeyNode.node.equals(node))
 					return sankeyNode;
+			}
+		}
 		return null;
 	}
 
