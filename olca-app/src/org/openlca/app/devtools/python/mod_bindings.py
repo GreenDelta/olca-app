@@ -256,6 +256,7 @@ import org.openlca.core.matrix.solvers.JavaSolver as JavaSolver
 import org.openlca.jsonld.Json as Json
 import org.openlca.core.services.JsonCalculationSetup as JsonCalculationSetup
 import org.openlca.core.services.JsonDataService as JsonDataService
+import org.openlca.jsonld.JsonDatabaseStore as JsonDatabaseStore
 import org.openlca.util.JsonDiffZip as JsonDiffZip
 import org.openlca.jsonld.output.JsonExport as JsonExport
 import org.openlca.jsonld.input.JsonImport as JsonImport
