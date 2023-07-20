@@ -1,8 +1,16 @@
 package org.openlca.app.tools.graphics.zoom;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.FreeformFigure;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.MarginBorder;
+import org.eclipse.draw2d.ScalableFigure;
+import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
@@ -12,9 +20,6 @@ import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.SharedMessages;
 import org.eclipse.draw2d.zoom.ZoomListener;
 import org.eclipse.swt.widgets.Display;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.openlca.app.tools.graphics.edit.RootEditPart.MARGIN_PADDING;
 
@@ -148,7 +153,7 @@ public class ZoomManager {
 		desired.width -= fig.getInsets().getWidth();
 		desired.height -= fig.getInsets().getHeight();
 
-		while (fig != getViewport()) {
+		while (!Objects.equals(fig, getViewport())) {
 			available.width -= fig.getInsets().getWidth();
 			available.height -= fig.getInsets().getHeight();
 			fig = fig.getParent();

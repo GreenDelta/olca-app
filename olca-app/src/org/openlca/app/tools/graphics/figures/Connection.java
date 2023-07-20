@@ -156,7 +156,7 @@ public class Connection extends SelectableConnection {
 
 	@Override
 	public void setSourceDecoration(RotatableDecoration dec) {
-		if (startArrow == dec)
+		if (Objects.equals(startArrow, dec))
 			return;
 		if (startArrow != null)
 			remove(startArrow);
@@ -173,7 +173,7 @@ public class Connection extends SelectableConnection {
 
 	@Override
 	public void setTargetDecoration(RotatableDecoration dec) {
-		if (endArrow == dec)
+		if (Objects.equals(endArrow, dec))
 			return;
 		if (endArrow != null)
 			remove(endArrow);

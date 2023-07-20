@@ -23,6 +23,7 @@ public class TreeConnectionRouter extends BendpointConnectionRouter {
 
 		if (source == null || target == null)
 			return;
+
 		var points = new PointList();
 		points.addPoint(conn.getPoints().getFirstPoint());
 
@@ -32,8 +33,9 @@ public class TreeConnectionRouter extends BendpointConnectionRouter {
 		var lastPoint = conn.getPoints().getLastPoint();
 
 		if (targetLoc.x < sourceLoc.x + source.getSize().width
-				|| targetLoc.x > sourceLoc.x + source.getSize().width + H_SPACE + target.getSize().width
-				|| target == source) {
+				|| targetLoc.x > sourceLoc.x + source.getSize().width
+				+ H_SPACE + target.getSize().width
+				|| target.equals(source)) {
 			points.addPoint(firstPoint.getTranslated(H_SPACE / 2, 0));
 			int y1 = Math.max(sourceLoc.y, targetLoc.y);
 			y1 -= V_SPACE / 2;

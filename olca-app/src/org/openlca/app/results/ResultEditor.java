@@ -1,5 +1,6 @@
 package org.openlca.app.results;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -115,7 +116,7 @@ public class ResultEditor extends FormEditor {
 	private void setSankeyPageListener(SankeyEditor sankeyEditor) {
 		var sankeyInit = new AtomicReference<IPageChangedListener>();
 		IPageChangedListener fn = e -> {
-			if (e.getSelectedPage() != sankeyEditor)
+			if (!Objects.equals(e.getSelectedPage(), sankeyEditor))
 				return;
 			var listener = sankeyInit.get();
 			if (listener == null)

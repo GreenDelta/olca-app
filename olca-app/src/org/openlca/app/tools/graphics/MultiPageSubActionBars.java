@@ -1,5 +1,7 @@
 package org.openlca.app.tools.graphics;
 
+import java.util.Objects;
+
 import org.eclipse.jface.action.ContributionManager;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -14,6 +16,7 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.SubActionBars2;
+
 
 /**
  * An extended subcool bar manager for used with the
@@ -170,7 +173,7 @@ public class MultiPageSubActionBars extends SubActionBars2 {
 		@Override
 		public void partActivated(IWorkbenchPart part) {
 			if (part instanceof IEditorPart editor) {
-				if (editor.getEditorSite().getActionBars() != getParent()
+				if (!Objects.equals(editor.getEditorSite().getActionBars(), getParent())
 						&& getActive()) {
 					deactivate();
 					updateActionBars();

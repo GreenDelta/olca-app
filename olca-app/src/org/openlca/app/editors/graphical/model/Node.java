@@ -1,5 +1,12 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
@@ -13,12 +20,6 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.openlca.app.tools.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
@@ -292,7 +293,7 @@ public class Node extends MinMaxComponent {
 				buttonStatus.put(side, false);
 			if (!isExpanded(side))
 				buttonStatus.put(side, true);
-			else if (this == getGraph().getReferenceNode())
+			else if (this.equals(getGraph().getReferenceNode()))
 				buttonStatus.put(side, true);
 			else
 				buttonStatus.put(side, !isOnlyChainingReferenceNode(side));
@@ -313,7 +314,7 @@ public class Node extends MinMaxComponent {
 	public boolean isOnlyChainingReferenceNode(int side) {
 		if (wasExplored)
 			return false;
-		else if (this == getGraph().getReferenceNode())
+		else if (this.equals(getGraph().getReferenceNode()))
 			// The reference node is explored if and only if it is the initial node
 			// (see the condition in the for loop).
 			return false;
@@ -335,7 +336,7 @@ public class Node extends MinMaxComponent {
 				var otherNode = side == INPUT
 						? link.getSourceNode()
 						: link.getTargetNode();
-				if (otherNode != getGraph().getReferenceNode()
+				if (!Objects.equals(otherNode, getGraph().getReferenceNode())
 						&& !otherNode.isOnlyChainingReferenceNode(side))
 					isOnlyChainingReferenceNode = false;
 			}
@@ -352,7 +353,7 @@ public class Node extends MinMaxComponent {
 	public boolean isChainingReferenceNode(int side) {
 		if (wasExplored)
 			return false;
-		else if (this == getGraph().getReferenceNode())
+		else if (this.equals(getGraph().getReferenceNode()))
 			// The reference node is explored if and only if it is the initial node
 			// (see the condition in the for loop).
 			return false;
@@ -373,7 +374,7 @@ public class Node extends MinMaxComponent {
 				var otherNode = side == INPUT
 						? link.getSourceNode()
 						: link.getTargetNode();
-				if (otherNode == getGraph().getReferenceNode()
+				if (Objects.equals(otherNode, getGraph().getReferenceNode())
 						|| otherNode.isChainingReferenceNode(side)) {
 					wasExplored = false;
 					return true;
@@ -403,9 +404,10 @@ public class Node extends MinMaxComponent {
 
 	public ExchangeItem getExchangeItem(Exchange exchange) {
 		for (var child : getChildren()) {
-			if (child instanceof ExchangeItem item)
-				if (item.exchange == exchange)
+			if (child instanceof ExchangeItem item) {
+				if (Objects.equals(item.exchange, exchange))
 					return item;
+			}
 		}
 		return null;
 	}

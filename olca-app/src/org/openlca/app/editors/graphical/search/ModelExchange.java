@@ -149,7 +149,7 @@ class ModelExchange {
 		if (isConnected)
 			return false;
 		for (Candidate other : all) {
-			if (other == c)
+			if (Objects.equals(other, c))
 				continue;
 			if (other.doConnect || other.doCreate)
 				return false;
@@ -159,7 +159,7 @@ class ModelExchange {
 
 	public boolean canBeAdded(Candidate c, List<Candidate> all) {
 		for (Candidate other : all) {
-			if (other == c)
+			if (Objects.equals(other, c))
 				continue;
 			if (other.doCreate || other.doConnect)
 				return false;

@@ -64,7 +64,7 @@ public class Vertex {
 
 	public Vertex getNextSibling() {
 		if (parent == null) return null;
-		return (parent.getLastChild() == this)
+		return (this.equals(parent.getLastChild()))
 				? null
 				: parent.children.get(siblingIndex + 1);
 	}

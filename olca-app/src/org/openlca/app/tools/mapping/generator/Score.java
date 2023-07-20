@@ -18,7 +18,7 @@ record Score(
 	}
 
 	boolean isNoMatch() {
-		return this == noMatch || nameScore == 0;
+		return this.equals(noMatch) || nameScore == 0;
 	}
 
 	static Score compute(Matcher matcher, FlowRef s, FlowRef t) {
