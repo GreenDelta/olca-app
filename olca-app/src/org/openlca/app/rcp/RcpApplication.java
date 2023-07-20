@@ -1,11 +1,8 @@
 package org.openlca.app.rcp;
 
-import static org.openlca.util.OS.WINDOWS;
-
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.util.OS;
 
 public class RcpApplication implements IApplication {
 

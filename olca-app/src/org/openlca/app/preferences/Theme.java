@@ -4,8 +4,6 @@ import org.eclipse.swt.widgets.Display;
 
 import java.util.Objects;
 
-import static org.openlca.util.OS.WINDOWS;
-
 /**
  * Enumeration of supported themes.
  * TODO: Theme cannot be modified within the config. This class is thus not
