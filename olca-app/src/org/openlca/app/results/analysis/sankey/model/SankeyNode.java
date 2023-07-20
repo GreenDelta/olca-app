@@ -70,7 +70,7 @@ public class SankeyNode extends Component {
 	}
 
 	public String toString() {
-		return "Node: "+ Labels.name(node.product.provider());
+		return "Node: "+ Labels.name(node.product);
 	}
 
 }

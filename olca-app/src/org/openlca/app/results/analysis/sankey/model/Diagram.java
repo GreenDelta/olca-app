@@ -4,12 +4,14 @@ import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.tools.graphics.model.BaseComponent;
 import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.util.Labels;
 import org.openlca.core.results.Sankey;
 
 public class Diagram extends BaseComponent {
 
 	public final SankeyEditor editor;
 	public final int orientation;
+	private SankeyNode referenceNode;
 
 	public Diagram(SankeyEditor editor, int orientation) {
 		this.editor = editor;
@@ -28,9 +30,15 @@ public class Diagram extends BaseComponent {
 		return null;
 	}
 
+	public SankeyNode getReferenceNode() {
+		if (referenceNode == null) {
+			referenceNode = getNode(editor.getSankey().root);
+		}
+		return referenceNode;
+	}
+
 	public boolean isReferenceNode(SankeyNode node) {
-		var refNode = getNode(editor.getSankey().root);
-		return refNode.equals(node);
+		return getReferenceNode().equals(node);
 	}
 
 	public SankeyConfig getConfig() {
@@ -44,8 +52,8 @@ public class Diagram extends BaseComponent {
 
 	@Override
 	public Component getFocusComponent() {
-		return  (editor != null && editor.getSankey() != null)
-				? getNode(editor.getSankey().root)
+		return (editor != null && editor.getSankey() != null)
+				? getReferenceNode()
 				: null;
 	}
 
