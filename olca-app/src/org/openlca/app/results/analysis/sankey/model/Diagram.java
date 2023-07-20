@@ -4,7 +4,6 @@ import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.tools.graphics.model.BaseComponent;
 import org.openlca.app.tools.graphics.model.Component;
-import org.openlca.app.util.Labels;
 import org.openlca.core.results.Sankey;
 
 public class Diagram extends BaseComponent {

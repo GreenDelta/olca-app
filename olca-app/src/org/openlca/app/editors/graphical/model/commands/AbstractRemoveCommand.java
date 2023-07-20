@@ -8,6 +8,7 @@ import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.ProcessLink;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
@@ -113,7 +114,7 @@ public abstract class AbstractRemoveCommand extends Command {
 				: graph.linkSearch.getConnectionLinks(link.processId);
 		var otherLinks = links.stream()
 				.filter(l -> l.processId != l.providerId) // remove self-loop
-				.filter(l -> l != link) // remove the current link
+				.filter(l -> !Objects.equals(l, link)) // remove the current link
 				.filter(l -> {
 					var process = provider ? l.processId : l.providerId;
 					var ref = graph.getProductSystem().referenceProcess.id;
@@ -136,7 +137,7 @@ public abstract class AbstractRemoveCommand extends Command {
 	 */
 	protected void removeNodeChains() {
 		for (var node : nodes) {
-			if (node == graph.getReferenceNode())
+			if (Objects.equals(node, graph.getReferenceNode()))
 				continue;
 
 			if (!node.isChainingReferenceNode(INPUT))

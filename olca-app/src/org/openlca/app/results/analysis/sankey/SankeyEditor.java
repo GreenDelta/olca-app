@@ -22,6 +22,8 @@ import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.Sankey;
 
+import java.util.Objects;
+
 import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
 public class SankeyEditor extends GraphicalEditorWithFrame {
@@ -132,7 +134,7 @@ public class SankeyEditor extends GraphicalEditorWithFrame {
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection)	{
 		var activePage = getSite().getWorkbenchWindow().getActivePage();
-		if (activePage.getActiveEditor().equals(this.resultEditor))
+		if (Objects.equals(activePage.getActiveEditor(), this.resultEditor))
 			updateActions(getSelectionActions());
 	}
 

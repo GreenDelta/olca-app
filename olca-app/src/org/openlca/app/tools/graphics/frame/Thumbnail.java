@@ -11,6 +11,7 @@
 package org.openlca.app.tools.graphics.frame;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -527,7 +528,7 @@ public class Thumbnail extends Figure implements UpdateListener {
 		for (Object o : dirtyRegions.keySet()) {
 			IFigure current = (IFigure) o;
 			while (current != null) {
-				if (current == getSource()) {
+				if (current.equals(getSource())) {
 					setDirty(true);
 					repaint();
 					return;
@@ -584,7 +585,7 @@ public class Thumbnail extends Figure implements UpdateListener {
 	 *            The source figure
 	 */
 	public void setSource(IFigure fig) {
-		if (sourceFigure == fig)
+		if (Objects.equals(sourceFigure, fig))
 			return;
 		if (sourceFigure != null)
 			sourceFigure.getUpdateManager().removeUpdateListener(this);

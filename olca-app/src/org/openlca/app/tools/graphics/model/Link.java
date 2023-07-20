@@ -1,5 +1,7 @@
 package org.openlca.app.tools.graphics.model;
 
+import java.util.Objects;
+
 public class Link extends Element {
 
 	protected Component source, target;
@@ -59,9 +61,9 @@ public class Link extends Element {
 	}
 
 	public boolean isCloseLoop() {
-		return getSourceNode() == getTargetNode();
+		return Objects.equals(getSourceNode(), getTargetNode());
 	}
-	
+
 	public String toString() {
 		return "Link(" + getSource() + " -> " + getTarget() + ")";
 	}
