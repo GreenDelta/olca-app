@@ -1,14 +1,5 @@
 package org.openlca.app;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
@@ -33,6 +24,16 @@ import org.openlca.nativelib.Module;
 import org.openlca.nativelib.NativeLib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 public class App {
 
@@ -71,46 +72,35 @@ public class App {
 
 			// try to load the native libraries, first try the workspace and
 			// then the installation location
-			var workspace = Workspace.root();
-			var s = tryLoadSolverFrom(workspace);
-			if (s != null) {
-				solver = s;
-				return solver;
+			var dirs = List.of(Workspace.root(), getInstallLocation());
+			try {
+				// check for MKL first
+				for (var dir : dirs) {
+					if (MKL.isLibraryDir(dir) && MKL.loadFrom(dir)) {
+						log.info("loaded MKL libraries from {}", dir);
+						solver = new MKLSolver();
+						return solver;
+					}
+				}
+				for (var dir : dirs) {
+					if (NativeLib.isLibraryDir(dir)) {
+						NativeLib.loadFrom(dir);
+						if (NativeLib.isLoaded()) {
+							log.info("loaded native libraries; with UMFPACK={}",
+									NativeLib.isLoaded(Module.UMFPACK));
+							solver = new NativeSolver();
+							return solver;
+						}
+					}
+				}
+			} catch (Throwable err) {
+				log.error("failed to load native solver", err);
+				return null;
 			}
 
-			var installDir = getInstallLocation();
-			s = tryLoadSolverFrom(installDir);
-			if (s != null) {
-				solver = s;
-				return solver;
-			} else {
-				log.warn("could not load a high-performance library for calculations");
-				solver = new JavaSolver();
-			}
-		}
-		return solver;
-	}
-
-	private static MatrixSolver tryLoadSolverFrom(File dir) {
-		if (dir == null )
-			return null;
-		try {
-			if (MKL.isLibraryDir(dir) && MKL.loadFrom(dir)) {
-				log.info("loaded MKL libraries from {}", dir);
-				return new MKLSolver();
-			}
-			if (NativeLib.isLibraryDir(dir)) {
-				NativeLib.loadFrom(dir);
-				if (!NativeLib.isLoaded())
-					return null;
-				log.info("loaded native libraries; with UMFPACK={}",
-						NativeLib.isLoaded(Module.UMFPACK));
-				return new NativeSolver();
-			}
-			return null;
-		} catch (Throwable err) {
-			log.error("failed to load native solver from " + dir, err);
-			return null;
+			log.warn("could not load a high-performance library for calculations");
+			solver = new JavaSolver();
+			return solver;
 		}
 	}
 
@@ -245,13 +235,14 @@ public class App {
 			log.error("Error while running progress " + name, e);
 		}
 	}
+
 	public static void runWithProgress(String name, Runnable fn,
-			Runnable callback) {
+																		 Runnable callback) {
 		runWithProgress(name, fn, callback, null);
 	}
 
 	public static void runWithProgress(String name, Runnable fn,
-			Runnable callback, Runnable onError) {
+																		 Runnable callback, Runnable onError) {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		AtomicBoolean fnSucceeded = new AtomicBoolean(false);
 		try {
