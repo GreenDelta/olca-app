@@ -236,13 +236,13 @@ public class App {
 		}
 	}
 
-	public static void runWithProgress(String name, Runnable fn,
-																		 Runnable callback) {
+	public static void runWithProgress(
+			String name, Runnable fn, Runnable callback) {
 		runWithProgress(name, fn, callback, null);
 	}
 
-	public static void runWithProgress(String name, Runnable fn,
-																		 Runnable callback, Runnable onError) {
+	public static void runWithProgress(
+			String name, Runnable fn, Runnable callback, Runnable onError) {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		AtomicBoolean fnSucceeded = new AtomicBoolean(false);
 		try {
