@@ -24,6 +24,8 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.matrix.solvers.MatrixSolver;
 import org.openlca.core.matrix.solvers.NativeSolver;
+import org.openlca.core.matrix.solvers.mkl.MKL;
+import org.openlca.core.matrix.solvers.mkl.MKLSolver;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -70,24 +72,46 @@ public class App {
 			// try to load the native libraries, first try the workspace and
 			// then the installation location
 			var workspace = Workspace.root();
-			if (NativeLib.isLibraryDir(workspace)) {
-				NativeLib.loadFrom(workspace);
-			}
-			var installDir = getInstallLocation();
-			if (!NativeLib.isLoaded() && NativeLib.isLibraryDir(installDir)) {
-				NativeLib.loadFrom(installDir);
+			var s = tryLoadSolverFrom(workspace);
+			if (s != null) {
+				solver = s;
+				return solver;
 			}
 
-			if (NativeLib.isLoaded()) {
-				log.info("loaded native libraries; with UMFPACK={}",
-						NativeLib.isLoaded(Module.UMFPACK));
-				solver = new NativeSolver();
+			var installDir = getInstallLocation();
+			s = tryLoadSolverFrom(installDir);
+			if (s != null) {
+				solver = s;
+				return solver;
 			} else {
 				log.warn("could not load a high-performance library for calculations");
 				solver = new JavaSolver();
 			}
 		}
 		return solver;
+	}
+
+	private static MatrixSolver tryLoadSolverFrom(File dir) {
+		if (dir == null )
+			return null;
+		try {
+			if (MKL.isLibraryDir(dir) && MKL.loadFrom(dir)) {
+				log.info("loaded MKL libraries from {}", dir);
+				return new MKLSolver();
+			}
+			if (NativeLib.isLibraryDir(dir)) {
+				NativeLib.loadFrom(dir);
+				if (!NativeLib.isLoaded())
+					return null;
+				log.info("loaded native libraries; with UMFPACK={}",
+						NativeLib.isLoaded(Module.UMFPACK));
+				return new NativeSolver();
+			}
+			return null;
+		} catch (Throwable err) {
+			log.error("failed to load native solver from " + dir, err);
+			return null;
+		}
 	}
 
 	/**
