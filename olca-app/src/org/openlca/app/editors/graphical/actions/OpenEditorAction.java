@@ -10,6 +10,7 @@ import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.systems.ProductSystemInfoPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.graphics.actions.ActionIds;
+import org.openlca.app.util.Labels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +50,10 @@ public class OpenEditorAction extends SelectionAction {
 
 		if (object instanceof GraphEditPart)
 			return M.ProductSystem;
-		else if (NodeEditPart.class.isAssignableFrom(object.getClass()))
-			return M.Process;
+		else if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
+			var model = ((NodeEditPart) object).getModel();
+			return Labels.of(model.descriptor.type);
+		}
 		else if (object instanceof ExchangeEditPart)
 			return M.Flow;
 		else return "";
