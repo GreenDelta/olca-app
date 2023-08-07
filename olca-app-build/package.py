@@ -12,16 +12,24 @@ import zipfile
 from enum import Enum
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Optional, NamedTuple
 
 # the version of the native library package
-NATIVE_LIB_VERSION = "0.0.1"
+BLAS_VERSION = "0.0.1"
+MKL_VERSION = "1"
 
 # the bundle ID of the JRE
 JRE_ID = "org.openlca.jre"
 
 # the root of the build project olca-app/olca-app-build
 PROJECT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
+
+
+class MathLib(NamedTuple):
+    name: str
+    win_url: str
+    mac_url: str
+    linux_url: str
 
 
 class OsArch(Enum):
@@ -189,30 +197,17 @@ class BuildDir:
     @property
     def app_dir(self) -> Path:
         if self.osa.is_mac():
-            return self.root / "openLCA/openLCA.app"
+            return self.root / "openLCA/openLCA.app/Contents/Eclipse"
         else:
             return self.root / "openLCA"
 
     @property
-    def about_dir(self) -> Path:
-        if self.osa.is_mac():
-            return self.app_dir / "Contents/Eclipse"
-        else:
-            return self.app_dir
-
-    @property
     def jre_dir(self) -> Path:
-        if self.osa.is_mac():
-            return self.root / "openLCA/openLCA.app/Contents/Eclipse/jre"
-        else:
-            return self.app_dir / "jre"
+        return self.app_dir / "jre"
 
     @property
     def olca_plugin_dir(self) -> Path | None:
-        if self.osa.is_mac():
-            plugin_dir = self.app_dir / "Contents/Eclipse/plugins"
-        else:
-            plugin_dir = self.app_dir / "plugins"
+        plugin_dir = self.app_dir / "plugins"
         if not plugin_dir.exists() or not plugin_dir.is_dir():
             print(f"warning: could not locate plugin folder: {plugin_dir}")
             return None
@@ -223,22 +218,26 @@ class BuildDir:
         return None
 
     @property
-    def native_lib_dir(self) -> Path:
+    def blas_lib_dir(self) -> Path:
         arch = "arm64" if self.osa == OsArch.MACOS_ARM else "x64"
-        if self.osa.is_mac():
-            target_dir = self.app_dir / "Contents/Eclipse"
-        else:
-            target_dir = self.app_dir
-        return target_dir / f"olca-native/{NATIVE_LIB_VERSION}/{arch}"
+        return self.app_dir / f"olca-native/{BLAS_VERSION}/{arch}"
+
+    @property
+    def mkl_lib_dir(self) -> Path:
+        arch = "arm64" if self.osa == OsArch.MACOS_ARM else "x64"
+        return self.app_dir / f"olca-mkl-{arch}_v{MKL_VERSION}"
 
     def package(self, version: Version):
-
         if self.osa.is_mac():
             MacDir.arrange(self)
 
-        # JRE and native libraries
         JRE.extract_to(self)
-        NativeLib.extract_to(self, repo=NativeLib.REPO_GITHUB)
+
+        if "--mkl" in sys.argv:
+            MKLFramework.extract_to(self)
+
+        lib = NativeLib.MKL if "--mkl" in sys.argv else NativeLib.BLAS
+        NativeLib.extract_to(self, lib, repo=NativeLib.REPO_GITHUB)
 
         # edit the JRE Info.plist
         if self.osa.is_mac():
@@ -248,7 +247,7 @@ class BuildDir:
         print("  copy credits")
         about_page = PROJECT_DIR / "credits/about.html"
         if about_page.exists():
-            shutil.copy2(about_page, self.about_dir)
+            shutil.copy2(about_page, self.app_dir)
             plugin_dir = self.olca_plugin_dir
             if plugin_dir:
                 shutil.copy2(about_page, plugin_dir)
@@ -292,6 +291,101 @@ class BuildDir:
             Nsis.run(self, version)
 
 
+class MKLFramework(Enum):
+    MKL = MathLib(
+        name="mkl-2023.1.0",
+        win_url="https://files.pythonhosted.org/packages/d9/a1/b7cfb6f3e7259f035a2c947cf26bff42cda6772933cdb95c829e91ce995f/mkl-2023.1.0-py2.py3-none-win_amd64.whl",  # noqa
+        mac_url="https://files.pythonhosted.org/packages/31/7f/e865657b372f8f0aa4664ea2d07a5f80a4aeb337760d571cc690011dc2ce/mkl-2023.1.0-py2.py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.whl",  # noqa
+        linux_url="https://files.pythonhosted.org/packages/85/66/815fb18860ad600695008f1a5acfc14a3e3b09fd77f006e332ce61af1f40/mkl-2023.1.0-py2.py3-none-manylinux1_x86_64.whl",  # noqa
+    )
+
+    OPENMP = MathLib(
+        name="intel_openmp-2023.1.0",
+        win_url="https://files.pythonhosted.org/packages/c7/a1/7407ebfb7131c2d8507bec5daf0684d76a9c6c38faaa6ae16b296e3335ce/intel_openmp-2023.1.0-py2.py3-none-win_amd64.whl",  # noqa
+        mac_url="https://files.pythonhosted.org/packages/3f/71/72f38f9340420e3a1456834ddd88442be97476174e4a24a1cc30d834659b/intel_openmp-2023.1.0-py2.py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.whl",  # noqa
+        linux_url="https://files.pythonhosted.org/packages/a3/6d/08040c4cfab1997f3a104238d850ab0ac345356762e34be7b415c7544162/intel_openmp-2023.1.0-py2.py3-none-manylinux1_x86_64.whl",  # noqa
+    )
+    TBB = MathLib(
+        name="tbb-2021.9.0",
+        win_url="https://files.pythonhosted.org/packages/64/6a/20f2e84e31bd82b7ddecf616be0338b7fa5dc37285a73e810101f9c2b195/tbb-2021.9.0-py3-none-win_amd64.whl",  # noqa
+        mac_url="https://files.pythonhosted.org/packages/b4/44/de6ad155a9b4c916cf72d3ad34de3c7802c51425b93e4727d1a372f9fb77/tbb-2021.9.0-py2.py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.whl",  # noqa
+        linux_url="https://files.pythonhosted.org/packages/96/5f/aaae879605e95e147b7269e54a5b49654a44d6fee7fed54ece8f77d77ded/tbb-2021.9.0-py2.py3-none-manylinux1_i686.whl"  # noqa
+    )
+
+    def file(self, osa: OsArch):
+        return f"{self.value.name}-py2.py3-none-${MKLFramework.wheel_suffix(osa)}"
+
+    @staticmethod
+    def wheel_suffix(osa: OsArch):
+        if osa == OsArch.MACOS_X64:
+            return "macosx_10_15_x86_64.macosx_11_0_x86_64.whl"
+        elif osa == OsArch.LINUX_X64:
+            return "manylinux1_x86_64.whl"
+        elif osa == OsArch.WINDOWS_X64:
+            return "win_amd64.whl"
+        else:
+            raise ValueError(f"unsupported OS+arch: {osa} for MKL.")
+
+    def url(self, osa: OsArch):
+        if osa == OsArch.MACOS_X64:
+            return self.value.mac_url
+        elif osa == OsArch.LINUX_X64:
+            return self.value.linux_url
+        elif osa == OsArch.WINDOWS_X64:
+            return self.value.win_url
+        else:
+            raise ValueError(f"unsupported OS+arch: {osa} for MKL.")
+
+    @staticmethod
+    def extract_to(build_dir: BuildDir):
+        if build_dir.mkl_lib_dir.exists():
+            return
+        else:
+            build_dir.mkl_lib_dir.mkdir(parents=True, exist_ok=True)
+        print("  copy MKL libraries")
+
+        for lib in MKLFramework:
+            wheel = lib.fetch(build_dir.osa)
+            folder = MKLFramework.cache_dir() / wheel.name[0:-3]
+            if not folder.exists():
+                Zip.unzip(wheel, folder)
+
+            MKLFramework.copy_binaries(folder, build_dir.mkl_lib_dir)
+
+    @staticmethod
+    def copy_binaries(folder: Path, lib_dir: Path):
+        # iterate over files in the wheel
+        for root, dirs, files in os.walk(folder):
+            for filename in files:
+                file = Path(root) / filename
+                path_patterns = [Path("/data/Library/bin/"), Path("/data/lib/")]
+                if any(str(pattern) in str(file) for pattern in path_patterns):
+                    print(f"  Copying {filename} from {folder.name}")
+                    shutil.copy2(file, lib_dir / filename)
+
+    @staticmethod
+    def cache_dir() -> Path:
+        d = PROJECT_DIR / "runtime/mkl"
+        if not os.path.exists(d):
+            d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    def fetch(self, osa: OsArch) -> Path:
+        cache_dir = MKLFramework.cache_dir()
+        file_name = self.file(osa)
+        file = cache_dir / file_name
+        if os.path.exists(file):
+            return file
+
+        url = self.url(osa)
+
+        print(f"  download {self.name} from {url}")
+        urllib.request.urlretrieve(url, file)
+        if not os.path.exists(file):
+            raise AssertionError(f"{self.name} download failed; url={url}")
+        return file
+
+
 class JRE:
     @staticmethod
     def zip_name(osa: OsArch) -> str:
@@ -319,7 +413,7 @@ class JRE:
     def fetch(osa: OsArch) -> Path:
         zip_name = JRE.zip_name(osa)
         cache_dir = JRE.cache_dir()
-        zf = cache_dir / JRE.zip_name(osa)
+        zf = cache_dir / zip_name
         if os.path.exists(zf):
             return zf
         url = (
@@ -365,12 +459,13 @@ class JRE:
 
 
 class NativeLib:
-
+    MKL = "MKL"
+    BLAS = "BLAS"
     REPO_GITHUB = "Github"
     REPO_MAVEN = "Maven"
 
     @staticmethod
-    def base_name(osa: OsArch) -> str:
+    def blas_base_name(osa: OsArch) -> str:
         if osa == OsArch.MACOS_ARM:
             arch = "macos-arm64"
         elif osa == OsArch.MACOS_X64:
@@ -384,36 +479,58 @@ class NativeLib:
         return f"olca-native-blas-{arch}"
 
     @staticmethod
-    def cache_dir() -> Path:
-        d = PROJECT_DIR / f"runtime/blas"
+    def mkl_base_name(osa: OsArch) -> str:
+        if osa == OsArch.MACOS_ARM:
+            arch = "macos_arm64"
+        elif osa == OsArch.MACOS_X64:
+            arch = "macos_x64"
+        elif osa == OsArch.LINUX_X64:
+            arch = "linux_x64"
+        elif osa == OsArch.WINDOWS_X64:
+            arch = "windows_x64"
+        else:
+            raise ValueError(f"unsupported OS+arch: {osa}")
+        return f"olcamkl_{arch}"
+
+    @staticmethod
+    def cache_dir(lib: str) -> Path:
+        d = PROJECT_DIR / f"runtime/{lib}"
         if not os.path.exists(d):
             d.mkdir(parents=True, exist_ok=True)
         return d
 
     @staticmethod
-    def fetch(osa: OsArch, repo: str) -> Path:
+    def fetch(osa: OsArch, lib, base_repo: str) -> Path:
+        if lib == NativeLib.BLAS:
+            base_name = NativeLib.blas_base_name(osa)
+        else:
+            base_name = NativeLib.mkl_base_name(osa)
 
-        base_name = NativeLib.base_name(osa)
-        if repo == NativeLib.REPO_GITHUB:
+        version = BLAS_VERSION if lib == NativeLib.BLAS else MKL_VERSION
+
+        if base_repo == NativeLib.REPO_GITHUB:
             jar = f"{base_name}.zip"
         else:
-            jar = f"{base_name}-{NATIVE_LIB_VERSION}.jar"
+            jar = f"{base_name}-{version}.jar"
 
-        cached = NativeLib.cache_dir() / jar
+        cached = NativeLib.cache_dir(lib) / jar
         if cached.exists():
             return cached
-        print(f"  fetch native lib from {repo} repository")
+        print(f"  fetch native lib from {base_repo} repository")
 
-        if repo == NativeLib.REPO_GITHUB:
+        if base_repo == NativeLib.REPO_GITHUB:
+            repo = "olca-native" if lib == NativeLib.BLAS else "olca-mkl"
             url = (
-                "https://github.com/GreenDelta/olca-native/releases/"
-                f"download/v{NATIVE_LIB_VERSION}/{jar}"
+                f"https://github.com/GreenDelta/{repo}/releases/download/"
+                f"v{version}/{jar}"
             )
-        else:
+        elif lib == NativeLib.BLAS:
             url = (
                 f"https://repo1.maven.org/maven2/org/openlca/"
-                f"{base_name}/{NATIVE_LIB_VERSION}/{jar}"
+                f"{base_name}/{BLAS_VERSION}/{jar}"
             )
+        else:
+            raise AssertionError(f"There is no MKL native library on Maven.")
 
         print(f"  download native libraries from {url}")
         urllib.request.urlretrieve(url, cached)
@@ -422,19 +539,24 @@ class NativeLib:
         return cached
 
     @staticmethod
-    def extract_to(build_dir: BuildDir, repo: str = REPO_GITHUB):
+    def extract_to(build_dir: BuildDir, lib: str, repo: str = REPO_GITHUB):
         print("  copy native libraries")
-        target = build_dir.native_lib_dir
+        if lib == NativeLib.BLAS:
+            target = build_dir.blas_lib_dir
+        else:
+            target = build_dir.mkl_lib_dir
+
         if not target.exists():
             target.mkdir(parents=True, exist_ok=True)
 
-        jar = NativeLib.fetch(build_dir.osa, repo)
+        jar = NativeLib.fetch(build_dir.osa, lib, repo)
 
         with zipfile.ZipFile(jar.as_posix(), "r") as z:
             for e in z.filelist:
                 if e.is_dir():
                     continue
                 name = Path(e.filename).name
+                print(f"native lib name: {name}")
                 if name.endswith((".MF", ".xml", ".properties")):
                     continue
                 target_file = target / name
@@ -447,10 +569,10 @@ class MacDir:
 
         # create the folder structure
         app_root = build_dir.root / "openLCA"
-        app_dir = build_dir.app_dir
-        eclipse_dir = app_dir / "Contents/Eclipse"
-        macos_dir = app_dir / "Contents/MacOS"
-        for d in (app_dir, eclipse_dir, macos_dir):
+        dot_app_dir = app_root / "openLCA.app"
+        eclipse_dir = dot_app_dir / "Contents/Eclipse"
+        macos_dir = dot_app_dir / "Contents/MacOS"
+        for d in (dot_app_dir, eclipse_dir, macos_dir):
             d.mkdir(parents=True, exist_ok=True)
 
         # move files and folders
@@ -458,14 +580,14 @@ class MacDir:
             (app_root / "configuration", eclipse_dir),
             (app_root / "plugins", eclipse_dir),
             (app_root / ".eclipseproduct", eclipse_dir),
-            (app_root / "Resources", app_dir / "Contents"),
+            (app_root / "Resources", dot_app_dir / "Contents"),
             (app_root / "MacOS/openLCA", macos_dir / "openLCA"),
         ]
         for (source, target) in moves:
             if source.exists():
                 shutil.move(str(source), str(target))
 
-        MacDir.add_app_info(app_dir / "Contents/Info.plist")
+        MacDir.add_app_info(dot_app_dir / "Contents/Info.plist")
 
         # create the ini file
         plugins_dir = eclipse_dir / "plugins"
@@ -517,7 +639,6 @@ class MacDir:
                 b'"no" ?>\n'
             )
             plist.write(out, encoding="UTF-8", xml_declaration=False)
-
 
 
 class Nsis:
@@ -588,7 +709,7 @@ class Nsis:
             dist_dir.mkdir(parents=True, exist_ok=True)
         app_file = (
             dist_dir / f"openLCA_{build_dir.osa.value}"
-            f"_{version.app_suffix}.exe"
+                       f"_{version.app_suffix}.exe"
         )
         shutil.move(build_dir.root / "setup.exe", app_file)
 
@@ -612,6 +733,9 @@ def main():
         build_dir = BuildDir(osa)
         if not build_dir.exists:
             print(f"no {osa} build available; skipped")
+            continue
+        if "--mkl" in sys.argv and osa.is_mac():
+            print("macOS version of openLCA with MKL is not available; skipped")
             continue
         print(f"package build: {osa}")
         build_dir.package(version)
