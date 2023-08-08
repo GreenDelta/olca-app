@@ -1,5 +1,6 @@
 package org.openlca.app.navigation.actions.libraries;
 
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,6 +22,8 @@ import org.openlca.app.util.Question;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.Library;
 import org.openlca.util.Dirs;
+
+import static org.openlca.app.licence.LibrarySession.removeSession;
 
 public class DeleteLibraryAction extends Action implements INavigationAction {
 
@@ -92,6 +95,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 
 		// delete it
 		Dirs.delete(lib.folder());
+		removeSession(lib.name());
 		Navigator.refresh();
 	}
 

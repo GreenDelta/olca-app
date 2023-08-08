@@ -111,17 +111,20 @@ public class LibrarySession {
 		}
 	}
 
-	public static boolean removeSession(String library) {
+	public static File sessionOf(String library) {
 		var dir = getSessionDir();
-		var json = new File(dir, library);
+		return new File(dir, library + SESSION_EXTENSION);
+	}
+
+	public static boolean removeSession(String library) {
+		var json = sessionOf(library);
 		if (json.exists())
 			return json.delete();
 		return false;
 	}
 
 	public static Optional<Session> retrieveSession(String library) {
-		var dir = getSessionDir();
-		var json = new File(dir, library + SESSION_EXTENSION);
+		var json = sessionOf(library);
 		if (!json.exists())
 			return Optional.empty();
 
