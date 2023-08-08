@@ -43,7 +43,7 @@ class Version:
     def get() -> "Version":
         # read app version from the app-manifest
         manifest = PROJECT_DIR.parent / Path("olca-app/META-INF/MANIFEST.MF")
-        print(f"read version from {manifest}")
+        print(f"Read version from {manifest}.")
         app_version = None
         with open(manifest, "r", encoding="utf-8") as f:
             for line in f:
@@ -96,8 +96,8 @@ class Zip:
         # try to fetch a version 7zip version from the web
         url = "https://www.7-zip.org/a/7za920.zip"
         print(
-            f"WARNING no 7zip version found under {z7}, will download an OLD"
-            f" version from {url}"
+            f"Warning: no 7zip version found under {z7}, will download an OLD"
+            f" version from {url}."
         )
         z7_dir = PROJECT_DIR / "tools/7zip"
         z7_dir.mkdir(parents=True, exist_ok=True)
@@ -143,9 +143,10 @@ class Zip:
             shutil.make_archive(str(base), "gztar", str(folder))
 
 
-class Build:
+class DistDir:
+
     @staticmethod
-    def dist_dir() -> Path:
+    def get() -> Path:
         d = PROJECT_DIR / "build/dist"
         if not d.exists():
             d.mkdir(parents=True, exist_ok=True)
@@ -153,15 +154,15 @@ class Build:
 
     @staticmethod
     def clean():
-        d = Build.dist_dir()
+        d = DistDir.get()
         if d.exists():
-            print("clean dist folder")
+            print("Cleaning dist folder...")
             shutil.rmtree(d, ignore_errors=True)
         d.mkdir(parents=True, exist_ok=True)
 
 
 @dataclass
-class BuildDir:
+class Build:
     osa: OsArch
 
     @property
@@ -178,7 +179,7 @@ class BuildDir:
         raise AssertionError(f"unknown build target {self.osa}")
 
     @property
-    def exists(self) -> bool:
+    def dir_exists(self) -> bool:
         return self.root.exists()
 
     @property
@@ -268,7 +269,7 @@ class BuildDir:
         # build the package
         pack_name = f"openLCA_{self.osa.value}_{version.app_suffix}"
         print(f"  create package {pack_name}")
-        pack = Build.dist_dir() / pack_name
+        pack = DistDir.get() / pack_name
         if self.osa == OsArch.WINDOWS_X64:
             shutil.make_archive(pack.as_posix(), "zip", self.root.as_posix())
         else:
@@ -331,20 +332,20 @@ class MKLFramework(Enum):
             raise ValueError(f"unsupported OS+arch: {osa} for MKL.")
 
     @staticmethod
-    def extract_to(build_dir: BuildDir):
-        if build_dir.mkl_lib_dir.exists():
+    def extract_to(build: Build):
+        if build.mkl_lib_dir.exists():
             return
         else:
-            build_dir.mkl_lib_dir.mkdir(parents=True, exist_ok=True)
+            build.mkl_lib_dir.mkdir(parents=True, exist_ok=True)
         print("  copy MKL libraries")
 
         for lib in MKLFramework:
-            wheel = lib.fetch(build_dir.osa)
+            wheel = lib.fetch(build.osa)
             folder = MKLFramework.cache_dir() / wheel.name[0:-3]
             if not folder.exists():
                 Zip.unzip(wheel, folder)
 
-            MKLFramework.copy_binaries(folder, build_dir.mkl_lib_dir)
+            MKLFramework.copy_binaries(folder, build.mkl_lib_dir)
 
     @staticmethod
     def copy_binaries(folder: Path, lib_dir: Path):
@@ -420,33 +421,33 @@ class JRE:
         return zf
 
     @staticmethod
-    def extract_to(build_dir: BuildDir):
-        if build_dir.jre_dir.exists():
+    def extract_to(build: Build):
+        if build.jre_dir.exists():
             return
         print("  Copying JRE")
 
         # fetch and extract the JRE
-        zf = JRE.fetch(build_dir.osa)
+        zf = JRE.fetch(build.osa)
 
         ziptool = Zip.get()
         if not ziptool.is_z7 or zf.name.endswith(".zip"):
-            Zip.unzip(zf, build_dir.app_dir)
+            Zip.unzip(zf, build.app_dir)
         else:
             tar = zf.parent / zf.name[0:-3]
             if not tar.exists():
                 Zip.unzip(zf, zf.parent)
                 if not tar.exists():
                     raise AssertionError(f"Could not find JRE tar {tar}")
-            Zip.unzip(tar, build_dir.app_dir)
+            Zip.unzip(tar, build.app_dir)
 
         # rename the JRE folder if required
-        if build_dir.jre_dir.exists():
+        if build.jre_dir.exists():
             return
-        jre_dir = next(build_dir.app_dir.glob("*jre*"))
-        os.rename(jre_dir, build_dir.jre_dir)
+        jre_dir = next(build.app_dir.glob("*jre*"))
+        os.rename(jre_dir, build.jre_dir)
 
         # delete a possible client VM (the server VM is much faster)
-        client_dir = build_dir.jre_dir / "bin/client"
+        client_dir = build.jre_dir / "bin/client"
         if client_dir.exists():
             delete(client_dir)
 
@@ -536,17 +537,17 @@ class NativeLib:
         return cached
 
     @staticmethod
-    def extract_to(build_dir: BuildDir, lib: str, repo: str = REPO_GITHUB):
+    def extract_to(build: Build, lib: str, repo: str = REPO_GITHUB):
         print("  Copying the native libraries")
         if lib == NativeLib.BLAS:
-            target = build_dir.blas_lib_dir
+            target = build.blas_lib_dir
         else:
-            target = build_dir.mkl_lib_dir
+            target = build.mkl_lib_dir
 
         if not target.exists():
             target.mkdir(parents=True, exist_ok=True)
 
-        jar = NativeLib.fetch(build_dir.osa, lib, repo)
+        jar = NativeLib.fetch(build.osa, lib, repo)
 
         with zipfile.ZipFile(jar.as_posix(), "r") as z:
             for e in z.filelist:
@@ -564,10 +565,10 @@ class MacDir:
     JRE_ID = "org.openlca.jre"
 
     @staticmethod
-    def arrange(build_dir: BuildDir):
+    def arrange(build: Build):
 
         # create the folder structure
-        app_root = build_dir.root / "openLCA"
+        app_root = build.root / "openLCA"
         dot_app_dir = app_root / "openLCA.app"
         eclipse_dir = dot_app_dir / "Contents/Eclipse"
         macos_dir = dot_app_dir / "Contents/MacOS"
@@ -615,8 +616,8 @@ class MacDir:
         MacDir.edit_plist(PROJECT_DIR / "templates/Info.plist", path, info_dict)
 
     @staticmethod
-    def edit_jre_info(build_dir: BuildDir):
-        path = build_dir.jre_dir / "Contents/Info.plist"
+    def edit_jre_info(build: Build):
+        path = build.jre_dir / "Contents/Info.plist"
         info_dict = {
             "CFBundleIdentifier": MacDir.JRE_ID,
         }
@@ -661,8 +662,8 @@ class Nsis:
         return nsis
 
     @staticmethod
-    def run(build_dir: BuildDir, version: Version):
-        if not build_dir.osa.is_win():
+    def run(build: Build, version: Version):
+        if not build.osa.is_win():
             return
         if "--winstaller" not in sys.argv:
             print("  Skipping NSIS installer build")
@@ -675,16 +676,16 @@ class Nsis:
         # installer resources
         inst_files = (PROJECT_DIR / "resources/installer_static_win").glob("*")
         for f in inst_files:
-            shutil.copy2(f, build_dir.root / f.name)
+            shutil.copy2(f, build.root / f.name)
         Template.apply(
             PROJECT_DIR / "templates/setup.nsi",
-            build_dir.root / "setup.nsi",
+            build.root / "setup.nsi",
             encoding="iso-8859-1",
             version=version.base,
         )
 
         # ini files with language flag
-        en_dir = build_dir.root / "english"
+        en_dir = build.root / "english"
         en_dir.mkdir(parents=True, exist_ok=True)
         Template.apply(
             PROJECT_DIR / "templates/openLCA_win.ini",
@@ -692,7 +693,7 @@ class Nsis:
             encoding="iso-8859-1",
             lang="en",
         )
-        de_dir = build_dir.root / "german"
+        de_dir = build.root / "german"
         de_dir.mkdir(parents=True, exist_ok=True)
         Template.apply(
             PROJECT_DIR / "templates/openLCA_win.ini",
@@ -702,15 +703,15 @@ class Nsis:
         )
 
         # create the installer
-        subprocess.call([exe, build_dir.root / "setup.nsi"])
+        subprocess.call([exe, build.root / "setup.nsi"])
         dist_dir = PROJECT_DIR / "build/dist"
         if not dist_dir.exists():
             dist_dir.mkdir(parents=True, exist_ok=True)
         app_file = (
-            dist_dir / f"openLCA_{build_dir.osa.value}"
+            dist_dir / f"openLCA_{build.osa.value}"
                        f"_{version.app_suffix}.exe"
         )
-        shutil.move(build_dir.root / "setup.exe", app_file)
+        shutil.move(build.root / "setup.exe", app_file)
 
 
 class Template:
@@ -726,18 +727,18 @@ class Template:
 
 
 def main():
-    Build.clean()
+    DistDir.clean()
     version = Version.get()
     for osa in OsArch:
-        build_dir = BuildDir(osa)
-        if not build_dir.exists:
+        build = Build(osa)
+        if not build.dir_exists:
             print(f"No {osa} build available; skipped")
             continue
         if "--mkl" in sys.argv and osa.is_mac():
             print("macOS version of openLCA with MKL is not available; skipped")
             continue
         print(f"Packaging the {osa} build...")
-        build_dir.package(version)
+        build.package(version)
 
 
 def delete(path: Path):
