@@ -14,22 +14,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, NamedTuple
 
-# the version of the native library package
-BLAS_VERSION = "0.0.1"
-MKL_VERSION = "1"
-
-# the bundle ID of the JRE
-JRE_ID = "org.openlca.jre"
 
 # the root of the build project olca-app/olca-app-build
 PROJECT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
-
-
-class MathLib(NamedTuple):
-    name: str
-    win_url: str
-    mac_url: str
-    linux_url: str
 
 
 class OsArch(Enum):
@@ -220,12 +207,12 @@ class BuildDir:
     @property
     def blas_lib_dir(self) -> Path:
         arch = "arm64" if self.osa == OsArch.MACOS_ARM else "x64"
-        return self.app_dir / f"olca-native/{BLAS_VERSION}/{arch}"
+        return self.app_dir / f"olca-native/{NativeLib.BLAS_VERSION}/{arch}"
 
     @property
     def mkl_lib_dir(self) -> Path:
         arch = "arm64" if self.osa == OsArch.MACOS_ARM else "x64"
-        return self.app_dir / f"olca-mkl-{arch}_v{MKL_VERSION}"
+        return self.app_dir / f"olca-mkl-{arch}_v{NativeLib.MKL_VERSION}"
 
     def package(self, version: Version):
         if self.osa.is_mac():
@@ -292,6 +279,13 @@ class BuildDir:
 
 
 class MKLFramework(Enum):
+
+    class MathLib(NamedTuple):
+        name: str
+        win_url: str
+        mac_url: str
+        linux_url: str
+
     MKL = MathLib(
         name="mkl-2023.1.0",
         win_url="https://files.pythonhosted.org/packages/d9/a1/b7cfb6f3e7259f035a2c947cf26bff42cda6772933cdb95c829e91ce995f/mkl-2023.1.0-py2.py3-none-win_amd64.whl",  # noqa
@@ -312,7 +306,7 @@ class MKLFramework(Enum):
         linux_url="https://files.pythonhosted.org/packages/96/5f/aaae879605e95e147b7269e54a5b49654a44d6fee7fed54ece8f77d77ded/tbb-2021.9.0-py2.py3-none-manylinux1_i686.whl"  # noqa
     )
 
-    def file(self, osa: OsArch):
+    def file_name(self, osa: OsArch):
         return f"{self.value.name}-py2.py3-none-${MKLFramework.wheel_suffix(osa)}"
 
     @staticmethod
@@ -372,17 +366,16 @@ class MKLFramework(Enum):
 
     def fetch(self, osa: OsArch) -> Path:
         cache_dir = MKLFramework.cache_dir()
-        file_name = self.file(osa)
-        file = cache_dir / file_name
+        file = cache_dir / self.file_name(osa)
         if os.path.exists(file):
             return file
 
         url = self.url(osa)
 
-        print(f"  download {self.name} from {url}")
+        print(f"  Fetching {self.name} from {url}...")
         urllib.request.urlretrieve(url, file)
         if not os.path.exists(file):
-            raise AssertionError(f"{self.name} download failed; url={url}")
+            raise AssertionError(f"{self.name} download failed; URL: {url}")
         return file
 
 
@@ -399,7 +392,7 @@ class JRE:
         elif osa == OsArch.WINDOWS_X64:
             name = "x64_windows"
         else:
-            raise ValueError(f"unsupported OS+arch: {osa}")
+            raise ValueError(f"Unsupported OS+arch: {osa}")
         return f"OpenJDK17U-jre_{name}_hotspot_17.0.5_8.{suffix}"
 
     @staticmethod
@@ -420,7 +413,7 @@ class JRE:
             "https://github.com/adoptium/temurin17-binaries/releases/"
             f"download/jdk-17.0.5%2B8/{zip_name}"
         )
-        print(f"  download JRE from {url}")
+        print(f"  Fetching JRE from {url}")
         urllib.request.urlretrieve(url, zf)
         if not os.path.exists(zf):
             raise AssertionError(f"JRE download failed; url={url}")
@@ -430,7 +423,7 @@ class JRE:
     def extract_to(build_dir: BuildDir):
         if build_dir.jre_dir.exists():
             return
-        print("  copy JRE")
+        print("  Copying JRE")
 
         # fetch and extract the JRE
         zf = JRE.fetch(build_dir.osa)
@@ -443,7 +436,7 @@ class JRE:
             if not tar.exists():
                 Zip.unzip(zf, zf.parent)
                 if not tar.exists():
-                    raise AssertionError(f"could not find JRE tar {tar}")
+                    raise AssertionError(f"Could not find JRE tar {tar}")
             Zip.unzip(tar, build_dir.app_dir)
 
         # rename the JRE folder if required
@@ -459,6 +452,10 @@ class JRE:
 
 
 class NativeLib:
+    # the version of the native library package
+    BLAS_VERSION = "0.0.1"
+    MKL_VERSION = "1"
+
     MKL = "MKL"
     BLAS = "BLAS"
     REPO_GITHUB = "Github"
@@ -475,7 +472,7 @@ class NativeLib:
         elif osa == OsArch.WINDOWS_X64:
             arch = "win-x64"
         else:
-            raise ValueError(f"unsupported OS+arch: {osa}")
+            raise ValueError(f"Unsupported OS+arch: {osa}")
         return f"olca-native-blas-{arch}"
 
     @staticmethod
@@ -489,7 +486,7 @@ class NativeLib:
         elif osa == OsArch.WINDOWS_X64:
             arch = "windows_x64"
         else:
-            raise ValueError(f"unsupported OS+arch: {osa}")
+            raise ValueError(f"Unsupported OS+arch: {osa}")
         return f"olcamkl_{arch}"
 
     @staticmethod
@@ -506,7 +503,7 @@ class NativeLib:
         else:
             base_name = NativeLib.mkl_base_name(osa)
 
-        version = BLAS_VERSION if lib == NativeLib.BLAS else MKL_VERSION
+        version = NativeLib.BLAS_VERSION if lib == NativeLib.BLAS else NativeLib.MKL_VERSION
 
         if base_repo == NativeLib.REPO_GITHUB:
             jar = f"{base_name}.zip"
@@ -527,20 +524,20 @@ class NativeLib:
         elif lib == NativeLib.BLAS:
             url = (
                 f"https://repo1.maven.org/maven2/org/openlca/"
-                f"{base_name}/{BLAS_VERSION}/{jar}"
+                f"{base_name}/{NativeLib.BLAS_VERSION}/{jar}"
             )
         else:
             raise AssertionError(f"There is no MKL native library on Maven.")
 
-        print(f"  download native libraries from {url}")
+        print(f"  Fetching the native libraries from {url}.")
         urllib.request.urlretrieve(url, cached)
         if not os.path.exists(cached):
-            raise AssertionError(f"native-library download failed; url={url}")
+            raise AssertionError(f"Native library download failed; URL={url}")
         return cached
 
     @staticmethod
     def extract_to(build_dir: BuildDir, lib: str, repo: str = REPO_GITHUB):
-        print("  copy native libraries")
+        print("  Copying the native libraries")
         if lib == NativeLib.BLAS:
             target = build_dir.blas_lib_dir
         else:
@@ -556,7 +553,6 @@ class NativeLib:
                 if e.is_dir():
                     continue
                 name = Path(e.filename).name
-                print(f"native lib name: {name}")
                 if name.endswith((".MF", ".xml", ".properties")):
                     continue
                 target_file = target / name
@@ -564,6 +560,9 @@ class NativeLib:
 
 
 class MacDir:
+    # the bundle ID of the JRE
+    JRE_ID = "org.openlca.jre"
+
     @staticmethod
     def arrange(build_dir: BuildDir):
 
@@ -619,7 +618,7 @@ class MacDir:
     def edit_jre_info(build_dir: BuildDir):
         path = build_dir.jre_dir / "Contents/Info.plist"
         info_dict = {
-            "CFBundleIdentifier": JRE_ID,
+            "CFBundleIdentifier": MacDir.JRE_ID,
         }
         MacDir.edit_plist(path, path, info_dict)
 
@@ -666,10 +665,10 @@ class Nsis:
         if not build_dir.osa.is_win():
             return
         if "--winstaller" not in sys.argv:
-            print("  skip NSIS installer build")
+            print("  Skipping NSIS installer build")
             return False
         if platform.system().lower() != "windows":
-            print("WARNING: NSIS installers can be only build on Windows")
+            print("Warning: NSIS installers can be only build on Windows")
 
         exe = Nsis.fetch()
 
@@ -732,12 +731,12 @@ def main():
     for osa in OsArch:
         build_dir = BuildDir(osa)
         if not build_dir.exists:
-            print(f"no {osa} build available; skipped")
+            print(f"No {osa} build available; skipped")
             continue
         if "--mkl" in sys.argv and osa.is_mac():
             print("macOS version of openLCA with MKL is not available; skipped")
             continue
-        print(f"package build: {osa}")
+        print(f"Packaging the {osa} build...")
         build_dir.package(version)
 
 
