@@ -7,4 +7,8 @@ win32.*/
 logs.zip
 
 # the distribution packages
-dist/
+dist-blas/
+dist-mkl/
+
+# the temp copy of the exports
+temp/

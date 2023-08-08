@@ -1,4 +1,5 @@
 import datetime
+import enum
 import os
 import platform
 import re
@@ -9,17 +10,15 @@ import urllib.request
 import xml.etree.ElementTree as ElementTree
 import zipfile
 
-from enum import Enum
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, NamedTuple
-
+from typing import Optional, NamedTuple, List
 
 # the root of the build project olca-app/olca-app-build
 PROJECT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 
 
-class OsArch(Enum):
+class OsArch(enum.Enum):
     MACOS_ARM = "macOS_arm64"
     MACOS_X64 = "macOS_x64"
     WINDOWS_X64 = "Windows_x64"
@@ -43,7 +42,7 @@ class Version:
     def get() -> "Version":
         # read app version from the app-manifest
         manifest = PROJECT_DIR.parent / Path("olca-app/META-INF/MANIFEST.MF")
-        print(f"Read version from {manifest}.")
+        print(f"Reading version from {manifest}.")
         app_version = None
         with open(manifest, "r", encoding="utf-8") as f:
             for line in f:
@@ -113,7 +112,7 @@ class Zip:
         if not target_folder.exists():
             target_folder.mkdir(parents=True, exist_ok=True)
         if Zip.get().is_z7:
-            subprocess.call([Zip.z7(), "x", zip_file, f"-o{target_folder}"])
+            Zip.run_quietly([Zip.z7(), "x", zip_file, f"-o{target_folder}"])
         else:
             shutil.unpack_archive(zip_file, target_folder)
 
@@ -134,20 +133,31 @@ class Zip:
         if Zip.get().is_z7:
             tar = target.parent / (base_name + ".tar")
             gz = target.parent / (base_name + ".tar.gz")
-            subprocess.call(
-                [Zip.z7(), "a", "-ttar", str(tar), folder.as_posix() + "/*"]
-            )
-            subprocess.call([Zip.z7(), "a", "-tgzip", str(gz), str(tar)])
+            Zip.run_quietly([Zip.z7(), "a", "-ttar", str(tar), folder.as_posix() + "/*"])
+            Zip.run_quietly([Zip.z7(), "a", "-tgzip", str(gz), str(tar)])
             os.remove(tar)
         else:
             shutil.make_archive(str(base), "gztar", str(folder))
+
+    @staticmethod
+    def run_quietly(args: List[str]):
+        process = subprocess.Popen(args=args,
+                                   stdout=subprocess.PIPE,
+                                   universal_newlines=True)
+        # quietly printing the logs (remove the "Extracting  <file>")
+        for line in process.stdout:
+            if "ing  " not in line:
+                sys.stdout.write(f"  {line}")
 
 
 class DistDir:
 
     @staticmethod
     def get() -> Path:
-        d = PROJECT_DIR / "build/dist"
+        if "--mkl" in sys.argv:
+            d = PROJECT_DIR / "build/dist-mkl"
+        else:
+            d = PROJECT_DIR / "build/dist-blas"
         if not d.exists():
             d.mkdir(parents=True, exist_ok=True)
         return d
@@ -166,21 +176,24 @@ class Build:
     osa: OsArch
 
     @property
-    def root(self) -> Path:
-        build_dir = PROJECT_DIR / "build"
+    def name(self):
         if self.osa == OsArch.LINUX_X64:
-            return build_dir / "linux.gtk.x86_64"
+            return "linux.gtk.x86_64"
         if self.osa == OsArch.WINDOWS_X64:
-            return build_dir / "win32.win32.x86_64"
+            return "win32.win32.x86_64"
         if self.osa == OsArch.MACOS_X64:
-            return build_dir / "macosx.cocoa.x86_64"
+            return "macosx.cocoa.x86_64"
         if self.osa == OsArch.MACOS_ARM:
-            return build_dir / "macosx.cocoa.aarch64"
-        raise AssertionError(f"unknown build target {self.osa}")
+            return "macosx.cocoa.aarch64"
+        raise AssertionError(f"Unknown build name {self.osa}")
 
     @property
-    def dir_exists(self) -> bool:
-        return self.root.exists()
+    def root(self) -> Path:
+        return PROJECT_DIR / "build" / "temp" / self.name
+
+    @property
+    def export_dir(self) -> Path:
+        return PROJECT_DIR / "build" / self.name
 
     @property
     def app_dir(self) -> Path:
@@ -197,12 +210,12 @@ class Build:
     def olca_plugin_dir(self) -> Path | None:
         plugin_dir = self.app_dir / "plugins"
         if not plugin_dir.exists() or not plugin_dir.is_dir():
-            print(f"warning: could not locate plugin folder: {plugin_dir}")
+            print(f"Warning: could not locate plugin folder: {plugin_dir}")
             return None
         for p in plugin_dir.iterdir():
             if p.name.startswith("olca-app") and p.is_dir():
                 return p
-        print(f"warning: olca-app plugin folder not found in: {plugin_dir}")
+        print(f"Warning: olca-app plugin folder not found in: {plugin_dir}")
         return None
 
     @property
@@ -214,6 +227,17 @@ class Build:
     def mkl_lib_dir(self) -> Path:
         arch = "arm64" if self.osa == OsArch.MACOS_ARM else "x64"
         return self.app_dir / f"olca-mkl-{arch}_v{NativeLib.MKL_VERSION}"
+
+    def copy_export(self):
+        if not self.export_dir.exists():
+            print(f"No export available for copy the {self.osa.value} version.")
+            return
+        if not self.root.exists():
+            self.root.parent.mkdir(exist_ok=True, parents=False)
+        else:
+            shutil.rmtree(self.root)
+            self.root.parent.mkdir(exist_ok=True, parents=False)
+        shutil.copytree(self.export_dir, self.root)
 
     def package(self, version: Version):
         if self.osa.is_mac():
@@ -232,7 +256,7 @@ class Build:
             MacDir.edit_jre_info(self)
 
         # copy credits
-        print("  copy credits")
+        print("\n  Copying credits...")
         about_page = PROJECT_DIR / "credits/about.html"
         if about_page.exists():
             shutil.copy2(about_page, self.app_dir)
@@ -268,7 +292,7 @@ class Build:
 
         # build the package
         pack_name = f"openLCA_{self.osa.value}_{version.app_suffix}"
-        print(f"  create package {pack_name}")
+        print(f"\n  Creating package {pack_name}...")
         pack = DistDir.get() / pack_name
         if self.osa == OsArch.WINDOWS_X64:
             shutil.make_archive(pack.as_posix(), "zip", self.root.as_posix())
@@ -279,8 +303,9 @@ class Build:
             Nsis.run(self, version)
 
 
-class MKLFramework(Enum):
+class MKLFramework(enum.Enum):
 
+    @enum.nonmember
     class MathLib(NamedTuple):
         name: str
         win_url: str
@@ -319,7 +344,7 @@ class MKLFramework(Enum):
         elif osa == OsArch.WINDOWS_X64:
             return "win_amd64.whl"
         else:
-            raise ValueError(f"unsupported OS+arch: {osa} for MKL.")
+            raise ValueError(f"Unsupported OS+arch: {osa.value} for MKL.")
 
     def url(self, osa: OsArch):
         if osa == OsArch.MACOS_X64:
@@ -329,7 +354,7 @@ class MKLFramework(Enum):
         elif osa == OsArch.WINDOWS_X64:
             return self.value.win_url
         else:
-            raise ValueError(f"unsupported OS+arch: {osa} for MKL.")
+            raise ValueError(f"Unsupported OS+arch: {osa.value} for MKL.")
 
     @staticmethod
     def extract_to(build: Build):
@@ -337,7 +362,7 @@ class MKLFramework(Enum):
             return
         else:
             build.mkl_lib_dir.mkdir(parents=True, exist_ok=True)
-        print("  copy MKL libraries")
+        print("  Copying MKL libraries")
 
         for lib in MKLFramework:
             wheel = lib.fetch(build.osa)
@@ -345,6 +370,7 @@ class MKLFramework(Enum):
             if not folder.exists():
                 Zip.unzip(wheel, folder)
 
+            print(f"  Copying {lib.name} from {folder.name}")
             MKLFramework.copy_binaries(folder, build.mkl_lib_dir)
 
     @staticmethod
@@ -355,7 +381,6 @@ class MKLFramework(Enum):
                 file = Path(root) / filename
                 path_patterns = [Path("/data/Library/bin/"), Path("/data/lib/")]
                 if any(str(pattern) in str(file) for pattern in path_patterns):
-                    print(f"  Copying {filename} from {folder.name}")
                     shutil.copy2(file, lib_dir / filename)
 
     @staticmethod
@@ -393,7 +418,7 @@ class JRE:
         elif osa == OsArch.WINDOWS_X64:
             name = "x64_windows"
         else:
-            raise ValueError(f"Unsupported OS+arch: {osa}")
+            raise ValueError(f"Unsupported OS+arch: {osa.value}")
         return f"OpenJDK17U-jre_{name}_hotspot_17.0.5_8.{suffix}"
 
     @staticmethod
@@ -414,7 +439,7 @@ class JRE:
             "https://github.com/adoptium/temurin17-binaries/releases/"
             f"download/jdk-17.0.5%2B8/{zip_name}"
         )
-        print(f"  Fetching JRE from {url}")
+        print(f"  Fetching JRE from {url}...")
         urllib.request.urlretrieve(url, zf)
         if not os.path.exists(zf):
             raise AssertionError(f"JRE download failed; url={url}")
@@ -457,8 +482,8 @@ class NativeLib:
     BLAS_VERSION = "0.0.1"
     MKL_VERSION = "1"
 
-    MKL = "MKL"
-    BLAS = "BLAS"
+    MKL = "mkl"
+    BLAS = "blas"
     REPO_GITHUB = "Github"
     REPO_MAVEN = "Maven"
 
@@ -473,7 +498,7 @@ class NativeLib:
         elif osa == OsArch.WINDOWS_X64:
             arch = "win-x64"
         else:
-            raise ValueError(f"Unsupported OS+arch: {osa}")
+            raise ValueError(f"Unsupported OS+arch: {osa.value}")
         return f"olca-native-blas-{arch}"
 
     @staticmethod
@@ -487,7 +512,7 @@ class NativeLib:
         elif osa == OsArch.WINDOWS_X64:
             arch = "windows_x64"
         else:
-            raise ValueError(f"Unsupported OS+arch: {osa}")
+            raise ValueError(f"Unsupported OS+arch: {osa.value}")
         return f"olcamkl_{arch}"
 
     @staticmethod
@@ -514,7 +539,7 @@ class NativeLib:
         cached = NativeLib.cache_dir(lib) / jar
         if cached.exists():
             return cached
-        print(f"  fetch native lib from {base_repo} repository")
+        print(f"  Fetching the native lib from {base_repo} repository.")
 
         if base_repo == NativeLib.REPO_GITHUB:
             repo = "olca-native" if lib == NativeLib.BLAS else "olca-mkl"
@@ -530,7 +555,7 @@ class NativeLib:
         else:
             raise AssertionError(f"There is no MKL native library on Maven.")
 
-        print(f"  Fetching the native libraries from {url}.")
+        print(f"  Fetching the native libraries from {url}...")
         urllib.request.urlretrieve(url, cached)
         if not os.path.exists(cached):
             raise AssertionError(f"Native library download failed; URL={url}")
@@ -538,7 +563,7 @@ class NativeLib:
 
     @staticmethod
     def extract_to(build: Build, lib: str, repo: str = REPO_GITHUB):
-        print("  Copying the native libraries")
+        print("\n  Copying the native libraries")
         if lib == NativeLib.BLAS:
             target = build.blas_lib_dir
         else:
@@ -609,9 +634,10 @@ class MacDir:
     def add_app_info(path: Path):
         # set version of the app
         # (version must be composed of one to three period-separated integers.)
+        version_base = Version.get().base
         info_dict = {
-            "CFBundleShortVersionString": Version.get().base,
-            "CFBundleVersion": Version.get().base,
+            "CFBundleShortVersionString": version_base,
+            "CFBundleVersion": version_base,
         }
         MacDir.edit_plist(PROJECT_DIR / "templates/Info.plist", path, info_dict)
 
@@ -653,12 +679,12 @@ class Nsis:
             f"https://sourceforge.net/projects/nsis/files"
             f"/NSIS%202/{Nsis.VERSION}/nsis-{Nsis.VERSION}.zip/download"
         )
-        print(f"  download NSIS from {url}")
+        print(f"  Downloading NSIS from {url}")
         nsis_zip = PROJECT_DIR / f"tools/nsis-{Nsis.VERSION}.zip"
         urllib.request.urlretrieve(url, nsis_zip)
         Zip.unzip(nsis_zip, PROJECT_DIR / f"tools")
         if not nsis.exists():
-            AssertionError(f"failed to fetch NSIS from {url}")
+            AssertionError(f"Failed to fetch NSIS from {url}")
         return nsis
 
     @staticmethod
@@ -731,14 +757,17 @@ def main():
     version = Version.get()
     for osa in OsArch:
         build = Build(osa)
-        if not build.dir_exists:
-            print(f"No {osa} build available; skipped")
+
+        if not build.export_dir.exists():
+            print(f"\nNo {osa.value} build available; skipped.")
             continue
-        if "--mkl" in sys.argv and osa.is_mac():
-            print("macOS version of openLCA with MKL is not available; skipped")
-            continue
-        print(f"Packaging the {osa} build...")
+
+        print(f"\nCopying the {osa.value} export...")
+        build.copy_export()
+        lib = "MKL" if "--mkl" in sys.argv else "BLAS"
+        print(f"Packaging the {osa.value} {lib} build...")
         build.package(version)
+        print(f"Done packaging the {osa.value} {lib} build.")
 
 
 def delete(path: Path):
