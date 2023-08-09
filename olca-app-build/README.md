@@ -13,7 +13,7 @@ select the following options in the export dialog:
 * (take the defaults for the others)
 
 In the next page, select the platforms for which you want to build the product.
-After the export, you need to run the package script `package.py` to copy
+After the export, you need to run the package module `package` to copy
 resources like the Java runtime, the native math libraries, etc. to the
 application folder and to create the installers.
 
@@ -48,12 +48,14 @@ and native libraries if these are missing.
 
 3. Run the PDE export as described above.
 
-4. Run the packaging script `package.py`.
+4. Run the packaging module `package`.
 
    ```bash
    cd olca-app-build
-   python package.py
+   python -m package
    ```
+
+   Note: To also create the Windows installer, run `python -m package --winstaller`
 
 -------------
 
