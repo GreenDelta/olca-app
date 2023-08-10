@@ -54,13 +54,17 @@ public class AuthenticationGroup {
 	}
 
 	public AuthenticationGroup render(Composite parent, FormToolkit tk, int flags) {
+		return render(parent, tk, flags, M.User);
+	}
+
+	public AuthenticationGroup render(Composite parent, FormToolkit tk, int flags, String userLabel) {
 		var autoFocus = (flags & SWT.FOCUSED) != 0;
 		var group = UI.group(parent, tk);
-		group.setText("Authentication");
+		group.setText(M.Authentication);
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
 		if (withUser) {
-			var t = createText(group, tk, SWT.NONE, M.User, user, text -> this.user = text);
+			var t = createText(group, tk, SWT.NONE, userLabel, user, text -> this.user = text);
 			if (autoFocus && Strings.nullOrEmpty(user)) {
 				t.setFocus();
 			}

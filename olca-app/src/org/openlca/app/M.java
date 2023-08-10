@@ -56,11 +56,14 @@ public class M extends NLS {
 	public static String AsDefinedInProcesses;
 	public static String AssessDataQuality;
 	public static String AssignUnits;
+	public static String Authentication;
 	public static String AutoLinkProcesses;
 	public static String AvoidedProduct;
 	public static String AvoidedProductFlow;
 	public static String AvoidedWaste;
 	public static String AvoidedWasteFlow;
+
+	//B
 	public static String BackgroundData;
 	public static String BackupDatabase;
 	public static String BaseUncertainty;
@@ -282,6 +285,7 @@ public class M extends NLS {
 	public static String EditStickyNote;
 	public static String ElementaryFlow;
 	public static String Email;
+	public static String EmailOrUsername;
 	public static String EmptyDatabase;
 	public static String EmptyValueMessage;
 	public static String EnableCollaboration;
@@ -679,6 +683,7 @@ public class M extends NLS {
 	public static String PleaseEnterANewName;
 	public static String PleaseEnterTheNameOfTheNewCategory;
 	public static String PleaseEnterYourAuthenticatorTokenToProceed;
+	public static String PleaseEnterYourCredentialsLibrary;
 	public static String PleaseSelectElements;
 	public static String PleaseSelectProperties;
 	public static String PleaseSpecifyHost;
@@ -1004,7 +1009,7 @@ public class M extends NLS {
 	public static String Yes;
 	public static String ZipCode;
 
-    private static Map<String, String> map;
+	private static Map<String, String> map;
 
 	static {
 		NLS.initializeMessages("org.openlca.app.messages", M.class);
