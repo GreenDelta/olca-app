@@ -100,8 +100,7 @@ public class LibrarySession {
 
 		if (status == WRONG_USER || status == WRONG_PASSWORD) {
 			if (!removeSession(library)) {
-				MsgBox.error("The provided credentials are not correct: "
-						+ Message.of(status));
+				MsgBox.error("The provided credentials are not correct.");
 			}
 			return isValid(library);
 		} else {
