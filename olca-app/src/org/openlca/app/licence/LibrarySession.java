@@ -71,7 +71,7 @@ public class LibrarySession {
 					return handleInvalid(libraryName, status);
 				session = license.createSession(credentials);
 			}
-		} catch (IOException e) {
+		} catch (IOException | IllegalArgumentException e) {
 			MsgBox.error("Failed to open the library.");
 			return false;
 		}

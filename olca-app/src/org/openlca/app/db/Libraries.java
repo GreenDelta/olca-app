@@ -7,6 +7,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +19,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import org.openlca.app.App;
+import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.app.licence.LibrarySession;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
@@ -33,10 +40,12 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.license.License;
+import org.openlca.license.certificate.CertificateInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.openlca.app.licence.LibrarySession.retrieveSession;
+import static org.openlca.license.Licensor.JSON;
 
 
 public final class Libraries {
@@ -237,6 +246,29 @@ public final class Libraries {
 					log.trace("Error deleting tmp file", e);
 				}
 			}
+		}
+	}
+
+
+	public static Optional<CertificateInfo> getLicense(File folder) {
+		var file = new File(folder, JSON);
+		if (!file.exists())
+			return Optional.empty();
+		try {
+			var reader = new JsonReader(new FileReader(file));
+			var gson = new Gson();
+			var mapType = new TypeToken<License>() {}.getType();
+			License license = gson.fromJson(reader, mapType);
+
+			var certBytes = license.certificate().getBytes();
+			var certificate = CertificateInfo.of(new ByteArrayInputStream(certBytes));
+			return Optional.of(certificate);
+		} catch (FileNotFoundException e) {
+			var log = LoggerFactory.getLogger(LibraryEditor.class);
+			log.error("failed to open the license.", e);
+			return Optional.empty();
+		} catch (IllegalArgumentException e) {
+			return Optional.empty();
 		}
 	}
 

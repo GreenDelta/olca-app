@@ -9,11 +9,13 @@ public enum Overlay {
 	DELETED("overlay/collaboration/deleted.png"),
 	DELETE_FROM_LOCAL("overlay/collaboration/delete_local.png"),
 	DELETE_FROM_REMOTE("overlay/collaboration/delete_remote.png"),
+	INVALID("overlay/red_dot.png"),
 	LIBRARY("overlay/library.png"),
 	MERGED("overlay/collaboration/merged.png"),
 	MODIFY_IN_LOCAL("overlay/collaboration/modify_local.png"),
 	MODIFY_IN_REMOTE("overlay/collaboration/modify_remote.png"),
-	NEW("overlay/new.png");
+	NEW("overlay/new.png"),
+	VALID("overlay/green_dot.png");
 
 	final String fileName;
 

@@ -5,8 +5,10 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryInfo;
 import org.openlca.license.certificate.CertificateInfo;
 import org.openlca.license.certificate.Person;
@@ -19,12 +21,12 @@ public class LibraryLicensePage extends FormPage {
 
 	public static final String ID = "LibraryLicensePage";
 	private final LibraryInfo info;
-	private final CertificateInfo license;
+	private final Library library;
 
 	public LibraryLicensePage(LibraryEditor editor) {
 		super(editor, ID, M.LicenseInformation);
 		info = editor.info;
-		license = editor.license;
+		library = editor.library;
 	}
 
 	@Override
@@ -34,12 +36,18 @@ public class LibraryLicensePage extends FormPage {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 
-		if (license == null) {
-			renderNoLicenseForm(body, tk);
-			return;
-		}
+		var license = Libraries.getLicense(library.folder());
+		license.ifPresentOrElse(l -> renderLicenseForm(body, tk, l),
+				() -> renderNoLicenseForm(body, tk));
+	}
 
-		createStatusSection(body, tk);
+	private void renderNoLicenseForm(Composite body, FormToolkit tk) {
+		UI.label(body, tk, M.NoLicenseDetected);
+	}
+
+	private void renderLicenseForm(Composite body, FormToolkit tk,
+			CertificateInfo license) {
+		createStatusSection(body, tk, license);
 
 		var owner = UI.formSection(body, tk, M.Owner, 2);
 		createPeopleSection(owner, tk, license.subject());
@@ -48,11 +56,8 @@ public class LibraryLicensePage extends FormPage {
 		createPeopleSection(vendor, tk, license.issuer());
 	}
 
-	private void renderNoLicenseForm(Composite body, FormToolkit tk) {
-		UI.label(body, tk, M.NoLicenseDetected);
-	}
-
-	private void createStatusSection(Composite body, FormToolkit tk) {
+	private void createStatusSection(Composite body, FormToolkit tk,
+			CertificateInfo license) {
 		var comp = UI.formSection(body, tk, M.Status, 2);
 
 		UI.label(comp, tk, M.Status);

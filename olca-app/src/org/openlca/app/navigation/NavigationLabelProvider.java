@@ -14,6 +14,7 @@ import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.Group;
@@ -28,6 +29,7 @@ import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
@@ -161,8 +163,11 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		// libraries
 		if (content instanceof LibraryDir)
 			return Icon.FOLDER.get();
-		if (content instanceof Library)
-			return Icon.LIBRARY.get();
+		if (content instanceof Library lib) {
+			var license = Libraries.getLicense(lib.folder());
+			return license.map(l -> Images.licensedLibrary(l.isValid()))
+					.orElse(Icon.LIBRARY.get());
+		}
 
 		// files and folders
 		if (content instanceof File file) {
