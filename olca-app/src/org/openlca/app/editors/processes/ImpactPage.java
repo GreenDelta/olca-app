@@ -3,10 +3,8 @@ package org.openlca.app.editors.processes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -15,10 +13,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
@@ -68,28 +63,26 @@ class ImpactPage extends ModelPage<Process> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.header(this);
-		FormToolkit tk = mform.getToolkit();
-		Composite body = UI.body(form, tk);
-		Composite comp = UI.composite(body, tk);
+	protected void createFormContent(IManagedForm mForm) {
+		var form = UI.header(this);
+		var tk = mForm.getToolkit();
+		var body = UI.body(form, tk);
+		var comp = UI.composite(body, tk);
 		UI.gridLayout(comp, 5);
 		UI.label(comp, tk, M.ImpactAssessmentMethod);
 		combo = new ImpactMethodViewer(comp);
-		List<ImpactMethodDescriptor> list = new ImpactMethodDao(Database.get())
+		var methods = new ImpactMethodDao(Database.get())
 				.getDescriptors()
-				.stream().sorted((m1, m2) -> Strings.compare(
-						m1.name, m2.name))
+				.stream().sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
 				.collect(Collectors.toList());
-		combo.setInput(list);
+		combo.setInput(methods);
 		combo.addSelectionChangedListener(this::setTreeInput);
 
 		zeroCheck = UI.labeledCheckbox(comp, tk, M.ExcludeZeroValues);
 		zeroCheck.setSelection(true);
-		Controls.onSelect(
-				zeroCheck, e -> setTreeInput(combo.getSelected()));
+		Controls.onSelect(zeroCheck, e -> setTreeInput(combo.getSelected()));
 
-		Button reload = UI.button(comp, tk, M.Reload);
+		var reload = UI.button(comp, tk, M.Reload);
 		var image = Icon.REFRESH.get();
 		reload.setImage(image);
 		Controls.onSelect(reload, _e -> {
@@ -107,22 +100,22 @@ class ImpactPage extends ModelPage<Process> {
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 
-		Action onOpen = Actions.onOpen(() -> {
+		var onOpen = Actions.onOpen(() -> {
 			Contribution<?> c = Viewers.getFirstSelected(tree);
 			if (c == null)
 				return;
-			if (c.item instanceof EnviFlow) {
-				App.open(((EnviFlow) c.item).flow());
+			if (c.item instanceof EnviFlow flow) {
+				App.open(flow.flow());
 			}
-			if (c.item instanceof ImpactDescriptor) {
-				App.open((ImpactDescriptor) c.item);
+			if (c.item instanceof ImpactDescriptor impact) {
+				App.open(impact);
 			}
 		});
 		Actions.bind(tree, onOpen);
 		Trees.onDoubleClick(tree, e -> onOpen.run());
 
-		if (!list.isEmpty()) {
-			ImpactMethodDescriptor m = list.get(0);
+		if (!methods.isEmpty()) {
+			var m = methods.get(0);
 			combo.select(m);
 			setTreeInput(m);
 		}
@@ -147,7 +140,7 @@ class ImpactPage extends ModelPage<Process> {
 			tree.setInput(Collections.emptyList());
 			return;
 		}
-		List<Contribution<?>> cons = new ImpactMethodDao(Database.get())
+		var contributions = new ImpactMethodDao(Database.get())
 				.getCategoryDescriptors(method.id)
 				.stream()
 				.sorted((d1, d2) -> Strings.compare(d1.name, d2.name))
@@ -157,7 +150,7 @@ class ImpactPage extends ModelPage<Process> {
 					return c;
 				})
 				.collect(Collectors.toList());
-		tree.setInput(cons);
+		tree.setInput(contributions);
 	}
 
 	private LcaResult compute() {
@@ -168,8 +161,7 @@ class ImpactPage extends ModelPage<Process> {
 		var refProduct = TechFlow.of(getModel());
 		data.techIndex = new TechIndex(refProduct);
 		data.demand = Demand.of(refProduct, 1.0);
-		data.techMatrix = JavaMatrix.of(
-				new double[][] { { 1.0 } });
+		data.techMatrix = JavaMatrix.of(new double[][]{{1.0}});
 
 		// collect the elementary flow exchanges
 		var elemFlows = new ArrayList<Exchange>();
@@ -242,7 +234,7 @@ class ImpactPage extends ModelPage<Process> {
 
 			double total = result.getTotalImpactValueOf(impact);
 			boolean withoutZeros = zeroCheck.getSelection();
-			List<Contribution<?>> childs = new ArrayList<>();
+			var childs = new ArrayList<Contribution<?>>();
 			for (var flow : result.enviIndex()) {
 				double value = result.getFlowImpactOf(impact, flow);
 				if (value == 0 && withoutZeros)
@@ -253,10 +245,18 @@ class ImpactPage extends ModelPage<Process> {
 				childs.add(child);
 			}
 
-			childs.sort((c1, c2) -> Double.compare(c2.amount, c1.amount));
+			childs.sort((c1, c2) -> {
+				int cc = Double.compare(c2.amount, c1.amount);
+				if (cc != 0)
+					return cc;
+				if (!(c1.item instanceof EnviFlow flow1)
+						|| !(c2.item instanceof EnviFlow flow2))
+					return cc;
+				return Strings.compare(Labels.name(flow1), Labels.name(flow2));
+			});
+
 			c.childs = childs;
 			return childs.toArray();
-
 		}
 
 		@Override
@@ -302,27 +302,27 @@ class ImpactPage extends ModelPage<Process> {
 			if (!(obj instanceof Contribution<?> c))
 				return null;
 			switch (col) {
-			case 0:
-				if (c.item instanceof EnviFlow)
-					return Labels.name((EnviFlow) c.item);
-				if (c.item instanceof ImpactDescriptor)
-					return Labels.name((ImpactDescriptor) c.item);
-				return null;
-			case 1:
-				if (c.item instanceof EnviFlow)
-					return Labels.category((EnviFlow) c.item);
-				return null;
-			case 2:
-				if (!(c.item instanceof EnviFlow f))
+				case 0:
+					if (c.item instanceof EnviFlow flow)
+						return Labels.name(flow);
+					if (c.item instanceof ImpactDescriptor impact)
+						return Labels.name(impact);
 					return null;
-				double a = result.getTotalFlowValueOf(f);
-				return Numbers.format(a) + " " + Labels.refUnit(f);
-			case 3:
-				return Strings.nullOrEmpty(c.unit)
-						? Numbers.format(c.amount)
-						: Numbers.format(c.amount) + " " + c.unit;
-			default:
-				return null;
+				case 1:
+					return c.item instanceof EnviFlow flow
+							? Labels.category(flow)
+							: null;
+				case 2:
+					if (!(c.item instanceof EnviFlow flow))
+						return null;
+					double a = result.getTotalFlowValueOf(flow);
+					return Numbers.format(a) + " " + Labels.refUnit(flow);
+				case 3:
+					return Strings.nullOrEmpty(c.unit)
+							? Numbers.format(c.amount)
+							: Numbers.format(c.amount) + " " + c.unit;
+				default:
+					return null;
 			}
 		}
 	}

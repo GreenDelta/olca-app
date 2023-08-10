@@ -69,9 +69,9 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		var remoteLibs = info.libraries();
 		var localLibs = Database.get().getLibraries();
 		for (var newLib : remoteLibs) {
-			if (localLibs.contains(newLib))
+			if (localLibs.contains(newLib.id()))
 				continue;
-			if (preresolve(newLib) == null)
+			if (preresolve(newLib.id()) == null)
 				return false;
 		}
 		return true;
