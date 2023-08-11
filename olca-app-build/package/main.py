@@ -76,11 +76,17 @@ def main():
     version = Version.get()
     for osa in OsArch:
         build_dir = BuildDir(osa)
-        if not build_dir.exists:
+
+        if not build_dir.export_dir.exists():
             print(f"No {osa} export is available; skipped")
             continue
-        print(f"Packaging build for {osa}...")
+
+        print(f"\nCopying the {osa.value} export...")
+        build_dir.copy_export()
+
+        print(f"Packaging the {osa.value} build...")
         package(osa, version, build_dir)
+        print(f"Done packaging the {osa.value} build.")
 
 
 if __name__ == "__main__":

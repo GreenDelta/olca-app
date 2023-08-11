@@ -11,21 +11,24 @@ class BuildDir:
     osa: OsArch
 
     @property
-    def root(self) -> Path:
-        build_dir = PROJECT_DIR / "build"
+    def name(self):
         if self.osa == OsArch.LINUX_X64:
-            return build_dir / "linux.gtk.x86_64"
+            return "linux.gtk.x86_64"
         if self.osa == OsArch.WINDOWS_X64:
-            return build_dir / "win32.win32.x86_64"
+            return "win32.win32.x86_64"
         if self.osa == OsArch.MACOS_X64:
-            return build_dir / "macosx.cocoa.x86_64"
+            return "macosx.cocoa.x86_64"
         if self.osa == OsArch.MACOS_ARM:
-            return build_dir / "macosx.cocoa.aarch64"
-        raise AssertionError(f"Warning: Unknown build target {self.osa}.")
+            return "macosx.cocoa.aarch64"
+        raise AssertionError(f"Unknown build name {self.osa}")
 
     @property
-    def exists(self) -> bool:
-        return self.root.exists()
+    def root(self) -> Path:
+        return PROJECT_DIR / "build" / "temp" / self.name
+
+    @property
+    def export_dir(self) -> Path:
+        return PROJECT_DIR / "build" / self.name
 
     @property
     def app(self) -> Path:
@@ -71,6 +74,17 @@ class BuildDir:
         else:
             target_dir = self.app
         return target_dir / f"olca-native/{BLAS_JNI_VERSION}/{arch}"
+    
+    def copy_export(self):
+        if not self.export_dir.exists():
+            print(f"No export available for copy the {self.osa.value} version.")
+            return
+        if not self.root.exists():
+            self.root.parent.mkdir(exist_ok=True, parents=False)
+        else:
+            shutil.rmtree(self.root)
+            self.root.parent.mkdir(exist_ok=True, parents=False)
+        shutil.copytree(self.export_dir, self.root)
 
 
 def delete(path: Path):
