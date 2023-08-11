@@ -1,8 +1,9 @@
+import argparse
 import shutil
 
 from package import PROJECT_DIR
 from package.dir import DistDir, BuildDir
-from package.dist import OsArch, Version
+from package.dist import Lib, OsArch, Version
 from package.jre import JRE
 from package.mac import MacDir
 from package.native import NativeLib
@@ -11,13 +12,15 @@ from package.template import Template
 from package.zipio import Zip
 
 
-def package(osa: OsArch, version: Version, build_dir: BuildDir):
+def package(osa: OsArch, version: Version, build_dir: BuildDir, 
+            win_installer: bool = False, mkl: bool = False):
     if osa.is_mac():
         MacDir.arrange(build_dir)
 
     # JRE and native libraries
     JRE.extract_to(build_dir)
-    NativeLib.extract_to(build_dir, repo=NativeLib.REPO_GITHUB)
+    lib = Lib.MKL if mkl else Lib.BLAS
+    NativeLib.extract_to(build_dir, lib)
 
     # edit the JRE Info.plist
     if osa.is_mac():
@@ -59,7 +62,7 @@ def package(osa: OsArch, version: Version, build_dir: BuildDir):
             shutil.copy2(bin_source, bin_target)
 
     # build the package
-    pack_name = f"openLCA_{osa.value}_{version.app_suffix}"
+    pack_name = f"openLCA_{lib.value}_{osa.value}_{version.app_suffix}"
     print(f"  Creating package {pack_name}...")
     pack = DistDir.get() / pack_name
     if osa == OsArch.WINDOWS_X64:
@@ -67,11 +70,16 @@ def package(osa: OsArch, version: Version, build_dir: BuildDir):
     else:
         Zip.targz(build_dir.root, pack)
 
-    if osa.is_win():
-        Nsis.run(build_dir, version)
+    if osa.is_win() and win_installer:
+        Nsis.run(build_dir, version, pack_name)
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-w", "--winstaller", help="also create an installer Windows release.", action="store_true")
+    parser.add_argument("-m", "--mkl", help="package the MKL framework instead of BLAS.", action="store_true")
+    args = parser.parse_args()
+
     DistDir.clean()
     version = Version.get()
     for osa in OsArch:
@@ -85,7 +93,7 @@ def main():
         build_dir.copy_export()
 
         print(f"Packaging the {osa.value} build...")
-        package(osa, version, build_dir)
+        package(osa, version, build_dir, args.winstaller, args.mkl)
         print(f"Done packaging the {osa.value} build.")
 
 

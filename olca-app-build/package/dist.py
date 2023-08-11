@@ -1,11 +1,12 @@
 import datetime
+import os
 import re
 
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
-from package import PROJECT_DIR
+from package import BLAS_JNI_VERSION, MKL_JNI_VERSION, PROJECT_DIR
 
 
 class OsArch(Enum):
@@ -57,3 +58,33 @@ class Version:
     def base(self) -> str:
         m = re.search(r"(\d+(\.\d+)?(\.\d+)?)", self.app_version)
         return "2" if m is None else m.group(0)
+
+
+class Lib(Enum):
+    BLAS = "blas"
+    MKL = "mkl"
+
+    def cache_dir(self) -> Path:
+        d = PROJECT_DIR / f"runtime/{self.value}"
+        if not os.path.exists(d):
+            d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    def base_name(self, osa: OsArch) -> str:
+        if osa == OsArch.MACOS_ARM:
+            arch = "macos-arm64" if self == self.BLAS else "macos_arm64"
+        elif osa == OsArch.MACOS_X64:
+            arch = "macos-x64" if self == self.BLAS else "macos_x64"
+        elif osa == OsArch.LINUX_X64:
+            arch = "linux-x64" if self == self.BLAS else "linux_x64"
+        elif osa == OsArch.WINDOWS_X64:
+            arch = "win-x64" if self == self.BLAS else "windows_x64"
+        else:
+            raise ValueError(f"Unsupported OS+arch: {osa.value}")
+        return f"olca-native-blas-{arch}" if self == self.BLAS else f"olcamkl_{arch}"
+
+    def version(self) -> str:
+        return BLAS_JNI_VERSION if self == self.BLAS else MKL_JNI_VERSION
+
+    def github_repo(self) -> str:
+        return "olca-native" if self == self.BLAS else "olca-mkl"

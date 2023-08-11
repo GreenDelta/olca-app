@@ -93,4 +93,4 @@ class Zip:
         # quietly printing the logs (remove the "Extracting  <file>" lines)
         for line in process.stdout:
             if "ing  " not in line:
-                sys.stdout.write(f"  {line}")
+                sys.stdout.write(f"    {line}")

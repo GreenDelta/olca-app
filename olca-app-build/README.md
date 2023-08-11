@@ -55,7 +55,8 @@ and native libraries if these are missing.
    python -m package
    ```
 
-   Note: To also create the Windows installer, run `python -m package --winstaller`
+   Note: To also create the Windows installer, add `--winstaller` to the 
+   command and to package _MKL_ native library instead of _BLAS_, add  `--mkl`.
 
 -------------
 

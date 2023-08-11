@@ -8,6 +8,7 @@ PROJECT_DIR = Path(os.path.abspath(__file__)).parent.parent
 
 # the version of the native library package
 BLAS_JNI_VERSION = "0.0.1"
+MKL_JNI_VERSION = "1"
 
 # the bundle ID of the JRE
 JRE_ID = "org.openlca.jre"

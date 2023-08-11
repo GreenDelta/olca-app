@@ -4,15 +4,15 @@ import zipfile
 
 from pathlib import Path
 
-from package import BLAS_JNI_VERSION, PROJECT_DIR
 from package.dir import BuildDir
-from package.dist import OsArch
+from package.dist import Lib, OsArch
+from package.mkl import MKLFramework
 
 
 class NativeLib:
 
-    REPO_GITHUB = "Github"
-    REPO_MAVEN = "Maven"
+    GITHUB = "Github"
+    MAVEN = "Maven"
 
 
     @staticmethod
@@ -28,53 +28,54 @@ class NativeLib:
         else:
             raise ValueError(f"Warning: Unsupported OS + arch: {osa}.")
         return f"olca-native-blas-{arch}"
-
+    
     @staticmethod
-    def cache_dir() -> Path:
-        d = PROJECT_DIR / f"runtime/blas"
-        if not os.path.exists(d):
-            d.mkdir(parents=True, exist_ok=True)
-        return d
+    def fetch(osa: OsArch, lib: Lib, platform: str) -> Path:
+        base_name = lib.base_name(osa)
+        version = lib.version()
 
-    @staticmethod
-    def fetch(osa: OsArch, repo: str) -> Path:
-
-        base_name = NativeLib.base_name(osa)
-        if repo == NativeLib.REPO_GITHUB:
+        if platform == NativeLib.GITHUB:
             jar = f"{base_name}.zip"
         else:
-            jar = f"{base_name}-{BLAS_JNI_VERSION}.jar"
+            jar = f"{base_name}-{version}.jar"
 
-        cached = NativeLib.cache_dir() / jar
+        cached = lib.cache_dir() / jar
         if cached.exists():
             return cached
-        print(f"  Fetching native lib from {repo} repository...")
+        print(f"  Fetching {lib.name} native lib from {platform} repository...")
 
-        if repo == NativeLib.REPO_GITHUB:
+        if platform == NativeLib.GITHUB:
+            repo = lib.github_repo()
             url = (
-                "https://github.com/GreenDelta/olca-native/releases/"
-                f"download/v{BLAS_JNI_VERSION}/{jar}"
+                f"https://github.com/GreenDelta/{repo}/releases/download/"
+                f"v{version}/{jar}"
             )
-        else:
+        elif lib == Lib.BLAS:
             url = (
                 f"https://repo1.maven.org/maven2/org/openlca/"
-                f"{base_name}/{BLAS_JNI_VERSION}/{jar}"
+                f"{base_name}/{lib.version()}/{jar}"
             )
+        else:
+            raise AssertionError(f"There is no MKL native library on Maven.")
 
-        print(f"  Fetching native libraries from {url}...")
+        print(f"  Fetching {lib.name} native libraries from {url}...")
         urllib.request.urlretrieve(url, cached)
         if not os.path.exists(cached):
             raise AssertionError(f"Warning: the native library download failed; url={url}")
+        
         return cached
 
     @staticmethod
-    def extract_to(build_dir: BuildDir, repo: str = REPO_GITHUB):
+    def extract_to(build_dir: BuildDir, lib: Lib, platform: str = GITHUB):
         print("  Copying native libraries...")
-        target = build_dir.native_lib
+        target = build_dir.blas_lib if lib == Lib.BLAS else build_dir.mkl_lib
         if not target.exists():
             target.mkdir(parents=True, exist_ok=True)
 
-        jar = NativeLib.fetch(build_dir.osa, repo)
+        if lib == Lib.MKL:
+            MKLFramework.extract_to(target, build_dir.osa)
+
+        jar = NativeLib.fetch(build_dir.osa, lib, platform)
 
         with zipfile.ZipFile(jar.as_posix(), "r") as z:
             for e in z.filelist:

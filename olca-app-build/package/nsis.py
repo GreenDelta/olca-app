@@ -1,7 +1,6 @@
 import platform
 import shutil
 import subprocess
-import sys
 import urllib.request
 
 from pathlib import Path
@@ -34,12 +33,10 @@ class Nsis:
         return nsis
 
     @staticmethod
-    def run(build_dir: BuildDir, version: Version):
+    def run(build_dir: BuildDir, version: Version, pack_name: str):
         if not build_dir.osa.is_win():
             return
-        if "--winstaller" not in sys.argv:
-            print("  NSIS installer build is skipped.")
-            return False
+        
         if platform.system().lower() != "windows":
             print("Warning: NSIS installers can be only build on Windows")
 
@@ -79,8 +76,5 @@ class Nsis:
         dist_dir = PROJECT_DIR / "build/dist"
         if not dist_dir.exists():
             dist_dir.mkdir(parents=True, exist_ok=True)
-        app_file = (
-            dist_dir / f"openLCA_{build_dir.osa.value}"
-            f"_{version.app_suffix}.exe"
-        )
+        app_file = dist_dir / f"{pack_name}.exe"
         shutil.move(build_dir.root / "setup.exe", app_file)
