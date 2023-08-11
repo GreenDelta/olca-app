@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import shutil
 
-from package import BLAS_JNI_VERSION, PROJECT_DIR
+from package import BLAS_JNI_VERSION, MKL_JNI_VERSION, PROJECT_DIR
 from package.dist import OsArch
 
 
@@ -58,9 +58,14 @@ class BuildDir:
         return None
 
     @property
-    def native_lib(self) -> Path:
+    def blas_lib(self) -> Path:
         arch = "arm64" if self.osa == OsArch.MACOS_ARM else "x64"
         return self.app / f"olca-native/{BLAS_JNI_VERSION}/{arch}"
+
+    @property
+    def mkl_lib(self) -> Path:
+        arch = "arm64" if self.osa == OsArch.MACOS_ARM else "x64"
+        return self.app / f"olca-mkl-{arch}_v{MKL_JNI_VERSION}"
     
     def copy_export(self):
         if not self.export_dir.exists():
