@@ -24,7 +24,7 @@ def package(osa: OsArch, version: Version, build_dir: BuildDir):
         MacDir.edit_jre_info(build_dir)
 
     # copy credits
-    print("  copy credits")
+    print("  Copying credits...")
     about_page = PROJECT_DIR / "credits/about.html"
     if about_page.exists():
         shutil.copy2(about_page, build_dir.about)
@@ -60,7 +60,7 @@ def package(osa: OsArch, version: Version, build_dir: BuildDir):
 
     # build the package
     pack_name = f"openLCA_{osa.value}_{version.app_suffix}"
-    print(f"  create package {pack_name}")
+    print(f"  Creating package {pack_name}...")
     pack = DistDir.get() / pack_name
     if osa == OsArch.WINDOWS_X64:
         shutil.make_archive(pack.as_posix(), "zip", build_dir.root.as_posix())
@@ -77,9 +77,9 @@ def main():
     for osa in OsArch:
         build_dir = BuildDir(osa)
         if not build_dir.exists:
-            print(f"no {osa} build available; skipped")
+            print(f"No {osa} export is available; skipped")
             continue
-        print(f"package build: {osa}")
+        print(f"Packaging build for {osa}...")
         package(osa, version, build_dir)
 
 

@@ -1,13 +1,13 @@
-from package import PROJECT_DIR
-
-
 import os
 import platform
 import shutil
 import subprocess
 import urllib.request
+
 from pathlib import Path
 from typing import Optional
+
+from package import PROJECT_DIR
 
 
 class Zip:
@@ -36,7 +36,7 @@ class Zip:
         # try to fetch a version 7zip version from the web
         url = "https://www.7-zip.org/a/7za920.zip"
         print(
-            f"WARNING no 7zip version found under {z7}, will download an OLD"
+            f"Warning: no 7zip version found under {z7}, will download an OLD"
             f" version from {url}"
         )
         z7_dir = PROJECT_DIR / "tools/7zip"

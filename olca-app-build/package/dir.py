@@ -21,7 +21,7 @@ class BuildDir:
             return build_dir / "macosx.cocoa.x86_64"
         if self.osa == OsArch.MACOS_ARM:
             return build_dir / "macosx.cocoa.aarch64"
-        raise AssertionError(f"unknown build target {self.osa}")
+        raise AssertionError(f"Warning: Unknown build target {self.osa}.")
 
     @property
     def exists(self) -> bool:
@@ -55,12 +55,12 @@ class BuildDir:
         else:
             plugin_dir = self.app / "plugins"
         if not plugin_dir.exists() or not plugin_dir.is_dir():
-            print(f"warning: could not locate plugin folder: {plugin_dir}")
+            print(f"Warning: could not locate plugin folder: {plugin_dir}.")
             return None
         for p in plugin_dir.iterdir():
             if p.name.startswith("olca-app") and p.is_dir():
                 return p
-        print(f"warning: olca-app plugin folder not found in: {plugin_dir}")
+        print(f"Warning: olca-app plugin folder not found in: {plugin_dir}.")
         return None
 
     @property
@@ -94,6 +94,6 @@ class DistDir:
     def clean():
         d = DistDir.get()
         if d.exists():
-            print("clean dist folder")
+            print("Cleaning dist folder...")
             shutil.rmtree(d, ignore_errors=True)
         d.mkdir(parents=True, exist_ok=True)

@@ -1,16 +1,16 @@
-from package import PROJECT_DIR
-from package.dir import BuildDir
-from package.dist import Version
-from package.template import Template
-from package.zipio import Zip
-
-
 import platform
 import shutil
 import subprocess
 import sys
 import urllib.request
+
 from pathlib import Path
+
+from package import PROJECT_DIR
+from package.dir import BuildDir
+from package.dist import Version
+from package.template import Template
+from package.zipio import Zip
 
 
 class Nsis:
@@ -25,7 +25,7 @@ class Nsis:
             f"https://sourceforge.net/projects/nsis/files"
             f"/NSIS%202/{Nsis.VERSION}/nsis-{Nsis.VERSION}.zip/download"
         )
-        print(f"  download NSIS from {url}")
+        print(f"  Fetching NSIS from {url}...")
         nsis_zip = PROJECT_DIR / f"tools/nsis-{Nsis.VERSION}.zip"
         urllib.request.urlretrieve(url, nsis_zip)
         Zip.unzip(nsis_zip, PROJECT_DIR / f"tools")
@@ -38,10 +38,10 @@ class Nsis:
         if not build_dir.osa.is_win():
             return
         if "--winstaller" not in sys.argv:
-            print("  skip NSIS installer build")
+            print("  NSIS installer build is skipped.")
             return False
         if platform.system().lower() != "windows":
-            print("WARNING: NSIS installers can be only build on Windows")
+            print("Warning: NSIS installers can be only build on Windows")
 
         exe = Nsis.fetch()
 
