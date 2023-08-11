@@ -26,7 +26,7 @@ class NativeLib:
         elif osa == OsArch.WINDOWS_X64:
             arch = "win-x64"
         else:
-            raise ValueError(f"unsupported OS+arch: {osa}")
+            raise ValueError(f"Warning: Unsupported OS + arch: {osa}.")
         return f"olca-native-blas-{arch}"
 
     @staticmethod
@@ -48,7 +48,7 @@ class NativeLib:
         cached = NativeLib.cache_dir() / jar
         if cached.exists():
             return cached
-        print(f"  fetch native lib from {repo} repository")
+        print(f"  Fetching native lib from {repo} repository...")
 
         if repo == NativeLib.REPO_GITHUB:
             url = (
@@ -61,15 +61,15 @@ class NativeLib:
                 f"{base_name}/{BLAS_JNI_VERSION}/{jar}"
             )
 
-        print(f"  download native libraries from {url}")
+        print(f"  Fetching native libraries from {url}...")
         urllib.request.urlretrieve(url, cached)
         if not os.path.exists(cached):
-            raise AssertionError(f"native-library download failed; url={url}")
+            raise AssertionError(f"Warning: the native library download failed; url={url}")
         return cached
 
     @staticmethod
     def extract_to(build_dir: BuildDir, repo: str = REPO_GITHUB):
-        print("  copy native libraries")
+        print("  Copying native libraries...")
         target = build_dir.native_lib
         if not target.exists():
             target.mkdir(parents=True, exist_ok=True)

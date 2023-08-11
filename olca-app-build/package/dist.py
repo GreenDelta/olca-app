@@ -32,7 +32,7 @@ class Version:
     def get() -> "Version":
         # read app version from the app-manifest
         manifest = PROJECT_DIR.parent / Path("olca-app/META-INF/MANIFEST.MF")
-        print(f"read version from {manifest}")
+        print(f"Reading version from {manifest}...")
         app_version = None
         with open(manifest, "r", encoding="utf-8") as f:
             for line in f:
@@ -44,7 +44,7 @@ class Version:
         if app_version is None:
             app_version = "2.0.0"
             print(
-                f"WARNING failed to read version from {manifest},"
+                f"Warning: failed to read version from {manifest},"
                 f" default to {app_version}"
             )
         return Version(app_version)

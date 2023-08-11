@@ -26,7 +26,7 @@ class JRE:
         elif osa == OsArch.WINDOWS_X64:
             name = "x64_windows"
         else:
-            raise ValueError(f"unsupported OS+arch: {osa}")
+            raise ValueError(f"Warning: Unsupported OS + arch: {osa}.")
         return f"OpenJDK17U-jre_{name}_hotspot_17.0.5_8.{suffix}"
 
     @staticmethod
@@ -47,17 +47,17 @@ class JRE:
             "https://github.com/adoptium/temurin17-binaries/releases/"
             f"download/jdk-17.0.5%2B8/{zip_name}"
         )
-        print(f"  download JRE from {url}")
+        print(f"  Fetching JRE from {url}...")
         urllib.request.urlretrieve(url, zf)
         if not os.path.exists(zf):
-            raise AssertionError(f"JRE download failed; url={url}")
+            raise AssertionError(f"Warning: JRE download failed; url={url}")
         return zf
 
     @staticmethod
     def extract_to(build_dir: BuildDir):
         if build_dir.jre.exists():
             return
-        print("  copy JRE")
+        print("  Copying JRE...")
 
         # fetch and extract the JRE
         zf = JRE.fetch(build_dir.osa)
@@ -70,7 +70,7 @@ class JRE:
             if not tar.exists():
                 Zip.unzip(zf, zf.parent)
                 if not tar.exists():
-                    raise AssertionError(f"could not find JRE tar {tar}")
+                    raise AssertionError(f"Warning: could not find the JRE tar {tar}.")
             Zip.unzip(tar, build_dir.app)
 
         # rename the JRE folder if required
