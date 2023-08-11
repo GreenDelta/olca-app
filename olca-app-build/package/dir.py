@@ -29,34 +29,25 @@ class BuildDir:
     @property
     def export_dir(self) -> Path:
         return PROJECT_DIR / "build" / self.name
-
+    
     @property
     def app(self) -> Path:
         if self.osa.is_mac():
-            return self.root / "openLCA/openLCA.app"
+            return self.root / "openLCA/openLCA.app/Contents/Eclipse"
         else:
             return self.root / "openLCA"
 
     @property
     def about(self) -> Path:
-        if self.osa.is_mac():
-            return self.app / "Contents/Eclipse"
-        else:
-            return self.app
-
+        return self.app
+    
     @property
     def jre(self) -> Path:
-        if self.osa.is_mac():
-            return self.root / "openLCA/openLCA.app/Contents/Eclipse/jre"
-        else:
-            return self.app / "jre"
+        return self.app / "jre"
 
     @property
     def olca_plugin(self) -> Path | None:
-        if self.osa.is_mac():
-            plugin_dir = self.app / "Contents/Eclipse/plugins"
-        else:
-            plugin_dir = self.app / "plugins"
+        plugin_dir = self.app / "plugins"
         if not plugin_dir.exists() or not plugin_dir.is_dir():
             print(f"Warning: could not locate plugin folder: {plugin_dir}.")
             return None
@@ -69,11 +60,7 @@ class BuildDir:
     @property
     def native_lib(self) -> Path:
         arch = "arm64" if self.osa == OsArch.MACOS_ARM else "x64"
-        if self.osa.is_mac():
-            target_dir = self.app / "Contents/Eclipse"
-        else:
-            target_dir = self.app
-        return target_dir / f"olca-native/{BLAS_JNI_VERSION}/{arch}"
+        return self.app / f"olca-native/{BLAS_JNI_VERSION}/{arch}"
     
     def copy_export(self):
         if not self.export_dir.exists():

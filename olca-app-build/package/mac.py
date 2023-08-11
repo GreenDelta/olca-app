@@ -15,33 +15,32 @@ class MacDir:
 
         # create the folder structure
         app_root = build_dir.root / "openLCA"
-        app_dir = build_dir.app
-        eclipse_dir = app_dir / "Contents/Eclipse"
-        macos_dir = app_dir / "Contents/MacOS"
-        for d in (app_dir, eclipse_dir, macos_dir):
+        bundle_dir = build_dir.root / "openLCA/openLCA.app"
+        macos_dir = bundle_dir / "Contents/MacOS"
+        for d in (bundle_dir, build_dir.app, macos_dir):
             d.mkdir(parents=True, exist_ok=True)
 
         # move files and folders
         moves = [
-            (app_root / "configuration", eclipse_dir),
-            (app_root / "plugins", eclipse_dir),
-            (app_root / ".eclipseproduct", eclipse_dir),
-            (app_root / "Resources", app_dir / "Contents"),
+            (app_root / "configuration", build_dir.app),
+            (app_root / "plugins", build_dir.app),
+            (app_root / ".eclipseproduct", build_dir.app),
+            (app_root / "Resources", bundle_dir / "Contents"),
             (app_root / "MacOS/openLCA", macos_dir / "openLCA"),
         ]
         for (source, target) in moves:
             if source.exists():
                 shutil.move(str(source), str(target))
 
-        MacDir.add_app_info(app_dir / "Contents/Info.plist")
+        MacDir.add_app_info(bundle_dir / "Contents/Info.plist")
 
         # create the ini file
-        plugins_dir = eclipse_dir / "plugins"
+        plugins_dir = build_dir.app / "plugins"
         launcher_jar = next(plugins_dir.glob("*launcher*.jar")).name
         launcher_lib = next(plugins_dir.glob("*launcher.cocoa.macosx*")).name
         Template.apply(
             PROJECT_DIR / "templates/openLCA_mac.ini",
-            eclipse_dir / "openLCA.ini",
+            build_dir.app / "openLCA.ini",
             launcher_jar=launcher_jar,
             launcher_lib=launcher_lib,
         )
