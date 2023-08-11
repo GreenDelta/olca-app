@@ -2,6 +2,7 @@ import os
 import platform
 import shutil
 import subprocess
+import sys
 import urllib.request
 
 from pathlib import Path
@@ -53,7 +54,7 @@ class Zip:
         if not target_folder.exists():
             target_folder.mkdir(parents=True, exist_ok=True)
         if Zip.get().is_z7:
-            subprocess.call([Zip.z7(), "x", zip_file, f"-o{target_folder}"])
+            Zip.run_quietly([Zip.z7(), "x", zip_file, f"-o{target_folder}"])
         else:
             shutil.unpack_archive(zip_file, target_folder)
 
@@ -74,10 +75,22 @@ class Zip:
         if Zip.get().is_z7:
             tar = target.parent / (base_name + ".tar")
             gz = target.parent / (base_name + ".tar.gz")
-            subprocess.call(
+            Zip.run_quietly(
                 [Zip.z7(), "a", "-ttar", str(tar), folder.as_posix() + "/*"]
             )
-            subprocess.call([Zip.z7(), "a", "-tgzip", str(gz), str(tar)])
+            Zip.run_quietly([Zip.z7(), "a", "-tgzip", str(gz), str(tar)])
             os.remove(tar)
         else:
             shutil.make_archive(str(base), "gztar", str(folder))
+    
+    @staticmethod
+    def run_quietly(args: list[str | Path]):
+        process = subprocess.Popen(args=args,
+                                   stdout=subprocess.PIPE,
+                                   universal_newlines=True)
+        if process.stdout is None:
+            return
+        # quietly printing the logs (remove the "Extracting  <file>" lines)
+        for line in process.stdout:
+            if "ing  " not in line:
+                sys.stdout.write(f"  {line}")
