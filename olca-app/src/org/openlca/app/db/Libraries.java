@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -254,8 +253,7 @@ public final class Libraries {
 		var file = new File(folder, JSON);
 		if (!file.exists())
 			return Optional.empty();
-		try {
-			var reader = new JsonReader(new FileReader(file));
+		try (var reader = new JsonReader(new FileReader(file))) {
 			var gson = new Gson();
 			var mapType = new TypeToken<License>() {}.getType();
 			License license = gson.fromJson(reader, mapType);
@@ -263,7 +261,7 @@ public final class Libraries {
 			var certBytes = license.certificate().getBytes();
 			var certificate = CertificateInfo.of(new ByteArrayInputStream(certBytes));
 			return Optional.of(certificate);
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			var log = LoggerFactory.getLogger(LibraryEditor.class);
 			log.error("failed to open the license.", e);
 			return Optional.empty();

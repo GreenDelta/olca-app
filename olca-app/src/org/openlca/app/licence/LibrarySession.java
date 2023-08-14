@@ -1,7 +1,6 @@
 package org.openlca.app.licence;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -80,7 +79,7 @@ public class LibrarySession {
 		return storeSession(session, libraryName);
 	}
 
-	public static boolean storeSession(Session session, String library) {
+	private static boolean storeSession(Session session, String library) {
 		var dir = getSessionDir();
 		var json = session.toJson();
 		var file = new File(dir, library + SESSION_EXTENSION);
@@ -99,8 +98,9 @@ public class LibrarySession {
 			return false;
 
 		if (status == WRONG_USER || status == WRONG_PASSWORD) {
-			if (!removeSession(library)) {
-				MsgBox.error("The provided credentials are not correct.");
+			if (removeSession(library)) {
+				MsgBox.error("The session credentials are not valid. Please log "
+						+ "again.");
 			}
 			return isValid(library);
 		} else {
@@ -110,7 +110,7 @@ public class LibrarySession {
 		}
 	}
 
-	public static File sessionOf(String library) {
+	private static File sessionOf(String library) {
 		var dir = getSessionDir();
 		return new File(dir, library + SESSION_EXTENSION);
 	}
@@ -127,10 +127,9 @@ public class LibrarySession {
 		if (!json.exists())
 			return Optional.empty();
 
-		try {
-			var reader = new JsonReader(new FileReader(json));
+		try (var reader = new JsonReader(new FileReader(json))) {
 			return Optional.of(Session.fromJson(reader));
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			log.error("Failed to retrieve the session of the following library: "
 					+ library, e);
 			return Optional.empty();
