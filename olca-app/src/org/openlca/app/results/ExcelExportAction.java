@@ -7,6 +7,7 @@ import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Popup;
@@ -28,10 +29,13 @@ public class ExcelExportAction extends Action {
 	public void run() {
 		ResultEditor editor = Editors.getActive();
 		if (editor == null) {
-			log.error("unexpected error: the product system editor is not active");
+			ErrorReporter.on("no result editor active");
 			return;
 		}
-		runExport(editor);
+		ExcelExportWizard.openFor(editor);
+
+
+//		runExport(editor);
 	}
 
 	private void runExport(ResultEditor editor) {
