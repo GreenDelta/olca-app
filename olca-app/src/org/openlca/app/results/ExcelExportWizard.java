@@ -7,6 +7,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
@@ -21,6 +23,7 @@ import org.openlca.io.xls.results.system.ResultExport;
 
 import java.io.File;
 import java.util.EnumSet;
+import java.util.List;
 
 class ExcelExportWizard extends Wizard {
 
@@ -63,8 +66,10 @@ class ExcelExportWizard extends Wizard {
 		}
 		try {
 			getContainer().run(true, true, monitor -> {
+				monitor.beginTask("Exporting file", 1);
 				export.run();
 				// TODO: forward cancel...
+				monitor.done();
 			});
 			return export.doneWithSuccess();
 		} catch (Exception e) {
@@ -96,6 +101,62 @@ class ExcelExportWizard extends Wizard {
 			setControl(body);
 			createFileSelector(body);
 
+			var group = new Group(body, SWT.NONE);
+			UI.fillHorizontal(group);
+			group.setText("Result matrices (optional)");
+			UI.gridLayout(group, 1);
+			new Label(group, SWT.NONE).setText(
+					"Note that some of these matrices " +
+							"can result in very long export times");
+
+			var zeroCheck = UI.checkbox(group, "Skip zero values");
+			zeroCheck.setSelection(skipZeros);
+			Controls.onSelect(zeroCheck, $ -> skipZeros = zeroCheck.getSelection());
+
+			var all = List.of(
+					MatrixPage.DIRECT_INVENTORIES,
+					MatrixPage.DIRECT_IMPACTS,
+					MatrixPage.FLOW_IMPACTS,
+					MatrixPage.TOTAL_INVENTORIES,
+					MatrixPage.TOTAL_IMPACTS);
+			var forImpacts = EnumSet.of(
+					MatrixPage.DIRECT_IMPACTS,
+					MatrixPage.FLOW_IMPACTS,
+					MatrixPage.TOTAL_IMPACTS);
+			var preSelected = EnumSet.of(
+					MatrixPage.DIRECT_INVENTORIES,
+					MatrixPage.DIRECT_IMPACTS);
+			var r = editor.result;
+			for (var matrix : all) {
+				var matrixCheck = UI.checkbox(group, labelOf(matrix));
+				if (!r.hasEnviFlows()
+						|| (!r.hasImpacts() && forImpacts.contains(matrix))) {
+					matrixCheck.setEnabled(false);
+					matrixCheck.setSelection(false);
+					continue;
+				}
+				if (preSelected.contains(matrix)) {
+					matrixCheck.setSelection(true);
+					matrices.add(matrix);
+				}
+				Controls.onSelect(matrixCheck, $ -> {
+					if (matrixCheck.getSelection()) {
+						matrices.add(matrix);
+					} else {
+						matrices.remove(matrix);
+					}
+				});
+			}
+		}
+
+		private String labelOf(MatrixPage matrix) {
+			return switch (matrix) {
+				case DIRECT_INVENTORIES -> "Direct inventory contributions";
+				case TOTAL_INVENTORIES -> "Upstream inventories";
+				case DIRECT_IMPACTS -> "Direct impact contributions";
+				case TOTAL_IMPACTS -> "Upstream impacts";
+				case FLOW_IMPACTS -> "Impacts by flow";
+			};
 		}
 
 		private void createFileSelector(Composite body) {
