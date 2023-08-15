@@ -22,6 +22,7 @@ public class ResultsBarContributor extends EditorActionBarContributor {
 			this.editor = sankeyEditor;
 		super.setActivePage(activePage);
 	}
+
 	@Override
 	public MultiPageSubActionBars getNewSubActionBars() {
 		return new MultiPageSubActionBars(getPage(),
@@ -33,7 +34,7 @@ public class ResultsBarContributor extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolbar) {
-		toolbar.add(new ExcelExportAction());
+		toolbar.add(ExcelExportWizard.createAction());
 	}
 
 }

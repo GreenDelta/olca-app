@@ -1,5 +1,6 @@
 package org.openlca.app.results;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
@@ -12,10 +13,14 @@ import org.eclipse.swt.widgets.Label;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.io.xls.results.system.MatrixPage;
@@ -36,9 +41,20 @@ class ExcelExportWizard extends Wizard {
 		setWindowTitle("Export");
 	}
 
-	static void openFor(ResultEditor editor) {
-		if (editor == null)
+	static Action createAction() {
+		return Actions.create(
+				M.ExportToExcel,
+				Images.descriptor(FileType.EXCEL),
+				ExcelExportWizard::open
+		);
+	}
+
+	static void open() {
+		ResultEditor editor = Editors.getActive();
+		if (editor == null) {
+			ErrorReporter.on("no result editor active");
 			return;
+		}
 		var wizard = new ExcelExportWizard(editor);
 		var dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
@@ -90,7 +106,7 @@ class ExcelExportWizard extends Wizard {
 			this.editor = editor;
 			setTitle("Export results to Excel");
 			setDescription("Specify an export file and optional settings");
-			setImageDescriptor(Icon.EXPORT.descriptor());
+			setImageDescriptor(Icon.EXPORT_WIZARD.descriptor());
 			setPageComplete(false);
 		}
 
