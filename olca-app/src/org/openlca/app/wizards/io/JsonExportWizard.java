@@ -121,8 +121,8 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 				if (resolved.contains(link))
 					continue;
 				var dependencies = library.getDirectDependencies();
-				resolved.addAll(resolveLibraries(dependencies));
 				resolved.add(link);
+				resolved.addAll(resolveLibraries(dependencies));
 			}
 			return resolved;
 		}
