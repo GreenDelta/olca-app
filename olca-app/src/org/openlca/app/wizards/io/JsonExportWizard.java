@@ -2,6 +2,8 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -12,9 +14,11 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.library.Library;
 import org.openlca.core.model.Callback.Message;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
@@ -90,8 +94,10 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		}
 
 		private void doExport(IProgressMonitor monitor, ZipStore store) {
-			// TODO filter relevant libraries
-			store.putLibraryLinks(LibraryLink.of(database.getLibraries()));
+			var libraries = database.getLibraries().stream()
+					.map(id -> Workspace.getLibraryDir().getLibrary(id).get())
+					.toList();
+			store.putLibraryLinks(resolveLibraries(libraries));
 			var export = new JsonExport(database, store);
 			for (var model : models) {
 				if (monitor.isCanceled())
@@ -104,6 +110,21 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 				}
 				monitor.worked(1);
 			}
+		}
+
+		private LinkedHashSet<LibraryLink> resolveLibraries(Collection<Library> libraries) {
+			var resolved = new LinkedHashSet<LibraryLink>();
+			if (libraries.isEmpty())
+				return resolved;
+			for (var library : libraries) {
+				var link = new LibraryLink(library.name(), null);
+				if (resolved.contains(link))
+					continue;
+				var dependencies = library.getDirectDependencies();
+				resolved.addAll(resolveLibraries(dependencies));
+				resolved.add(link);
+			}
+			return resolved;
 		}
 
 		private void doExport(JsonExport export, RootEntity entity) {
