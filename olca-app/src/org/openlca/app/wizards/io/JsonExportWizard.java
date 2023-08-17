@@ -19,6 +19,7 @@ import org.openlca.core.model.Callback.Message;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.jsonld.LibraryLink;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.output.JsonExport;
 import org.slf4j.Logger;
@@ -89,6 +90,8 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		}
 
 		private void doExport(IProgressMonitor monitor, ZipStore store) {
+			// TODO filter relevant libraries
+			store.putLibraryLinks(LibraryLink.of(database.getLibraries()));
 			var export = new JsonExport(database, store);
 			for (var model : models) {
 				if (monitor.isCanceled())
