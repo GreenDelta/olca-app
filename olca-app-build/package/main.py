@@ -2,7 +2,7 @@ import argparse
 import shutil
 
 from package import PROJECT_DIR
-from package.dir import DistDir, BuildDir
+from package.dir import DistDir, BuildDir, delete
 from package.dist import Lib, OsArch, Version
 from package.jre import JRE
 from package.mac import MacDir
@@ -127,6 +127,7 @@ def main():
 
         print(f"Packaging the {osa.value} build...")
         package(osa, version, build_dir, args.winstaller, args.mkl)
+        delete(build_dir.root)
         print(f"Done packaging the {osa.value} build.")
 
 
