@@ -12,8 +12,13 @@ from package.template import Template
 from package.zipio import Zip
 
 
-def package(osa: OsArch, version: Version, build_dir: BuildDir, 
-            win_installer: bool = False, mkl: bool = False):
+def package(
+    osa: OsArch,
+    version: Version,
+    build_dir: BuildDir,
+    win_installer: bool = False,
+    mkl: bool = False,
+):
     if osa.is_mac():
         MacDir.arrange(build_dir)
 
@@ -76,11 +81,39 @@ def package(osa: OsArch, version: Version, build_dir: BuildDir,
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-w", "--winstaller", help="also create an installer Windows release.", action="store_true")
-    parser.add_argument("-m", "--mkl", help="package the MKL framework instead of BLAS.", action="store_true")
+    parser.add_argument(
+        "-w",
+        "--winstaller",
+        help="also create an Windows installer",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-m",
+        "--mkl",
+        help="package the MKL framework instead of OpenBLAS",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-c",
+        "--clean",
+        help="delete the last build files",
+        action="store_true"
+    )
     args = parser.parse_args()
 
+    # delete build recources
     DistDir.clean()
+    if args.clean:
+        for arch in OsArch:
+            build_dir = BuildDir(arch)
+            if build_dir.root.exists():
+                print(f"delete: ${build_dir.root}")
+                shutil.rmtree(build_dir.root)
+            if build_dir.export_dir.exists():
+                print(f"delete: ${build_dir.export_dir}")
+                shutil.rmtree(build_dir.export_dir)
+        return
+
     version = Version.get()
     for osa in OsArch:
         build_dir = BuildDir(osa)

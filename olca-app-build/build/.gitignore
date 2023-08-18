@@ -8,3 +8,5 @@ logs.zip
 
 # the distribution packages
 dist/
+
+temp/
