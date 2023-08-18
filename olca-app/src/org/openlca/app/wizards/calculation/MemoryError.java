@@ -11,12 +11,10 @@ import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
-class MemoryError {
+public class MemoryError {
 
 	public static void show() {
-		App.runInUI("Memory error in calculation...", () -> {
-			new Dialog().open();
-		});
+		App.runInUI("Memory error in calculation...", () -> new Dialog().open());
 	}
 
 	private static class Dialog extends FormDialog {
@@ -64,7 +62,5 @@ class MemoryError {
 					null, "preferencepages.config", null, null);
 			dialog.open();
 		}
-
 	}
-
 }

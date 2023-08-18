@@ -1,8 +1,5 @@
 package org.openlca.app.results;
 
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -23,12 +20,16 @@ import org.openlca.app.results.contributions.TagResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.app.results.impacts.ImpactTreePage;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
+import org.openlca.app.wizards.calculation.MemoryError;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
-import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
 
@@ -49,7 +50,7 @@ public class ResultEditor extends FormEditor {
 	}
 
 	public static void open(CalculationSetup setup, LcaResult result,
-			DQResult dqResult) {
+													DQResult dqResult) {
 		var input = ResultEditorInput
 				.create(setup, result)
 				.with(dqResult);
@@ -106,9 +107,19 @@ public class ResultEditor extends FormEditor {
 				addPage(new TagResultPage(this));
 			}
 
-		} catch (final PartInitException e) {
-			var log = LoggerFactory.getLogger(getClass());
-			log.error("Add pages failed", e);
+		} catch (Throwable e) {
+			ErrorReporter.on("failed to create result pages", e);
+			this.close(false);
+		}
+	}
+
+	@Override
+	protected void pageChange(int newPageIndex) {
+		try {
+			super.pageChange(newPageIndex);
+		} catch (OutOfMemoryError e) {
+			MemoryError.show();
+			this.close(false);
 		}
 	}
 
@@ -189,7 +200,7 @@ public class ResultEditor extends FormEditor {
 		}
 
 		@Override
-		@SuppressWarnings({ "unchecked", "rawtypes"})
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		public Object getAdapter(Class adapter) {
 			return null;
 		}
