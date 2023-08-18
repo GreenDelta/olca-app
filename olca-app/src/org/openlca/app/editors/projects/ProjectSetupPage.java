@@ -40,7 +40,6 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
@@ -165,14 +164,11 @@ class ProjectSetupPage extends ModelPage<Project> {
 		for (var d : descriptors) {
 			if (d == null || d.type != ModelType.PRODUCT_SYSTEM)
 				continue;
-			ProductSystemDao dao = new ProductSystemDao(database);
-			ProductSystem system = dao.getForId(d.id);
-			if (system == null) {
+			var system = database.get(ProductSystem.class, d.id);
+			if (system == null)
 				continue;
-			}
 			List<ProjectVariant> variants = project.variants;
-			ProjectVariant variant = createVariant(
-				system, variants.size() + 1);
+			var variant = createVariant(system);
 			variants.add(variant);
 			variantViewer.setInput(variants);
 			parameterTable.addVariant(variant);
@@ -180,10 +176,11 @@ class ProjectSetupPage extends ModelPage<Project> {
 		editor.setDirty(true);
 	}
 
-	private ProjectVariant createVariant(ProductSystem system, int i) {
-		ProjectVariant v = new ProjectVariant();
+	private ProjectVariant createVariant(ProductSystem system) {
+		var v = new ProjectVariant();
 		v.productSystem = system;
-		v.name = M.Variant + i;
+		v.name = Strings.uniqueNameOf(
+				system.name, project.variants, vi -> vi.name);
 		v.allocationMethod = AllocationMethod.NONE;
 		v.amount = system.targetAmount;
 		v.flowPropertyFactor = system.targetFlowPropertyFactor;
@@ -329,9 +326,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ProjectVariant))
+			if (!(obj instanceof ProjectVariant v))
 				return null;
-			var v = (ProjectVariant) obj;
 			return switch (col) {
 				case 1 -> Images.get(ModelType.PRODUCT_SYSTEM);
 				case 2 -> v.isDisabled
@@ -346,9 +342,8 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ProjectVariant))
+			if (!(obj instanceof ProjectVariant variant))
 				return null;
-			var variant = (ProjectVariant) obj;
 			var system = variant.productSystem;
 			return switch (col) {
 				case 0 -> variant.name;
