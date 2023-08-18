@@ -71,11 +71,8 @@ class BuildDir:
         if not self.export_dir.exists():
             print(f"No export available for copy the {self.osa.value} version.")
             return
-        if not self.root.exists():
-            self.root.parent.mkdir(exist_ok=True, parents=False)
-        else:
-            shutil.rmtree(self.root)
-            self.root.parent.mkdir(exist_ok=True, parents=False)
+        delete(self.root)
+        self.root.parent.mkdir(exist_ok=True, parents=False)
         shutil.copytree(self.export_dir, self.root)
 
 
