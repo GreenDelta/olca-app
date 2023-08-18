@@ -22,7 +22,7 @@ import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.app.results.impacts.ImpactTreePage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
-import org.openlca.app.wizards.calculation.MemoryError;
+import org.openlca.app.util.MemoryError;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.LcaResult;

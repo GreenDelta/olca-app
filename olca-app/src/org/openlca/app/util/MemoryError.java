@@ -1,4 +1,4 @@
-package org.openlca.app.wizards.calculation;
+package org.openlca.app.util;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -8,8 +8,6 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.util.Controls;
-import org.openlca.app.util.UI;
 
 public class MemoryError {
 
