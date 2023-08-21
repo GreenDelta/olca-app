@@ -4,7 +4,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.App;
@@ -40,7 +39,7 @@ public class ParameterUsageView {
 		tree.setContentProvider(new ContentProvider());
 		tree.setLabelProvider(new Label());
 		tree.setInput(this.tree);
-		if (this.tree.nodes.size() >= 1) {
+		if (!this.tree.nodes.isEmpty()) {
 			tree.setExpandedElements(this.tree.nodes.get(0));
 		}
 		Trees.onDoubleClick(tree, e -> onOpen(tree));
@@ -63,26 +62,16 @@ public class ParameterUsageView {
 	private static class ContentProvider implements ITreeContentProvider {
 
 		@Override
-		public void dispose() {
-		}
-
-		@Override
-		public void inputChanged(Viewer viewer, Object old, Object newInput) {
-		}
-
-		@Override
 		public Object[] getElements(Object elem) {
-			if (!(elem instanceof ParameterUsageTree))
+			if (!(elem instanceof ParameterUsageTree tree))
 				return new Object[0];
-			var tree = (ParameterUsageTree) elem;
 			return tree.nodes.toArray();
 		}
 
 		@Override
 		public Object[] getChildren(Object elem) {
-			if (!(elem instanceof ParameterUsageTree.Node))
+			if (!(elem instanceof ParameterUsageTree.Node node))
 				return null;
-			var node = (ParameterUsageTree.Node) elem;
 			if (node.childs.isEmpty())
 				return null;
 			return node.childs.toArray();
@@ -95,9 +84,8 @@ public class ParameterUsageView {
 
 		@Override
 		public boolean hasChildren(Object elem) {
-			if (!(elem instanceof ParameterUsageTree.Node))
+			if (!(elem instanceof ParameterUsageTree.Node node))
 				return false;
-			var node = (ParameterUsageTree.Node) elem;
 			return !node.childs.isEmpty();
 		}
 	}
@@ -106,9 +94,8 @@ public class ParameterUsageView {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ParameterUsageTree.Node))
+			if (!(obj instanceof ParameterUsageTree.Node node))
 				return null;
-			var node = (ParameterUsageTree.Node) obj;
 			if (col == 0)
 				return modelIcon(node);
 			if (col == 1 && node.usageType != null)
@@ -130,36 +117,26 @@ public class ParameterUsageView {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ParameterUsageTree.Node))
+			if (!(obj instanceof ParameterUsageTree.Node node))
 				return null;
-			var node = (ParameterUsageTree.Node) obj;
-			switch (col) {
-			case 0:
-				return node.model != null
+			return switch (col) {
+				case 0 -> node.model != null
 						? Labels.name(node.model)
 						: node.name;
-			case 1:
-				return usageType(node.usageType);
-			case 2:
-				return node.usage;
-			default:
-				return null;
-			}
+				case 1 -> usageType(node.usageType);
+				case 2 -> node.usage;
+				default -> null;
+			};
 		}
 
 		private String usageType(UsageType type) {
 			if (type == null)
 				return "";
-			switch (type) {
-			case FORMULA:
-				return M.Formula;
-			case DEFINITION:
-				return "Parameter definition";
-			case REDEFINITION:
-				return "Parameter redefinition";
-			default:
-				return "?";
-			}
+			return switch (type) {
+				case FORMULA -> M.Formula;
+				case DEFINITION -> "Parameter definition";
+				case REDEFINITION -> "Parameter redefinition";
+			};
 		}
 	}
 }
