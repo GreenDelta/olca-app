@@ -2,7 +2,6 @@ package org.openlca.app.wizards.io;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -112,19 +111,21 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 			}
 		}
 
-		private LinkedHashSet<LibraryLink> resolveLibraries(Collection<Library> libraries) {
-			var resolved = new LinkedHashSet<LibraryLink>();
-			if (libraries.isEmpty())
-				return resolved;
+		private static List<LibraryLink> resolveLibraries(List<Library> libraries) {
+			var toResolve = new LinkedHashSet<Library>(libraries);
 			for (var library : libraries) {
-				var link = new LibraryLink(library.name(), null);
-				if (resolved.contains(link))
-					continue;
-				var dependencies = library.getDirectDependencies();
-				resolved.add(link);
-				resolved.addAll(resolveLibraries(dependencies));
+				toResolve.addAll(library.getTransitiveDependencies());
 			}
-			return resolved;
+			return toResolve.stream()
+					.sorted((l1, l2) -> {
+						if (l1.getTransitiveDependencies().contains(l2))
+							return -1;
+						else if (l2.getTransitiveDependencies().contains(l1))
+							return 1;
+						return 0;
+					})
+					.map(l -> new LibraryLink(l.name(), null))
+					.toList();
 		}
 
 		private void doExport(JsonExport export, RootEntity entity) {
