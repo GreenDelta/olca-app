@@ -11,7 +11,7 @@ import org.openlca.io.ecospold1.output.ExportConfig;
 
 class Es1ExportConfigPage extends WizardPage {
 
-	private ExportConfig config;
+	private final ExportConfig config;
 
 	Es1ExportConfigPage() {
 		super("Es1ExportConfigPage");
