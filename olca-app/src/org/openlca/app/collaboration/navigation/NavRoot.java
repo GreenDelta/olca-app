@@ -104,8 +104,9 @@ public class NavRoot {
 		buildGroup(root, null, UNGROUPED_TYPES);
 		buildGroup(root, M.IndicatorsAndParameters, GROUP1_TYPES);
 		buildGroup(root, M.BackgroundData, GROUP2_TYPES);
+		buildLibraryDir(root);
 	}
-
+	
 	private void buildGroup(NavElement parent, String group, ModelType[] types) {
 		if (group != null) {
 			var root = parent;
@@ -116,7 +117,7 @@ public class NavRoot {
 			parent.children().add(new NavElement(ElementType.MODEL_TYPE, type, buildChildren(type, null)));
 		}
 	}
-
+	
 	private List<NavElement> buildChildren(ModelType type, Long parentId) {
 		var children = new ArrayList<NavElement>();
 		children.addAll(build(categories, type, parentId,
@@ -126,6 +127,17 @@ public class NavRoot {
 		return children;
 	}
 
+	private void buildLibraryDir(NavElement root) {
+		var libs = Database.get().getLibraries();
+		if (libs.isEmpty())
+			return;
+		var libDir = new NavElement(ElementType.LIBRARY_DIR, null);
+		for (var lib : libs) {
+			libDir.children().add(new NavElement(ElementType.LIBRARY, lib));
+		}
+		root.children().add(libDir);
+	}
+	
 	private <T> List<NavElement> build(EnumMap<ModelType, Map<Long, List<T>>> map, ModelType type, Long parentId,
 			Function<T, NavElement> builder) {
 		return map.getOrDefault(type, Collections.emptyMap())
@@ -133,7 +145,7 @@ public class NavRoot {
 				.map(builder)
 				.toList();
 	}
-
+	
 	private void loadCategories() {
 		for (var category : new CategoryDao(database).getAll()) {
 			if (category.modelType == null)

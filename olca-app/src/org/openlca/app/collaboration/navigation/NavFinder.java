@@ -9,6 +9,8 @@ import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.LibraryDirElement;
+import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.core.model.Category;
@@ -26,6 +28,10 @@ class NavFinder {
 	NavElement find(NavElement root, INavigationElement<?> elem) {
 		if (elem instanceof DatabaseElement)
 			return root;
+		if (elem instanceof LibraryDirElement)
+			return findLibraryDir(root);
+		if (elem instanceof LibraryElement e)
+			return findLibrary(root, e.getContent().name());
 		if (elem instanceof GroupElement e)
 			return findGroup(root, e.getContent().label);
 		if (elem instanceof ModelTypeElement e)
@@ -35,6 +41,17 @@ class NavFinder {
 		if (elem instanceof ModelElement e)
 			return findDescriptor(root, e.getContent());
 		return null;
+	}
+
+	private NavElement findLibraryDir(NavElement root) {
+		return findChild(root, elem -> elem.is(ElementType.LIBRARY_DIR));
+	}
+
+	private NavElement findLibrary(NavElement root, String id) {
+		var libraryDir = findLibraryDir(root);
+		if (libraryDir == null)
+			return null;
+		return findChild(libraryDir, elem -> elem.is(ElementType.LIBRARY) && elem.content().equals(id));
 	}
 
 	private NavElement findGroup(NavElement root, String label) {
