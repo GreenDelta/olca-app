@@ -132,7 +132,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		LibCombo(Combo combo) {
 			this.combo = combo;
 			fill();
-			if (libraries.size() > 0) {
+			if (!libraries.isEmpty()) {
 				select(libraries.get(0));
 			}
 			Controls.onSelect(combo, $ -> {

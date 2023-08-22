@@ -181,7 +181,6 @@ public final class Libraries {
 					Files.delete(file);
 				} catch (IOException e) {
 					log.trace("Error deleting tmp file", e);
-					return library;
 				}
 			}
 		}

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -35,8 +36,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
-
-import io.grpc.netty.shaded.io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Consumer;
 
 public class MountLibraryDialog extends FormDialog {
 

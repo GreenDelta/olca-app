@@ -125,7 +125,7 @@ public class LibraryDialog extends FormDialog {
 	private enum Mode {
 
 		URL,
-		FILE;
+		FILE
 
 	}
 
