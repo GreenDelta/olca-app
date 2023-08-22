@@ -1,10 +1,12 @@
-package org.openlca.app.navigation.actions.libraries;
+package org.openlca.app.components;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -34,16 +36,25 @@ import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.util.Categories;
 import org.openlca.util.Strings;
 
-class MountLibraryDialog extends FormDialog {
+import io.grpc.netty.shaded.io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Consumer;
+
+public class MountLibraryDialog extends FormDialog {
 
 	private final Library library;
 	private final List<Section> sections = new ArrayList<>();
 
-	static void show(Library library, PreMountCheck.Result checkResult) {
+	public static void show(Library library, PreMountCheck.Result checkResult) {
+		show(library, checkResult, null);
+	}
+
+	public static void show(Library library, PreMountCheck.Result checkResult, Consumer<Set<Library>> callback) {
 		if (checkResult.isError()) {
 			ErrorReporter.on(
 					"Failed to check library: " + library,
 					checkResult.error());
+			if (callback != null) {
+				callback.accept(Collections.emptySet());
+			}
 			return;
 		}
 		var state = checkResult.getState(library).orElse(null);
@@ -51,26 +62,41 @@ class MountLibraryDialog extends FormDialog {
 			MsgBox.info(
 					"No libraries to add",
 					"Found no libraries that could be added.");
+			if (callback != null) {
+				callback.accept(Collections.emptySet());
+			}
 			return;
 		}
 		if (state == PreMountState.PRESENT) {
 			var b = Question.ask("Library already present",
 					"The library was already added to the database. Continue anyhow?");
-			if (!b)
+			if (!b) {
+				if (callback != null) {
+					callback.accept(Collections.emptySet());
+				}
 				return;
+			}
 		}
 
 		var dialog = new MountLibraryDialog(library, checkResult);
-		if (dialog.open() != Window.OK)
+		if (dialog.open() != Window.OK) {
+			if (callback != null) {
+				callback.accept(Collections.emptySet());
+			}
 			return;
+		}
 		var previousTags = getCurrentTags();
+		var actions = dialog.collectActions();
 		App.runWithProgress("Add library " + library.name() + " ...",
 				() -> Mounter.of(Database.get(), library)
-						.apply(dialog.collectActions())
+						.apply(actions)
 						.run(),
 				() -> {
 					updateGitIndex(previousTags);
 					Navigator.refresh();
+					if (callback != null) {
+						callback.accept(actions.keySet());
+					}
 				});
 	}
 
