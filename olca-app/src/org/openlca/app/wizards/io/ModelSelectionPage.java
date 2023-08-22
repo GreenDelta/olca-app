@@ -76,7 +76,7 @@ class ModelSelectionPage extends WizardPage {
 	public List<RootDescriptor> getSelectedModels() {
 		return selectionProvider.getSelection()
 				.stream()
-				.filter(elem -> elem instanceof ModelElement)
+				.filter(elem -> elem instanceof ModelElement e && !e.isFromLibrary())
 				.map(elem -> ((ModelElement) elem).getContent())
 				.toList();
 	}
