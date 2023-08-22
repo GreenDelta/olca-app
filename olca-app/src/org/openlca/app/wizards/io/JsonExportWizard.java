@@ -49,7 +49,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 							"Export default providers of product inputs and waste outputs");
 					providerCheck.setToolTipText(
 							"Note that this exports the providers recursively, means also " +
-									"providers of providers, which can result in very large" +
+									"providers of providers, which can result in very large " +
 									"export files.");
 					providerCheck.setSelection(withProviders);
 					Controls.onSelect(providerCheck,
