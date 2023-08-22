@@ -17,6 +17,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.simapro.csv.output.SimaProExport;
@@ -60,6 +61,8 @@ public class SimaProProcessExportWizard
 				monitor.beginTask(
 						M.ExportingProcesses, IProgressMonitor.UNKNOWN);
 				SimaProExport.of(Database.get(), models)
+						.withTopCategoryAsType(configPage.withTopCategoryToType)
+						.withFlowMap(configPage.flowMap)
 						.withProcessSuffixes(configPage.withProcessSuffix)
 						.withLocationSuffixes(configPage.withLocationSuffix)
 						.withTypeSuffixes(configPage.withTypeSuffix)
@@ -78,6 +81,8 @@ public class SimaProProcessExportWizard
 
 	private static class ConfigPage extends WizardPage {
 
+		private FlowMap flowMap;
+		private boolean withTopCategoryToType = true;
 		private boolean withProcessSuffix = true;
 		private boolean withLocationSuffix = true;
 		private boolean withTypeSuffix = true;
@@ -93,12 +98,32 @@ public class SimaProProcessExportWizard
 			var body = UI.composite(parent);
 			setControl(body);
 			UI.gridLayout(body, 1);
-			var group = new Group(body, SWT.NONE);
-			group.setText("Exported product names");
-			UI.fillHorizontal(group);
-			UI.gridLayout(group, 1);
 
-			var example = UI.label(group, "Example: product | process {GLO}, U");
+			var generalGroup = new Group(body, SWT.NONE);
+			generalGroup.setText("General export settings");
+			UI.gridLayout(generalGroup, 1);
+			UI.fillHorizontal(generalGroup);
+
+			var categoryCheck = UI.checkbox(
+					generalGroup, "Use matching top categories as process types");
+			categoryCheck.setSelection(withTopCategoryToType);
+			Controls.onSelect(categoryCheck,
+					$ -> withTopCategoryToType = categoryCheck.getSelection());
+
+			var mappingComp = UI.composite(generalGroup);
+			UI.fillHorizontal(mappingComp);
+			UI.gridLayout(mappingComp, 3);
+			MappingSelector.on(flowMap -> this.flowMap = flowMap)
+					.render(mappingComp);
+
+			// product names
+			var productGroup = new Group(body, SWT.NONE);
+			productGroup.setText("Exported product names");
+			UI.fillHorizontal(productGroup);
+			UI.gridLayout(productGroup, 1);
+
+			var example = UI.label(
+					productGroup, "Example: product | process {GLO}, U");
 			Runnable updateExample = () -> {
 				var text = "Example: product";
 				if (withProcessSuffix) {
@@ -114,28 +139,27 @@ public class SimaProProcessExportWizard
 			};
 			updateExample.run();
 
-			var processCheck = UI.checkbox(group, "Append process names");
+			var processCheck = UI.checkbox(productGroup, "Append process names");
 			processCheck.setSelection(withProcessSuffix);
 			Controls.onSelect(processCheck, $ -> {
 				withProcessSuffix = processCheck.getSelection();
 				updateExample.run();
 			});
 
-			var locationCheck = UI.checkbox(group, "Append location codes");
+			var locationCheck = UI.checkbox(productGroup, "Append location codes");
 			locationCheck.setSelection(withLocationSuffix);
 			Controls.onSelect(locationCheck, $ -> {
 				withLocationSuffix = locationCheck.getSelection();
 				updateExample.run();
 			});
 
-			var typeCheck = UI.checkbox(group,
+			var typeCheck = UI.checkbox(productGroup,
 					"Append process types (U: unit process, S: system/LCI result)");
 			typeCheck.setSelection(withTypeSuffix);
 			Controls.onSelect(typeCheck, $ -> {
 				withTypeSuffix = typeCheck.getSelection();
 				updateExample.run();
 			});
-
 		}
 	}
 }

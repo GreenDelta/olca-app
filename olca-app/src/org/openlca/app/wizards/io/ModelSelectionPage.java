@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -44,6 +45,7 @@ class ModelSelectionPage extends WizardPage {
 	private File exportDestination;
 	private boolean targetIsDir;
 	private String fileExtension;
+	private Consumer<Composite> extension;
 
 	static ModelSelectionPage forDirectory(ModelType... types) {
 		ModelSelectionPage page = new ModelSelectionPage(types);
@@ -67,6 +69,11 @@ class ModelSelectionPage extends WizardPage {
 		this.types = types;
 		setPageComplete(false);
 		createTexts();
+	}
+
+	ModelSelectionPage withExtension(Consumer<Composite> extension) {
+		this.extension = extension;
+		return this;
 	}
 
 	public File getExportDestination() {
@@ -94,16 +101,19 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	@Override
-	public void createControl(final Composite parent) {
+	public void createControl(Composite parent) {
 		var body = UI.composite(parent);
 		UI.gridLayout(body, 1);
 		createChooseTargetComposite(body);
 		createViewer(body);
 		setControl(body);
 		checkCompletion();
+		if (extension != null) {
+			extension.accept(body);
+		}
 	}
 
-	private void createChooseTargetComposite(final Composite body) {
+	private void createChooseTargetComposite(Composite body) {
 		var composite = UI.composite(body);
 		var layout = UI.gridLayout(composite, 3);
 		layout.marginHeight = 0;
