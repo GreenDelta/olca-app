@@ -101,7 +101,7 @@ def main():
     )
     args = parser.parse_args()
 
-    # delete build recources
+    # delete build resources
     DistDir.clean()
     if args.clean:
         for arch in OsArch:

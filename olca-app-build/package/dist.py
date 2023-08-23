@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import os
 import re
@@ -5,6 +6,7 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+import sys
 
 from package import BLAS_JNI_VERSION, MKL_JNI_VERSION, PROJECT_DIR
 
@@ -88,3 +90,26 @@ class Lib(Enum):
 
     def github_repo(self) -> str:
         return "olca-native" if self == self.BLAS else "olca-mkl"
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-v",
+        "--version",
+        help="get the version of openLCA",
+        action="store_true",
+    )
+
+    args = parser.parse_args()
+    if args.version:
+        # Silencing the prints in the script
+        sys.stdout = open(os.devnull, 'w')
+        suffix = Version.get().app_suffix
+        # Restoring the prints
+        sys.stdout = sys.__stdout__
+        print(suffix)
+
+
+if __name__ == "__main__":
+    main()
