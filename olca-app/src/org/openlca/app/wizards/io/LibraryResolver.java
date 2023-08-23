@@ -83,10 +83,6 @@ class LibraryResolver {
 				return;
 			}
 			success.stream().map(Library::name).forEach(handled::add);
-			if (links.isEmpty()) {
-				callback.accept(true);
-				return;
-			}
 			next();
 		});
 	}
