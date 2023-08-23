@@ -152,6 +152,24 @@
       "licenseUrl": "https://raw.githubusercontent.com/eclipse-ee4j/glassfish-hk2/master/LICENSE.md"
     },
     {
+      "project": "Intel® oneAPI Math Kernel Library",
+      "projectUrl": "https://software.intel.com/en-us/oneapi/onemkl",
+      "license": "Intel",
+      "licenseUrl": "https://www.intel.com/content/dam/develop/external/us/en/documents/pdf/intel-simplified-software-license.pdf"
+    },
+    {
+      "project": "Intel OpenMP",
+      "projectUrl": "https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html",
+      "license": "APL 2.0",
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "project": "Intel® oneAPI Threading Building Blocks",
+      "projectUrl": "https://github.com/oneapi-src/oneTBB",
+      "license": "APL 2.0",
+      "licenseUrl": "https://raw.githubusercontent.com/oneapi-src/oneTBB/master/LICENSE.txt"
+    },
+    {
       "project": "Javassist",
       "projectUrl": "https://github.com/jboss-javassist/javassist",
       "license": "APL 2.0",

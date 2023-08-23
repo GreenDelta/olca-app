@@ -4,7 +4,7 @@
 // cached in the `credits/cache` folder. This cache folder and the about page
 // are not put under version control.
 
-// in orger to collect our Maven dependencies, you can run
+// in order to collect our Maven dependencies, you can run
 // mvn project-info-reports:dependencies
 
 const fs = require('fs/promises');
