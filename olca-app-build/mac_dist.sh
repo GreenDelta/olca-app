@@ -7,8 +7,10 @@ JRE_ID="org.openlca.jre"
 APP_DMG="build/tmp/macosx.cocoa.x86_64/openLCA_dmg/openLCA.app"
 APP_PKG="build/tmp/macosx.cocoa.x86_64/openLCA_pkg/openLCA.app"
 APP_UNSIGNED="build/macosx.cocoa.x86_64/openLCA/openLCA.app"
-DMG="build/dist/${DIST}.dmg"
-PKG="build/dist/${DIST}.pkg"
+MKL_LIBS=(${APP_UNSIGNED}/Contents/Eclipse/olca-mkl*)
+LIB=$(if [ -d "$MKL_LIBS" ]; then echo "mkl"; else echo "blas"; fi)
+DMG="build/dist/openLCA_${LIB}_macOS_x64_${APP_SUFFIX}.dmg"
+PKG="build/dist/openLCA_${LIB}_macOS_x64_${APP_SUFFIX}.pkg"
 ENTITLEMENTS_DMG="resources/dmg.entitlements"
 ENTITLEMENTS_PKG="resources/pkg.entitlements"
 KEY_NOTARYTOOL="notarytool"
@@ -134,6 +136,7 @@ build_pkg() {
 
 build_dmg() {
   NOTARIZATION_DMG="${APP%/*.*}/notarization.dmg"
+
   rm -f "$NOTARIZATION_DMG"
 
   printf "\nCreating the disk image installer file to be notarized...\n"
@@ -142,10 +145,10 @@ build_dmg() {
 
   printf "\nNotarization of the DMG...\n"
   xcrun notarytool submit "$NOTARIZATION_DMG" \
-   --keychain-profile "$KEY_NOTARYTOOL" --wait
+   --keychain-profile "$KEY_NOTARYTOOL" --wait  || exit 1
 
   printf "\nStapling the app...\n"
-  xcrun stapler staple "$APP"
+  xcrun stapler staple "$APP" || exit 1
 
   printf "\nCreating the disk image installer file to be distributed...\n"
   create-dmg \
