@@ -34,13 +34,16 @@ class LibraryResolver {
 	static void resolve(List<LibraryLink> links, Consumer<Boolean> callback) {
 		if (links.isEmpty()) {
 			callback.accept(true);
+			return;
 		}
 		new LibraryResolver(links, callback).next();
 	}
 
 	private void next() {
-		if (links.isEmpty())
+		if (links.isEmpty()) {
+			callback.accept(true);
 			return;
+		}
 		var link = links.pop();
 		var lib = libDir.getLibrary(link.id()).orElse(null);
 		if (lib == null) {
