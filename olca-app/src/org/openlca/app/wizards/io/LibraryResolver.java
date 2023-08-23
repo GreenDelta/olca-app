@@ -39,6 +39,8 @@ class LibraryResolver {
 	}
 
 	private void next() {
+		if (links.isEmpty())
+			return;
 		var link = links.pop();
 		var lib = libDir.getLibrary(link.id()).orElse(null);
 		if (lib == null) {
