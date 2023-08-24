@@ -17,6 +17,7 @@ import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
+import org.openlca.core.matrix.solvers.mkl.MKL;
 import org.openlca.nativelib.Module;
 import org.openlca.nativelib.NativeLib;
 import org.openlca.util.OS;
@@ -74,7 +75,8 @@ public class StartPage extends SimpleFormEditor {
 				config.put("version", getVersion());
 				var lang = AppArg.get("nl");
 				config.put("lang", Strings.nullOrEmpty(lang) ? "en" : lang);
-				config.put("showLibHint", !NativeLib.isLoaded(Module.UMFPACK));
+				config.put("showLibHint",
+						!NativeLib.isLoaded(Module.UMFPACK) && !MKL.isLoaded());
 				var json = new Gson().toJson(config);
 				browser.execute("setData(" + json + ")");
 			});

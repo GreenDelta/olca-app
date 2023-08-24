@@ -25,6 +25,7 @@ project and other open source software.
       <vmArgs>-Xmx3584M
 -Dpython.console.encoding=UTF-8
 --add-modules=ALL-SYSTEM
+-Dorg.eclipse.swt.browser.DefaultType=edge
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -50,7 +51,6 @@ project and other open source software.
    <vm>
       <windows include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17</windows>
    </vm>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
