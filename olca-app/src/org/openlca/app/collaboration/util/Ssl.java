@@ -49,39 +49,28 @@ public class Ssl {
 		}
 	}
 
-	public static boolean addCertificate(String name, InputStream stream) {
+	public static void addCertificate(String name, InputStream stream) {
 		try {
-			if (keyStore.isCertificateEntry(name))
-				return false;
 			var certificate = certificateFactory.generateCertificate(stream);
-			return addCertificate(name, certificate);
+			addCertificate(name, certificate);
 		} catch (Exception e) {
 			log.error("Error loading certificate", e);
-			return false;
 		}
 	}
 
-	public static boolean addCertificate(String name, Certificate certificate) {
+	public static void addCertificate(String name, Certificate certificate) {
 		try {
-			if (keyStore.isCertificateEntry(name))
-				return false;
 			keyStore.setCertificateEntry(name, certificate);
-			return true;
 		} catch (Exception e) {
 			log.error("Error adding certificate to keystore", e);
-			return false;
 		}
 	}
 
-	public static boolean removeCertificate(String name) {
+	public static void removeCertificate(String name) {
 		try {
-			if (!keyStore.isCertificateEntry(name))
-				return false;
 			keyStore.deleteEntry(name);
-			return true;
 		} catch (Exception e) {
 			log.error("Error removing certificate from keystore", e);
-			return false;
 		}
 	}
 

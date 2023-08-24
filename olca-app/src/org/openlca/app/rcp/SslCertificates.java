@@ -34,7 +34,8 @@ class SslCertificates {
 			name = name.substring(0, file.getName().lastIndexOf("."));
 			log.debug("Loading certificate " + name);
 			try (InputStream stream = new FileInputStream(file)) {
-				added = added || Ssl.addCertificate(name, stream);
+				Ssl.addCertificate(name, stream);
+				added = true;
 				log.debug("Sucessfully added certificate " + name);
 			} catch (IOException e) {
 				log.error("Error loading certificate " + name, e);
