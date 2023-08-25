@@ -167,7 +167,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 					|| (!e.isInput && type == FlowType.PRODUCT_FLOW);
 			return (isRevenue && e.costs >= 0) || (!isRevenue && e.costs < 0)
 					? Colors.systemColor(SWT.COLOR_DARK_GREEN)
-					: Colors.systemColor(SWT.COLOR_DARK_MAGENTA);
+					: Colors.fromHex("#a04ac4");
 		}
 
 		return null;

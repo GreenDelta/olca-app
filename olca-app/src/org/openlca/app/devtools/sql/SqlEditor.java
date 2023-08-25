@@ -10,6 +10,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -175,13 +176,13 @@ public class SqlEditor extends ScriptingEditor {
 						continue;
 					}
 
-					if (Character.isWhitespace(c) && buff.length() > 0) {
+					if (Character.isWhitespace(c) && !buff.isEmpty()) {
 						buff.append(' ');
 					} else {
 						buff.append(c);
 					}
 				}
-				if (buff.length() > 0) {
+				if (!buff.isEmpty()) {
 					var next = buff.toString().trim();
 					if (!next.isEmpty()) {
 						statements.add(next);
@@ -191,8 +192,9 @@ public class SqlEditor extends ScriptingEditor {
 			}
 		}
 
-		private class SyntaxStyler {
+		private static class SyntaxStyler {
 
+			private final Color highlightColor = Colors.fromHex("#f29e74");
 			private final StyledText text;
 
 			// complete SQL99 keywords, see
@@ -290,7 +292,7 @@ public class SqlEditor extends ScriptingEditor {
 			}
 
 			private boolean isKeyWord(StringBuilder word) {
-				if (word == null || word.length() == 0)
+				if (word == null || word.isEmpty())
 					return false;
 				String s = word.toString();
 				for (String keyword : keywords) {
@@ -301,16 +303,16 @@ public class SqlEditor extends ScriptingEditor {
 			}
 
 			private void setKeywordStyle(int wordStart, int length) {
-				StyleRange styleRange = new StyleRange();
+				var styleRange = new StyleRange();
 				styleRange.start = wordStart;
 				styleRange.length = length;
 				styleRange.fontStyle = SWT.BOLD;
-				styleRange.foreground = Colors.get(0, 0, 255);
+				styleRange.foreground = highlightColor;
 				text.setStyleRange(styleRange);
 			}
 
 			private void setDefaultStyle(int wordStart, int length) {
-				StyleRange styleRange = new StyleRange();
+				var styleRange = new StyleRange();
 				styleRange.start = wordStart;
 				styleRange.length = length;
 				text.setStyleRange(styleRange);
