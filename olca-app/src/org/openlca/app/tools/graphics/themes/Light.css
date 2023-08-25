@@ -77,22 +77,17 @@
   color: #000000;
 }
 
-/* product flows */
+/* product flows link */
 #model link .product {
   color: #000000;
 }
 
-/* waste flows */
+/* waste flows link */
 #model link .waste {
   color: #000000;
 }
 
-/* elementary flows */
-#model link .elementary-flow {
-  color: #000000;
-}
-
-/* selected flows */
+/* selected node link */
 #model link ::selection {
   color: #fcba03;
 }
@@ -179,7 +174,7 @@
 
 /* -- links -- */
 
-/* selected flows */
+/* selected node link */
 #sankey link ::selection {
   color: #fcba03;
 }

@@ -52,7 +52,8 @@ public class LinkEditPart extends AbstractConnectionEditPart
 		var theme = config.getTheme();
 
 		var router = config.connectionRouter();
-		var color = theme != null ? theme.linkColor() : ColorConstants.black;
+		var type = graph.flows.type(getModel().processLink.flowId);
+		var color = theme != null ? theme.linkColor(type) : ColorConstants.black;
 		var colorSelected = theme != null
 				? theme.linkColorSelected()
 				: ColorConstants.black;
