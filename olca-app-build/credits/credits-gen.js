@@ -23,8 +23,14 @@ async function main() {
   // generate the credit blocks
   const creditsPath = path.join(__dirname, 'credits.json');
   const { credits, pipCredits } = JSON.parse(await fs.readFile(creditsPath, 'utf8'));
+  const allCredits = [...credits, ...pipCredits];
+  allCredits.sort((c1, c2) => {
+    const p1 = c1.project.trim().toLowerCase();
+    const p2 = c2.project.trim().toLowerCase();
+    return p1.localeCompare(p2);
+  });
   let creditBlocks = '';
-  for (const credit of [...credits, ...pipCredits]) {
+  for (const credit of allCredits) {
     const licenseText = await getLicenseText(credit);
     creditBlocks += creditBlockOf(credit, licenseText);
   }
@@ -90,11 +96,10 @@ function fetchPipLicenseFrom(url) {
 async function getLicenseFromPackage(data) {
   const buf = Buffer.concat(data);
   const zip = new AdmZip(buf);
-  let license = "";
   for (entry of zip.getEntries())
     if (entry.name.endsWith("LICENSE.txt")) {
       return entry.getData().toString("utf8");
-  }
+    }
 }
 
 function creditBlockOf(credit, licenseText) {
