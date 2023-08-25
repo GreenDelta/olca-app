@@ -37,10 +37,11 @@ public class OpenEditorAction extends SelectionAction {
 		if (objects.size() != 1)
 			return false;
 		object = objects.get(0);
+		if (object instanceof GraphEditPart)
+			return false;
 		setText(M.OpenInEditor + ": " + getObjectName());
 
-		return ((object instanceof GraphEditPart)
-				|| (NodeEditPart.class.isAssignableFrom(object.getClass()))
+		return ((NodeEditPart.class.isAssignableFrom(object.getClass()))
 				|| (object instanceof ExchangeEditPart));
 	}
 
@@ -48,9 +49,7 @@ public class OpenEditorAction extends SelectionAction {
 		if (object == null)
 			return "";
 
-		if (object instanceof GraphEditPart)
-			return M.ProductSystem;
-		else if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
+		if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
 			var model = ((NodeEditPart) object).getModel();
 			return Labels.of(model.descriptor.type);
 		}
@@ -64,10 +63,6 @@ public class OpenEditorAction extends SelectionAction {
 		try {
 			var b = editor.isDirty();
 			if (editor.promptSaveIfNecessary()) {
-				if (object instanceof GraphEditPart) {
-					var systemEditor = editor.getProductSystemEditor();
-					systemEditor.setActivePage(ProductSystemInfoPage.ID);
-				}
 				if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
 					var node = ((NodeEditPart) object).getModel();
 					if (b)
@@ -81,7 +76,7 @@ public class OpenEditorAction extends SelectionAction {
 				}
 			}
 		} catch (Exception e) {
-			log.error("Failed to complete product system. ", e);
+			log.error("Failed to open the editor. ", e);
 		}
 	}
 
