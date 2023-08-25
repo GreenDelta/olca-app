@@ -152,24 +152,6 @@
       "licenseUrl": "https://raw.githubusercontent.com/eclipse-ee4j/glassfish-hk2/master/LICENSE.md"
     },
     {
-      "project": "Intel® oneAPI Math Kernel Library",
-      "projectUrl": "https://software.intel.com/en-us/oneapi/onemkl",
-      "license": "Intel",
-      "licenseUrl": "https://www.intel.com/content/dam/develop/external/us/en/documents/pdf/intel-simplified-software-license.pdf"
-    },
-    {
-      "project": "Intel OpenMP",
-      "projectUrl": "https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html",
-      "license": "APL 2.0",
-      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    },
-    {
-      "project": "Intel® oneAPI Threading Building Blocks",
-      "projectUrl": "https://github.com/oneapi-src/oneTBB",
-      "license": "APL 2.0",
-      "licenseUrl": "https://raw.githubusercontent.com/oneapi-src/oneTBB/master/LICENSE.txt"
-    },
-    {
       "project": "Javassist",
       "projectUrl": "https://github.com/jboss-javassist/javassist",
       "license": "APL 2.0",
@@ -252,6 +234,26 @@
       "projectUrl": "https://github.com/be5invis/Iosevka",
       "license": "OFL 1.1",
       "licenseUrl": "https://raw.githubusercontent.com/be5invis/Iosevka/main/LICENSE.md"
+    }
+  ],
+  "pipCredits": [
+    {
+      "project": "Intel oneAPI Math Kernel Library",
+      "projectUrl": "https://software.intel.com/en-us/oneapi/onemkl",
+      "license": "Intel",
+      "pipUrl": "https://files.pythonhosted.org/packages/d9/a1/b7cfb6f3e7259f035a2c947cf26bff42cda6772933cdb95c829e91ce995f/mkl-2023.1.0-py2.py3-none-win_amd64.whl"
+    },
+    {
+      "project": "Intel OpenMP",
+      "projectUrl": "https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html",
+      "license": "Intel",
+      "pipUrl": "https://files.pythonhosted.org/packages/c7/a1/7407ebfb7131c2d8507bec5daf0684d76a9c6c38faaa6ae16b296e3335ce/intel_openmp-2023.1.0-py2.py3-none-win_amd64.whl"
+    },
+    {
+      "project": "Intel oneAPI Threading Building Blocks",
+      "projectUrl": "https://github.com/oneapi-src/oneTBB",
+      "license": "Intel",
+      "pipUrl": "https://files.pythonhosted.org/packages/64/6a/20f2e84e31bd82b7ddecf616be0338b7fa5dc37285a73e810101f9c2b195/tbb-2021.9.0-py3-none-win_amd64.whl"
     }
   ]
 }
