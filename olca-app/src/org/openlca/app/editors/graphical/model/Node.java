@@ -12,7 +12,9 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.util.Labels;
+import org.openlca.core.database.ExchangeDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
@@ -43,6 +45,7 @@ public class Node extends MinMaxComponent {
 	private final IDatabase db = Database.get();
 	public RootDescriptor descriptor;
 	private RootEntity entity;
+	private boolean isLinkedToAvoided;
 
 	/**
 	 * Define if the input or this output side is expanded.
@@ -287,6 +290,15 @@ public class Node extends MinMaxComponent {
 		return false;
 	}
 
+	public void updateIsLinkedToAvoided(long exchangeId) {
+		var exchange = new ExchangeDao(Database.get()).getForId(exchangeId);
+		if (exchange == null) {
+			isLinkedToAvoided = false;
+			return;
+		}
+		isLinkedToAvoided = exchange.isAvoided;
+	}
+
 	public void setButtonStatus() {
 		for (var side : Arrays.asList(INPUT, OUTPUT)) {
 			if (!canExpandOrCollapse(side))
@@ -451,6 +463,10 @@ public class Node extends MinMaxComponent {
 
 	public boolean isOfReferenceProcess() {
 		return getGraph().isReferenceProcess(this);
+	}
+
+	public Theme.Box getThemeBox() {
+		return Theme.Box.of(descriptor, isOfReferenceProcess(), isLinkedToAvoided);
 	}
 
 	public String toString() {

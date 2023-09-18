@@ -1,7 +1,5 @@
 package org.openlca.app.tools.graphics;
 
-import java.util.Objects;
-
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;

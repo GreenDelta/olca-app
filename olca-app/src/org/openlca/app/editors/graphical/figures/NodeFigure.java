@@ -4,7 +4,6 @@ import org.eclipse.draw2d.*;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.util.Labels;
@@ -34,7 +33,7 @@ public class NodeFigure extends ComponentFigure {
 
 		NodeHeader() {
 			var theme = node.getGraph().getConfig().getTheme();
-			var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
+			var box = node.getThemeBox();
 
 			GridLayout layout = new GridLayout(4, false);
 			layout.marginHeight = 2;

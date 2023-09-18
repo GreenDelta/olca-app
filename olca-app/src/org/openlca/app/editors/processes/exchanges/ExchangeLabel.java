@@ -177,9 +177,11 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 	public Font getFont(Object obj, int col) {
 		if (!(obj instanceof Exchange e))
 			return null;
+		if (e.isAvoided)
+			return UI.italicFont();
 		var qRef = editor.getModel().quantitativeReference;
-		return Objects.equals(e, qRef)
-				? UI.boldFont()
-				: null;
+		if (Objects.equals(e, qRef))
+			return UI.boldFont();
+		return null;
 	}
 }

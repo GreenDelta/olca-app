@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.model;
 
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.tools.graphics.model.Link;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
@@ -23,24 +24,27 @@ public class GraphLink extends Link {
 
 	@Override
 	public void reconnect(Component newSource, Component newTarget) {
-		disconnect();
-
+		super.disconnect();
 		source = adaptComponent(newSource, true);
 		target = adaptComponent(newTarget, false);
+		super.reconnect();
 
-		reconnect();
+		updateIsExpanded();
+		updateLinkToAvoided();
 	}
 
 	@Override
 	public void disconnect() {
 		super.disconnect();
 		updateIsExpanded();
+		updateLinkToAvoided();
 	}
 
 	@Override
 	public void reconnect() {
 		super.reconnect();
 		updateIsExpanded();
+		updateLinkToAvoided();
 	}
 
 	private void updateIsExpanded() {
@@ -48,6 +52,20 @@ public class GraphLink extends Link {
 			getSourceNode().updateIsExpanded(OUTPUT);
 		if (getTargetNode() != null)
 			getTargetNode().updateIsExpanded(INPUT);
+	}
+
+	private void updateLinkToAvoided() {
+		if (getSourceNode() == null || getSourceNode().getGraph() == null)
+			return;
+		var type = getSourceNode().getGraph().flows.type(processLink.flowId);
+		var node = type == FlowType.PRODUCT_FLOW
+				? getSourceNode()
+				: type == FlowType.WASTE_FLOW ? getTargetNode() : null;
+
+		if (node == null)
+			return;
+
+		node.updateIsLinkedToAvoided(processLink.exchangeId);
 	}
 
 	/**

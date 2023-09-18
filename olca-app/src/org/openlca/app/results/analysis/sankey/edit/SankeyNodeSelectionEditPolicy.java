@@ -27,6 +27,7 @@ public class SankeyNodeSelectionEditPolicy extends SelectionEditPolicy {
 		setSelected(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setSelected(boolean b) {
 		var sources = getHost().getSourceConnections();
 		var targets = getHost().getTargetConnections();

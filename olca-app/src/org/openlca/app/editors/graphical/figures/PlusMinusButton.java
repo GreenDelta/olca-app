@@ -5,7 +5,6 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.util.Colors;
 
 public class PlusMinusButton extends Clickable {
@@ -30,7 +29,7 @@ public class PlusMinusButton extends Clickable {
 			this.node = node;
 			this.side = side;
 			var theme = node.getGraph().getConfig().getTheme();
-			var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
+			var box = node.getThemeBox();
 			setBackgroundColor(theme.boxBackgroundColor(box));
 		}
 
@@ -43,7 +42,7 @@ public class PlusMinusButton extends Clickable {
 			g.setAntialias(SWT.ON);
 
 			var theme = node.getGraph().getConfig().getTheme();
-			var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
+			var box = node.getThemeBox();
 
 			setEnabled(node.isButtonEnabled(side));
 			setVisible(node.canExpandOrCollapse(side));
