@@ -3,6 +3,7 @@ package org.openlca.app.editors.graphical.model;
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.util.Strings;
@@ -57,7 +58,10 @@ public class ExchangeItem extends Component {
 	}
 
 	public Node getNode() {
-		return getIOPane().getNode();
+		var pane = getIOPane();
+		if (pane == null)
+			return null;
+		return pane.getNode();
 	}
 
 	public Exchange getExchange() {
@@ -139,13 +143,15 @@ public class ExchangeItem extends Component {
 		};
 	}
 
-	public static int compare(ExchangeItem e1, ExchangeItem e2) {
-		if (e1 == null && e2 == null)
+	public static int compare(ExchangeItem e1, ExchangeItem e2, Flow refFlow) {
+		if (e1 == null || e2 == null)
 			return 0;
-		if (e1 != null && e2 == null)
+		if (e1.exchange == null || e2.exchange == null)
+			return 0;
+		if (e1.exchange.flow != null && e1.exchange.flow.equals(refFlow))
 			return 1;
-		if (e1 == null)
-			return -1;
+		if (e2.exchange.flow != null && e2.exchange.flow.equals(refFlow))
+			return 1;
 		int t1 = typeOrderOf(e1.exchange);
 		int t2 = typeOrderOf(e2.exchange);
 		if (t1 != t2)
@@ -157,8 +163,16 @@ public class ExchangeItem extends Component {
 
 	@Override
 	public int compareTo(Component other) {
+		var node = getNode();
+		if (node == null) {
+			return compareTo(other, null);
+		}
+		return compareTo(other, node.getRefFlow());
+	}
+
+	public int compareTo(Component other, Flow refFlow) {
 		if (other instanceof ExchangeItem e)
-			return compare(this, e);
+			return compare(this, e, refFlow);
 		else return 0;
 	}
 

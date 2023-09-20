@@ -85,7 +85,7 @@ public class GraphFactory {
 							|| e.flow.flowType != FlowType.ELEMENTARY_FLOW;
 				})
 				.map(ExchangeItem::new)
-				.sorted(ExchangeItem::compareTo)
+				.sorted((item, other) -> item.compareTo(other, node.getRefFlow()))
 				.forEach(e -> panes.get(paneOf(e)).addChild(e));
 		return panes;
 	}
