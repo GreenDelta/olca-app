@@ -57,7 +57,7 @@ public class SankeyNode extends Component {
 	}
 
 	public Theme.Box getThemeBox() {
-		return Theme.Box.of(product.provider(), isReference(), false);
+		return Theme.Box.of(product.provider(), isReference());
 	}
 
 	@Override

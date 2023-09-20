@@ -128,8 +128,6 @@ class Css {
       return Optional.empty();
 		if (hasSelector(".reference-process", rule))
 			return Optional.of(Theme.Box.REFERENCE_PROCESS);
-		if (hasSelector(".avoided", rule))
-			return Optional.of(Theme.Box.AVOIDED_PROCESS);
 		if (hasSelector(".unit-process", rule))
 			return Optional.of(Theme.Box.UNIT_PROCESS);
     if (hasSelector(".system-process", rule))

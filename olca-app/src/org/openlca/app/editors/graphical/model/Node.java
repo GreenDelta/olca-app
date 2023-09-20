@@ -45,7 +45,6 @@ public class Node extends MinMaxComponent {
 	private final IDatabase db = Database.get();
 	public RootDescriptor descriptor;
 	private RootEntity entity;
-	private boolean isLinkedToAvoided;
 
 	/**
 	 * Define if the input or this output side is expanded.
@@ -290,15 +289,6 @@ public class Node extends MinMaxComponent {
 		return false;
 	}
 
-	public void updateIsLinkedToAvoided(long exchangeId) {
-		var exchange = new ExchangeDao(Database.get()).getForId(exchangeId);
-		if (exchange == null) {
-			isLinkedToAvoided = false;
-			return;
-		}
-		isLinkedToAvoided = exchange.isAvoided;
-	}
-
 	public void setButtonStatus() {
 		for (var side : Arrays.asList(INPUT, OUTPUT)) {
 			if (!canExpandOrCollapse(side))
@@ -466,7 +456,7 @@ public class Node extends MinMaxComponent {
 	}
 
 	public Theme.Box getThemeBox() {
-		return Theme.Box.of(descriptor, isOfReferenceProcess(), isLinkedToAvoided);
+		return Theme.Box.of(descriptor, isOfReferenceProcess());
 	}
 
 	public String toString() {

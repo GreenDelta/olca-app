@@ -217,7 +217,6 @@ public class Theme {
 	public enum Box {
 		DEFAULT,
 		REFERENCE_PROCESS,
-		AVOIDED_PROCESS,
 		UNIT_PROCESS,
 		SYSTEM_PROCESS,
 		SUB_SYSTEM,
@@ -225,16 +224,13 @@ public class Theme {
 		RESULT,
 		STICKY_NOTE;
 
-		public static Box of(RootDescriptor descriptor, boolean isReference,
-				boolean isAvoided) {
+		public static Box of(RootDescriptor descriptor, boolean isReference) {
 			if (descriptor == null)
 				return DEFAULT;
 			if (descriptor.isFromLibrary())
 				return LIBRARY_PROCESS;
 			if (isReference)
 				return REFERENCE_PROCESS;
-			if (isAvoided)
-				return AVOIDED_PROCESS;
 			if (descriptor instanceof ProcessDescriptor p)
 				return p.processType == ProcessType.UNIT_PROCESS
 						? UNIT_PROCESS
