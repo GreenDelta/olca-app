@@ -1,6 +1,6 @@
 package org.openlca.app.editors.processes.exchanges;
 
-import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -13,7 +13,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.Exchange;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
@@ -53,15 +53,44 @@ public class ProcessExchangePage extends ModelPage<Process> {
 	}
 
 	private void sortExchanges() {
-		List<Exchange> exchanges = editor.getModel().exchanges;
+		var process = editor.getModel();
+		var exchanges = process.exchanges;
 		exchanges.sort((e1, e2) -> {
-			if (e1.flow == null || e2.flow == null)
+
+			// quant. reference first
+			if (Objects.equals(process.quantitativeReference, e1))
+				return -1;
+			if (Objects.equals(process.quantitativeReference, e2))
+				return 1;
+
+			// null checks for flows
+			if (e1.flow == null && e2.flow == null)
 				return 0;
+			if (e1.flow == null)
+				return -1;
+			if (e2.flow == null)
+				return 1;
+
+			// flow type
+			var t1 = e1.flow.flowType;
+			var t2 = e2.flow.flowType;
+			if ( t1 != null && t2 != null && t1 != t2) {
+				if (t1 == FlowType.PRODUCT_FLOW)
+					return -1;
+				if (t2 == FlowType.PRODUCT_FLOW)
+					return 1;
+				if (t1 == FlowType.WASTE_FLOW)
+					return -1;
+				if (t2 == FlowType.WASTE_FLOW)
+					return  1;
+			}
+
+			// name or category
 			int c = Strings.compare(e1.flow.name, e2.flow.name);
 			if (c != 0)
 				return c;
-			String c1 = CategoryPath.getShort(e1.flow.category);
-			String c2 = CategoryPath.getShort(e2.flow.category);
+			var c1 = CategoryPath.getShort(e1.flow.category);
+			var c2 = CategoryPath.getShort(e2.flow.category);
 			return Strings.compare(c1, c2);
 		});
 	}
