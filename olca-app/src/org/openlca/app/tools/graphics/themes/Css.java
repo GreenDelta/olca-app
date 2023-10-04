@@ -8,28 +8,12 @@ import org.openlca.app.util.Colors;
 import org.openlca.core.model.FlowType;
 
 import java.util.*;
-import java.util.function.IntFunction;
 import java.util.function.ToIntFunction;
 
 class Css {
 
   private Css() {
   }
-
-	static Optional<Integer> themeVersionOf(CascadingStyleSheet css) {
-		if (css == null)
-			return Optional.empty();
-		for (int i = 0; i < css.getStyleRuleCount(); i++) {
-			var rule = css.getStyleRuleAtIndex(i);
-			if (!isRoot(rule))
-				continue;
-			for (var value : valuesOf("--version", rule)) {
-				if (value != null && !value.isBlank())
-					return Optional.of(Integer.parseInt(unquote(value)));
-			}
-		}
-		return Optional.empty();
-	}
 
   static Optional<String> themeNameOf(CascadingStyleSheet css) {
     if (css == null)
@@ -267,25 +251,4 @@ class Css {
     };
     return Optional.ofNullable(color);
   }
-
-  static String toHex(Color color) {
-    if (color == null)
-      return "#000000";
-    IntFunction<String> fmt = c -> {
-      var hex = Integer.toHexString(c);
-      if (hex.length() < 2) {
-        hex = "0" + hex;
-      }
-      if (hex.length() > 2) {
-        hex = hex.substring(0, 2);
-      }
-      return hex;
-    };
-
-    var r = fmt.apply(color.getRed());
-    var g = fmt.apply(color.getGreen());
-    var b = fmt.apply(color.getBlue());
-    return "#" + r + g + b;
-  }
-
 }
