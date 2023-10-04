@@ -64,13 +64,6 @@
   border: 2px #eda211;  /* border width and color */
 }
 
-/* avoided product/waste process */
-#model box .avoided {
-  color: #000000;       /* font color */
-  background: #dbdbdb;  /* background color */
-  border: 2px #eda211;  /* border width and color */
-}
-
 /* sticky-note */
 #model box .sticky-note {
   color: #000000;       /* font color */

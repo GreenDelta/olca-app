@@ -30,21 +30,18 @@ public class GraphLink extends Link {
 		super.reconnect();
 
 		updateIsExpanded();
-		updateLinkToAvoided();
 	}
 
 	@Override
 	public void disconnect() {
 		super.disconnect();
 		updateIsExpanded();
-		updateLinkToAvoided();
 	}
 
 	@Override
 	public void reconnect() {
 		super.reconnect();
 		updateIsExpanded();
-		updateLinkToAvoided();
 	}
 
 	private void updateIsExpanded() {
@@ -52,20 +49,6 @@ public class GraphLink extends Link {
 			getSourceNode().updateIsExpanded(OUTPUT);
 		if (getTargetNode() != null)
 			getTargetNode().updateIsExpanded(INPUT);
-	}
-
-	private void updateLinkToAvoided() {
-		if (getSourceNode() == null || getSourceNode().getGraph() == null)
-			return;
-		var type = getSourceNode().getGraph().flows.type(processLink.flowId);
-		var node = type == FlowType.PRODUCT_FLOW
-				? getSourceNode()
-				: type == FlowType.WASTE_FLOW ? getTargetNode() : null;
-
-		if (node == null)
-			return;
-
-		node.updateIsLinkedToAvoided(processLink.exchangeId);
 	}
 
 	/**
