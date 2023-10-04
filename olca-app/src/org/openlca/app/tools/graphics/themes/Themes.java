@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public final class Themes {
 
@@ -76,6 +77,7 @@ public final class Themes {
 			}
 			if (!version.isCurrent()) {
 				version.write();
+				deleteOldFolders(dir);
 			}
 		} catch (Exception e) {
 			ErrorReporter.on(
@@ -96,6 +98,40 @@ public final class Themes {
 		var file = new File(dir, name);
 		try (stream) {
 			Files.copy(stream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
+	// TODO: added for version 2.0.3; this should
+// be removed later (e.g. version >= 2.1). This
+// method deletes the `v1` and `v2` sub-folders
+// that were used in older versions
+	private static void deleteOldFolders(File dir) {
+		try {
+			var defaults = Set.of(
+					"Dark.css", "Default.css", "Light.css");
+			for (var v : List.of("v1", "v2")) {
+				var sub = new File(dir, v);
+				if (!sub.isDirectory())
+					continue;
+				boolean canDelete = true;
+				var files = sub.list();
+				if (files == null) {
+					Dirs.delete(sub);
+					continue;
+				}
+				for (var file : files) {
+					if (defaults.contains(file))
+						continue;
+					canDelete = false;
+					break;
+				}
+				if (canDelete) {
+					Dirs.delete(sub);
+				}
+			}
+		} catch (Exception e) {
+			var log = LoggerFactory.getLogger(Themes.class);
+			log.error("failed to delete old theme folders", e);
 		}
 	}
 
