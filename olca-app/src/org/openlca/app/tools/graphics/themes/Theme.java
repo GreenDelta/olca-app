@@ -1,9 +1,5 @@
 package org.openlca.app.tools.graphics.themes;
 
-import java.io.File;
-import java.util.EnumMap;
-import java.util.Optional;
-
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.reader.CSSReader;
 import com.helger.css.reader.CSSReaderSettings;
@@ -15,6 +11,11 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.EnumMap;
+import java.util.Optional;
 
 public class Theme {
 
@@ -131,7 +132,7 @@ public class Theme {
 				? FlowType.PRODUCT_FLOW
 				: flowType;
 		return flowLabelColors.getOrDefault(
-				type,boxFontColor(Box.DEFAULT));
+				type, boxFontColor(Box.DEFAULT));
 	}
 
 	public static Optional<Theme> loadFrom(File file, String id) {
@@ -139,7 +140,12 @@ public class Theme {
 			return Optional.empty();
 
 		var settings = new CSSReaderSettings();
+		settings.setCustomExceptionHandler(ex -> {
+			var log = LoggerFactory.getLogger(Theme.class);
+			log.warn("failed to parse CSS", ex);
+		});
 		var css = CSSReader.readFromFile(file, settings);
+
 		if (css == null)
 			return Optional.empty();
 
@@ -194,7 +200,8 @@ public class Theme {
 						if (Css.isInfo(rule)) {
 							theme.infoLabelColor = color;
 						}
-						Css.flowTypeOf(rule).ifPresent(flowType -> theme.flowLabelColors.put(flowType, color));
+						Css.flowTypeOf(rule).ifPresent(
+								flowType -> theme.flowLabelColors.put(flowType, color));
 					});
 				}
 			}
@@ -224,7 +231,7 @@ public class Theme {
 		RESULT,
 		STICKY_NOTE;
 
-		public static Box of(RootDescriptor descriptor, boolean isReference) {
+  public static Box of(RootDescriptor descriptor, boolean isReference) {
 			if (descriptor == null)
 				return DEFAULT;
 			if (descriptor.isFromLibrary())

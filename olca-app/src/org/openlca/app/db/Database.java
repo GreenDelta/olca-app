@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.navigation.CopyPaste;
+import org.openlca.app.rcp.RcpWindowAdvisor;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.Derby;
@@ -47,6 +48,7 @@ public class Database {
 			log.trace("activated database {} with version{}",
 					database.getName(), database.getVersion());
 			Repository.open(Repository.gitDir(database.getName()));
+			RcpWindowAdvisor.updateWindowTitle();
 			return database;
 		} catch (Exception e) {
 			database = null;
@@ -75,6 +77,7 @@ public class Database {
 		database = null;
 		config = null;
 		Repository.close();
+		RcpWindowAdvisor.updateWindowTitle();
 	}
 
 	private static DatabaseConfigList readConfigs() {
@@ -176,7 +179,7 @@ public class Database {
 	 * valid
 	 */
 	public static String validateNewName(String name) {
-		if (name == null || name.isBlank() || name.length() < 1)
+		if (name == null || name.isBlank() || name.isEmpty())
 			return M.NewDatabase_NameToShort;
 		if (!name.strip().equals(name)) {
 			return "The given database name contains" +

@@ -1,19 +1,47 @@
 package org.openlca.app.rcp;
 
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.App;
 import org.openlca.app.Config;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.preferences.Preferences;
+import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.UI;
 
 public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	public RcpWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
+	}
+
+	public static void updateWindowTitle() {
+		App.runInUI("update title", () -> {
+			try {
+				var wb = PlatformUI.getWorkbench();
+				if (wb == null)
+					return;
+				var window = wb.getActiveWorkbenchWindow();
+				if (window == null)
+					return;
+				var shell = window.getShell();
+				if (shell == null)
+					return;
+				var prefix = Config.APPLICATION_NAME + " " + App.getVersion();
+				var db = Database.get();
+				var title = db != null
+						? prefix + " - " + db.getName()
+						: prefix;
+				shell.setText(title);
+			} catch (Exception e) {
+				ErrorReporter.on("failed to update app-title", e);
+			}
+		});
 	}
 
 	@Override
