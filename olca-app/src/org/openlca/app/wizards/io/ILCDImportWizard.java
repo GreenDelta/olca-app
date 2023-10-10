@@ -126,6 +126,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 					.render(comp);
 
 			MappingSelector.on(fm -> this.flowMap = fm)
+					.withSelectionPattern("(?i).*ilcd*.import.*")
 					.render(comp);
 
 			setControl(body);

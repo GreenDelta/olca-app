@@ -31,6 +31,7 @@ public class OneClickExportWizard extends Wizard implements IExportWizard {
 					UI.fillHorizontal(comp);
 					UI.gridLayout(comp, 3);
 					MappingSelector.on(flowMap -> this.flowMap = flowMap)
+							.withSelectionPattern("(?i).*one.*click.*lca.*export.*")
 							.render(comp);
 				});
 		addPage(page);

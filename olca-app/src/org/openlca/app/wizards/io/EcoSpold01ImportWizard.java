@@ -148,6 +148,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			UI.gridLayout(mapComp, 3);
 			UI.fillHorizontal(mapComp);
 			MappingSelector.on(fm -> this.flowMap = fm)
+					.withSelectionPattern("(?i).*ecospold*.1*.import.*")
 					.render(mapComp);
 
 			setControl(body);
