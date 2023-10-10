@@ -7,6 +7,8 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.UI;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.oneclick.OneClickExport;
@@ -14,6 +16,7 @@ import org.openlca.io.oneclick.OneClickExport;
 public class OneClickExportWizard extends Wizard implements IExportWizard {
 
 	private ModelSelectionPage page;
+	private FlowMap flowMap;
 
 	public OneClickExportWizard() {
 		super();
@@ -22,7 +25,14 @@ public class OneClickExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		page = ModelSelectionPage.forDirectory(ModelType.PROCESS);
+		page = ModelSelectionPage.forDirectory(ModelType.PROCESS)
+				.withExtension(parent -> {
+					var comp = UI.composite(parent);
+					UI.fillHorizontal(comp);
+					UI.gridLayout(comp, 3);
+					MappingSelector.on(flowMap -> this.flowMap = flowMap)
+							.render(comp);
+				});
 		addPage(page);
 	}
 
@@ -35,10 +45,13 @@ public class OneClickExportWizard extends Wizard implements IExportWizard {
 	public boolean performFinish() {
 		var models = page.getSelectedModels().stream()
 				.filter(d -> d instanceof ProcessDescriptor)
-				.map(d -> (ProcessDescriptor)d)
+				.map(d -> (ProcessDescriptor) d)
 				.toList();
 		var export = OneClickExport.of(
 				Database.get(), models, page.getExportDestination());
+		if (flowMap != null) {
+			export.withFlowMap(flowMap);
+		}
 		try {
 			getContainer().run(true, true, monitor -> {
 				monitor.beginTask("Export processes", IProgressMonitor.UNKNOWN);
