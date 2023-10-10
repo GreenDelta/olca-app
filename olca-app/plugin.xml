@@ -832,6 +832,15 @@
 				Export LCIA methods to a SimaPro CSV file
 			</description>
 		</wizard>
+		<wizard
+			category="export.category.excel"
+			id="org.openlca.app.wizards.io.OneClickExportWizard"
+			class="org.openlca.app.wizards.io.OneClickExportWizard"
+			name="One Click LCA - Excel template">
+			<description>
+				Exports processes into the One Click LCA Excel template
+			</description>
+		</wizard>
 	</extension>
 
 	<extension
