@@ -5,6 +5,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.rcp.Workspace;
@@ -51,7 +52,10 @@ public class LibraryEditor extends FormEditor {
 	protected void addPages() {
 		try {
 			addPage(new LibraryInfoPage(this));
-			addPage(new LibraryLicensePage(this));
+			var license = Libraries.getLicense(library.folder());
+			if (license.isPresent()) {
+				addPage(new LibraryLicensePage(this));
+			}
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add page", e);
 		}
