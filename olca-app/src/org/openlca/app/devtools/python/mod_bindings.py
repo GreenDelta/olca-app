@@ -76,6 +76,7 @@ import org.openlca.core.database.usage.DQSystemUseSearch as DQSystemUseSearch
 import org.openlca.jsonld.output.DQSystemWriter as DQSystemWriter
 import org.openlca.util.DQSystems as DQSystems
 import org.openlca.core.database.Daos as Daos
+import org.openlca.io.oneclick.DataColumn as DataColumn
 import org.openlca.core.DataDir as DataDir
 import org.openlca.ipc.handlers.DataHandler as DataHandler
 import org.openlca.proto.io.server.DataUpdateService as DataUpdateService
@@ -284,6 +285,7 @@ import org.openlca.core.library.LibraryPackage as LibraryPackage
 import org.openlca.geo.geojson.LineString as LineString
 import org.openlca.core.matrix.linking.LinkingConfig as LinkingConfig
 import org.openlca.core.matrix.linking.LinkingInfo as LinkingInfo
+import org.openlca.util.Lists as Lists
 import org.openlca.core.model.Location as Location
 import org.openlca.core.database.LocationDao as LocationDao
 import org.openlca.core.model.descriptors.LocationDescriptor as LocationDescriptor
@@ -341,8 +343,10 @@ import org.openlca.core.database.NwSetDao as NwSetDao
 import org.openlca.core.model.descriptors.NwSetDescriptor as NwSetDescriptor
 import org.openlca.core.matrix.NwSetTable as NwSetTable
 import org.openlca.util.OS as OS
+import org.openlca.io.oneclick.OneClickExport as OneClickExport
 import org.openlca.proto.io.output.Out as Out
 import org.openlca.jsonld.PackageInfo as PackageInfo
+import org.openlca.io.oneclick.PackagingMatcher as PackagingMatcher
 import org.openlca.util.Pair as Pair
 import org.openlca.core.model.Parameter as Parameter
 import org.openlca.core.database.ParameterDao as ParameterDao
