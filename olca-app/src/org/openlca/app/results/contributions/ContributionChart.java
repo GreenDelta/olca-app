@@ -47,7 +47,7 @@ public class ContributionChart {
 		// that the y-axis is cut sometimes
 		chart.getTitle().setText(".");
 		chart.getTitle().setFont(UI.defaultFont());
-		chart.getTitle().setForeground(Colors.white());
+		chart.getTitle().setForeground(Colors.background());
 		chart.getTitle().setVisible(true);
 
 		// configure the x-axis with one category
