@@ -26,7 +26,6 @@ import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.model.SearchResult;
 import org.openlca.app.collaboration.model.SearchResult.Dataset;
 import org.openlca.app.collaboration.util.RepositoryClients;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
@@ -244,12 +243,11 @@ class SearchPage extends FormPage {
 			ZipStore store = null;
 			try {
 				tmp = Files.createTempFile("cs-json-", ".zip").toFile();
-				query.client.downloadJson(requestData, tmp);
+				if (!query.client.downloadJson(requestData, tmp))
+					return;
 				store = ZipStore.open(tmp);
 				var jsonImport = new JsonImport(store, Database.get());
 				jsonImport.run();
-			} catch (WebRequestException ex) {
-				log.error("Error listing repositories", ex);
 			} catch (Exception ex) {
 				log.error("Error during json import", ex);
 			} finally {

@@ -11,7 +11,7 @@ import org.openlca.app.db.Repository;
 import org.openlca.core.database.config.DerbyConfig;
 
 public class RepositoryClients {
-
+	
 	public static List<RepositoryClient> get() {
 		return Database.getConfigurations().getDerbyConfigs().stream()
 				.map(RepositoryClients::getClient)
@@ -24,6 +24,7 @@ public class RepositoryClients {
 		if (!gitDir.exists())
 			return null;
 		try (var repo = new FileRepository(gitDir)) {
+			Repository.checkIfCollaborationServer(repo);
 			var config = repo.getConfig();
 			if (!Repository.isCollaborationServer(config))
 				return null;

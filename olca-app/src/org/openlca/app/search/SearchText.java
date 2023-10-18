@@ -18,7 +18,6 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.search.SearchQuery;
 import org.openlca.app.collaboration.search.SearchView;
-import org.openlca.app.collaboration.util.RepositoryClients;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -162,9 +161,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			for (ModelType type : types) {
 				createItem(menu, getSearchLabel(type), type);
 			}
-			if (!RepositoryClients.get().isEmpty()) {
-				createSearchOnlineItem(menu);
-			}
+			createSearchOnlineItem(menu);
 			return menu;
 		}
 

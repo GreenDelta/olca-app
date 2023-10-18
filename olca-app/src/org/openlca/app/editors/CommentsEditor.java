@@ -9,7 +9,6 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.model.Comment;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.rcp.images.Icon;
@@ -47,11 +46,7 @@ public class CommentsEditor extends SimpleFormEditor {
 		List<Comment> comments = new ArrayList<>();
 		if (Repository.get().isCollaborationServer()) {
 			RepositoryClient client = Repository.get().client;
-			try {
-				comments = client.getAllComments();
-			} catch (WebRequestException e) {
-				log.error("Error loading comments", e);
-			}
+			comments = client.getAllComments();
 		}
 		return new CommentsPage(this, comments);
 	}

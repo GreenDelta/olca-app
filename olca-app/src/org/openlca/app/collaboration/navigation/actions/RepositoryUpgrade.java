@@ -139,8 +139,6 @@ public class RepositoryUpgrade {
 			}
 			GitInit.in(gitDir).remoteUrl(url).run();
 			var repo = Repository.initialize(gitDir);
-			if (repo == null)
-				return null;
 			repo.user(user);
 			return repo;
 		} catch (WebRequestException e) {

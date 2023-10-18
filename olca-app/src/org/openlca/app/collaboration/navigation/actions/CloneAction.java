@@ -88,8 +88,6 @@ public class CloneAction extends Action implements INavigationAction {
 			var gitDir = Repository.gitDir(dbName);
 			GitInit.in(gitDir).remoteUrl(dialog.url()).run();
 			var repo = Repository.initialize(gitDir);
-			if (repo == null)
-				return false;
 			repo.user(dialog.user());
 			repo.password(dialog.credentials().password);
 			return true;
