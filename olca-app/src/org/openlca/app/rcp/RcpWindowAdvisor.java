@@ -12,7 +12,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.preferences.Preferences;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.UI;
 
 public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 

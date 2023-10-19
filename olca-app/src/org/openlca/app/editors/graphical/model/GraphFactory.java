@@ -11,7 +11,6 @@ import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
-import org.openlca.app.licence.LibrarySession;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptor;
