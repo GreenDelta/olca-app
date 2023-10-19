@@ -29,7 +29,6 @@ import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
