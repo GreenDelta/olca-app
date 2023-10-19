@@ -40,6 +40,7 @@ import org.openlca.core.model.Category as Category
 import org.openlca.util.CategoryContentTest as CategoryContentTest
 import org.openlca.core.database.CategoryDao as CategoryDao
 import org.openlca.core.model.descriptors.CategoryDescriptor as CategoryDescriptor
+import org.openlca.jsonld.input.CategoryImport as CategoryImport
 import org.openlca.io.CategoryPair as CategoryPair
 import org.openlca.io.CategoryPath as CategoryPath
 import org.openlca.core.io.CategorySync as CategorySync
