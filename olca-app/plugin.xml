@@ -466,8 +466,8 @@
 					value="icons/logo/16_32bit.png,icons/logo/32_32bit.png,icons/logo/48_32bit.png,icons/logo/64.png,icons/logo/128.png">
 			</property>
 			<property
-					name="aboutText"
-					value="openLCA 2.0.4&#x0D;&#x0A;&#x0D;&#x0A;Copyright (c) 2007 - 2023 GreenDelta. All rights reserved.&#x0D;&#x0A;Visit http://openlca.org and http://greendelta.com&#x0D;&#x0A;&#x0D;&#x0A;This product includes software developed in the openLCA&#x0D;&#x0A;project and other open source software.">
+         name="aboutText"
+         value="openLCA 2.0.4&#x0A;&#x0A;Copyright (c) 2007 - 2023 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA&#x0A;project and other open source software.">
 			</property>
 			<property
 					name="aboutImage"
@@ -494,10 +494,6 @@
 			<property
 					name="startupMessageRect"
 					value="7,525,445,20">
-			</property>
-			<property
-					name="preferenceCustomization"
-					value="plugin_customization.ini">
 			</property>
 		</product>
 	</extension>
@@ -837,7 +833,7 @@
 				category="export.category.excel"
 				id="org.openlca.app.wizards.io.OneClickExportWizard"
 				class="org.openlca.app.wizards.io.OneClickExportWizard"
-				name="One Click LCA - Excel template (experimental)"
+				name="One Click LCA - Excel template"
 				icon="icons/immutable/oneclick16.png">
 			<description>
 				Exports processes into the One Click LCA Excel template
