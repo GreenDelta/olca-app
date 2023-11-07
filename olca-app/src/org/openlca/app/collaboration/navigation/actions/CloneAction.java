@@ -9,7 +9,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.collaboration.dialogs.ConnectDialog;
 import org.openlca.app.collaboration.util.Announcements;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -20,7 +19,6 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Input;
-import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.upgrades.Upgrades;
 import org.openlca.git.actions.GitInit;
@@ -84,17 +82,14 @@ public class CloneAction extends Action implements INavigationAction {
 
 	private boolean initRepository(String dbName, ConnectDialog dialog)
 			throws GitAPIException, URISyntaxException {
-		try {
-			var gitDir = Repository.gitDir(dbName);
-			GitInit.in(gitDir).remoteUrl(dialog.url()).run();
-			var repo = Repository.initialize(gitDir);
-			repo.user(dialog.user());
-			repo.password(dialog.credentials().password);
-			return true;
-		} catch (WebRequestException e) {
-			MsgBox.error("Could not connect, is this an older version of the collaboration server?");
+		var gitDir = Repository.gitDir(dbName);
+		GitInit.in(gitDir).remoteUrl(dialog.url()).run();
+		var repo = Repository.initialize(gitDir);
+		if (repo == null)
 			return false;
-		}
+		repo.user(dialog.user());
+		repo.password(dialog.credentials().password);
+		return true;
 	}
 
 	private void onError(DerbyConfig config) {

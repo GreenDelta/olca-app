@@ -8,7 +8,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.openlca.app.collaboration.api.RepositoryClient;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.git.GitIndex;
 import org.openlca.git.find.Commits;
@@ -76,7 +75,7 @@ public class Repository {
 		}
 	}
 
-	public static Repository initialize(File gitDir) throws WebRequestException {
+	public static Repository initialize(File gitDir) {
 		var repo = open(gitDir);
 		checkIfCollaborationServer(repo);
 		return repo;
