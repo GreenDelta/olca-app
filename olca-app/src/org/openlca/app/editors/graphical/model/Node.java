@@ -14,7 +14,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.util.Labels;
-import org.openlca.core.database.ExchangeDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.*;
 import org.openlca.core.model.Process;

@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions.libraries;
 
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
