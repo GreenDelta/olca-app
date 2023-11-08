@@ -42,7 +42,7 @@ class HistoryLabel extends OwnerDrawLabelProvider {
 		if (text != null) {
 			width += event.gc.textExtent(text).x;
 		}
-		event.setBounds(new Rectangle(event.x, event.y, width, 20));
+		event.setBounds(new Rectangle(event.x, event.y, width, event.getBounds().height));
 	}
 
 	@Override
@@ -53,8 +53,11 @@ class HistoryLabel extends OwnerDrawLabelProvider {
 		var x = 6;
 		event.gc.setAntialias(SWT.ON);
 		if (image != null) {
-			x = image.getBounds().width;
-			event.gc.drawImage(image, bounds.x, bounds.y);
+			var iBounds = image.getBounds();
+			var hFactor = (double) bounds.height / (double) iBounds.height;
+			var width = (int) Math.floor(image.getBounds().width * hFactor);
+			event.gc.drawImage(image, iBounds.x, iBounds.y, iBounds.width, iBounds.height, bounds.x, bounds.y, width, bounds.height);
+			x = width;
 		}
 		for (var badge : getBadges(commit)) {
 			var font = event.gc.getFont();
@@ -65,10 +68,10 @@ class HistoryLabel extends OwnerDrawLabelProvider {
 			var bg = event.gc.getBackground();
 			var fg = event.gc.getForeground();
 			event.gc.setForeground(badge.border);
-			event.gc.drawRoundRectangle(bounds.x + x, bounds.y, width + 9, 18, 8, 8);
+			event.gc.drawRoundRectangle(bounds.x + x, bounds.y, width + 9, bounds.height - 2, 8, 8);
 			event.gc.setForeground(fg);
 			event.gc.setBackground(badge.background);
-			event.gc.fillRoundRectangle(bounds.x + x + 2, bounds.y + 2, width + 6, 15, 6, 6);
+			event.gc.fillRoundRectangle(bounds.x + x + 2, bounds.y + 2, width + 6, bounds.height - 5, 6, 6);
 			event.gc.setBackground(bg);
 			event.gc.drawText(badge.text, bounds.x + x + 5, bounds.y + 2, true);
 			event.gc.setFont(font);
