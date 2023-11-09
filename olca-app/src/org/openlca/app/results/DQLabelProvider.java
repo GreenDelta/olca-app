@@ -1,6 +1,7 @@
 package org.openlca.app.results;
 
 import java.util.Collections;
+import java.util.Objects;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -8,6 +9,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.DQUI;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQIndicator;
