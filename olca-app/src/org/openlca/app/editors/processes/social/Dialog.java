@@ -112,7 +112,7 @@ class Dialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		int width = 600;
+		int width = 1000;
 		int height = 600;
 		Rectangle shellBounds = getShell().getDisplay().getBounds();
 		int shellWidth = shellBounds.x;
