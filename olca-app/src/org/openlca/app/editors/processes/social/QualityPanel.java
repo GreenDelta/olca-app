@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -33,7 +35,15 @@ class QualityPanel {
 		UI.gridLayout(comp, system.getScoreCount() + 1, 2, 0);
 		drawHeader(comp);
 		drawContent(comp);
-		initSelection();
+		// With the app in dark mode, it is necessary to re-set the background color
+		// when painting. Otherwise, the background stay dark.
+		comp.addPaintListener(new PaintListener() {
+			@Override
+			public void paintControl(PaintEvent e) {
+				initSelection();
+				comp.removePaintListener(this);
+			}
+		});
 	}
 
 	private void initSelection() {

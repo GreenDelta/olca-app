@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
@@ -94,7 +95,10 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			for (DQScore score : indicator.scores) {
 				Text descriptionText = createTextCell(composite, 8, 8);
 				getBinding().onString(() -> score, "description", descriptionText);
-				descriptionText.setBackground(DQUI.getColor(score.position, getModel().getScoreCount()));
+				var color = Objects.requireNonNullElse(
+						DQUI.getColor(score.position, getModel().getScoreCount()),
+						descriptionText.getBackground());
+				descriptionText.setBackground(color);
 				commentControl(composite, "indicators[" + indicator.position + "].scores[" + score.position
 						+ "].description");
 			}

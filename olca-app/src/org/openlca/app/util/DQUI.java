@@ -1,6 +1,7 @@
 package org.openlca.app.util;
 
 import org.eclipse.swt.graphics.Color;
+import org.openlca.app.preferences.Theme;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQIndicator;
@@ -45,24 +46,58 @@ public class DQUI {
 		return adjusted;
 	}
 
+	/**
+	 * Return the corresponding color if the value is more than 0, otherwise null.
+	 * The default color should be managed by the caller.
+	 */
 	public static Color getColor(int value, int total) {
 		if (value <= 0)
-			return Colors.white();
+			return Colors.background();
 		if (value == 1)
-			return Colors.get(125, 250, 125);
+			return green();
 		if (value == total)
-			return Colors.get(250, 125, 125);
+			return red();
 		int median = total / 2 + 1;
 		if (value == median)
-			return Colors.get(250, 250, 125);
+			return yellow();
 		if (value < median) {
 			int divisor = median - 1;
 			int factor = value - 1;
-			return Colors.get(125 + (125 * factor / divisor), 250, 125);
+			return colorInferior((double) factor / divisor);
 		}
 		int divisor = median - 1;
 		int factor = value - median;
-		return Colors.get(250, 250 - (125 * factor / divisor), 125);
+		return colorSuperior((double) factor / divisor);
+	}
+
+	private static Color green() {
+		if (Theme.isDark()) {
+			return Colors.get(83, 167, 83);
+		} else return Colors.get(125, 250, 125);
+	}
+
+	private static Color red() {
+		if (Theme.isDark()) {
+			return Colors.get(167, 83, 83);
+		} else return Colors.get(250, 125, 125);
+	}
+
+	private static Color yellow() {
+		if (Theme.isDark()) {
+			return Colors.get(167, 167, 83);
+		} else return Colors.get(250, 250, 125);
+	}
+
+	private static Color colorInferior(double factor) {
+		if (Theme.isDark()) {
+			return Colors.get((int) (83 + (83 * factor)), 167, 83);
+		} else return Colors.get((int) (125 + (125 * factor)), 250, 125);
+	}
+
+	private static Color colorSuperior(double factor) {
+		if (Theme.isDark()) {
+			return Colors.get(167, (int) (167 - (83 * factor)), 83);
+		} else return Colors.get(250, (int) (250 - (125 * factor)), 125);
 	}
 
 	public static boolean displayProcessQuality(DQResult result) {
