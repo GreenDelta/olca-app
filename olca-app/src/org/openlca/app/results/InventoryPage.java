@@ -179,7 +179,7 @@ public class InventoryPage extends FormPage {
 		Label() {
 			super(editor.dqResult, editor.dqResult != null
 					? editor.dqResult.setup.exchangeSystem
-					: null, 5);
+					: null, 4);
 		}
 
 		@Override
