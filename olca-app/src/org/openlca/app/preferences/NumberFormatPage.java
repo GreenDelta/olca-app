@@ -81,7 +81,7 @@ public class NumberFormatPage extends PreferencePage implements
 		numberText = new Text(parent, SWT.BORDER);
 		UI.fillHorizontal(numberText);
 		UI.gridData(numberText, false, false).widthHint = 80;
-		new DataBinding().onBoolean(() -> this, "applyFormat", applyFormatCheck);
+		new DataBinding().onInt(() -> this, "accuracy", numberText);
 		numberText.addModifyListener((e) -> setSampleLabel());
 	}
 
