@@ -1,28 +1,25 @@
 package org.openlca.app.util;
 
 import org.eclipse.swt.graphics.Color;
+import org.openlca.app.preferences.Theme;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQSystem;
-import org.python.google.common.base.Strings;
+import org.openlca.util.Strings;
 
 public class DQUI {
 
 	public static final int MIN_COL_WIDTH = 20;
 
 	public static String[] appendTableHeaders(String[] headers, DQSystem system) {
-		String[] newHeaders = new String[headers.length + system.indicators.size()];
-		for (int i = 0; i < headers.length; i++) {
-			newHeaders[i] = headers[i];
-		}
+		var newHeaders = new String[headers.length + system.indicators.size()];
+		System.arraycopy(headers, 0, newHeaders, 0, headers.length);
 		for (int i = headers.length; i < newHeaders.length; i++) {
 			int pos = i - headers.length + 1;
-			DQIndicator indicator = system.getIndicator(pos);
-			if (Strings.isNullOrEmpty(indicator.name))
-				newHeaders[i] = Integer.toString(indicator.position);
-			else
-				newHeaders[i] = Character.toString(indicator.name.charAt(0));
+			var indicator = system.getIndicator(pos);
+			newHeaders[i] = Strings.nullOrEmpty(indicator.name)
+					? Integer.toString(indicator.position)
+					: Character.toString(indicator.name.charAt(0));
 		}
 		return newHeaders;
 	}
@@ -45,24 +42,58 @@ public class DQUI {
 		return adjusted;
 	}
 
+	/**
+	 * Return the corresponding color for the given data quality value. If the
+	 * value is 0, the default background color is returned.
+	 */
 	public static Color getColor(int value, int total) {
 		if (value <= 0)
-			return Colors.white();
+			return Colors.background();
 		if (value == 1)
-			return Colors.get(125, 250, 125);
-		if (value == total)
-			return Colors.get(250, 125, 125);
+			return green();
+		if (value >= total)
+			return red();
 		int median = total / 2 + 1;
 		if (value == median)
-			return Colors.get(250, 250, 125);
-		if (value < median) {
-			int divisor = median - 1;
-			int factor = value - 1;
-			return Colors.get(125 + (125 * factor / divisor), 250, 125);
-		}
+			return yellow();
+
 		int divisor = median - 1;
-		int factor = value - median;
-		return Colors.get(250, 250 - (125 * factor / divisor), 125);
+		if (value < median) {
+			int num = value - 1;
+			return moreGreen((double) num / divisor);
+		}
+		int num = value - median;
+		return moreRed((double) num / divisor);
+	}
+
+	private static Color green() {
+		return Theme.isDark()
+				? Colors.get(83, 167, 83)
+				: Colors.get(125, 250, 125);
+	}
+
+	private static Color red() {
+		return Theme.isDark()
+				? Colors.get(167, 83, 83)
+				: Colors.get(250, 125, 125);
+	}
+
+	private static Color yellow() {
+		return Theme.isDark()
+				? Colors.get(167, 167, 83)
+				: Colors.get(250, 250, 125);
+	}
+
+	private static Color moreGreen(double factor) {
+		return Theme.isDark()
+				? Colors.get((int) (83 + (83 * factor)), 167, 83)
+				: Colors.get((int) (125 + (125 * factor)), 250, 125);
+	}
+
+	private static Color moreRed(double factor) {
+		return Theme.isDark()
+				? Colors.get(167, (int) (167 - (83 * factor)), 83)
+				: Colors.get(250, (int) (250 - (125 * factor)), 125);
 	}
 
 	public static boolean displayProcessQuality(DQResult result) {
@@ -72,9 +103,7 @@ public class DQUI {
 			return false;
 		if (result.setup.processSystem.indicators.isEmpty())
 			return false;
-		if (result.setup.processSystem.getScoreCount() == 0)
-			return false;
-		return true;
+		return result.setup.processSystem.getScoreCount() != 0;
 	}
 
 	public static boolean displayExchangeQuality(DQResult result) {
@@ -86,9 +115,7 @@ public class DQUI {
 			return false;
 		if (result.setup.exchangeSystem.getScoreCount() == 0)
 			return false;
-		if (result.setup.aggregationType == AggregationType.NONE)
-			return false;
-		return true;
+		return result.setup.aggregationType != AggregationType.NONE;
 	}
 
 }

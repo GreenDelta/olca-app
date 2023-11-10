@@ -113,6 +113,7 @@ public class DataQualityShell extends Shell {
 
 	private void create(boolean withUncertainty) {
 		ScrolledForm form = toolkit.createScrolledForm(this);
+		form.setBackground(Colors.background());
 		Composite root = form.getBody();
 		UI.gridLayout(root, 1);
 		createHeader(root);
