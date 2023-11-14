@@ -1,7 +1,5 @@
 package org.openlca.app.collaboration.api;
 
-import java.util.Collection;
-
 import org.openlca.app.collaboration.util.Valid;
 import org.openlca.app.collaboration.util.WebRequests.Type;
 import org.openlca.git.util.TypedRefId;
@@ -9,27 +7,25 @@ import org.openlca.git.util.TypedRefId;
 class DownloadJsonPrepareInvocation extends Invocation<String, String> {
 
 	private final String repositoryId;
-	private final Collection<? extends TypedRefId> requestData;
+	private final TypedRefId id;
 
-	DownloadJsonPrepareInvocation(String repositoryId, Collection<? extends TypedRefId> requestData) {
-		super(Type.PUT, "public/download/json/prepare", String.class);
+	DownloadJsonPrepareInvocation(String repositoryId, TypedRefId id) {
+		super(Type.GET, "public/download/json/prepare", String.class);
 		this.repositoryId = repositoryId;
-		this.requestData = requestData;
+		this.id = id;
 	}
 
 	@Override
 	protected void checkValidity() {
 		Valid.checkNotEmpty(repositoryId, "repository id");
+		Valid.checkNotEmpty(id, "id");
 	}
 
 	@Override
 	protected String query() {
-		return "/" + repositoryId;
+		var base = "/" + repositoryId + "/";
+		if (id == null || id.type == null)
+			return base;
+		return base + id.type.name() + "/" + id.refId;
 	}
-	
-	@Override
-	protected Object data() {
-		return requestData;
-	}
-
 }
