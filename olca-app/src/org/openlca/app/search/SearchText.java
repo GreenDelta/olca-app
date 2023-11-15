@@ -4,7 +4,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -188,14 +187,11 @@ public class SearchText extends WorkbenchWindowControlContribution {
 			};
 		}
 
-		private void createItem(Menu menu, final String text,
-				final ModelType type) {
-			Image image = null;
-			if (type == null)
-				image = Icon.SEARCH.get();
-			else
-				image = Images.get(type);
-			MenuItem item = new MenuItem(menu, SWT.NONE);
+		private void createItem(Menu menu, String text, ModelType type) {
+			var image = type == null
+					? Icon.SEARCH.get()
+					: Images.get(type);
+			var item = new MenuItem(menu, SWT.NONE);
 			item.setText(text);
 			item.setImage(image);
 			Controls.onSelect(item, e -> updateSelection(text, type));
@@ -227,7 +223,11 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 		@Override
 		public void run() {
-			doSearch(typeFilter);
+			if (searchOnline) {
+				doSearchOnline();
+			} else {
+				doSearch(typeFilter);
+			}
 		}
 	}
 }
