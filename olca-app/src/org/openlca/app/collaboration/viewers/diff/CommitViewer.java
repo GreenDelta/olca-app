@@ -63,14 +63,12 @@ public class CommitViewer extends DiffNodeViewer {
 	private Set<DiffNode> collectChildren(TypedRefIdSet models, DiffNode node) {
 		var nodes = new HashSet<DiffNode>();
 		for (var child : node.children) {
-			if (child.isModelNode()) {
-				var d = child.contentAsTriDiff();
+			if (child.content instanceof TriDiff d) {
 				if (models == null || models.contains(d)) {
 					nodes.add(child);
 				}
-			} else {
-				nodes.addAll(collectChildren(models, child));
 			}
+			nodes.addAll(collectChildren(models, child));
 		}
 		return nodes;
 	}
@@ -87,7 +85,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected boolean isLeaf(DiffNode element) {
-			return element.isModelNode();
+			return element.content instanceof TriDiff d && element.children.isEmpty();
 		}
 
 		@Override
@@ -101,8 +99,13 @@ public class CommitViewer extends DiffNodeViewer {
 		}
 
 		@Override
+		protected boolean isSelectable(DiffNode element) {
+			return element.content instanceof TriDiff;
+		}
+
+		@Override
 		protected void setSelection(DiffNode element, boolean checked) {
-			if (!element.isModelNode()) {
+			if (!isLeaf(element)) {
 				super.setSelection(element, checked);
 				return;
 			}

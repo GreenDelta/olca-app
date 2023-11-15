@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -23,7 +22,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitCommit;
 import org.openlca.git.actions.GitPush;
-import org.openlca.git.model.Change;
 
 public class CommitAction extends Action implements INavigationAction {
 
@@ -60,12 +58,9 @@ public class CommitAction extends Action implements INavigationAction {
 			var user = doPush && credentials != null ? credentials.ident : AuthenticationDialog.promptUser(repo);
 			if (credentials == null && user == null)
 				return false;
-			var changes = input.datasets().stream()
-					.map(d -> new Change(d.leftDiffType, d))
-					.collect(Collectors.toList());
 			Actions.run(GitCommit.from(Database.get())
 					.to(repo.git)
-					.changes(changes)
+					.changes(input.datasets())
 					.withMessage(input.message())
 					.as(user)
 					.update(repo.gitIndex));

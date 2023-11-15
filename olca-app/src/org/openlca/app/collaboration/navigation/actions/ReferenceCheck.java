@@ -12,14 +12,15 @@ import org.openlca.app.App;
 import org.openlca.app.collaboration.dialogs.CommitReferencesDialog;
 import org.openlca.app.collaboration.navigation.actions.ModelReferences.ModelReference;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
+import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.git.util.TypedRefId;
+import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.git.util.TypedRefIdSet;
 
 class ReferenceCheck {
@@ -27,31 +28,32 @@ class ReferenceCheck {
 	private final IDatabase database;
 	private final TypedRefIdMap<Diff> diffs;
 	private final ModelReferences references;
-	private final Set<TriDiff> input;
-	private final TypedRefIdSet selection;
+	private final Set<DiffNode> input;
+	private final TypedRefIdMap<DiffNode> selection;
 	private final TypedRefIdSet visited = new TypedRefIdSet();
 
-	private ReferenceCheck(IDatabase database, List<Diff> all, Set<TriDiff> input) {
+	private ReferenceCheck(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		this.database = database;
 		this.diffs = TypedRefIdMap.of(all);
 		this.input = input;
-		this.selection = new TypedRefIdSet(input);
+		this.selection = new TypedRefIdMap<>();
+		input.forEach(node -> selection.put(node.contentAsTriDiff(), node));
 		this.references = App.exec("Collecting references", () -> ModelReferences.scan(Database.get()));
 	}
 
-	static Set<TriDiff> forRemote(IDatabase database, List<Diff> all, Set<TriDiff> input) {
+	static Set<DiffNode> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences())
 			return input;
 		return new ReferenceCheck(database, all, input).run(false);
 	}
 
-	static Set<TriDiff> forStash(IDatabase database, List<Diff> all, Set<TriDiff> input) {
+	static Set<DiffNode> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences())
 			return input;
 		return new ReferenceCheck(database, all, input).run(true);
 	}
 
-	private Set<TriDiff> run(boolean stashCommit) {
+	private Set<DiffNode> run(boolean stashCommit) {
 		var references = collect();
 		if (references.isEmpty())
 			return input;
@@ -62,7 +64,7 @@ class ReferenceCheck {
 		var selected = dialog.getSelected();
 		if (selected.isEmpty())
 			return input;
-		var set = new HashSet<TriDiff>();
+		var set = new HashSet<DiffNode>();
 		set.addAll(input);
 		set.addAll(selected);
 		return set;
@@ -71,7 +73,7 @@ class ReferenceCheck {
 	private Set<TriDiff> collect() {
 		var referenced = new TypedRefIdSet();
 		var stack = new Stack<TypedRefId>();
-		selection.forEach(selected -> stack.add(selected));
+		selection.forEach((type, refId, node) -> stack.add(new TypedRefId(type, refId)));
 		while (!stack.isEmpty()) {
 			var next = stack.pop();
 			var collected = collect(next);

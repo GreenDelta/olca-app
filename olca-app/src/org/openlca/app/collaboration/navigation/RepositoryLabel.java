@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.collaboration.navigation.NavElement.ElementType;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
+import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryDirElement;
@@ -18,6 +18,7 @@ import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.core.database.config.DatabaseConfig;
+import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.GitIndex;
 import org.openlca.git.util.Constants;
@@ -42,6 +43,9 @@ public class RepositoryLabel {
 				&& e.getDatabase().isPresent()
 				&& isNew(NavRoot.get(e)))
 			return Images.library(Overlay.ADDED);
+		if (elem instanceof CategoryElement e
+				&& isNew(NavRoot.get(e)))
+			return Images.get(e.getContent(), Overlay.ADDED);
 		return null;
 	}
 
@@ -97,7 +101,7 @@ public class RepositoryLabel {
 			if (isNew(elem))
 				return false;
 			var d = (RootDescriptor) elem.content();
-			var entry = index().get(Cache.getPathCache(), d);
+			var entry = index().get(NavRoot.get().categoryPaths, d);
 			return d.lastChange != entry.lastChange()
 					|| d.version != entry.version();
 		}
@@ -106,7 +110,7 @@ public class RepositoryLabel {
 		if (elem.is(ElementType.LIBRARY_DIR))
 			return librariesChanged();
 		for (var child : elem.children())
-			if (hasChanged(child) || (child.is(ElementType.MODEL) && isNew(child)))
+			if (hasChanged(child) || (child.is(ElementType.MODEL, ElementType.CATEGORY) && isNew(child)))
 				return true;
 		return containsDeleted(elem);
 	}
@@ -116,7 +120,9 @@ public class RepositoryLabel {
 			return false;
 		if (elem.is(ElementType.LIBRARY) && isNewLibrary((String) elem.content()))
 			return true;
-		if (elem.is(ElementType.MODEL) && !index().has(Cache.getPathCache(), (RootDescriptor) elem.content()))
+		if (elem.is(ElementType.MODEL) && !index().has(NavRoot.get().categoryPaths, (RootDescriptor) elem.content()))
+			return true;
+		if (elem.is(ElementType.CATEGORY) && !index().has((Category) elem.content()))
 			return true;
 		return false;
 	}

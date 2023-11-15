@@ -191,17 +191,20 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 				return node.contentAsDatabase().getName();
 			if (node.isModelTypeNode())
 				return Labels.plural(node.getModelType());
-			if (node.isCategoryNode())
+			if (node.isCategoryNode() && node.content instanceof String)
 				return node.contentAsString().substring(node.contentAsString().lastIndexOf("/") + 1);
+			if (node.isCategoryNode() && node.content instanceof TriDiff)
+				return node.contentAsTriDiff().path.substring(node.contentAsTriDiff().path.lastIndexOf("/") + 1);
 			var diff = (TriDiff) node.content;
 			var descriptor = Daos.root(Database.get(), diff.type).getDescriptorForRefId(diff.refId);
 			if (descriptor != null)
 				return descriptor.name;
+			var repo = Repository.get();
 			if (!ObjectId.zeroId().equals(diff.rightNewObjectId))
-				return Repository.get().datasets.getName(diff.right());
+				return repo.datasets.getName(diff.right());
 			if (!ObjectId.zeroId().equals(diff.leftNewObjectId))
-				return Repository.get().datasets.getName(diff.left());
-			return Repository.get().datasets.getName(diff);
+				return repo.datasets.getName(diff.left());
+			return repo.datasets.getName(diff);
 		}
 
 		@Override
@@ -209,8 +212,17 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (element == null)
 				return null;
 			var node = (DiffNode) element;
-			if (node.isModelTypeNode() || node.isCategoryNode())
+			if (node.isModelTypeNode())
 				return Images.getForCategory(node.getModelType());
+			var repo = Repository.get();
+			if (node.isCategoryNode()) {
+				if (node.content instanceof String s)
+					if (!repo.gitIndex.has(s))
+						return Images.getForCategory(node.getModelType(), Overlay.ADD_TO_REMOTE);
+				if (node.content instanceof TriDiff diff)
+					return Images.getForCategory(node.getModelType(), getOverlay(diff));
+				return Images.getForCategory(node.getModelType());
+			}
 			var diff = node.contentAsTriDiff();
 			var overlay = getOverlay(diff);
 			return Images.get(diff.type, overlay);

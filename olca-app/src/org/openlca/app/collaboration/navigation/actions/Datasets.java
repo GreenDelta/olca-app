@@ -2,11 +2,13 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.RestrictionDialog;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.PathFilters;
+import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
@@ -14,8 +16,9 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
+import org.openlca.git.find.Diffs;
+import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
-import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.git.util.TypedRefIdSet;
 import org.openlca.util.Strings;
@@ -38,7 +41,11 @@ class Datasets {
 			return null;
 		if (!checkRestrictions(withReferences))
 			return null;
-		return new DialogResult(dialogResult, dialog.getMessage(), withReferences);
+		var result = withReferences.stream()
+				.map(DiffNode::contentAsTriDiff)
+				.map(d -> new Change(d.leftDiffType, d))
+				.collect(Collectors.toList());
+		return new DialogResult(dialogResult, dialog.getMessage(), result);
 	}
 
 	private static CommitDialog createCommitDialog(List<INavigationElement<?>> selection, List<Diff> diffs,
@@ -85,19 +92,20 @@ class Datasets {
 		return false;
 	}
 
-	private static boolean checkRestrictions(Set<TriDiff> refs) {
+	private static boolean checkRestrictions(Set<DiffNode> refs) {
 		if (!CollaborationPreference.checkRestrictions())
 			return true;
 		if (!Repository.get().isCollaborationServer())
 			return true;
-		var restricted = Repository.get().client.checkRestrictions(refs);
+		var restricted = Repository.get().client.checkRestrictions(
+				refs.stream().map(DiffNode::contentAsTriDiff).toList());
 		if (restricted.isEmpty())
 			return true;
 		var code = new RestrictionDialog(restricted).open();
 		return code == RestrictionDialog.OK;
 	}
 
-	static record DialogResult(int action, String message, Set<TriDiff> datasets) {
+	static record DialogResult(int action, String message, List<Change> datasets) {
 	}
 
 }

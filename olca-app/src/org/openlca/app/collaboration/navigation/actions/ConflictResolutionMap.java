@@ -25,12 +25,12 @@ import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.actions.GitStashDrop;
+import org.openlca.git.find.Diffs;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.ModelRef;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.jsonld.Json;
 

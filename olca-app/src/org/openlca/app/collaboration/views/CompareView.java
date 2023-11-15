@@ -17,9 +17,9 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.git.find.Diffs;
 import org.openlca.git.model.Commit;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.Diffs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

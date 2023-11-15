@@ -1,14 +1,10 @@
 package org.openlca.app.db;
 
-import java.util.Objects;
-
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.cache.MatrixCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Categories;
-import org.openlca.util.Categories.PathBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +17,6 @@ public final class Cache {
 	private static AppCache appCache = new AppCache();
 	private static EntityCache entityCache;
 	private static MatrixCache matrixCache;
-	private static PathBuilder pathCache;
 
 	private Cache() {
 	}
@@ -34,21 +29,12 @@ public final class Cache {
 		return matrixCache;
 	}
 
-	public static PathBuilder getPathCache() {
-		if (pathCache == null) {
-			var db = Objects.requireNonNull(Database.get());
-			pathCache = Categories.pathsOf(db);
-		}
-		return pathCache;
-	}
-
 	public static void close() {
 		log.trace("close cache");
 		evictAll();
 		entityCache = null;
 		matrixCache = null;
 		appCache = null;
-		pathCache = null;
 	}
 
 	/**
@@ -98,7 +84,6 @@ public final class Cache {
 		if (matrixCache != null) {
 			matrixCache.evictAll();
 		}
-		pathCache = null;
 	}
 
 	private static void evictEntity(Descriptor d) {
@@ -113,9 +98,6 @@ public final class Cache {
 		clazz = d.type.getModelClass();
 		log.trace("evict from entity cache {} with id={}", clazz, id);
 		entityCache.invalidate(clazz, id);
-		if (d.type == ModelType.CATEGORY) {
-			pathCache = null;
-		}
 	}
 
 	private static void evictFromMatrices(Descriptor d) {

@@ -1,6 +1,6 @@
 package org.openlca.app.collaboration.dialogs;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
@@ -11,7 +11,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
-import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
@@ -78,10 +77,8 @@ public class CommitReferencesDialog extends FormDialog {
 		createButton(parent, IDialogConstants.OK_ID, isStashCommit ? "Stash" : M.Commit, true);
 	}
 
-	public List<TriDiff> getSelected() {
-		return viewer.getChecked().stream()
-				.map(DiffNode::contentAsTriDiff)
-				.toList();
+	public Set<DiffNode> getSelected() {
+		return viewer.getChecked();
 	}
 
 }

@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -17,7 +16,6 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.git.actions.GitStashCreate;
-import org.openlca.git.model.Change;
 
 public class StashCreateAction extends Action implements INavigationAction {
 
@@ -55,13 +53,10 @@ public class StashCreateAction extends Action implements INavigationAction {
 			var user = AuthenticationDialog.promptUser(repo);
 			if (user == null)
 				return;
-			var changes = input.datasets().stream()
-					.map(d -> new Change(d.leftDiffType, d))
-					.collect(Collectors.toList());
 			Actions.run(GitStashCreate.from(Database.get())
 					.to(repo.git)
 					.as(user)
-					.changes(changes)
+					.changes(input.datasets())
 					.update(repo.gitIndex));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);

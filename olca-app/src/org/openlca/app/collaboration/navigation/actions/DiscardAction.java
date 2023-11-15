@@ -2,6 +2,7 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -19,8 +20,8 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 import org.openlca.git.actions.GitStashCreate;
+import org.openlca.git.find.Diffs;
 import org.openlca.git.model.Change;
-import org.openlca.git.util.Diffs;
 
 public class DiscardAction extends Action implements INavigationAction {
 
@@ -35,7 +36,7 @@ public class DiscardAction extends Action implements INavigationAction {
 	public ImageDescriptor getImageDescriptor() {
 		return Icon.DELETE.descriptor();
 	}
-	
+
 	@Override
 	public boolean isEnabled() {
 		for (var selected : selection)
@@ -48,14 +49,19 @@ public class DiscardAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (!Question.ask("Discard changes", "Do you really want to discard the selected changes? This action can not be undone."))
+		if (!Question.ask("Discard changes",
+				"Do you really want to discard the selected changes? This action can not be undone."))
 			return;
 		var repo = Repository.get();
 		try {
-			var selected = Diffs.of(repo.git)
-					.filter(PathFilters.of(selection))
-					.with(Database.get(), repo.gitIndex)
-					.stream().map(Change::new).toList();
+			var selected = new ArrayList<Change>();
+			PathFilters.of(selection).forEach(filter -> {
+				Diffs.of(repo.git)
+						.filter(filter)
+						.with(Database.get(), repo.gitIndex)
+						.stream().map(Change::new)
+						.forEach(selected::add);
+			});
 			Actions.run(GitStashCreate.from(Database.get())
 					.to(repo.git)
 					.changes(selected)

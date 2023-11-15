@@ -25,10 +25,10 @@ import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
+import org.openlca.git.find.Diffs;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
-import org.openlca.git.util.Diffs;
 import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
@@ -159,6 +159,8 @@ public class HistoryView extends ViewPart {
 		public String getText(Object element) {
 			if (!(element instanceof Diff diff))
 				return null;
+			if (diff.isCategory)
+				return diff.getCategoryPath();
 			var text = diff.category;
 			if (!text.isEmpty()) {
 				text += "/";
@@ -180,6 +182,8 @@ public class HistoryView extends ViewPart {
 			} else if (diff.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
+			if (diff.isCategory)
+				return Images.getForCategory(diff.type, overlay);
 			return Images.get(diff.type, overlay);
 		}
 

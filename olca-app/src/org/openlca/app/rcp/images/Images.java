@@ -150,6 +150,12 @@ public class Images {
 				: ImageManager.get(icon, overlay);
 	}
 
+	public static Image get(Category c, Overlay overlay) {
+		if (c == null)
+			return null;
+		return getForCategory(c.modelType, overlay);
+	}
+
 	public static Image get(Descriptor d, Overlay overlay) {
 		var icon = icon(d);
 		if (icon == null)
@@ -176,6 +182,15 @@ public class Images {
 		return icon == null
 				? Icon.FOLDER.get()
 				: ImageManager.get(icon);
+	}
+
+	public static Image getForCategory(ModelType type, Overlay overlay) {
+		var icon = categoryIcon(type);
+		if (icon == null)
+			return null;
+		return overlay == null
+				? ImageManager.get(icon)
+				: ImageManager.get(icon, overlay);
 	}
 
 	public static ImageDescriptor descriptor(RefEntity entity) {

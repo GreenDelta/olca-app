@@ -39,6 +39,8 @@ import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.util.Categories;
+import org.openlca.util.Categories.PathBuilder;
 
 public class NavRoot {
 
@@ -55,6 +57,7 @@ public class NavRoot {
 	private static NavRoot INSTANCE = new NavRoot(null);
 	private Boolean changes;
 	private final IDatabase database;
+	final PathBuilder categoryPaths;
 	private final Map<Long, Category> categoryMap = new HashMap<>();
 	private final EnumMap<ModelType, Map<Long, List<Category>>> categories = new EnumMap<>(ModelType.class);
 	private final EnumMap<ModelType, Map<Long, List<RootDescriptor>>> descriptors = new EnumMap<>(ModelType.class);
@@ -62,6 +65,9 @@ public class NavRoot {
 
 	private NavRoot(IDatabase database) {
 		this.database = database;
+		this.categoryPaths = database != null
+				? Categories.pathsOf(database)
+				: null;
 	}
 
 	public static NavRoot get() {
@@ -80,10 +86,7 @@ public class NavRoot {
 		navigatorRefresh.run();
 		new Thread(() -> {
 			init();
-			App.runInUI("Refreshing navigator", () -> {
-				navigatorRefresh.run();
-				INSTANCE.changes = null;
-			});
+			App.runInUI("Refreshing navigator", navigatorRefresh::run);
 		}).start();
 	}
 
@@ -106,7 +109,7 @@ public class NavRoot {
 		buildGroup(root, M.BackgroundData, GROUP2_TYPES);
 		buildLibraryDir(root);
 	}
-	
+
 	private void buildGroup(NavElement parent, String group, ModelType[] types) {
 		if (group != null) {
 			var root = parent;
@@ -117,7 +120,7 @@ public class NavRoot {
 			parent.children().add(new NavElement(ElementType.MODEL_TYPE, type, buildChildren(type, null)));
 		}
 	}
-	
+
 	private List<NavElement> buildChildren(ModelType type, Long parentId) {
 		var children = new ArrayList<NavElement>();
 		children.addAll(build(categories, type, parentId,
@@ -137,7 +140,7 @@ public class NavRoot {
 		}
 		root.children().add(libDir);
 	}
-	
+
 	private <T> List<NavElement> build(EnumMap<ModelType, Map<Long, List<T>>> map, ModelType type, Long parentId,
 			Function<T, NavElement> builder) {
 		return map.getOrDefault(type, Collections.emptyMap())
@@ -145,7 +148,7 @@ public class NavRoot {
 				.map(builder)
 				.toList();
 	}
-	
+
 	private void loadCategories() {
 		for (var category : new CategoryDao(database).getAll()) {
 			if (category.modelType == null)

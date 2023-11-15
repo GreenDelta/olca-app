@@ -3,15 +3,6 @@ package org.openlca.app.collaboration.navigation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.db.Cache;
-import org.openlca.app.navigation.elements.CategoryElement;
-import org.openlca.app.navigation.elements.DatabaseElement;
-import org.openlca.app.navigation.elements.GroupElement;
-import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryDirElement;
-import org.openlca.app.navigation.elements.LibraryElement;
-import org.openlca.app.navigation.elements.ModelElement;
-import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -43,31 +34,13 @@ record NavElement(ElementType type, Object content, boolean isFromLibrary, List<
 		if (is(ElementType.CATEGORY))
 			return index.getPath((Category) content());
 		if (is(ElementType.MODEL))
-			return index.getPath(Cache.getPathCache(), (RootDescriptor) content());
+			return index.getPath(NavRoot.get().categoryPaths, (RootDescriptor) content());
 		return null;
 	}
 
 	enum ElementType {
 
 		DATABASE, LIBRARY_DIR, LIBRARY, GROUP, MODEL_TYPE, CATEGORY, MODEL;
-
-		static ElementType get(INavigationElement<?> elem) {
-			if (elem instanceof DatabaseElement)
-				return DATABASE;
-			if (elem instanceof GroupElement)
-				return GROUP;
-			if (elem instanceof ModelTypeElement)
-				return MODEL_TYPE;
-			if (elem instanceof CategoryElement)
-				return CATEGORY;
-			if (elem instanceof ModelElement)
-				return MODEL;
-			if (elem instanceof LibraryDirElement)
-				return LIBRARY_DIR;
-			if (elem instanceof LibraryElement)
-				return LIBRARY;
-			return null;
-		}
 
 	}
 
