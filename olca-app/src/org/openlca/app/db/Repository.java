@@ -107,6 +107,7 @@ public class Repository extends ClientRepository {
 			client.close();
 		}
 		super.close();
+		CURRENT = null;
 	}
 
 	public String url() {
