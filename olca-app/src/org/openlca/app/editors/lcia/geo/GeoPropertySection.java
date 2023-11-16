@@ -19,6 +19,8 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.geo.lcia.GeoAggregation;
+import org.openlca.geo.lcia.GeoProperty;
 import org.openlca.util.Strings;
 
 class GeoPropertySection {
@@ -59,7 +61,7 @@ class GeoPropertySection {
 	}
 
 	private void showMap() {
-		Setup setup = page.setup;
+		var setup = page.setup;
 		if (setup == null || setup.features.isEmpty())
 			return;
 		GeoProperty gp = Viewers.getFirstSelected(table);

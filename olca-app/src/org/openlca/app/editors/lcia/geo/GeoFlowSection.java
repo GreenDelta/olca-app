@@ -32,6 +32,8 @@ import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
+import org.openlca.geo.lcia.GeoFactorCalculator;
+import org.openlca.geo.lcia.GeoFlowBinding;
 import org.openlca.io.CategoryPath;
 
 class GeoFlowSection {
@@ -111,7 +113,7 @@ class GeoFlowSection {
 	}
 
 	private void onCalculate() {
-		Setup setup = page.setup;
+		var setup = page.setup;
 		if (setup == null) {
 			MsgBox.error("Invalid calculation setup",
 					"No GeoJSON file is selected.");
@@ -139,7 +141,7 @@ class GeoFlowSection {
 				.collect(Collectors.toList());
 
 		var calc = new GeoFactorCalculator(
-				page.setup, page.editor.getModel(), locations);
+				Database.get(), page.setup, page.editor.getModel(), locations);
 		App.runWithProgress("Calculate regionalized factors", calc, () -> {
 			page.editor.setDirty(true);
 			page.editor.emitEvent(page.editor.FACTORS_CHANGED_EVENT);
@@ -204,23 +206,19 @@ class GeoFlowSection {
 			if (b.flow == null)
 				return null;
 
-			switch (col) {
-			case 0:
-				return Labels.name(b.flow);
-			case 1:
-				return CategoryPath.getFull(b.flow.category);
-			case 2:
-				return b.formula;
-			case 3:
-				var defVal = b.defaultValueOf(page.setup.properties);
-				return defVal != null
-						? Numbers.format(defVal)
-						: "FORMULA ERROR";
-			case 4:
-				return Labels.name(b.flow.getReferenceUnit());
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> Labels.name(b.flow);
+				case 1 -> CategoryPath.getFull(b.flow.category);
+				case 2 -> b.formula;
+				case 3 -> {
+					var defVal = b.defaultValueOf(page.setup.properties);
+					yield defVal != null
+							? Numbers.format(defVal)
+							: "FORMULA ERROR";
+				}
+				case 4 -> Labels.name(b.flow.getReferenceUnit());
+				default -> null;
+			};
 		}
 	}
 }

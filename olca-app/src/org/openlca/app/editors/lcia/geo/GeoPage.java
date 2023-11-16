@@ -20,12 +20,13 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ImpactCategory;
+import org.openlca.geo.lcia.GeoFactorSetup;
 import org.openlca.util.Strings;
 
 public class GeoPage extends ModelPage<ImpactCategory> {
 
 	final ImpactCategoryEditor editor;
-	Setup setup;
+	GeoFactorSetup setup;
 
 	private GeoPropertySection paramSection;
 	private GeoFlowSection flowSection;
@@ -85,7 +86,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 			return;
 		var nextSetup = App.exec(
 			"Parse setup ...",
-			() -> Setup.read(file, Database.get()));
+			() -> GeoFactorSetup.read(file, Database.get()));
 		if (nextSetup == null) {
 			ErrorReporter.on("Failed to read setup or" +
 											 " GeoJSON file from " + file);
