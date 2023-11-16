@@ -75,6 +75,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 		deleteCategories(continuationFlag);
 		models.clear();
 		categories.clear();
+		Navigator.refresh();
 	}
 
 	private int deleteModels() {
@@ -100,7 +101,6 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			// delete the model
 			App.close(model);
 			delete(model);
-			Navigator.refresh(elem.getParent());
 		}
 
 		return dontAsk
@@ -142,10 +142,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			if (a == IDialogConstants.NO_ID)
 				continue;
 
-			if (delete(elem)) {
-				var typeElement = Navigator.findElement(category.modelType);
-				Navigator.refresh(typeElement);
-			}
+			delete(elem);
 		}
 	}
 
@@ -204,7 +201,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 
 		// delete the category
 		if (!canBeDeleted) {
-			Navigator.refresh(element);
+			Navigator.refresh();
 			return false;
 		}
 		var category = element.getContent();

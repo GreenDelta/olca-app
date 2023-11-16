@@ -10,7 +10,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -33,12 +32,12 @@ public class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return !Repository.get().localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty();
+		return !Repository.CURRENT.localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty();
 	}
 
 	@Override
 	public void run() {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		try {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
@@ -50,9 +49,7 @@ public class MergeAction extends Action implements INavigationAction {
 					? AuthenticationDialog.promptUser(repo)
 					: null;
 			var changed = Actions.run(GitMerge
-					.from(repo.git)
-					.into(Database.get())
-					.update(repo.gitIndex)
+					.on(repo)
 					.as(user)
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));

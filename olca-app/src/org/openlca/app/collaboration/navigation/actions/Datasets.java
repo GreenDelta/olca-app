@@ -16,7 +16,6 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
-import org.openlca.git.find.Diffs;
 import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.TypedRefId;
@@ -26,8 +25,8 @@ import org.openlca.util.Strings;
 class Datasets {
 
 	static DialogResult select(List<INavigationElement<?>> selection, boolean canPush, boolean isStashCommit) {
-		var repo = Repository.get();
-		var diffs = Diffs.of(repo.git).with(Database.get(), repo.gitIndex);
+		var repo = Repository.CURRENT;
+		var diffs = repo.diffs.find().withDatabase();
 		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
 		if (dialog == null)
 			return null;
@@ -95,9 +94,9 @@ class Datasets {
 	private static boolean checkRestrictions(Set<DiffNode> refs) {
 		if (!CollaborationPreference.checkRestrictions())
 			return true;
-		if (!Repository.get().isCollaborationServer())
+		if (!Repository.CURRENT.isCollaborationServer())
 			return true;
-		var restricted = Repository.get().client.checkRestrictions(
+		var restricted = Repository.CURRENT.client.checkRestrictions(
 				refs.stream().map(DiffNode::contentAsTriDiff).toList());
 		if (restricted.isEmpty())
 			return true;

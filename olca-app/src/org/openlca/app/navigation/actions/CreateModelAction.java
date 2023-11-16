@@ -27,7 +27,6 @@ class CreateModelAction extends Action implements INavigationAction {
 
 	private Category category;
 	private ModelType type;
-	private INavigationElement<?> parent;
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
@@ -48,7 +47,6 @@ class CreateModelAction extends Action implements INavigationAction {
 
 		if (type == null || first.getLibrary().isPresent())
 			return false;
-		parent = first;
 		setText(getText());
 		setImageDescriptor(getImageDescriptor());
 		return true;
@@ -67,7 +65,7 @@ class CreateModelAction extends Action implements INavigationAction {
 			}
 			var dialog = new WizardDialog(UI.shell(), wizard);
 			dialog.open();
-			Navigator.refresh(parent);
+			Navigator.refresh();
 		} catch (CoreException e) {
 			ErrorReporter.on("Open model wizard failed", e);
 		}

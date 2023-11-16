@@ -7,7 +7,7 @@ import org.openlca.app.util.MsgBox;
 public class Announcements {
 
 	public static void check() {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		if (!Repository.isConnected() || !repo.isCollaborationServer())
 			return;
 		var client = repo.client;

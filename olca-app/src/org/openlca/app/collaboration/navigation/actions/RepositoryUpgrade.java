@@ -28,7 +28,6 @@ import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitInit;
 import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitStashCreate;
-import org.openlca.git.find.Diffs;
 import org.openlca.git.model.Change;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
@@ -137,7 +136,7 @@ public class RepositoryUpgrade {
 				Dirs.delete(gitDir);
 			}
 			GitInit.in(gitDir).remoteUrl(url).run();
-			var repo = Repository.initialize(gitDir);
+			var repo = Repository.initialize(gitDir, Database.get());
 			if (repo == null)
 				return null;
 			if (repo.isCollaborationServer()) {
@@ -158,7 +157,7 @@ public class RepositoryUpgrade {
 
 	private boolean pull(Repository repo, GitCredentialsProvider credentials) {
 		try {
-			var commits = Actions.run(credentials, GitFetch.to(repo.git));
+			var commits = Actions.run(credentials, GitFetch.to(repo));
 			if (commits == null || commits.isEmpty())
 				return true;
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
@@ -170,10 +169,8 @@ public class RepositoryUpgrade {
 			}
 			var commit = repo.commits.find().refs(Constants.REMOTE_REF).latest();
 			boolean wasStashed = stashDifferences(repo, commit, credentials.ident, descriptors);
-			Actions.run(GitMerge.from(repo.git)
-					.into(database)
+			Actions.run(GitMerge.on(repo)
 					.as(credentials.ident)
-					.update(repo.gitIndex)
 					.resolveLibrariesWith(libraryResolver)
 					.resolveConflictsWith(new EqualResolver(descriptors)));
 			if (!wasStashed)
@@ -188,18 +185,16 @@ public class RepositoryUpgrade {
 	private boolean stashDifferences(Repository repo, Commit commit, PersonIdent user,
 			TypedRefIdMap<RootDescriptor> descriptors)
 			throws IOException, InvocationTargetException, InterruptedException, GitAPIException {
-		var differences = Diffs.of(repo.git, commit)
-				.with(Database.get(), repo.gitIndex).stream()
+		var differences = repo.diffs.find().commit(commit)
+				.withDatabase().stream()
 				.filter(diff -> !equalsDescriptor(diff, descriptors.get(diff)))
 				.map(diff -> new Change(diff))
 				.collect(Collectors.toList());
 		if (differences.isEmpty())
 			return false;
-		Actions.run(GitStashCreate.from(Database.get())
-				.to(repo.git)
+		Actions.run(GitStashCreate.on(repo)
 				.as(user)
 				.reference(commit)
-				.update(repo.gitIndex)
 				.changes(differences));
 		return true;
 	}
@@ -210,7 +205,7 @@ public class RepositoryUpgrade {
 		if (ObjectId.zeroId().equals(diff.oldObjectId))
 			return false;
 		var ref = new Reference(diff.path, diff.oldCommitId, diff.oldObjectId);
-		var remoteModel = Repository.get().datasets.parse(ref, "lastChange", "version");
+		var remoteModel = Repository.CURRENT.datasets.parse(ref, "lastChange", "version");
 		if (remoteModel == null)
 			return false;
 		var version = Version.fromString(string(remoteModel, "version")).getValue();

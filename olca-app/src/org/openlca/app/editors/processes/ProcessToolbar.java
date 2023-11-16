@@ -96,7 +96,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 			wizard.setProcess(process);
 			var dialog = new WizardDialog(UI.shell(), wizard);
 			if (dialog.open() == Window.OK) {
-				Navigator.refresh(Navigator.findElement(ModelType.PRODUCT_SYSTEM));
+				Navigator.refresh();
 			}
 		} catch (Exception e) {
 			ErrorReporter.on("failed to open product system dialog for process", e);

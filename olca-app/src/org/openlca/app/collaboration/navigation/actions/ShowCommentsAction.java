@@ -39,6 +39,6 @@ public class ShowCommentsAction extends Action implements INavigationAction {
 			return false;
 		return CollaborationPreference.commentsEnabled()
 				&& Repository.isConnected()
-				&& Repository.get().isCollaborationServer();
+				&& Repository.CURRENT.isCollaborationServer();
 	}
 }

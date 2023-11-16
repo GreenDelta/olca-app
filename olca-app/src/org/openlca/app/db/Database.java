@@ -47,7 +47,7 @@ public class Database {
 			Logger log = LoggerFactory.getLogger(Database.class);
 			log.trace("activated database {} with version{}",
 					database.getName(), database.getVersion());
-			Repository.open(Repository.gitDir(database.getName()));
+			Repository.open(Repository.gitDir(database.getName()), database);
 			RcpWindowAdvisor.updateWindowTitle();
 			return database;
 		} catch (Exception e) {
@@ -76,7 +76,9 @@ public class Database {
 		database.close();
 		database = null;
 		config = null;
-		Repository.close();
+		if (Repository.CURRENT != null) {
+			Repository.CURRENT.close();
+		}
 		RcpWindowAdvisor.updateWindowTitle();
 	}
 
@@ -174,9 +176,10 @@ public class Database {
 	 * database. Such a name is valid if a folder with that name can be created
 	 * in the workspace and when no database with the same name already exists.
 	 *
-	 * @param name the name of the new database
+	 * @param name
+	 *            the name of the new database
 	 * @return the validation error for display or {@code null} when the name is
-	 * valid
+	 *         valid
 	 */
 	public static String validateNewName(String name) {
 		if (name == null || name.isBlank() || name.isEmpty())

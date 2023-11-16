@@ -1,6 +1,7 @@
 package org.openlca.app.collaboration.viewers.diff;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -26,6 +27,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.DiffType;
+import org.openlca.git.model.Entry;
 import org.openlca.git.util.TypedRefIdMap;
 
 import com.google.gson.JsonObject;
@@ -34,12 +36,14 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
 	private final boolean canMerge;
+	private final Map<String, Entry> entryMap;
 	private Runnable onMerge;
 	private TypedRefIdMap<ConflictResolution> resolvedConflicts = new TypedRefIdMap<>();
 
 	DiffNodeViewer(Composite parent, boolean canMerge) {
 		super(parent);
 		this.canMerge = canMerge;
+		this.entryMap = Repository.CURRENT.entries.find().recursive().asMap();
 	}
 
 	@Override
@@ -199,7 +203,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var descriptor = Daos.root(Database.get(), diff.type).getDescriptorForRefId(diff.refId);
 			if (descriptor != null)
 				return descriptor.name;
-			var repo = Repository.get();
+			var repo = Repository.CURRENT;
 			if (!ObjectId.zeroId().equals(diff.rightNewObjectId))
 				return repo.datasets.getName(diff.right());
 			if (!ObjectId.zeroId().equals(diff.leftNewObjectId))
@@ -214,10 +218,9 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var node = (DiffNode) element;
 			if (node.isModelTypeNode())
 				return Images.getForCategory(node.getModelType());
-			var repo = Repository.get();
 			if (node.isCategoryNode()) {
 				if (node.content instanceof String s)
-					if (!repo.gitIndex.has(s))
+					if (!entryMap.containsKey(s))
 						return Images.getForCategory(node.getModelType(), Overlay.ADD_TO_REMOTE);
 				if (node.content instanceof TriDiff diff)
 					return Images.getForCategory(node.getModelType(), getOverlay(diff));

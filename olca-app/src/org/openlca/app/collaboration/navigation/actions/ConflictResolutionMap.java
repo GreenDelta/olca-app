@@ -25,7 +25,6 @@ import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.actions.GitStashDrop;
-import org.openlca.git.find.Diffs;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.ModelRef;
@@ -75,7 +74,7 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	private static ConflictResult resolve(String ref, boolean stashCommit)
 			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		var commit = repo.commits.find().refs(ref).latest();
 		var commonParent = repo.localHistory.commonParentOf(ref);
 		var workspaceConflicts = workspaceDiffs(commit, commonParent);
@@ -111,24 +110,24 @@ class ConflictResolutionMap implements ConflictResolver {
 	}
 
 	private static Conflicts workspaceDiffs(Commit commit, Commit commonParent) throws IOException {
-		var repo = Repository.get();
-		var workspaceChanges = Diffs.of(repo.git).with(Database.get(), repo.gitIndex);
+		var repo = Repository.CURRENT;
+		var workspaceChanges = repo.diffs.find().withDatabase();
 		if (workspaceChanges.isEmpty())
 			return Conflicts.none();
-		var remoteChanges = Diffs.of(repo.git, commonParent).with(commit);
+		var remoteChanges = repo.diffs.find().commit(commonParent).with(commit);
 		var diffs = between(workspaceChanges, remoteChanges);
 		return check(diffs);
 	}
 
 	private static Conflicts localDiffs(Commit commit, Commit commonParent) throws IOException {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		var localCommit = repo.commits.get(repo.commits.resolve(Constants.LOCAL_BRANCH));
 		if (localCommit == null)
 			return Conflicts.none();
-		var localChanges = Diffs.of(repo.git, commonParent).with(localCommit);
+		var localChanges = repo.diffs.find().commit(commonParent).with(localCommit);
 		if (localChanges.isEmpty())
 			return Conflicts.none();
-		var remoteChanges = Diffs.of(repo.git, commonParent).with(commit);
+		var remoteChanges = repo.diffs.find().commit(commonParent).with(commit);
 		if (remoteChanges.isEmpty())
 			return Conflicts.none();
 		var diffs = between(localChanges, remoteChanges);
@@ -170,19 +169,17 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	private static boolean stashChanges(boolean discard)
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
-		var repo = Repository.get();
-		if (!discard && Actions.getStashCommit(repo.git) != null) {
+		var repo = Repository.CURRENT;
+		if (!discard && Actions.getStashCommit(repo) != null) {
 			var answers = Arrays.asList("Cancel", "Discard existing stash");
 			var result = Question.ask("Stash workspace",
 					"You already have stashed changes, how do you want to proceed?",
 					answers.toArray(new String[answers.size()]));
 			if (result == 0)
 				return false;
-			GitStashDrop.from(repo.git).run();
+			GitStashDrop.from(repo).run();
 		}
-		var stashCreate = GitStashCreate.from(Database.get())
-				.to(repo.git)
-				.update(repo.gitIndex);
+		var stashCreate = GitStashCreate.on(repo);
 		if (discard) {
 			stashCreate = stashCreate.discard();
 		} else {
@@ -245,7 +242,7 @@ class ConflictResolutionMap implements ConflictResolver {
 		if (ObjectId.zeroId().equals(diff.rightNewObjectId))
 			return false;
 		var ref = new Reference(diff.path, diff.commitId, diff.rightNewObjectId);
-		var remoteModel = Repository.get().datasets.parse(ref, "lastChange", "version");
+		var remoteModel = Repository.CURRENT.datasets.parse(ref, "lastChange", "version");
 		if (remoteModel == null)
 			return false;
 		var version = Version.fromString(string(remoteModel, "version")).getValue();

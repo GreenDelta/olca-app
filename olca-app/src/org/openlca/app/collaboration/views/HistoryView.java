@@ -25,7 +25,6 @@ import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.find.Diffs;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
@@ -68,7 +67,7 @@ public class HistoryView extends ViewPart {
 		historyViewer.addSelectionChangedListener((commit) -> {
 			referenceViewer.select(null);
 			var diffs = Repository.isConnected() && commit != null
-					? Diffs.of(Repository.get().git, commit).withPreviousCommit()
+					? Repository.CURRENT.diffs.find().commit(commit).withPreviousCommit()
 					: new ArrayList<Diff>();
 			referenceViewer.setInput(diffs);
 		});
@@ -102,7 +101,7 @@ public class HistoryView extends ViewPart {
 	private JsonObject getJson(Reference ref) {
 		if (ref == null || ObjectId.zeroId().equals(ref.objectId))
 			return null;
-		var datasets = Repository.get().datasets;
+		var datasets = Repository.CURRENT.datasets;
 		var json = datasets.get(ref);
 		if (Strings.nullOrEmpty(json))
 			return null;
@@ -139,7 +138,7 @@ public class HistoryView extends ViewPart {
 	public static void refresh() {
 		if (instance == null)
 			return;
-		instance.historyViewer.setRepository(Repository.get());
+		instance.historyViewer.setRepository(Repository.CURRENT);
 	}
 
 	@Override
@@ -169,7 +168,7 @@ public class HistoryView extends ViewPart {
 			if (descriptor != null)
 				return text + descriptor.name;
 			var side = ObjectId.zeroId().equals(diff.oldObjectId) ? Side.NEW : Side.OLD;
-			return text + Repository.get().datasets.getName(diff.toReference(side));
+			return text + Repository.CURRENT.datasets.getName(diff.toReference(side));
 		}
 
 		@Override

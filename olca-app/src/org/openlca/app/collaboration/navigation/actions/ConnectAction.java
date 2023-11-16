@@ -30,7 +30,7 @@ public class ConnectAction extends Action implements INavigationAction {
 		var gitDir = Repository.gitDir(Database.get().getName());
 		try {
 			GitInit.in(gitDir).remoteUrl(url).run();
-			var repo = Repository.initialize(gitDir);
+			var repo = Repository.initialize(gitDir, Database.get());
 			if (repo == null) {
 				Dirs.delete(gitDir);
 			} else {

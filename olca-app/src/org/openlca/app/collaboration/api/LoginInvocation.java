@@ -28,7 +28,7 @@ class LoginInvocation {
 		if (response.getStatus() != Status.OK.getStatusCode())
 			return null;
 		var result = response.getEntity(String.class);
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		if ("tokenRequired".equals(result)) {
 			repo.useTwoFactorAuth(true);
 			var auth = AuthenticationDialog.promptToken(credentials.user, credentials.password);

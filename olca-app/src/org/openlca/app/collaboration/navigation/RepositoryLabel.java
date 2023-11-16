@@ -1,7 +1,6 @@
 package org.openlca.app.collaboration.navigation;
 
 import java.util.ArrayList;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.swt.graphics.Image;
@@ -19,11 +18,10 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.git.GitIndex;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.GitUtil;
-import org.openlca.git.util.Repositories;
+import org.openlca.git.util.Path;
 import org.openlca.jsonld.LibraryLink;
 import org.openlca.util.Strings;
 
@@ -37,14 +35,14 @@ public class RepositoryLabel {
 		if (elem instanceof ModelElement e
 				&& !e.getLibrary().isPresent()
 				&& !e.isFromLibrary()
-				&& isNew(NavRoot.get(e)))
+				&& isNew(NavCache.get(e)))
 			return Images.get(e.getContent(), Overlay.ADDED);
 		if (elem instanceof LibraryElement e
 				&& e.getDatabase().isPresent()
-				&& isNew(NavRoot.get(e)))
+				&& isNew(NavCache.get(e)))
 			return Images.library(Overlay.ADDED);
 		if (elem instanceof CategoryElement e
-				&& isNew(NavRoot.get(e)))
+				&& isNew(NavCache.get(e)))
 			return Images.get(e.getContent(), Overlay.ADDED);
 		return null;
 	}
@@ -52,7 +50,7 @@ public class RepositoryLabel {
 	public static String getRepositoryText(DatabaseConfig dbConfig) {
 		if (!Database.isActive(dbConfig) || !Repository.isConnected())
 			return null;
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		var ahead = repo.localHistory.getAheadOf(Constants.REMOTE_REF);
 		var behind = repo.localHistory.getBehindOf(Constants.REMOTE_REF);
 		var user = repo.user();
@@ -83,7 +81,7 @@ public class RepositoryLabel {
 			return null;
 		if (elem instanceof LibraryElement e && e.getDatabase() == null)
 			return null;
-		if (!hasChanged(NavRoot.get(elem)))
+		if (!hasChanged(NavCache.get(elem)))
 			return null;
 		return CHANGED_STATE;
 	}
@@ -91,7 +89,7 @@ public class RepositoryLabel {
 	public static boolean hasChanged(INavigationElement<?> elem) {
 		if (Database.get() == null || !Repository.isConnected() || elem == null || elem.getLibrary().isPresent())
 			return false;
-		return hasChanged(NavRoot.get(elem));
+		return hasChanged(NavCache.get(elem));
 	}
 
 	public static boolean hasChanged(NavElement elem) {
@@ -100,10 +98,8 @@ public class RepositoryLabel {
 		if (elem.is(ElementType.MODEL)) {
 			if (isNew(elem))
 				return false;
-			var d = (RootDescriptor) elem.content();
-			var entry = index().get(NavRoot.get().categoryPaths, d);
-			return d.lastChange != entry.lastChange()
-					|| d.version != entry.version();
+			 var d = (RootDescriptor) elem.content();
+			 return !Repository.CURRENT.index.isSameVersion(getPath(d), d);
 		}
 		if (elem.is(ElementType.DATABASE) && librariesChanged())
 			return true;
@@ -120,9 +116,8 @@ public class RepositoryLabel {
 			return false;
 		if (elem.is(ElementType.LIBRARY) && isNewLibrary((String) elem.content()))
 			return true;
-		if (elem.is(ElementType.MODEL) && !index().has(NavRoot.get().categoryPaths, (RootDescriptor) elem.content()))
-			return true;
-		if (elem.is(ElementType.CATEGORY) && !index().has((Category) elem.content()))
+		if (elem.is(ElementType.MODEL, ElementType.CATEGORY)
+				&& !Repository.CURRENT.index.contains(getPath(elem.content())))
 			return true;
 		return false;
 	}
@@ -135,11 +130,10 @@ public class RepositoryLabel {
 				return true;
 		if (!elem.is(ElementType.MODEL_TYPE, ElementType.CATEGORY))
 			return false;
-		var fromIndex = index().getSubPaths(elem.getPath(index()))
-				.stream().filter(Predicate.not(GitUtil::isBinDir))
-				.toList();
+		var path = getPath(elem.content());
+		var fromIndex = Repository.CURRENT.index.getSubPaths(path);
 		var fromNavigation = elem.children()
-				.stream().map(e -> e.getPath(index()))
+				.stream().map(e -> getPath(e.content()))
 				.collect(Collectors.toSet());
 		for (var entry : fromIndex)
 			if (!fromNavigation.contains(entry))
@@ -148,7 +142,7 @@ public class RepositoryLabel {
 	}
 
 	private static boolean librariesChanged() {
-		var info = Repositories.infoOf(Repository.get().git);
+		var info = Repository.CURRENT.getInfo();
 		var libsBefore = info == null ? new ArrayList<LibraryLink>() : info.libraries();
 		var libsNow = LibraryLink.of(Database.get().getLibraries());
 		if (libsBefore.size() != libsNow.size())
@@ -163,13 +157,19 @@ public class RepositoryLabel {
 	}
 
 	private static boolean isNewLibrary(String lib) {
-		var info = Repositories.infoOf(Repository.get().git);
+		var info = Repository.CURRENT.getInfo();
 		var libsBefore = info == null ? new ArrayList<LibraryLink>() : info.libraries();
 		return !libsBefore.contains(new LibraryLink(lib, null));
 	}
 
-	private static GitIndex index() {
-		return Repository.get().gitIndex;
+	private static String getPath(Object o) {
+		if (o instanceof ModelType t)
+			return Path.of(t);
+		if (o instanceof Category c)
+			return Path.of(c);
+		if (o instanceof RootDescriptor d)
+			return Path.of(Repository.CURRENT.descriptors.categoryPaths, d);
+		return null;
 	}
 
 }

@@ -84,7 +84,7 @@ public class CloneAction extends Action implements INavigationAction {
 			throws GitAPIException, URISyntaxException {
 		var gitDir = Repository.gitDir(dbName);
 		GitInit.in(gitDir).remoteUrl(dialog.url()).run();
-		var repo = Repository.initialize(gitDir);
+		var repo = Repository.initialize(gitDir, Database.get());
 		if (repo == null)
 			return false;
 		repo.user(dialog.user());

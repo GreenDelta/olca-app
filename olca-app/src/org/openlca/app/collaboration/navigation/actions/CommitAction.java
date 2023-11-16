@@ -13,8 +13,7 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
-import org.openlca.app.collaboration.navigation.NavRoot;
-import org.openlca.app.db.Database;
+import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -39,7 +38,7 @@ public class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return NavRoot.get().hasChanges();
+		return NavCache.get().hasChanges();
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class CommitAction extends Action implements INavigationAction {
 
 	boolean doRun(boolean canPush) {
 		try {
-			var repo = Repository.get();
+			var repo = Repository.CURRENT;
 			var input = Datasets.select(selection, canPush, false);
 			if (input == null || input.action() == CommitDialog.CANCEL)
 				return false;
@@ -58,16 +57,14 @@ public class CommitAction extends Action implements INavigationAction {
 			var user = doPush && credentials != null ? credentials.ident : AuthenticationDialog.promptUser(repo);
 			if (credentials == null && user == null)
 				return false;
-			Actions.run(GitCommit.from(Database.get())
-					.to(repo.git)
+			Actions.run(GitCommit.on(repo)
 					.changes(input.datasets())
 					.withMessage(input.message())
-					.as(user)
-					.update(repo.gitIndex));
+					.as(user));
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
 				return true;
 			var result = Actions.run(credentials,
-					GitPush.from(Repository.get().git));
+					GitPush.from(Repository.CURRENT));
 			if (result == null)
 				return false;
 			if (result.status() == Status.REJECTED_NONFASTFORWARD) {

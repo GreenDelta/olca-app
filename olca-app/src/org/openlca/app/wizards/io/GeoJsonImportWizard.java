@@ -19,7 +19,6 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ModelType;
 import org.openlca.geo.GeoJsonImport;
 
 public class GeoJsonImportWizard extends Wizard implements IImportWizard {
@@ -70,8 +69,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 						.run();
 				m.done();
 			});
-			Navigator.refresh(
-					Navigator.findElement(ModelType.LOCATION));
+			Navigator.refresh();
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to import GeoJSON file", e);

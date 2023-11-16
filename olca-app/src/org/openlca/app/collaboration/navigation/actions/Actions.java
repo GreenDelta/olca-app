@@ -16,7 +16,6 @@ import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
-import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
@@ -49,7 +48,7 @@ class Actions {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitRemoteRunner<>(runnable);
 		service.run(true, false, runner::run);
-		var repo = org.openlca.app.db.Repository.get();
+		var repo = org.openlca.app.db.Repository.CURRENT;
 		if (runner.exception == null) {
 			if (Strings.nullOrEmpty(credentials.token)) {
 				repo.useTwoFactorAuth(false);
@@ -119,16 +118,14 @@ class Actions {
 	}
 
 	static boolean applyStash() throws GitAPIException, InvocationTargetException, IOException, InterruptedException {
-		var repo = org.openlca.app.db.Repository.get();
+		var repo = org.openlca.app.db.Repository.CURRENT;
 		var libraryResolver = WorkspaceLibraryResolver.forStash();
 		if (libraryResolver == null)
 			return false;
 		var conflictResult = ConflictResolutionMap.forStash();
 		if (conflictResult == null)
 			return false;
-		Actions.run(GitStashApply.from(repo.git)
-				.to(Database.get())
-				.update(repo.gitIndex)
+		Actions.run(GitStashApply.on(repo)
 				.resolveConflictsWith(conflictResult.resolutions())
 				.resolveLibrariesWith(libraryResolver));
 		return true;

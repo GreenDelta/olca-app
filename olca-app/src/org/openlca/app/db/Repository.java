@@ -9,44 +9,28 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.git.GitIndex;
-import org.openlca.git.find.Commits;
-import org.openlca.git.find.Datasets;
+import org.openlca.core.database.IDatabase;
+import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.History;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Repository {
+public class Repository extends ClientRepository {
 
 	private static final Logger log = LoggerFactory.getLogger(Repository.class);
-	private static Repository current;
+	public static Repository CURRENT;
 	public static final String GIT_DIR = "repositories";
-	public final org.eclipse.jgit.lib.Repository git;
 	public final RepositoryClient client;
-	public final GitIndex gitIndex;
-	public final Commits commits;
-	public final Datasets datasets;
-	public final History localHistory;
 	private String password;
 
-	private Repository(File gitDir) throws IOException {
-		git = new FileRepository(gitDir);
-		client = client(git);
-		var storeFile = new File(gitDir, "git.index");
-		gitIndex = GitIndex.fromFile(storeFile);
-		commits = Commits.of(git);
-		datasets = Datasets.of(git);
-		localHistory = History.localOf(git);
-	}
-
-	public static Repository get() {
-		return current;
+	private Repository(File gitDir, IDatabase database) throws IOException {
+		super(gitDir, database);
+		client = client(this);
 	}
 
 	public static void checkIfCollaborationServer() {
-		checkIfCollaborationServer(current);
+		checkIfCollaborationServer(CURRENT);
 	}
 
 	public static void checkIfCollaborationServer(FileRepository gitRepo) throws IOException {
@@ -62,21 +46,30 @@ public class Repository {
 		repo.isCollaborationServer(repo.client != null && repo.client.isCollaborationServer());
 	}
 
-	public static Repository open(File gitDir) {
-		close();
-		if (!gitDir.exists() || !gitDir.isDirectory() || gitDir.listFiles().length == 0)
-			return null;
+	public static Repository open(File gitDir, IDatabase database) {
+		return open(gitDir, database, false);
+	}
+
+	private static Repository open(File gitDir, IDatabase database, boolean createIfNotExists) {
+		if (CURRENT != null) {
+			CURRENT.close();
+			CURRENT = null;
+		}
 		try {
-			current = new Repository(gitDir);
-			return current;
+			if ((!gitDir.exists() && !gitDir.isDirectory() || gitDir.listFiles().length == 0) && !createIfNotExists)
+				return null;
+			CURRENT = new Repository(gitDir, database);
+			if (!gitDir.exists())
+				CURRENT.create(true);
+			return CURRENT;
 		} catch (IOException e) {
 			log.error("Error opening Git repo", e);
 			return null;
 		}
 	}
 
-	public static Repository initialize(File gitDir) {
-		var repo = open(gitDir);
+	public static Repository initialize(File gitDir, IDatabase database) {
+		var repo = open(gitDir, database, true);
 		checkIfCollaborationServer(repo);
 		return repo;
 	}
@@ -86,8 +79,8 @@ public class Repository {
 		return new File(repos, databaseName);
 	}
 
-	public static RepositoryClient client(org.eclipse.jgit.lib.Repository git) throws IOException {
-		var url = url(git);
+	public static RepositoryClient client(org.eclipse.jgit.lib.Repository repo) throws IOException {
+		var url = url(repo);
 		if (Strings.nullOrEmpty(url))
 			return null;
 		if (url.startsWith("git@")) {
@@ -105,21 +98,19 @@ public class Repository {
 	}
 
 	public static boolean isConnected() {
-		return current != null;
+		return CURRENT != null;
 	}
 
-	public static void close() {
-		if (current == null)
-			return;
-		if (current.client != null) {
-			current.client.close();
+	@Override
+	public void close() {
+		if (client != null) {
+			client.close();
 		}
-		current.git.close();
-		current = null;
+		super.close();
 	}
 
 	public String url() {
-		return url(git);
+		return url(this);
 	}
 
 	private static String url(org.eclipse.jgit.lib.Repository repo) {
@@ -139,19 +130,15 @@ public class Repository {
 		}
 	}
 
-	public static String user(StoredConfig config) {
-		return config.getString("user", null, "name");
-	}
-
 	public String user() {
-		return user(git.getConfig());
+		return getConfig().getString("user", null, "name");
 	}
 
 	public void user(String user) {
 		if (!user.equals(user())) {
 			useTwoFactorAuth(false);
 		}
-		var config = git.getConfig();
+		var config = getConfig();
 		config.setString("user", null, "name", user);
 		saveConfig(config);
 	}
@@ -169,11 +156,11 @@ public class Repository {
 	}
 
 	public boolean useTwoFactorAuth() {
-		return git.getConfig().getBoolean("user", null, "useTwoFactorAuth", false);
+		return getConfig().getBoolean("user", null, "useTwoFactorAuth", false);
 	}
 
 	public void useTwoFactorAuth(boolean value) {
-		var config = git.getConfig();
+		var config = getConfig();
 		config.setString("user", null, "useTwoFactorAuth", Boolean.toString(value));
 		saveConfig(config);
 	}
@@ -183,7 +170,7 @@ public class Repository {
 	}
 
 	public boolean isCollaborationServer() {
-		return isCollaborationServer(git.getConfig()) && client != null;
+		return isCollaborationServer(getConfig()) && client != null;
 	}
 
 	public static void isCollaborationServer(StoredConfig config, boolean value) {
@@ -192,7 +179,7 @@ public class Repository {
 	}
 
 	public void isCollaborationServer(boolean value) {
-		isCollaborationServer(git.getConfig(), value);
+		isCollaborationServer(getConfig(), value);
 	}
 
 	private static void saveConfig(StoredConfig config) {

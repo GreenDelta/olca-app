@@ -17,7 +17,6 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
-import org.openlca.git.find.Diffs;
 import org.openlca.git.model.Commit;
 import org.openlca.git.util.Constants;
 import org.slf4j.Logger;
@@ -83,18 +82,18 @@ public class CompareView extends ViewPart {
 	}
 
 	private List<TriDiff> getDiffs(Commit commit, List<INavigationElement<?>> elements) {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		var localHistory = repo.commits.find().refs(Constants.LOCAL_REF).all();
 		if (localHistory.contains(commit)) {
-			var diffs = Diffs.of(repo.git, commit).with(Database.get(), repo.gitIndex);
+			var diffs = repo.diffs.find().commit(commit).withDatabase();
 			return diffs.stream()
 					.map(local -> new TriDiff(local, null))
 					.toList();
 		}
 		var localCommit = getCommonParent(localHistory, commit);
-		var remoteDiffs = Diffs.of(repo.git, localCommit).with(commit);
+		var remoteDiffs = repo.diffs.find().commit(localCommit).with(commit);
 		var diffs = new ArrayList<TriDiff>();
-		var localDiffs = Diffs.of(repo.git, localCommit).with(Database.get(), repo.gitIndex);
+		var localDiffs = repo.diffs.find().commit(localCommit).withDatabase();
 		localDiffs.forEach(local -> {
 			var remote = remoteDiffs.stream()
 					.filter(e -> e.path.equals(local.path))
@@ -114,7 +113,7 @@ public class CompareView extends ViewPart {
 			return null;
 		if (localHistory.contains(commit))
 			return commit;
-		var other = Repository.get().commits.find().refs(Constants.REMOTE_REF).until(commit.id).all();
+		var other = Repository.CURRENT.commits.find().refs(Constants.REMOTE_REF).until(commit.id).all();
 		if (other.isEmpty())
 			return null;
 		var commonHistory = other.stream()

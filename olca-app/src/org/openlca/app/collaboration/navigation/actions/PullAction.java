@@ -11,7 +11,6 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -34,18 +33,18 @@ public class PullAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return Repository.get().client != null;
+		return Repository.CURRENT.client != null;
 	}
 	
 	@Override
 	public void run() {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		try {
 			var credentials = AuthenticationDialog.promptCredentials(repo);
 			if (credentials == null)
 				return;
 			var newCommits = Actions.run(credentials,
-					GitFetch.to(repo.git));
+					GitFetch.to(repo));
 			if (newCommits == null)
 				return;
 			if (!newCommits.isEmpty()) {
@@ -58,9 +57,7 @@ public class PullAction extends Action implements INavigationAction {
 			if (conflictResult == null)
 				return;
 			var changed = Actions.run(GitMerge
-					.from(repo.git)
-					.into(Database.get())
-					.update(repo.gitIndex)
+					.on(repo)
 					.as(credentials.ident)
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));

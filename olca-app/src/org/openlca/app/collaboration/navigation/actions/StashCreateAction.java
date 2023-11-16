@@ -8,9 +8,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
-import org.openlca.app.collaboration.navigation.NavRoot;
+import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -34,10 +33,10 @@ public class StashCreateAction extends Action implements INavigationAction {
 	@Override
 	public boolean isEnabled() {
 		try {
-			var repo = Repository.get();
-			if (Actions.getStashCommit(repo.git) != null)
+			var repo = Repository.CURRENT;
+			if (Actions.getStashCommit(repo) != null)
 				return false;
-			return NavRoot.get().hasChanges();
+			return NavCache.get().hasChanges();
 		} catch (GitAPIException e) {
 			return false;
 		}
@@ -45,7 +44,7 @@ public class StashCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		try {
 			var input = Datasets.select(selection, false, true);
 			if (input == null)
@@ -53,11 +52,9 @@ public class StashCreateAction extends Action implements INavigationAction {
 			var user = AuthenticationDialog.promptUser(repo);
 			if (user == null)
 				return;
-			Actions.run(GitStashCreate.from(Database.get())
-					.to(repo.git)
+			Actions.run(GitStashCreate.on(repo)
 					.as(user)
-					.changes(input.datasets())
-					.update(repo.gitIndex));
+					.changes(input.datasets()));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);
 		} finally {
