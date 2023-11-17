@@ -14,7 +14,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.progress.UIJob;
-import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.App;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -52,6 +52,7 @@ class Validation {
 				});
 				validation.run();
 				monitor.done();
+				StatsDialog.open(setup, validation);
 				return Status.OK_STATUS;
 			}
 		};
@@ -59,14 +60,6 @@ class Validation {
 				.getProgressService()
 				.showInDialog(UI.shell(), job);
 		job.schedule();
-
-		// wait for the job to finish and display the statistics
-		try {
-			job.join();
-			StatsDialog.open(setup, validation.stats());
-		} catch (Exception e) {
-			ErrorReporter.on("Validation job failed", e);
-		}
 	}
 
 	private static class StatsDialog extends FormDialog {
@@ -80,10 +73,12 @@ class Validation {
 			this.stats = stats;
 		}
 
-		static void open(GeoFactorSetup setup, Stats stats) {
-			if (stats == null)
+		static void open(GeoFactorSetup setup, FeatureValidation validation) {
+			if (validation.wasCancelled())
 				return;
-			new StatsDialog(setup, stats).open();
+			App.runInUI(
+					"Show validation statistics",
+					() -> new StatsDialog(setup, validation.stats()).open());
 		}
 
 		@Override
@@ -124,7 +119,7 @@ class Validation {
 		@Override
 		protected void buttonPressed(int buttonId) {
 			boolean hasInvalid = stats.totalInvalid() > 0;
-			if (!hasInvalid && buttonId != IDialogConstants.OK_ID)
+			if (!hasInvalid || buttonId != IDialogConstants.OK_ID)
 				return;
 			var b = Question.ask("Repair geometries?",
 					"This will try to fix problems like self-intersecting" +

@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
-import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.App;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.geo.calc.FeatureRepair;
@@ -38,6 +38,7 @@ class Repair {
 				});
 				repair.run();
 				monitor.done();
+				showInfo(repair);
 				return repair.wasCancelled()
 						? Status.CANCEL_STATUS
 						: Status.OK_STATUS;
@@ -47,16 +48,17 @@ class Repair {
 				.getProgressService()
 				.showInDialog(UI.shell(), job);
 		job.schedule();
+	}
 
-		// wait for the job to finish
-		try {
-			job.join();
+	private static void showInfo(FeatureRepair repair) {
+		if (repair.wasCancelled())
+			return;
+		App.runInUI("Feature repair done", () -> {
 			var msg = repair.count() == 1
 					? "Checked one feature."
 					: "Checked " + repair.count() + " features.";
 			MsgBox.info("Feature repair done", msg);
-		} catch (Exception e) {
-			ErrorReporter.on("Repair job failed", e);
-		}
+		});
 	}
+
 }
