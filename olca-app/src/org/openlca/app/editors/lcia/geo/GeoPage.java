@@ -32,6 +32,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 	private GeoFlowSection flowSection;
 	private Text fileText;
 	private Button saveBtn;
+	private Button validationBtn;
 
 	public GeoPage(ImpactCategoryEditor editor) {
 		super(editor, "GeoPage", "Regionalized calculation");
@@ -65,16 +66,24 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		// buttons
 		UI.filler(comp, tk);
 		var btnComp = UI.composite(comp, tk);
-		UI.gridLayout(btnComp, 2, 10, 0);
+		UI.gridLayout(btnComp, 3, 10, 0);
+
 		var openBtn = UI.button(btnComp, tk, "Open");
 		openBtn.setImage(Icon.FOLDER_OPEN.get());
 		UI.gridData(openBtn, false, false).widthHint = 80;
 		Controls.onSelect(openBtn, _e -> onOpenFile());
+
 		saveBtn = UI.button(btnComp, tk, "Save");
 		saveBtn.setImage(Icon.SAVE.get());
 		UI.gridData(saveBtn, false, false).widthHint = 80;
 		saveBtn.setEnabled(false);
 		Controls.onSelect(saveBtn, _e -> onSaveFile());
+
+		validationBtn = UI.button(btnComp, tk, "Validate");
+		validationBtn.setImage(Icon.CHECK_TRUE.get());
+		UI.gridData(validationBtn, false, false).widthHint = 80;
+		validationBtn.setEnabled(false);
+		Controls.onSelect(validationBtn, _e -> Validation.run(setup));
 	}
 
 	private void onOpenFile() {
@@ -95,6 +104,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		setup = nextSetup;
 		fileText.setText(file.getAbsolutePath());
 		saveBtn.setEnabled(true);
+		validationBtn.setEnabled(true);
 		paramSection.update();
 		flowSection.update();
 	}
