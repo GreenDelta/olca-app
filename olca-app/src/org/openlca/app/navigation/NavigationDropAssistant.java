@@ -10,7 +10,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TransferData;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
 import org.openlca.app.navigation.elements.CategoryElement;
@@ -21,38 +20,23 @@ import org.openlca.app.rcp.RcpActivator;
 
 import com.google.common.base.Objects;
 
-/**
- * Extension of the {@link CommonDropAdapterAssistant} to support drop
- * assistance for the common viewer of the applications navigator
- */
-
 public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 
 	@Override
-	public IStatus handleDrop(CommonDropAdapter dropAdapter,
-			DropTargetEvent dropTargetEvent, Object target) {
-		Navigator navigator = (Navigator) PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage()
-				.findView(Navigator.ID);
-		DropTarget dropTarget = (DropTarget) dropTargetEvent.getSource();
-		INavigationElement<?> targetElement = (INavigationElement<?>) target;
+	public IStatus handleDrop(
+			CommonDropAdapter adapter, DropTargetEvent event, Object target
+	) {
+		var navigator = Navigator.getInstance();
+		if (navigator == null)
+			return null;
+		if (!(target instanceof INavigationElement<?> element))
+			return null;
+		if (!(event.getSource() instanceof DropTarget dropTarget))
+			return null;
 		if (dropTarget.getControl() == navigator.getCommonViewer().getTree()) {
-			doIt(dropTargetEvent, targetElement);
+			doIt(event, element);
 		}
 		return null;
-	}
-
-	private List<INavigationElement<?>> getElements(DropTargetEvent event, INavigationElement<?> targetElement) {
-		List<INavigationElement<?>> elements = new ArrayList<>();
-		IStructuredSelection selection = (IStructuredSelection) event.data;
-		for (Object o : selection.toArray()) {
-			if (!(o instanceof ModelElement || o instanceof CategoryElement))
-				continue;
-			if (Objects.equal(o, targetElement))
-				continue;
-			elements.add((INavigationElement<?>) o);
-		}
-		return elements;
 	}
 
 	private void doIt(DropTargetEvent event, INavigationElement<?> targetElement) {
@@ -68,19 +52,31 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 		CopyPaste.pasteTo(targetElement);
 	}
 
+	private List<INavigationElement<?>> getElements(
+			DropTargetEvent event, INavigationElement<?> target) {
+		if (!(event.data instanceof IStructuredSelection selection))
+			return List.of();
+		var elements = new ArrayList<INavigationElement<?>>();
+		for (var o : selection) {
+			if (!(o instanceof ModelElement || o instanceof CategoryElement))
+				continue;
+			if (Objects.equal(o, target))
+				continue;
+			elements.add((INavigationElement<?>) o);
+		}
+		return elements;
+	}
+
 	@Override
-	public boolean isSupportedType(TransferData aTransferType) {
+	public boolean isSupportedType(TransferData data) {
 		return true;
 	}
 
 	@Override
-	public IStatus validateDrop(Object target, int operation,
-			TransferData transferType) {
-		IStatus status = null;
-		if (target instanceof CategoryElement
-				|| target instanceof ModelTypeElement)
-			status = new Status(IStatus.OK, RcpActivator.PLUGIN_ID, "");
-		return status;
+	public IStatus validateDrop(Object target, int operation, TransferData data) {
+		if (target instanceof CategoryElement || target instanceof ModelTypeElement)
+			return new Status(IStatus.OK, RcpActivator.PLUGIN_ID, "");
+		return null;
 	}
 
 }

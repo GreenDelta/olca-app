@@ -189,7 +189,6 @@ public final class ModelTransfer extends ByteArrayTransfer {
 			case SOCIAL_INDICATOR -> gson.fromJson(e, SocialIndicatorDescriptor.class);
 			case SOURCE -> gson.fromJson(e, SourceDescriptor.class);
 			case UNIT_GROUP -> gson.fromJson(e, UnitGroupDescriptor.class);
-			default -> gson.fromJson(e, Descriptor.class);
 		};
 	}
 

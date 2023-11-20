@@ -22,7 +22,7 @@ public class DbCategoryAction extends Action implements INavigationAction {
 	private DerbyConfig config;
 
 	public DbCategoryAction() {
-		setText("Set folder...");
+		setText("Set folder");
 		setImageDescriptor(Icon.FOLDER.descriptor());
 	}
 

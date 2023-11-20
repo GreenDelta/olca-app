@@ -145,6 +145,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 				return img;
 		}
 
+		if (elem instanceof DatabaseDirElement)
+			return Icon.FOLDER.get();
+
 		var content = (elem).getContent();
 		if (content instanceof DatabaseConfig config) {
 			return Database.isActive(config)
