@@ -22,6 +22,14 @@ class DatabaseTransfer extends ByteArrayTransfer {
 
 	private static final String NAME = "database_config_transfer";
 	private static final int ID = registerType(NAME);
+	private static final DatabaseTransfer instance = new DatabaseTransfer();
+
+	private DatabaseTransfer() {
+	}
+
+	static DatabaseTransfer getInstance() {
+		return instance;
+	}
 
 	@Override
 	protected int[] getTypeIds() {

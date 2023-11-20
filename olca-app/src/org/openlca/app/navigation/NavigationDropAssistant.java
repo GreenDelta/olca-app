@@ -2,6 +2,7 @@ package org.openlca.app.navigation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -12,13 +13,12 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
-import org.openlca.app.rcp.RcpActivator;
-
-import com.google.common.base.Objects;
 
 public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 
@@ -60,7 +60,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 		for (var o : selection) {
 			if (!(o instanceof ModelElement || o instanceof CategoryElement))
 				continue;
-			if (Objects.equal(o, target))
+			if (Objects.equals(o, target))
 				continue;
 			elements.add((INavigationElement<?>) o);
 		}
@@ -69,14 +69,26 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 
 	@Override
 	public boolean isSupportedType(TransferData data) {
-		return true;
+		if (data == null)
+			return false;
+		return ModelTransfer.getInstance().isSupportedType(data)
+				|| DatabaseTransfer.getInstance().isSupportedType(data);
 	}
 
 	@Override
 	public IStatus validateDrop(Object target, int operation, TransferData data) {
-		if (target instanceof CategoryElement || target instanceof ModelTypeElement)
-			return new Status(IStatus.OK, RcpActivator.PLUGIN_ID, "");
-		return null;
-	}
+		System.out.println(target);
+		// database transfer
+		if (DatabaseTransfer.getInstance().isSupportedType(data)
+				&& target instanceof DatabaseDirElement)
+			return Status.OK_STATUS;
 
+		// model transfer
+		if (!ModelTransfer.getInstance().isSupportedType(data))
+			return null;
+		return target instanceof CategoryElement
+				|| target instanceof ModelTypeElement
+				? Status.OK_STATUS
+				: null;
+	}
 }

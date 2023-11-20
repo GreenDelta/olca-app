@@ -30,7 +30,10 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 
 	@Override
 	public Transfer[] getSupportedTransferTypes() {
-		return new Transfer[] { ModelTransfer.getInstance() };
+		return new Transfer[]{
+				ModelTransfer.getInstance(),
+				DatabaseTransfer.getInstance(),
+		};
 	}
 
 	@Override
