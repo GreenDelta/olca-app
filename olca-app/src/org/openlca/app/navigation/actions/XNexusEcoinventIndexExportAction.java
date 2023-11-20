@@ -203,10 +203,9 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 			@Override
 			protected DatabaseConfig[] getItems(Entry element) {
-				var dbs = new ArrayList<DatabaseConfig>();
-				dbs.addAll(Database.getConfigurations().getDerbyConfigs());
-				dbs.addAll(Database.getConfigurations().getMySqlConfigs());
-				return dbs.toArray(new DatabaseConfig[0]);
+				return Database.getConfigurations()
+						.getAll()
+						.toArray(DatabaseConfig[]::new);
 			}
 
 			@Override

@@ -88,13 +88,9 @@ class DbImportPage extends WizardPage {
 	 * imported into the currently active database.
 	 */
 	private List<DatabaseConfig> existing() {
-		var dbs = Database.getConfigurations();
 		var configs = new ArrayList<DatabaseConfig>();
-		dbs.getDerbyConfigs()
-				.stream()
-				.filter(c -> c != null && !Database.isActive(c))
-				.forEach(configs::add);
-		dbs.getMySqlConfigs()
+		Database.getConfigurations()
+				.getAll()
 				.stream()
 				.filter(c -> c != null && !Database.isActive(c))
 				.forEach(configs::add);

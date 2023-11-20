@@ -16,6 +16,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.Group;
 import org.openlca.app.navigation.elements.GroupElement;
@@ -45,10 +46,6 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	implements ICommonLabelProvider, IColorProvider {
 
 	private final boolean indicateRepositoryState;
-
-	public NavigationLabelProvider() {
-		this(true);
-	}
 
 	private NavigationLabelProvider(boolean indicateRepositoryState) {
 		this.indicateRepositoryState = indicateRepositoryState;
@@ -210,17 +207,21 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	}
 
 	private String getBaseText(INavigationElement<?> elem) {
-		if (elem instanceof GroupElement)
-			return ((GroupElement) elem).getContent().label;
+
+		if (elem instanceof DatabaseDirElement dirElem)
+			return dirElem.getContent();
+		if (elem instanceof GroupElement groupElem)
+			return groupElem.getContent().label;
+
 		var content = elem.getContent();
-		if (content instanceof DatabaseConfig)
-			return ((DatabaseConfig) content).name();
-		if (content instanceof Category)
-			return ((Category) content).name;
-		if (content instanceof ModelType)
-			return Labels.plural((ModelType) content);
-		if (content instanceof Descriptor)
-			return Labels.name((Descriptor) content);
+		if (content instanceof DatabaseConfig config)
+			return config.name();
+		if (content instanceof Category category)
+			return category.name;
+		if (content instanceof ModelType type)
+			return Labels.plural(type);
+		if (content instanceof Descriptor d)
+			return Labels.name(d);
 		if (content instanceof LibraryDir)
 			return "Libraries";
 		if (content instanceof Library lib) {
@@ -229,8 +230,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (elem instanceof MappingDirElement)
 			return "Mapping files";
 
-		if (content instanceof File)
-			return ((File) content).getName();
+		if (content instanceof File file)
+			return file.getName();
 		if (content instanceof String)
 			return (String) content;
 
