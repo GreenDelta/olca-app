@@ -24,8 +24,29 @@ public class DatabaseDirElement extends NavigationElement<String> {
 
 	@Override
 	protected List<INavigationElement<?>> queryChilds() {
+		var childs = new ArrayList<INavigationElement<?>>();
+		var thisPath = path();
+		for (var config : Database.getConfigurations().getAll()) {
+			var confPath = split(config.category());
+			if (!matches(confPath, thisPath))
+				continue;
+			if (confPath.length == thisPath.length) {
+				childs.add(new DatabaseElement(this, config));
+			} else {
+				childs.add(new DatabaseDirElement(this, confPath[thisPath.length]));
+			}
+		}
+		return childs;
+	}
 
-		return null;
+	private boolean matches(String[] confPath, String[] thisPath) {
+		if (confPath.length < thisPath.length)
+			return false;
+		for (int i = 0; i < thisPath.length; i++) {
+			if (!confPath[i].equalsIgnoreCase(thisPath[i]))
+				return false;
+		}
+		return true;
 	}
 
 	public static String[] split(String path) {

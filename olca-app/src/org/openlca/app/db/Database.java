@@ -122,7 +122,7 @@ public class Database {
 		return configs;
 	}
 
-	private static void saveConfig() {
+	public static void saveConfig() {
 		var file = new File(Workspace.root(), "databases.json");
 		configurations.write(file);
 	}

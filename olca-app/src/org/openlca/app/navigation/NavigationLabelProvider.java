@@ -47,6 +47,13 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	private final boolean indicateRepositoryState;
 
+	/**
+	 * The default constructor is required by the common-navigator framework.
+	 */
+	public NavigationLabelProvider() {
+		this.indicateRepositoryState = false;
+	}
+
 	private NavigationLabelProvider(boolean indicateRepositoryState) {
 		this.indicateRepositoryState = indicateRepositoryState;
 	}

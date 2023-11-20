@@ -19,6 +19,7 @@ import org.openlca.app.collaboration.navigation.RepositoryMenu;
 import org.openlca.app.collaboration.navigation.actions.CloneAction;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
+import org.openlca.app.navigation.actions.db.DbCategoryAction;
 import org.openlca.app.navigation.actions.db.DbCloseAction;
 import org.openlca.app.navigation.actions.db.DbCopyAction;
 import org.openlca.app.navigation.actions.db.DbCreateAction;
@@ -86,6 +87,7 @@ public class NavigationMenu extends CommonActionProvider {
 				new DbValidationAction(),
 				new DbCopyAction(),
 				new DbRenameAction(),
+				new DbCategoryAction(),
 				new DbDeleteAction(),
 				new DbCloseAction(),
 				new AddLibraryAction());
