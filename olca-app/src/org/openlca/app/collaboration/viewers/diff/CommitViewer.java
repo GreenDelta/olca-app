@@ -105,7 +105,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected void setSelection(DiffNode element, boolean checked) {
-			if (!isLeaf(element)) {
+			if (!isSelectable(element)) {
 				super.setSelection(element, checked);
 				return;
 			}
