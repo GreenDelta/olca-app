@@ -30,17 +30,15 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 
 	@Override
 	public Transfer[] getSupportedTransferTypes() {
-		return new Transfer[]{
-				ModelTransfer.getInstance(),
-				DatabaseTransfer.getInstance(),
-		};
+		return new Transfer[]{ModelTransfer.getInstance()};
 	}
 
 	@Override
 	public boolean setDragData(
-			DragSourceEvent anEvent, IStructuredSelection aSelection) {
+			DragSourceEvent e, IStructuredSelection selection) {
+
 		boolean canBeDropped = true;
-		Iterator<?> it = aSelection.iterator();
+		Iterator<?> it = selection.iterator();
 		List<Descriptor> components = new ArrayList<>();
 		while (it.hasNext() && canBeDropped) {
 			Object o = it.next();
@@ -59,7 +57,7 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 			for (int i = 0; i < components.size(); i++) {
 				data[i] = components.get(i);
 			}
-			anEvent.data = data;
+			e.data = data;
 		}
 		return canBeDropped;
 	}

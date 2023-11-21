@@ -13,7 +13,7 @@ public class DatabaseDirElement extends NavigationElement<String> {
 		super(parent, name);
 	}
 
-	private String[] path() {
+	public String[] path() {
 		if (!(getParent() instanceof DatabaseDirElement p))
 			return new String[]{getContent()};
 		var parentDir = p.path();
