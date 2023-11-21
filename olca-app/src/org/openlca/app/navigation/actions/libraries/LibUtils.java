@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.core.database.CategoryDao;
@@ -32,7 +31,6 @@ class LibUtils {
 			categoryDao.delete(category);
 		}
 		Database.get().removeLibrary(lib.name());
-		Navigator.refresh();
 	}
 
 	static List<Category> collectCategories(Library lib, INavigationElement<?> element) {
