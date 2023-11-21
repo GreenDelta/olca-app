@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.window.Window;
@@ -34,11 +36,17 @@ import org.openlca.core.library.PreMountCheck;
 
 public class AddLibraryAction extends Action implements INavigationAction {
 
+	private Consumer<Set<Library>> callback;
+	
 	public AddLibraryAction() {
 		setText("Add a library");
 		setImageDescriptor(Icon.LIBRARY.descriptor());
 	}
 
+	void setCallback(Consumer<Set<Library>> callback) {
+		this.callback = callback;
+	}
+	
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
@@ -71,7 +79,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			ErrorReporter.on("Failed to check library", checkResult.error());
 			return;
 		}
-		MountLibraryDialog.show(lib, checkResult);
+		MountLibraryDialog.show(lib, checkResult, callback);
 	}
 
 	private static class Dialog extends FormDialog {
