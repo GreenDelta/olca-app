@@ -28,37 +28,35 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 		}
 	}
 
+	/**
+	 * This method is only called when the drag is moved to a drop-target outside
+	 * the navigator. As we only allow models to be moved outside, we only return
+	 * the model-transfer here.
+	 */
 	@Override
 	public Transfer[] getSupportedTransferTypes() {
 		return new Transfer[]{ModelTransfer.getInstance()};
 	}
 
+	/**
+	 * This method is called when a drop happened outside the navigation. As we
+	 * only allow the drop of models outside the navigator, we only return {@code
+	 * true} when the drag contains model elements.
+	 */
 	@Override
 	public boolean setDragData(
 			DragSourceEvent e, IStructuredSelection selection) {
-
-		boolean canBeDropped = true;
-		Iterator<?> it = selection.iterator();
-		List<Descriptor> components = new ArrayList<>();
-		while (it.hasNext() && canBeDropped) {
-			Object o = it.next();
-			if (!(o instanceof ModelElement || o instanceof CategoryElement)) {
-				canBeDropped = false;
-			} else {
-				if (o instanceof ModelElement navElem) {
-					var comp = navElem.getContent();
-					if (comp != null)
-						components.add(comp);
-				}
+		var descriptors = new ArrayList<Descriptor>();
+		for (var o : selection) {
+			if (!(o instanceof ModelElement elem))
+				return false;
+			if (elem.getContent() != null) {
+				descriptors.add(elem.getContent());
 			}
 		}
-		if (canBeDropped) {
-			Object[] data = new Object[components.size()];
-			for (int i = 0; i < components.size(); i++) {
-				data[i] = components.get(i);
-			}
-			e.data = data;
-		}
-		return canBeDropped;
+		if (descriptors.isEmpty())
+			return false;
+		e.data = descriptors.toArray();
+		return true;
 	}
 }

@@ -29,7 +29,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 	public IStatus handleDrop(
 			CommonDropAdapter adapter, DropTargetEvent event, Object target) {
 		if (skip(event))
-			return null;
+			return Status.CANCEL_STATUS;
 
 		if (target instanceof DatabaseDirElement dbDir) {
 			var elements = elementsOf(event, e -> e instanceof DatabaseElement);
@@ -44,7 +44,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 			return moveModels(event.detail, elements, (INavigationElement<?>) target);
 		}
 
-		return null;
+		return Status.CANCEL_STATUS;
 	}
 
 	/**
@@ -65,9 +65,9 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 	}
 
 	/**
-	 * In the navigation, we only handle drag-and-drop events that happen
-	 * within the navigation. The dragged elements are then directly in
-	 * the data of the drop event.
+	 * In the navigation, we only handle drag-and-drop events that happen within
+	 * the navigation. The dragged elements are then directly in the data of the
+	 * drop event.
 	 */
 	private List<INavigationElement<?>> elementsOf(
 			DropTargetEvent e, Predicate<INavigationElement<?>> filter) {
@@ -125,7 +125,7 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 
 	@Override
 	public boolean isSupportedType(TransferData data) {
-		// This method is only called when the drag started outside of
+		// This method is only called when the drag started outside
 		// the navigation tree (?). As we currently do not support such
 		// drops that come from outside the tree, we always return false
 		// here.
@@ -138,6 +138,6 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 				|| target instanceof ModelTypeElement
 				|| target instanceof CategoryElement)
 			return Status.OK_STATUS;
-		return null;
+		return Status.CANCEL_STATUS;
 	}
 }
