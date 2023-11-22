@@ -21,6 +21,9 @@ import org.openlca.app.navigation.actions.libraries.AddLibraryAction;
 import org.openlca.app.navigation.actions.libraries.DeleteLibraryAction;
 import org.openlca.app.navigation.actions.libraries.ExportLibraryAction;
 import org.openlca.app.navigation.actions.libraries.OpenLibraryAction;
+import org.openlca.app.navigation.actions.nexus.XNexusCsvIndexExportAction;
+import org.openlca.app.navigation.actions.nexus.XNexusEcoinventIndexExportAction;
+import org.openlca.app.navigation.actions.nexus.XNexusIndexExportAction;
 import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
@@ -90,6 +93,7 @@ public class NavigationMenu extends CommonActionProvider {
 			addActions(selection, menu,
 					new XEI3MetaDataImportAction(),
 					new XEI3MarketProcessCleanUp(),
+					new XNexusCsvIndexExportAction(),
 					new XNexusIndexExportAction(),
 					new XNexusEcoinventIndexExportAction(),
 					new XRefDataExport(),
