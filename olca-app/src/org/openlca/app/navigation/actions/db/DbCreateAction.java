@@ -1,7 +1,5 @@
 package org.openlca.app.navigation.actions.db;
 
-import java.util.List;
-
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.db.DatabaseWizard;
@@ -12,6 +10,8 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.util.Strings;
+
+import java.util.List;
 
 /**
  * Opens the wizard for creating a new database.
@@ -27,6 +27,7 @@ public class DbCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
+		folder = "";
 		if (selection.isEmpty())
 			return true;
 		var first = selection.get(0);
@@ -34,7 +35,6 @@ public class DbCreateAction extends Action implements INavigationAction {
 			folder = String.join("/", dir.path());
 			return true;
 		}
-		folder = "";
 		return first instanceof DatabaseElement
 				|| first instanceof NavigationRoot;
 	}
