@@ -28,17 +28,17 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.ProductSystemDao;
 
-public class MetaDataDialog extends FormDialog {
+class MetaDataDialog extends FormDialog {
 
 	private final MetaData metaData = new MetaData();
 
-	public MetaDataDialog() {
+	MetaDataDialog() {
 		super(UI.shell());
 	}
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(800, 700);
+		return new Point(800, 900);
 	}
 
 	@Override
