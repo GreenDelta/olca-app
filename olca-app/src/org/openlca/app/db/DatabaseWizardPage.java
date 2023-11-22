@@ -17,15 +17,18 @@ import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.util.Strings;
 
-public class DatabaseWizardPage extends WizardPage {
+class DatabaseWizardPage extends WizardPage {
+
+	private final String folder;
 
 	private Text nameText;
 	private Text folderText;
 	private Button[] contentRadios;
 
-	public DatabaseWizardPage() {
+	DatabaseWizardPage(String folder) {
 		super("database-wizard-page", M.NewDatabase,
 				Icon.DATABASE_WIZARD.descriptor());
+		this.folder = folder;
 		setDescription(M.CreateANewDatabase);
 		setPageComplete(false);
 	}
@@ -39,6 +42,9 @@ public class DatabaseWizardPage extends WizardPage {
 		nameText = createText(body, M.DatabaseName);
 		nameText.addModifyListener(e -> validateInput());
 		folderText = createText(body, M.Folder);
+		if (Strings.notEmpty(folder)) {
+			folderText.setText(folder);
+		}
 		createDatabaseContent(body);
 	}
 
