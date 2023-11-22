@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.nexus;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,6 +16,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
@@ -36,13 +37,13 @@ import com.google.gson.GsonBuilder;
  * Exports an file with the process meta-data of the currently activated
  * database for the search index in openLCA Nexus (http://nexus.openlca.org).
  */
-class XNexusIndexExportAction extends Action implements INavigationAction {
+public class XNexusIndexExportAction extends Action implements INavigationAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public XNexusIndexExportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Export Nexus Index");
+		setText("Export Nexus JSON Index");
 	}
 
 	@Override
@@ -67,7 +68,7 @@ class XNexusIndexExportAction extends Action implements INavigationAction {
 		File file = FileChooser.forSavingFile(M.Export, defaultName);
 		if (file == null)
 			return;
-		App.run("Export Nexus index", new Runner(file, db));
+		App.run("Export Nexus JSON index", new Runner(file, db));
 	}
 
 	private class Runner implements Runnable {
