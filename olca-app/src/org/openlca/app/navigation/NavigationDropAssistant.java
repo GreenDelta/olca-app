@@ -1,10 +1,5 @@
 package org.openlca.app.navigation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -21,7 +16,13 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
+import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.core.database.config.DerbyConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 
@@ -30,18 +31,21 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 			CommonDropAdapter adapter, DropTargetEvent event, Object target) {
 		if (skip(event))
 			return Status.CANCEL_STATUS;
+		if (!(target instanceof INavigationElement<?> targetElem))
+			return Status.CANCEL_STATUS;
 
-		if (target instanceof DatabaseDirElement dbDir) {
+		if (targetElem instanceof DatabaseDirElement
+				|| targetElem instanceof NavigationRoot) {
 			var elements = elementsOf(event, e -> e instanceof DatabaseElement);
-			return moveDatabases(elements, dbDir);
+			return moveDatabases(elements, targetElem);
 		}
 
-		if (target instanceof ModelTypeElement
-				|| target instanceof CategoryElement) {
+		if (targetElem instanceof ModelTypeElement
+				|| targetElem instanceof CategoryElement) {
 			var elements = elementsOf(event,
-					e -> !Objects.equals(e, target)
+					e -> !Objects.equals(e, targetElem)
 							&& (e instanceof ModelElement || e instanceof CategoryElement));
-			return moveModels(event.detail, elements, (INavigationElement<?>) target);
+			return moveModels(event.detail, elements, targetElem);
 		}
 
 		return Status.CANCEL_STATUS;
@@ -102,10 +106,12 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 	}
 
 	private IStatus moveDatabases(
-			List<INavigationElement<?>> elements, DatabaseDirElement target) {
+			List<INavigationElement<?>> elements, INavigationElement<?> target) {
 		if (elements.isEmpty())
 			return Status.CANCEL_STATUS;
-		var path = String.join("/", target.path());
+		var path = target instanceof DatabaseDirElement dir
+				? String.join("/", dir.path())
+				: "";
 		int moved = 0;
 		for (var e : elements) {
 			if (e instanceof DatabaseElement dbElem) {
@@ -134,7 +140,8 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 
 	@Override
 	public IStatus validateDrop(Object target, int operation, TransferData data) {
-		if (target instanceof DatabaseDirElement
+		if (target instanceof NavigationRoot
+				|| target instanceof DatabaseDirElement
 				|| target instanceof ModelTypeElement
 				|| target instanceof CategoryElement)
 			return Status.OK_STATUS;
