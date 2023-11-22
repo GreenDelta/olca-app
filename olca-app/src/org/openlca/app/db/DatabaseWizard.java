@@ -1,7 +1,5 @@
 package org.openlca.app.db;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
@@ -80,8 +78,7 @@ public class DatabaseWizard extends Wizard {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor)
-			throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) {
 			monitor.beginTask(M.CreateDatabase, IProgressMonitor.UNKNOWN);
 			try {
 				createIt();
