@@ -157,6 +157,9 @@ import org.openlca.ipc.handlers.ExportHandler as ExportHandler
 import org.openlca.core.results.providers.FactorizationSolver as FactorizationSolver
 import org.openlca.geo.geojson.Feature as Feature
 import org.openlca.geo.geojson.FeatureCollection as FeatureCollection
+import org.openlca.geo.calc.FeatureRepair as FeatureRepair
+import org.openlca.geo.calc.FeatureShare as FeatureShare
+import org.openlca.geo.calc.FeatureValidation as FeatureValidation
 import org.openlca.core.database.FileStore as FileStore
 import org.openlca.jsonld.FileStoreReader as FileStoreReader
 import org.openlca.jsonld.FileStoreWriter as FileStoreWriter
@@ -191,9 +194,14 @@ import org.openlca.jsonld.output.FlowWriter as FlowWriter
 import org.openlca.util.ForegroundSystemGenerator as ForegroundSystemGenerator
 import org.openlca.io.Format as Format
 import org.openlca.util.Formula as Formula
+import org.openlca.geo.lcia.GeoAggregation as GeoAggregation
+import org.openlca.geo.lcia.GeoFactorCalculator as GeoFactorCalculator
+import org.openlca.geo.lcia.GeoFactorSetup as GeoFactorSetup
+import org.openlca.geo.lcia.GeoFlowBinding as GeoFlowBinding
 import org.openlca.geo.geojson.GeoJSON as GeoJSON
 import org.openlca.geo.GeoJson2Kml as GeoJson2Kml
 import org.openlca.geo.GeoJsonImport as GeoJsonImport
+import org.openlca.geo.lcia.GeoProperty as GeoProperty
 import org.openlca.util.Geometries as Geometries
 import org.openlca.geo.geojson.Geometry as Geometry
 import org.openlca.geo.geojson.GeometryCollection as GeometryCollection
@@ -254,6 +262,7 @@ import org.openlca.core.matrix.io.index.IxProto as IxProto
 import org.openlca.core.matrix.io.index.IxProvider as IxProvider
 import org.openlca.core.matrix.io.index.IxTechIndex as IxTechIndex
 import org.openlca.core.matrix.io.index.IxTechItem as IxTechItem
+import org.openlca.geo.calc.JTS as JTS
 import org.openlca.core.matrix.format.JavaMatrix as JavaMatrix
 import org.openlca.core.matrix.solvers.JavaSolver as JavaSolver
 import org.openlca.jsonld.Json as Json
@@ -456,6 +465,7 @@ import org.openlca.core.matrix.solvers.SeqAgg as SeqAgg
 import org.openlca.core.matrix.solvers.SequentialSolver as SequentialSolver
 import org.openlca.proto.io.server.Server as Server
 import org.openlca.core.services.ServerConfig as ServerConfig
+import org.openlca.geo.Shape as Shape
 import org.openlca.io.simapro.csv.input.SimaProCsvImport as SimaProCsvImport
 import org.openlca.io.simapro.csv.output.SimaProExport as SimaProExport
 import org.openlca.io.simapro.csv.SimaProUnit as SimaProUnit
