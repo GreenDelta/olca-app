@@ -94,6 +94,9 @@ class CsvWriter {
 	}
 
 	private static String productSystem(String line, ProductSystemIndexEntry e) {
+		for (var i = 0; i < 22; i++) {
+			line = addCell(line, "");
+		}
 		line = addCell(line, esc(e.metaData.creator));
 		line = addCell(line, number(e.numberOfProcesses));
 		line = addCell(line, esc(e.quantitativeReference));

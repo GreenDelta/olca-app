@@ -24,6 +24,7 @@ import org.openlca.app.navigation.actions.nexus.Types.ReviewSystem;
 import org.openlca.app.navigation.actions.nexus.Types.ReviewType;
 import org.openlca.app.navigation.actions.nexus.Types.SourceReliability;
 import org.openlca.app.navigation.actions.nexus.Types.WaterModeling;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.database.ProductSystemDao;
@@ -86,6 +87,9 @@ class MetaDataDialog extends FormDialog {
 
 		if (!new ProductSystemDao(Database.get()).getDescriptors().isEmpty()) {
 			var system = UI.formSection(body, toolkit, "Product system meta data");
+			var check = UI.labeledCheckbox(system, toolkit, "Export product systems");
+			check.setSelection(true);
+			Controls.onSelect(check, $ -> metaData.exportSystems = check.getSelection());
 			createString(system, toolkit, "Creator",
 					v -> metaData.creator = v);
 			createString(system, toolkit, "Intended audience",

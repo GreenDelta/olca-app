@@ -86,10 +86,12 @@ public class XNexusCsvIndexExportAction extends Action implements INavigationAct
 						unitProcessIds.add(d.id);
 					}
 				}
-				var systemDao = new ProductSystemDao(db);
-				for (var d : systemDao.getDescriptors()) {
-					var system = systemDao.getForId(d.id);
-					entries.add(new ProductSystemIndexEntry(system, metaData, unitProcessIds));
+				if (metaData.exportSystems) {
+					var systemDao = new ProductSystemDao(db);
+					for (var d : systemDao.getDescriptors()) {
+						var system = systemDao.getForId(d.id);
+						entries.add(new ProductSystemIndexEntry(system, metaData, unitProcessIds));
+					}
 				}
 				CsvWriter.write(file, entries);
 			} catch (Exception e) {

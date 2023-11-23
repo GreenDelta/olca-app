@@ -40,5 +40,7 @@ class MetaData {
 	// product system
 	String creator;
 	String intendedAudience;	
+	
+	boolean exportSystems;
 
 }
