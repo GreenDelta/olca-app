@@ -16,6 +16,7 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitMerge;
+import org.openlca.git.actions.GitMerge.MergeResult;
 import org.openlca.git.util.Constants;
 
 public class MergeAction extends Action implements INavigationAction {
@@ -48,17 +49,21 @@ public class MergeAction extends Action implements INavigationAction {
 			var user = !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty()
 					? AuthenticationDialog.promptUser(repo)
 					: null;
-			var changed = Actions.run(GitMerge
+			var mergeResult = Actions.run(GitMerge
 					.on(repo)
 					.as(user)
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
-			if (changed != null && conflictResult.stashedChanges()) {
+			if (mergeResult == MergeResult.ABORTED)
+				return;			
+			if (conflictResult.stashedChanges()) {
 				Actions.askApplyStash();
 			}
-			if (changed == null || changed)
-				return;
-			MsgBox.info("No changes to merge");
+			if (mergeResult == MergeResult.MOUNT_ERROR) {
+				MsgBox.error("Could not mount library");
+			} else if (mergeResult == MergeResult.NO_CHANGES) {
+				MsgBox.info("No changes to merge");
+			}
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during Git merge", e);
 		} finally {
