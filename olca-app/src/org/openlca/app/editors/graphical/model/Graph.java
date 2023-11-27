@@ -55,8 +55,24 @@ public class Graph extends BaseComponent {
 	}
 
 	public void removeLink(ProcessLink link) {
+		removeProcessLink(link);
+		removeGraphLink(link);
+	}
+
+	/**
+	 * Remove the ProcessLink from the product system (and not the GraphLink from
+	 * the graph).
+	 */
+	public void removeProcessLink(ProcessLink link) {
 		getProductSystem().processLinks.remove(link);
 		linkSearch.remove(link);
+	}
+
+	/**
+	 * Remove the GraphLink from the graph (and not the ProcessLink from the
+	 * product system).
+	 */
+	public void removeGraphLink(ProcessLink link) {
 		var graphLink = mapProcessLinkToGraphLink.remove(link);
 		if (graphLink != null)
 			graphLink.disconnect();
