@@ -25,6 +25,7 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.geo.lcia.GeoFactorCalculator;
@@ -35,6 +36,7 @@ import org.openlca.io.CategoryPath;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 class GeoFlowSection {
@@ -143,14 +145,17 @@ class GeoFlowSection {
 
 		var calc = GeoFactorCalculator.of(
 				Database.get(), page.setup, locations);
+		var factors = new AtomicReference<List<ImpactFactor>>();
 		App.runWithProgress("Calculate regionalized factors", () -> {
-					var factors = calc.calculate();
-					GeoFactorMerge.replaceExisting(page.editor.getModel()).doIt(factors);
+					var r = calc.calculate();
+					factors.set(r);
 				},
 				() -> {
-					page.editor.setDirty(true);
-					page.editor.emitEvent(page.editor.FACTORS_CHANGED_EVENT);
-					page.editor.setActivePage("ImpactFactorPage");
+					GeoFactorDialog.open(page, factors.get());
+					// GeoFactorMerge.replaceExisting(page.editor.getModel()).doIt(factors);
+					// page.editor.setDirty(true);
+					// page.editor.emitEvent(page.editor.FACTORS_CHANGED_EVENT);
+					// page.editor.setActivePage("ImpactFactorPage");
 				});
 	}
 
