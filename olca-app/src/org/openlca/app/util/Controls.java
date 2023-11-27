@@ -1,5 +1,6 @@
 package org.openlca.app.util;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 
@@ -10,6 +11,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
@@ -34,7 +36,7 @@ public class Controls {
 		text.setText(s == null ? "" : s);
 	}
 
-	public static void set(Text text, String initial, Consumer<String> fn){
+	public static void set(Text text, String initial, Consumer<String> fn) {
 		set(text, initial);
 		if (text == null || fn == null)
 			return;
@@ -134,6 +136,26 @@ public class Controls {
 			if (e.detail == SWT.TRAVERSE_RETURN) {
 				fn.accept(e);
 			}
+		});
+	}
+
+	/**
+	 * Checks and, if required, sets the given color as background color on every
+	 * paint event. On some systems and especially in dark-mode this is necessary
+	 * in some cases because otherwise the widget is drawn with the default
+	 * background color even when it was set explicitly. It also does not always
+	 * work to do this in the first paint event only, thus we need to check the
+	 * background color after each re-paint. So, only use this function if
+	 * required.
+	 */
+	public static void paintBackground(Control widget, Color color) {
+		if (widget == null || color == null)
+			return;
+		widget.setBackground(color);
+		widget.addPaintListener(e -> {
+			if (Objects.equals(widget.getBackground(), color))
+				return;
+			widget.setBackground(color);
 		});
 	}
 }

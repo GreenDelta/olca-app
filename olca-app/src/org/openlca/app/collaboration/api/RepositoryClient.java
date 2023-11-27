@@ -98,9 +98,9 @@ public class RepositoryClient {
 			return null;
 		}
 	}
-	public boolean downloadJson(Collection<? extends TypedRefId> requestedData, File toFile) {
+	public boolean downloadJson(TypedRefId id, File toFile) {
 		try {
-			var token = executeLoggedIn(new DownloadJsonPrepareInvocation(repositoryId, requestedData));
+			var token = executeLoggedIn(new DownloadJsonPrepareInvocation(repositoryId, id));
 			executeLoggedIn(new DownloadJsonInvocation(token, toFile));
 			return true;
 		} catch (WebRequestException e) {

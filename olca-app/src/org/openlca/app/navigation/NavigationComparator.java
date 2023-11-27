@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.LibraryDirElement;
@@ -66,22 +67,24 @@ public class NavigationComparator extends ViewerComparator {
 	}
 
 	private int typeOrderOf(Object o) {
-		if (o instanceof DatabaseElement)
+		if (o instanceof DatabaseDirElement)
 			return 0;
-		if (o instanceof ModelTypeElement)
+		if (o instanceof DatabaseElement)
 			return 1;
-		if (o instanceof GroupElement)
+		if (o instanceof ModelTypeElement)
 			return 2;
-		if (o instanceof CategoryElement)
+		if (o instanceof GroupElement)
 			return 3;
-		if (o instanceof ModelElement)
+		if (o instanceof CategoryElement)
 			return 4;
-		if (o instanceof LibraryDirElement)
+		if (o instanceof ModelElement)
 			return 5;
-		if (o instanceof LibraryElement)
+		if (o instanceof LibraryDirElement)
 			return 6;
-		if (o instanceof ScriptElement)
+		if (o instanceof LibraryElement)
 			return 7;
+		if (o instanceof ScriptElement)
+			return 8;
 		return 10;
 	}
 
