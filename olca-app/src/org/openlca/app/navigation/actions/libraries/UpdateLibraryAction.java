@@ -53,7 +53,7 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 				return;
 			var lib = element.getContent();
 			App.runWithProgress("Removing library " + lib.name() + " ...",
-					() -> new Unmounter(Database.get()).unmountUnsafe(lib),					
+					() -> new Unmounter(Database.get()).unmountUnsafe(lib.name()),					
 					() -> Navigator.refresh());
 		});
 		addAction.run();

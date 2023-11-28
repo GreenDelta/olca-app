@@ -65,7 +65,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		var db = element.getDatabase();
 		if (db.isPresent()) {
 			App.runWithProgress("Removing library " + lib.name() + " ...",
-					() -> new Unmounter(db.get()).unmountUnsafe(lib),
+					() -> new Unmounter(db.get()).unmountUnsafe(lib.name()),
 					() -> Navigator.refresh());
 		} else {
 			delete(lib);
