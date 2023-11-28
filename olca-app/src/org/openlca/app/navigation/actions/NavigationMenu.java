@@ -24,6 +24,7 @@ import org.openlca.app.navigation.actions.libraries.OpenLibraryAction;
 import org.openlca.app.navigation.actions.nexus.XNexusCsvIndexExportAction;
 import org.openlca.app.navigation.actions.nexus.XNexusEcoinventIndexExportAction;
 import org.openlca.app.navigation.actions.nexus.XNexusIndexExportAction;
+import org.openlca.app.navigation.actions.libraries.UpdateLibraryAction;
 import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
@@ -115,7 +116,8 @@ public class NavigationMenu extends CommonActionProvider {
 				new OpenLibraryAction(),
 				new DeleteScriptAction(),
 				new DeleteMappingAction(),
-				new DeleteLibraryAction());
+				new DeleteLibraryAction(),
+				new UpdateLibraryAction());
 
 		// DnD actions
 		addActions(selection, menu,
