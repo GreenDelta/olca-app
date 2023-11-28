@@ -55,11 +55,19 @@ public class NavCache {
 	}
 
 	public static void refresh() {
+		refresh(null);
+	}
+
+	public static void refresh(ModelType type) {
 		var database = Database.get();
 		INSTANCE = new NavCache();
 		if (database == null || !Repository.isConnected())
 			return;
-		Repository.CURRENT.descriptors.reload();
+		if (type == null) {
+			Repository.CURRENT.descriptors.reload();
+		} else {
+			Repository.CURRENT.descriptors.reload(type);			
+		}
 		INSTANCE.build();
 	}
 

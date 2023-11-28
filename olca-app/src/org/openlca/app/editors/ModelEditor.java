@@ -176,7 +176,7 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 		this.setPartName(Labels.name(model));
 		Cache.evict(descriptor);
 		emitEvent(ON_SAVED);
-		Navigator.refresh();
+		Navigator.refresh(Navigator.findElement(descriptor));
 	}
 
 	@Override

@@ -34,6 +34,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final List<ModelElement> models = new ArrayList<>();
 	private final List<CategoryElement> categories = new ArrayList<>();
+	private final List<INavigationElement<?>> toRefresh = new ArrayList<>();
 	private boolean showInUseMessage = true;
 
 	@Override
@@ -71,11 +72,14 @@ public class DeleteModelAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		showInUseMessage = true;
-		int continuationFlag = deleteModels();
-		deleteCategories(continuationFlag);
-		models.clear();
-		categories.clear();
-		Navigator.refresh();
+		try {
+			int continuationFlag = deleteModels();
+			deleteCategories(continuationFlag);
+			models.clear();
+			categories.clear();
+		} finally {
+			Navigator.refresh(toRefresh);
+		}
 	}
 
 	private int deleteModels() {
@@ -101,6 +105,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			// delete the model
 			App.close(model);
 			delete(model);
+			toRefresh.add(elem.getParent());
 		}
 
 		return dontAsk
@@ -142,7 +147,10 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			if (a == IDialogConstants.NO_ID)
 				continue;
 
-			delete(elem);
+			if (delete(elem)) {
+				var typeElement = Navigator.findElement(category.modelType);
+				toRefresh.add(typeElement);
+			}
 		}
 	}
 
@@ -201,7 +209,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 
 		// delete the category
 		if (!canBeDeleted) {
-			Navigator.refresh();
+			toRefresh.add(element);
 			return false;
 		}
 		var category = element.getContent();

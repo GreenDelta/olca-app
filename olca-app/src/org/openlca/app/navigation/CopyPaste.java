@@ -43,7 +43,6 @@ public class CopyPaste {
 
 	public static void cut(Collection<INavigationElement<?>> elements) {
 		cut(elements.toArray(new INavigationElement<?>[0]));
-		Navigator.refresh();
 	}
 
 	private static void cut(INavigationElement<?>[] elements) {
@@ -127,6 +126,8 @@ public class CopyPaste {
 			return;
 		for (INavigationElement<?> element : cache) {
 			paste(element, element.getParent());
+			var modelRoot = Navigator.findElement(getModelType(element));
+			Navigator.refresh(modelRoot);
 		}
 	}
 
@@ -141,7 +142,8 @@ public class CopyPaste {
 			}
 		} finally {
 			clearCache();
-			Navigator.refresh();
+			var root = Navigator.findElement(Database.getActiveConfiguration());
+			Navigator.refresh(root);
 		}
 	}
 

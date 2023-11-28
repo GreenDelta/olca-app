@@ -81,7 +81,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 			wizard.setRefFlow(flow);
 			var dialog = new WizardDialog(UI.shell(), wizard);
 			if (dialog.open() == Window.OK) {
-				Navigator.refresh();
+				Navigator.refresh(Navigator.findElement(ModelType.PROCESS));
 			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());

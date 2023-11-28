@@ -2,10 +2,12 @@ package org.openlca.app.navigation;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -18,6 +20,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -39,11 +42,15 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.util.Colors;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.core.model.Category;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.descriptors.Descriptor;
 
 import com.google.common.base.Objects;
 
@@ -142,6 +149,106 @@ public class Navigator extends CommonNavigator {
 		root.update();
 		viewer.refresh();
 		setRefreshedExpansion(viewer, oldExpansion);
+	}
+
+	/**
+	 * Refreshes the content *under* the given element.
+	 */
+	public static void refresh(INavigationElement<?> element) {
+		if (element instanceof ModelTypeElement e) {
+			NavCache.refresh(e.getContent());			
+		} else {
+			NavCache.refresh();						
+		}
+		doRefresh(element);
+	}
+	
+	/**
+	 * Refreshes the content *under* the given elements.
+	 */
+	public static void refresh(Collection<INavigationElement<?>> elements) {
+		NavCache.refresh();
+		for (var element : elements) {
+			doRefresh(element);
+		}
+	}
+
+	private static void doRefresh(INavigationElement<?> element) {
+		var viewer = getNavigationViewer();
+		if (viewer == null || element == null)
+			return;
+		element.update();
+		Object[] oldExpansion = viewer.getExpandedElements();
+		viewer.refresh(element);
+		updateLabels(viewer, element);
+		setRefreshedExpansion(viewer, oldExpansion);
+
+		// clear the category content cache for the respective model type
+		var modelType = modelTypeOf(element);
+		if (modelType == null)
+			return;
+		var dbElem = databaseElementOf(element);
+		if (dbElem == null)
+			return;
+		var contentTest = dbElem.categoryContentTest();
+		if (contentTest != null) {
+			contentTest.clearCacheOf(modelType);
+		}
+	}
+
+	private static ModelType modelTypeOf(INavigationElement<?> elem) {
+		var content = elem.getContent();
+		if (content == null)
+			return null;
+		if (content instanceof ModelType t)
+			return t;
+		if (content instanceof Descriptor d)
+			return d.type;
+		if (content instanceof Category c)
+			return c.modelType;
+		return null;
+	}
+
+	private static DatabaseElement databaseElementOf(INavigationElement<?> elem) {
+		var e = elem;
+		while (e != null) {
+			if (e instanceof DatabaseElement dbe)
+				return dbe;
+			e = e.getParent();
+		}
+		return null;
+	}
+
+	private static void updateLabels(CommonViewer viewer,
+			INavigationElement<?> element) {
+		TreeItem item = findItem(viewer, element);
+		if (item == null)
+			return;
+		do {
+			viewer.doUpdateItem(item);
+			item = item.getParentItem();
+		} while (item != null);
+	}
+
+	private static TreeItem findItem(CommonViewer viewer,
+			INavigationElement<?> element) {
+		Stack<TreeItem> items = new Stack<>();
+		items.addAll(Arrays.asList(viewer.getTree().getItems()));
+		while (!items.empty()) {
+			TreeItem next = items.pop();
+			if (itemEqualsElement(next, element))
+				return next;
+			items.addAll(Arrays.asList(next.getItems()));
+		}
+		return null;
+	}
+
+	private static boolean itemEqualsElement(TreeItem item,
+			INavigationElement<?> element) {
+		INavigationElement<?> data = (INavigationElement<?>) item.getData();
+		if (data == null)
+			return false;
+		return Objects.equal(data.getContent(), element.getContent());
 	}
 
 	/**

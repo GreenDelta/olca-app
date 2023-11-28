@@ -221,6 +221,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			creator.flowName = flowText.getText();
 			creator.flowProperty = propertyCombo.getSelected();
 			Process result = creator.create();
+			Navigator.refresh((Navigator.findElement(ModelType.FLOW)));
 			return result;
 		}
 

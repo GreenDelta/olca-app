@@ -93,7 +93,6 @@ class RenameAction extends Action implements INavigationAction {
 		} else {
 			doUpdate(((ModelElement) element).getContent(), newName);
 		}
-		Navigator.refresh();
 	}
 
 	private void doUpdate(Category category, String newName) {
@@ -101,6 +100,7 @@ class RenameAction extends Action implements INavigationAction {
 			category.name = newName.trim();
 			category = new CategoryDao(Database.get()).update(category);
 			Cache.evict(Descriptor.of(category));
+			Navigator.refresh(element);
 		} catch (final Exception e) {
 			ErrorReporter.on("Failed to update category", e);
 		}
@@ -114,5 +114,6 @@ class RenameAction extends Action implements INavigationAction {
 		entity.name = newName.trim();
 		dao.update(entity);
 		Cache.evict(d);
+		Navigator.refresh(element.getParent());
 	}
 }

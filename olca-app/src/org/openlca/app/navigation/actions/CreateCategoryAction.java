@@ -64,7 +64,10 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			return;
 		try {
 			category = tryInsert(category);
-			Navigator.refresh();
+			// we have to refresh the category starting from it's root
+			// otherwise the object model is out of sync.
+			var element = Navigator.findElement(category.modelType);
+			Navigator.refresh(element);
 			Navigator.select(category);
 		} catch (Exception e) {
 			ErrorReporter.on("failed to save category", e);
