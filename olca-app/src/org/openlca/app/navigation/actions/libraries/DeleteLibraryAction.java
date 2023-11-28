@@ -22,6 +22,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.Library;
+import org.openlca.core.library.Unmounter;
 import org.openlca.util.Dirs;
 
 public class DeleteLibraryAction extends Action implements INavigationAction {
@@ -63,9 +64,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		// check if this is a mounted library
 		var db = element.getDatabase();
 		if (db.isPresent()) {
-			var root = Navigator.getInstance().getRoot();
 			App.runWithProgress("Removing library " + lib.name() + " ...",
-					() -> LibUtils.unmountUnsafe(lib, root),					
+					() -> new Unmounter(db.get()).unmountUnsafe(lib),
 					() -> Navigator.refresh());
 		} else {
 			delete(lib);

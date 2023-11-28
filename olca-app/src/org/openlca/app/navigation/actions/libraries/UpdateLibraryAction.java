@@ -12,6 +12,7 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.core.library.Unmounter;
 
 public class UpdateLibraryAction extends Action implements INavigationAction {
 
@@ -51,9 +52,8 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 			if (added.isEmpty())
 				return;
 			var lib = element.getContent();
-			var root = Navigator.getInstance().getRoot();
 			App.runWithProgress("Removing library " + lib.name() + " ...",
-					() -> LibUtils.unmountUnsafe(lib, root),					
+					() -> new Unmounter(Database.get()).unmountUnsafe(lib),					
 					() -> Navigator.refresh());
 		});
 		addAction.run();
