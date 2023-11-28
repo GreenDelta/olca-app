@@ -3,6 +3,7 @@ package org.openlca.app.editors.lcia.geo;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -10,18 +11,25 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
+import org.openlca.app.components.mapview.MapDialog;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
+import org.openlca.geo.geojson.FeatureCollection;
+import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.geo.lcia.GeoFactorMerge;
 import org.openlca.util.Strings;
 
 import java.util.List;
+import java.util.Map;
 
 class GeoFactorDialog extends FormDialog {
 
@@ -80,6 +88,32 @@ class GeoFactorDialog extends FormDialog {
 		Tables.bindColumnWidths(table, 0.3, 0.25, 0.15, 0.15, 0.15);
 		table.setLabelProvider(new FactorLabel(page));
 		table.setInput(factors);
+
+		var mapAction = Actions.create(
+				"Show factors for flow", Icon.MAP.descriptor(), () -> openMap(table));
+		Actions.bind(table, mapAction);
+	}
+
+	private void openMap(TableViewer table) {
+		ImpactFactor factor = Viewers.getFirstSelected(table);
+		if (factor == null || factor.flow == null)
+			return;
+		var flow = factor.flow;
+		var coll = new FeatureCollection();
+		for (var f : factors) {
+			if (f.location == null)
+				continue;
+			var g = GeoJSON.unpack(f.location.geodata);
+			if (g == null || g.isEmpty())
+				continue;
+			for (var feature : g.features) {
+				feature.properties = Map.of("cf", f.value);
+				coll.features.add(feature);
+			}
+		}
+		var title = "Regionalized characterization factors for "
+				+ Labels.name(flow);
+		MapDialog.show(title, map -> map.addLayer(coll).fillScale("cf"));
 	}
 
 	@Override
