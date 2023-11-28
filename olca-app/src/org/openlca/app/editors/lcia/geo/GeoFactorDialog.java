@@ -4,18 +4,21 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
+import org.openlca.geo.lcia.GeoFactorMerge;
 import org.openlca.util.Strings;
 
 import java.util.List;
@@ -24,6 +27,7 @@ class GeoFactorDialog extends FormDialog {
 
 	private final GeoPage page;
 	private final List<ImpactFactor> factors;
+	private boolean keepExisting = true;
 
 	static void open(GeoPage page, List<ImpactFactor> factors) {
 		new GeoFactorDialog(page, factors).open();
@@ -42,6 +46,11 @@ class GeoFactorDialog extends FormDialog {
 	}
 
 	@Override
+	protected Point getInitialSize() {
+		return new Point(1000, 800);
+	}
+
+	@Override
 	protected void createButtonsForButtonBar(Composite comp) {
 		createButton(comp, IDialogConstants.OK_ID,
 				"Add new factors", true);
@@ -53,11 +62,37 @@ class GeoFactorDialog extends FormDialog {
 	protected void createFormContent(IManagedForm form) {
 		var tk = form.getToolkit();
 		var body = UI.dialogBody(form.getForm(), tk);
+
+		// merge strategy
+		var radioComp = UI.composite(body, tk);
+		UI.gridLayout(radioComp, 3);
+		UI.label(radioComp, tk, "Merge factors: ");
+		var keep = UI.radio(radioComp, tk, "Keep existing");
+		keep.setSelection(keepExisting);
+		Controls.onSelect(keep, $ -> keepExisting = keep.getSelection());
+		var repl = UI.radio(radioComp, tk, "Replace existing");
+		repl.setSelection(!keepExisting);
+		Controls.onSelect(repl, $ -> keepExisting = !repl.getSelection());
+
+		// factor table
 		var table = Tables.createViewer(body,
 				M.Flow, M.Category, M.Factor, M.Unit, M.Location);
 		Tables.bindColumnWidths(table, 0.3, 0.25, 0.15, 0.15, 0.15);
 		table.setLabelProvider(new FactorLabel(page));
 		table.setInput(factors);
+	}
+
+	@Override
+	protected void okPressed() {
+		var impact = page.editor.getModel();
+		var merge = keepExisting
+				? GeoFactorMerge.keepExisting(impact)
+				: GeoFactorMerge.replaceExisting(impact);
+		merge.doIt(factors);
+		page.editor.setDirty(true);
+		page.editor.emitEvent(page.editor.FACTORS_CHANGED_EVENT);
+		page.editor.setActivePage("ImpactFactorPage");
+		super.okPressed();
 	}
 
 	private static class FactorLabel extends LabelProvider
