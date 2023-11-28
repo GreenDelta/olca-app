@@ -1,8 +1,5 @@
 package org.openlca.app.util;
 
-import java.math.RoundingMode;
-import java.util.Objects;
-
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -12,23 +9,8 @@ import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.ProviderLinking;
-import org.openlca.core.model.AllocationMethod;
-import org.openlca.core.model.Category;
-import org.openlca.core.model.Currency;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.FlowProperty;
-import org.openlca.core.model.FlowPropertyType;
-import org.openlca.core.model.FlowType;
-import org.openlca.core.model.Location;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.RefEntity;
-import org.openlca.core.model.RiskLevel;
-import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.UncertaintyType;
-import org.openlca.core.model.Unit;
-import org.openlca.core.model.UnitGroup;
+import org.openlca.core.model.*;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -39,6 +21,9 @@ import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.RoundingMode;
+import java.util.Objects;
 
 public class Labels {
 
@@ -154,6 +139,14 @@ public class Labels {
 		return techFlow != null
 				? category(techFlow.provider())
 				: "";
+	}
+
+	public static String code(Location loc) {
+		if (loc == null)
+			return "";
+		return Strings.notEmpty(loc.code)
+				? loc.code
+				: loc.name;
 	}
 
 	public static String getEnumText(Object enumValue) {

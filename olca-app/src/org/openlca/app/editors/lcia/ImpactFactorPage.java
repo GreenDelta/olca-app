@@ -241,28 +241,17 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		public String getColumnText(Object o, int col) {
 			if (!(o instanceof ImpactFactor f))
 				return null;
-			switch (col) {
-				case 0:
-					return Labels.name(f.flow);
-				case 1:
-					return Labels.category(f.flow);
-				case 2:
-					if (f.formula == null || !showFormulas)
-						return Double.toString(f.value);
-					else
-						return f.formula;
-				case 3:
-					return getFactorUnit(f);
-				case 4:
-					return Uncertainty.string(f.uncertainty);
-				case 5:
-					return f.location == null ? ""
-						: f.location.code != null
-						? f.location.code
-						: Labels.name(f.location);
-				default:
-					return null;
-			}
+			return switch (col) {
+				case 0 -> Labels.name(f.flow);
+				case 1 -> Labels.category(f.flow);
+				case 2 -> f.formula == null || !showFormulas
+					? Double.toString(f.value)
+					: f.formula;
+				case 3 -> getFactorUnit(f);
+				case 4 -> Uncertainty.string(f.uncertainty);
+				case 5 -> Labels.code(f.location);
+				default -> null;
+			};
 		}
 
 		private String getFactorUnit(ImpactFactor factor) {
@@ -274,7 +263,6 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			else
 				return "1/" + factor.unit.name;
 		}
-
 	}
 
 	private static class LocationModifier extends DialogCellEditor {
