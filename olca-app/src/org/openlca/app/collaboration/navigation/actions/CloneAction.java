@@ -30,10 +30,23 @@ import org.slf4j.LoggerFactory;
 public class CloneAction extends Action implements INavigationAction {
 
 	private static final Logger log = LoggerFactory.getLogger(CloneAction.class);
+	private final boolean standalone;
+
+	private CloneAction(boolean standalone) {
+		this.standalone = standalone;
+	}
+
+	public static CloneAction forImportMenu() {
+		return new CloneAction(false);
+	}
+
+	public static CloneAction standalone() {
+		return new CloneAction(true);
+	}
 
 	@Override
 	public String getText() {
-		return "From Git...";
+		return standalone ? "Import from Git..." : "From Git...";
 	}
 
 	@Override
@@ -121,15 +134,17 @@ public class CloneAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
-		if (selection.size() != 1)
+		if (selection.size() > 1)
 			return false;
+		if (selection.size() == 0)
+			return standalone;
 		var first = selection.get(0);
 		if (!(first instanceof DatabaseElement))
 			return false;
 		var elem = (DatabaseElement) first;
 		if (!Database.isActive(elem.getContent()))
-			return false;
-		return !Repository.isConnected();
+			return standalone;
+		return false;
 	}
 
 }

@@ -165,7 +165,8 @@ public class NavigationMenu extends CommonActionProvider {
 				new ExportAction(),
 				new ExportScriptAction(),
 				new ExportFlowMapAction(),
-				new ExportLibraryAction());
+				new ExportLibraryAction(),
+				CloneAction.standalone());
 	}
 
 	public static MenuManager createImportMenu() {
@@ -179,7 +180,7 @@ public class NavigationMenu extends CommonActionProvider {
 				Icon.FILE.descriptor(),
 				() -> new FileImport().run()));
 		// Git clone
-		menu.add(new CloneAction());
+		menu.add(CloneAction.forImportMenu());
 		// open the generic import dialog
 		menu.add(Actions.create(M.Other + "...", icon, () -> {
 			try {
