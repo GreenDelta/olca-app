@@ -22,7 +22,6 @@ import org.openlca.app.collaboration.navigation.actions.StashApplyAction;
 import org.openlca.app.collaboration.navigation.actions.StashCreateAction;
 import org.openlca.app.collaboration.navigation.actions.StashDropAction;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.actions.NavigationMenu;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -91,15 +90,15 @@ public class RepositoryMenu {
 		if (selection.isEmpty())
 			return false;
 		for (var element : selection)
-			if (isSubOfActiveRepo(element))
+			if (isSubOfActive(element))
 				return true;
 		return false;
 	}
 
-	private static boolean isSubOfActiveRepo(INavigationElement<?> element) {
+	private static boolean isSubOfActive(INavigationElement<?> element) {
 		while (element != null) {
 			if (element instanceof DatabaseElement db) {
-				if (Database.isActive(db.getContent()) && Repository.isConnected())
+				if (Database.isActive(db.getContent()))
 					return true;
 			}
 			element = element.getParent();
