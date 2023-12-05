@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -80,10 +81,10 @@ public class DbRestoreAction extends Action implements INavigationAction {
 	}
 
 	private static String getDatabaseName(File zolca, File dbFolder) {
-		String proposal = zolca.getName()
-				.replace(".zolca", "")
-				.replaceAll("\\W+", "_")
-				.toLowerCase();
+		var proposal = zolca.getName();
+		if (proposal.toLowerCase(Locale.US).endsWith(".zolca")) {
+			proposal = proposal.substring(0, proposal.length() - 6);
+		}
 		var existing = dbFolder.list();
 		var names = existing == null
 				? Collections.emptySet()
@@ -94,7 +95,7 @@ public class DbRestoreAction extends Action implements INavigationAction {
 		int count = 0;
 		while (names.contains(name.toLowerCase())) {
 			count++;
-			name = proposal + "_" + count;
+			name = proposal + " (" + count + ")";
 		}
 		return name;
 	}
