@@ -21,14 +21,18 @@ import org.openlca.app.collaboration.navigation.actions.ShowInHistoryAction;
 import org.openlca.app.collaboration.navigation.actions.StashApplyAction;
 import org.openlca.app.collaboration.navigation.actions.StashCreateAction;
 import org.openlca.app.collaboration.navigation.actions.StashDropAction;
+import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.actions.NavigationMenu;
+import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 
 public class RepositoryMenu {
 
 	public static void add(List<INavigationElement<?>> selection, IMenuManager menu) {
+		if (!isSubOfActiveRepo(selection))
+			return;
 		var repoMenu = new MenuManager(M.Repository);
 		repoMenu.setImageDescriptor(Icon.REPOSITORY.descriptor());
 		var added = NavigationMenu.addActions(selection, repoMenu,
@@ -82,4 +86,24 @@ public class RepositoryMenu {
 		return 1;
 	}
 
+	private static boolean isSubOfActiveRepo(List<INavigationElement<?>> selection) {
+		if (selection.isEmpty())
+			return false;
+		for (var element : selection)
+			if (isSubOfActive(element))
+				return true;
+		return false;
+	}
+
+	private static boolean isSubOfActive(INavigationElement<?> element) {
+		while (element != null) {
+			if (element instanceof DatabaseElement db) {
+				if (Database.isActive(db.getContent()))
+					return true;
+			}
+			element = element.getParent();
+		}
+		return false;
+	}
+	
 }

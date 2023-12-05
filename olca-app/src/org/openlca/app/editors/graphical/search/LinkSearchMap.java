@@ -172,88 +172,8 @@ public class LinkSearchMap {
 		if (list == null)
 			return;
 		list.remove(index);
-		if (list.size() == 0)
+		if (list.isEmpty())
 			map.remove(id);
-	}
-
-
-	/**
-	 * Recursively check if any of this process's outputs or inputs chain to the
-	 * reference (closed loop are not considered).
-	 * Returns false is the initial process is the reference.
-	 * @param process
-	 * @param provider if true checks the supply chain, else the demand chain.
-	 * @param ref the reference process.
-	 * @return
-	 */
-	public boolean isChainingReference(long process, boolean provider, long ref) {
-		if (wasExplored.contains(process))
-			return false;
-		else if (process == ref)
-			// The reference node is explored if and only if it is the initial node
-			// (see the condition in the for loop).
-			return false;
-		wasExplored.add(process);
-
-		var links = provider
-				? getConnectionLinks(process)
-				: getProviderLinks(process);
-		if (links.isEmpty()) {
-			wasExplored.remove(process);
-			return false;
-		}
-
-		for (var link : links) {
-			if (link.processId == link.providerId)
-				continue;
-			var otherProcess = provider
-					? link.providerId
-					: link.processId;
-			if (otherProcess == ref
-					|| isChainingReference(otherProcess, provider, ref)) {
-				wasExplored.remove(process);
-				return true;
-			}
-		}
-		wasExplored.remove(process);
-		return false;
-	}
-
-	/**
-	 * Recursively check if a process's outputs or inputs only chain to the
-	 * reference process (close loop are not considered).
-	 * Returns false is the initial process is the reference.
-	 */
-	public boolean isOnlyChainingReferenceNode(Long process, int side, Long ref) {
-		if (wasExplored.contains(process))
-			return false;
-		else if (Objects.equals(process, ref))
-			// The reference node is explored if and only if it is the initial node
-			// (see the condition in the for loop).
-			return false;
-		wasExplored.add(process);
-
-		var links = side == INPUT
-				? getConnectionLinks(process)
-				: getProviderLinks(process);
-		if (links.isEmpty()) {
-			wasExplored.remove(process);
-			return false;
-		}
-
-		var isOnlyChainingReferenceNode = true;
-		for (var link : links) {
-			if (link.processId == link.providerId)
-				continue;
-			var otherNode = side == INPUT
-					? link.providerId
-					: link.processId;
-			if (otherNode != ref
-					&& !isOnlyChainingReferenceNode(otherNode, side, ref))
-				isOnlyChainingReferenceNode = false;
-		}
-		wasExplored.remove(process);
-		return isOnlyChainingReferenceNode;
 	}
 
 }
