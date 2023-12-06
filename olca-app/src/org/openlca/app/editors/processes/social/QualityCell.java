@@ -6,7 +6,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -17,7 +16,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.DQIndicator;
 import org.openlca.core.model.DQScore;
 
-import java.util.Objects;
 
 class QualityCell {
 

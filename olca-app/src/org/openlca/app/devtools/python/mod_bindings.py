@@ -158,7 +158,6 @@ import org.openlca.core.results.providers.FactorizationSolver as FactorizationSo
 import org.openlca.geo.geojson.Feature as Feature
 import org.openlca.geo.geojson.FeatureCollection as FeatureCollection
 import org.openlca.geo.calc.FeatureRepair as FeatureRepair
-import org.openlca.geo.calc.FeatureShare as FeatureShare
 import org.openlca.geo.calc.FeatureValidation as FeatureValidation
 import org.openlca.core.database.FileStore as FileStore
 import org.openlca.jsonld.FileStoreReader as FileStoreReader
@@ -196,6 +195,7 @@ import org.openlca.io.Format as Format
 import org.openlca.util.Formula as Formula
 import org.openlca.geo.lcia.GeoAggregation as GeoAggregation
 import org.openlca.geo.lcia.GeoFactorCalculator as GeoFactorCalculator
+import org.openlca.geo.lcia.GeoFactorMerge as GeoFactorMerge
 import org.openlca.geo.lcia.GeoFactorSetup as GeoFactorSetup
 import org.openlca.geo.lcia.GeoFlowBinding as GeoFlowBinding
 import org.openlca.geo.geojson.GeoJSON as GeoJSON
@@ -244,6 +244,7 @@ import org.openlca.core.matrix.IndexedMatrix as IndexedMatrix
 import org.openlca.io.openepd.io.IndicatorMapping as IndicatorMapping
 import org.openlca.io.xls.results.InfoSheet as InfoSheet
 import org.openlca.geo.calc.IntersectionCalculator as IntersectionCalculator
+import org.openlca.geo.calc.IntersectionShare as IntersectionShare
 import org.openlca.core.matrix.InventoryBuilder as InventoryBuilder
 import org.openlca.core.results.providers.InversionResult as InversionResult
 import org.openlca.core.results.providers.InversionResultProvider as InversionResultProvider
@@ -421,6 +422,7 @@ import org.openlca.jsonld.output.ProjectWriter as ProjectWriter
 import org.openlca.geo.calc.Projection as Projection
 import org.openlca.geo.geojson.Proto as Proto
 import org.openlca.proto.io.input.ProtoImport as ProtoImport
+import org.openlca.util.ProviderChainRemoval as ProviderChainRemoval
 import org.openlca.core.matrix.linking.ProviderIndex as ProviderIndex
 import org.openlca.core.matrix.linking.ProviderLinking as ProviderLinking
 import org.openlca.core.matrix.linking.ProviderSearch as ProviderSearch

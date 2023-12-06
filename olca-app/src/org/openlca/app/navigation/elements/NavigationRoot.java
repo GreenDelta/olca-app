@@ -9,7 +9,6 @@ import java.util.Locale;
 import org.eclipse.core.runtime.PlatformObject;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.util.Dirs;
 
 /**

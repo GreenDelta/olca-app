@@ -103,6 +103,9 @@ public class DeleteManager {
 				graph.linkSearch.remove(link);
 				return provider;
 			}
+			case Cancel -> {
+				return null;
+			}
 		}
 		return null;
 	}

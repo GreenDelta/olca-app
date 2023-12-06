@@ -6,11 +6,9 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Question;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.util.ProviderChainRemoval;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 
