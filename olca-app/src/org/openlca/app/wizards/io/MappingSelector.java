@@ -71,6 +71,13 @@ class MappingSelector {
 		combo.select(selected);
 		Controls.onSelect(combo, $ -> onItemSelected(combo));
 
+		// fire the selected mapping if a pattern matched
+		if (selected > 0 && handler != null) {
+			var name = dbFiles.get(selected - 1);
+			var mapping = new MappingFileDao(db).getForName(name);
+			handler.accept(FlowMap.of(mapping));
+		}
+
 		// add the file button
 		var fileBtn = new Button(comp, SWT.NONE);
 		fileBtn.setText("From file");
