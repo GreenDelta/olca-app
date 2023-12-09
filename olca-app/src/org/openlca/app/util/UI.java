@@ -539,9 +539,7 @@ public class UI {
 	public static Text labeledText(Composite comp, FormToolkit tk, String label,
 			int style) {
 		var lab = label(comp, tk, label);
-		var gd = gridData(lab, false, false);
-		gd.verticalAlignment = SWT.TOP;
-		gd.verticalIndent = 2;
+		gridData(lab, false, false);
 		return text(comp, tk, null, style);
 	}
 
