@@ -20,11 +20,11 @@ public class DeleteManager {
 	private final Graph graph;
 	private final GraphEditor editor;
 	public static final String QUESTION =
-			"Keep: keep the supply chain even if it is not connected to " +
+			"- Keep: keep the supply chain even if it is not connected to " +
 					"the reference process." +
-					"\n• Hide: hide the supply chain but keep the processes as part " +
+					"\n- Hide: hide the supply chain but keep the processes as part " +
 					"of the product system," +
-					"\n• Delete: delete the supply chain (processes) from the " +
+					"\n- Delete: delete the supply chain (processes) from the " +
 					"product system," +
 					"\nPlease note that clicking delete won't delete the providers " +
 					"that supply the reference process, but only hide them.";
@@ -102,6 +102,9 @@ public class DeleteManager {
 				r.remove(link);
 				graph.linkSearch.remove(link);
 				return provider;
+			}
+			case Cancel -> {
+				return null;
 			}
 		}
 		return null;

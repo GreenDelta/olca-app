@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
 
 /**
  * This is a data structure for searching a set of existing links by
@@ -34,8 +32,6 @@ public class LinkSearchMap {
 	TLongObjectHashMap<TIntArrayList> connectionIndex;
 
 	ArrayList<ProcessLink> data;
-	private ArrayList<Long> wasExplored = new ArrayList<>();
-
 	public LinkSearchMap(Collection<ProcessLink> links) {
 		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
 				Constants.DEFAULT_LOAD_FACTOR, -1L);

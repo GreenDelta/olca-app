@@ -15,7 +15,6 @@ import java.nio.file.Files;
 class CalculationDispatch {
 
 	private final ProductSystem system;
-	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private CalculationDispatch(ProductSystem system) {
 		this.system = system;

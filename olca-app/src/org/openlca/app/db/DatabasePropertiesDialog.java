@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 public class DatabasePropertiesDialog extends FormDialog {
 
 	private final DatabaseConfig config;
+	private final int style = SWT.READ_ONLY | SWT.BORDER;
 
 	public DatabasePropertiesDialog(DatabaseConfig config) {
 		super(UI.shell());
@@ -43,28 +44,22 @@ public class DatabasePropertiesDialog extends FormDialog {
 	private void renderMysqlConfiguration(
 			MySqlConfig conf, Composite parent, FormToolkit tk
 	) {
-		UI.labeledText(parent, tk, M.Type, SWT.READ_ONLY)
-				.setText(M.RemoteDatabase);
-		UI.labeledText(parent, tk, M.Name, SWT.READ_ONLY)
-				.setText(conf.name());
-		UI.labeledText(parent, tk, M.Host, SWT.READ_ONLY)
-				.setText(conf.host());
-		UI.labeledText(parent, tk, M.Port, SWT.READ_ONLY)
+		UI.labeledText(parent, tk, M.Type, style).setText(M.RemoteDatabase);
+		UI.labeledText(parent, tk, M.Name, style).setText(conf.name());
+		UI.labeledText(parent, tk, M.Host, style).setText(conf.host());
+		UI.labeledText(parent, tk, M.Port, style)
 				.setText(Integer.toString(conf.port()));
-		UI.labeledText(parent, tk, M.User, SWT.READ_ONLY)
-				.setText(conf.user());
+		UI.labeledText(parent, tk, M.User, style).setText(conf.user());
 		boolean withPassword = Strings.notEmpty(conf.password());
-		UI.labeledText(parent, tk, M.WithPassword, SWT.READ_ONLY)
+		UI.labeledText(parent, tk, M.WithPassword, style)
 				.setText(withPassword ? M.Yes : M.No);
 	}
 
 	private void renderDerbyConfig(
 			DerbyConfig conf, Composite parent, FormToolkit tk
 	) {
-		UI.labeledText(parent, tk, M.Type, SWT.READ_ONLY)
-				.setText(M.LocalDatabase);
-		UI.labeledText(parent, tk, M.Name, SWT.READ_ONLY)
-				.setText(conf.name());
+		UI.labeledText(parent, tk, M.Type, style).setText(M.LocalDatabase);
+		UI.labeledText(parent, tk, M.Name, style).setText(conf.name());
 		UI.label(parent, tk, M.Folder);
 		renderFolderLink(conf, parent, tk);
 	}

@@ -1,8 +1,6 @@
 package org.openlca.app.navigation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DragSourceEvent;
