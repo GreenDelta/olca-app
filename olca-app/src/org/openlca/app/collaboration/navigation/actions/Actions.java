@@ -183,6 +183,11 @@ class Actions {
 				public void beginTask(String title, int totalWork) {
 					monitor.beginTask(title, totalWork);
 				}
+
+				@Override
+				public void showDuration(boolean arg0) {
+					
+				}
 			};
 		}
 
