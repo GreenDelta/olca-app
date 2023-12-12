@@ -19,6 +19,7 @@ import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
+import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.actions.GitStashApply;
@@ -38,8 +39,12 @@ class Actions {
 	}
 
 	static void handleException(String message, Exception e) {
+		var msg = e.getMessage();
+		if (e instanceof UnsupportedClientVersionException ue) {
+			msg = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
+		}
 		log.error(message, e);
-		MsgBox.error(e.getMessage());
+		MsgBox.error(msg);
 	}
 
 	static <T> T run(GitCredentialsProvider credentials, GitRemoteAction<T> runnable)
@@ -186,7 +191,7 @@ class Actions {
 
 				@Override
 				public void showDuration(boolean arg0) {
-					
+
 				}
 			};
 		}
