@@ -109,7 +109,7 @@ Bundle-ClassPath: .,
  libs/olca-proto-2.0.1.jar,
  libs/olca-proto-io-2.0.4.jar,
  libs/olca-simapro-csv-3.0.5.jar,
- libs/org.eclipse.jgit-6.7.0.202309050840-r.jar
+ libs/org.eclipse.jgit-6.7.0.202309050840-r.jar,
  libs/org.eclipse.persistence.asm-9.3.0.jar,
  libs/org.eclipse.persistence.core-3.0.3.jar,
  libs/org.eclipse.persistence.jpa.jpql-3.0.3.jar,
