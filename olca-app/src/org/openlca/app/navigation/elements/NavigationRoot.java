@@ -2,7 +2,9 @@ package org.openlca.app.navigation.elements;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.openlca.app.db.Database;
@@ -40,13 +42,8 @@ public class NavigationRoot extends PlatformObject implements
 
 		childs = new ArrayList<>();
 
-		// add database elements
-		var dbs = Database.getConfigurations();
-		for (var config : dbs.getDerbyConfigs()) {
-			childs.add(new DatabaseElement(this, config));
-		} for (var config : dbs.getMySqlConfigs()) {
-			childs.add(new DatabaseElement(this, config));
-		}
+		// add database elements and their folders
+		childs.addAll(dbs());
 
 		// libraries
 		var libDir = Workspace.getLibraryDir();
@@ -63,5 +60,21 @@ public class NavigationRoot extends PlatformObject implements
 		}
 
 		return childs;
+	}
+
+	private List<NavigationElement<?>> dbs() {
+		var elems = new ArrayList<NavigationElement<?>>();
+		var dirs = new HashMap<String, DatabaseDirElement>();
+		for (var conf : Database.getConfigurations().getAll()) {
+			var path = DatabaseDirElement.split(conf.category());
+			if (path.length == 0) {
+				elems.add(new DatabaseElement(this, conf));
+				continue;
+			}
+			var key = path[0].toLowerCase(Locale.US);
+			dirs.computeIfAbsent(key, $ -> new DatabaseDirElement(this, path[0]));
+		}
+		elems.addAll(dirs.values());
+		return elems;
 	}
 }

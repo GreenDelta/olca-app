@@ -1,10 +1,6 @@
 package org.openlca.app.wizards.io;
 
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.function.Consumer;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -19,18 +15,32 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.core.io.maps.FlowMap;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
+
 class MappingSelector {
 
 	private final IDatabase db;
 	private final Consumer<FlowMap> handler;
+	private Pattern selection;
 
 	private MappingSelector(IDatabase db, Consumer<FlowMap> handler) {
-		this.db	 = db;
+		this.db = db;
 		this.handler = handler;
 	}
 
 	static MappingSelector on(Consumer<FlowMap> handler) {
 		return new MappingSelector(Database.get(), handler);
+	}
+
+	/**
+	 * Provide a regex pattern for pre-selecting a possible mapping.
+	 */
+	MappingSelector withSelectionPattern(String p) {
+		selection = Pattern.compile(p);
+		return this;
 	}
 
 	void render(Composite comp) {
@@ -47,12 +57,26 @@ class MappingSelector {
 				.toList();
 		var items = new String[dbFiles.size() + 1];
 		items[0] = "";
+		int selected = 0;
 		for (int i = 0; i < dbFiles.size(); i++) {
-			items[i + 1] = dbFiles.get(i);
+			var mapping = dbFiles.get(i);
+			items[i + 1] = mapping;
+			if (selection != null
+					&& selected == 0
+					&& selection.matcher(mapping).matches()) {
+				selected = i + 1;
+			}
 		}
 		combo.setItems(items);
-		combo.select(0);
+		combo.select(selected);
 		Controls.onSelect(combo, $ -> onItemSelected(combo));
+
+		// fire the selected mapping if a pattern matched
+		if (selected > 0 && handler != null) {
+			var name = dbFiles.get(selected - 1);
+			var mapping = new MappingFileDao(db).getForName(name);
+			handler.accept(FlowMap.of(mapping));
+		}
 
 		// add the file button
 		var fileBtn = new Button(comp, SWT.NONE);

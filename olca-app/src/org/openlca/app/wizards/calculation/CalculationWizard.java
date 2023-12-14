@@ -50,6 +50,9 @@ public class CalculationWizard extends Wizard {
 		boolean doContinue = checkForUnsavedContent();
 		if (!doContinue)
 			return;
+
+		Libraries.checkValidity();
+
 		var wizard = new CalculationWizard(target);
 		var dialog = new WizardDialog(UI.shell(), wizard);
 		dialog.open();
@@ -130,7 +133,7 @@ public class CalculationWizard extends Wizard {
 		log.trace("run calculation");
 		var calc = new SystemCalculator(Database.get())
 				.withSolver(App.getSolver());
-		Libraries.forCalculation().ifPresent(calc::withLibraries);
+		Libraries.readersForCalculation().ifPresent(calc::withLibraries);
 		var result = setup.type == CalculationType.LAZY
 				? calc.calculateLazy(setup.calcSetup)
 				: calc.calculateEager(setup.calcSetup);

@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.preferences.Theme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,6 +159,11 @@ public class Colors {
 		return get(25, 76, 127);
 	}
 
+	public static Color darkBackground() {
+		// Also defined in /olca-app/css/e4_dark_fixes.css
+		return get(47, 47, 47);
+	}
+
 	public static Color gray() {
 		return get(128, 128, 128);
 	}
@@ -176,6 +182,10 @@ public class Colors {
 
 	public static Color tagBackground() {
 		return fromHex("#e8eaf6");
+	}
+
+	public static Color background() {
+		return Theme.isDark() ? Colors.darkBackground() : Colors.white();
 	}
 
 	/**
@@ -222,5 +232,4 @@ public class Colors {
 
 		return get(red, green, blue);
 	}
-
 }

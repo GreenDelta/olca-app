@@ -7,7 +7,6 @@ import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.RestrictionDialog;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.PathFilters;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
@@ -17,8 +16,8 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.Diffs;
-import org.openlca.git.util.TypedRefIdSet;
 import org.openlca.git.util.TypedRefId;
+import org.openlca.git.util.TypedRefIdSet;
 import org.openlca.util.Strings;
 
 class Datasets {
@@ -91,16 +90,11 @@ class Datasets {
 			return true;
 		if (!Repository.get().isCollaborationServer())
 			return true;
-		try {
-			var restricted = Repository.get().client.checkRestrictions(refs);
-			if (restricted.isEmpty())
-				return true;
-			var code = new RestrictionDialog(restricted).open();
-			return code == RestrictionDialog.OK;
-		} catch (WebRequestException e) {
-			Actions.handleException("Error performing restriction check", e);
-			return false;
-		}
+		var restricted = Repository.get().client.checkRestrictions(refs);
+		if (restricted.isEmpty())
+			return true;
+		var code = new RestrictionDialog(restricted).open();
+		return code == RestrictionDialog.OK;
 	}
 
 	static record DialogResult(int action, String message, Set<TriDiff> datasets) {

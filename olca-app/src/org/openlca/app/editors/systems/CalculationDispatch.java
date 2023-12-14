@@ -6,6 +6,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.wizards.calculation.CalculationWizard;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.util.ProductSystems;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;

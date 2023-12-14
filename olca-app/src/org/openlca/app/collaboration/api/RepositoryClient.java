@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.api;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,53 +38,84 @@ public class RepositoryClient {
 		this.repositoryId = repositoryId;
 	}
 
-	public boolean isCollaborationServer() throws WebRequestException {
+	public boolean isCollaborationServer() {
 		var invocation = new ServerCheckInvocation();
 		invocation.baseUrl = apiUrl;
-		var result = invocation.execute();
-		if (result != null)
-			return result;
-		return false;
+		try {
+			var result = invocation.execute();
+			if (result != null)
+				return result;
+			return false;
+		} catch (WebRequestException e) {
+			log.warn("isCollaborationServer call responded: " + e.getMessage());
+			return false;
+		}
 	}
 
-	public Announcement getAnnouncement() throws WebRequestException {
-		var invocation = new AnnouncementInvocation();
-		invocation.baseUrl = apiUrl;
-		return invocation.execute();
+	public Announcement getAnnouncement() {
+		try {
+			var invocation = new AnnouncementInvocation();
+			invocation.baseUrl = apiUrl;
+			return invocation.execute();
+		} catch (WebRequestException e) {
+			log.error("Repository client request failed", e);
+			return null;
+		}
 	}
 
-	public InputStream downloadLibrary(String library) throws WebRequestException {
-		return executeLoggedIn(new LibraryDownloadInvocation(library));
+	public List<Restriction> checkRestrictions(Collection<? extends ModelRef> refs) {
+		try {
+			return executeLoggedIn(new RestrictionCheckInvocation(repositoryId, refs));
+		} catch (WebRequestException e) {
+			log.error("Repository client request failed", e);
+			return new ArrayList<>();
+		}
 	}
 
-	public boolean hasAccess() throws WebRequestException {
-		return executeLoggedIn(new CheckAccessInvocation(repositoryId));
+	public List<Comment> getAllComments() {
+		try {
+			return executeLoggedIn(new CommentsInvocation(repositoryId));
+		} catch (WebRequestException e) {
+			log.error("Repository client request failed", e);
+			return new ArrayList<>();
+		}
 	}
 
-	public List<Restriction> checkRestrictions(Collection<? extends ModelRef> refs) throws WebRequestException {
-		return executeLoggedIn(new RestrictionCheckInvocation(repositoryId, refs));
+	public Comments getComments(ModelType type, String refId) {
+		try {
+			return new Comments(executeLoggedIn(new CommentsInvocation(repositoryId, type, refId)));
+		} catch (WebRequestException e) {
+			log.error("Repository client request failed", e);
+			return new Comments(new ArrayList<>());
+		}
 	}
 
-	public List<Comment> getAllComments() throws WebRequestException {
-		return executeLoggedIn(new CommentsInvocation(repositoryId));
+	public InputStream downloadLibrary(String library) {
+		try {
+			return executeLoggedIn(new LibraryDownloadInvocation(library));
+		} catch (WebRequestException e) {
+			log.error("Repository client request failed", e);
+			return null;
+		}
+	}
+	public boolean downloadJson(TypedRefId id, File toFile) {
+		try {
+			var token = executeLoggedIn(new DownloadJsonPrepareInvocation(repositoryId, id));
+			executeLoggedIn(new DownloadJsonInvocation(token, toFile));
+			return true;
+		} catch (WebRequestException e) {
+			log.error("Repository client request failed", e);
+			return false;
+		}
 	}
 
-	public Comments getComments(ModelType type, String refId) throws WebRequestException {
-		return new Comments(executeLoggedIn(new CommentsInvocation(repositoryId, type, refId)));
-	}
-
-	public List<String> listRepositories() throws WebRequestException {
-		return executeLoggedIn(new ListRepositoriesInvocation());
-	}
-
-	public void downloadJson(Collection<? extends TypedRefId> requestedData, File toFile)
-			throws WebRequestException {
-		var token = executeLoggedIn(new DownloadJsonPrepareInvocation(repositoryId, requestedData));
-		executeLoggedIn(new DownloadJsonInvocation(token, toFile));
-	}
-
-	public SearchResult search(String query, ModelType type, int page, int pageSize) throws WebRequestException {
-		return executeLoggedIn(new SearchInvocation(repositoryId, query, type, page, pageSize));
+	public SearchResult search(String query, ModelType type, int page, int pageSize) {
+		try {
+			return executeLoggedIn(new SearchInvocation(repositoryId, query, type, page, pageSize));
+		} catch (WebRequestException e) {
+			log.error("Repository client request failed", e);
+			return null;
+		}
 	}
 
 	private <T> T executeLoggedIn(Invocation<?, T> invocation) throws WebRequestException {
@@ -100,7 +132,7 @@ public class RepositoryClient {
 				invocation.sessionId = sessionId;
 				return invocation.execute();
 			} else if (e.isConnectException()) {
-				log.warn("Could not connect to repository server " + serverUrl + ", " + e.getMessage());
+				log.error("Repository client request failed", e);
 				return null;
 			}
 			throw e;
@@ -126,7 +158,7 @@ public class RepositoryClient {
 			sessionId = invocation.execute();
 		} catch (WebRequestException e) {
 			if (e.isConnectException()) {
-				log.warn("Could not connect to repository server " + serverUrl + ", " + e.getMessage());
+				log.error("Repository client request failed", e);
 				return false;
 			}
 			if (e.getErrorCode() == Status.UNAUTHORIZED.getStatusCode()
@@ -141,7 +173,7 @@ public class RepositoryClient {
 		try {
 			logout();
 		} catch (WebRequestException e) {
-			log.error("Error logging out from repository", e);
+			log.error("Repository client request failed", e);
 		}
 	}
 

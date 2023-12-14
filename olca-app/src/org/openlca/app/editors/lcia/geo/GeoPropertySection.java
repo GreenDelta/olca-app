@@ -1,6 +1,5 @@
 package org.openlca.app.editors.lcia.geo;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -8,9 +7,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.App;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.components.mapview.MapDialog;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -19,6 +22,14 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
+import org.openlca.geo.calc.IntersectionCalculator;
+import org.openlca.geo.calc.IntersectionShare;
+import org.openlca.geo.geojson.FeatureCollection;
+import org.openlca.geo.geojson.GeoJSON;
+import org.openlca.geo.lcia.GeoAggregation;
+import org.openlca.geo.lcia.GeoProperty;
 import org.openlca.util.Strings;
 
 class GeoPropertySection {
@@ -50,16 +61,18 @@ class GeoPropertySection {
 		bindModifiers();
 
 		// bind the "open map" action
-		Action openMap = Actions.create("Open map",
+		var openMap = Actions.create("Open map",
 				Icon.MAP.descriptor(), this::showMap);
-		Actions.bind(table, openMap);
+		var calcIntersections = Actions.create(
+				"Test intersections", this::showIntersections);
+		Actions.bind(table, openMap, calcIntersections);
 		Actions.bind(section, openMap);
 
 		update();
 	}
 
 	private void showMap() {
-		Setup setup = page.setup;
+		var setup = page.setup;
 		if (setup == null || setup.features.isEmpty())
 			return;
 		GeoProperty gp = Viewers.getFirstSelected(table);
@@ -76,6 +89,47 @@ class GeoPropertySection {
 		});
 	}
 
+	private void showIntersections() {
+		var setup = page.setup;
+		if (setup == null || setup.features.isEmpty())
+			return;
+		var d = ModelSelector.select(ModelType.LOCATION);
+		if (d == null)
+			return;
+		var loc = Database.get().get(Location.class, d.id);
+		var geoData = GeoJSON.unpack(loc.geodata);
+		if (geoData == null || geoData.isEmpty()) {
+			MsgBox.info("No geographic data", "The selected location '"
+					+ Labels.name(loc) + "' has no geographic information attached.");
+			return;
+		}
+
+		var shares = App.exec("Calculate intersections",
+				() -> IntersectionCalculator.on(setup.features).shares(loc));
+		var coll = new FeatureCollection();
+		shares.stream()
+				.map(IntersectionShare::intersection)
+				.forEach(coll.features::add);
+		if (coll.isEmpty()) {
+			MsgBox.info("No intersections",
+					"The selected location '" + Labels.name(loc) +
+							"' has no intersections with the provided setup.");
+			return;
+		}
+
+		GeoProperty gp = Viewers.getFirstSelected(table);
+		var param = gp != null ? gp.name : null;
+		MapDialog.show("Intersections", map -> {
+			if (param == null) {
+				map.addLayer(coll).center();
+			} else {
+				map.addLayer(coll)
+						.fillScale(param)
+						.center();
+			}
+		});
+	}
+
 	private void bindModifiers() {
 		ModifySupport<GeoProperty> ms = new ModifySupport<>(table);
 		ms.bind("Aggregation type", new AggTypeCell());
@@ -83,7 +137,7 @@ class GeoPropertySection {
 			@Override
 			protected String getText(GeoProperty param) {
 				return param == null ? ""
-					: Double.toString(param.defaultValue);
+						: Double.toString(param.defaultValue);
 			}
 
 			@Override
@@ -95,7 +149,7 @@ class GeoPropertySection {
 					table.refresh();
 				} catch (Exception e) {
 					MsgBox.error("Not a number",
-						"The string " + s + " is not a valid number");
+							"The string " + s + " is not a valid number");
 				}
 			}
 		});
@@ -158,10 +212,10 @@ class GeoPropertySection {
 				case 1 -> p.identifier;
 				case 2 -> Numbers.format(p.defaultValue);
 				case 3 -> "[" + Numbers.format(p.min)
-					+ ", " + Numbers.format(p.max) + "]";
+						+ ", " + Numbers.format(p.max) + "]";
 				case 4 -> p.aggregation == null
-					? GeoAggregation.WEIGHTED_AVERAGE.toString()
-					: p.aggregation.toString();
+						? GeoAggregation.WEIGHTED_AVERAGE.toString()
+						: p.aggregation.toString();
 				default -> null;
 			};
 		}

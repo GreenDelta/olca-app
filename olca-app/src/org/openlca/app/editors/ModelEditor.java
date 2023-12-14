@@ -15,13 +15,11 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.util.Comments;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Categories;
 import org.openlca.app.util.ErrorReporter;
@@ -36,8 +34,7 @@ import org.openlca.core.model.Version;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
-public abstract class ModelEditor<T extends RootEntity>
-		extends FormEditor {
+public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 
 	/**
 	 * An event that is emitted by the model editor by default after the model
@@ -72,15 +69,11 @@ public abstract class ModelEditor<T extends RootEntity>
 				&& comments.hasAnyPath(path);
 	}
 
-	protected void addExtensionPages() throws PartInitException {
-		if (App.isCommentingEnabled()
-				&& comments != null
-				&& comments.hasRefId(model.refId)) {
-			addPage(new CommentsPage(this, comments, model));
-		}
-		if (FeatureFlag.ADDITIONAL_PROPERTIES.isEnabled()) {
-			addPage(new AdditionalPropertiesPage<>(this));
-		}
+	protected void addCommentPage() throws PartInitException {
+		if (!App.isCommentingEnabled() || comments == null
+				|| !comments.hasRefId(model.refId))
+			return;
+		addPage(new CommentsPage(this, comments, model));
 	}
 
 	public void emitEvent(String eventId) {
@@ -139,11 +132,7 @@ public abstract class ModelEditor<T extends RootEntity>
 				|| !Repository.isConnected()
 				|| !Repository.get().isCollaborationServer())
 			return;
-		try {
-			comments = Repository.get().client.getComments(type, refId);
-		} catch (WebRequestException e) {
-			ErrorReporter.on("Error loading comments from repository", e);
-		}
+		comments = Repository.get().client.getComments(type, refId);
 	}
 
 	@Override
@@ -219,12 +208,12 @@ public abstract class ModelEditor<T extends RootEntity>
 	public void doSaveAs() {
 		var diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs,
 				model.name + " - Copy", (name) -> {
-			if (Strings.nullOrEmpty(name))
-				return M.NameCannotBeEmpty;
-			if (Strings.nullOrEqual(name, model.name))
-				return M.NameShouldBeDifferent;
-			return null;
-		});
+					if (Strings.nullOrEmpty(name))
+						return M.NameCannotBeEmpty;
+					if (Strings.nullOrEqual(name, model.name))
+						return M.NameShouldBeDifferent;
+					return null;
+				});
 		if (diag.open() != Window.OK)
 			return;
 		String newName = diag.getValue();

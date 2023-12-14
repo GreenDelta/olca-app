@@ -1,18 +1,26 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import org.eclipse.gef.commands.Command;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
+import org.openlca.core.model.ProcessLink;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 
-public class DeleteNodeCommand extends AbstractRemoveCommand {
+public class DeleteNodeCommand extends Command {
+
+	private final Graph graph;
+	private final GraphEditor editor;
 	/**
 	 * Node to remove.
 	 */
 	private final Node node;
+	private int answer;
 
 	/**
 	 * Create a command that will remove the node from its parent.
@@ -22,7 +30,8 @@ public class DeleteNodeCommand extends AbstractRemoveCommand {
 	 * @throws IllegalArgumentException if any parameter is null
 	 */
 	public DeleteNodeCommand(Graph graph, Node node) {
-		super(graph);
+		this.graph = graph;
+		editor = graph.getEditor();
 		setLabel("delete node");
 		this.node = node;
 	}
@@ -42,49 +51,46 @@ public class DeleteNodeCommand extends AbstractRemoveCommand {
 
 	@Override
 	public void execute() {
-		var b = Question.ask("Remove process",
-				"Remove " + Labels.name(node.descriptor)
-						+ " from product system " + Labels.name(graph.getProductSystem())
-						+ "?"
-						+ "\nThis action will also remove the processes that are only " +
-						"linked to this process."
-		);
-		if (!b)
-			return;
+		answer = Question.ask("Deleting " + node.descriptor.name,
+				DeleteManager.QUESTION,
+				Arrays.stream(DeleteManager.Answer.values()).map(Enum::name).toArray(String[]::new));
 
-		redo();
+		if (answer != DeleteManager.Answer.Cancel.ordinal()) {
+			redo();
+		}
 	}
 
 	@Override
 	public void redo() {
-		var root = node.descriptor.id;
-		var ref = graph.getReferenceNode().descriptor.id;
+		var deleteManager = DeleteManager.on(graph);
+		var connectedNodes = new ArrayList<Node>();
 
-		// Remove the links to a process that is chained to the reference process.
-		graph.linkSearch.getProviderLinks(node.descriptor.id).stream()
-				.filter(link ->
-						graph.linkSearch.isChainingReference(link.providerId, false, ref))
-				.forEach(this::removeLink);
-		graph.linkSearch.getConnectionLinks(node.descriptor.id).stream()
-				.filter(link ->
-						graph.linkSearch.isChainingReference(link.processId, true, ref))
-				.forEach(this::removeLink);
+		// Remove the links to the suppliers
+		var providerLinks = graph.linkSearch.getProviderLinks(node.descriptor.id);
+		for (ProcessLink link : providerLinks) {
+			var recipient = graph.getNode(link.processId);
+			if (recipient != null) {
+				connectedNodes.add(recipient);
+			}
+			graph.removeLink(link);
+		}
 
-		// Remove the supply and demand chain.
-		removeChain(root, root, false);
-		removeChain(root, root, true);
+		// Remove the links to the providers
+		var connectionLinks = graph.linkSearch.getConnectionLinks(node.descriptor.id);
+		for (ProcessLink link : connectionLinks) {
+			var provider = deleteManager.link(link, answer);
+			if (provider != null) {
+				connectedNodes.add(provider);
+			}
+		}
 
-		// Remove eventual remaining graphical links
-		node.getAllLinks().stream()
-				.map(GraphLink.class::cast)
-				.forEach(this::removeGraphLinkOnly);
-
-		removeProcess(node.descriptor.id);
-		removeNodeChains();
+		deleteManager.process(node.descriptor.id);
+		for (Node node : connectedNodes) {
+			deleteManager.nodeChains(node);
+		}
 
 		graph.firePropertyChange(CHILDREN_PROP, null, null);
-		if (!processes.isEmpty() || !links.isEmpty())
-			editor.setDirty();
+		editor.setDirty();
 	}
 
 }

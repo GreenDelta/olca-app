@@ -1,7 +1,5 @@
 package org.openlca.app.wizards.io;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -9,26 +7,24 @@ import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.database.ProcessDao;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.ecospold1.output.EcoSpold1Export;
 import org.openlca.io.ecospold1.output.ExportConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Wizard for exporting processes and impact methods to the EcoSpold01 format
  */
 public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final ModelType type;
 	private ModelSelectionPage modelPage;
 	private Es1ExportConfigPage configPage;
-	private final ModelType type;
 
 	public EcoSpold01ExportWizard(ModelType type) {
 		super();
@@ -45,19 +41,19 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	}
 
 	@Override
-	public void init(final IWorkbench workbench,
-			final IStructuredSelection selection) {
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(M.ExportEcoSpold);
 	}
 
 	@Override
 	public boolean performFinish() {
-		boolean errorOccured = false;
 		var models = modelPage.getSelectedModels();
-		ExportConfig config = getConfig();
-		try (EcoSpold1Export export = new EcoSpold1Export(
+		var config = configPage == null
+				? ExportConfig.getDefault()
+				: configPage.getConfig();
+		try (var export = new EcoSpold1Export(
 				modelPage.getExportDestination(), config)) {
-			getContainer().run(true, true, (monitor) -> {
+			getContainer().run(true, true, monitor -> {
 				int size = models.size();
 				monitor.beginTask(M.ExportingProcesses, size + 1);
 				monitor.subTask(M.CreatingEcoSpoldFolder);
@@ -65,41 +61,32 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 				doExport(models, monitor, export);
 				monitor.done();
 			});
+			return true;
 		} catch (Exception e) {
-			log.error("Perform finish failed", e);
-			errorOccured = true;
+			ErrorReporter.on("EcoSpold I export failed", e);
+			return false;
 		}
-		return !errorOccured;
 	}
 
-	private ExportConfig getConfig() {
-		if (configPage == null)
-			return ExportConfig.getDefault();
-		else
-			return configPage.getConfig();
-	}
-
-	private void doExport(List<RootDescriptor> models,
-			IProgressMonitor monitor, EcoSpold1Export export)
-			throws InterruptedException {
-		ProcessDao pDao = new ProcessDao(Database.get());
-		ImpactMethodDao mDao = new ImpactMethodDao(Database.get());
+	private void doExport(
+			List<RootDescriptor> models, IProgressMonitor monitor, EcoSpold1Export export
+	) throws InterruptedException {
 		try {
+			var db = Database.get();
 			for (var d : models) {
 				if (monitor.isCanceled())
 					break;
 				monitor.subTask(d.name);
 				if (type == ModelType.PROCESS) {
-					Process process = pDao.getForId(d.id);
+					var process = db.get(Process.class, d.id);
 					export.export(process);
 				} else if (type == ModelType.IMPACT_METHOD) {
-					ImpactMethod method = mDao.getForId(d.id);
+					var method = db.get(ImpactMethod.class, d.id);
 					export.export(method);
 				}
 				monitor.worked(1);
 			}
 		} catch (Exception e) {
-			log.error("Export failed", e);
 			throw new InterruptedException(e.getMessage());
 		}
 	}

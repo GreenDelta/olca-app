@@ -85,17 +85,21 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 		UI.gridLayout(composite, 2 * getModel().getScoreCount() + 3);
 		createHeader(composite, true);
 		createAddScoreButton(composite);
-		for (DQIndicator indicator : getModel().indicators) {
-			Text nameText = createTextCell(composite, 1, 15);
-			((GridData) nameText.getLayoutData()).verticalAlignment = SWT.TOP;
-			getBinding().onString(() -> indicator, "name", nameText);
-			indicatorTexts.put(indicator.position, nameText);
+		for (var indicator : getModel().indicators) {
+
+			var name = createTextCell(composite, 1, 15);
+			((GridData) name.getLayoutData()).verticalAlignment = SWT.TOP;
+			getBinding().onString(() -> indicator, "name", name);
+			indicatorTexts.put(indicator.position, name);
 			commentControl(composite, "indicators[" + indicator.position + "]");
-			for (DQScore score : indicator.scores) {
-				Text descriptionText = createTextCell(composite, 8, 8);
-				getBinding().onString(() -> score, "description", descriptionText);
-				descriptionText.setBackground(DQUI.getColor(score.position, getModel().getScoreCount()));
-				commentControl(composite, "indicators[" + indicator.position + "].scores[" + score.position
+
+			for (var score : indicator.scores) {
+				var description = createTextCell(composite, 8, 8);
+				getBinding().onString(() -> score, "description", description);
+				var color = DQUI.getColor(score.position, getModel().getScoreCount());
+				Controls.paintBackground(description, color);
+				commentControl(composite,
+						"indicators[" + indicator.position + "].scores[" + score.position
 						+ "].description");
 			}
 			createRemoveIndicatorButton(composite, indicator.position);

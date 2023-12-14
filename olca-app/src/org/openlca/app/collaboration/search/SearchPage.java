@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.search;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -26,7 +25,6 @@ import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.model.SearchResult;
 import org.openlca.app.collaboration.model.SearchResult.Dataset;
 import org.openlca.app.collaboration.util.RepositoryClients;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
@@ -35,7 +33,6 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.core.model.ModelType;
 import org.openlca.git.util.TypedRefId;
@@ -50,7 +47,7 @@ class SearchPage extends FormPage {
 
 	private static final Logger log = LoggerFactory.getLogger(SearchView.class);
 
-	private SearchQuery query;
+	private final SearchQuery query;
 	private FormToolkit tk;
 	private ScrolledForm form;
 	private Composite formBody;
@@ -138,11 +135,6 @@ class SearchPage extends FormPage {
 			public Class<ModelType> getType() {
 				return ModelType.class;
 			}
-
-			@Override
-			protected IBaseLabelProvider getLabelProvider() {
-				return new BaseLabelProvider();
-			}
 		};
 		viewer.setNullable(true);
 		viewer.setInput(ModelType.values());
@@ -154,11 +146,11 @@ class SearchPage extends FormPage {
 	}
 
 	private void createQueryText() {
-		UI.label(headerComposite, tk, "Term");
+		UI.label(headerComposite, tk, "Query");
 		var comp = UI.composite(headerComposite, tk);
-		UI.gridData(comp, true, true);
-		UI.gridLayout(comp, 2, 0, 0);
-		var text = UI.labeledText(comp, tk, null);
+		UI.gridData(comp, true, false);
+		UI.gridLayout(comp, 2, 10, 0);
+		var text = UI.text(comp, tk);
 		Controls.set(text, query.query);
 		text.addModifyListener(e -> query.query = text.getText());
 		var button = tk.createButton(comp, M.Search, SWT.FLAT);
@@ -238,18 +230,17 @@ class SearchPage extends FormPage {
 		}
 		var b = (Button) e.widget;
 		var data = (Dataset) b.getData();
-		var requestData = Collections.singleton(new TypedRefId(data.type(), data.refId()));
+		var id = new TypedRefId(data.type(), data.refId());
 		App.runWithProgress(M.DownloadingData, () -> {
 			File tmp = null;
 			ZipStore store = null;
 			try {
 				tmp = Files.createTempFile("cs-json-", ".zip").toFile();
-				query.client.downloadJson(requestData, tmp);
+				if (!query.client.downloadJson(id, tmp))
+					return;
 				store = ZipStore.open(tmp);
 				var jsonImport = new JsonImport(store, Database.get());
 				jsonImport.run();
-			} catch (WebRequestException ex) {
-				log.error("Error listing repositories", ex);
 			} catch (Exception ex) {
 				log.error("Error during json import", ex);
 			} finally {
@@ -267,7 +258,7 @@ class SearchPage extends FormPage {
 		}, Navigator::refresh);
 	}
 
-	private class LinkClick extends HyperlinkAdapter {
+	private static class LinkClick extends HyperlinkAdapter {
 		@Override
 		public void linkActivated(HyperlinkEvent e) {
 			var link = (ImageHyperlink) e.widget;

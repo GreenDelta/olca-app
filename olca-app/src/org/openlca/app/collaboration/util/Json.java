@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.util;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -7,13 +8,32 @@ import java.util.Stack;
 
 import org.openlca.core.model.ModelType;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
 
 public class Json {
+
+	private static final Gson gson = new Gson();
+	private static final TypeAdapter<JsonElement> strictAdapter = gson.getAdapter(JsonElement.class);
+
+	public static boolean isValid(String json) {
+	    try {
+	        strictAdapter.fromJson(json);
+	    } catch (JsonSyntaxException | IOException e) {
+	        return false;
+	    }
+	    return true;
+	}
+
+	public static JsonElement parse(String json) {
+		return gson.fromJson(json, JsonElement.class);
+	}
 
 	public static JsonObject toJsonObject(JsonElement element) {
 		if (element == null)
@@ -156,9 +176,12 @@ public class Json {
 
 	public static String getString(JsonElement element, String property) {
 		var value = getValue(element, property);
-		if (value == null)
+		if (value == null || !value.isJsonPrimitive())
 			return null;
-		return value.getAsString();
+		var prim = value.getAsJsonPrimitive();
+		return prim.isString()
+				? prim.getAsString()
+				: null;
 	}
 
 	public static double getDouble(JsonElement element, String property) {

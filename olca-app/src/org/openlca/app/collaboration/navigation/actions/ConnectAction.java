@@ -6,13 +6,11 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.ConnectDialog;
 import org.openlca.app.collaboration.util.Announcements;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitInit;
 import org.openlca.util.Dirs;
 
@@ -32,15 +30,13 @@ public class ConnectAction extends Action implements INavigationAction {
 		var gitDir = Repository.gitDir(Database.get().getName());
 		try {
 			GitInit.in(gitDir).remoteUrl(url).run();
-			try {
-				var repo = Repository.initialize(gitDir);
-				repo.user(dialog.user());
-			} catch (WebRequestException e) {
-				MsgBox.error("Could not connect, is this an older version of the collaboration server?");
+			var repo = Repository.initialize(gitDir);
+			if (repo == null) {
 				Dirs.delete(gitDir);
-				return;
+			} else {
+				repo.user(dialog.user());
+				Announcements.check();
 			}
-			Announcements.check();
 		} catch (Exception e) {
 			Actions.handleException("Error connecting to repository", e);
 		} finally {

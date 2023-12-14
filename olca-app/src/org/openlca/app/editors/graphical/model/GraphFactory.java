@@ -5,6 +5,7 @@ import java.util.*;
 import com.google.gson.JsonArray;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
@@ -127,10 +128,13 @@ public class GraphFactory {
 	public static List<Exchange> getExchanges(RootEntity entity, ModelType type) {
 		return switch (type) {
 			case PROCESS -> {
-				var process = (Process) entity;
-				yield process == null
-						? Collections.emptyList()
-						: process.exchanges;
+				var p = (Process) entity;
+				if (p == null)
+					yield Collections.emptyList();
+				if (p.isFromLibrary()) {
+					Libraries.fillExchangesOf(p);
+				}
+				yield p.exchanges;
 			}
 			case PRODUCT_SYSTEM -> {
 				var system = (ProductSystem) entity;

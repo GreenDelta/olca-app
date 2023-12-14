@@ -267,6 +267,11 @@ public class Images {
 		return ImageManager.descriptor(Icon.DATABASE, Overlay.NEW);
 	}
 
+	public static Image licensedLibrary(boolean isValid) {
+		var overlay = isValid ? Overlay.VALID : Overlay.INVALID;
+		return ImageManager.get(Icon.LIBRARY, overlay);
+	}
+
 	private static ModelIcon icon(RefEntity entity) {
 		if (entity instanceof Process p) {
 			var qRef = p.quantitativeReference;

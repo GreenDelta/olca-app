@@ -11,6 +11,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
+import org.openlca.app.tools.authentification.AuthenticationGroup;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 

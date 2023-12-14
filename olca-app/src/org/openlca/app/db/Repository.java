@@ -8,7 +8,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.openlca.app.collaboration.api.RepositoryClient;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.git.GitIndex;
 import org.openlca.git.find.Commits;
@@ -46,6 +45,23 @@ public class Repository {
 		return current;
 	}
 
+	public static void checkIfCollaborationServer() {
+		checkIfCollaborationServer(current);
+	}
+
+	public static void checkIfCollaborationServer(FileRepository gitRepo) throws IOException {
+		if (gitRepo == null)
+			return;
+		var client = client(gitRepo);
+		isCollaborationServer(gitRepo.getConfig(), client != null && client.isCollaborationServer());
+	}
+
+	public static void checkIfCollaborationServer(Repository repo) {
+		if (repo == null)
+			return;
+		repo.isCollaborationServer(repo.client != null && repo.client.isCollaborationServer());
+	}
+
 	public static Repository open(File gitDir) {
 		close();
 		if (!gitDir.exists() || !gitDir.isDirectory() || gitDir.listFiles().length == 0)
@@ -59,17 +75,10 @@ public class Repository {
 		}
 	}
 
-	public static Repository initialize(File gitDir) throws WebRequestException {
-		open(gitDir);
-		if (current == null)
-			return null;
-		try {
-			current.isCollaborationServer(current.client != null && current.client.isCollaborationServer());
-		} catch (WebRequestException e) {
-			current = null;
-			throw e;
-		}
-		return current;
+	public static Repository initialize(File gitDir) {
+		var repo = open(gitDir);
+		checkIfCollaborationServer(repo);
+		return repo;
 	}
 
 	public static File gitDir(String databaseName) {
@@ -142,8 +151,9 @@ public class Repository {
 		if (!user.equals(user())) {
 			useTwoFactorAuth(false);
 		}
-		git.getConfig().setString("user", null, "name", user);
-		saveConfig();
+		var config = git.getConfig();
+		config.setString("user", null, "name", user);
+		saveConfig(config);
 	}
 
 	public String password() {
@@ -163,8 +173,9 @@ public class Repository {
 	}
 
 	public void useTwoFactorAuth(boolean value) {
-		git.getConfig().setString("user", null, "useTwoFactorAuth", Boolean.toString(value));
-		saveConfig();
+		var config = git.getConfig();
+		config.setString("user", null, "useTwoFactorAuth", Boolean.toString(value));
+		saveConfig(config);
 	}
 
 	public static boolean isCollaborationServer(StoredConfig config) {
@@ -175,14 +186,18 @@ public class Repository {
 		return isCollaborationServer(git.getConfig()) && client != null;
 	}
 
-	public void isCollaborationServer(boolean value) {
-		git.getConfig().setBoolean("remote", "origin", "isCollaborationServer", value);
-		saveConfig();
+	public static void isCollaborationServer(StoredConfig config, boolean value) {
+		config.setBoolean("remote", "origin", "isCollaborationServer", value);
+		saveConfig(config);
 	}
-	
-	private void saveConfig() {
+
+	public void isCollaborationServer(boolean value) {
+		isCollaborationServer(git.getConfig(), value);
+	}
+
+	private static void saveConfig(StoredConfig config) {
 		try {
-			git.getConfig().save();
+			config.save();
 		} catch (IOException e) {
 			log.error("Error saving Git config", e);
 		}

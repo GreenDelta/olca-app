@@ -31,8 +31,7 @@ public class ExportAction extends Action implements INavigationAction {
 					|| e instanceof CategoryElement
 					|| e instanceof ModelElement)
 				return true;
-			if (e instanceof DatabaseElement) {
-				var elem = (DatabaseElement) e;
+			if (e instanceof DatabaseElement elem) {
 				if (Database.isActive(elem.getContent()))
 					return true;
 			}

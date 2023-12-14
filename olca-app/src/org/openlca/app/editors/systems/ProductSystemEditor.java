@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditor;
@@ -31,34 +32,36 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 		try {
 			addPage(new ProductSystemInfoPage(this));
 			addPage(new ParameterPage(this));
-
-			var descriptor = getEditorInput().getDescriptor();
-			GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
-			graphEditor = new GraphEditor(this);
-			int gIdx = addPage(graphEditor, gInput);
-			setPageText(gIdx, M.ModelGraph);
-			// Add a page listener to set the graph when it is activated the first
-			// time.
-			setGraphPageListener(graphEditor);
-			// Add a part listener to save the graph layout when the editor is closed.
-			var page = Editors.getActivePage();
-			if (page != null)
-				page.addPartListener(new IPartListener2() {
-					@Override
-					public void partClosed(IWorkbenchPartReference partRef) {
-						IPartListener2.super.partClosed(partRef);
-						if (partRef.getId().equals(ID)
-								&& partRef.getPage().getDirtyEditors().length == 0) {
-							GraphFile.save(graphEditor);
-						}
-					}
-				});
-
+			addGraphPage();
 			addPage(new StatisticsPage(this));
 			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add page", e);
 		}
+	}
+
+	private void addGraphPage() throws PartInitException {
+		var descriptor = getEditorInput().getDescriptor();
+		GraphicalEditorInput gInput = new GraphicalEditorInput(descriptor);
+		graphEditor = new GraphEditor(this);
+		int gIdx = addPage(graphEditor, gInput);
+		setPageText(gIdx, M.ModelGraph);
+		// Add a page listener to set the graph when it is activated the first
+		// time.
+		setGraphPageListener(graphEditor);
+		// Add a part listener to save the graph layout when the editor is closed.
+		var page = Editors.getActivePage();
+		if (page != null)
+			page.addPartListener(new IPartListener2() {
+				@Override
+				public void partClosed(IWorkbenchPartReference partRef) {
+					IPartListener2.super.partClosed(partRef);
+					if (partRef.getId().equals(ID)
+							&& partRef.getPage().getDirtyEditors().length == 0) {
+						GraphFile.save(graphEditor);
+					}
+				}
+			});
 	}
 
 	private void setGraphPageListener(GraphEditor graphEditor) {

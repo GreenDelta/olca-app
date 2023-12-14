@@ -1,16 +1,15 @@
 #!/bin/bash
 
 APP_SUFFIX=$(python3 -m package.dist -v)
-DIST="openLCA_macOS_x64_${APP_SUFFIX}"
 APP_ID="org.openlca.app"
 JRE_ID="org.openlca.jre"
 APP_DMG="build/tmp/macosx.cocoa.x86_64/openLCA_dmg/openLCA.app"
 APP_PKG="build/tmp/macosx.cocoa.x86_64/openLCA_pkg/openLCA.app"
-APP_UNSIGNED="build/macosx.cocoa.x86_64/openLCA/openLCA.app"
-MKL_LIBS=(${APP_UNSIGNED}/Contents/Eclipse/olca-mkl*)
-LIB=$(if [ -d "$MKL_LIBS" ]; then echo "mkl"; else echo "blas"; fi)
-DMG="build/dist/openLCA_${LIB}_macOS_x64_${APP_SUFFIX}.dmg"
-PKG="build/dist/openLCA_${LIB}_macOS_x64_${APP_SUFFIX}.pkg"
+APP_UNSIGNED="build/openLCA.app"
+MKL_LIBS=("${APP_UNSIGNED}"/Contents/Eclipse/olca-mkl*)
+LIB=$(if [ -d "$MKL_LIBS" ]; then echo "mkl_"; else echo ""; fi)
+DMG="build/dist/openLCA_${LIB}macOS_x64_${APP_SUFFIX}.dmg"
+PKG="build/dist/openLCA_${LIB}macOS_x64_${APP_SUFFIX}.pkg"
 ENTITLEMENTS_DMG="resources/dmg.entitlements"
 ENTITLEMENTS_PKG="resources/pkg.entitlements"
 KEY_NOTARYTOOL="notarytool"

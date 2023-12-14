@@ -13,7 +13,6 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
-import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
@@ -141,15 +140,16 @@ public class RepositoryUpgrade {
 			var repo = Repository.initialize(gitDir);
 			if (repo == null)
 				return null;
-			repo.user(user);
-			return repo;
-		} catch (WebRequestException e) {
+			if (repo.isCollaborationServer()) {
+				repo.user(user);
+				return repo;
+			}
 			url = Input.promptString("Could not connect",
 					"Could not connect, this might be an older version of the collaboration server? Please specify the url to the updated repository:",
 					url);
-			if (url != null)
-				return initGit(url, user);
-			return null;
+			if (url == null)
+				return null;				
+			return initGit(url, user);
 		} catch (GitAPIException | URISyntaxException e) {
 			log.warn("Error initializing git repo from " + url, e);
 			return null;

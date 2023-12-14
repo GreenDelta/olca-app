@@ -7,14 +7,23 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.io.ByteArrayInputStream;
+import java.io.FileReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import org.openlca.app.App;
+import org.openlca.app.editors.libraries.LibraryEditor;
+import org.openlca.app.licence.LibrarySession;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.IDatabase;
@@ -27,8 +36,16 @@ import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.ProductSystemDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.license.License;
+import org.openlca.license.certificate.CertificateInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.openlca.app.licence.LibrarySession.retrieveSession;
+import static org.openlca.license.Licensor.JSON;
+
 
 public final class Libraries {
 
@@ -38,9 +55,10 @@ public final class Libraries {
 	}
 
 	/**
-	 * Tries to create a library reader for the library with the given ID (name)
-	 * in sync with the currently active database. Returns an empty option if
-	 * this fails.
+	 * After checking the validity of the license library, tries to create a
+	 * library reader for the given library in sync with the currently active
+	 * database. Returns an empty option if this fails or if the license is
+	 * invalid.
 	 */
 	public static Optional<LibReader> readerOf(String libId) {
 		var libDir = Workspace.getLibraryDir();
@@ -51,20 +69,34 @@ public final class Libraries {
 	}
 
 	/**
-	 * Tries to create a library reader for the given library in sync with the
-	 * currently active database. Returns an empty option if this fails.
+	 * After checking the validity of the license library, tries to create a
+	 * library reader for the given library in sync with the currently active
+	 * database. Returns an empty option if this fails or if the license is
+	 * invalid.
 	 */
 	public static Optional<LibReader> readerOf(Library lib) {
 		if (lib == null)
 			return Optional.empty();
+
 		var db = Database.get();
 		if (db == null)
 			return Optional.empty();
-		var r = LibReader.of(lib, db)
-				.withSolver(App.getSolver())
-				// .withDecryption() // TODO: resolve a possible decryption
-				.create();
-		return Optional.of(r);
+
+		var builder = LibReader.of(lib, db)
+				.withSolver(App.getSolver());
+
+		var license = License.of(lib.folder());
+		if (license.isPresent()) {
+			var credentials = retrieveSession(lib.name()).orElse(null);
+			if (credentials == null) {
+				log.error("Error while retrieving the library credentials of "
+						+ lib.name());
+				return Optional.empty();
+			}
+			builder.withDecryption(() -> license.get().getDecryptCipher(credentials));
+		}
+
+		return Optional.of(builder.create());
 	}
 
 	/**
@@ -72,7 +104,20 @@ public final class Libraries {
 	 * needed to run a calculation. Returns an empty option if this fails or
 	 * when no libraries with matrices are mounted to that database.
 	 */
-	public static Optional<LibReaderRegistry> forCalculation() {
+	public static Optional<LibReaderRegistry> readersForCalculation() {
+		var libs = forCalculation();
+		if (libs.isEmpty())
+			return Optional.empty();
+
+		var readers = new ArrayList<LibReader>();
+		libs.get().forEach(lib -> readerOf(lib).ifPresent(readers::add));
+
+		return readers.isEmpty()
+				? Optional.empty()
+				: Optional.of(LibReaderRegistry.of(readers));
+	}
+
+	public static Optional<Set<Library>> forCalculation() {
 		var db = Database.get();
 		if (db == null)
 			return Optional.empty();
@@ -82,7 +127,7 @@ public final class Libraries {
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.toList();
-		var readers = new ArrayList<LibReader>();
+		var libs = new HashSet<Library>();
 		var queue = new ArrayDeque<>(mounted);
 		var handled = new HashSet<String>();
 
@@ -92,7 +137,7 @@ public final class Libraries {
 				continue;
 			handled.add(lib.name());
 			if (lib.hasMatrices()) {
-				readerOf(lib).ifPresent(readers::add);
+				libs.add(lib);
 			}
 			for (var dep : lib.getDirectDependencies()) {
 				if (handled.contains(dep.name())
@@ -101,10 +146,27 @@ public final class Libraries {
 				queue.add(dep);
 			}
 		}
+		return Optional.of(libs);
+	}
 
-		return readers.isEmpty()
-				? Optional.empty()
-				: Optional.of(LibReaderRegistry.of(readers));
+	public static boolean checkValidity(RootDescriptor d) {
+		if (d.isFromLibrary())
+			return LibrarySession.isValid(d.library);
+
+		if (d instanceof ProductSystemDescriptor) {
+			return checkValidity();
+		}
+		return true;
+	}
+
+	public static boolean checkValidity() {
+		var libraries = Libraries.forCalculation()
+				.orElse(Collections.emptySet());
+		for (var library : libraries) {
+			if (!LibrarySession.isValid(library.name()))
+				return false;
+		}
+		return true;
 	}
 
 	public static void fillExchangesOf(Process process) {
@@ -183,6 +245,28 @@ public final class Libraries {
 					log.trace("Error deleting tmp file", e);
 				}
 			}
+		}
+	}
+
+
+	public static Optional<CertificateInfo> getLicense(File folder) {
+		var file = new File(folder, JSON);
+		if (!file.exists())
+			return Optional.empty();
+		try (var reader = new JsonReader(new FileReader(file))) {
+			var gson = new Gson();
+			var mapType = new TypeToken<License>() {}.getType();
+			License license = gson.fromJson(reader, mapType);
+
+			var certBytes = license.certificate().getBytes();
+			var certificate = CertificateInfo.of(new ByteArrayInputStream(certBytes));
+			return Optional.of(certificate);
+		} catch (IOException e) {
+			var log = LoggerFactory.getLogger(LibraryEditor.class);
+			log.error("failed to open the license.", e);
+			return Optional.empty();
+		} catch (IllegalArgumentException e) {
+			return Optional.empty();
 		}
 	}
 

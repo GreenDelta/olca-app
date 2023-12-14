@@ -4,7 +4,7 @@ Bundle-Name: olca-app
 Automatic-Module-Name: olca-app
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-SymbolicName: olca-app;singleton:=true
-Bundle-Version: 2.0.3.SNAPSHOT
+Bundle-Version: 2.0.5.SNAPSHOT
 Bundle-Activator: org.openlca.app.rcp.RcpActivator
 Bundle-Vendor: openLCA.org
 Eclipse-BundleShape: dir
@@ -30,6 +30,9 @@ Bundle-ClassPath: .,
  libs/animal-sniffer-annotations-1.21.jar,
  libs/annotations-4.1.1.4.jar,
  libs/aopalliance-repackaged-3.0.1.jar,
+ libs/bcpkix-jdk15on-1.70.jar,
+ libs/bcprov-jdk15on-1.70.jar,
+ libs/bcutil-jdk15on-1.70.jar,
  libs/checker-qual-3.33.0.jar,
  libs/commons-beanutils-1.9.4.jar,
  libs/commons-codec-1.13.jar,
@@ -91,19 +94,20 @@ Bundle-ClassPath: .,
  libs/mariadb-java-client-2.7.2.jar,
  libs/mimepull-1.9.13.jar,
  libs/npy-0.0.3.jar,
- libs/olca-core-2.0.3-SNAPSHOT.jar,
+ libs/olca-core-2.0.5-SNAPSHOT.jar,
  libs/olca-ecospold-1-2.0.0.jar,
  libs/olca-ecospold-2-2.0.0.jar,
  libs/olca-formula-2.0.0.jar,
- libs/olca-git-2.0.3-SNAPSHOT.jar,
+ libs/olca-git-2.0.5-SNAPSHOT.jar,
  libs/olca-grpc-2.0.1.jar,
  libs/olca-ilcd-2.0.0.jar,
- libs/olca-io-2.0.3-SNAPSHOT.jar,
- libs/olca-ipc-2.0.3-SNAPSHOT.jar,
+ libs/olca-io-2.0.5-SNAPSHOT.jar,
+ libs/olca-ipc-2.0.5-SNAPSHOT.jar,
+ libs/olca-license-0.0.1.jar,
  libs/olca-native-0.0.2.jar,
  libs/olca-process-xls-2.0.0.jar,
  libs/olca-proto-2.0.1.jar,
- libs/olca-proto-io-2.0.3-SNAPSHOT.jar,
+ libs/olca-proto-io-2.0.5-SNAPSHOT.jar,
  libs/olca-simapro-csv-3.0.5.jar,
  libs/org.eclipse.jgit-6.4.0.202211300538-r.jar,
  libs/org.eclipse.persistence.asm-9.3.0.jar,

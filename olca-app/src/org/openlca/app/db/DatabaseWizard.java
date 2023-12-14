@@ -1,7 +1,5 @@
 package org.openlca.app.db;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
@@ -26,16 +24,28 @@ import org.slf4j.LoggerFactory;
 public class DatabaseWizard extends Wizard {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final String folder;
 	private DatabaseWizardPage page;
 
-	public DatabaseWizard() {
+	private DatabaseWizard(String folder) {
+		this.folder = folder;
 		setNeedsProgressMonitor(true);
 		setWindowTitle(M.NewDatabase);
 	}
 
+	public static void open() {
+		open("");
+	}
+
+	public static void open(String folder) {
+		var wizard = new DatabaseWizard(folder);
+		var dialog = new WizardDialog(UI.shell(), wizard);
+		dialog.open();
+	}
+
 	@Override
 	public void addPages() {
-		page = new DatabaseWizardPage();
+		page = new DatabaseWizardPage(folder);
 		addPage(page);
 	}
 
@@ -46,8 +56,8 @@ public class DatabaseWizard extends Wizard {
 				return false;
 			var config = page.getPageData();
 			var runner = (config instanceof DerbyConfig)
-				? new Runner(config, page.getSelectedContent())
-				: new Runner(config);
+					? new Runner(config, page.getSelectedContent())
+					: new Runner(config);
 			getContainer().run(true, false, runner);
 			Navigator.refresh();
 			HistoryView.refresh();
@@ -57,12 +67,6 @@ public class DatabaseWizard extends Wizard {
 			log.error("Database creation failed", e);
 			return false;
 		}
-	}
-
-	public static void open() {
-		var wizard = new DatabaseWizard();
-		var dialog = new WizardDialog(UI.shell(), wizard);
-		dialog.open();
 	}
 
 	private static class Runner implements IRunnableWithProgress {
@@ -80,8 +84,7 @@ public class DatabaseWizard extends Wizard {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor)
-			throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) {
 			monitor.beginTask(M.CreateDatabase, IProgressMonitor.UNKNOWN);
 			try {
 				createIt();
@@ -106,7 +109,7 @@ public class DatabaseWizard extends Wizard {
 			var dir = DatabaseDir.getRootFolder(config.name());
 			if (dir.exists()) {
 				ErrorReporter.on("Failed to create database: folder "
-					+ dir + " already exists");
+						+ dir + " already exists");
 				return;
 			}
 
@@ -120,5 +123,4 @@ public class DatabaseWizard extends Wizard {
 			}
 		}
 	}
-
 }

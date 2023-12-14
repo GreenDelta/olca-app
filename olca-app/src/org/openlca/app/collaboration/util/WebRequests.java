@@ -65,16 +65,16 @@ public class WebRequests {
 
 	private static ClientResponse call(Type type, Builder builder) {
 		switch (type) {
-			case GET:
-				return builder.get(ClientResponse.class);
-			case POST:
-				return builder.post(ClientResponse.class);
-			case PUT:
-				return builder.put(ClientResponse.class);
-			case DELETE:
-				return builder.delete(ClientResponse.class);
-			default:
-				return null;
+		case GET:
+			return builder.get(ClientResponse.class);
+		case POST:
+			return builder.post(ClientResponse.class);
+		case PUT:
+			return builder.put(ClientResponse.class);
+		case DELETE:
+			return builder.delete(ClientResponse.class);
+		default:
+			return null;
 		}
 	}
 
@@ -182,7 +182,19 @@ public class WebRequests {
 		}
 
 		private static String toMessage(ClientResponse response) {
-			return response.getEntity(String.class);
+			var message = response.getEntity(String.class);
+			if (!Json.isValid(message))
+				return message;
+			var json = Json.parse(message);
+			if (!json.isJsonObject())
+				return message;
+			var obj = json.getAsJsonObject();
+			if (!obj.has("message"))
+				return message;
+			var jsonMessage = obj.get("message");
+			if (!jsonMessage.isJsonPrimitive())
+				return message;
+			return jsonMessage.getAsString();
 		}
 
 		public boolean isUnauthorized() {

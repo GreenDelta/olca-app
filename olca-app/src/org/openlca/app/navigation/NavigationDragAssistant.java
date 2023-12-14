@@ -1,8 +1,6 @@
 package org.openlca.app.navigation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DragSourceEvent;
@@ -19,9 +17,6 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 	public void dragStart(DragSourceEvent event, IStructuredSelection selection) {
 		event.doit = true;
 		for (var o : selection) {
-			// only forbid category dragging, model elements will be checked on
-			// drop in NavigationDropAssistent, to still allow e.g. dropping
-			// processes in inputs/outputs table, etc.
 			if (o instanceof CategoryElement catElem) {
 				if (catElem.hasLibraryContent()) {
 					event.doit = false;
@@ -31,36 +26,35 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 		}
 	}
 
+	/**
+	 * This method is only called when the drag is moved to a drop-target outside
+	 * the navigator. As we only allow models to be moved outside, we only return
+	 * the model-transfer here.
+	 */
 	@Override
 	public Transfer[] getSupportedTransferTypes() {
-		return new Transfer[] { ModelTransfer.getInstance() };
+		return new Transfer[]{ModelTransfer.getInstance()};
 	}
 
+	/**
+	 * This method is called when a drop happened outside the navigation. As we
+	 * only allow the drop of models outside the navigator, we only return {@code
+	 * true} when the drag contains model elements.
+	 */
 	@Override
-	public boolean setDragData(DragSourceEvent anEvent,
-			IStructuredSelection aSelection) {
-		boolean canBeDropped = true;
-		Iterator<?> it = aSelection.iterator();
-		List<Descriptor> components = new ArrayList<>();
-		while (it.hasNext() && canBeDropped) {
-			Object o = it.next();
-			if (!(o instanceof ModelElement || o instanceof CategoryElement)) {
-				canBeDropped = false;
-			} else {
-				if (o instanceof ModelElement navElem) {
-					var comp = navElem.getContent();
-					if (comp != null)
-						components.add(comp);
-				}
+	public boolean setDragData(
+			DragSourceEvent e, IStructuredSelection selection) {
+		var descriptors = new ArrayList<Descriptor>();
+		for (var o : selection) {
+			if (!(o instanceof ModelElement elem))
+				return false;
+			if (elem.getContent() != null) {
+				descriptors.add(elem.getContent());
 			}
 		}
-		if (canBeDropped) {
-			Object[] data = new Object[components.size()];
-			for (int i = 0; i < components.size(); i++) {
-				data[i] = components.get(i);
-			}
-			anEvent.data = data;
-		}
-		return canBeDropped;
+		if (descriptors.isEmpty())
+			return false;
+		e.data = descriptors.toArray();
+		return true;
 	}
 }

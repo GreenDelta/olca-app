@@ -18,6 +18,7 @@ import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Repository;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -161,7 +162,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 					}
 				}
 			}
-			log.trace("Refresh history view (if open)");
+			Repository.checkIfCollaborationServer();
 			Announcements.check();
 			HistoryView.refresh();
 			CompareView.clear();

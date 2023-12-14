@@ -56,11 +56,14 @@ public class M extends NLS {
 	public static String AsDefinedInProcesses;
 	public static String AssessDataQuality;
 	public static String AssignUnits;
+	public static String Authentication;
 	public static String AutoLinkProcesses;
 	public static String AvoidedProduct;
 	public static String AvoidedProductFlow;
 	public static String AvoidedWaste;
 	public static String AvoidedWasteFlow;
+
+	//B
 	public static String BackgroundData;
 	public static String BackupDatabase;
 	public static String BaseUncertainty;
@@ -236,6 +239,8 @@ public class M extends NLS {
 	public static String DatabaseValidationCompleteNoErrorsWereFound;
 	public static String DatabaseVersionCheckFailed;
 	public static String DatabaseWasExportedToFile;
+	public static String DaysAgo;
+	public static String DaysFromNow;
 	public static String DecimalSeparator;
 	public static String DefaultFlowProperty;
 	public static String DefaultMethod;
@@ -280,6 +285,7 @@ public class M extends NLS {
 	public static String EditStickyNote;
 	public static String ElementaryFlow;
 	public static String Email;
+	public static String EmailOrUsername;
 	public static String EmptyDatabase;
 	public static String EmptyValueMessage;
 	public static String EnableCollaboration;
@@ -308,6 +314,8 @@ public class M extends NLS {
 	public static String Exit;
 	public static String Expand;
 	public static String ExpandAll;
+	public static String Expired;
+	public static String ExpiryDate;
 	public static String Export;
 	public static String ExportAsMatrix;
 	public static String ExportDataSets;
@@ -488,6 +496,15 @@ public class M extends NLS {
 	public static String LCIAChecks;
 	public static String LciaResultTable;
 	public static String LibgfortanInfo;
+	public static String Library;
+	public static String LicenseCorrupted;
+	public static String LicenseExpired;
+	public static String LicenseInformation;
+	public static String LicenseNotYetValid;
+	public static String LicenseUntrusted;
+	public static String LicenseValid;
+	public static String LicenseWrongPassword;
+	public static String LicenseWrongUser;
 	public static String Line;
 	public static String LinkingProperties;
 	public static String LoadingRepositoryList;
@@ -585,6 +602,7 @@ public class M extends NLS {
 	public static String NoDescription;
 	public static String NoDistribution;
 	public static String NoExportFilesSelected;
+	public static String NoLicenseDetected;
 	public static String NoOpportunity;
 	public static String NoParameterSelected;
 	public static String NoProjectVaraintsAreDefined;
@@ -632,6 +650,7 @@ public class M extends NLS {
 	public static String OpenPluginManager;
 	public static String OpenProvider;
 	public static String OpenUpdateManager;
+	public static String Organisation;
 	public static String Other;
 	public static String OutOfMemory;
 	public static String Output;
@@ -641,6 +660,7 @@ public class M extends NLS {
 	public static String OverwriteRemoteChanges;
 	public static String OverwriteFile;
 	public static String OverwriteFileQuestion;
+	public static String Owner;
 
 	// P
 	public static String Parameter;
@@ -663,6 +683,7 @@ public class M extends NLS {
 	public static String PleaseEnterANewName;
 	public static String PleaseEnterTheNameOfTheNewCategory;
 	public static String PleaseEnterYourAuthenticatorTokenToProceed;
+	public static String PleaseEnterYourCredentialsLibrary;
 	public static String PleaseSelectElements;
 	public static String PleaseSelectProperties;
 	public static String PleaseSpecifyHost;
@@ -876,6 +897,7 @@ public class M extends NLS {
 	public static String StartIPCServer;
 	public static String StartIPCInfo;
 	public static String Statistics;
+	public static String Status;
 	public static String StoreInventoryResult;
 	public static String StopIPCInfo;
 	public static String SubCategory;
@@ -954,12 +976,14 @@ public class M extends NLS {
 	public static String UsedInProcesses;
 	public static String User;
 
+	public static String Valid;
 	public static String Validate;
 	public static String ValidatingDatabase;
 	public static String Value;
 	public static String Variant;
 	public static String VariantDescriptionTable;
 	public static String Variants;
+	public static String Vendor;
 	public static String Verifier;
 	public static String Version;
 	public static String VersionNewer;
@@ -985,7 +1009,7 @@ public class M extends NLS {
 	public static String Yes;
 	public static String ZipCode;
 
-    private static Map<String, String> map;
+	private static Map<String, String> map;
 
 	static {
 		NLS.initializeMessages("org.openlca.app.messages", M.class);

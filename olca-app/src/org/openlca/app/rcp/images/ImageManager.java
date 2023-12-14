@@ -25,7 +25,7 @@ class ImageManager {
 			return null;
 		return get(icon.fileName);
 	}
-	
+
 	static Image get(Icon icon, Overlay overlay) {
 		if (icon == null || overlay == null)
 			return null;

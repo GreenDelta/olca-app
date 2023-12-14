@@ -67,6 +67,7 @@ public enum Icon {
 	FORMULA("formula.png"),
 
 	GRAPH_PROCESS_PRODUCTION("graphical/process_production.png"),
+	GREEN_DOT("green_dot.png"),
 	GIT_GRAPH_FIRST_LAST("collaboration/graph/first-last.png"),
 	GIT_GRAPH_FIRST_LOCAL("collaboration/graph/first-local.png"),
 	GIT_GRAPH_FIRST_BRANCH_START("collaboration/graph/first-branch-start.png"),
@@ -131,6 +132,7 @@ public enum Icon {
 
 	QUICK_RESULT("quick_calculation.png"),
 
+	RED_DOT("red_dot.png"),
 	REDO("redo.png"),
 	REDO_DISABLED("redo_disabled.png"),
 	REGIONALIZED_RESULT("model/impact_method.png"),

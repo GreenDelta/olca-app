@@ -127,6 +127,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			UI.fillHorizontal(mappingComp);
 			// flow mapping
 			MappingSelector.on(fm -> this.flowMap = fm)
+					.withSelectionPattern("(?i).*simapro*.import.*")
 					.render(mappingComp);
 
 			// options

@@ -67,7 +67,9 @@ def package(
             shutil.copy2(bin_source, bin_target)
 
     # build the package
-    pack_name = f"openLCA_{lib.value}_{osa.value}_{version.app_suffix}"
+    app_prefix = f"openLCA" if lib == Lib.BLAS else f"openLCA_{lib.value}"
+    pack_name = f"{app_prefix}_{osa.value}_{version.app_suffix}"
+
     print(f"  Creating package {pack_name}...")
     pack = DistDir.get() / pack_name
     if osa == OsArch.WINDOWS_X64:

@@ -43,7 +43,7 @@ import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.navigation.elements.ScriptElement;
-import org.openlca.app.tools.libraries.LibraryInfoPage;
+import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.app.util.Colors;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
@@ -96,7 +96,7 @@ public class Navigator extends CommonNavigator {
 				OpenScriptAction.run(file);
 			} else if (elem instanceof LibraryElement) {
 				var library = ((LibraryElement) elem).getContent();
-				LibraryInfoPage.show(library);
+				LibraryEditor.open(library);
 			} else if (elem instanceof MappingFileElement) {
 				var mapping = ((MappingFileElement) elem).getContent();
 				OpenMappingAction.run(mapping);
