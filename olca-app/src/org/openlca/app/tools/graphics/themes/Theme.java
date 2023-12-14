@@ -1,9 +1,5 @@
 package org.openlca.app.tools.graphics.themes;
 
-import java.io.File;
-import java.util.EnumMap;
-import java.util.Optional;
-
 import com.helger.css.decl.CSSStyleRule;
 import com.helger.css.reader.CSSReader;
 import com.helger.css.reader.CSSReaderSettings;
@@ -15,12 +11,16 @@ import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.EnumMap;
+import java.util.Optional;
 
 public class Theme {
 
 	private final String file;
 	private final String name;
-	private final Integer version;
 
 	private boolean isDark;
 	private Color backgroundColor;
@@ -32,17 +32,16 @@ public class Theme {
 	private final EnumMap<FlowType, Color> linkColors;
 	private final EnumMap<Box, BoxConfig> boxConfigs;
 
-	private Theme(String file, String name, Integer version) {
+	private Theme(String file, String name) {
 		this.file = file;
 		this.name = name;
-		this.version = version;
 		this.flowLabelColors = new EnumMap<>(FlowType.class);
 		this.linkColors = new EnumMap<>(FlowType.class);
 		this.boxConfigs = new EnumMap<>(Box.class);
 	}
 
-	public static Theme defaults(String file, String name, Integer version) {
-		return new Theme(file, name, version);
+	public static Theme of(String file, String name) {
+		return new Theme(file, name);
 	}
 
 	/**
@@ -57,10 +56,6 @@ public class Theme {
 
 	public String name() {
 		return name;
-	}
-
-	public Integer version() {
-		return version;
 	}
 
 	public boolean isDark() {
@@ -131,15 +126,20 @@ public class Theme {
 				? FlowType.PRODUCT_FLOW
 				: flowType;
 		return flowLabelColors.getOrDefault(
-				type,boxFontColor(Box.DEFAULT));
+				type, boxFontColor(Box.DEFAULT));
 	}
 
-	public static Optional<Theme> loadFrom(File file, String id) {
+	public static Optional<Theme> loadFrom(File file, String context) {
 		if (file == null)
 			return Optional.empty();
 
 		var settings = new CSSReaderSettings();
+		settings.setCustomExceptionHandler(ex -> {
+			var log = LoggerFactory.getLogger(Theme.class);
+			log.warn("failed to parse CSS", ex);
+		});
 		var css = CSSReader.readFromFile(file, settings);
+
 		if (css == null)
 			return Optional.empty();
 
@@ -152,16 +152,13 @@ public class Theme {
 			}
 		}
 
-		// set the version of the theme
-		var version = Css.themeVersionOf(css).orElse(0);
-
-		var theme = defaults(file.getName(), name, version);
+		var theme = of(file.getName(), name);
 
 		theme.isDark = Css.isDarkMode(css);
 
 		for (int i = 0; i < css.getStyleRuleCount(); i++) {
 			var rule = css.getStyleRuleAtIndex(i);
-			if (Css.asId(rule, id)) {
+			if (Css.asId(rule, context)) {
 
 				// box config
 				Css.boxOf(rule)
@@ -194,7 +191,8 @@ public class Theme {
 						if (Css.isInfo(rule)) {
 							theme.infoLabelColor = color;
 						}
-						Css.flowTypeOf(rule).ifPresent(flowType -> theme.flowLabelColors.put(flowType, color));
+						Css.flowTypeOf(rule).ifPresent(
+								flowType -> theme.flowLabelColors.put(flowType, color));
 					});
 				}
 			}

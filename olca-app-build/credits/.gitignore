@@ -1,2 +1,5 @@
 cache/
 about.html
+
+# Dependency directory
+node_modules/

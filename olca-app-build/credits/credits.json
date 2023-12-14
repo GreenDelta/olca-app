@@ -8,19 +8,19 @@
       "licenseUrl": "https://raw.githubusercontent.com/qos-ch/logback/master/LICENSE.txt"
     },
     {
-      "project": " Jackson",
+      "project": "Jackson",
       "projectUrl": "https://github.com/FasterXML/jackson-core",
       "license": "APL v2.0",
       "licenseUrl": "https://raw.githubusercontent.com/FasterXML/jackson-core/2.16/LICENSE"
     },
     {
-      "project": " blockingMap4j",
+      "project": "blockingMap4j",
       "projectUrl": "https://github.com/sarveswaran-m/blockingMap4j",
       "license": "APL v2.0",
       "licenseUrl": "https://raw.githubusercontent.com/sarveswaran-m/blockingMap4j/master/LICENSE"
     },
     {
-      "project": " curvesapi",
+      "project": "curvesapi",
       "projectUrl": "https://github.com/virtuald/curvesapi",
       "license": "BSD",
       "licenseUrl": "https://raw.githubusercontent.com/virtuald/curvesapi/master/license.txt"
@@ -234,6 +234,26 @@
       "projectUrl": "https://github.com/be5invis/Iosevka",
       "license": "OFL 1.1",
       "licenseUrl": "https://raw.githubusercontent.com/be5invis/Iosevka/main/LICENSE.md"
+    }
+  ],
+  "pipCredits": [
+    {
+      "project": "Intel oneMKL",
+      "projectUrl": "https://software.intel.com/en-us/oneapi/onemkl",
+      "license": "Intel Simplified Software License",
+      "pipUrl": "https://files.pythonhosted.org/packages/d9/a1/b7cfb6f3e7259f035a2c947cf26bff42cda6772933cdb95c829e91ce995f/mkl-2023.1.0-py2.py3-none-win_amd64.whl"
+    },
+    {
+      "project": "Intel OpenMP",
+      "projectUrl": "https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html",
+      "license": "Intel End User License Agreement for Developer Tools",
+      "pipUrl": "https://files.pythonhosted.org/packages/c7/a1/7407ebfb7131c2d8507bec5daf0684d76a9c6c38faaa6ae16b296e3335ce/intel_openmp-2023.1.0-py2.py3-none-win_amd64.whl"
+    },
+    {
+      "project": "Intel oneTBB",
+      "projectUrl": "https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onetbb.html",
+      "license": "Intel Simplified Software License",
+      "pipUrl": "https://files.pythonhosted.org/packages/64/6a/20f2e84e31bd82b7ddecf616be0338b7fa5dc37285a73e810101f9c2b195/tbb-2021.9.0-py3-none-win_amd64.whl"
     }
   ]
 }

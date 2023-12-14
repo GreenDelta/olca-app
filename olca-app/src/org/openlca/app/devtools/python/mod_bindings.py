@@ -19,6 +19,7 @@ import org.openlca.util.AllocationUtils as AllocationUtils
 import org.openlca.io.openepd.Api as Api
 import org.openlca.util.AutoTagger as AutoTagger
 import org.openlca.core.database.BaseDao as BaseDao
+import org.openlca.jsonld.input.BatchImport as BatchImport
 import org.openlca.util.BinUtils as BinUtils
 import org.openlca.core.database.BlockFetch as BlockFetch
 import org.openlca.core.results.providers.libblocks.BlockTechIndex as BlockTechIndex
@@ -256,6 +257,8 @@ import org.openlca.core.matrix.solvers.JavaSolver as JavaSolver
 import org.openlca.jsonld.Json as Json
 import org.openlca.core.services.JsonCalculationSetup as JsonCalculationSetup
 import org.openlca.core.services.JsonDataService as JsonDataService
+import org.openlca.jsonld.JsonDatabaseStore as JsonDatabaseStore
+import org.openlca.jsonld.JsonDatabaseTransfer as JsonDatabaseTransfer
 import org.openlca.util.JsonDiffZip as JsonDiffZip
 import org.openlca.jsonld.output.JsonExport as JsonExport
 import org.openlca.jsonld.input.JsonImport as JsonImport
@@ -276,6 +279,7 @@ import org.openlca.core.library.LibraryDir as LibraryDir
 import org.openlca.core.library.LibraryExport as LibraryExport
 import org.openlca.core.library.LibraryInfo as LibraryInfo
 import org.openlca.core.results.providers.libblocks.LibraryInversionSolver as LibraryInversionSolver
+import org.openlca.jsonld.LibraryLink as LibraryLink
 import org.openlca.core.library.LibraryPackage as LibraryPackage
 import org.openlca.geo.geojson.LineString as LineString
 import org.openlca.core.matrix.linking.LinkingConfig as LinkingConfig
@@ -289,6 +293,8 @@ import org.openlca.core.results.LocationResult as LocationResult
 import org.openlca.core.database.usage.LocationUseSearch as LocationUseSearch
 import org.openlca.jsonld.output.LocationWriter as LocationWriter
 import org.openlca.core.matrix.index.LongPair as LongPair
+import org.openlca.core.matrix.solvers.mkl.MKL as MKL
+import org.openlca.core.matrix.solvers.mkl.MKLSolver as MKLSolver
 import org.openlca.io.maps.MapFactor as MapFactor
 import org.openlca.io.openepd.io.MappedExportResult as MappedExportResult
 import org.openlca.core.model.MappingFile as MappingFile
@@ -306,6 +312,7 @@ import org.openlca.core.matrix.MatrixData as MatrixData
 import org.openlca.io.xls.MatrixExcelExport as MatrixExcelExport
 import org.openlca.core.matrix.io.MatrixExport as MatrixExport
 import org.openlca.io.MatrixImageExport as MatrixImageExport
+import org.openlca.io.xls.results.system.MatrixPage as MatrixPage
 import org.openlca.core.math.MatrixRowSorter as MatrixRowSorter
 import org.openlca.jsonld.MemStore as MemStore
 import org.openlca.proto.io.Messages as Messages
@@ -528,6 +535,7 @@ import org.openlca.core.database.upgrades.VersionState as VersionState
 import org.openlca.io.openepd.io.Vocab as Vocab
 import org.openlca.io.ecospold2.input.WasteFlows as WasteFlows
 import org.openlca.geo.calc.WebMercator as WebMercator
+import org.openlca.core.results.providers.WeightedMeanProvider as WeightedMeanProvider
 import org.openlca.text.WordBuffer as WordBuffer
 import org.openlca.proto.io.output.WriterConfig as WriterConfig
 import org.openlca.io.Xml as Xml

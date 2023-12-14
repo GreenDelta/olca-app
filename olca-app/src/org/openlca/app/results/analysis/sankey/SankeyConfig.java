@@ -1,12 +1,12 @@
 package org.openlca.app.results.analysis.sankey;
 
+import java.util.Objects;
+
 import org.openlca.app.tools.graphics.model.Element;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.core.model.Copyable;
 import org.openlca.util.Strings;
-
-import java.util.Objects;
 
 import static org.eclipse.draw2d.PositionConstants.NORTH;
 import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
@@ -122,7 +122,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 	}
 
 	public void setSelection(Object selection) {
-		if (selection == this.selection)
+		if (Objects.equals(this.selection, selection))
 			return;
 		this.selection = selection;
 		firePropertyChange(CONFIG_PROP, null, this);

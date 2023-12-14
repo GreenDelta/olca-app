@@ -1,10 +1,11 @@
 package org.openlca.app.results.analysis.sankey.model;
 
-import org.openlca.app.tools.graphics.model.Component;
-import org.openlca.app.tools.graphics.model.Link;
-
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+
+import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.tools.graphics.model.Link;
 
 import static org.eclipse.draw2d.PositionConstants.EAST;
 import static org.eclipse.draw2d.PositionConstants.WEST;
@@ -40,7 +41,7 @@ public class SankeyLink extends Link {
 				.toList();
 
 		var sum = sankeyLinks.stream()
-				.takeWhile(link -> !link.getTarget().equals(target))
+				.takeWhile(link -> !Objects.equals(link.getTarget(), target))
 				.map(SankeyLink::getLineWidth)
 				.reduce(Integer::sum)
 				.orElse(0);
@@ -59,7 +60,7 @@ public class SankeyLink extends Link {
 				.toList();
 
 		var sum = sankeyLinks.stream()
-				.takeWhile(link -> !link.getSource().equals(source))
+				.takeWhile(link -> !Objects.equals(link.getSource(), source))
 				.map(SankeyLink::getLineWidth)
 				.reduce(Integer::sum)
 				.orElse(0);

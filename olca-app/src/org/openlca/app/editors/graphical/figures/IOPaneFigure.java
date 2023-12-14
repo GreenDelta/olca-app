@@ -7,7 +7,6 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
-import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.tools.graphics.figures.GridPos;
 
@@ -28,7 +27,7 @@ public class IOPaneFigure extends ComponentFigure {
 		this.pane = pane;
 		var theme = pane.getGraph().getConfig().getTheme();
 		var node = pane.getNode();
-		var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
+		var box = node.getThemeBox();
 
 		var layout = new GridLayout(1, false);
 		layout.marginWidth = 0;
@@ -153,7 +152,7 @@ public class IOPaneFigure extends ComponentFigure {
 				if (!inputIOPane.getExchangeItems().isEmpty()) {
 					var theme = pane.getGraph().getConfig().getTheme();
 					var node = pane.getNode();
-					var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
+					var box = node.getThemeBox();
 					var location = getLocation();
 					var size = getNodeFigure().getSize();
 					g.setForegroundColor(theme.boxBorderColor(box));

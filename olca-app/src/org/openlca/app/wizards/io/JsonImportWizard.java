@@ -83,16 +83,26 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 		var mode = page.updateMode;
 		LoggerFactory.getLogger(getClass())
 				.info("Import JSON LD package {} with update mode = {}", zip, mode);
-		getContainer().run(true, true, (monitor) -> {
-			monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
-			try (var store = ZipStore.open(zip)) {
-				var importer = new JsonImport(store, Database.get());
-				importer.setUpdateMode(mode);
-				importer.run();
-			} catch (Exception e) {
-				throw new InvocationTargetException(e);
-			}
-		});
+		try (var store = ZipStore.open(zip)) {
+			LibraryResolver.resolve(store.getLibraryLinks(), success -> {
+				if (!success)
+					return;
+				try {
+					getContainer().run(true, true, (monitor) -> {
+						monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
+						try {
+							var importer = new JsonImport(store, Database.get());
+							importer.setUpdateMode(mode);
+							importer.run();
+						} catch (Exception e) {
+							throw new InvocationTargetException(e);
+						}
+					});
+				} catch (InvocationTargetException | InterruptedException e) {
+					ErrorReporter.on("JSON import failed", e);
+				}
+			});
+		}
 	}
 
 	/**
@@ -124,9 +134,9 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			UI.fillHorizontal(fileComp);
 			UI.gridLayout(fileComp, 3).marginBottom = 0;
 			FileSelector.on(file -> {
-						zip = file;
-						setPageComplete(true);
-					})
+				zip = file;
+				setPageComplete(true);
+			})
 					.withTitle("Select a zip file with openLCA data...")
 					.withExtensions("*.zip")
 					.withSelection(zip)

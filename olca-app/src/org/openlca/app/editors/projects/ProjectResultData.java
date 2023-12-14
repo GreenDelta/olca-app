@@ -10,71 +10,37 @@ import org.openlca.core.results.ProjectResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.util.Strings;
 
-public class ProjectResultData {
-
-	private final IDatabase db;
-	private final Project project;
-	private final ProjectResult result;
-	private final Report report;
-	private final ProjectVariant[] variants;
-	private final ResultItemOrder items;
-	private final NwSetTable nwFactors;
-
-	private ProjectResultData(
-		IDatabase db, Project project, ProjectResult result, Report report) {
-		this.db = db;
-		this.project = project;
-		this.result = result;
-		this.report = report;
-		this.variants = result.getVariants()
-			.stream()
-			.sorted((v1, v2) -> Strings.compare(v1.name, v2.name))
-			.toArray(ProjectVariant[]::new);
-		this.items = ResultItemOrder.of(result);
-		Sort.sort(this.items);
-		var nwFactors = project.nwSet != null
-			? NwSetTable.of(db, project.nwSet)
-			: null;
-		this.nwFactors = nwFactors != null && !nwFactors.isEmpty()
-			? nwFactors
-			: null;
-	}
+public record ProjectResultData(
+		IDatabase db,
+		Project project,
+		ProjectResult result,
+		Report report,
+		ProjectVariant[] variants,
+		ResultItemOrder items,
+		NwSetTable nwFactors
+) {
 
 	static ProjectResultData of(
-		IDatabase db, Project project, ProjectResult result, Report report) {
-		return new ProjectResultData(db, project, result, report);
-	}
-
-	public IDatabase db() {
-		return db;
-	}
-
-	public ProjectResult result() {
-		return result;
-	}
-
-	public Project project() {
-		return project;
+			IDatabase db, Project project, ProjectResult result, Report report
+	) {
+		var variants = result.getVariants()
+				.stream()
+				.sorted((v1, v2) -> Strings.compare(v1.name, v2.name))
+				.toArray(ProjectVariant[]::new);
+		var items = ResultItemOrder.of(result);
+		Sort.sort(items);
+		var nwFactors = project.nwSet != null
+				? NwSetTable.of(db, project.nwSet)
+				: null;
+		nwFactors = nwFactors != null && !nwFactors.isEmpty()
+				? nwFactors
+				: null;
+		return new ProjectResultData(
+				db, project, result, report, variants, items, nwFactors);
 	}
 
 	public boolean hasReport() {
 		return report != null;
-	}
-
-	public Report report() {
-		return report;
-	}
-
-	public ProjectVariant[] variants() {
-		return variants;
-	}
-
-	public ResultItemOrder items() {
-		return items;
-	}
-
-	public NwSetTable nwFactors() {
-		return nwFactors;
 	}
 
 	public boolean hasNormalization() {
@@ -87,7 +53,7 @@ public class ProjectResultData {
 
 	public String weightedScoreUnit() {
 		return project != null && project.nwSet != null
-			? project.nwSet.weightedScoreUnit
-			: null;
+				? project.nwSet.weightedScoreUnit
+				: null;
 	}
 }

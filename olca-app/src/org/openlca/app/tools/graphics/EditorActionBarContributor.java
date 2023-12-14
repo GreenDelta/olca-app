@@ -16,6 +16,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.openlca.app.navigation.Navigator;
 import org.slf4j.LoggerFactory;
 
+
 public abstract class EditorActionBarContributor extends
 		MultiPageEditorActionBarContributor {
 
@@ -52,7 +53,7 @@ public abstract class EditorActionBarContributor extends
 	private void setActiveActionBars(MultiPageSubActionBars actionBars,
 																	 IEditorPart activeEditor) {
 		if (activeEditorActionBars != null
-				&& activeEditorActionBars != actionBars) {
+				&& !activeEditorActionBars.equals(actionBars)) {
 			activeEditorActionBars.deactivate();
 		}
 		activeEditorActionBars = actionBars;

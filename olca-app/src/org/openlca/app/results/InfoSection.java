@@ -74,8 +74,7 @@ class InfoSection {
 		UI.gridLayout(inner, 2, 5, 0);
 		var excelBtn = UI.button(inner, tk, M.ExportToExcel);
 		excelBtn.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(excelBtn,
-				e -> new ExcelExportAction().run());
+		Controls.onSelect(excelBtn, e -> ExcelExportWizard.open());
 		var resultBtn = UI.button(inner, tk, "Save result as ...", SWT.NONE);
 		resultBtn.setImage(Icon.SAVE_AS.get());
 		Controls.onSelect(resultBtn, e -> {

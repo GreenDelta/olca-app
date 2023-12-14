@@ -61,15 +61,8 @@ public class SimulationEditor extends SimpleFormEditor {
 		return new SimulationPage(this);
 	}
 
-	private static class SimulationInput implements IEditorInput {
-
-		final String setupKey;
-		final String solverKey;
-
-		public SimulationInput(String setupKey, String solverKey) {
-			this.setupKey = setupKey;
-			this.solverKey = solverKey;
-		}
+	private record SimulationInput(String setupKey, String solverKey)
+			implements IEditorInput {
 
 		@Override
 		@SuppressWarnings({"rawtypes", "unchecked"})

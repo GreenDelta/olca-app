@@ -51,6 +51,12 @@ public class ProjectResultEditor extends FormEditor {
 	}
 
 	@Override
+	public void dispose() {
+		data.result().dispose();
+		super.dispose();
+	}
+
+	@Override
 	protected void addPages() {
 		try {
 			addPage(new ResultPage(this));

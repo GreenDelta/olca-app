@@ -7,6 +7,8 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.tools.graphics.model.Link;
 
+import java.util.Objects;
+
 import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
 import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
@@ -80,9 +82,9 @@ public class CollapseCommand extends Command {
 						|| otherNode.equals(root))  // double link
 					continue;
 
-				if (root != graph.getReferenceNode()
+				if (!Objects.equals(root, graph.getReferenceNode())
 						&& (otherNode.isChainingReferenceNode(side)
-						|| otherNode == graph.getReferenceNode()))
+						|| otherNode.equals(graph.getReferenceNode())))
 					continue;
 
 				graph.mapProcessLinkToGraphLink.remove(link.processLink);

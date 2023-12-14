@@ -2,6 +2,7 @@ package org.openlca.app.editors.graphical.model;
 
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.tools.graphics.model.Link;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
@@ -23,12 +24,12 @@ public class GraphLink extends Link {
 
 	@Override
 	public void reconnect(Component newSource, Component newTarget) {
-		disconnect();
-
+		super.disconnect();
 		source = adaptComponent(newSource, true);
 		target = adaptComponent(newTarget, false);
+		super.reconnect();
 
-		reconnect();
+		updateIsExpanded();
 	}
 
 	@Override

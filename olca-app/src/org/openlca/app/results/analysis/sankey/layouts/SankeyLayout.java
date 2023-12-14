@@ -36,14 +36,14 @@ public class SankeyLayout extends GraphLayout {
 
 	@Override
 	public Component getReferenceNode() {
-		return getDiagram().getNode(getDiagram().editor.getSankey().root);
+		return getDiagram().getReferenceNode();
 	}
 
 	@Override
 	public ComponentFigure getReferenceFigure() {
 		for (var child : getParentFigure().getChildren()) {
 			if (child instanceof SankeyNodeFigure figure) {
-				if (figure.getComponent() == getReferenceNode())
+				if (figure.getComponent().equals(getReferenceNode()))
 					return figure;
 			}
 		}

@@ -18,6 +18,7 @@ import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.simulation.SimulationEditor;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MemoryError;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;

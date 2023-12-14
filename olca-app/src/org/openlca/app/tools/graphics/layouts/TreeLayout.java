@@ -1,13 +1,14 @@
 package org.openlca.app.tools.graphics.layouts;
 
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.app.tools.graphics.model.Component;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
+import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.tools.graphics.model.Component;
 
 import static org.eclipse.draw2d.PositionConstants.*;
 
@@ -152,7 +153,7 @@ public class TreeLayout {
 	}
 
 	private void secondWalkMistletoes(Vertex vertex) {
-		if (vertex != apexVertex && vertex.mistletoe != null) {
+		if (!Objects.equals(vertex, apexVertex) && vertex.mistletoe != null) {
 			var apex = vertex.mistletoe.apexVertex;
 			vertex.mistletoe.setApexLocation();
 			vertex.mistletoe.secondWalk(apex, null, -apex.prelim, 0);
@@ -190,7 +191,7 @@ public class TreeLayout {
 	}
 
 	private void firstWalkMistletoes(Vertex vertex, int depth) {
-		if (vertex != apexVertex && vertex.mistletoe != null) {
+		if (!Objects.equals(vertex, apexVertex) && vertex.mistletoe != null) {
 			// First walks on the mistletoes of the mistletoe.
 			vertex.mistletoe.firstWalkMistletoes(vertex.mistletoe.apexVertex, 1);
 
@@ -450,7 +451,7 @@ public class TreeLayout {
 
 	private Vertex ancestor(Vertex topInsideVertex, Vertex vertex, Vertex ancestor) {
 		return (topInsideVertex.ancestor != null
-				&& topInsideVertex.ancestor.parent == vertex.parent)
+				&& Objects.equals(topInsideVertex.ancestor.parent, vertex.parent))
 				? topInsideVertex.ancestor
 				: ancestor;
 	}

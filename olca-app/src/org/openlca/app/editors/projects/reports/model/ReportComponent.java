@@ -40,9 +40,9 @@ public enum ReportComponent {
 	SINGLE_SCORE_BAR_CHART("single_score_bar_chart"),
 
 	/** Contributions of the processes in the variants to the LCIA results. */
-	PROCESS_CONTRIBUTION_CHART("process_contribution_chart"),
+	// PROCESS_CONTRIBUTION_CHART("process_contribution_chart"),
 
-	PROCESS_CONTRIBUTION_TABLE("process_contribution_table"),
+	// PROCESS_CONTRIBUTION_TABLE("process_contribution_table"),
 
 	LCC_ADDED_VALUES_TABLE("lcc_added_values_table"),
 

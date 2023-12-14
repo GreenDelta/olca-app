@@ -4,6 +4,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.matrix.index.EnviFlow;
@@ -55,6 +56,10 @@ public class SankeyNode extends Component {
 		return getDiagram().isReferenceNode(this);
 	}
 
+	public Theme.Box getThemeBox() {
+		return Theme.Box.of(product.provider(), isReference());
+	}
+
 	@Override
 	public int compareTo(Component other) {
 		if (other instanceof SankeyNode n)
@@ -70,7 +75,7 @@ public class SankeyNode extends Component {
 	}
 
 	public String toString() {
-		return "Node: "+ Labels.name(node.product.provider());
+		return "Node: "+ Labels.name(node.product);
 	}
 
 }

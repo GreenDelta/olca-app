@@ -20,7 +20,8 @@ import org.openlca.app.editors.graphical.model.Node;
 	 * <li>support for adding and removing children,</li>
 	 * <li>methods for connections with other <code>Components</code>,</li>
  */
-abstract public class Component extends Element implements Comparable<Component> {
+abstract public class Component extends Element implements
+		Comparable<Component> {
 
 	public static final String
 		CHILDREN_PROP = "children",
@@ -138,10 +139,10 @@ abstract public class Component extends Element implements Comparable<Component>
 	public void addConnection(Link link) {
 		if (link == null)
 			return;
-		if (link.getTarget() == this && !targetConnections.contains(link)) {
+		if (this.equals(link.getTarget()) && !targetConnections.contains(link)) {
 			targetConnections.add(link);
 			firePropertyChange(TARGET_CONNECTIONS_PROP, null, link);
-		} else if (link.getSource() == this && !sourceConnections.contains(link)) {
+		} else if (this.equals(link.getSource()) && !sourceConnections.contains(link)) {
 			sourceConnections.add(link);
 			firePropertyChange(SOURCE_CONNECTIONS_PROP, null, link);
 		}
@@ -151,11 +152,11 @@ abstract public class Component extends Element implements Comparable<Component>
 		if (link == null) {
 			return;
 		}
-		if (link.getTarget() == this) {
+		if (Objects.equals(link.getTarget(), this)) {
 			targetConnections.remove(link);
 			firePropertyChange(TARGET_CONNECTIONS_PROP, link, null);
 		}
-		else if (link.getSource() == this) {
+		else if (Objects.equals(link.getSource(), this)) {
 			sourceConnections.remove(link);
 			firePropertyChange(SOURCE_CONNECTIONS_PROP, link, null);
 		}

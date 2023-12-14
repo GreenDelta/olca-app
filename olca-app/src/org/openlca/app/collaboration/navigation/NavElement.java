@@ -8,6 +8,8 @@ import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.navigation.elements.LibraryDirElement;
+import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.core.model.Category;
@@ -47,7 +49,7 @@ record NavElement(ElementType type, Object content, boolean isFromLibrary, List<
 
 	enum ElementType {
 
-		DATABASE, GROUP, MODEL_TYPE, CATEGORY, MODEL;
+		DATABASE, LIBRARY_DIR, LIBRARY, GROUP, MODEL_TYPE, CATEGORY, MODEL;
 
 		static ElementType get(INavigationElement<?> elem) {
 			if (elem instanceof DatabaseElement)
@@ -60,6 +62,10 @@ record NavElement(ElementType type, Object content, boolean isFromLibrary, List<
 				return CATEGORY;
 			if (elem instanceof ModelElement)
 				return MODEL;
+			if (elem instanceof LibraryDirElement)
+				return LIBRARY_DIR;
+			if (elem instanceof LibraryElement)
+				return LIBRARY;
 			return null;
 		}
 

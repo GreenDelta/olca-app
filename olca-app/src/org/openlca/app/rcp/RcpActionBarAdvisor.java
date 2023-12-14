@@ -36,7 +36,6 @@ import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.NavigationMenu;
-import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.libraries.LibraryExportDialog;

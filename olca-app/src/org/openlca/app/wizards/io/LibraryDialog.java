@@ -1,4 +1,4 @@
-package org.openlca.app.collaboration.dialogs;
+package org.openlca.app.wizards.io;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -12,27 +12,28 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.jsonld.LibraryLink;
 import org.openlca.util.Strings;
 
 public class LibraryDialog extends FormDialog {
 
-	private final String library;
+	private final LibraryLink link;
 	private Button urlCheck;
 	private Button fileCheck;
 	private Mode selectedMode = Mode.URL;
 	private String location;
 
-	public LibraryDialog(String library) {
+	public LibraryDialog(LibraryLink link) {
 		super(UI.shell());
 		setBlockOnOpen(true);
-		this.library = library;
+		this.link = link;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
 				"Locate library",
-				"Please specify a location for the missing library '" + library + "'");
+				"Please specify a location for the missing library '" + link.id() + "'");
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
@@ -43,6 +44,10 @@ public class LibraryDialog extends FormDialog {
 	private void createContent(Composite parent, FormToolkit tk) {
 		urlCheck = createCheckboxSection(parent, tk, "From url", Mode.URL, (composite, check) -> {
 			var text = UI.text(composite, tk);
+			if (!Strings.nullOrEmpty(link.url())) {
+				location = link.url();
+				text.setText(link.url());
+			}
 			text.addModifyListener(e -> {
 				location = text.getText();
 				updateButtons();
@@ -120,7 +125,7 @@ public class LibraryDialog extends FormDialog {
 	private enum Mode {
 
 		URL,
-		FILE;
+		FILE
 
 	}
 

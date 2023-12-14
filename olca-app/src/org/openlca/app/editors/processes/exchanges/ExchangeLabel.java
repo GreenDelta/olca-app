@@ -167,7 +167,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 					|| (!e.isInput && type == FlowType.PRODUCT_FLOW);
 			return (isRevenue && e.costs >= 0) || (!isRevenue && e.costs < 0)
 					? Colors.systemColor(SWT.COLOR_DARK_GREEN)
-					: Colors.systemColor(SWT.COLOR_DARK_MAGENTA);
+					: Colors.fromHex("#a04ac4");
 		}
 
 		return null;
@@ -177,9 +177,11 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 	public Font getFont(Object obj, int col) {
 		if (!(obj instanceof Exchange e))
 			return null;
+		if (e.isAvoided)
+			return UI.italicFont();
 		var qRef = editor.getModel().quantitativeReference;
-		return Objects.equals(e, qRef)
-				? UI.boldFont()
-				: null;
+		if (Objects.equals(e, qRef))
+			return UI.boldFont();
+		return null;
 	}
 }

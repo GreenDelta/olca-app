@@ -2,6 +2,7 @@ package org.openlca.app.collaboration.util;
 
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -19,7 +20,9 @@ public class Ssl {
 	private static KeyStore keyStore;
 	private static CertificateFactory certificateFactory;
 	private static TrustManagerFactory trustManagerFactory;
-
+	private static Path keyStorePath = Paths.get(System.getProperty("java.home"), "lib", "security", "cacerts");
+	private static String keyStorePassword = "changeit";
+	
 	static {
 		try {
 			certificateFactory = CertificateFactory.getInstance("X.509");
@@ -73,13 +76,12 @@ public class Ssl {
 
 	private static KeyStore loadKeyStore() throws Exception {
 		var keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		var path = Paths.get(System.getProperty("java.home"), "lib", "security", "cacerts");
-		keyStore.load(Files.newInputStream(path), "changeit".toCharArray());
+		keyStore.load(Files.newInputStream(keyStorePath), keyStorePassword.toCharArray());
 		return keyStore;
 	}
 
-	public static KeyStore getKeyStore() {
-		return keyStore;
+	public static void saveKeyStore() throws Exception {
+		keyStore.store(Files.newOutputStream(keyStorePath), keyStorePassword.toCharArray());
 	}
 
 }

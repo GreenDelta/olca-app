@@ -29,7 +29,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 		super(node);
 		this.node = node;
 		theme = node.getDiagram().getConfig().getTheme();
-		box = Theme.Box.of(node.product.provider(), node.isReference());
+		box = node.getThemeBox();
 
 		GridLayout layout = new GridLayout(1, false);
 		layout.marginHeight = 2;
@@ -114,7 +114,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 
 		SankeyNodeHeader() {
 			var theme = node.getDiagram().getConfig().getTheme();
-			var box = Theme.Box.of(node.product.provider(), node.isReference());
+			var box = node.getThemeBox();
 
 			GridLayout layout = new GridLayout(2, false);
 			layout.marginHeight = 2;

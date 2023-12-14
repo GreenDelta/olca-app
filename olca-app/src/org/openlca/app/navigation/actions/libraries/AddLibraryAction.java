@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
+import org.openlca.app.components.MountLibraryDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -131,7 +132,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		LibCombo(Combo combo) {
 			this.combo = combo;
 			fill();
-			if (libraries.size() > 0) {
+			if (!libraries.isEmpty()) {
 				select(libraries.get(0));
 			}
 			Controls.onSelect(combo, $ -> {

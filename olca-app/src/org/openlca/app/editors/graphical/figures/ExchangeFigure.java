@@ -63,6 +63,9 @@ public class ExchangeFigure extends ComponentFigure {
 
 		label = new Label(Labels.name(exchange.flow));
 		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
+		if (exchange.isAvoided) {
+			setItalic(true);
+		}
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
 		var flowColor = theme.labelColor(exchangeItem.flowType());
@@ -141,8 +144,9 @@ public class ExchangeFigure extends ComponentFigure {
 			g.setBackgroundColor(Colors.gray());
 			g.fillRectangle(getBounds());
 		}
-		if (exchangeItem.isQuantitativeReference())
+		if (exchangeItem.isQuantitativeReference()) {
 			setBold(true);
+		}
 
 		g.setForegroundColor(ColorConstants.white);
 		g.popState();
@@ -152,6 +156,11 @@ public class ExchangeFigure extends ComponentFigure {
 
 	public void setBold(boolean b) {
 		if (b) label.setFont(UI.boldFont());
+		else label.setFont(null);
+	}
+
+	public void setItalic(boolean b) {
+		if (b) label.setFont(UI.italicFont());
 		else label.setFont(null);
 	}
 
@@ -200,7 +209,7 @@ public class ExchangeFigure extends ComponentFigure {
 		var border = (LineBorder) getBorder();
 		if (b) {
 			var node = exchangeItem.getNode();
-			var box = Theme.Box.of(node.descriptor, node.isOfReferenceProcess());
+			var box = node.getThemeBox();
 			var color = theme.boxBorderColor(box);
 			border.setColor(color);
 			border.setStyle(SWT.LINE_DASH);

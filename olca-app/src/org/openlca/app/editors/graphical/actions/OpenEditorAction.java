@@ -7,9 +7,9 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
-import org.openlca.app.editors.systems.ProductSystemInfoPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.graphics.actions.ActionIds;
+import org.openlca.app.util.Labels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +36,11 @@ public class OpenEditorAction extends SelectionAction {
 		if (objects.size() != 1)
 			return false;
 		object = objects.get(0);
+		if (object instanceof GraphEditPart)
+			return false;
 		setText(M.OpenInEditor + ": " + getObjectName());
 
-		return ((object instanceof GraphEditPart)
-				|| (NodeEditPart.class.isAssignableFrom(object.getClass()))
+		return ((NodeEditPart.class.isAssignableFrom(object.getClass()))
 				|| (object instanceof ExchangeEditPart));
 	}
 
@@ -47,10 +48,10 @@ public class OpenEditorAction extends SelectionAction {
 		if (object == null)
 			return "";
 
-		if (object instanceof GraphEditPart)
-			return M.ProductSystem;
-		else if (NodeEditPart.class.isAssignableFrom(object.getClass()))
-			return M.Process;
+		if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
+			var model = ((NodeEditPart) object).getModel();
+			return Labels.of(model.descriptor.type);
+		}
 		else if (object instanceof ExchangeEditPart)
 			return M.Flow;
 		else return "";
@@ -61,10 +62,6 @@ public class OpenEditorAction extends SelectionAction {
 		try {
 			var b = editor.isDirty();
 			if (editor.promptSaveIfNecessary()) {
-				if (object instanceof GraphEditPart) {
-					var systemEditor = editor.getProductSystemEditor();
-					systemEditor.setActivePage(ProductSystemInfoPage.ID);
-				}
 				if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
 					var node = ((NodeEditPart) object).getModel();
 					if (b)
@@ -78,7 +75,7 @@ public class OpenEditorAction extends SelectionAction {
 				}
 			}
 		} catch (Exception e) {
-			log.error("Failed to complete product system. ", e);
+			log.error("Failed to open the editor. ", e);
 		}
 	}
 
