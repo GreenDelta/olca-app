@@ -122,7 +122,7 @@ public class Database {
 		return configs;
 	}
 
-	private static void saveConfig() {
+	public static void saveConfig() {
 		var file = new File(Workspace.root(), "databases.json");
 		configurations.write(file);
 	}
@@ -132,12 +132,10 @@ public class Database {
 	}
 
 	public static DatabaseConfig getActiveConfiguration() {
-		for (var conf : configurations.getDerbyConfigs())
+		for (var conf : configurations.getAll()) {
 			if (isActive(conf))
 				return conf;
-		for (var conf : configurations.getMySqlConfigs())
-			if (isActive(conf))
-				return conf;
+		}
 		return null;
 	}
 

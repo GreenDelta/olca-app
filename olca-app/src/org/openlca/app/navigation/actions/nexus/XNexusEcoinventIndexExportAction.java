@@ -1,4 +1,4 @@
-package org.openlca.app.navigation.actions;
+package org.openlca.app.navigation.actions.nexus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,8 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.actions.XNexusIndexExportAction.IndexEntry;
+import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.app.navigation.actions.nexus.XNexusIndexExportAction.IndexEntry;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.Workspace;
@@ -39,7 +40,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 	public XNexusEcoinventIndexExportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Export Ecoinvent Nexus Index");
+		setText("Export Ecoinvent Nexus JSON Index");
 	}
 
 	@Override

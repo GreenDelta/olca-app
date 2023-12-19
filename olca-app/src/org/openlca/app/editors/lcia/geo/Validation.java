@@ -74,7 +74,7 @@ class Validation {
 		}
 
 		static void open(GeoFactorSetup setup, FeatureValidation validation) {
-			if (validation.wasCancelled())
+			if (validation.wasCanceled())
 				return;
 			App.runInUI(
 					"Show validation statistics",

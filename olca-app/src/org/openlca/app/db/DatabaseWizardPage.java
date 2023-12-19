@@ -10,42 +10,53 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
+import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
+import org.openlca.util.Strings;
 
-public class DatabaseWizardPage extends WizardPage {
+class DatabaseWizardPage extends WizardPage {
+
+	private final String folder;
 
 	private Text nameText;
+	private Text folderText;
 	private Button[] contentRadios;
 
-	public DatabaseWizardPage() {
+	DatabaseWizardPage(String folder) {
 		super("database-wizard-page", M.NewDatabase,
 				Icon.DATABASE_WIZARD.descriptor());
+		this.folder = folder;
 		setDescription(M.CreateANewDatabase);
 		setPageComplete(false);
 	}
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite body = UI.composite(parent);
+		var body = UI.composite(parent);
 		setControl(body);
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		UI.gridLayout(body, 2);
-		createNameText(body);
+		nameText = createText(body, M.DatabaseName);
+		nameText.addModifyListener(e -> validateInput());
+		folderText = createText(body, M.Folder);
+		if (Strings.notEmpty(folder)) {
+			folderText.setText(folder);
+		}
 		createDatabaseContent(body);
 	}
 
-	private void createNameText(Composite comp) {
-		var label = new Label(comp, SWT.NONE);
-		label.setText(M.DatabaseName);
-		var gd = UI.gridData(label, false, false);
+	private Text createText(Composite comp, String label) {
+		var l = new Label(comp, SWT.NONE);
+		l.setText(label);
+		var gd = UI.gridData(l, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
-		nameText = new Text(comp, SWT.BORDER);
-		UI.fillHorizontal(nameText);
-		nameText.addModifyListener((e) -> validateInput());
+		var text = new Text(comp, SWT.BORDER);
+		UI.fillHorizontal(text);
+		return text;
 	}
 
 	private void createDatabaseContent(Composite comp) {
@@ -57,8 +68,8 @@ public class DatabaseWizardPage extends WizardPage {
 		createContentRadios(comp);
 	}
 
-	private void createContentRadios(Composite composite) {
-		Composite radioGroup = UI.composite(composite);
+	private void createContentRadios(Composite comp) {
+		var radioGroup = UI.composite(comp);
 		radioGroup.setLayout(new RowLayout(SWT.VERTICAL));
 		contentRadios = new Button[DbTemplate.values().length];
 		for (int i = 0; i < DbTemplate.values().length; i++) {
@@ -96,9 +107,15 @@ public class DatabaseWizardPage extends WizardPage {
 	}
 
 	DatabaseConfig getPageData() {
-		var derbyConfig = new DerbyConfig();
-		derbyConfig.name(getText(nameText));
-		return derbyConfig;
+		var config = new DerbyConfig();
+		config.name(getText(nameText));
+		var path = folderText.getText();
+		if (Strings.notEmpty(path)) {
+			// normalize the path
+			var parts = DatabaseDirElement.split(path);
+			config.setCategory(String.join("/", parts));
+		}
+		return config;
 	}
 
 	DbTemplate getSelectedContent() {

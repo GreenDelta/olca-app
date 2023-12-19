@@ -39,7 +39,7 @@ class Repair {
 				repair.run();
 				monitor.done();
 				showInfo(repair);
-				return repair.wasCancelled()
+				return repair.wasCanceled()
 						? Status.CANCEL_STATUS
 						: Status.OK_STATUS;
 			}
@@ -51,7 +51,7 @@ class Repair {
 	}
 
 	private static void showInfo(FeatureRepair repair) {
-		if (repair.wasCancelled())
+		if (repair.wasCanceled())
 			return;
 		App.runInUI("Feature repair done", () -> {
 			var msg = repair.count() == 1

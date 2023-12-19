@@ -112,27 +112,11 @@ public class DeleteExchangeCommand extends Command {
 						&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
 				.toList();
 
-		if (!techFlows.isEmpty()) {
-			var usages = new ExchangeUseSearch(Database.get(), process)
-					.findUses(exchange);
-			// The exchange cannot be removed if it is used in another product system.
-			usages.remove(Descriptor.of(graph.getProductSystem()));
-			if (!usages.isEmpty()) {
-				MsgBox.error(M.CannotRemoveExchanges,
-						M.ExchangesAreUsedOrNotDisconnected);
-				return;
-			}
-
-			if (!checkProviderLinks(process, exchanges, techFlows))
-				return;
-
-			var b = Question.ask("Remove exchange",
-					"Remove flow " + Labels.name(exchange.flow)
-							+ " from process " + Labels.name(process) + "?");
-			if (!b)
-				return;
+		if (!techFlows.isEmpty() && !checkUsage(exchanges, techFlows)) {
+			return;
 		}
 
+		// Removing the exchange and the eventual links
 		process.exchanges.remove(exchange);
 		var processLinks = graph.linkSearch.getLinks(process.id);
 		for (var link : processLinks) {
@@ -143,6 +127,28 @@ public class DeleteExchangeCommand extends Command {
 		parent.removeChild(child);
 
 		editor.setDirty(process);
+	}
+
+	private boolean checkUsage(List<Exchange> exchanges,
+			List<Exchange> techFlows) {
+		var usages = new ExchangeUseSearch(Database.get(), process)
+				.findUses(exchange);
+		// The exchange cannot be removed if it is used in another product system.
+		usages.remove(Descriptor.of(graph.getProductSystem()));
+		if (!usages.isEmpty()) {
+			MsgBox.error(M.CannotRemoveExchanges,
+					M.ExchangesAreUsedOrNotDisconnected);
+			return false;
+		}
+
+		// Check if the flow is used as a default provider (MsgBox.error is
+		// managed by the method).
+		if (!checkProviderLinks(process, exchanges, techFlows))
+			return false;
+
+		return Question.ask("Remove exchange",
+				"Remove flow " + Labels.name(exchange.flow)
+						+ " from process " + Labels.name(process) + "?");
 	}
 
 	private Exchange getExchange() {

@@ -49,12 +49,12 @@ class FileSelector {
 	}
 
 	void render(Composite comp) {
-		var fileText = UI.labeledText(comp, M.File, SWT.READ_ONLY);
-		fileText.setBackground(Colors.systemColor(SWT.COLOR_LIST_BACKGROUND));
+		var text = UI.labeledText(comp, title(), SWT.READ_ONLY);
+		text.setBackground(Colors.systemColor(SWT.COLOR_LIST_BACKGROUND));
 		if (selection != null) {
-			fileText.setText(selection.getName());
+			text.setText(selection.getName());
 		}
-		UI.fillHorizontal(fileText);
+		UI.fillHorizontal(text);
 		var browse = new Button(comp, SWT.NONE);
 		browse.setText(M.Browse);
 		browse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
@@ -70,10 +70,16 @@ class FileSelector {
 					.orElse(null);
 			if (file != null) {
 				selection = file;
-				fileText.setText(file.getName());
+				text.setText(file.getName());
 				handler.accept(file);
 			}
 		});
+	}
+
+	private String title() {
+		return title == null
+				? M.File
+				: title;
 	}
 
 }
