@@ -22,6 +22,8 @@ def package(
     if osa.is_mac():
         MacDir.arrange(build_dir)
 
+    build_dir.unjar_plugins()
+
     # JRE and native libraries
     JRE.extract_to(build_dir)
     lib = Lib.MKL if mkl else Lib.BLAS
