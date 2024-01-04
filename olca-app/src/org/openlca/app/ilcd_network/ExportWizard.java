@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class ExportWizard extends Wizard implements IExportWizard {
 
 	private ExportWizardPage selectionPage;
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public ExportWizard() {
 		super();
@@ -35,7 +35,7 @@ public class ExportWizard extends Wizard implements IExportWizard {
 			this.getContainer().run(
 					true,
 					true,
-					new Export(selectionPage.getSelectedModels(), Database
+					new ExportProcess(selectionPage.getSelectedModels(), Database
 							.get()));
 		} catch (Exception e) {
 			log.error("An error occurred: " + e.getMessage(), e);

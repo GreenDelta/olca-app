@@ -19,8 +19,8 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.io.ilcd.ILCDExport;
-import org.openlca.io.ilcd.output.ExportConfig;
+import org.openlca.ilcd.io.ZipStore;
+import org.openlca.io.ilcd.output.Export;
 
 public class ILCDExportWizard extends Wizard implements IExportWizard {
 
@@ -36,6 +36,8 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 		ModelType[] types = {
 				ModelType.PRODUCT_SYSTEM,
 				ModelType.IMPACT_METHOD,
+				ModelType.IMPACT_CATEGORY,
+				ModelType.EPD,
 				ModelType.PROCESS,
 				ModelType.FLOW,
 				ModelType.FLOW_PROPERTY,
@@ -62,13 +64,15 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public boolean performFinish() {
-		var config = createConfig();
-		if (config == null)
+		var target = prepareTarget();
+		if (target == null)
 			return false;
 		var descriptors = page.getSelectedModels();
-		try {
+		try (var zip = new ZipStore(target)) {
+			var export = new Export(Database.get(), zip)
+					.withLang(IoPreference.getIlcdLanguage());
 			getContainer().run(true, true,
-					monitor -> runExport(monitor, config, descriptors));
+					monitor -> runExport(monitor, export, descriptors));
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("ILCD export failed", e);
@@ -77,22 +81,20 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 	}
 
 	private void runExport(
-			IProgressMonitor monitor,
-			ExportConfig config,
-			List<RootDescriptor> descriptors) throws InvocationTargetException {
+			IProgressMonitor monitor, Export export, List<RootDescriptor> descriptors
+	) throws InvocationTargetException {
 
 		int n = descriptors.size();
 		monitor.beginTask(M.Export, n == 1 ? IProgressMonitor.UNKNOWN : n);
 		int worked = 0;
 
-		var export = new ILCDExport(config);
 		for (var d : descriptors) {
 			if (monitor.isCanceled())
 				break;
 			monitor.setTaskName(d.name);
 			try {
-				var e = Daos.root(config.db, d.type).getForId(d.id);
-				export.export(e);
+				var e = Daos.root(Database.get(), d.type).getForId(d.id);
+				export.write(e);
 				if (n > 1) {
 					monitor.worked(++worked);
 				}
@@ -100,10 +102,9 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 				throw new InvocationTargetException(e);
 			}
 		}
-		export.close();
 	}
 
-	private ExportConfig createConfig() {
+	private File prepareTarget() {
 		var target = page.getExportDestination();
 		if (target == null)
 			return null;
@@ -135,9 +136,6 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 				return null;
 			}
 		}
-
-		var config = new ExportConfig(Database.get(), target);
-		config.lang = IoPreference.getIlcdLanguage();
-		return config;
+		return target;
 	}
 }
