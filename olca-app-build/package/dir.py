@@ -29,7 +29,7 @@ class BuildDir:
     @property
     def export_dir(self) -> Path:
         return PROJECT_DIR / "build" / self.name
-    
+
     @property
     def app(self) -> Path:
         if self.osa.is_mac():
@@ -40,7 +40,7 @@ class BuildDir:
     @property
     def about(self) -> Path:
         return self.app
-    
+
     @property
     def jre(self) -> Path:
         return self.app / "jre"
@@ -66,7 +66,7 @@ class BuildDir:
     def mkl_lib(self) -> Path:
         arch = "arm64" if self.osa == OsArch.MACOS_ARM else "x64"
         return self.app / f"olca-mkl-{arch}_v{MKL_JNI_VERSION}"
-    
+
     def copy_export(self):
         if not self.export_dir.exists():
             print(f"No export available for copy the {self.osa.value} version.")
@@ -74,6 +74,26 @@ class BuildDir:
         delete(self.root)
         self.root.parent.mkdir(exist_ok=True, parents=False)
         shutil.copytree(self.export_dir, self.root)
+
+    def unjar_plugins(self):
+        """Sometimes in newer Eclipse versions the PDE build does not respect
+        the `Eclipse-BundleShape: dir` entry in plugin manifests anymore but
+        exports them as jar-files. For plugins that should be extracted as
+        folders, we check if there is a jar-file and extract it if this is
+        the case."""
+
+        plugin_dir = self.app / "plugins"
+        jars = [
+            "org.eclipse.equinox.launcher.*.jar",
+            "olca-app_*.jar",
+            "org.eclipse.ui.themes_*.jar",
+        ]
+        for jar in jars:
+            for g in plugin_dir.glob(jar):
+                name = g.name[0:len(g.name) - 4]
+                print(f"info: unpack plugin {name}")
+                shutil.unpack_archive(g, plugin_dir / name, "zip")
+                g.unlink()
 
 
 def delete(path: Path):

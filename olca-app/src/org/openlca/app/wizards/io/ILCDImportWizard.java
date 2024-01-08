@@ -20,7 +20,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.ilcd.io.ZipStore;
-import org.openlca.io.ilcd.ILCDImport;
+import org.openlca.io.ilcd.input.Import;
 import org.openlca.io.ilcd.input.ImportConfig;
 
 public class ILCDImportWizard extends Wizard implements IImportWizard {
@@ -89,7 +89,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 				var config = new ImportConfig(store, Database.get(), flowMap)
 						.withAllFlows(true)
 						.withLanguageOrder(langOrder);
-				ImportMonitor.on(monitor).run(new ILCDImport(config));
+				ImportMonitor.on(monitor).run(new Import(config));
 			});
 		}
 	}

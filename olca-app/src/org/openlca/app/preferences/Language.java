@@ -13,8 +13,10 @@ public enum Language {
 
 	CATALAN("Catalan", "ca"),
 
-	CHINESE("Chinese", "zh"),
+	CHINESESIMPLIFIED("Chinese (Simplified)", "zh_cn"),
 
+	CHINESETRADITIONAL("Chinese (Traditional)", "zh_tw"),
+	
 	ENGLISH("English", "en"),
 
 	FRENCH("French", "fr"),

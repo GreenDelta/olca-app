@@ -23,7 +23,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 public class ExportWizardPage extends WizardPage implements ICheckStateListener {
 
 	private CheckboxTreeViewer viewer;
-	private List<Descriptor> selectedModels = new ArrayList<>();
+	private final List<Descriptor> selectedModels = new ArrayList<>();
 
 	public ExportWizardPage() {
 		super("ilcd.network.SelectProcessPage");
@@ -68,8 +68,7 @@ public class ExportWizardPage extends WizardPage implements ICheckStateListener 
 		selectedModels.clear();
 		Object[] elements = viewer.getCheckedElements();
 		for (Object element : elements) {
-			if (element instanceof ModelElement) {
-				ModelElement modelElement = (ModelElement) element;
+			if (element instanceof ModelElement modelElement) {
 				var model = modelElement.getContent();
 				selectedModels.add(model);
 			}
