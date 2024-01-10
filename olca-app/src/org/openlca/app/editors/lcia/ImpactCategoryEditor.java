@@ -88,7 +88,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 				addPage(ParameterPage.create(this));
 				addPage(new GeoPage(this));
 				addPage(new ImpactSimilaritiesPage(this));
-				addCommentPage();
+				addExtensionPages();
 			}
 		} catch (Exception e) {
 			ErrorReporter.on("failed to init pages", e);
