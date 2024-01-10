@@ -23,7 +23,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDocumentation;
+import org.openlca.core.model.ProcessDoc;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;
@@ -127,16 +127,16 @@ public class XNexusIndexExportAction extends Action implements INavigationAction
 			version = Version.asString(process.version);
 			if (process.location != null)
 				location = process.location.code;
-			ProcessDocumentation doc = process.documentation;
+			var doc = process.documentation;
 			if (doc != null) {
 				writeDocValues(doc);
 			}
 		}
 
-		private void writeDocValues(ProcessDocumentation doc) {
+		private void writeDocValues(ProcessDoc doc) {
 			technology = doc.technology;
-			if (doc.dataSetOwner != null)
-				owner = doc.dataSetOwner.name;
+			if (doc.dataOwner != null)
+				owner = doc.dataOwner.name;
 			if (doc.dataGenerator != null)
 				generator = doc.dataGenerator.name;
 			if (doc.reviewer != null)

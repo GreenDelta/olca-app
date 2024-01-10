@@ -17,7 +17,7 @@ import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDocumentation;
+import org.openlca.core.model.ProcessDoc;
 import org.openlca.util.AllocationUtils;
 
 public class ProcessEditor extends ModelEditor<Process> {
@@ -39,7 +39,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 		super.init(site, input);
 		var process = getModel();
 		if (process.documentation == null) {
-			process.documentation = new ProcessDocumentation();
+			process.documentation = new ProcessDoc();
 		}
 		evalFormulas();
 		parameterSupport = new ParameterChangeSupport();
