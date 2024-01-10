@@ -7,13 +7,15 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Colors;
 
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+
 public class PlusMinusButton extends Clickable {
 
 	public final PlusMinusFigure icon;
 
 	public PlusMinusButton(Node node, int side) {
 		setContents(icon = new PlusMinusFigure(node, side));
-		setVisible(node.canExpandOrCollapse(side));
+		setVisible(side == INPUT ? node.hasLinkedInput() : node.hasLinkedOutput());
 		setEnabled(node.isButtonEnabled(side));
 	}
 
@@ -45,7 +47,10 @@ public class PlusMinusButton extends Clickable {
 			var box = node.getThemeBox();
 
 			setEnabled(node.isButtonEnabled(side));
-			setVisible(node.canExpandOrCollapse(side));
+			var isVisible = side == INPUT
+					? node.hasLinkedInput()
+					: node.hasLinkedOutput();
+			setVisible(isVisible);
 
 			// Painting
 			if (isEnabled())

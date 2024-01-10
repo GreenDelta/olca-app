@@ -30,7 +30,7 @@ public class CollapseCommand extends Command {
 	public boolean canExecute() {
 		return host.isExpanded(side)
 			&& (side == INPUT || side == OUTPUT)
-			&& !host.isOnlyChainingReferenceNode(side);
+			&& host.hasConnectionToCollapse(side);
 	}
 
 	@Override
