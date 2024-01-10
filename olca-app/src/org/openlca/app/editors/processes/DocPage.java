@@ -12,13 +12,13 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ProcessTypeViewer;
 import org.openlca.core.model.Process;
 
-class ModelingPage extends ModelPage<Process> {
+class DocPage extends ModelPage<Process> {
 
 	private FormToolkit toolkit;
 	private final ProcessEditor editor;
 
-	ModelingPage(ProcessEditor editor) {
-		super(editor, "ProcessInfoPage", M.ModelingAndValidation);
+	DocPage(ProcessEditor editor) {
+		super(editor, "ProcessInfoPage", "Documentation");
 		this.editor = editor;
 	}
 
@@ -27,40 +27,41 @@ class ModelingPage extends ModelPage<Process> {
 		var form = UI.header(this);
 		toolkit = mForm.getToolkit();
 		var body = UI.body(form, toolkit);
-		createModelingSection(body);
+		createInventorySection(body);
 		createDataSourceSection(body);
 		createReviewSection(body);
 		createSourcesSection(body);
+		createAdminInfoSection(body);
 		body.setFocus();
 		form.reflow(true);
 	}
 
-	private void createModelingSection(Composite parent) {
-		var comp = UI.formSection(parent, toolkit, M.ModelingAndValidation, 3);
-
+	private void createInventorySection(Composite parent) {
+		var comp = UI.formSection(parent, toolkit, M.LCIMethod, 3);
 		UI.label(comp, getToolkit(), M.ProcessType);
 		var typeCombo = new ProcessTypeViewer(comp);
 		getBinding().onModel(this::getModel, "processType", typeCombo);
 		typeCombo.setEnabled(isEditable());
-
 		new CommentControl(comp, getToolkit(), "processType", getComments());
 		multiText(comp, M.LCIMethod, "documentation.inventoryMethod", 40);
 		multiText(comp, M.ModelingConstants, "documentation.modelingConstants", 40);
-		multiText(comp, M.DataCompleteness, "documentation.completeness", 40);
-		multiText(comp, M.DataSelection, "documentation.dataSelection", 40);
-		multiText(comp, M.DataTreatment, "documentation.dataTreatment", 40);
 	}
 
 	private void createDataSourceSection(Composite parent) {
 		var comp = UI.formSection(parent, toolkit, M.DataSourceInformation, 3);
-		multiText(comp, M.SamplingProcedure, "documentation.sampling", 40);
+		multiText(comp, M.DataCompleteness, "documentation.dataCompleteness", 40);
+		multiText(comp, M.DataSelection, "documentation.dataSelection", 40);
+		multiText(comp, M.DataTreatment, "documentation.dataTreatment", 40);
+		multiText(comp, M.SamplingProcedure, "documentation.samplingProcedure", 40);
 		multiText(comp, M.DataCollectionPeriod, "documentation.dataCollectionPeriod", 40);
+		multiText(comp, "Use advice", "documentation.useAdvice", 40);
 	}
 
 	private void createReviewSection(Composite parent) {
-		var comp = UI.formSection(parent, toolkit, M.ProcessEvaluationAndValidation, 3);
+		var comp = UI.formSection(parent, toolkit, "Review", 3);
 		modelLink(comp, M.Reviewer, "documentation.reviewer");
-		multiText(comp, M.DataSetOtherEvaluation, "documentation.reviewDetails", 40);
+		modelLink(comp, "Review report", "documentation.reviewReport");
+		multiText(comp, "Review details", "documentation.reviewDetails", 40);
 	}
 
 	private void createSourcesSection(Composite parent) {
@@ -74,4 +75,18 @@ class ModelingPage extends ModelPage<Process> {
 		CommentAction.bindTo(section, viewer, "documentation.sources", editor.getComments());
 		editor.onSaved(() -> viewer.setInput(getModel()));
 	}
+
+	private void createAdminInfoSection(Composite parent) {
+		var comp = UI.formSection(parent, toolkit, M.AdministrativeInformation, 3);
+		multiText(comp, M.Project, "documentation.project", 40);
+		multiText(comp, M.IntendedApplication, "documentation.intendedApplication", 40);
+		modelLink(comp, M.DataSetOwner, "documentation.dataOwner");
+		modelLink(comp, M.DataGenerator, "documentation.dataGenerator");
+		modelLink(comp, M.DataDocumentor, "documentation.dataDocumentor");
+		modelLink(comp, M.Publication, "documentation.publication");
+		readOnly(comp, M.CreationDate, "documentation.creationDate");
+		checkBox(comp, M.Copyright, "documentation.copyright");
+		multiText(comp, M.AccessAndUseRestrictions, "documentation.accessRestrictions", 40);
+	}
+
 }

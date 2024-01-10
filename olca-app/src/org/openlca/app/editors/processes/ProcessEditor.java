@@ -75,8 +75,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 		try {
 			addPage(new InfoPage(this));
 			addPage(new ProcessExchangePage(this));
-			addPage(new AdminInfoPage(this));
-			addPage(new ModelingPage(this));
+			addPage(new DocPage(this));
 			addPage(ParameterPage.create(this));
 			addPage(new AllocationPage(this));
 			addPage(new SocialAspectsPage(this));
