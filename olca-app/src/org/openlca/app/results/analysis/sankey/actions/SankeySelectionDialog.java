@@ -72,7 +72,7 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 		var inner = UI.composite(comp, tk);
 		UI.gridLayout(inner, 2, 10, 0);
 		var spinner = UI.spinner(inner, tk, SWT.BORDER);
-		spinner.setIncrement(10);
+		spinner.setIncrement(1);
 		spinner.setMinimum(1);
 		spinner.setMaximum(items.techFlows().size());
 		spinner.setDigits(0);
