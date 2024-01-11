@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.model;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +15,7 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.tools.graphics.model.Link;
+import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.IDatabase;
@@ -26,8 +27,6 @@ import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 import static org.openlca.app.tools.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 /**
  * A {@link Node} represents a unit process, a library process, a result
@@ -59,7 +58,7 @@ public class Node extends MinMaxComponent {
 	 */
 	public boolean isCollapsing;
 	private final String comparisonLabel = Labels.name(getRefFlow());
-	private final Map<Integer, Boolean> buttonStatus = new HashMap<>();
+	private final Map<Side, Boolean> buttonStatus = new EnumMap<>(Side.class);
 
 	public Node(RootDescriptor descriptor) {
 		this.descriptor = descriptor;
@@ -207,14 +206,14 @@ public class Node extends MinMaxComponent {
 		return false;
 	}
 
-	public boolean isExpanded(int side) {
-		var bitPosition = side == INPUT ? 1 : 2;
+	public boolean isExpanded(Side side) {
+		var bitPosition = side == Side.INPUT ? 1 : 2;
 		return ((isExpanded >> bitPosition) & 1) == 1;
 	}
 
-	public void setExpanded(int side, boolean value) {
+	public void setExpanded(Side side, boolean value) {
 		var oldIsExpanded = isExpanded;
-		var bitPosition = side == INPUT ? 1 : 2;
+		var bitPosition = side == Side.INPUT ? 1 : 2;
 		if (value)
 			isExpanded |= 1 << bitPosition;
 		else
@@ -228,7 +227,7 @@ public class Node extends MinMaxComponent {
 	 * or collapsing the node. However, it is sometime necessary that the Node
 	 * updates itself its status when it is not known out of the box.
 	 */
-	public void updateIsExpanded(int side) {
+	public void updateIsExpanded(Side side) {
 		var sourceNodeIds = getAllTargetConnections().stream()
 				.map(GraphLink.class::cast)
 				.map(c -> c.getSourceNode().descriptor.id)
@@ -246,12 +245,12 @@ public class Node extends MinMaxComponent {
 			boolean isProvider = descriptor.id == pLink.providerId;
 			long otherID = isProvider ? pLink.processId : pLink.providerId;
 
-			if (side == INPUT && isInput(type, isProvider)) {
+			if (side == Side.INPUT && isInput(type, isProvider)) {
 				if (!sourceNodeIds.contains(otherID)) {
 					setExpanded(side, false);
 					return;
 				}
-			} else if (side == OUTPUT && isOutput(type, isProvider)) {
+			} else if (side == Side.OUTPUT && isOutput(type, isProvider)) {
 				if (!targetNodeIds.contains(otherID)) {
 					setExpanded(side, false);
 					return;
@@ -306,8 +305,8 @@ public class Node extends MinMaxComponent {
 	}
 
 	public void setButtonStatus() {
-		for (var side : Arrays.asList(INPUT, OUTPUT)) {
-			if (side == INPUT ? !hasLinkedInput() : !hasLinkedOutput())
+		for (var side : Side.values()) {
+			if (side == Side.INPUT ? !hasLinkedInput() : !hasLinkedOutput())
 				buttonStatus.put(side, false);
 			else if (!isExpanded(side))
 				buttonStatus.put(side, true);
@@ -319,7 +318,7 @@ public class Node extends MinMaxComponent {
 		}
 	}
 
-	public boolean isButtonEnabled(int side) {
+	public boolean isButtonEnabled(Side side) {
 		if (buttonStatus.get(side) == null)
 			setButtonStatus();
 		return buttonStatus.get(side);
@@ -336,11 +335,11 @@ public class Node extends MinMaxComponent {
 	 * Node (without traversing this Node), then this Node can be collapsed on
 	 * this Side.
 	 */
-	public boolean hasConnectionToCollapse(int side) {
-		if (!Arrays.asList(INPUT, OUTPUT).contains(side))
+	public boolean hasConnectionToCollapse(Side side) {
+		if (side == Side.BOTH)
 			return false;
 
-		var nodes = side == INPUT ? getInputs() : getOutputs();
+		var nodes = side == Side.INPUT ? getInputs() : getOutputs();
 
 		if (getGraph().isReferenceProcess(this))
 			return !nodes.isEmpty();
@@ -384,8 +383,8 @@ public class Node extends MinMaxComponent {
 	 * Check if any of this node's outputs or inputs chain to the reference node.
 	 * Returns false is the initial node is the reference.
 	 */
-	public boolean isChainingReferenceNode(int side) {
-		if (!Arrays.asList(INPUT, OUTPUT).contains(side))
+	public boolean isChainingReferenceNode(Side side) {
+		if (side == Side.BOTH)
 			return false;
 
 		if (getGraph().isReferenceProcess(this))
@@ -394,7 +393,7 @@ public class Node extends MinMaxComponent {
 		var handled = new HashSet<Node>();
 		handled.add(this);
 
-		var nodes = side == INPUT ? getInputs() : getOutputs();
+		var nodes = side == Side.INPUT ? getInputs() : getOutputs();
 		for (var node : nodes) {
 			if (getGraph().isReferenceProcess(node))
 				return true;

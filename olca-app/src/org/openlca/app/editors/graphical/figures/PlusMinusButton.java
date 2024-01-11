@@ -5,6 +5,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.app.util.Colors;
 
 import static org.openlca.app.tools.graphics.model.Side.INPUT;
@@ -13,9 +14,11 @@ public class PlusMinusButton extends Clickable {
 
 	public final PlusMinusFigure icon;
 
-	public PlusMinusButton(Node node, int side) {
+	public PlusMinusButton(Node node, Side side) {
 		setContents(icon = new PlusMinusFigure(node, side));
-		setVisible(side == INPUT ? node.hasLinkedInput() : node.hasLinkedOutput());
+		setVisible(side == Side.INPUT
+				? node.hasLinkedInput()
+				: node.hasLinkedOutput());
 		setEnabled(node.isButtonEnabled(side));
 	}
 
@@ -25,9 +28,9 @@ public class PlusMinusButton extends Clickable {
 		public static int LINE_WIDTH = 1;
 
 		private final Node node;
-		private final int side;
+		private final Side side;
 
-		PlusMinusFigure(Node node, int side) {
+		PlusMinusFigure(Node node, Side side) {
 			this.node = node;
 			this.side = side;
 			var theme = node.getGraph().getConfig().getTheme();
