@@ -41,6 +41,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.tools.openepd.EpdPanel;
+import org.openlca.app.tools.soda.SodaClientTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.MsgBox;
@@ -171,6 +172,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		// openEPD
 		menu.add(Actions.create("Get EPDs from EC3",
 			Icon.BUILDING.descriptor(), EpdPanel::open));
+		menu.add(Actions.create("LCDN/ILCD soda4LCA - Client",
+			SodaClientTool::open));
 
 		// console
 		menu.add(new Separator());
