@@ -114,12 +114,13 @@ public class IoPreferencePage extends PreferencePage implements
 	@Override
 	protected void performApply() {
 		super.performApply();
-		SodaConnection con = new SodaConnection();
+		var con = new SodaConnection();
 		con.url = IoPreference.getIlcdUrl();
 		con.user = IoPreference.getIlcdUser();
 		con.password = IoPreference.getIlcdPassword();
-		SodaClient client = new SodaClient(con);
-		testConnection(client);
+		try (var client = SodaClient.of(con)) {
+			testConnection(client);
+		}
 	}
 
 	@Override
@@ -139,7 +140,6 @@ public class IoPreferencePage extends PreferencePage implements
 
 	private void testConnection(SodaClient client) {
 		try {
-			client.connect();
 			AuthInfo info = client.getAuthInfo();
 			if (!info.isAuthenticated) {
 				MsgBox.info(M.ConnectionWithAnonymousAccess);

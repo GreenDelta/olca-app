@@ -52,7 +52,6 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	private void tryImport() throws Exception {
 		var processes = processSearchPage.getSelectedProcesses();
 		var client = IoPreference.createClient();
-		client.connect();
 		var config = new ImportConfig(client, database)
 				.withLanguageOrder(IoPreference.getIlcdLanguage(), "en");
 		getContainer().run(true, true, monitor -> {
@@ -64,6 +63,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			}
 			monitor.done();
 		});
+		client.close();
 	}
 
 	private void importProcesses(List<ProcessDescriptor> descriptors,
