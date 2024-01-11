@@ -10,10 +10,9 @@ import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.CollapseCommand;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
+import org.openlca.app.tools.graphics.model.Side;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class NodeEditPolicy extends MinMaxComponentEditPolicy {
 
@@ -35,23 +34,27 @@ public class NodeEditPolicy extends MinMaxComponentEditPolicy {
 		return super.getCommand(request);
 	}
 
-	private Command getExpansionCommand(Node node, int side, String type,
+	private Command getExpansionCommand(Node node, Side side, String type,
 		boolean quiet) {
 		var cc = new CompoundCommand();
 		var isExpand = Objects.equals(type, REQ_EXPAND);
 
-		if (side == (INPUT | OUTPUT)) {
-			for (var s : Arrays.asList(INPUT, OUTPUT))
-				if (node.isExpanded(s) && !isExpand)
+		if (side == Side.BOTH) {
+			for (var s : Arrays.asList(Side.INPUT, Side.OUTPUT)) {
+				if (node.isExpanded(s) && !isExpand) {
 					cc.add(new CollapseCommand(node, s));
-				else if (!node.isExpanded(s) && isExpand)
+				} else if (!node.isExpanded(s) && isExpand) {
 					cc.add(new ExpandCommand(node, s, quiet));
-		} else if ((side == INPUT) || (side == OUTPUT))
-			if (node.isExpanded(side) && !isExpand)
+				}
+			}
+		} else {
+			if (node.isExpanded(side) && !isExpand) {
 				cc.add(new CollapseCommand(node, side));
-			else if (!node.isExpanded(side) && isExpand)
+			}
+			else if (!node.isExpanded(side) && isExpand) {
 				cc.add(new ExpandCommand(node, side, quiet));
-		else return null;
+			}
+		}
 
 		return cc.unwrap();
 	}

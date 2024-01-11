@@ -17,9 +17,8 @@ import org.openlca.app.editors.graphical.figures.NodeFigure;
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
+import org.openlca.app.tools.graphics.model.Side;
 
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 
@@ -92,12 +91,14 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 
 	protected void addButtonActionListener(NodeFigure figure) {
 		figure.inputExpandButton.addActionListener($ -> {
-			var command = getCommand(new ExpandCollapseRequest(getModel(), INPUT, false));
+			var command = getCommand(
+					new ExpandCollapseRequest(getModel(), Side.INPUT, false));
 			if (command.canExecute())
 				getViewer().getEditDomain().getCommandStack().execute(command);
 		});
 		figure.outputExpandButton.addActionListener($ -> {
-			var command = getCommand(new ExpandCollapseRequest(getModel(), OUTPUT, false));
+			var command = getCommand(
+					new ExpandCollapseRequest(getModel(), Side.OUTPUT, false));
 			if (command.canExecute())
 				getViewer().getEditDomain().getCommandStack().execute(command);
 		});

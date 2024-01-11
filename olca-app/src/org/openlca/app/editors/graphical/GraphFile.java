@@ -14,14 +14,13 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.StickyNote;
+import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 
 /**
@@ -94,8 +93,8 @@ public final class GraphFile {
 		json.addProperty("id", node.descriptor.refId);
 
 		setLayoutProperties(json, node);
-		json.addProperty("expandedLeft", node.isExpanded(INPUT));
-		json.addProperty("expandedRight", node.isExpanded(OUTPUT));
+		json.addProperty("expandedLeft", node.isExpanded(Side.INPUT));
+		json.addProperty("expandedRight", node.isExpanded(Side.OUTPUT));
 
 		return json;
 	}
