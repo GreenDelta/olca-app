@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.App;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -15,6 +16,7 @@ import org.openlca.util.Strings;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 class LoginDialog extends FormDialog {
 
@@ -22,20 +24,24 @@ class LoginDialog extends FormDialog {
 	private Button anoCheck;
 	private Text userText;
 	private Text pwText;
+	private Connection con;
 
-	public static void show() {
+	static Optional<Connection> show() {
 		var dialog = new LoginDialog();
-		dialog.open();
+		return dialog.open() == OK
+				? Optional.ofNullable(dialog.con)
+				: Optional.empty();
 	}
 
 	private LoginDialog() {
 		super(UI.shell());
+		setBlockOnOpen(true);
 	}
 
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Connect to data node");
+		newShell.setText("Connect to a data node");
 	}
 
 	@Override
@@ -57,7 +63,7 @@ class LoginDialog extends FormDialog {
 		anoCheck = tk.createButton(comp, "Anonymous access", SWT.CHECK);
 		anoCheck.setSelection(true);
 		userText = UI.labeledText(comp, tk, "User");
-		userText.setText("Anonymous");
+		userText.setText("anonymous");
 		userText.setEnabled(false);
 		pwText = UI.labeledText(
 				comp, tk, "Password", SWT.BORDER | SWT.PASSWORD);
@@ -65,7 +71,7 @@ class LoginDialog extends FormDialog {
 
 		Controls.onSelect(anoCheck, $ -> {
 			var anonymous = anoCheck.getSelection();
-			userText.setText(anonymous ? "Anonymous" : "");
+			userText.setText(anonymous ? "anonymous" : "");
 			pwText.setText("");
 			userText.setEnabled(!anonymous);
 			pwText.setEnabled(!anonymous);
@@ -81,13 +87,14 @@ class LoginDialog extends FormDialog {
 			return;
 		}
 
-		var client = data.login();
-		if (client == null)
+		var con = App.exec("Connect to node ...", data::login);
+		if (con.hasError()) {
+			MsgBox.error(
+					"Connection failed",
+					"Failed to connect to node: " + con.error());
 			return;
-		for (var stock : client.getDataStockList().dataStocks) {
-			System.out.println(stock.name);
 		}
-
+		this.con = con;
 		super.okPressed();
 	}
 
@@ -127,7 +134,7 @@ class LoginDialog extends FormDialog {
 			return null;
 		}
 
-		SodaClient login() {
+		Connection login() {
 			var url = this.url;
 			if (url.endsWith("/")) {
 				url = url.substring(0, url.length() - 1);
@@ -141,12 +148,11 @@ class LoginDialog extends FormDialog {
 				if (!anonymous) {
 					client.login(user, password);
 				}
-				return client;
+				var stocks = client.getDataStockList().dataStocks;
+				return new Connection(client, stocks, url, user, null);
 			} catch (Exception e) {
-				MsgBox.error(
-						"Connection failed",
-						"Failed to connect to node: " + e.getMessage());
-				return null;
+
+				return Connection.error(e.getMessage());
 			}
 		}
 	}

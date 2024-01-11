@@ -172,7 +172,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		// openEPD
 		menu.add(Actions.create("Get EPDs from EC3",
 			Icon.BUILDING.descriptor(), EpdPanel::open));
-		menu.add(Actions.create("LCDN/ILCD soda4LCA - Client",
+		menu.add(Actions.create("ILCD/LCDN/soda4LCA-client",
 			SodaClientTool::open));
 
 		// console
