@@ -7,7 +7,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Labels;
 import org.openlca.core.model.ModelType;
 import org.openlca.ilcd.commons.DataSetType;
 
@@ -40,33 +39,18 @@ class TypeCombo {
 				DataSetType.SOURCE,
 		};
 		for (var type : types) {
-			var modelType = modelTypeOf(type);
-			if (modelType == null)
-				continue;
 			var item = new MenuItem(menu, SWT.NONE);
-			item.setText(Labels.plural(modelType));
-			item.setImage(Images.get(modelType));
+			item.setText(Util.labelOf(type));
+			item.setImage(Util.imageOf(type));
 			Controls.onSelect(item, e -> {
 				this.type = type;
-				button.setImage(Images.get(modelType));
-				button.setToolTipText(Labels.plural(modelType));
+				button.setImage(Util.imageOf(type));
+				button.setToolTipText(Util.labelOf(type));
 			});
 		}
 		button.setMenu(menu);
 		Controls.onSelect(button, e -> menu.setVisible(true));
 	}
 
-	private ModelType modelTypeOf(DataSetType type) {
-		return switch (type) {
-			case CONTACT -> ModelType.ACTOR;
-			case MODEL -> ModelType.PRODUCT_SYSTEM;
-			case FLOW -> ModelType.FLOW;
-			case SOURCE -> ModelType.SOURCE;
-			case PROCESS -> ModelType.PROCESS;
-			case FLOW_PROPERTY -> ModelType.FLOW_PROPERTY;
-			case UNIT_GROUP -> ModelType.UNIT_GROUP;
-			case IMPACT_METHOD -> ModelType.IMPACT_CATEGORY;
-			case EXTERNAL_FILE -> null;
-		};
-	}
+
 }
