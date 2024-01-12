@@ -1,11 +1,13 @@
 package org.openlca.app.tools.soda;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.ilcd.commons.DataSetType;
 import org.openlca.ilcd.io.SodaClient;
 
 class SodaPage extends FormPage {
@@ -24,13 +26,16 @@ class SodaPage extends FormPage {
 		var form = UI.header(mForm, "soda4LCA client");
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
+		createConnectionSection(body, tk);
+		createDataSection(body, tk);
+	}
 
+	private void createConnectionSection(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, "Connection");
 		var urlText = UI.labeledText(comp, tk, "URL");
 		urlText.setText(con.toString());
 		urlText.setEditable(false);
 		createStockCombo(comp, tk);
-
 	}
 
 	private void createStockCombo(Composite comp, FormToolkit tk) {
@@ -60,4 +65,38 @@ class SodaPage extends FormPage {
 		});
 
 	}
+
+	private void createDataSection(Composite body, FormToolkit tk) {
+		var comp = UI.formSection(body, tk, "Datasets", 1);
+
+		var searchComp = tk.createComposite(comp);
+		UI.fillHorizontal(searchComp);
+		UI.gridLayout(searchComp, 4);
+
+		var typeCombo = TypeCombo.create(searchComp, tk);
+		var searchText = tk.createText(searchComp, "", SWT.BORDER);
+		UI.fillHorizontal(searchText);
+		searchText.setMessage("Search dataset ...");
+		var button = tk.createButton(searchComp, "Search", SWT.NONE);
+		Controls.onSelect(button,
+				e -> runSearch(typeCombo.selected(), searchText.getText()));
+		searchText.addTraverseListener(e -> {
+			if (e.detail == SWT.TRAVERSE_RETURN) {
+				runSearch(typeCombo.selected(), searchText.getText());
+			}
+		});
+
+		/*
+		table = Tables.createViewer(parent, M.Name, M.UUID, M.DataSetVersion,
+				M.Comment);
+		Tables.bindColumnWidths(table, 0.3, 0.2, 0.2, 0.3);
+		table.setLabelProvider(new TableLabel());
+
+		 */
+	}
+
+	private void runSearch(DataSetType type, String name) {
+
+	}
+
 }
