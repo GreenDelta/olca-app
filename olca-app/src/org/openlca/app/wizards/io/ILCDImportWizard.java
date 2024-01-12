@@ -21,7 +21,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.ilcd.io.ZipStore;
 import org.openlca.io.ilcd.input.Import;
-import org.openlca.io.ilcd.input.ImportConfig;
 
 public class ILCDImportWizard extends Wizard implements IImportWizard {
 
@@ -86,10 +85,10 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 				var flowMap = page.flowMap != null
 						? page.flowMap
 						: FlowMap.empty();
-				var config = new ImportConfig(store, Database.get(), flowMap)
+				var imp = Import.of(store, Database.get(), flowMap)
 						.withAllFlows(true)
 						.withLanguageOrder(langOrder);
-				ImportMonitor.on(monitor).run(new Import(config));
+				ImportMonitor.on(monitor).run(imp);
 			});
 		}
 	}

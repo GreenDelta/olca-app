@@ -11,18 +11,25 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferences.IoPreference;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.ilcd.commons.DataSetType;
 import org.openlca.ilcd.commons.LangString;
 import org.openlca.ilcd.descriptors.Descriptor;
 import org.openlca.ilcd.io.SodaClient;
+import org.openlca.io.ilcd.input.Import;
 import org.openlca.util.Strings;
 
 import java.util.ArrayList;
+import java.util.List;
 
 class SodaPage extends FormPage {
 
@@ -87,7 +94,9 @@ class SodaPage extends FormPage {
 	}
 
 	private void createDataSection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Datasets", 1);
+		var section = UI.section(body, tk, "Datasets");
+		UI.gridData(section, true, true);
+		var comp = UI.sectionClient(section, tk, 1);
 
 		var searchComp = tk.createComposite(comp);
 		UI.fillHorizontal(searchComp);
@@ -107,8 +116,12 @@ class SodaPage extends FormPage {
 		});
 
 		table = Tables.createViewer(comp, M.Name, "UUID", M.Version, M.Comment);
+		UI.gridData(table.getControl(), true, true);
 		Tables.bindColumnWidths(table, 0.3, 0.2, 0.2, 0.3);
 		table.setLabelProvider(new TableLabel());
+		var importAction = Actions.create(
+				"Import selected", Icon.IMPORT.descriptor(), this::runImport);
+		Actions.bind(table, importAction);
 	}
 
 	private void runSearch(DataSetType type, String name) {
@@ -131,6 +144,28 @@ class SodaPage extends FormPage {
 			else
 				MsgBox.error("Searching for datasets failed", err[0]);
 		});
+	}
+
+	private void runImport() {
+		List<Descriptor> selection = Viewers.getAllSelected(table);
+		if (selection.isEmpty())
+			return;
+
+		var db = Database.get();
+		if (db == null) {
+			MsgBox.info("No database open",
+					"You need to open the database where" +
+							" you want to import the datasets first.");
+			return;
+		}
+
+		App.runWithProgress("Import datasets ...", () -> {
+			var imp = Import.of(client, db)
+					.withLanguageOrder(IoPreference.getIlcdLanguage());
+			for (var d : selection) {
+				imp.write(d.toRef().type, d.uuid);
+			}
+		}, Navigator::refresh);
 	}
 
 	private static class TableLabel extends BaseLabelProvider

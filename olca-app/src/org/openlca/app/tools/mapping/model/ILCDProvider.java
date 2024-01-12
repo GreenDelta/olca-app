@@ -26,7 +26,7 @@ import org.openlca.ilcd.util.FlowProperties;
 import org.openlca.ilcd.util.Flows;
 import org.openlca.ilcd.util.UnitGroups;
 import org.openlca.io.ilcd.input.FlowImport;
-import org.openlca.io.ilcd.input.ImportConfig;
+import org.openlca.io.ilcd.input.Import;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,9 +130,9 @@ public class ILCDProvider implements FlowProvider {
 		if (refs == null || db == null)
 			return;
 		try (var store = new ZipStore(file)) {
-			var conf = new ImportConfig(store, db);
+			var imp = Import.of(store, db);
 			for (FlowRef ref : refs) {
-				FlowImport.get(conf, ref.flow.refId);
+				FlowImport.get(imp, ref.flow.refId);
 			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
