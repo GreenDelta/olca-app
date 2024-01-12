@@ -9,12 +9,11 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.app.util.Question;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 /**
  * <p>
@@ -79,8 +78,8 @@ public class MassExpansionAction extends StackAction {
 
 		else if (type == EXPAND) {
 			for (var node : editor.getModel().getNodes()) {
-				if (!node.isExpanded(INPUT)
-					|| !node.isExpanded(OUTPUT)) {
+				if (!node.isExpanded(Side.INPUT)
+					|| !node.isExpanded(Side.OUTPUT)) {
 					var editPart = (EditPart) viewer.getEditPartRegistry().get(node);
 					var request = new ExpandCollapseRequest(node, REQ_EXPAND, true);
 					if (editPart != null)

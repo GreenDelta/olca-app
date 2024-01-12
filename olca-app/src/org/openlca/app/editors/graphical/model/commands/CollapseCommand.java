@@ -6,20 +6,19 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.tools.graphics.model.Link;
+import org.openlca.app.tools.graphics.model.Side;
 
 import java.util.Objects;
 
 import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class CollapseCommand extends Command {
 
 	private final Node host;
-	private final int side;
+	private final Side side;
 	public final Graph graph;
 
-	public CollapseCommand(Node host, int side) {
+	public CollapseCommand(Node host, Side side) {
 		this.host = host;
 		this.graph = host.getGraph();
 		this.side = side;
@@ -29,8 +28,8 @@ public class CollapseCommand extends Command {
 	@Override
 	public boolean canExecute() {
 		return host.isExpanded(side)
-			&& (side == INPUT || side == OUTPUT)
-			&& !host.isOnlyChainingReferenceNode(side);
+			&& (side != Side.BOTH)
+			&& host.hasConnectionToCollapse(side);
 	}
 
 	@Override
@@ -58,23 +57,23 @@ public class CollapseCommand extends Command {
 	 *  - the reference node,
 	 *  - nodes that are chained to the reference node.
 	 */
-	protected static void collapse(Graph graph, Node root, Node node, int side) {
+	protected static void collapse(Graph graph, Node root, Node node, Side side) {
 		if (node.isCollapsing)
 			return;
 		node.isCollapsing = true;
 
 		// It is needed to copy the links otherwise we get a concurrent modification
 		// exception
-		var links = side == INPUT
+		var links = side == Side.INPUT
 				? node.getAllTargetConnections().toArray(new Link[0])
 				: node.getAllSourceConnections().toArray(new Link[0]);
 
 		for (var l : links) {
 			if (l instanceof GraphLink link) {
-				var thisNode = side == INPUT
+				var thisNode = side == Side.INPUT
 						? link.getTargetNode()
 						: link.getSourceNode();
-				var otherNode = side == INPUT
+				var otherNode = side == Side.INPUT
 						? link.getSourceNode()
 						: link.getTargetNode();
 
@@ -89,11 +88,14 @@ public class CollapseCommand extends Command {
 
 				graph.mapProcessLinkToGraphLink.remove(link.processLink);
 				link.disconnect();
-				collapse(graph, root, otherNode, INPUT);
-				collapse(graph, root, otherNode, OUTPUT);
+				collapse(graph, root, otherNode, Side.INPUT);
+				collapse(graph, root, otherNode, Side.OUTPUT);
 
-				if (link.isCloseLoop()) // close loop
-					root.setExpanded(side == INPUT ? OUTPUT : INPUT, false);
+				if (link.isCloseLoop()) { // close loop
+					root.setExpanded(side == Side.INPUT
+							? Side.OUTPUT
+							: Side.INPUT, false);
+				}
 
 				var linkStream = otherNode.getAllLinks().stream()
 						.map(GraphLink.class::cast);

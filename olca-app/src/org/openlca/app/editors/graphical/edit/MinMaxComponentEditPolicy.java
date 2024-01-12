@@ -9,6 +9,7 @@ import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.CollapseCommand;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.editors.graphical.model.commands.MinMaxCommand;
+import org.openlca.app.tools.graphics.model.Side;
 
 import java.util.Arrays;
 
@@ -16,8 +17,6 @@ import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAX
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MAX;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MIN;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 
@@ -60,9 +59,9 @@ public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 
 		// True if the node is chained to the reference Node on one of its side.
 		var chained = node.getGraph().isReferenceProcess(node)
-				||node.isChainingReferenceNode(INPUT)
-				|| node.isChainingReferenceNode(OUTPUT);
-		for (var side : Arrays.asList(INPUT, OUTPUT)) {
+				||node.isChainingReferenceNode(Side.INPUT)
+				|| node.isChainingReferenceNode(Side.OUTPUT);
+		for (var side : Arrays.asList(Side.INPUT, Side.OUTPUT)) {
 			if (!node.isChainingReferenceNode(side)) {
 				var com = type == MAXIMIZE && chained
 						? new ExpandCommand(node, side, false)

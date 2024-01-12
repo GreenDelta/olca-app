@@ -22,8 +22,6 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.DbUtils;
-import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 
 public class DbCopyAction extends Action implements INavigationAction {
@@ -40,9 +38,8 @@ public class DbCopyAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
+		if (!(first instanceof DatabaseElement e))
 			return false;
-		var e = (DatabaseElement) first;
 		var config = e.getContent();
 		if (!(config instanceof DerbyConfig))
 			return false;
@@ -53,21 +50,24 @@ public class DbCopyAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		if (config == null) {
-			DatabaseConfig conf = Database.getActiveConfiguration();
+			var conf = Database.getActiveConfiguration();
 			if (!(conf instanceof DerbyConfig))
 				return;
 			config = (DerbyConfig) conf;
 		}
-		InputDialog dialog = new InputDialog(UI.shell(),
+
+		var dialog = new InputDialog(UI.shell(),
 				M.Copy,
 				M.PleaseEnterAName,
-				config.name(), null);
+				config.name() + " - Copy",
+				null);
 		if (dialog.open() != Window.OK)
 			return;
-		String newName = dialog.getValue();
-		if (!DbUtils.isValidName(newName) || Database.getConfigurations()
-				.nameExists(newName.trim())) {
-			MsgBox.error(M.NewDatabase_InvalidName);
+
+		var newName = dialog.getValue();
+		var err = Database.validateNewName(newName);
+		if (err != null) {
+			MsgBox.error("Invalid database name", err);
 			return;
 		}
 		App.runInUI("Copy database", () -> doCopy(newName));
