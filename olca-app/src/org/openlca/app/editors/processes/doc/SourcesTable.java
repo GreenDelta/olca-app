@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.doc;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.openlca.app.App;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.Viewers;
