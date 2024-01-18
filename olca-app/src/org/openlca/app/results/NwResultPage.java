@@ -35,8 +35,8 @@ public class NwResultPage extends FormPage {
 
 	public NwResultPage(ResultEditor editor) {
 		super(editor, "NwResultPage", M.NormalizationWeighting);
-		this.result = editor.result;
-		this.setup = editor.setup;
+		this.result = editor.result();
+		this.setup = editor.setup();
 	}
 
 	@Override

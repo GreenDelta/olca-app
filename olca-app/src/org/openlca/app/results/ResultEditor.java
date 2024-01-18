@@ -2,15 +2,14 @@ package org.openlca.app.results;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IPageChangedListener;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
@@ -20,6 +19,7 @@ import org.openlca.app.results.contributions.TagResultPage;
 import org.openlca.app.results.contributions.locations.LocationPage;
 import org.openlca.app.results.grouping.GroupPage;
 import org.openlca.app.results.impacts.ImpactTreePage;
+import org.openlca.app.results.slca.ui.SocialResultPage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MemoryError;
@@ -40,42 +40,46 @@ public class ResultEditor extends FormEditor {
 
 	public static final String ID = "editors.analyze";
 
-	public LcaResult result;
-	public CalculationSetup setup;
-	public DQResult dqResult;
-	public ResultItemOrder items;
+	private ResultBundle bundle;
 
-	public static void open(CalculationSetup setup, LcaResult result) {
-		open(setup, result, null);
-	}
-
-	public static void open(CalculationSetup setup, LcaResult result,
-													DQResult dqResult) {
-		var input = ResultEditorInput
-				.create(setup, result)
-				.with(dqResult);
+	public static void open(ResultBundle bundle) {
+		if (bundle == null)
+			return;
+		var name = M.ResultsOf + ": " + Labels.name(bundle.setup().target());
+		var id = Cache.getAppCache().put(bundle);
+		var input = new SimpleEditorInput(id, name);
 		Editors.open(input, ResultEditor.ID);
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput iInput)
+	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
-		super.init(site, iInput);
+		super.init(site, input);
 		setTitleImage(Icon.ANALYSIS_RESULT.get());
-		var inp = (ResultEditorInput) iInput;
-		result = Cache.getAppCache().remove(inp.resultKey, LcaResult.class);
-		if (inp.dqResultKey != null) {
-			dqResult = Cache.getAppCache().remove(inp.dqResultKey, DQResult.class);
-		}
-		setup = Cache.getAppCache().remove(inp.setupKey, CalculationSetup.class);
-		items = ResultItemOrder.of(result);
-		Sort.sort(items);
-		setPartName(M.ResultsOf + ": " + Labels.name(setup.target()));
+		var inp = (SimpleEditorInput) input;
+		bundle = Cache.getAppCache().remove(inp.id, ResultBundle.class);
+		setPartName(inp.getName());
+	}
+
+	public LcaResult result() {
+		return bundle.result();
+	}
+
+	public CalculationSetup setup() {
+		return bundle.setup();
+	}
+
+	public ResultItemOrder items() {
+		return bundle.items();
+	}
+
+	public DQResult dqResult() {
+		return bundle.dqResult();
 	}
 
 	@Override
 	public void dispose() {
-		result.dispose();
+		result().dispose();
 		super.dispose();
 	}
 
@@ -84,23 +88,28 @@ public class ResultEditor extends FormEditor {
 		try {
 			addPage(new InfoPage(this));
 			addPage(new InventoryPage(this));
-			if (result.hasImpacts())
+			if (result().hasImpacts()) {
 				addPage(new ImpactTreePage(this));
-			if (result.hasImpacts() && setup.nwSet() != null)
+			}
+			if (result().hasImpacts() && setup().nwSet() != null) {
 				addPage(new NwResultPage(this));
+			}
+			if (bundle.hasSocialResult()) {
+				addPage(new SocialResultPage(this, bundle.socialResult()));
+			}
 			addPage(new ProcessResultPage(this));
 			addPage(new ContributionTreePage(this));
 			addPage(new GroupPage(this));
 			addPage(new LocationPage(this));
 
-			var sankeyEditor = new SankeyEditor(this);
-			var sankeyEditorIndex = addPage(sankeyEditor, getEditorInput());
-			setPageText(sankeyEditorIndex, M.SankeyDiagram);
-			// Add a page listener to set the graph when it is activated the first
-			// time.
-			setSankeyPageListener(sankeyEditor);
+			var sankey = new SankeyEditor(this);
+			var sankeyIndex = addPage(sankey, getEditorInput());
+			setPageText(sankeyIndex, M.SankeyDiagram);
+			// Add a page listener to set the graph when
+			// it is activated the first time.
+			setSankeyPageListener(sankey);
 
-			if (result.hasImpacts()) {
+			if (result().hasImpacts()) {
 				addPage(new ImpactChecksPage(this));
 			}
 			if (FeatureFlag.TAG_RESULTS.isEnabled()) {
@@ -167,67 +176,4 @@ public class ResultEditor extends FormEditor {
 	public void setFocus() {
 	}
 
-	static class ResultEditorInput implements IEditorInput {
-
-		private final String name;
-		public final String resultKey;
-		public final String setupKey;
-		public String dqResultKey;
-
-		private ResultEditorInput(
-				String name, String resultKey, String setupKey) {
-			this.name = name;
-			this.resultKey = resultKey;
-			this.setupKey = setupKey;
-		}
-
-		static ResultEditorInput create(CalculationSetup setup, LcaResult result) {
-			if (setup == null)
-				return null;
-			var name = Labels.name(setup.target());
-			var resultKey = Cache.getAppCache().put(result);
-			var setupKey = Cache.getAppCache().put(setup);
-			return new ResultEditorInput(name, resultKey, setupKey);
-		}
-
-		/**
-		 * With data quality
-		 */
-		public ResultEditorInput with(DQResult dqResult) {
-			if (dqResult != null)
-				dqResultKey = Cache.getAppCache().put(dqResult);
-			return this;
-		}
-
-		@Override
-		@SuppressWarnings({"unchecked", "rawtypes"})
-		public Object getAdapter(Class adapter) {
-			return null;
-		}
-
-		@Override
-		public boolean exists() {
-			return true;
-		}
-
-		@Override
-		public ImageDescriptor getImageDescriptor() {
-			return Icon.CHART.descriptor();
-		}
-
-		@Override
-		public String getName() {
-			return M.Results + ": " + name;
-		}
-
-		@Override
-		public IPersistableElement getPersistable() {
-			return null;
-		}
-
-		@Override
-		public String getToolTipText() {
-			return getName();
-		}
-	}
 }

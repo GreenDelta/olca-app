@@ -61,9 +61,9 @@ public class ProcessResultPage extends FormPage {
 
 	public ProcessResultPage(ResultEditor editor) {
 		super(editor, ProcessResultPage.class.getName(), M.ProcessResults);
-		this.result = editor.result;
-		this.setup = editor.setup;
-		this.items = editor.items;
+		this.result = editor.result();
+		this.setup = editor.setup();
+		this.items = editor.items();
 		this.flowResult = new ResultProvider(result);
 		this.impactResult = new ResultProvider(result);
 	}

@@ -15,8 +15,11 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
+import org.openlca.app.preferences.FeatureFlag;
+import org.openlca.app.results.ResultBundle;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.simulation.SimulationEditor;
+import org.openlca.app.results.slca.SocialResult;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MemoryError;
 import org.openlca.app.util.MsgBox;
@@ -138,16 +141,21 @@ public class CalculationWizard extends Wizard {
 				? calc.calculateLazy(setup.calcSetup)
 				: calc.calculateEager(setup.calcSetup);
 
-		// check storage and DQ calculation
-		DQResult dqResult = null;
+		var bundle = ResultBundle.of(setup.calcSetup, result);
 		if (setup.withDataQuality) {
 			log.trace("calculate data quality result");
-			dqResult = DQResult.of(
+			var dqResult = DQResult.of(
 					Database.get(), setup.dqSetup, result.provider());
+			bundle.with(dqResult);
+		}
+
+		if (FeatureFlag.DIRECT_SLCA.isEnabled()) {
+			SocialResult.calculate(Database.get(), result.provider())
+					.ifPresent(bundle::with);
 		}
 
 		// sort and open the editor
 		log.trace("calculation done; open editor");
-		ResultEditor.open(setup.calcSetup, result, dqResult);
+		ResultEditor.open(bundle);
 	}
 }

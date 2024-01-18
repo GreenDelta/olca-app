@@ -42,10 +42,10 @@ public class SankeyEditor extends GraphicalEditorWithFrame {
 
 	public SankeyEditor(ResultEditor parent) {
 		this.resultEditor = parent;
-		this.dqResult = parent.dqResult;
-		this.result = parent.result;
-		this.items = parent.items;
-		this.calculationTarget = parent.setup.target();
+		this.dqResult = parent.dqResult();
+		this.result = parent.result();
+		this.items = parent.items();
+		this.calculationTarget = parent.setup().target();
 		this.config = new SankeyConfig(this);
 	}
 

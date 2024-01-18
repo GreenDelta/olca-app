@@ -67,7 +67,7 @@ public class SaveResultDialog extends FormDialog {
 		UI.fillHorizontal(nameComp);
 		nameText = UI.labeledText(nameComp, tk, "Name");
 		Controls.onPainted(nameText, () -> {
-			var name = Labels.name(editor.setup.target());
+			var name = Labels.name(editor.setup().target());
 			if (name != null) {
 				nameText.setText(name);
 			}
@@ -137,14 +137,14 @@ public class SaveResultDialog extends FormDialog {
 			if (createProcess) {
 				var process = withMetaData
 					? SystemProcess.createWithMetaData(
-					db, editor.setup, editor.result, name)
+					db, editor.setup(), editor.result(), name)
 					: SystemProcess.create(
-					db, editor.setup, editor.result, name);
+					db, editor.setup(), editor.result(), name);
 				process.category = Categories.removeLibraryFrom(process.category);
 				return db.insert(process);
 			}
 
-			var result = Results.createFrom(db, editor.setup, editor.result);
+			var result = Results.createFrom(db, editor.setup(), editor.result());
 			result.name = name;
 			return db.insert(result);
 		}
