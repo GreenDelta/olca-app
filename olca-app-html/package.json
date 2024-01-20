@@ -26,6 +26,7 @@
     "zip-webpack-plugin": "^4.0.1"
   },
   "dependencies": {
+    "@picocss/pico": "^1.5.11",
     "chart.js": "^3.9.1",
     "codemirror": "^5.65.12",
     "jquery": "^3.6.3",
