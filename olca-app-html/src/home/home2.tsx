@@ -1,4 +1,4 @@
-import React, { useState, CSSProperties } from "react";
+import React, { useState, CSSProperties, MouseEvent } from "react";
 import { render } from "react-dom";
 
 type PageData = {
@@ -208,7 +208,7 @@ const Content = ({ item }: { item: Item }) => {
             in IT development, data development, research, or consultancy - GreenDelta
             offers various open positions (available in German or English). We
             also welcome applications for internships. Check out
-            our <a href="https://www.greendelta.com/about-us/open-positions/">current opportunities</a>.
+            our <a href="https://www.greendelta.com/about-us/open-positions/" onClick={_onClick}>current opportunities</a>.
           </p>
         </div>
       );
@@ -248,17 +248,28 @@ declare global {
     setData: any;
     onOpenLink: any;
     onLibHintClick: any;
+    _onClick: any;
   }
 }
 
-const setData = (data: PageData) => {
+window.setData = (data: PageData) => {
   render(<Page data={data} />, document.getElementById("app"));
 };
-window.setData = setData;
-
-setData({
+window.setData({
   version: "Version 2.1.0",
   showLibHint: true,
 });
+window._onClick = (e: globalThis.MouseEvent) => {
+  if (window.onOpenLink) {
+    e.preventDefault();
+    const target = (e.target as HTMLElement).closest("a");
+    const link = target.getAttribute("href");
+    console.log(link)
+    window.onOpenLink(link);
+  }
+};
 
+function _onClick(e: MouseEvent<HTMLAnchorElement>) {
+  window._onClick(e.nativeEvent);
+}
 
