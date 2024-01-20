@@ -3,31 +3,32 @@
 <target name="platform" sequenceNumber="6">
 <locations>
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/gef/classic/releases/3.15.0/"/>
-		<unit id="org.eclipse.gef.feature.group" version="3.15.0.202211301913"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/nebula/releases/2.7.2/"/>
-		<unit id="org.eclipse.nebula.feature.feature.group" version="2.7.2.202208171809"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.26/"/>
-		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.23.600.v20221116-1440"/>
-		<unit id="org.eclipse.platform.sdk" version="4.26.0.I20221123-1800"/>
-		<unit id="org.eclipse.rcp.feature.group" version="4.26.0.v20221123-2302"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.32"/>
-		<unit id="org.eclipse.emf.sdk.feature.group" version="2.32.0.v20221121-1400"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20221123021534/repository"/>
-		<unit id="org.apache.commons.io" version="2.8.0.v20210415-0900"/>
-		<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/swtchart/releases/0.14.0/repository/"/>
 		<unit id="org.eclipse.swtchart.feature.feature.group" version="0.14.0.202301260747"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/eclipse/updates/4.30/"/>
+		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.23.1000.v20231114-0937"/>
+		<unit id="org.eclipse.rcp.feature.group" version="4.30.0.v20231201-0512"/>
+		<unit id="org.eclipse.sdk.feature.group" version="4.30.0.v20231201-0512"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.36.0"/>
+		<unit id="org.eclipse.emf.sdk.feature.group" version="2.36.0.v20231107-0612"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/nebula/releases/3.1.0"/>
+		<unit id="org.eclipse.nebula.feature.feature.group" version="3.0.0.202312260654"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/tools/gef/classic/releases/3.18.0/"/>
+		<unit id="org.eclipse.gef.feature.group" version="3.18.0.202311222042"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/I20230403150144/repository/"/>
+		<unit id="com.ibm.icu" version="72.1.0.v20221115-2007"/>
+		<unit id="org.apache.commons.io" version="2.8.0.v20210415-0900"/>
+		<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
 	</location>
 </locations>
 </target>

@@ -70,9 +70,8 @@ public class IOPaneFigure extends ComponentFigure {
 		super.paint(g);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<ExchangeFigure> getChildren() {
+	public List<? extends IFigure> getChildren() {
 		return super.getChildren();
 	}
 
