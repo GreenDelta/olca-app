@@ -57,3 +57,24 @@ body {
 .olca-nav-item:hover {
   text-decoration: underline;
 }
+
+.olca-content-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
+
+.olca-content>p {
+  color: #415462;
+  font-size: 1.4rem;
+}
+
+.olca-content>p>a {
+  color: #415462;
+  text-decoration: underline;
+}
+
+.olca-content>p>a:hover {
+  color: white;
+}
