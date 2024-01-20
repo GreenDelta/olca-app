@@ -34,12 +34,26 @@ html {
   --font-family: "TheSans", system-ui, -apple-system, "Segoe UI", "Roboto",
     "Ubuntu", "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --block-spacing-vertical: 0px;
 }
 
 body {
   font-family: 'TheSans', Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 25px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  padding: 0px !important;
+}
+
+footer {
+  min-height: 50px;
+  padding: 0px !important;
 }
 
 .openlca-logo {
@@ -48,10 +62,14 @@ body {
   float: right;
 }
 
+.gd-logo {
+  float: right;
+}
+
 .olca-nav-item {
   color: white;
   cursor: pointer;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
 
 .olca-nav-item:hover {

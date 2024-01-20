@@ -38,11 +38,8 @@ const Page = ({ data }: { data: PageData }) => {
       <div className="grid">
         <div />
         <div>
-          <a href="http://www.openlca.org"
-            title="http://www.openlca.org"
-            className="openlca-logo">
-            <img
-              className="openlca-logo"
+          <a href="http://www.openlca.org" className="openlca-logo">
+            <img className="openlca-logo"
               src="images/logo_start_page.png" />
           </a>
         </div>
@@ -71,9 +68,9 @@ const Nav = ({ items, selected, onSelect }: {
       : {};
     /*
     if (i === Item.JOINING) {
-      style["color"] = "#69558F";
+        style["color"] = "#69558F";
     }
-    */
+      */
 
     return (
       <li className="olca-nav-item" style={style} onClick={() => onSelect(i)}>
