@@ -66,6 +66,23 @@ footer {
   float: right;
 }
 
+.olca-lib-hint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffd233;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 10px;
+  background-blend-mode: overlay;
+  cursor: pointer;
+}
+
+.olca-lib-hint-icon {
+  max-width: 16px;
+  margin-right: 8px;
+}
+
 .olca-nav-item {
   color: white;
   cursor: pointer;

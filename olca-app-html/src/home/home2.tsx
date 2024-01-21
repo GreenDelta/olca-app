@@ -35,6 +35,7 @@ const Page = ({ data }: { data: PageData }) => {
 
   return (
     <div className="container-fluid">
+      <LibHint display={data.showLibHint} />
       <div className="grid">
         <div />
         <div>
@@ -52,6 +53,29 @@ const Page = ({ data }: { data: PageData }) => {
           <Content item={selected} />
         </div>
       </div>
+    </div>
+  );
+};
+
+const LibHint = ({ display }: { display: boolean }) => {
+  if (!display) {
+    return <></>;
+  }
+  const handleClick = () => {
+    if (window.onLibHintClick) {
+      window.onLibHintClick();
+    }
+  };
+  return (
+    <div className="grid">
+      <div />
+      <div>
+        <p className="olca-lib-hint" onClick={() => handleClick()}>
+          <img className="olca-lib-hint-icon" src="images/info-32.png" />
+          Make the calculations in openLCA faster. Click here to learn more.
+        </p>
+      </div>
+      <div />
     </div>
   );
 };
@@ -257,7 +281,7 @@ window.setData = (data: PageData) => {
 };
 window.setData({
   version: "Version 2.1.0",
-  showLibHint: true,
+  showLibHint: false,
 });
 window._onClick = (e: globalThis.MouseEvent) => {
   if (window.onOpenLink) {
