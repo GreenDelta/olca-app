@@ -67,7 +67,11 @@ footer {
 }
 
 .olca-lib-hint {
-  display: flex;
+  text-align: center;
+}
+
+.olca-lib-hint>p {
+  display: inline;
   justify-content: center;
   align-items: center;
   color: #ffd233;
@@ -112,4 +116,31 @@ footer {
 
 .olca-content>p>a:hover {
   color: white;
+}
+
+@media (max-width: 1400px) {
+  .olca-nav-item {
+    font-size: 1.4rem;
+  }
+  .olca-content>p {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .olca-nav-item {
+    font-size: 1.2rem;
+  }
+  .olca-content>p {
+    font-size: 1.0rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .olca-nav-item {
+    font-size: 1.0rem;
+  }
+  .olca-content>p {
+    font-size: 0.8rem;
+  }
 }

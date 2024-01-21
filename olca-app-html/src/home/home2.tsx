@@ -1,10 +1,12 @@
 import React, { useState, CSSProperties, MouseEvent } from "react";
 import { render } from "react-dom";
 
+
 type PageData = {
   version: string;
   showLibHint: boolean;
 };
+
 
 enum Item {
   GETTING_STARTED,
@@ -39,7 +41,7 @@ const Page = ({ data }: { data: PageData }) => {
       <div className="grid">
         <div />
         <div>
-          <a href="http://www.openlca.org" className="openlca-logo">
+          <a onClick={_onClick} href="http://www.openlca.org" className="openlca-logo">
             <img className="openlca-logo"
               src="images/logo_start_page.png" />
           </a>
@@ -57,28 +59,21 @@ const Page = ({ data }: { data: PageData }) => {
   );
 };
 
+
 const LibHint = ({ display }: { display: boolean }) => {
-  if (!display) {
+  if (!display || !window.onLibHintClick) {
     return <></>;
   }
-  const handleClick = () => {
-    if (window.onLibHintClick) {
-      window.onLibHintClick();
-    }
-  };
   return (
-    <div className="grid">
-      <div />
-      <div>
-        <p className="olca-lib-hint" onClick={() => handleClick()}>
-          <img className="olca-lib-hint-icon" src="images/info-32.png" />
-          Make the calculations in openLCA faster. Click here to learn more.
-        </p>
-      </div>
-      <div />
+    <div className="olca-lib-hint">
+      <p onClick={() => window.onLibHintClick()}>
+        <img className="olca-lib-hint-icon" src="images/info-32.png" />
+        Make the calculations in openLCA faster. Click here to learn more.
+      </p>
     </div>
   );
 };
+
 
 const Nav = ({ items, selected, onSelect }: {
   items: Item[],
@@ -114,6 +109,7 @@ const Nav = ({ items, selected, onSelect }: {
   );
 };
 
+
 const Content = ({ item }: { item: Item }) => {
   switch (item) {
 
@@ -135,13 +131,13 @@ const Content = ({ item }: { item: Item }) => {
           <p>
             openLCA 1 was already quite a good software, we made it even better
             (more modelling options, faster calculation, better usability including
-            better design, enhanced quality assurance support, etc.). Check the
-            <a href="https://www.openlca.org/openlca-2-0-is-now-available-for-download/"> blogpost </a>
-            to see what we added and improved in version 2.
+            better design, enhanced quality assurance support, etc.). Check
+            the <a onClick={_onClick} href="https://www.openlca.org/openlca-2-0-is-now-available-for-download/">blogpost</a> to
+            see what we added and improved in version 2.
           </p>
           <p>
-            openLCA is updated regularly, latest versions are available from the
-            <a href="https://www.openlca.org/download/"> openLCA download page</a>.
+            openLCA is updated regularly, latest versions are available from
+            the <a onClick={_onClick} href="https://www.openlca.org/download/">openLCA download page</a>.
           </p>
         </div>
       );
@@ -150,17 +146,13 @@ const Content = ({ item }: { item: Item }) => {
       return (
         <div className="olca-content">
           <p>
-            There are many
-            <a href="https://www.openlca.org/learning/"> resources </a>
-            for openLCA: the
-            <a href="https://manuals.openlca.org/openlca/"> manual</a>,
-            <a href="https://www.openlca.org/case-studies/"> case studies</a>,
-            our
-            <a href="https://www.youtube.com/@openLCA"> YouTube channel </a>
-            with a lot of learning and informative material, a
-            <a href="https://ask.openlca.org/"> forum</a>.
-            We also offer
-            <a href="https://www.openlca.org/trainings/"> trainings</a>.
+            There are many <a onClick={_onClick} href="https://www.openlca.org/learning/">resources</a> for
+            openLCA: the <a onClick={_onClick} href="https://manuals.openlca.org/openlca/">manual</a>,
+            {" "}<a onClick={_onClick} href="https://www.openlca.org/case-studies/">case studies</a>,
+            our <a onClick={_onClick} href="https://www.youtube.com/@openLCA">YouTube channel</a> with
+            a lot of learning and informative material,
+            a <a onClick={_onClick} href="https://ask.openlca.org/">forum</a>.
+            We also offer <a onClick={_onClick} href="https://www.openlca.org/trainings/">trainings</a>.
           </p>
         </div>
       );
@@ -171,8 +163,7 @@ const Content = ({ item }: { item: Item }) => {
           <p>
             If you run into a problem or have a question, maybe someone had a
             similar issue to yours. For that, we have an ask forum for openLCA
-            community question and answers:
-            <a href="https://ask.openlca.org/"> https://ask.openlca.org/</a>
+            community question and answers: <a onClick={_onClick} href="https://ask.openlca.org/">ask.openlca.org</a>
           </p>
         </div>
       );
@@ -181,8 +172,7 @@ const Content = ({ item }: { item: Item }) => {
       return (
         <div className="olca-content">
           <p>
-            Since more than 10 years we run
-            <a href="https://nexus.openlca.org/"> openLCA Nexus</a>,
+            Since more than 10 years we run <a onClick={_onClick} href="https://nexus.openlca.org/">openLCA Nexus</a>,
             the source for LCA and sustainability datasets, databases, case
             studies and LCA models for openLCA and other tools.
           </p>
@@ -195,12 +185,12 @@ const Content = ({ item }: { item: Item }) => {
           <p>
             Trainings on LCA, social LCA, sustainability and of course openLCA
             are available on a regular basis, provided by GreenDelta and also
-            by other <a href="https://www.openlca.org/certified-trainers/">certified trainers</a> worldwide.
-            They are posted and can be <a href="https://nexus.openlca.org/service/openLCA%20Trainings">booked on Nexus</a>.
+            by other <a onClick={_onClick} href="https://www.openlca.org/certified-trainers/">certified trainers</a> worldwide.
+            They are posted and can be <a onClick={_onClick} href="https://nexus.openlca.org/service/openLCA%20Trainings">booked on Nexus</a>.
           </p>
           <p>
             Software and modelling support is available as well, it can
-            be <a href="https://nexus.openlca.org/service/openLCA%20Support%20(help%20desk)">booked via Nexus</a>,
+            be <a onClick={_onClick} href="https://nexus.openlca.org/service/openLCA%20Support%20(help%20desk)">booked via Nexus</a>,
             contact us for larger packs or inquiries.
           </p>
         </div>
@@ -214,11 +204,11 @@ const Content = ({ item }: { item: Item }) => {
             professionalism of distributed software code development into LCA
             data management, developed by GreenDelta since more than 5 years,
             with data review, detailed version control, publication
-            possibilities. Find the manual <a href="https://manuals.openlca.org/lca-collaboration-server/">here</a>, some public
-            cases are listed <a href="https://www.lcacommons.gov/lca-collaboration/">here</a>.
+            possibilities. Find the manual <a onClick={_onClick} href="https://manuals.openlca.org/lca-collaboration-server/">here</a>, some public
+            cases are listed <a onClick={_onClick} href="https://www.lcacommons.gov/lca-collaboration/">here</a>.
           </p>
           <p>
-            OnlineLCA - the webtool based on openLCA. More details here.
+            onlineLCA - the webtool based on openLCA. More details <a href="#">here</a>.
           </p>
         </div>
       );
@@ -232,7 +222,7 @@ const Content = ({ item }: { item: Item }) => {
             in IT development, data development, research, or consultancy - GreenDelta
             offers various open positions (available in German or English). We
             also welcome applications for internships. Check out
-            our <a href="https://www.greendelta.com/about-us/open-positions/" onClick={_onClick}>current opportunities</a>.
+            our <a onClick={_onClick} href="https://www.greendelta.com/about-us/open-positions/">current opportunities</a>.
           </p>
         </div>
       );
@@ -241,6 +231,7 @@ const Content = ({ item }: { item: Item }) => {
       return <></>;
   }
 };
+
 
 function headerOf(i: Item): string {
   switch (i) {
@@ -265,8 +256,14 @@ function headerOf(i: Item): string {
   }
 }
 
-// expose the setData function by binding it to the window object
-// onOpenLink can be bound to an event handler (link: string) => void
+
+/**
+ * Extension of the Window type:
+ * + `setData`: (re-)renders the page with the given data; called from Java
+ * + `onOpenLink`: a handler that is called when a link is clicked; bound in Java
+ * + `onLibHintClick`: a handler when the "install native libraries" hint is clicked; bound in Java
+ * + `_onClick`: an internal click handler for links, that calls `onOpenLink` when it is bound
+ */
 declare global {
   interface Window {
     setData: any;
@@ -279,21 +276,27 @@ declare global {
 window.setData = (data: PageData) => {
   render(<Page data={data} />, document.getElementById("app"));
 };
+
 window.setData({
   version: "Version 2.1.0",
   showLibHint: false,
 });
+
+/**
+ * Binds a handler for mouse-click events to the window object. This should be
+ * then also used in static parts of the page (see the html). It calls then
+ * `onOpenLink` when this function is bound, which is done in the Java context.
+ */
 window._onClick = (e: globalThis.MouseEvent) => {
   if (window.onOpenLink) {
     e.preventDefault();
     const target = (e.target as HTMLElement).closest("a");
     const link = target.getAttribute("href");
-    console.log(link)
     window.onOpenLink(link);
   }
 };
 
+/** Remaps the React mouse-events. */
 function _onClick(e: MouseEvent<HTMLAnchorElement>) {
   window._onClick(e.nativeEvent);
 }
-
