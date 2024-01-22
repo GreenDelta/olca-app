@@ -3,16 +3,26 @@ package org.openlca.app.editors.processes.doc;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.forms.FormDialog;
+import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.editors.processes.ProcessEditor;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.doc.Review;
+import org.openlca.ilcd.processes.ReviewMethod;
+import org.openlca.ilcd.processes.ReviewScope;
 import org.openlca.util.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -33,6 +43,34 @@ class ReviewScopeSection {
 		Tables.bindColumnWidths(table, 0.4, 0.6);
 		table.setLabelProvider(new TableLabel());
 		table.setInput(Item.allOf(sync.get()));
+
+		if (!editor.isEditable())
+			return;
+
+		var add = Actions.onAdd(() -> {
+			var item = ItemDialog.show().orElse(null);
+			if (item == null)
+				return;
+			var rev = sync.get();
+			if (item.addTo(rev)) {
+				table.setInput(Item.allOf(rev));
+				editor.setDirty();
+			}
+		});
+
+		var del = Actions.onRemove(() -> {
+			Item item = Viewers.getFirstSelected(table);
+			if (item == null)
+				return;
+			var rev = sync.get();
+			if (item.removeFrom(rev)) {
+				table.setInput(Item.allOf(rev));
+				editor.setDirty();
+			}
+		});
+
+		Actions.bind(section, add, del);
+		Actions.bind(table, add, del);
 	}
 
 	record Item(AtomicInteger index, String scope, String method) {
@@ -70,6 +108,30 @@ class ReviewScopeSection {
 
 			return list;
 		}
+
+		boolean addTo(Review rev) {
+			for (var scope : rev.scopes) {
+				if (!Strings.nullOrEqual(this.scope, scope.name))
+					continue;
+				if (scope.methods.contains(method))
+					return false;
+				scope.methods.add(method);
+				return true;
+			}
+
+			var scope = new org.openlca.core.model.doc.ReviewScope(this.scope);
+			scope.methods.add(this.method);
+			rev.scopes.add(scope);
+			return true;
+		}
+
+		boolean removeFrom(Review rev) {
+			var scope = rev.scopes.stream()
+					.filter(s -> Strings.nullOrEqual(s.name, this.scope))
+					.findAny()
+					.orElse(null);
+			return scope != null && scope.methods.remove(method);
+		}
 	}
 
 	private static class TableLabel extends BaseLabelProvider
@@ -94,4 +156,66 @@ class ReviewScopeSection {
 		}
 	}
 
+	private static class ItemDialog extends FormDialog {
+
+		private String scope;
+		private String method;
+
+		static Optional<Item> show() {
+			var dialog = new ItemDialog();
+			return dialog.open() == OK
+					? Optional.of(Item.of(dialog.scope, dialog.method))
+					: Optional.empty();
+		}
+
+		private ItemDialog() {
+			super(UI.shell());
+		}
+
+		@Override
+		protected void configureShell(Shell shell) {
+			super.configureShell(shell);
+			shell.setText("Add a review method");
+		}
+
+		@Override
+		protected Point getInitialSize() {
+			return new Point(550, 350);
+		}
+
+		@Override
+		protected void createFormContent(IManagedForm mForm) {
+			var tk = mForm.getToolkit();
+			var body = UI.dialogBody(mForm.getForm(), tk);
+			UI.gridLayout(body, 2);
+
+			var scopeCombo = UI.labeledCombo(body, tk, "Scope");
+			var scopes = ReviewScope.values();
+			var scopeItems = new String[scopes.length];
+			for (int i = 0; i < scopes.length; i++) {
+				scopeItems[i] = scopes[i].value();
+			}
+			scopeCombo.setItems(scopeItems);
+			scopeCombo.select(0);
+			this.scope = scopeItems[0];
+			Controls.onSelect(scopeCombo, $ -> {
+				int i = scopeCombo.getSelectionIndex();
+				this.scope = scopeItems[i];
+			});
+
+			var methodCombo = UI.labeledCombo(body, tk, "Method");
+			var methods = ReviewMethod.values();
+			var methodItems = new String[methods.length];
+			for (int i = 0; i < methods.length; i++) {
+				methodItems[i] = methods[i].value();
+			}
+			methodCombo.setItems(methodItems);
+			methodCombo.select(0);
+			this.method = methodItems[0];
+			Controls.onSelect(methodCombo, $ -> {
+				int i = methodCombo.getSelectionIndex();
+				this.method = methodItems[i];
+			});
+		}
+	}
 }
