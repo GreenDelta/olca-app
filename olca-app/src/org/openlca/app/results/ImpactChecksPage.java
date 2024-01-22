@@ -45,8 +45,8 @@ public class ImpactChecksPage extends FormPage {
 
 	public ImpactChecksPage(ResultEditor editor) {
 		super(editor, "ImpactChecksPage", M.LCIAChecks);
-		this.result = editor.result;
-		this.items = editor.items;
+		this.result = editor.result();
+		this.items = editor.items();
 	}
 
 	@Override

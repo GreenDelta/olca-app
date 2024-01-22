@@ -51,7 +51,7 @@ public class PushAction extends Action implements INavigationAction {
 			if (result.newCommits().isEmpty()) {
 				MsgBox.info("No commits to push - Everything up to date");
 			} else if (result.status() == Status.REJECTED_NONFASTFORWARD) {
-				MsgBox.error("Rejected - Not up to date - Please merge remote changes to continue");
+				MsgBox.error("Rejected - Not up to date - Please pull remote changes to continue");
 			} else {
 				Collections.reverse(result.newCommits());
 				new HistoryDialog("Pushed commits", result.newCommits()).open();

@@ -1,8 +1,10 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,6 +14,8 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.tools.graphics.model.Link;
+import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.IDatabase;
@@ -23,8 +27,6 @@ import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 import static org.openlca.app.tools.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 /**
  * A {@link Node} represents a unit process, a library process, a result
@@ -55,13 +57,8 @@ public class Node extends MinMaxComponent {
 	 * Helper variable when exploring graph in CollapseCommand
 	 */
 	public boolean isCollapsing;
-	/**
-	 * Helper variable when exploring graph in isChainingReferenceNode and in
-	 * isOnlyChainingReferenceNode.
-	 */
-	public boolean wasExplored;
 	private final String comparisonLabel = Labels.name(getRefFlow());
-	private final Map<Integer, Boolean> buttonStatus = new HashMap<>();
+	private final Map<Side, Boolean> buttonStatus = new EnumMap<>(Side.class);
 
 	public Node(RootDescriptor descriptor) {
 		this.descriptor = descriptor;
@@ -77,7 +74,7 @@ public class Node extends MinMaxComponent {
 		// If the corresponding entity is dirty, the dirty one is return.
 		if (entity == null
 				&& getGraph() != null && getGraph().getEditor() != null) {
-				entity = getGraph().getEditor().getDirty(descriptor.id);
+			entity = getGraph().getEditor().getDirty(descriptor.id);
 		}
 		// Otherwise, it is retrieved from the DB.
 		if (entity == null) {
@@ -126,6 +123,22 @@ public class Node extends MinMaxComponent {
 				return exchangeItem;
 		}
 		return null;
+	}
+
+	private List<Node> getInputs() {
+		return getAllTargetConnections().stream()
+				.map(Link::getSourceNode)
+				.filter(l -> l instanceof Node)
+				.map(Node.class::cast)
+				.toList();
+	}
+
+	private List<Node> getOutputs() {
+		return getAllSourceConnections().stream()
+				.map(Link::getTargetNode)
+				.filter(l -> l instanceof Node)
+				.map(Node.class::cast)
+				.toList();
 	}
 
 	public static boolean isInput(FlowType type, boolean isProvider) {
@@ -184,14 +197,6 @@ public class Node extends MinMaxComponent {
 		return list;
 	}
 
-	public GraphLink getLink(ProcessLink link) {
-		for (var l : getAllLinks())
-			if (l instanceof GraphLink graphLink)
-				if (graphLink.processLink.equals(link))
-					return graphLink;
-		return null;
-	}
-
 	public boolean isEditable() {
 		if (entity instanceof Process process) {
 			return !process.isFromLibrary()
@@ -201,14 +206,14 @@ public class Node extends MinMaxComponent {
 		return false;
 	}
 
-	public boolean isExpanded(int side) {
-		var bitPosition = side == INPUT ? 1 : 2;
+	public boolean isExpanded(Side side) {
+		var bitPosition = side == Side.INPUT ? 1 : 2;
 		return ((isExpanded >> bitPosition) & 1) == 1;
 	}
 
-	public void setExpanded(int side, boolean value) {
+	public void setExpanded(Side side, boolean value) {
 		var oldIsExpanded = isExpanded;
-		var bitPosition = side == INPUT ? 1 : 2;
+		var bitPosition = side == Side.INPUT ? 1 : 2;
 		if (value)
 			isExpanded |= 1 << bitPosition;
 		else
@@ -222,7 +227,7 @@ public class Node extends MinMaxComponent {
 	 * or collapsing the node. However, it is sometime necessary that the Node
 	 * updates itself its status when it is not known out of the box.
 	 */
-	public void updateIsExpanded(int side) {
+	public void updateIsExpanded(Side side) {
 		var sourceNodeIds = getAllTargetConnections().stream()
 				.map(GraphLink.class::cast)
 				.map(c -> c.getSourceNode().descriptor.id)
@@ -240,12 +245,12 @@ public class Node extends MinMaxComponent {
 			boolean isProvider = descriptor.id == pLink.providerId;
 			long otherID = isProvider ? pLink.processId : pLink.providerId;
 
-			if (side == INPUT && isInput(type, isProvider)) {
+			if (side == Side.INPUT && isInput(type, isProvider)) {
 				if (!sourceNodeIds.contains(otherID)) {
 					setExpanded(side, false);
 					return;
 				}
-			} else if (side == OUTPUT && isOutput(type, isProvider)) {
+			} else if (side == Side.OUTPUT && isOutput(type, isProvider)) {
 				if (!targetNodeIds.contains(otherID)) {
 					setExpanded(side, false);
 					return;
@@ -262,10 +267,9 @@ public class Node extends MinMaxComponent {
 	}
 
 	/**
-	 * Return true if the node as any of its inputs or outputs is linked in the
-	 * product system.
+	 * Return true if the process has at least one linked input.
 	 */
-	public boolean canExpandOrCollapse(int side) {
+	public boolean hasLinkedInput() {
 		var linkSearch = getGraph().linkSearch;
 		long processId = descriptor.id;
 
@@ -273,121 +277,158 @@ public class Node extends MinMaxComponent {
 			FlowType type = getGraph().flows.type(link.flowId);
 			boolean isProvider = link.providerId == processId;
 
-			if (side == INPUT) {
-				if (type == FlowType.PRODUCT_FLOW && !isProvider)
-					return true;
-				if (type == FlowType.WASTE_FLOW && isProvider)
-					return true;
-			} else if (side == OUTPUT) {
-				if (type == FlowType.PRODUCT_FLOW && isProvider)
-					return true;
-				if (type == FlowType.WASTE_FLOW && !isProvider)
-					return true;
-			}
+			if (type == FlowType.PRODUCT_FLOW && !isProvider)
+				return true;
+			if (type == FlowType.WASTE_FLOW && isProvider)
+				return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Return true if the process has at least one linked output.
+	 */
+	public boolean hasLinkedOutput() {
+		var linkSearch = getGraph().linkSearch;
+		long processId = descriptor.id;
+
+		for (ProcessLink link : linkSearch.getLinks(processId)) {
+			FlowType type = getGraph().flows.type(link.flowId);
+			boolean isProvider = link.providerId == processId;
+
+			if (type == FlowType.PRODUCT_FLOW && isProvider)
+				return true;
+			if (type == FlowType.WASTE_FLOW && !isProvider)
+				return true;
 		}
 		return false;
 	}
 
 	public void setButtonStatus() {
-		for (var side : Arrays.asList(INPUT, OUTPUT)) {
-			if (!canExpandOrCollapse(side))
+		for (var side : Side.values()) {
+			if (side == Side.INPUT ? !hasLinkedInput() : !hasLinkedOutput())
 				buttonStatus.put(side, false);
-			if (!isExpanded(side))
+			else if (!isExpanded(side))
 				buttonStatus.put(side, true);
 			else if (this.equals(getGraph().getReferenceNode()))
 				buttonStatus.put(side, true);
-			else
-				buttonStatus.put(side, !isOnlyChainingReferenceNode(side));
+			else {
+				buttonStatus.put(side, hasConnectionToCollapse(side));
+			}
 		}
 	}
 
-	public boolean isButtonEnabled(int side) {
+	public boolean isButtonEnabled(Side side) {
 		if (buttonStatus.get(side) == null)
 			setButtonStatus();
 		return buttonStatus.get(side);
 	}
 
 	/**
-	 * Recursively check if this node's outputs or inputs only chain to the
-	 * reference node (close loop are not considered).
-	 * Returns false is the initial node is the reference.
+	 * Check if this Node has any linked providers (INPUT side) or suppliers
+	 * (OUTPUT side) to collapse.
+	 * Return true if the Node is the reference and has any supplier (resp.
+	 * provider).
+	 * The method checks if any of the suppliers (resp. providers) of the Node is
+	 * not chaining to the reference Node. In other words, if it exists a supplier
+	 * (resp. provider) such that there is no path connecting it to the reference
+	 * Node (without traversing this Node), then this Node can be collapsed on
+	 * this Side.
 	 */
-	public boolean isOnlyChainingReferenceNode(int side) {
-		if (wasExplored)
+	public boolean hasConnectionToCollapse(Side side) {
+		if (side == Side.BOTH)
 			return false;
-		else if (this.equals(getGraph().getReferenceNode()))
-			// The reference node is explored if and only if it is the initial node
-			// (see the condition in the for loop).
-			return false;
-		wasExplored = true;
 
-		var links = side == INPUT
-				? getAllTargetConnections()
-				: getAllSourceConnections();
-		if (links.isEmpty()) {
-			wasExplored = false;
-			return false;
-		}
+		var nodes = side == Side.INPUT ? getInputs() : getOutputs();
 
-		var isOnlyChainingReferenceNode = true;
-		for (var l : links) {
-			if (l instanceof GraphLink link) {
-				if (link.isCloseLoop())
+		if (getGraph().isReferenceProcess(this))
+			return !nodes.isEmpty();
+
+		var handled = new HashSet<Node>();
+		handled.add(this);
+
+		for (var node : nodes) {
+			var isChainingReferenceNode = false;
+			var queue = new ArrayDeque<Node>();
+			queue.add(node);
+
+			while (!queue.isEmpty()) {
+				var next = queue.poll();
+
+				if (getGraph().isReferenceProcess(next)) {
+					isChainingReferenceNode = true;
+					queue.clear();
 					continue;
-				var otherNode = side == INPUT
-						? link.getSourceNode()
-						: link.getTargetNode();
-				if (!Objects.equals(otherNode, getGraph().getReferenceNode())
-						&& !otherNode.isOnlyChainingReferenceNode(side))
-					isOnlyChainingReferenceNode = false;
-			}
-		}
-		wasExplored = false;
-		return isOnlyChainingReferenceNode;
-	}
+				}
 
-	/**
-	 * Recursively check if any of this node's outputs or inputs chain to the
-	 * reference node (closed loop are not considered).
-	 * Returns false is the initial node is the reference.
-	 */
-	public boolean isChainingReferenceNode(int side) {
-		if (wasExplored)
-			return false;
-		else if (this.equals(getGraph().getReferenceNode()))
-			// The reference node is explored if and only if it is the initial node
-			// (see the condition in the for loop).
-			return false;
-		wasExplored = true;
+				handled.add(next);
 
-		var links = side == INPUT
-				? getAllTargetConnections()
-				: getAllSourceConnections();
-		if (links.isEmpty()) {
-			wasExplored = false;
-			return false;
-		}
-
-		for (var l : links) {
-			if (l instanceof GraphLink link) {
-				if (link.isCloseLoop())
-					continue;
-				var otherNode = side == INPUT
-						? link.getSourceNode()
-						: link.getTargetNode();
-				if (Objects.equals(otherNode, getGraph().getReferenceNode())
-						|| otherNode.isChainingReferenceNode(side)) {
-					wasExplored = false;
-					return true;
+				var otherNodes = new ArrayList<Node>();
+				otherNodes.addAll(next.getInputs());
+				otherNodes.addAll(next.getOutputs());
+				for (var otherNode : otherNodes) {
+					if (!handled.contains(otherNode) && !queue.contains(otherNode)) {
+						queue.add(otherNode);
+					}
 				}
 			}
+			if (!isChainingReferenceNode) {
+				return true;
+			}
 		}
-		wasExplored = false;
 		return false;
 	}
 
-	public boolean isChainingReferenceNode() {
-		return isChainingReferenceNode(INPUT) || isChainingReferenceNode(OUTPUT);
+	/**
+	 * Check if any of this node's outputs or inputs chain to the reference node.
+	 * Returns false is the initial node is the reference.
+	 */
+	public boolean isChainingReferenceNode(Side side) {
+		if (side == Side.BOTH)
+			return false;
+
+		if (getGraph().isReferenceProcess(this))
+			return false;
+
+		var handled = new HashSet<Node>();
+		handled.add(this);
+
+		var nodes = side == Side.INPUT ? getInputs() : getOutputs();
+		for (var node : nodes) {
+			if (getGraph().isReferenceProcess(node))
+				return true;
+
+			var queue = new ArrayDeque<Node>();
+			queue.add(node);
+
+			while (!queue.isEmpty()) {
+				var next = queue.poll();
+				handled.add(next);
+
+				var outputs = next.getOutputs();
+				if (outputs == null)
+					continue;
+				for (var output : outputs) {
+					if (getGraph().isReferenceProcess(output))
+						return true;
+					if (!handled.contains(output) && !queue.contains(output)) {
+						queue.add(output);
+					}
+				}
+
+				var inputs = next.getInputs();
+				if (inputs == null)
+					continue;
+				for (var input : inputs) {
+					if (getGraph().isReferenceProcess(input))
+						return true;
+					if (!handled.contains(input) && !queue.contains(input)) {
+						queue.add(input);
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public void setDescriptor(RootDescriptor d) {
@@ -464,6 +505,11 @@ public class Node extends MinMaxComponent {
 		var name = Labels.name(descriptor);
 		return editable + "Node[" + prefix + "]("
 				+ name.substring(0, Math.min(name.length(), 20)) + ")";
+	}
+
+	@Override
+	public final int hashCode() {
+		return descriptor == null ? super.hashCode() : descriptor.hashCode();
 	}
 
 }

@@ -72,7 +72,7 @@ class GroupResultSection {
 	}
 
 	private List<Contribution<ProcessGrouping>> calculate(Object o) {
-		var calc = new GroupingContribution(editor.result, groups);
+		var calc = new GroupingContribution(editor.result(), groups);
 		if (o instanceof EnviFlow)
 			return calc.calculate((EnviFlow) o);
 		if (o instanceof ImpactDescriptor)
@@ -102,7 +102,7 @@ class GroupResultSection {
 		UI.gridData(composite, true, false);
 		UI.gridLayout(composite, 2);
 		createFlowViewer(toolkit, composite);
-		if (editor.result.hasImpacts())
+		if (editor.result().hasImpacts())
 			createImpact(toolkit, composite);
 	}
 
@@ -110,7 +110,7 @@ class GroupResultSection {
 		Button flowsCheck = toolkit.createButton(parent, M.Flows, SWT.RADIO);
 		flowsCheck.setSelection(true);
 		flowViewer = new ResultFlowCombo(parent);
-		var flows = editor.items.enviFlows();
+		var flows = editor.items().enviFlows();
 		flowViewer.setInput(flows);
 		flowViewer.addSelectionChangedListener(e -> update());
 		if (flows.size() > 0) {
@@ -123,7 +123,7 @@ class GroupResultSection {
 		Button impactCheck = toolkit.createButton(parent, M.ImpactCategories, SWT.RADIO);
 		impactViewer = new ImpactCategoryViewer(parent);
 		impactViewer.setEnabled(false);
-		var impacts = editor.items.impacts();
+		var impacts = editor.items().impacts();
 		impactViewer.setInput(impacts);
 		impactViewer.addSelectionChangedListener((e) -> update());
 		if (impacts.size() > 0) {

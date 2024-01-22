@@ -53,8 +53,8 @@ public class ContributionChartSection {
 	}
 
 	private ContributionChartSection(ResultEditor editor, boolean forFlows) {
-		this.result = editor.result;
-		this.items = editor.items;
+		this.result = editor.result();
+		this.items = editor.items();
 		this.forFlows = forFlows;
 	}
 

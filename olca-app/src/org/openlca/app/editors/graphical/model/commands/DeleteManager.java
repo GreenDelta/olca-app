@@ -4,6 +4,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.util.ProviderChainRemoval;
 
@@ -12,8 +13,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class DeleteManager {
 
@@ -46,11 +45,11 @@ public class DeleteManager {
 		if (node == null || Objects.equals(node, graph.getReferenceNode()))
 			return;
 
-		if (!node.isChainingReferenceNode(INPUT)) {
-			CollapseCommand.collapse(graph, node, node, INPUT);
+		if (!node.isChainingReferenceNode(Side.INPUT)) {
+			CollapseCommand.collapse(graph, node, node, Side.INPUT);
 		}
-		if (!node.isChainingReferenceNode(OUTPUT)) {
-			CollapseCommand.collapse(graph, node, node, OUTPUT);
+		if (!node.isChainingReferenceNode(Side.OUTPUT)) {
+			CollapseCommand.collapse(graph, node, node, Side.OUTPUT);
 		}
 
 		var links = node.getAllLinks();

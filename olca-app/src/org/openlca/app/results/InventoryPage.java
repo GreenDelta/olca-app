@@ -49,7 +49,7 @@ public class InventoryPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.header(mform,
-				Labels.name(editor.setup.target()),
+				Labels.name(editor.setup().target()),
 				Icon.ANALYSIS_RESULT.get());
 		toolkit = mform.getToolkit();
 		var body = UI.body(form, toolkit);
@@ -59,7 +59,7 @@ public class InventoryPage extends FormPage {
 		var inputTree = createTree(sash, true);
 		var outputTree = createTree(sash, false);
 		var reqSection = new TotalRequirementsSection(
-				editor.result, editor.dqResult);
+				editor.result(), editor.dqResult());
 		reqSection.create(sash, toolkit);
 		form.reflow(true);
 		fillTrees(inputTree, outputTree);
@@ -69,7 +69,7 @@ public class InventoryPage extends FormPage {
 	private void fillTrees(TreeViewer inputTree, TreeViewer outputTree) {
 		var inFlows = new ArrayList<EnviFlow>();
 		var outFlows = new ArrayList<EnviFlow>();
-		for (var flow : editor.items.enviFlows()) {
+		for (var flow : editor.items().enviFlows()) {
 			if (flow.isVirtual())
 				continue;
 			var list = flow.isInput() ? inFlows : outFlows;
@@ -91,18 +91,18 @@ public class InventoryPage extends FormPage {
 		// create the tree
 		var headers = new String[]{
 				M.Name, M.Category, M.Amount, M.Unit};
-		if (DQUI.displayExchangeQuality(editor.dqResult)) {
+		if (DQUI.displayExchangeQuality(editor.dqResult())) {
 			headers = DQUI.appendTableHeaders(
-					headers, editor.dqResult.setup.exchangeSystem);
+					headers, editor.dqResult().setup.exchangeSystem);
 		}
 		var label = new Label();
 		var viewer = Trees.createViewer(comp, headers, label);
 		viewer.setContentProvider(new ContentProvider());
 		createColumnSorters(viewer, label);
 		double[] widths = {.45, .35, .15, .05};
-		if (DQUI.displayExchangeQuality(editor.dqResult)) {
+		if (DQUI.displayExchangeQuality(editor.dqResult())) {
 			widths = DQUI.adjustTableWidths(
-					widths, editor.dqResult.setup.exchangeSystem);
+					widths, editor.dqResult().setup.exchangeSystem);
 		}
 		viewer.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		Trees.bindColumnWidths(viewer.getTree(), DQUI.MIN_COL_WIDTH, widths);
@@ -127,8 +127,8 @@ public class InventoryPage extends FormPage {
 	private void createColumnSorters(TreeViewer viewer, Label label) {
 		Viewers.sortByLabels(viewer, label, 0, 1, 3);
 		Viewers.sortByDouble(viewer, this::getAmount, 2);
-		if (DQUI.displayExchangeQuality(editor.dqResult)) {
-			int len = editor.dqResult.setup.exchangeSystem.indicators.size();
+		if (DQUI.displayExchangeQuality(editor.dqResult())) {
+			int len = editor.dqResult().setup.exchangeSystem.indicators.size();
 			for (int i = 0; i < len; i++) {
 				Viewers.sortByDouble(viewer, label, i + 4);
 			}
@@ -145,7 +145,7 @@ public class InventoryPage extends FormPage {
 			if (!(e instanceof EnviFlow flow))
 				return null;
 			double cutoffValue = Math.abs(getAmount(flow) * this.cutoff);
-			return editor.result.getProcessContributions(flow)
+			return editor.result().getProcessContributions(flow)
 					.stream()
 					.filter(i -> i.amount != 0)
 					.filter(i -> Math.abs(i.amount) >= cutoffValue)
@@ -177,8 +177,8 @@ public class InventoryPage extends FormPage {
 		private final ContributionImage img = new ContributionImage();
 
 		Label() {
-			super(editor.dqResult, editor.dqResult != null
-					? editor.dqResult.setup.exchangeSystem
+			super(editor.dqResult(), editor.dqResult() != null
+					? editor.dqResult().setup.exchangeSystem
 					: null, 4);
 		}
 
@@ -236,16 +236,16 @@ public class InventoryPage extends FormPage {
 		@Override
 		protected int[] getQuality(Object obj) {
 			if (obj instanceof EnviFlow f)
-				return editor.dqResult.get(f);
+				return editor.dqResult().get(f);
 			if (obj instanceof FlowContribution c)
-				return editor.dqResult.get(c.item.item, c.flow);
+				return editor.dqResult().get(c.item.item, c.flow);
 			return null;
 		}
 	}
 
 	private double getAmount(Object o) {
 		if (o instanceof EnviFlow e) {
-			return editor.result.getTotalFlowValueOf(e);
+			return editor.result().getTotalFlowValueOf(e);
 		} else if (o instanceof FlowContribution c) {
 			return c.item.amount;
 		}

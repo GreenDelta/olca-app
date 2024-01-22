@@ -2,25 +2,24 @@ package org.openlca.app.editors.graphical.requests;
 
 import org.eclipse.gef.Request;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.tools.graphics.model.Side;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class ExpandCollapseRequest extends Request {
 
 	private final Node node;
-	private final int side;
+	private final Side side;
 	private final boolean quiet;
 
 	public ExpandCollapseRequest(Node node, String requestType, boolean quiet) {
 		this.node = node;
-		this.side = INPUT | OUTPUT;
+		this.side = Side.BOTH;
 		this.quiet = quiet;
 		setType(requestType);
 	}
 
-	public ExpandCollapseRequest(Node node, int side, boolean quiet) {
+	public ExpandCollapseRequest(Node node, Side side, boolean quiet) {
 		this.node = node;
 		this.side = side;
 		this.quiet = quiet;
@@ -31,7 +30,7 @@ public class ExpandCollapseRequest extends Request {
 		return node;
 	}
 
-	public int getSide() {
+	public Side getSide() {
 		return side;
 	}
 

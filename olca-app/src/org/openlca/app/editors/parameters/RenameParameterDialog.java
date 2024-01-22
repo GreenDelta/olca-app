@@ -102,7 +102,7 @@ public class RenameParameterDialog extends FormDialog {
 				text.setToolTipText(err);
 			} else {
 				getButton(IDialogConstants.OK_ID).setEnabled(true);
-				text.setBackground(Colors.white());
+				text.setBackground(Colors.background());
 				text.setToolTipText("");
 			}
 		});
@@ -110,7 +110,7 @@ public class RenameParameterDialog extends FormDialog {
 		if (usageTree.nodes.isEmpty()) {
 			UI.label(body, tk,
 					"The parameter is currently not used"
-							+ " so it is save to rename it.");
+							+ " so it is safe to rename it.");
 			return;
 		}
 

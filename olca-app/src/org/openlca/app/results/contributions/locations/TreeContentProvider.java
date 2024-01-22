@@ -25,7 +25,7 @@ class TreeContentProvider implements ITreeContentProvider {
 
 	public TreeContentProvider(LocationPage page) {
 		this.page = page;
-		this.result = page.editor.result;
+		this.result = page.editor.result();
 	}
 
 	@Override

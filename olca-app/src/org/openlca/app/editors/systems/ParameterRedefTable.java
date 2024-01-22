@@ -40,7 +40,7 @@ import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
@@ -201,8 +201,7 @@ class ParameterRedefTable {
 	private boolean contains(ParameterRedef redef, List<ParameterRedef> redefs) {
 		for (ParameterRedef contained : redefs) {
 			if (Strings.nullOrEqual(contained.name, redef.name)
-					&& Objects.equals(contained.contextId,
-					redef.contextId))
+					&& Objects.equals(contained.contextId, redef.contextId))
 				return true;
 		}
 		return false;
@@ -260,7 +259,7 @@ class ParameterRedefTable {
 			if (redef == null || redef.contextId == null)
 				return null;
 			long modelId = redef.contextId;
-			var model = cache.get(ImpactMethodDescriptor.class, modelId);
+			var model = cache.get(ImpactDescriptor.class, modelId);
 			return model != null
 					? model
 					: cache.get(ProcessDescriptor.class, modelId);

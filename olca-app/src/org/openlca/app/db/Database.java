@@ -181,14 +181,16 @@ public class Database {
 	 */
 	public static String validateNewName(String name) {
 		if (name == null || name.isBlank() || name.isEmpty())
-			return M.NewDatabase_NameToShort;
+			return "An empty name is not allowed.";
 		if (!name.strip().equals(name)) {
 			return "The given database name contains" +
 					" leading or trailing whitespaces.";
 		}
 		try {
-			var vDir = new File(Workspace.dbDir(), name);
-			Paths.get(vDir.getAbsolutePath());
+			var dir = new File(Workspace.dbDir(), name);
+			if (dir.exists())
+				return M.NewDatabase_AlreadyExists;
+			Paths.get(dir.getAbsolutePath());
 		} catch (Exception e) {
 			return M.NewDatabase_InvalidName;
 		}

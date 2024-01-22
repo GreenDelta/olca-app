@@ -2,6 +2,7 @@
 linux.*/
 macosx.*/
 win32.*/
+openLCA.app
 
 # potential error logs
 logs.zip

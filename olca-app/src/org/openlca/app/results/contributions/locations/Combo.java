@@ -46,7 +46,7 @@ class Combo {
 	public static Builder on(ResultEditor editor) {
 		Combo c = new Combo();
 		c.flows = new ArrayList<>();
-		var items = editor.items;
+		var items = editor.items();
 		var flowIDs = new TLongHashSet();
 		for (var f : items.enviFlows()) {
 			if (f.flow() == null || flowIDs.contains(f.flow().id))
@@ -61,14 +61,14 @@ class Combo {
 		}
 
 		// add cost / added value selection
-		if (editor.result.hasCosts()) {
+		if (editor.result().hasCosts()) {
 			var d1 = new CostResultDescriptor();
 			d1.forAddedValue = false;
 			d1.name = M.Netcosts;
 			var d2 = new CostResultDescriptor();
 			d2.forAddedValue = true;
 			d2.name = M.AddedValue;
-			c.costs = editor.result.getTotalCosts() >= 0
+			c.costs = editor.result().getTotalCosts() >= 0
 					? Arrays.asList(d1, d2)
 					: Arrays.asList(d2, d1);
 		}

@@ -6,6 +6,8 @@ package org.openlca.app.preferences;
  */
 public enum FeatureFlag {
 
+	DIRECT_SLCA("New social impact assessment"),
+
 	TAG_RESULTS("Enable contributions by tags in result views"),
 
 	MATRIX_IMAGE_EXPORT("Enable matrix image export");

@@ -38,7 +38,7 @@ public class ErrorReporter extends FormDialog {
 	/**
 	 * Opens the error reporter for the given message and error. It also writes the
 	 * error to the log. So no need to log an error when you later want to open it
-	 * in the reporter. It is save to call this method from non-UI threads.
+	 * in the reporter. It is safe to call this method from non-UI threads.
 	 */
 	public static void on(String message, Throwable error) {
 		on(message, null, error);

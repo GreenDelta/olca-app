@@ -7,6 +7,7 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
@@ -15,18 +16,16 @@ import java.util.List;
 import static org.openlca.app.editors.graphical.model.Node.isInput;
 import static org.openlca.app.editors.graphical.model.Node.isOutput;
 import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class ExpandCommand extends Command {
 
 	private final Node host;
-	private final int side;
+	private final Side side;
 	private final GraphEditor editor;
 	private final Graph graph;
 	private final boolean quiet;
 
-	public ExpandCommand(Node host, int side, boolean quiet) {
+	public ExpandCommand(Node host, Side side, boolean quiet) {
 		this.host = host;
 		this.editor = host.getGraph().getEditor();
 		this.graph = host.getGraph();
@@ -37,7 +36,8 @@ public class ExpandCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return !host.isExpanded(side) && (side == INPUT || side == OUTPUT);
+		return !host.isExpanded(side)
+				&& (side != Side.BOTH);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class ExpandCommand extends Command {
 		long processID = host.descriptor.id;
 		List<ProcessLink> links = graph.linkSearch.getLinks(processID);
 
-		var oldLinks = side == INPUT
+		var oldLinks = side == Side.INPUT
 			? host.getAllTargetConnections()
 			: host.getAllSourceConnections();
 		var oldPLinks = oldLinks.stream()
@@ -74,10 +74,10 @@ public class ExpandCommand extends Command {
 			long otherID = isProvider ? pLink.processId : pLink.providerId;
 			Node outNode;
 			Node inNode;
-			if (side == INPUT && isInput(type, isProvider)) {
+			if (side == Side.INPUT && isInput(type, isProvider)) {
 				inNode = host;
 				outNode = getOrCreateNode(otherID);
-			} else if (side == OUTPUT && isOutput(type, isProvider)) {
+			} else if (side == Side.OUTPUT && isOutput(type, isProvider)) {
 				outNode = host;
 				inNode = getOrCreateNode(otherID);
 			} else if (processID == otherID) {  // close loop
@@ -110,7 +110,7 @@ public class ExpandCommand extends Command {
 		var newNode = editor.getGraphFactory().createNode(descriptor, null);
 		if (quiet) graph.addChildQuietly(newNode);
 		else graph.addChild(newNode);
-		newNode.updateIsExpanded(side == INPUT ? OUTPUT : INPUT);
+		newNode.updateIsExpanded(side.opposite());
 		return newNode;
 	}
 

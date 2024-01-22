@@ -26,6 +26,8 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 
 	public SankeyConfig(SankeyEditor editor) {
 		this.editor = editor;
+		var numberOfTechFlow = editor.items.techFlows().size();
+		maxCount = Math.min(numberOfTechFlow, 25);
 		initSelection();
 	}
 
@@ -47,7 +49,6 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 					.stream()
 					.min((i1, i2) -> Strings.compare(i1.name, i2.name))
 					.orElse(null);
-
 		}
 
 		if (selection == null)

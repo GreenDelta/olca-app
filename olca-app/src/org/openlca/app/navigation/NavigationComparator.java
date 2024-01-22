@@ -52,17 +52,6 @@ public class NavigationComparator extends ViewerComparator {
 
 		String name1 = getLabel(viewer, e1);
 		String name2 = getLabel(viewer, e2);
-
-		// when a database is connected to a repository, the navigation label
-		// contains the repository URL as suffix; we do not want to include
-		// that URL in this comparison
-		if (e1 instanceof DatabaseElement && name1.contains(" ")) {
-			name1 = name1.substring(0, name1.indexOf(" "));
-		}
-		if (e2 instanceof DatabaseElement && name2.contains(" ")) {
-			name2 = name2.substring(0, name2.indexOf(" "));
-		}
-
 		return Strings.compare(name1, name2);
 	}
 

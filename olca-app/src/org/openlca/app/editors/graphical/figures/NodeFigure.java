@@ -6,10 +6,9 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
+import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.app.util.Labels;
 
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
 public class NodeFigure extends ComponentFigure {
 
@@ -21,8 +20,8 @@ public class NodeFigure extends ComponentFigure {
 	public NodeFigure(Node node) {
 		super(node);
 		this.node = node;
-		inputExpandButton = new PlusMinusButton(node, INPUT);
-		outputExpandButton = new PlusMinusButton(node, OUTPUT);
+		inputExpandButton = new PlusMinusButton(node, Side.INPUT);
+		outputExpandButton = new PlusMinusButton(node, Side.OUTPUT);
 
 		var name = Labels.name(node.descriptor);
 
