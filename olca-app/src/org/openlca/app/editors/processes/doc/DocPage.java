@@ -29,7 +29,7 @@ public class DocPage extends ModelPage<Process> {
 		var body = UI.body(form, tk);
 		createInventorySection(body, tk);
 		createDataSourceSection(body, tk);
-		createReviewSection(body, tk);
+		new ReviewSection(editor).render(body, tk, form);
 		new CompletenessTable(editor).render(body, tk);
 		createSourcesSection(body, tk);
 		createAdminInfoSection(body, tk);
@@ -56,13 +56,6 @@ public class DocPage extends ModelPage<Process> {
 		multiText(comp, M.SamplingProcedure, "documentation.samplingProcedure", 40);
 		multiText(comp, M.DataCollectionPeriod, "documentation.dataCollectionPeriod", 40);
 		multiText(comp, "Use advice", "documentation.useAdvice", 40);
-	}
-
-	private void createReviewSection(Composite parent, FormToolkit tk) {
-		var comp = UI.formSection(parent, tk, "Review", 3);
-		modelLink(comp, M.Reviewer, "documentation.reviewer");
-		modelLink(comp, "Review report", "documentation.reviewReport");
-		multiText(comp, "Review details", "documentation.reviewDetails", 40);
 	}
 
 	private void createSourcesSection(Composite parent, FormToolkit tk) {

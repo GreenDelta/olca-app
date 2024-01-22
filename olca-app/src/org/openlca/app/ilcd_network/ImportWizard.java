@@ -71,7 +71,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		for (var d : descriptors) {
 			var p = imp.store().get(Process.class, d.uuid);
 			if (p != null) {
-				new ProcessImport(imp).run(p);
+				new ProcessImport(imp, p).run();
 			}
 		}
 	}

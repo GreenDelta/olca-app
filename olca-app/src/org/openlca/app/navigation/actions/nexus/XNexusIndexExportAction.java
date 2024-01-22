@@ -34,7 +34,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Exports an file with the process meta-data of the currently activated
+ * Exports a file with the process meta-data of the currently activated
  * database for the search index in openLCA Nexus (http://nexus.openlca.org).
  */
 public class XNexusIndexExportAction extends Action implements INavigationAction {
@@ -139,10 +139,16 @@ public class XNexusIndexExportAction extends Action implements INavigationAction
 				owner = doc.dataOwner.name;
 			if (doc.dataGenerator != null)
 				generator = doc.dataGenerator.name;
-			if (doc.reviewer != null)
-				reviewer = doc.reviewer.name;
 			if (doc.dataDocumentor != null)
 				documentor = doc.dataDocumentor.name;
+			for (var rev : doc.reviews) {
+				if (reviewer != null)
+					break;
+				for (var r : rev.reviewers) {
+					reviewer = r.name;
+					break;
+				}
+			}
 			created = doc.creationDate;
 			validityTimeStart = doc.validFrom;
 			validityTimeEnd = doc.validUntil;
