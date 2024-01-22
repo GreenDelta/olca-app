@@ -1,15 +1,27 @@
 package org.openlca.app.editors.processes.doc;
 
+import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.components.ModelLink;
+import org.openlca.app.components.ModelSelector;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.processes.ProcessEditor;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.Actor;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProcessDoc;
+import org.openlca.core.model.Source;
 import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.commons.ReviewType;
 import org.openlca.util.Strings;
@@ -47,8 +59,10 @@ class ReviewSection {
 			new Sec(review);
 		}
 
-		var add = Actions.onAdd(this::addReview);
-		Actions.bind(section, add);
+		if (editor.isEditable()) {
+			var add = Actions.onAdd(this::addReview);
+			Actions.bind(section, add);
+		}
 		form.reflow(true);
 	}
 
@@ -68,10 +82,13 @@ class ReviewSection {
 		Sec(Review review) {
 			this._rev = review;
 			section = UI.section(parent, tk, header());
-			var comp = UI.sectionClient(section, tk, 1);
-			typeCombo(comp);
-			var del = Actions.onRemove(this::delete);
-			Actions.bind(section, del);
+			var root = UI.sectionClient(section, tk, 1);
+			renderTop(root);
+			reviewerTable(root);
+			if (editor.isEditable()) {
+				var del = Actions.onRemove(this::delete);
+				Actions.bind(section, del);
+			}
 		}
 
 		private void delete() {
@@ -98,9 +115,34 @@ class ReviewSection {
 			return Strings.cut(buff.toString(), 50);
 		}
 
-		private void typeCombo(Composite parent) {
-			var comp = tk.createComposite(parent);
-			UI.gridLayout(comp, 2);
+		private void renderTop(Composite root) {
+			var comp = tk.createComposite(root);
+			UI.gridLayout(comp, 2, 10, 0);
+			UI.fillHorizontal(comp);
+			typeCombo(comp);
+
+			UI.label(comp, tk, "Review report");
+			ModelLink.of(Source.class)
+					.setModel(_rev.report)
+					.onChange(source -> {
+						sync().report = source;
+						editor.setDirty();
+					})
+					.setEditable(editor.isEditable())
+					.renderOn(comp, tk);
+
+			var details = UI.labeledMultiText(comp, tk, "Review details", 40);
+			if (_rev.details != null) {
+				details.setText(_rev.details);
+			}
+			details.setEditable(editor.isEditable());
+			details.addModifyListener($ -> {
+				sync().details = details.getText();
+				editor.setDirty();
+			});
+		}
+
+		private void typeCombo(Composite comp) {
 			var combo = UI.labeledCombo(comp, tk, "Review type");
 			var values = ReviewType.values();
 			var items = new ArrayList<String>(1 + values.length);
@@ -120,12 +162,63 @@ class ReviewSection {
 			combo.setItems(items.toArray(String[]::new));
 			combo.select(selected);
 
+			if (!editor.isEditable()) {
+				combo.setEnabled(false);
+				return;
+			}
+
 			Controls.onSelect(combo, $ -> {
+				var rev = sync();
 				int i = combo.getSelectionIndex();
-				sync().type = items.get(i);
+				rev.type = items.get(i);
+				section.setText(header());
 				editor.setDirty();
 			});
 		}
+
+		private void reviewerTable(Composite root) {
+			var section = UI.section(root, tk, "Reviewers");
+			var comp = UI.sectionClient(section, tk, 1);
+			var table = Tables.createViewer(comp, "Reviewer");
+			Tables.bindColumnWidths(table, 1.0);
+			table.setLabelProvider(new ActorTableLabel());
+			table.setInput(_rev.reviewers);
+			if (!editor.isEditable())
+				return;
+
+			var add = Actions.onAdd(() -> {
+				var ds = ModelSelector.multiSelect(ModelType.ACTOR);
+				if (ds.isEmpty())
+					return;
+				var db = Database.get();
+				var rev = sync();
+				for (var d : ds) {
+					var actor = db.get(Actor.class, d.id);
+					if (actor == null)
+						continue;
+					if (!rev.reviewers.contains(actor)) {
+						rev.reviewers.add(actor);
+					}
+				}
+				table.setInput(rev.reviewers);
+				Sec.this.section.setText(header());
+				editor.setDirty();
+			});
+
+			var del = Actions.onRemove(() -> {
+				var obj = Viewers.getFirstSelected(table);
+				if (!(obj instanceof Actor actor))
+					return;
+				var rev = sync();
+				rev.reviewers.remove(actor);
+				table.setInput(rev.reviewers);
+				editor.setDirty();
+			});
+
+			Actions.bind(section, add, del);
+			Actions.bind(table, add, del);
+		}
+
 
 		/**
 		 * Before editing a review, we always need to sync it with
@@ -144,4 +237,21 @@ class ReviewSection {
 
 	}
 
+	private static class ActorTableLabel extends BaseLabelProvider
+			implements ITableLabelProvider {
+
+		@Override
+		public Image getColumnImage(Object obj, int col) {
+			return obj instanceof Actor actor
+					? Images.get(actor)
+					: null;
+		}
+
+		@Override
+		public String getColumnText(Object obj, int col) {
+			return obj instanceof Actor actor
+					? Labels.name(actor)
+					: null;
+		}
+	}
 }
