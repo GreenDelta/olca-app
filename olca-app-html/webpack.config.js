@@ -8,7 +8,6 @@ const config = {
   entry: {
     home: './src/home/home.tsx',
     report: './src/report/report.tsx',
-    home2: './src/home/home2.tsx',
   },
   module: {
     rules: [
