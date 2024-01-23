@@ -36,7 +36,7 @@ class MacDir:
 
         # create the ini file
         plugins_dir = build_dir.app / "plugins"
-        launcher_jar = next(plugins_dir.glob("*launcher*.jar")).name
+        launcher_jar = next(plugins_dir.glob("*launcher_*.jar")).name
         launcher_lib = next(plugins_dir.glob("*launcher.cocoa.macosx*")).name
         Template.apply(
             PROJECT_DIR / "templates/openLCA_mac.ini",

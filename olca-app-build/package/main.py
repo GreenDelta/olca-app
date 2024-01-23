@@ -19,10 +19,15 @@ def package(
     win_installer: bool = False,
     mkl: bool = False,
 ):
+    plugins_dir = (
+        build_dir.root / "openLCA/plugins"
+        if osa.is_mac()
+        else build_dir.app / "plugins"
+    )
+    BuildDir.unjar_plugins(plugins_dir)
+
     if osa.is_mac():
         MacDir.arrange(build_dir)
-
-    build_dir.unjar_plugins()
 
     # JRE and native libraries
     JRE.extract_to(build_dir)
@@ -38,9 +43,9 @@ def package(
     about_page = PROJECT_DIR / "credits/about.html"
     if about_page.exists():
         shutil.copy2(about_page, build_dir.about)
-        plugin_dir = build_dir.olca_plugin
-        if plugin_dir:
-            shutil.copy2(about_page, plugin_dir)
+        plugins_dir = build_dir.olca_plugin
+        if plugins_dir:
+            shutil.copy2(about_page, plugins_dir)
 
     # copy ini and bin files
     bins: list[str] = []
@@ -98,10 +103,7 @@ def main():
         action="store_true",
     )
     parser.add_argument(
-        "-c",
-        "--clean",
-        help="delete the last build files",
-        action="store_true"
+        "-c", "--clean", help="delete the last build files", action="store_true"
     )
     args = parser.parse_args()
 
