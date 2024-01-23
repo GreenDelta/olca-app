@@ -32,8 +32,8 @@ export const SingleScoreChart = ({ report }: { report: Report }) => {
     options: {
       responsive: false,
       scales: {
-        x: {stacked: true},
-        y: {stacked: true},
+        x: { stacked: true },
+        y: { stacked: true },
       },
       plugins: {
         legend: { display: false },
