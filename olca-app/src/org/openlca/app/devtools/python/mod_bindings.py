@@ -87,7 +87,6 @@ import org.openlca.io.olca.DatabaseImport as DatabaseImport
 import org.openlca.util.Databases as Databases
 import org.openlca.core.io.DbEntityResolver as DbEntityResolver
 import org.openlca.core.library.DbLibrarySwap as DbLibrarySwap
-import org.openlca.core.database.DbUtils as DbUtils
 import org.openlca.core.library.reader.DecryptingLibReader as DecryptingLibReader
 import org.openlca.core.matrix.linking.DefaultProcessLinker as DefaultProcessLinker
 import org.openlca.core.matrix.Demand as Demand
@@ -132,6 +131,7 @@ import org.openlca.core.database.EpdDao as EpdDao
 import org.openlca.core.model.descriptors.EpdDescriptor as EpdDescriptor
 import org.openlca.core.database.descriptors.EpdDescriptors as EpdDescriptors
 import org.openlca.io.openepd.EpdDoc as EpdDoc
+import org.openlca.io.ilcd.output.EpdExport as EpdExport
 import org.openlca.io.openepd.EpdImpactResult as EpdImpactResult
 import org.openlca.io.ilcd.input.EpdImport as EpdImport
 import org.openlca.io.openepd.EpdIndicatorResult as EpdIndicatorResult
@@ -152,6 +152,7 @@ import org.openlca.core.io.ExchangeProviderQueue as ExchangeProviderQueue
 import org.openlca.core.matrix.cache.ExchangeTable as ExchangeTable
 import org.openlca.core.database.usage.ExchangeUseSearch as ExchangeUseSearch
 import org.openlca.util.Exchanges as Exchanges
+import org.openlca.io.ilcd.output.Export as Export
 import org.openlca.io.ecospold1.output.ExportConfig as ExportConfig
 import org.openlca.ipc.handlers.ExportHandler as ExportHandler
 import org.openlca.core.results.providers.FactorizationSolver as FactorizationSolver
@@ -210,11 +211,10 @@ import org.openlca.io.HSCSim as HSCSim
 import org.openlca.ipc.handlers.HandlerContext as HandlerContext
 import org.openlca.core.matrix.format.HashPointByteMatrix as HashPointByteMatrix
 import org.openlca.core.matrix.format.HashPointMatrix as HashPointMatrix
-import org.openlca.io.ilcd.ILCDExport as ILCDExport
-import org.openlca.io.ilcd.ILCDImport as ILCDImport
 import org.openlca.core.matrix.ImpactBuilder as ImpactBuilder
 import org.openlca.core.model.ImpactCategory as ImpactCategory
 import org.openlca.core.database.ImpactCategoryDao as ImpactCategoryDao
+import org.openlca.io.ilcd.output.ImpactCategoryExport as ImpactCategoryExport
 import org.openlca.jsonld.input.ImpactCategoryReader as ImpactCategoryReader
 import org.openlca.core.database.usage.ImpactCategoryUseSearch as ImpactCategoryUseSearch
 import org.openlca.jsonld.output.ImpactCategoryWriter as ImpactCategoryWriter
@@ -234,6 +234,7 @@ import org.openlca.core.database.usage.ImpactMethodUseSearch as ImpactMethodUseS
 import org.openlca.jsonld.output.ImpactMethodWriter as ImpactMethodWriter
 import org.openlca.core.model.ImpactResult as ImpactResult
 import org.openlca.core.results.ImpactValue as ImpactValue
+import org.openlca.io.ilcd.input.Import as Import
 import org.openlca.io.ecospold1.input.ImportConfig as ImportConfig
 import org.openlca.core.io.ImportLog as ImportLog
 import org.openlca.proto.io.input.ImportStatus as ImportStatus
