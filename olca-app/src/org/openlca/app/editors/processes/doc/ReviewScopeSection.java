@@ -21,6 +21,7 @@ import org.openlca.ilcd.processes.ReviewScope;
 import org.openlca.util.Strings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -195,6 +196,7 @@ class ReviewScopeSection {
 			for (int i = 0; i < scopes.length; i++) {
 				scopeItems[i] = scopes[i].value();
 			}
+			Arrays.sort(scopeItems);
 			scopeCombo.setItems(scopeItems);
 			scopeCombo.select(0);
 			this.scope = scopeItems[0];
@@ -209,6 +211,7 @@ class ReviewScopeSection {
 			for (int i = 0; i < methods.length; i++) {
 				methodItems[i] = methods[i].value();
 			}
+			Arrays.sort(methodItems);
 			methodCombo.setItems(methodItems);
 			methodCombo.select(0);
 			this.method = methodItems[0];

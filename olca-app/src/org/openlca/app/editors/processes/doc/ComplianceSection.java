@@ -68,6 +68,7 @@ class ComplianceSection {
 			section = UI.section(parent, tk, header());
 			var root = UI.sectionClient(section, tk, 1);
 			renderTop(root);
+			new ComplianceTable(editor, this::sync).render(root, tk);
 			if (editor.isEditable()) {
 				var del = Actions.onRemove(this::delete);
 				Actions.bind(section, del);
