@@ -109,12 +109,12 @@ class ReviewSection {
 				return type;
 			var buff = new StringBuilder(type);
 			for (int i = 0; i < _rev.reviewers.size(); i++) {
-				var r = _rev.reviewers.get(0);
+				var r = _rev.reviewers.get(i);
 				buff.append(i == 0 ? ": " : "; ");
 				var name = Labels.name(r);
 				buff.append(Strings.notEmpty(name) ? name : "?");
 			}
-			return Strings.cut(buff.toString(), 50);
+			return Strings.cut(buff.toString(), 100);
 		}
 
 		private void renderTop(Composite root) {

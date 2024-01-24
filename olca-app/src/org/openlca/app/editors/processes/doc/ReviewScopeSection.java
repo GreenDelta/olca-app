@@ -180,7 +180,7 @@ class ReviewScopeSection {
 
 		@Override
 		protected Point getInitialSize() {
-			return new Point(550, 350);
+			return new Point(550, 250);
 		}
 
 		@Override

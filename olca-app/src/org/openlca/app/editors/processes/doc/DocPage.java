@@ -30,6 +30,7 @@ public class DocPage extends ModelPage<Process> {
 		createInventorySection(body, tk);
 		createDataSourceSection(body, tk);
 		new ReviewSection(editor).render(body, tk, form);
+		new ComplianceSection(editor).render(body, tk, form);
 		new CompletenessTable(editor).render(body, tk);
 		createSourcesSection(body, tk);
 		createAdminInfoSection(body, tk);
