@@ -100,8 +100,8 @@ public class SankeyHeader extends Header {
 
 	private void setTitle() {
 		if (getModel() != null
-				&& getModel().getEditor().resultEditor.setup != null) {
-			var setup = getModel().getEditor().resultEditor.setup;
+				&& getModel().getEditor().resultEditor.setup() != null) {
+			var setup = getModel().getEditor().resultEditor.setup();
 			Object entity = setup.hasProductSystem()
 					? setup.productSystem()
 					: setup.process();
@@ -125,8 +125,8 @@ public class SankeyHeader extends Header {
 
 	private void setMethod() {
 		if (getModel() != null
-				&& getModel().getEditor().resultEditor.setup != null) {
-			var impact = getModel().getEditor().resultEditor.setup.impactMethod();
+				&& getModel().getEditor().resultEditor.setup() != null) {
+			var impact = getModel().getEditor().resultEditor.setup().impactMethod();
 			method.setText(Labels.name(impact));
 			method.setImage(Images.get(impact));
 			Controls.onClick(method, e -> App.open(impact));

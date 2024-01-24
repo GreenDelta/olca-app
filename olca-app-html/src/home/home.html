@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-        <link rel="stylesheet" type="text/css" href="home.css" />
-    </head>
 
-    <body>
-        <div id="react-root"></div>
-        <script src="lib/react.js"></script>
-        <script src="lib/react-dom.js"></script>
-        <script src="home.js"></script>
-    </body>
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" type="text/css" href="lib/pico.min.css" />
+  <link rel="stylesheet" type="text/css" href="home.css" />
+</head>
+
+<body>
+  <main>
+    <div id="app"></div>
+  </main>
+  <footer>
+    <div class="container-fluid">
+      <div class="grid">
+        <div />
+        <div>
+          <a href="http://www.greendelta.com" class="gd-logo" onclick="_onClick(event);">
+            <img class="gd-logo" src="images/greendelta-logo.png" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="lib/react.js"></script>
+  <script src="lib/react-dom.js"></script>
+  <script src="home.js"></script>
+</body>
+
 </html>

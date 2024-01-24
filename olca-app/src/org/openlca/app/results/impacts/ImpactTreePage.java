@@ -24,7 +24,6 @@ import org.openlca.util.Strings;
 
 public class ImpactTreePage extends FormPage {
 
-	private final ResultEditor editor;
 	private final CalculationSetup setup;
 	private final LcaResult result;
 	private final DQResult dqResult;
@@ -37,11 +36,10 @@ public class ImpactTreePage extends FormPage {
 
 	public ImpactTreePage(ResultEditor editor) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
-		this.editor = editor;
-		this.result = editor.result;
-		this.setup = editor.setup;
-		this.dqResult = editor.dqResult;
-		this.items = editor.items;
+		this.result = editor.result();
+		this.setup = editor.setup();
+		this.dqResult = editor.dqResult();
+		this.items = editor.items();
 	}
 
 	@Override
@@ -94,7 +92,7 @@ public class ImpactTreePage extends FormPage {
 			columns = DQUI.appendTableHeaders(columns,
 					dqResult.setup.exchangeSystem);
 		}
-		var label = new TreeLabel(editor.dqResult);
+		var label = new TreeLabel(dqResult);
 		viewer = Trees.createViewer(comp, columns, label);
 		viewer.setContentProvider(new TreeContent(this));
 		tk.adapt(viewer.getTree(), false, false);

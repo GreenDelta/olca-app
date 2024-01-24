@@ -77,16 +77,16 @@ public class GroupPage extends FormPage {
 		var restGroup = new ProcessGrouping();
 		restGroup.name = M.Other;
 		restGroup.rest = true;
-		restGroup.processes.addAll(editor.items.providers());
+		restGroup.processes.addAll(editor.items().providers());
 		groups.add(restGroup);
 	}
 
 	public void applyGrouping(ProcessGroupSet groupSet) {
-		if (groupSet == null || editor.result == null)
+		if (groupSet == null || editor.result() == null)
 			return;
 		this.groupSet = groupSet;
 		var newGroups = ProcessGrouping.applyOn(
-				editor.items.providers(), groupSet, M.Other);
+				editor.items().providers(), groupSet, M.Other);
 		groups.clear();
 		groups.addAll(newGroups);
 		updateViewers();
@@ -115,7 +115,7 @@ public class GroupPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.header(mform,
-				Labels.name(editor.setup.target()),
+				Labels.name(editor.setup().target()),
 				Icon.ANALYSIS_RESULT.get());
 		var toolkit = mform.getToolkit();
 		var body = UI.body(form, toolkit);

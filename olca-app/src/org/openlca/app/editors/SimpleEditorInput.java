@@ -48,9 +48,8 @@ public class SimpleEditorInput implements IEditorInput {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof SimpleEditorInput))
+		if (!(obj instanceof SimpleEditorInput input))
 			return false;
-		var input = (SimpleEditorInput) obj;
 		return Strings.nullOrEqual(id, input.id);
 	}
 }

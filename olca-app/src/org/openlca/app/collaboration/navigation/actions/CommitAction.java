@@ -76,7 +76,7 @@ public class CommitAction extends Action implements INavigationAction {
 			if (result == null)
 				return false;
 			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
-				MsgBox.error("Rejected - Not up to date - Please merge remote changes to continue");
+				MsgBox.error("Rejected - Not up to date - Please pull remote changes to continue");
 				return false;
 			}
 			Collections.reverse(result.newCommits());

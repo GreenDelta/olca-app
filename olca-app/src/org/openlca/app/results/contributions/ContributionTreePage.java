@@ -49,9 +49,9 @@ public class ContributionTreePage extends FormPage {
 
 	public ContributionTreePage(ResultEditor editor) {
 		super(editor, "analysis.ContributionTreePage", M.ContributionTree);
-		this.result = editor.result;
-		this.setup = editor.setup;
-		this.items = editor.items;
+		this.result = editor.result();
+		this.setup = editor.setup();
+		this.items = editor.items();
 	}
 
 	@Override

@@ -32,7 +32,7 @@ public class DQInfoSection {
 
 	public DQInfoSection(Composite parent, FormToolkit tk, ResultEditor editor) {
 		this.editor = editor;
-		this.dqResult = editor.dqResult;
+		this.dqResult = editor.dqResult();
 		this.tk = tk;
 		create(parent);
 	}
@@ -81,7 +81,7 @@ public class DQInfoSection {
 			if (!(parent instanceof DQIndicator dqi))
 				return null;
 			List<Object> children = new ArrayList<>();
-			for (var p : editor.items.techFlows()) {
+			for (var p : editor.items().techFlows()) {
 				children.add(new Tuple(p, dqi));
 			}
 			return children.toArray();

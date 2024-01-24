@@ -73,9 +73,9 @@ class ExcelExportWizard extends Wizard {
 			return false;
 		var cache = Cache.getEntityCache();
 		var export = new ResultExport(
-				editor.setup, editor.result, file, cache)
-				.withDqResult(editor.dqResult)
-				.withOrder(editor.items)
+				editor.setup(), editor.result(), file, cache)
+				.withDqResult(editor.dqResult())
+				.withOrder(editor.items())
 				.skipZeros(page.skipZeros);
 		for (var matrix : page.matrices) {
 			export.addPage(matrix);
@@ -142,7 +142,7 @@ class ExcelExportWizard extends Wizard {
 			var preSelected = EnumSet.of(
 					MatrixPage.DIRECT_INVENTORIES,
 					MatrixPage.DIRECT_IMPACTS);
-			var r = editor.result;
+			var r = editor.result();
 			for (var matrix : all) {
 				var matrixCheck = UI.checkbox(group, labelOf(matrix));
 				if (!r.hasEnviFlows()
@@ -192,7 +192,7 @@ class ExcelExportWizard extends Wizard {
 			browse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
 			Controls.onSelect(browse, e -> {
-				String fileName = Labels.name(editor.setup.target())
+				String fileName = Labels.name(editor.setup().target())
 						.replaceAll("[^A-Za-z\\d]", "_") + ".xlsx";
 				var f = FileChooser.forSavingFile(M.Export, fileName);
 				if (f != null) {

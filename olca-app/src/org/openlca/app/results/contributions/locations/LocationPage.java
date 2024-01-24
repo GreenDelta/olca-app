@@ -54,7 +54,7 @@ public class LocationPage extends FormPage {
 	public LocationPage(ResultEditor editor) {
 		super(editor, "analysis.MapPage", M.Locations);
 		this.editor = editor;
-		this.locations = new LocationResult(editor.result, Database.get());
+		this.locations = new LocationResult(editor.result(), Database.get());
 	}
 
 	public Object getSelection() {
@@ -64,7 +64,7 @@ public class LocationPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.header(mform,
-				Labels.name(editor.setup.target()),
+				Labels.name(editor.setup().target()),
 				Icon.ANALYSIS_RESULT.get());
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
@@ -87,8 +87,8 @@ public class LocationPage extends FormPage {
 		combos = Combo.on(editor)
 				.onSelected(this::onSelected)
 				.create(comboComp, tk);
-		if (editor.items.enviFlows().size() > 0) {
-			combos.selectWithEvent(editor.items.enviFlows().get(0));
+		if (editor.items().enviFlows().size() > 0) {
+			combos.selectWithEvent(editor.items().enviFlows().get(0));
 		}
 
 		Composite cutoffComp = UI.composite(outer, tk);

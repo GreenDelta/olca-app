@@ -3,6 +3,6 @@ root = true
 [*]
 charset = utf-8
 
-[*.{ts, tsx, js, html, json}]
+[*.{ts,tsx,js,html,json,css}]
 indent_style = space
-indent_size = 4
+indent_size = 2

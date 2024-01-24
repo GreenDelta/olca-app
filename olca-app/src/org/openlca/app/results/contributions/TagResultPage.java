@@ -41,7 +41,7 @@ public class TagResultPage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		var form = UI.header(mform,
-			Labels.name(editor.setup.target()),
+			Labels.name(editor.setup().target()),
 			Icon.ANALYSIS_RESULT.get());
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
@@ -52,7 +52,7 @@ public class TagResultPage extends FormPage {
 		UI.gridLayout(comp, 1);
 
 		var selector = ResultItemSelector
-			.on(editor.items)
+			.on(editor.items())
 			.withSelectionHandler(new SelectionHandler())
 			.create(comp, tk);
 
@@ -66,7 +66,7 @@ public class TagResultPage extends FormPage {
 
 		App.runWithProgress("Calculate tag results", () -> {
 			tagResults.clear();
-			tagResults.addAll(TagResult.allOf(editor.result));
+			tagResults.addAll(TagResult.allOf(editor.result()));
 		}, selector::initWithEvent);
 	}
 
@@ -83,22 +83,22 @@ public class TagResultPage extends FormPage {
 		@Override
 		public void onFlowSelected(EnviFlow flow) {
 			fillTable(Labels.refUnit(flow),
-				editor.result.getTotalFlowValueOf(flow),
+				editor.result().getTotalFlowValueOf(flow),
 				tagResult -> tagResult.inventoryResultOf(flow).value());
 		}
 
 		@Override
 		public void onImpactSelected(ImpactDescriptor impact) {
 			fillTable(impact.referenceUnit,
-				editor.result.getTotalImpactValueOf(impact),
+				editor.result().getTotalImpactValueOf(impact),
 				tagResult -> tagResult.impactResultOf(impact).value());
 		}
 
 		@Override
 		public void onCostsSelected(CostResultDescriptor cost) {
 			var total = cost.forAddedValue
-				? -editor.result.getTotalCosts()
-				: editor.result.getTotalCosts();
+				? -editor.result().getTotalCosts()
+				: editor.result().getTotalCosts();
 			fillTable(Labels.getReferenceCurrencyCode(),
 				total,
 				tagResults -> cost.forAddedValue
