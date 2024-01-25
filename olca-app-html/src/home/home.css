@@ -97,8 +97,17 @@ footer {
   text-decoration: underline;
 }
 
-.olca-content-container {
+.olca-row {
   display: flex;
+}
+
+.olca-left-col {
+  flex: 50%;
+}
+
+.olca-right-col {
+  display: flex;
+  flex: 50%;
   align-items: center;
   justify-content: center;
   margin: auto;
