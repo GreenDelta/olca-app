@@ -75,14 +75,14 @@ class BuildDir:
         self.root.parent.mkdir(exist_ok=True, parents=False)
         shutil.copytree(self.export_dir, self.root)
 
-    def unjar_plugins(self):
+    @staticmethod
+    def unjar_plugins(plugin_dir: Path):
         """Sometimes in newer Eclipse versions the PDE build does not respect
         the `Eclipse-BundleShape: dir` entry in plugin manifests anymore but
         exports them as jar-files. For plugins that should be extracted as
-        folders, we check if there is a jar-file and extract it if this is
-        the case."""
+        folders, we check if there is a jar-file in the raw plugins folder
+        and extract it if this is the case."""
 
-        plugin_dir = self.app / "plugins"
         jars = [
             "org.eclipse.equinox.launcher.*.jar",
             "olca-app_*.jar",
