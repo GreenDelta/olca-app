@@ -10,7 +10,7 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDoc;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.ProcessType;
 
 import com.google.common.base.Strings;

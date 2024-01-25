@@ -14,13 +14,14 @@ import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.doc.Completeness;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.ilcd.commons.FlowCompleteness;
 import org.openlca.ilcd.commons.ImpactCategory;
 import org.openlca.util.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 class CompletenessTable {
 
@@ -92,14 +93,16 @@ class CompletenessTable {
 		final String aspect;
 		FlowCompleteness value;
 
-		Item(Completeness c, String aspect) {
+		Item(Map<String, String> c, String aspect) {
 			this.aspect = aspect;
 			value = FlowCompleteness.fromValue(c.get(aspect))
 					.orElse(FlowCompleteness.NO_STATEMENT);
 		}
 
 		static List<Item> readFrom(Process process) {
-			var c = Completeness.readFrom(process);
+			Map<String, String> c = process.documentation != null
+					? process.documentation.flowCompleteness
+					: Map.of();
 			var items = new ArrayList<Item>();
 			items.add(new Item(c, "Product model"));
 			for (var impact : ImpactCategory.values()) {
@@ -109,13 +112,15 @@ class CompletenessTable {
 		}
 
 		static void writeTo(List<Item> items, Process process) {
-			var c = new Completeness();
+			if (process.documentation == null) {
+				process.documentation = new ProcessDoc();
+			}
+			var c = process.documentation.flowCompleteness;
 			for (var item : items) {
 				if (Strings.nullOrEmpty(item.aspect) || item.value == null)
 					continue;
 				c.put(item.aspect, item.value.value());
 			}
-			c.writeTo(process);
 		}
 	}
 

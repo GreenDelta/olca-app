@@ -18,7 +18,7 @@ import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDoc;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.util.AllocationUtils;
 
 public class ProcessEditor extends ModelEditor<Process> {

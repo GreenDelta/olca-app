@@ -9,7 +9,7 @@ import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ProcessDoc;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.doc.ComplianceDeclaration;
 

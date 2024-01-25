@@ -23,7 +23,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDoc;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.io.CategoryPath;

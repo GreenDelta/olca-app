@@ -20,7 +20,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.ProcessDoc;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.commons.ReviewType;

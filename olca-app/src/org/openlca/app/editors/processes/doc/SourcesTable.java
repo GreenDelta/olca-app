@@ -19,7 +19,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDoc;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.Descriptor;
 
