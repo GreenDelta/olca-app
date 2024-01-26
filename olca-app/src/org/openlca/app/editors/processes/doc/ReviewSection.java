@@ -85,8 +85,8 @@ class ReviewSection {
 			var root = UI.sectionClient(section, tk, 1);
 			renderTop(root);
 			reviewerTable(root);
-			new ReviewScopeSection(editor, this::sync)
-					.render(root, tk);
+			new ReviewScopeSection(editor, this::sync).render(root, tk);
+			new ReviewQualityTable(editor, this::sync).render(root, tk);
 			if (editor.isEditable()) {
 				var del = Actions.onRemove(this::delete);
 				Actions.bind(section, del);

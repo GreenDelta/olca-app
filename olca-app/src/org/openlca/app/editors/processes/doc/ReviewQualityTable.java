@@ -11,40 +11,48 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.core.model.doc.ComplianceDeclaration;
-import org.openlca.ilcd.commons.Compliance;
+import org.openlca.core.model.doc.Review;
+import org.openlca.ilcd.commons.Quality;
+import org.openlca.ilcd.commons.QualityIndicator;
+import org.openlca.util.Strings;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-class ComplianceTable {
+class ReviewQualityTable {
 
 	private final ProcessEditor editor;
-	private final Supplier<ComplianceDeclaration> sync;
+	private final Supplier<Review> sync;
 	private final List<Item> items;
 
-	ComplianceTable(ProcessEditor editor, Supplier<ComplianceDeclaration> sync) {
+	ReviewQualityTable(ProcessEditor editor, Supplier<Review> sync) {
 		this.editor = editor;
 		this.sync = sync;
 		this.items = Item.readFrom(sync.get());
 	}
 
 	void render(Composite root, FormToolkit tk) {
-		var comp = UI.formSection(root, tk, "Compliance details", 1);
-		var table = Tables.createViewer(
-				comp,
-				"Aspect",
-				Compliance.FULLY_COMPLIANT.value(),
-				Compliance.NOT_COMPLIANT.value(),
-				Compliance.NOT_DEFINED.value());
+		var comp = UI.formSection(root, tk, "Quality assessment", 1);
+
+		var qs = Quality.values();
+		var props = new String[qs.length + 1];
+		props[0] = "Aspect";
+		for (int i = 0; i < qs.length; i++) {
+			props[i + 1] = qs[i].value();
+		}
+
+		var table = Tables.createViewer(comp, props);
 		table.setInput(items);
 		table.setLabelProvider(new TableLabel());
-		Tables.bindColumnWidths(table, 0.25, 0.25, 0.25, 0.25);
+		var widths = new double[props.length];
+		widths[0] = 0.25;
+		Arrays.fill(widths, 1, widths.length, 0.75 / ((double) qs.length));
+		Tables.bindColumnWidths(table, widths);
 
 		var modifier = new ModifySupport<Item>(table);
-		for (var v : Compliance.values()) {
+		for (var v : qs) {
 			modifier.bind(v.value(), new CheckBoxCellModifier<>() {
 				@Override
 				protected boolean isChecked(Item item) {
@@ -53,48 +61,34 @@ class ComplianceTable {
 
 				@Override
 				protected void setChecked(Item item, boolean b) {
-					var nextVal = b ? v : Compliance.NOT_DEFINED;
+					var nextVal = b ? v : Quality.NOT_EVALUATED_UNKNOWN;
 					if (item.value == nextVal)
 						return;
 					item.value = nextVal;
-					var dec = sync.get();
-					dec.aspects.put(item.aspect, nextVal.value());
+					var review = sync.get();
+					review.assessment.put(item.aspect, nextVal.value());
 					editor.setDirty();
 				}
 			});
 		}
 	}
 
-	private static int columnOf(Compliance c) {
-		if (c == null)
-			return 3;
-		return switch (c) {
-			case FULLY_COMPLIANT -> 1;
-			case NOT_COMPLIANT -> 2;
-			case NOT_DEFINED -> 3;
-		};
-	}
-
 	private static class Item {
 
 		final String aspect;
-		Compliance value;
+		Quality value;
 
 		Item(Map<String, String> aspects, String aspect) {
 			this.aspect = aspect;
-			value = Compliance.fromValue(aspects.get(aspect))
-					.orElse(Compliance.NOT_DEFINED);
+			value = Quality.fromValue(aspects.get(aspect))
+					.orElse(null);
 		}
 
-		static List<Item> readFrom(ComplianceDeclaration dec) {
-			return Stream.of(
-							"Overall compliance",
-							"Nomenclature compliance",
-							"Methodological compliance",
-							"Review compliance",
-							"Documentation compliance",
-							"Quality compliance")
-					.map(a -> new Item(dec.aspects, a))
+		static List<Item> readFrom(Review review) {
+			var a = review.assessment;
+			return Arrays.stream(QualityIndicator.values())
+					.map(qi -> new Item(a, qi.value()))
+					.sorted((i1, i2) -> Strings.compare(i1.aspect, i2.aspect))
 					.toList();
 		}
 	}
@@ -106,7 +100,10 @@ class ComplianceTable {
 		public Image getColumnImage(Object obj, int col) {
 			if (col == 0 || !(obj instanceof Item item))
 				return null;
-			return columnOf(item.value) == col
+			int idx = item.value != null
+					? 1 + item.value.ordinal()
+					: 1 + Quality.NOT_EVALUATED_UNKNOWN.ordinal();
+			return idx == col
 					? Icon.CHECK_TRUE.get()
 					: Icon.CHECK_FALSE.get();
 		}
