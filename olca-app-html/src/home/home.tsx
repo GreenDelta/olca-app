@@ -210,7 +210,7 @@ const Content = ({ item }: { item: Item }) => {
             some public data repositories are listed <a onClick={_onClick} href="https://www.lcacommons.gov/lca-collaboration/">here</a>.
           </p>
           <p>
-            onlineLCA - the webtool based on openLCA. More details soon.
+            onlineLCA - the webtool based on openLCA. More details <a href="https://www.openlca.org/onlinelca/">here</a>.
           </p>
         </div>
       );
