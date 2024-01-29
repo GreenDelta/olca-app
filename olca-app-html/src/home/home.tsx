@@ -47,11 +47,11 @@ const Page = ({ data }: { data: PageData }) => {
           </a>
         </div>
       </div>
-      <div className="grid">
-        <div>
+      <div className="olca-row">
+        <div className="olca-left-col">
           <Nav items={items} selected={selected} onSelect={setSelected} />
         </div>
-        <div className="olca-content-container">
+        <div className="olca-right-col">
           <Content item={selected} />
         </div>
       </div>
@@ -120,7 +120,8 @@ const Content = ({ item }: { item: Item }) => {
             With openLCA, you can model the life cycle of everything. Create or
             import existing databases with life cycle processes and import
             assessment methods; create your own processes, build your own life
-            cycle models, calculate and analyse them. Keep reading to know more.
+            cycle models, calculate and analyse them. Click the other sections
+            on the left to read more.
           </p>
         </div>
       );
@@ -200,15 +201,16 @@ const Content = ({ item }: { item: Item }) => {
       return (
         <div className="olca-content">
           <p>
-            The LCA Collaboration Server is a unique tool to bring the
+            The <a onClick={_onClick} href="https://www.openlca.org/collaboration-server/">LCA Collaboration Server</a> is
+            a unique tool to bring the
             professionalism of distributed software code development into LCA
             data management, developed by GreenDelta since more than 5 years,
             with data review, detailed version control, publication
-            possibilities. Find the manual <a onClick={_onClick} href="https://manuals.openlca.org/lca-collaboration-server/">here</a>, some public
-            cases are listed <a onClick={_onClick} href="https://www.lcacommons.gov/lca-collaboration/">here</a>.
+            possibilities. Checkout the <a onClick={_onClick} href="https://manuals.openlca.org/lca-collaboration-server/">manual</a> and
+            an example of a public data <a onClick={_onClick} href="https://www.lcacommons.gov/lca-collaboration/">repository</a>.
           </p>
           <p>
-            onlineLCA - the webtool based on openLCA. More details <a href="#">here</a>.
+            onlineLCA is a webtool based on openLCA. More details on our <a onClick={_onClick} href="https://www.openlca.org/onlinelca/">website</a>.
           </p>
         </div>
       );
