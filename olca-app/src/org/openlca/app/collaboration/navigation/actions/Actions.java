@@ -14,6 +14,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
+import org.openlca.app.collaboration.util.SslCertificates;
+import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.navigation.Navigator;
@@ -42,6 +44,16 @@ class Actions {
 		var msg = e.getMessage();
 		if (e instanceof UnsupportedClientVersionException ue) {
 			msg = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
+		} else if (e instanceof WebRequestException we) {
+			if (we.isSslCertificateException()) {
+				if (Question.ask("SSL Certificate unknown",
+						"The site " + we.getHost() + " you are trying to connect to uses an unknown SSL certificate. "
+								+ "Do you want to add the certificate to the list of trusted certificates? "
+								+ "You will need to rerun the current action to continue after adding it")) {
+					var cert = SslCertificates.downloadCertificate(we.getHost(), we.getPort());
+					SslCertificates.importCertificate(cert, we.getHost());
+				}
+			}
 		}
 		log.error(message, e);
 		MsgBox.error(msg);

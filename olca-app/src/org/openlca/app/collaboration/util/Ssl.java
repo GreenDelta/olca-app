@@ -36,6 +36,10 @@ public class Ssl {
 		}
 	}
 
+	static KeyStore getKeyStore() {
+		return keyStore;
+	}
+	
 	static SSLContext createContext() {
 		if (trustManagerFactory == null)
 			return null;
