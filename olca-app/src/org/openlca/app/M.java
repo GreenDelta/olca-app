@@ -264,6 +264,7 @@ public class M extends NLS {
 	public static String DirectContribution;
 	public static String DirectContributionsFlowResultsOverview;
 	public static String DirectContributionsImpactCategoryResultsOverview;
+	public static String DirectImpacts;
 	public static String Direction;
 	public static String Disabled;
 	public static String Disconnect;

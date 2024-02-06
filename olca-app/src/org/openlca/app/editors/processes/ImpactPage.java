@@ -59,7 +59,7 @@ class ImpactPage extends ModelPage<Process> {
 	private LcaResult result;
 
 	ImpactPage(ProcessEditor editor) {
-		super(editor, "ProcessImpactPage", M.ImpactAnalysis);
+		super(editor, "ProcessImpactPage", M.DirectImpacts);
 	}
 
 	@Override
