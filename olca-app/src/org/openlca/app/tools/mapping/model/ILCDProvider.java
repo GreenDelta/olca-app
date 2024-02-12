@@ -65,20 +65,20 @@ public class ILCDProvider implements FlowProvider {
 				if (unit == null)
 					return;
 				Descriptor d = new UnitDescriptor();
-				d.name = unit.name;
-				units.put(ug.getUUID(), d);
+				d.name = unit.getName();
+				units.put(UnitGroups.getUUID(ug), d);
 			});
 
 			// collect flow properties
 			Map<String, Descriptor> props = new HashMap<>();
 			store.each(FlowProperty.class, fp -> {
 				Descriptor d = new FlowPropertyDescriptor();
-				d.refId = fp.getUUID();
-				d.name = LangString.getFirst(fp.getName(), "en");
+				d.refId = FlowProperties.getUUID(fp);
+				d.name = LangString.getFirst(FlowProperties.getName(fp), "en");
 				props.put(d.refId, d);
 				Ref ug = FlowProperties.getUnitGroupRef(fp);
 				if (ug != null) {
-					Descriptor unit = units.get(ug.uuid);
+					Descriptor unit = units.get(ug.getUUID());
 					units.put(d.refId, unit);
 				}
 			});
@@ -93,7 +93,7 @@ public class ILCDProvider implements FlowProvider {
 				flowRef.flow = d;
 				d.name = Flows.getFullName(f);
 				d.flowType = map(Flows.getType(f));
-				d.refId = f.getUUID();
+				d.refId = Flows.getUUID(f);
 
 				// category path
 				String[] cpath = Categories.getPath(f);
@@ -101,9 +101,9 @@ public class ILCDProvider implements FlowProvider {
 
 				// flow property & unit
 				FlowPropertyRef refProp = Flows.getReferenceFlowProperty(f);
-				if (refProp == null || refProp.flowProperty == null)
+				if (refProp == null || refProp.getFlowProperty() == null)
 					return;
-				String propID = refProp.flowProperty.uuid;
+				String propID = refProp.getFlowProperty().getUUID();
 				flowRef.property = props.get(propID);
 				flowRef.unit = units.get(propID);
 			});

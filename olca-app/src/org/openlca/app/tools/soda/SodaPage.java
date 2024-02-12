@@ -73,7 +73,7 @@ class SodaPage extends FormPage {
 		items[0] = "Undefined / Default";
 		int i = 1;
 		for (var stock : con.stocks()) {
-			items[i] = stock.shortName;
+			items[i] = stock.getShortName();
 			i++;
 		}
 
@@ -87,7 +87,7 @@ class SodaPage extends FormPage {
 			}
 			var stock = con.stocks().get(k - 1);
 			client.useDataStock(stock != null
-					? stock.uuid
+					? stock.getUUID()
 					: null);
 		});
 
@@ -130,11 +130,11 @@ class SodaPage extends FormPage {
 			return;
 
 		var err = new String[1];
-		var result = new ArrayList<Descriptor>();
+		var result = new ArrayList<Descriptor<?>>();
 		App.run("Search datasets ...", () -> {
 			try {
 				var list = client.search(clazz, name);
-				result.addAll(list.descriptors);
+				result.addAll(list.getDescriptors());
 			} catch (Exception e) {
 				err[0] = e.getMessage();
 			}
@@ -147,7 +147,7 @@ class SodaPage extends FormPage {
 	}
 
 	private void runImport() {
-		List<Descriptor> selection = Viewers.getAllSelected(table);
+		List<Descriptor<?>> selection = Viewers.getAllSelected(table);
 		if (selection.isEmpty())
 			return;
 
@@ -163,7 +163,7 @@ class SodaPage extends FormPage {
 			var imp = Import.of(client, db)
 					.withLanguageOrder(IoPreference.getIlcdLanguage());
 			for (var d : selection) {
-				imp.write(d.toRef().type, d.uuid);
+				imp.write(d.toRef().getType(), d.getUuid());
 			}
 		}, Navigator::refresh);
 	}
@@ -175,20 +175,20 @@ class SodaPage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			return col == 0 && obj instanceof Descriptor d
-					? Util.imageOf(d.toRef().type)
+			return col == 0 && obj instanceof Descriptor<?> d
+					? Util.imageOf(d.toRef().getType())
 					: null;
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Descriptor d))
+			if (!(obj instanceof Descriptor<?> d))
 				return null;
 			return switch (col) {
-				case 0 -> LangString.getFirst(d.name, lang);
-				case 1 -> d.uuid;
-				case 2 -> d.version;
-				case 3 -> Strings.cut(LangString.getFirst(d.comment, lang), 75);
+				case 0 -> LangString.getFirst(d.getName(), lang);
+				case 1 -> d.getUuid();
+				case 2 -> d.getVersion();
+				case 3 -> Strings.cut(LangString.getFirst(d.getComment(), lang), 75);
 				default -> null;
 			};
 		}

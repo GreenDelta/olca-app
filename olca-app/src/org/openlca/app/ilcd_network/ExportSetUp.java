@@ -10,7 +10,7 @@ public class ExportSetUp {
 	private String url;
 	private String user;
 	private String password;
-	private List<Descriptor> exportTupels = new ArrayList<>();
+	private final List<Descriptor> exportTuples = new ArrayList<>();
 
 	public String getUser() {
 		return user;
@@ -36,8 +36,8 @@ public class ExportSetUp {
 		this.url = url;
 	}
 
-	public List<Descriptor> getExportTupels() {
-		return exportTupels;
+	public List<Descriptor> getExportTuples() {
+		return exportTuples;
 	}
 
 }

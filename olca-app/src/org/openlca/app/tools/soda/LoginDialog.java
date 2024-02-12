@@ -148,7 +148,7 @@ class LoginDialog extends FormDialog {
 				if (!anonymous) {
 					client.login(user, password);
 				}
-				var stocks = client.getDataStockList().dataStocks;
+				var stocks = client.getDataStockList().getDataStocks();
 				return new Connection(client, stocks, url, user, null);
 			} catch (Exception e) {
 

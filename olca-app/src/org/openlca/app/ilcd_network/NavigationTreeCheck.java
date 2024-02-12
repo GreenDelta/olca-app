@@ -8,7 +8,7 @@ import org.openlca.app.navigation.elements.ModelElement;
 
 class NavigationTreeCheck implements ICheckStateListener {
 
-	private CheckboxTreeViewer viewer;
+	private final CheckboxTreeViewer viewer;
 
 	NavigationTreeCheck(CheckboxTreeViewer viewer) {
 		this.viewer = viewer;
