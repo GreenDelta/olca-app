@@ -541,6 +541,7 @@ import org.openlca.io.UnitMappingEntry as UnitMappingEntry
 import org.openlca.io.UnitMappingSync as UnitMappingSync
 import org.openlca.core.database.usage.UnitUsageSearch as UnitUsageSearch
 import org.openlca.jsonld.output.UnitWriter as UnitWriter
+import org.openlca.core.library.Unmounter as Unmounter
 import org.openlca.jsonld.input.UpdateMode as UpdateMode
 import org.openlca.core.database.upgrades.Upgrade11 as Upgrade11
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
