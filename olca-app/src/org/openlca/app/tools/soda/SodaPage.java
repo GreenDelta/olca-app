@@ -163,7 +163,7 @@ class SodaPage extends FormPage {
 			var imp = Import.of(client, db)
 					.withLanguageOrder(IoPreference.getIlcdLanguage());
 			for (var d : selection) {
-				imp.write(d.toRef().getType(), d.getUuid());
+				imp.write(d.toRef().getType(), d.getUUID());
 			}
 		}, Navigator::refresh);
 	}
@@ -186,7 +186,7 @@ class SodaPage extends FormPage {
 				return null;
 			return switch (col) {
 				case 0 -> LangString.getFirst(d.getName(), lang);
-				case 1 -> d.getUuid();
+				case 1 -> d.getUUID();
 				case 2 -> d.getVersion();
 				case 3 -> Strings.cut(LangString.getFirst(d.getComment(), lang), 75);
 				default -> null;
