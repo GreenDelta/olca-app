@@ -201,16 +201,16 @@ const Content = ({ item }: { item: Item }) => {
       return (
         <div className="olca-content">
           <p>
-            The <a onClick={_onClick} href="https://www.openlca.org/collaboration-server/">LCA Collaboration Server</a>
-            is a unique tool to bring the
+            The <a onClick={_onClick} href="https://www.openlca.org/collaboration-server/">LCA Collaboration Server</a> is
+            a unique tool to bring the
             professionalism of distributed software code development into LCA
             data management, developed by GreenDelta since more than 5 years,
             with data review, detailed version control, publication
-            possibilities. Find the manual <a onClick={_onClick} href="https://manuals.openlca.org/lca-collaboration-server/">here</a>,
-            some public data repositories are listed <a onClick={_onClick} href="https://www.lcacommons.gov/lca-collaboration/">here</a>.
+            possibilities. Checkout the <a onClick={_onClick} href="https://manuals.openlca.org/lca-collaboration-server/">manual</a> and
+            an example of a public data <a onClick={_onClick} href="https://www.lcacommons.gov/lca-collaboration/">repository</a>.
           </p>
           <p>
-            onlineLCA - the webtool based on openLCA. More details soon.
+            onlineLCA is a webtool based on openLCA. More details on our <a onClick={_onClick} href="https://www.openlca.org/onlinelca/">website</a>.
           </p>
         </div>
       );
