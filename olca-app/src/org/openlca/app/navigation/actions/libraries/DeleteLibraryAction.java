@@ -44,8 +44,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 	@Override
 	public String getText() {
 		if (element != null && element.getDatabase().isEmpty())
-			return "Remove library (experimental)";
-		return "Remove library";
+			return "Remove library";
+		return "Remove library (experimental)";
 	}
 
 	@Override
@@ -64,9 +64,14 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		// check if this is a mounted library
 		var db = element.getDatabase();
 		if (db.isPresent()) {
-			App.runWithProgress("Removing library " + lib.name() + " ...",
-					() -> new Unmounter(db.get()).unmountUnsafe(lib.name()),
-					() -> Navigator.refresh());
+			if (Question.ask("Removing library warning",
+					"This action might break your database, if the database uses any dataset of present in the library. "
+							+ "It is recommended to run a database validation after removing a library, to ensure database integrity.\r\n\r\n"
+							+ "Do you want to continue")) {
+				App.runWithProgress("Removing library " + lib.name() + " ...",
+						() -> new Unmounter(db.get()).unmountUnsafe(lib.name()),
+						() -> Navigator.refresh());
+			}
 		} else {
 			delete(lib);
 		}
@@ -89,7 +94,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 			if (u.isError()) {
 				ErrorReporter.on(
 						"Failed to check usage of library '"
-								+ lib.name() + "'", u.error);
+								+ lib.name() + "'",
+						u.error);
 				return;
 			}
 			MsgBox.info("Cannot delete library",

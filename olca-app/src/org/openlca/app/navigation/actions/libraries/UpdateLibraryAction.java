@@ -12,6 +12,7 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Question;
 import org.openlca.core.library.Unmounter;
 
 public class UpdateLibraryAction extends Action implements INavigationAction {
@@ -46,6 +47,15 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 	public void run() {
 		if (element == null)
 			return;
+		if (!Question.ask("Updating library warning",
+				"This action might break your database, if in the library update... \r\n\r\n"
+						+ "* Datasets were removed, which are linked to another dataset (e.g. Actor in a Process)\r\n"
+						+ "* Units or flow property factors were removed, which are used in an exchange or impact factor\r\n"
+						+ "* Product or waste flows were removed from a process, which are linked in a product system\r\n"
+						+ "* Parameters were removed or parameter names were changed, which are used in a formula\r\n\r\n"
+						+ "It is recommended to run a database validation after replacing a library, to ensure database integrity.\r\n\r\n"
+						+ "Do you want to continue?"))
+			return;
 		var addAction = new AddLibraryAction();
 		addAction.accept(Collections.singletonList(Navigator.findElement(Database.get())));
 		addAction.setCallback(added -> {
@@ -53,7 +63,7 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 				return;
 			var lib = element.getContent();
 			App.runWithProgress("Removing library " + lib.name() + " ...",
-					() -> new Unmounter(Database.get()).unmountUnsafe(lib.name()),					
+					() -> new Unmounter(Database.get()).unmountUnsafe(lib.name()),
 					() -> Navigator.refresh());
 		});
 		addAction.run();
