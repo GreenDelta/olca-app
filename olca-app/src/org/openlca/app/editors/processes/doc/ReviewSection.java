@@ -20,11 +20,12 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.Source;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.commons.ReviewType;
 import org.openlca.util.Strings;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ class ReviewSection {
 	private Composite parent;
 	private FormToolkit tk;
 	private ScrolledForm form;
+	private final List<Sec> secs = new ArrayList<>();
 
 	ReviewSection(ProcessEditor editor) {
 		this.editor = editor;
@@ -55,8 +57,9 @@ class ReviewSection {
 		this.form = form;
 		var section = UI.section(body, tk, "Reviews");
 		parent = UI.sectionClient(section, tk, 1);
-		for (var review : reviews()) {
-			new Sec(review);
+		var revs = reviews();
+		for (int i = 0; i < revs.size(); i++) {
+			secs.add(new Sec(i, revs.get(i)));
 		}
 
 		if (editor.isEditable()) {
@@ -67,19 +70,23 @@ class ReviewSection {
 	}
 
 	private void addReview() {
+		var revs = reviews();
+		int pos = revs.size();
 		var review = new Review();
 		reviews().add(review);
-		new Sec(review);
+		secs.add(new Sec(pos, review));
 		form.reflow(true);
 		editor.setDirty();
 	}
 
 	private class Sec {
 
+		private int pos;
 		private Review _rev;
 		private final Section section;
 
-		Sec(Review review) {
+		Sec(int pos, Review review) {
+			this.pos = pos;
 			this._rev = review;
 			section = UI.section(parent, tk, header());
 			var root = UI.sectionClient(section, tk, 1);
@@ -94,20 +101,27 @@ class ReviewSection {
 		}
 
 		private void delete() {
-			var rev = sync();
-			reviews().remove(rev);
+			reviews().remove(pos);
+			secs.remove(pos);
+			for (var sec : secs) {
+				if (sec.pos > pos) {
+					sec.pos--;
+					sec.section.setText(sec.header());
+				}
+			}
 			section.dispose();
 			form.reflow(true);
 			editor.setDirty();
 		}
 
 		private String header() {
-			var type = Strings.notEmpty(_rev.type)
-					? _rev.type
-					: "Unknown review";
+			var buff = new StringBuilder("Review #" + (pos + 1));
+			if (Strings.notEmpty(_rev.type)) {
+				buff.append(" - ").append(_rev.type);
+			}
 			if (_rev.reviewers.isEmpty())
-				return type;
-			var buff = new StringBuilder(type);
+				return buff.toString();
+
 			for (int i = 0; i < _rev.reviewers.size(); i++) {
 				var r = _rev.reviewers.get(i);
 				buff.append(i == 0 ? ": " : "; ");
@@ -228,15 +242,15 @@ class ReviewSection {
 		 * in the mean-time.
 		 */
 		private Review sync() {
-			for (var r : reviews()) {
-				if (r == _rev || (r.id > 0 && r.id == _rev.id)) {
-					_rev = r;
-					return _rev;
-				}
+			var revs = reviews();
+			if (pos < revs.size()) {
+				_rev = revs.get(pos);
+				return _rev;
 			}
+			LoggerFactory.getLogger(getClass())
+					.error("could not sync review at pos={}", pos);
 			return _rev;
 		}
-
 	}
 
 	private static class ActorTableLabel extends BaseLabelProvider
