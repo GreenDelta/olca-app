@@ -1,5 +1,9 @@
 package org.openlca.app.editors.processes.doc;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -11,15 +15,11 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.core.model.doc.AspectMap;
 import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.commons.Quality;
 import org.openlca.ilcd.commons.QualityIndicator;
 import org.openlca.util.Strings;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
 
 class ReviewQualityTable {
 
@@ -48,7 +48,7 @@ class ReviewQualityTable {
 		table.setLabelProvider(new TableLabel());
 		var widths = new double[props.length];
 		widths[0] = 0.25;
-		Arrays.fill(widths, 1, widths.length, 0.75 / ((double) qs.length));
+		Arrays.fill(widths, 1, widths.length, 0.75 / (qs.length));
 		Tables.bindColumnWidths(table, widths);
 
 		var modifier = new ModifySupport<Item>(table);
@@ -78,7 +78,7 @@ class ReviewQualityTable {
 		final String aspect;
 		Quality value;
 
-		Item(Map<String, String> aspects, String aspect) {
+		Item(AspectMap aspects, String aspect) {
 			this.aspect = aspect;
 			value = Quality.fromValue(aspects.get(aspect))
 					.orElse(null);

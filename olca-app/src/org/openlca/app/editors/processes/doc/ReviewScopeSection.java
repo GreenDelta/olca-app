@@ -84,7 +84,7 @@ class ReviewScopeSection {
 			if (review.scopes.isEmpty())
 				return List.of();
 			var list = new ArrayList<Item>();
-			for (var scope : review.scopes) {
+			for (var scope : review.scopes.values()) {
 				for (var method : scope.methods) {
 					list.add(Item.of(scope.name, method));
 				}
@@ -111,7 +111,7 @@ class ReviewScopeSection {
 		}
 
 		boolean addTo(Review rev) {
-			for (var scope : rev.scopes) {
+			for (var scope : rev.scopes.values()) {
 				if (!Strings.nullOrEqual(this.scope, scope.name))
 					continue;
 				if (scope.methods.contains(method))
@@ -122,15 +122,12 @@ class ReviewScopeSection {
 
 			var scope = new org.openlca.core.model.doc.ReviewScope(this.scope);
 			scope.methods.add(this.method);
-			rev.scopes.add(scope);
+			rev.scopes.put(scope);
 			return true;
 		}
 
-		boolean removeFrom(Review rev) {
-			var scope = rev.scopes.stream()
-					.filter(s -> Strings.nullOrEqual(s.name, this.scope))
-					.findAny()
-					.orElse(null);
+		boolean removeFrom(Review rev) {			
+			var scope = rev.scopes.get(this.scope);
 			return scope != null && scope.methods.remove(method);
 		}
 	}

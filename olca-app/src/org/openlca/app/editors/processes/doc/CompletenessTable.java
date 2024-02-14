@@ -1,5 +1,8 @@
 package org.openlca.app.editors.processes.doc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -14,14 +17,11 @@ import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.doc.AspectMap;
 import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.ilcd.commons.FlowCompleteness;
 import org.openlca.ilcd.commons.ImpactCategory;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 class CompletenessTable {
 
@@ -93,16 +93,16 @@ class CompletenessTable {
 		final String aspect;
 		FlowCompleteness value;
 
-		Item(Map<String, String> c, String aspect) {
+		Item(AspectMap c, String aspect) {
 			this.aspect = aspect;
 			value = FlowCompleteness.fromValue(c.get(aspect))
 					.orElse(FlowCompleteness.NO_STATEMENT);
 		}
 
 		static List<Item> readFrom(Process process) {
-			Map<String, String> c = process.documentation != null
+			var c = process.documentation != null
 					? process.documentation.flowCompleteness
-					: Map.of();
+					: new AspectMap();
 			var items = new ArrayList<Item>();
 			items.add(new Item(c, "Product model"));
 			for (var impact : ImpactCategory.values()) {
