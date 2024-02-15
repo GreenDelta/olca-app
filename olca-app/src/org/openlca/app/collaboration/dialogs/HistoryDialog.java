@@ -54,7 +54,7 @@ public class HistoryDialog extends FormDialog {
 	}
 
 	private void onDoubleClick(DoubleClickEvent event) {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		if (repo == null || !repo.isCollaborationServer())
 			return;
 		Commit element = Selections.firstOf(event);

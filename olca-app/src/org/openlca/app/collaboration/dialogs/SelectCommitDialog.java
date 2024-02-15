@@ -36,7 +36,7 @@ public class SelectCommitDialog extends FormDialog {
 			selection = Viewers.getFirstSelected(viewer.getViewer());
 			updateButtons();
 		});
-		viewer.setRepository(Repository.get());
+		viewer.setRepository(Repository.CURRENT);
 	}
 
 	private void updateButtons() {

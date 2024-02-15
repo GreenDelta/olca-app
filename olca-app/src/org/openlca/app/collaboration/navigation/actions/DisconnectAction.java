@@ -27,7 +27,7 @@ public class DisconnectAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Repository.close();
+		Repository.CURRENT.close();
 		var gitDir = Repository.gitDir(Database.get().getName());
 		Dirs.delete(gitDir);
 		Actions.refresh();

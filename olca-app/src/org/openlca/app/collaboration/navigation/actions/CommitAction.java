@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -14,16 +13,18 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
-import org.openlca.app.collaboration.navigation.NavRoot;
+import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.git.actions.GitCommit;
 import org.openlca.git.actions.GitPush;
-import org.openlca.git.model.Change;
 
 public class CommitAction extends Action implements INavigationAction {
 
@@ -41,7 +42,7 @@ public class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return NavRoot.get().hasChanges();
+		return NavCache.get().hasChanges();
 	}
 
 	@Override
@@ -51,7 +52,9 @@ public class CommitAction extends Action implements INavigationAction {
 
 	boolean doRun(boolean canPush) {
 		try {
-			var repo = Repository.get();
+			if (!checkDatabase())
+				return false;
+			var repo = Repository.CURRENT;
 			var input = Datasets.select(selection, canPush, false);
 			if (input == null || input.action() == CommitDialog.CANCEL)
 				return false;
@@ -60,19 +63,14 @@ public class CommitAction extends Action implements INavigationAction {
 			var user = doPush && credentials != null ? credentials.ident : AuthenticationDialog.promptUser(repo);
 			if (credentials == null && user == null)
 				return false;
-			var changes = input.datasets().stream()
-					.map(d -> new Change(d.leftDiffType, d))
-					.collect(Collectors.toList());
-			Actions.run(GitCommit.from(Database.get())
-					.to(repo.git)
-					.changes(changes)
+			Actions.run(GitCommit.on(repo)
+					.changes(input.datasets())
 					.withMessage(input.message())
-					.as(user)
-					.update(repo.gitIndex));
+					.as(user));
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
 				return true;
 			var result = Actions.run(credentials,
-					GitPush.from(Repository.get().git));
+					GitPush.from(Repository.CURRENT));
 			if (result == null)
 				return false;
 			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
@@ -88,6 +86,35 @@ public class CommitAction extends Action implements INavigationAction {
 		} finally {
 			Actions.refresh();
 		}
+	}
+
+	private boolean checkDatabase() {
+		var dao = new CategoryDao(Database.get());
+		var withSlash = dao.getDescriptors().stream()
+				.filter(c -> c.name.contains("/"))
+				.toList();
+		if (withSlash.isEmpty())
+			return true;
+		var message = "The following categories contain a slash (/) in their name, which is not allowed. A simple fix is to replace / with \\. Should this be done now?\r\n";
+		for (var i = 0; i < Math.min(5, withSlash.size()); i++) {
+			var category = dao.getForId(withSlash.get(i).id);
+			message += "\r\n* " + category.name + " in " + Labels.plural(category.modelType);
+			if (category.category != null) {
+				message += "/" + category.category.toPath();
+			}
+		}
+		if (withSlash.size() > 5) {
+			message += "\r\n  and " + (withSlash.size() - 5) + " more";
+		}
+		if (!Question.ask("Invalid category names", message))
+			return false;
+		for (var descriptor : withSlash) {
+			var category = dao.getForId(descriptor.id);
+			category.name = category.name.replace("/", "\\");
+			dao.update(category);
+		}
+		Repository.CURRENT.descriptors.reload();
+		return true;
 	}
 
 	@Override

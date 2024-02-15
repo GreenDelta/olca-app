@@ -11,7 +11,6 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Cache;
-import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -19,6 +18,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitMerge;
+import org.openlca.git.actions.GitMerge.MergeResult;
 
 public class PullAction extends Action implements INavigationAction {
 
@@ -34,18 +34,18 @@ public class PullAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return Repository.get().client != null;
+		return Repository.CURRENT.client != null;
 	}
-	
+
 	@Override
 	public void run() {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		try {
 			var credentials = AuthenticationDialog.promptCredentials(repo);
 			if (credentials == null)
 				return;
 			var newCommits = Actions.run(credentials,
-					GitFetch.to(repo.git));
+					GitFetch.to(repo));
 			if (newCommits == null)
 				return;
 			if (!newCommits.isEmpty()) {
@@ -57,22 +57,24 @@ public class PullAction extends Action implements INavigationAction {
 			var conflictResult = ConflictResolutionMap.forRemote();
 			if (conflictResult == null)
 				return;
-			var changed = Actions.run(GitMerge
-					.from(repo.git)
-					.into(Database.get())
-					.update(repo.gitIndex)
+			var mergeResult = Actions.run(GitMerge
+					.on(repo)
 					.as(credentials.ident)
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
-			if (changed != null && conflictResult.stashedChanges()) {
+			if (mergeResult == MergeResult.ABORTED)
+				return;
+			if (conflictResult.stashedChanges()) {
 				Actions.askApplyStash();
 			}
-			if (changed == null || changed)
-				return;
-			if (newCommits.isEmpty()) {
-				MsgBox.info("No commits to fetch - Everything up to date");
-			} else {
-				MsgBox.info("No changes to merge");
+			if (mergeResult == MergeResult.MOUNT_ERROR) {
+				MsgBox.error("Could not mount library");
+			} else if (mergeResult == MergeResult.NO_CHANGES) {
+				if (newCommits.isEmpty()) {
+					MsgBox.info("No commits to fetch - Everything up to date");
+				} else {
+					MsgBox.info("No changes to merge");
+				}
 			}
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error pulling data", e);

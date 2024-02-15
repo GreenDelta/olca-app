@@ -19,28 +19,19 @@ import static org.openlca.core.model.ModelType.SOURCE;
 import static org.openlca.core.model.ModelType.UNIT_GROUP;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.NavElement.ElementType;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.core.database.CategoryDao;
-import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.RootDescriptor;
 
-public class NavRoot {
+public class NavCache {
 
 	private static final ModelType[] UNGROUPED_TYPES = {
 			PROJECT, PRODUCT_SYSTEM, PROCESS, FLOW, EPD, RESULT
@@ -52,43 +43,36 @@ public class NavRoot {
 			FLOW_PROPERTY, UNIT_GROUP, CURRENCY, ACTOR, SOURCE, LOCATION
 	};
 
-	private static NavRoot INSTANCE = new NavRoot(null);
-	private Boolean changes;
-	private final IDatabase database;
-	private final Map<Long, Category> categoryMap = new HashMap<>();
-	private final EnumMap<ModelType, Map<Long, List<Category>>> categories = new EnumMap<>(ModelType.class);
-	private final EnumMap<ModelType, Map<Long, List<RootDescriptor>>> descriptors = new EnumMap<>(ModelType.class);
+	private static NavCache INSTANCE = new NavCache();
 	private final NavElement root = new NavElement(ElementType.DATABASE, null);
+	private Boolean changes;
 
-	private NavRoot(IDatabase database) {
-		this.database = database;
+	private NavCache() {
 	}
 
-	public static NavRoot get() {
+	public static NavCache get() {
 		return INSTANCE;
 	}
 
-	public static void init() {
+	public static void refresh() {
+		refresh(null);
+	}
+
+	public static void refresh(ModelType type) {
 		var database = Database.get();
-		INSTANCE = new NavRoot(database);
+		INSTANCE = new NavCache();
 		if (database == null || !Repository.isConnected())
 			return;
+		if (type == null) {
+			Repository.CURRENT.descriptors.reload();
+		} else {
+			Repository.CURRENT.descriptors.reload(type);			
+		}
 		INSTANCE.build();
 	}
 
-	public static void refresh(Runnable navigatorRefresh) {
-		navigatorRefresh.run();
-		new Thread(() -> {
-			init();
-			App.runInUI("Refreshing navigator", () -> {
-				navigatorRefresh.run();
-				INSTANCE.changes = null;
-			});
-		}).start();
-	}
-
 	static NavElement get(INavigationElement<?> elem) {
-		return new NavFinder(NavRoot.get().categoryMap).find(NavRoot.get().root, elem);
+		return new NavFinder(Repository.CURRENT).find(INSTANCE.root, elem);
 	}
 
 	public boolean hasChanges() {
@@ -99,14 +83,12 @@ public class NavRoot {
 	}
 
 	private void build() {
-		loadCategories();
-		loadDescriptors();
 		buildGroup(root, null, UNGROUPED_TYPES);
 		buildGroup(root, M.IndicatorsAndParameters, GROUP1_TYPES);
 		buildGroup(root, M.BackgroundData, GROUP2_TYPES);
 		buildLibraryDir(root);
 	}
-	
+
 	private void buildGroup(NavElement parent, String group, ModelType[] types) {
 		if (group != null) {
 			var root = parent;
@@ -117,13 +99,11 @@ public class NavRoot {
 			parent.children().add(new NavElement(ElementType.MODEL_TYPE, type, buildChildren(type, null)));
 		}
 	}
-	
-	private List<NavElement> buildChildren(ModelType type, Long parentId) {
+
+	private List<NavElement> buildChildren(ModelType type, Category category) {
 		var children = new ArrayList<NavElement>();
-		children.addAll(build(categories, type, parentId,
-				c -> new NavElement(ElementType.CATEGORY, c, buildChildren(type, c.id))));
-		children.addAll(build(descriptors, type, parentId,
-				d -> new NavElement(ElementType.MODEL, d)));
+		children.addAll(buildCategories(type, category));
+		children.addAll(buildDatasets(type, category));
 		return children;
 	}
 
@@ -137,43 +117,23 @@ public class NavRoot {
 		}
 		root.children().add(libDir);
 	}
-	
-	private <T> List<NavElement> build(EnumMap<ModelType, Map<Long, List<T>>> map, ModelType type, Long parentId,
-			Function<T, NavElement> builder) {
-		return map.getOrDefault(type, Collections.emptyMap())
-				.getOrDefault(parentId, Collections.emptyList()).stream()
-				.map(builder)
-				.toList();
-	}
-	
-	private void loadCategories() {
-		for (var category : new CategoryDao(database).getAll()) {
-			if (category.modelType == null)
-				continue;
-			var parentId = category.category != null ? category.category.id : null;
-			put(categories, category.modelType, parentId, category);
-			categoryMap.put(category.id, category);
-		}
+
+	private List<NavElement> buildCategories(ModelType type, Category category) {
+		var categories = category != null
+				? category.childCategories
+				: Repository.CURRENT.descriptors.getCategories(type);
+		return categories.stream()
+				.map(c -> new NavElement(ElementType.CATEGORY, c, buildChildren(type, c)))
+				.collect(Collectors.toList());
 	}
 
-	private void loadDescriptors() {
-		for (var type : ModelType.values()) {
-			if (type == PARAMETER) {
-				for (var descriptor : new ParameterDao(database).getGlobalDescriptors()) {
-					put(descriptors, type, descriptor.category, descriptor);
-				}
-			} else {
-				for (var descriptor : database.getDescriptors(type.getModelClass())) {
-					put(descriptors, type, descriptor.category, descriptor);
-				}
-			}
-		}
-	}
-
-	private <T> void put(EnumMap<ModelType, Map<Long, List<T>>> map, ModelType type, Long parentId, T value) {
-		map.computeIfAbsent(type, t -> new HashMap<>())
-				.computeIfAbsent(parentId, id -> new ArrayList<>())
-				.add(value);
+	private List<NavElement> buildDatasets(ModelType type, Category category) {
+		var datasets = category != null
+				? Repository.CURRENT.descriptors.get(category)
+				: Repository.CURRENT.descriptors.get(type);
+		return datasets.stream()
+				.map(d -> new NavElement(ElementType.MODEL, d))
+				.collect(Collectors.toList());
 	}
 
 }

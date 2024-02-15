@@ -27,27 +27,22 @@ public class DiffNode {
 	}
 
 	boolean isCategoryNode() {
-		return content instanceof String s && s.contains("/");
+		return content instanceof String s && s.contains("/")
+				|| content instanceof TriDiff d && d.isCategory;
 	}
 
 	boolean isModelNode() {
-		return content instanceof TriDiff;
+		return content instanceof TriDiff d && !d.isCategory;
 	}
 
 	ModelType getModelType() {
 		if (isModelTypeNode())
 			return (ModelType) content;
-		if (isCategoryNode())
-			return ModelType.valueOf(content.toString().substring(0, content.toString().indexOf("/")));
 		if (content instanceof TriDiff diff)
 			return diff.type;
+		if (isCategoryNode())
+			return ModelType.valueOf(content.toString().substring(0, content.toString().indexOf("/")));
 		return null;
-	}
-
-	boolean hasChanged() {
-		if (!isModelNode())
-			return false;
-		return !contentAsTriDiff().noAction();
 	}
 
 	IDatabase contentAsDatabase() {

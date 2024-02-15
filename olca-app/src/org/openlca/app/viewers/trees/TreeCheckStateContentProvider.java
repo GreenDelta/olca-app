@@ -27,7 +27,7 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 	private CheckState getCheckState(T element) {
 		if (element == null)
 			return CheckState.UNCHECKED;
-		if (isLeaf(element)) {
+		if (isSelectable(element)) {
 			if (isSelected(element))
 				return CheckState.CHECKED;
 			return CheckState.UNCHECKED;
@@ -53,6 +53,10 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 
 	protected abstract boolean isLeaf(T element);
 
+	protected boolean isSelectable(T element) {
+		return isLeaf(element);
+	}
+
 	private boolean isSelected(T element) {
 		return selection.contains(element);
 	}
@@ -63,16 +67,18 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 
 	@SuppressWarnings("unchecked")
 	protected void setSelection(T element, boolean checked) {
-		if (isLeaf(element)) {
+		if (isSelectable(element)) {
 			if (checked) {
-				selection.add(element);
+				var added = selection.add(element);
+				if (added) {
+					setSelection((T) getParent(element), true);
+				}
 			} else {
 				selection.remove(element);
 			}
-		} else {
-			for (var child : getChildren(element)) {
-				setSelection((T) child, checked);
-			}
+		}
+		for (var child : getChildren(element)) {
+			setSelection((T) child, checked);
 		}
 	}
 

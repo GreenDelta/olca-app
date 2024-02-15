@@ -3,7 +3,6 @@ package org.openlca.app.rcp;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.openlca.app.collaboration.util.Ssl;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ class SslCertificates {
 			}
 			name = name.substring(0, file.getName().lastIndexOf("."));
 			log.debug("Loading certificate " + name);
-			try (InputStream stream = new FileInputStream(file)) {
+			try (var stream = new FileInputStream(file)) {
 				Ssl.addCertificate(name, stream);
 				added = true;
 				log.debug("Sucessfully added certificate " + name);

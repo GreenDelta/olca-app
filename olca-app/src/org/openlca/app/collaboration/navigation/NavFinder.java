@@ -1,6 +1,5 @@
 package org.openlca.app.collaboration.navigation;
 
-import java.util.Map;
 import java.util.Stack;
 import java.util.function.Predicate;
 
@@ -16,13 +15,14 @@ import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.git.repo.ClientRepository;
 
 class NavFinder {
 
-	private final Map<Long, Category> categories;
+	private final ClientRepository repo;
 
-	NavFinder(Map<Long, Category> categories) {
-		this.categories = categories;
+	NavFinder(ClientRepository repo) {
+		this.repo = repo;
 	}
 
 	NavElement find(NavElement root, INavigationElement<?> elem) {
@@ -88,7 +88,7 @@ class NavFinder {
 	}
 
 	private NavElement findDescriptor(NavElement root, RootDescriptor descriptor) {
-		var category = categories.get(descriptor.category);
+		var category = repo.descriptors.getCategory(descriptor.category);
 		var parentElement = category != null
 				? findCategory(root, category)
 				: findModelType(root, descriptor.type);

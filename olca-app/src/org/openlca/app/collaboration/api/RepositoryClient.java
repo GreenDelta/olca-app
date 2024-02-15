@@ -142,7 +142,7 @@ public class RepositoryClient {
 	private boolean login(boolean forceCredentials) throws WebRequestException {
 		var invocation = new LoginInvocation();
 		invocation.baseUrl = apiUrl;
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		var url = serverUrl + "/" + repositoryId;
 		invocation.credentials = forceCredentials
 				? repo != null

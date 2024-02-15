@@ -7,7 +7,6 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.collaboration.model.Comment;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.comments.CommentsPage;
@@ -44,9 +43,8 @@ public class CommentsEditor extends SimpleFormEditor {
 	protected FormPage getPage() {
 		setTitleImage(Icon.COMMENTS_VIEW.get());
 		List<Comment> comments = new ArrayList<>();
-		if (Repository.get().isCollaborationServer()) {
-			RepositoryClient client = Repository.get().client;
-			comments = client.getAllComments();
+		if (Repository.CURRENT.isCollaborationServer()) {
+			comments = Repository.CURRENT.client.getAllComments();
 		}
 		return new CommentsPage(this, comments);
 	}

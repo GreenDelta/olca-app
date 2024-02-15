@@ -19,23 +19,17 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.Daos;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.MountAction;
 import org.openlca.core.library.Mounter;
 import org.openlca.core.library.PreMountCheck;
 import org.openlca.core.library.PreMountState;
-import org.openlca.core.model.ModelType;
-import org.openlca.git.util.TypedRefIdMap;
-import org.openlca.util.Categories;
-import org.openlca.util.Strings;
 
 public class MountLibraryDialog extends FormDialog {
 
@@ -84,44 +78,17 @@ public class MountLibraryDialog extends FormDialog {
 			}
 			return;
 		}
-		var previousTags = getCurrentTags();
 		var actions = dialog.collectActions();
 		App.runWithProgress("Add library " + library.name() + " ...",
 				() -> Mounter.of(Database.get(), library)
 						.apply(actions)
 						.run(),
 				() -> {
-					updateGitIndex(previousTags);
 					Navigator.refresh();
 					if (callback != null) {
 						callback.accept(actions.keySet());
 					}
 				});
-	}
-
-	private static TypedRefIdMap<String> getCurrentTags() {
-		var tags = new TypedRefIdMap<String>();
-		for (var type : ModelType.values()) {
-			Database.get().getDescriptors(type.getModelClass()).forEach(d -> {
-				if (!Strings.nullOrEmpty(d.library)) {
-					tags.put(type, d.refId, d.library);
-				}
-			});
-		}
-		return tags;
-	}
-
-	private static void updateGitIndex(TypedRefIdMap<String> previousTags) {
-		if (!Repository.isConnected())
-			return;
-		var pathBuilder = Categories.pathsOf(Database.get());
-		for (var type : ModelType.values()) {
-			Daos.root(Database.get(), type).getDescriptors().forEach(d -> {
-				if (!Strings.nullOrEmpty(d.library) && !previousTags.contains(type, d.refId)) {
-					Repository.get().gitIndex.invalidate(pathBuilder, d);
-				}
-			});
-		}
 	}
 
 	private MountLibraryDialog(Library library, PreMountCheck.Result checkResult) {

@@ -35,18 +35,18 @@ public class FetchAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return Repository.get().client != null;
+		return Repository.CURRENT.client != null;
 	}
 	
 	@Override
 	public void run() {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		try {
 			var credentials = AuthenticationDialog.promptCredentials(repo);
 			if (credentials == null)
 				return;
 			var newCommits = Actions.run(credentials,
-					GitFetch.to(repo.git));
+					GitFetch.to(repo));
 			if (newCommits == null)
 				return;
 			if (newCommits.isEmpty()) {

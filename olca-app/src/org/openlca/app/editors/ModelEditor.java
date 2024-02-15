@@ -130,9 +130,9 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 	private void loadComments(ModelType type, String refId) {
 		if (!App.isCommentingEnabled()
 				|| !Repository.isConnected()
-				|| !Repository.get().isCollaborationServer())
+				|| !Repository.CURRENT.isCollaborationServer())
 			return;
-		comments = Repository.get().client.getComments(type, refId);
+		comments = Repository.CURRENT.client.getComments(type, refId);
 	}
 
 	@Override

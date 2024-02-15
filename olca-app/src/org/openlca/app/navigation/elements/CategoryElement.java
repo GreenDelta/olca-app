@@ -83,6 +83,15 @@ public class CategoryElement extends NavigationElement<Category> {
 
 	/**
 	 * Returns {@code true} if the category of this element or a child category
+	 * of it contain model elements only from the given library.
+	 */
+	public boolean hasOnlyLibraryContent(String library) {
+		var test = DatabaseElement.categoryTesterOf(this);
+		return test != null && test.hasOnlyLibraryContent(getContent(), library);
+	}
+
+	/**
+	 * Returns {@code true} if the category of this element or a child category
 	 * of it contain model elements that do not belong to a library.
 	 */
 	public boolean hasNonLibraryContent() {
