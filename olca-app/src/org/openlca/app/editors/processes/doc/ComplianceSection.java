@@ -1,5 +1,8 @@
 package org.openlca.app.editors.processes.doc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -9,15 +12,16 @@ import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.doc.ComplianceDeclaration;
-
-import java.util.List;
+import org.openlca.core.model.doc.ProcessDoc;
+import org.openlca.util.Strings;
+import org.slf4j.LoggerFactory;
 
 class ComplianceSection {
 
 	private final ProcessEditor editor;
+	private final List<Sec> secs = new ArrayList<>();
 
 	private Composite parent;
 	private FormToolkit tk;
@@ -40,8 +44,9 @@ class ComplianceSection {
 		this.form = form;
 		var section = UI.section(body, tk, "Compliance declarations");
 		parent = UI.sectionClient(section, tk, 1);
-		for (var dec : declarations()) {
-			new Sec(dec);
+		var decs = declarations();
+		for (int pos = 0; pos < decs.size(); pos++) {
+			secs.add(new Sec(pos, decs.get(pos)));
 		}
 		if (editor.isEditable()) {
 			var add = Actions.onAdd(this::addDeclaration);
@@ -51,19 +56,23 @@ class ComplianceSection {
 	}
 
 	private void addDeclaration() {
+		var decs = declarations();
+		var pos = decs.size();
 		var dec = new ComplianceDeclaration();
-		declarations().add(dec);
-		new Sec(dec);
+		decs.add(dec);
+		secs.add(new Sec(pos, dec));
 		form.reflow(true);
 		editor.setDirty();
 	}
 
 	private class Sec {
 
+		private int pos;
 		private ComplianceDeclaration _dec;
 		private final Section section;
 
-		Sec(ComplianceDeclaration dec) {
+		Sec(int pos, ComplianceDeclaration dec) {
+			this.pos = pos;
 			this._dec = dec;
 			section = UI.section(parent, tk, header());
 			var root = UI.sectionClient(section, tk, 1);
@@ -76,17 +85,28 @@ class ComplianceSection {
 		}
 
 		private void delete() {
-			var dec = sync();
-			declarations().remove(dec);
+			declarations().remove(pos);
+			secs.remove(pos);
+			for (var sec : secs) {
+				if (sec.pos > pos) {
+					sec.pos--;
+					sec.section.setText(sec.header());
+				}
+			}
 			section.dispose();
 			form.reflow(true);
 			editor.setDirty();
 		}
 
 		private String header() {
-			return _dec.system != null
-					? Labels.name(_dec.system)
-					: "Unknown compliance system";
+			var h = "Compliance system #" + (pos + 1);
+			if (_dec.system != null) {
+				var name = Labels.name(_dec.system);
+				if (Strings.notEmpty(name)) {
+					h += " - " + name;
+				}
+			}
+			return h;
 		}
 
 		private void renderTop(Composite root) {
@@ -122,12 +142,13 @@ class ComplianceSection {
 		 * update in the mean-time.
 		 */
 		private ComplianceDeclaration sync() {
-			for (var d : declarations()) {
-				if (d == _dec || (d.id > 0 && d.id == _dec.id)) {
-					_dec = d;
-					return _dec;
-				}
+			var decs = declarations();
+			if (pos < decs.size()) {
+				_dec = decs.get(pos);
+				return _dec;
 			}
+			LoggerFactory.getLogger(getClass())
+				.error("could not sync declaration at pos={}", pos);
 			return _dec;
 		}
 	}
