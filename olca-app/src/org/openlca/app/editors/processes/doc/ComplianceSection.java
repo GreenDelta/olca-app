@@ -126,12 +126,12 @@ class ComplianceSection {
 					.renderOn(comp, tk);
 
 			var details = UI.labeledMultiText(comp, tk, "Comment", 40);
-			if (_dec.details != null) {
-				details.setText(_dec.details);
+			if (_dec.comment != null) {
+				details.setText(_dec.comment);
 			}
 			details.setEditable(editor.isEditable());
 			details.addModifyListener($ -> {
-				sync().details = details.getText();
+				sync().comment = details.getText();
 				editor.setDirty();
 			});
 		}
