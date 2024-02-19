@@ -84,7 +84,7 @@ class ModelUtil {
 				"outputResults.flow.flowType", "inputResults.flow.refUnit", "outputResults.flow.refUnit",
 				"allocationFactors.product", "allocationFactors.exchange", "variants.name", "indicators.name");
 		var hiddenRefs = Arrays.asList("processLinks", "category", "refProcess", "refExchange",
-				"activityQuantity", "targetFlowProperty", "impactCategories");
+				"activityQuantity", "targetFlowProperty", "impactCategories", "targetUnit");
 		if (hiddenProps.contains(property) || hiddenPaths.contains(path) || hiddenRefs.contains(parentPath))
 			return false;
 		if (parentPath.contains(".uncertainty") || parentPath.startsWith("uncertainty")
