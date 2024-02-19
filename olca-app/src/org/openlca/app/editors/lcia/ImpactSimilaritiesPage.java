@@ -68,14 +68,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 		});
 	}
 
-	private static class Item {
-		final ImpactDescriptor impact;
-		final double similarity;
-
-		Item(ImpactDescriptor impact, double similarity) {
-			this.impact = impact;
-			this.similarity = similarity;
-		}
+	private record Item(ImpactDescriptor impact, double similarity) {
 
 		static List<Item> listOf(ImpactCategory impact) {
 			var db = Database.get();
@@ -166,7 +159,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 				return c != 0
 						? c
 						: Strings.compare(
-								Labels.name(i1.impact), Labels.name(i2.impact));
+						Labels.name(i1.impact), Labels.name(i2.impact));
 			});
 
 			return items;
@@ -186,9 +179,8 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof Item))
+			if (!(obj instanceof Item item))
 				return null;
-			var item = (Item) obj;
 			if (col == 0)
 				return Images.get(item.impact);
 			return col != 1
@@ -198,9 +190,8 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Item))
+			if (!(obj instanceof Item item))
 				return null;
-			var item = (Item) obj;
 			if (col == 0)
 				return Labels.name(item.impact);
 			return col != 1
