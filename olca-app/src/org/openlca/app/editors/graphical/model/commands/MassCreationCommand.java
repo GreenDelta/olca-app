@@ -55,10 +55,12 @@ public class MassCreationCommand extends Command {
 
 	@Override
 	public void execute() {
-		for (RootDescriptor process : toCreate)
+		for (RootDescriptor process : toCreate) {
 			addNode(process);
-		for (ProcessLink link : newLinks)
+		}
+		for (ProcessLink link : newLinks) {
 			addLink(link);
+		}
 
 		for (Node node : graph.getNodes()) {
 			var bounds = new Rectangle(

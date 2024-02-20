@@ -76,7 +76,7 @@ abstract public class Component extends Element implements
 
 	/**
 	 * Add a child to the children list without firing a property change.
-	 * Should be use with caution as it won't repaint the figures.
+	 * Should be used with caution as it won't repaint the figures.
 	 */
 	public void addChildQuietly(Component child) {
 		children.add(child);
@@ -117,7 +117,7 @@ abstract public class Component extends Element implements
 
 	/**
 	 * Remove a child from this without firing the property change.
-	 * Should be use with caution as it won't repaint the figures.
+	 * Should be used with caution as it won't repaint the figures.
 	 *
 	 * @param child
 	 *            a non-null component instance;

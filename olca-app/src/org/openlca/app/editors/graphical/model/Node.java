@@ -207,11 +207,18 @@ public class Node extends MinMaxComponent {
 	}
 
 	public boolean isExpanded(Side side) {
+		if (side == Side.BOTH)
+			return false;
 		var bitPosition = side == Side.INPUT ? 1 : 2;
 		return ((isExpanded >> bitPosition) & 1) == 1;
 	}
 
 	public void setExpanded(Side side, boolean value) {
+		if (side == Side.BOTH) {
+			setExpanded(Side.INPUT, value);
+			setExpanded(Side.OUTPUT, value);
+		}
+
 		var oldIsExpanded = isExpanded;
 		var bitPosition = side == Side.INPUT ? 1 : 2;
 		if (value)
@@ -228,6 +235,11 @@ public class Node extends MinMaxComponent {
 	 * updates itself its status when it is not known out of the box.
 	 */
 	public void updateIsExpanded(Side side) {
+		if (side == Side.BOTH) {
+			updateIsExpanded(Side.INPUT);
+			updateIsExpanded(Side.OUTPUT);
+		}
+
 		var sourceNodeIds = getAllTargetConnections().stream()
 				.map(GraphLink.class::cast)
 				.map(c -> c.getSourceNode().descriptor.id)
@@ -305,20 +317,42 @@ public class Node extends MinMaxComponent {
 	}
 
 	public void setButtonStatus() {
-		for (var side : Side.values()) {
-			if (side == Side.INPUT ? !hasLinkedInput() : !hasLinkedOutput())
-				buttonStatus.put(side, false);
-			else if (!isExpanded(side))
-				buttonStatus.put(side, true);
-			else if (this.equals(getGraph().getReferenceNode()))
-				buttonStatus.put(side, true);
-			else {
-				buttonStatus.put(side, hasConnectionToCollapse(side));
-			}
+		setButtonStatus(Side.INPUT);
+		setButtonStatus(Side.OUTPUT);
+	}
+
+	/**
+	 * Set the button status of the corresponding side.
+	 * It does nothing when side is Side.BOTH.
+	 */
+	private void setButtonStatus(Side side) {
+		if (side == Side.BOTH) {
+			return;
+		}
+
+		if (side == Side.INPUT ? !hasLinkedInput() : !hasLinkedOutput()) {
+			buttonStatus.put(side, false);
+		}
+		else if (!isExpanded(side)) {
+			buttonStatus.put(side, true);
+		}
+		else if (this.equals(getGraph().getReferenceNode())) {
+			buttonStatus.put(side, true);
+		}
+		else {
+			buttonStatus.put(side, hasConnectionToCollapse(side));
 		}
 	}
 
+	/**
+	 * Returns the status for the corresponding button.
+	 * Returns false if the side is Side.BOTH.
+	 */
 	public boolean isButtonEnabled(Side side) {
+		if (side == Side.BOTH) {
+			return false;
+		}
+
 		if (buttonStatus.get(side) == null)
 			setButtonStatus();
 		return buttonStatus.get(side);
@@ -329,8 +363,8 @@ public class Node extends MinMaxComponent {
 	 * (OUTPUT side) to collapse.
 	 * Return true if the Node is the reference and has any supplier (resp.
 	 * provider).
-	 * The method checks if any of the suppliers (resp. providers) of the Node is
-	 * not chaining to the reference Node. In other words, if it exists a supplier
+	 * The method checks if any of the suppliers (resp. providers) of the Node are
+	 * not chained to the reference Node. In other words, if it exists a supplier
 	 * (resp. provider) such that there is no path connecting it to the reference
 	 * Node (without traversing this Node), then this Node can be collapsed on
 	 * this Side.
