@@ -56,7 +56,7 @@ class ConflictResolutionMap implements ConflictResolver {
 			return null;
 		return resolution.type;
 	}
-	
+
 	@Override
 	public ConflictResolution resolveConflict(ModelRef ref, JsonObject remote) {
 		return resolutions.get(ref);
@@ -212,9 +212,13 @@ class ConflictResolutionMap implements ConflictResolver {
 		var remaining = new ArrayList<TriDiff>();
 		var descriptors = new TypedRefIdMap<RootDescriptor>();
 		for (var type : ModelType.values()) {
+			if (type == ModelType.CATEGORY)
+				continue;
 			Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
 		}
 		conflicts.forEach(conflict -> {
+			if (conflict.isCategory)
+				return;
 			if (equalsDescriptor(conflict, descriptors.get(conflict))) {
 				equal.add(conflict);
 			} else {
@@ -280,7 +284,7 @@ class ConflictResolutionMap implements ConflictResolver {
 		private static Conflicts none() {
 			return new Conflicts(new ArrayList<>(), new ArrayList<>());
 		}
-		
+
 	}
 
 }
