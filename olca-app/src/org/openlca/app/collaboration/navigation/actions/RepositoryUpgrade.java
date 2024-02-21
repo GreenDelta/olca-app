@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -147,7 +146,7 @@ public class RepositoryUpgrade {
 					"Could not connect, this might be an older version of the collaboration server? Please specify the url to the updated repository:",
 					url);
 			if (url == null)
-				return null;				
+				return null;
 			return initGit(url, user);
 		} catch (GitAPIException | URISyntaxException e) {
 			log.warn("Error initializing git repo from " + url, e);
@@ -185,11 +184,10 @@ public class RepositoryUpgrade {
 	private boolean stashDifferences(Repository repo, Commit commit, PersonIdent user,
 			TypedRefIdMap<RootDescriptor> descriptors)
 			throws IOException, InvocationTargetException, InterruptedException, GitAPIException {
-		var differences = repo.diffs.find().commit(commit)
-				.withDatabase().stream()
-				.filter(diff -> !equalsDescriptor(diff, descriptors.get(diff)))
-				.map(diff -> new Change(diff))
-				.collect(Collectors.toList());
+		var differences = Change.of(
+				repo.diffs.find().commit(commit).withDatabase().stream()
+						.filter(diff -> !equalsDescriptor(diff, descriptors.get(diff)))
+						.toList());
 		if (differences.isEmpty())
 			return false;
 		Actions.run(GitStashCreate.on(repo)

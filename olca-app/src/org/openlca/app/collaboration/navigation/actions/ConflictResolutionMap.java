@@ -18,8 +18,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Question;
-import org.openlca.core.database.Daos;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver;
@@ -32,6 +30,7 @@ import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.jsonld.Json;
+import org.openlca.util.Strings;
 
 import com.google.common.base.Predicates;
 import com.google.gson.JsonObject;
@@ -152,7 +151,8 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	private static TriDiff findConflict(Diff element, List<Diff> others) {
 		return others.stream()
-				.filter(e -> e.path.equals(element.path))
+				.filter(e -> e.path.equals(element.path)
+						|| (e.type == element.type && Strings.nullOrEqual(e.refId, element.refId)))
 				.findFirst()
 				.map(e -> new TriDiff(element, e))
 				.orElse(null);
@@ -210,16 +210,10 @@ class ConflictResolutionMap implements ConflictResolver {
 	private static Conflicts check(List<TriDiff> conflicts) {
 		var equal = new ArrayList<TriDiff>();
 		var remaining = new ArrayList<TriDiff>();
-		var descriptors = new TypedRefIdMap<RootDescriptor>();
-		for (var type : ModelType.values()) {
-			if (type == ModelType.CATEGORY)
-				continue;
-			Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
-		}
 		conflicts.forEach(conflict -> {
 			if (conflict.isCategory)
 				return;
-			if (equalsDescriptor(conflict, descriptors.get(conflict))) {
+			if (equalsDescriptor(conflict, Repository.CURRENT.descriptors.get(conflict))) {
 				equal.add(conflict);
 			} else {
 				remaining.add(conflict);
@@ -251,7 +245,11 @@ class ConflictResolutionMap implements ConflictResolver {
 			return false;
 		var version = Version.fromString(string(remoteModel, "version")).getValue();
 		var lastChange = date(remoteModel, "lastChange");
-		return version == d.version && lastChange == d.lastChange;
+		var category = Repository.CURRENT.descriptors.categoryPaths.pathOf(d.category);
+		if (category == null) {
+			category = "";
+		}
+		return version == d.version && lastChange == d.lastChange && category.equals(diff.category);
 	}
 
 	private static String string(Map<String, Object> map, String field) {

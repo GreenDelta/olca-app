@@ -12,15 +12,19 @@ import org.openlca.git.util.GitUtil;
  */
 public class TriDiff extends Reference {
 
+	public final String leftOldPath;
 	public final DiffType leftDiffType;
 	public final ObjectId leftNewObjectId;
+	public final String rightOldPath;
 	public final DiffType rightDiffType;
 	public final ObjectId rightNewObjectId;
 
 	public TriDiff(Diff left, Diff right) {
 		super(getPath(left, right), any(left, right).oldCommitId, any(left, right).oldObjectId);
+		this.leftOldPath = left != null ? left.oldPath : null;
 		this.leftDiffType = left != null ? left.diffType : null;
 		this.leftNewObjectId = left != null ? left.newObjectId : ObjectId.zeroId();
+		this.rightOldPath = right != null ? right.oldPath : null;
 		this.rightDiffType = right != null ? right.diffType : null;
 		this.rightNewObjectId = right != null ? right.newObjectId : ObjectId.zeroId();
 	}
@@ -58,7 +62,7 @@ public class TriDiff extends Reference {
 		if (leftDiffType == null || rightDiffType == null)
 			return false;
 		switch (leftDiffType) {
-			case ADDED, MODIFIED:
+			case ADDED, MODIFIED, MOVED:
 				return !hasEqualObjectId();
 			case DELETED:
 				return rightDiffType != DiffType.DELETED;

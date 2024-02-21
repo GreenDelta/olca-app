@@ -1,8 +1,8 @@
 package org.openlca.app.collaboration.navigation.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.RestrictionDialog;
@@ -18,6 +18,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
 import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
+import org.openlca.git.model.ModelRef;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.git.util.TypedRefIdSet;
 import org.openlca.util.Strings;
@@ -40,10 +41,25 @@ class Datasets {
 			return null;
 		if (!checkRestrictions(withReferences))
 			return null;
-		var result = withReferences.stream()
-				.map(DiffNode::contentAsTriDiff)
-				.map(d -> new Change(d.leftDiffType, d))
-				.collect(Collectors.toList());
+		var result = new ArrayList<Change>();
+		for (var node : withReferences) {
+			var diff = node.contentAsTriDiff();
+			switch (diff.leftDiffType) {
+				case ADDED:
+					result.add(Change.add(diff));
+					break;
+				case MODIFIED:
+					result.add(Change.modify(diff));
+					break;
+				case DELETED:
+					result.add(Change.delete(diff));
+					break;
+				case MOVED: {
+					result.addAll(Change.move(new ModelRef(diff.leftOldPath), new ModelRef(diff.path)));
+					break;
+				}
+			}
+		}
 		return new DialogResult(dialogResult, dialog.getMessage(), result);
 	}
 

@@ -252,7 +252,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		private Overlay getOverlayLocal(DiffType type) {
 			return switch (type) {
 				case ADDED -> Overlay.ADD_TO_LOCAL;
-				case MODIFIED -> Overlay.MODIFY_IN_LOCAL;
+				case MODIFIED, MOVED -> Overlay.MODIFY_IN_LOCAL;
 				case DELETED -> Overlay.DELETE_FROM_LOCAL;
 			};
 		}
@@ -260,7 +260,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		private Overlay getOverlayRemote(DiffType type) {
 			return switch (type) {
 				case ADDED -> Overlay.ADD_TO_REMOTE;
-				case MODIFIED -> Overlay.MODIFY_IN_REMOTE;
+				case MODIFIED, MOVED -> Overlay.MODIFY_IN_REMOTE;
 				case DELETED -> Overlay.DELETE_FROM_REMOTE;
 			};
 		}

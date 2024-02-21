@@ -53,13 +53,12 @@ public class DiscardAction extends Action implements INavigationAction {
 		var repo = Repository.CURRENT;
 		try {
 			var selected = new ArrayList<Change>();
-			PathFilters.of(selection).forEach(filter -> {
-				repo.diffs.find()
-						.filter(filter)
-						.withDatabase()
-						.stream().map(Change::new)
-						.forEach(selected::add);
-			});
+			PathFilters.of(selection).stream()
+					.map(filter -> repo.diffs.find()
+							.filter(filter)
+							.withDatabase())
+					.map(Change::of)
+					.forEach(selected::addAll);
 			Actions.run(GitStashCreate.on(repo)
 					.changes(selected)
 					.discard());
