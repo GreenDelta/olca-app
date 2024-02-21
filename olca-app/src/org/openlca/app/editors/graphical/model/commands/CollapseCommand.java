@@ -28,8 +28,7 @@ public class CollapseCommand extends Command {
 	@Override
 	public boolean canExecute() {
 		return host.isExpanded(side)
-			&& (side != Side.BOTH)
-			&& host.hasConnectionToCollapse(side);
+			&& (side != Side.BOTH);
 	}
 
 	@Override
