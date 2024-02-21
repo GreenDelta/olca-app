@@ -98,8 +98,8 @@ public class RepositoryLabel {
 		if (elem.is(ElementType.MODEL)) {
 			if (isNew(elem))
 				return false;
-			 var d = (RootDescriptor) elem.content();
-			 return !Repository.CURRENT.index.isSameVersion(getPath(d), d);
+			var d = (RootDescriptor) elem.content();
+			return !Repository.CURRENT.index.isSameVersion(getPath(d), d);
 		}
 		if (elem.is(ElementType.DATABASE) && librariesChanged())
 			return true;
@@ -116,8 +116,9 @@ public class RepositoryLabel {
 			return false;
 		if (elem.is(ElementType.LIBRARY) && isNewLibrary((String) elem.content()))
 			return true;
-		if (elem.is(ElementType.MODEL, ElementType.CATEGORY)
-				&& !Repository.CURRENT.index.contains(getPath(elem.content())))
+		if (elem.is(ElementType.CATEGORY) && !Repository.CURRENT.index.contains(getPath(elem.content())))
+			return true;
+		if (elem.is(ElementType.MODEL) && Repository.CURRENT.index.getPath(elem.getTypedRefId()) == null)
 			return true;
 		return false;
 	}
