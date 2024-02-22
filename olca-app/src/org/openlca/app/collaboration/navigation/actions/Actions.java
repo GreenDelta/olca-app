@@ -236,6 +236,7 @@ class Actions {
 				@Override
 				public void beginTask(String name, int totalWork) {
 					monitor.beginTask(name, totalWork);
+					monitor.subTask("");
 				}
 
 				@Override
