@@ -82,7 +82,7 @@ public class HistoryView extends ViewPart {
 		};
 		UI.gridData(referenceViewer.getViewer().getTable(), true, true);
 		referenceViewer.addSelectionChangedListener((diff) -> {
-			if (diff == null || !Repository.isConnected()) {
+			if (diff == null || !Repository.isConnected() || diff.isCategory) {
 				diffViewer.setInput(null);
 				return;
 			}
