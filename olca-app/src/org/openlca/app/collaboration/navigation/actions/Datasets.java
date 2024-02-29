@@ -2,13 +2,9 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.openlca.app.collaboration.dialogs.CommitDialog;
-import org.openlca.app.collaboration.dialogs.RestrictionDialog;
-import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.PathFilters;
-import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
@@ -38,8 +34,6 @@ class Datasets {
 				? ReferenceCheck.forStash(Database.get(), diffs, dialog.getSelected())
 				: ReferenceCheck.forRemote(Database.get(), diffs, dialog.getSelected());
 		if (withReferences == null)
-			return null;
-		if (!checkRestrictions(withReferences))
 			return null;
 		var result = new ArrayList<Change>();
 		for (var node : withReferences) {
@@ -105,19 +99,6 @@ class Datasets {
 			if (path.startsWith(p))
 				return true;
 		return false;
-	}
-
-	private static boolean checkRestrictions(Set<DiffNode> refs) {
-		if (!CollaborationPreference.checkRestrictions())
-			return true;
-		if (!Repository.CURRENT.isCollaborationServer())
-			return true;
-		var restricted = Repository.CURRENT.client.checkRestrictions(
-				refs.stream().map(DiffNode::contentAsTriDiff).toList());
-		if (restricted.isEmpty())
-			return true;
-		var code = new RestrictionDialog(restricted).open();
-		return code == RestrictionDialog.OK;
 	}
 
 	static record DialogResult(int action, String message, List<Change> datasets) {
