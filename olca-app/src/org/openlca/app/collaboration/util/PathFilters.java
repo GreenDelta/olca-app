@@ -1,7 +1,10 @@
 package org.openlca.app.collaboration.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.openlca.app.navigation.elements.CategoryElement;
@@ -19,21 +22,22 @@ public class PathFilters {
 		if (filterElements == null || filterElements.isEmpty())
 			return new ArrayList<>();
 		var all = filterElements.stream()
-				.filter(e -> !(e instanceof GroupElement))
+				.filter(Predicate.not(GroupElement.class::isInstance))
 				.collect(Collectors.toList());
 		filterElements.stream()
-				.filter(e -> e instanceof GroupElement)
-				.forEach(e -> all.addAll(e.getChildren()));
+				.filter(GroupElement.class::isInstance)
+				.map(INavigationElement::getChildren)
+				.forEach(all::addAll);
 		return onlyRetainTopLevel(all.stream()
 				.map(PathFilters::getPath)
-				.filter(Strings::notEmpty)
+				.filter(Objects::nonNull)
 				.distinct()
 				.toList());
 	}
 
 	private static String getPath(INavigationElement<?> element) {
 		if (element instanceof DatabaseElement)
-			return null;
+			return "";
 		if (element instanceof ModelTypeElement e)
 			return e.getContent().name();
 		if (element instanceof CategoryElement e) {
@@ -61,9 +65,9 @@ public class PathFilters {
 	 * ]
 	 */
 	private static List<String> onlyRetainTopLevel(List<String> paths) {
-		var conjuncted = new ArrayList<String>();
 		if (paths.contains(""))
-			return conjuncted;
+			return Arrays.asList("");
+		var conjuncted = new ArrayList<String>();
 		paths.stream()
 				.sorted((p1, p2) -> Integer.compare(count(p1, '/'), count(p2, '/')))
 				.forEach(path -> {
