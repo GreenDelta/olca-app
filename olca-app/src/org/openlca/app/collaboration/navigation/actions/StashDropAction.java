@@ -29,7 +29,7 @@ public class StashDropAction extends Action implements INavigationAction {
 	public boolean isEnabled() {
 		var repo = Repository.CURRENT;
 		try {
-			return Actions.getStashCommit(repo) != null;
+			return repo.commits.stash() != null;
 		} catch (GitAPIException e) {
 			return false;
 		}

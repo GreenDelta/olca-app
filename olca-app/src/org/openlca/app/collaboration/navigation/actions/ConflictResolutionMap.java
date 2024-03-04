@@ -170,7 +170,7 @@ class ConflictResolutionMap implements ConflictResolver {
 	private static boolean stashChanges(boolean discard)
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
 		var repo = Repository.CURRENT;
-		if (!discard && Actions.getStashCommit(repo) != null) {
+		if (!discard && repo.commits.stash() != null) {
 			var answers = Arrays.asList("Cancel", "Discard existing stash");
 			var result = Question.ask("Stash workspace",
 					"You already have stashed changes, how do you want to proceed?",

@@ -34,7 +34,7 @@ public class StashCreateAction extends Action implements INavigationAction {
 	public boolean isEnabled() {
 		try {
 			var repo = Repository.CURRENT;
-			if (Actions.getStashCommit(repo) != null)
+			if (repo.commits.stash() != null)
 				return false;
 			return NavCache.get().hasChanges();
 		} catch (GitAPIException e) {
