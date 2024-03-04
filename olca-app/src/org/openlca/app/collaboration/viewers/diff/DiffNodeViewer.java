@@ -28,6 +28,7 @@ import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Entry;
+import org.openlca.git.util.ModelRefMap;
 import org.openlca.git.util.TypedRefIdMap;
 
 import com.google.gson.JsonObject;
@@ -38,7 +39,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	private final boolean canMerge;
 	private final Map<String, Entry> entryMap;
 	private Runnable onMerge;
-	private TypedRefIdMap<ConflictResolution> resolvedConflicts = new TypedRefIdMap<>();
+	private ModelRefMap<ConflictResolution> resolvedConflicts = new ModelRefMap<>();
 
 	DiffNodeViewer(Composite parent, boolean canMerge) {
 		super(parent);

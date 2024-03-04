@@ -17,10 +17,12 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Input;
 import org.openlca.app.util.Question;
+import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.actions.GitFetch;
@@ -33,7 +35,7 @@ import org.openlca.git.model.Diff;
 import org.openlca.git.model.ModelRef;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.TypedRefIdMap;
+import org.openlca.git.util.ModelRefMap;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Dirs;
 import org.openlca.util.Strings;
@@ -162,9 +164,14 @@ public class RepositoryUpgrade {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return false;
-			var descriptors = new TypedRefIdMap<RootDescriptor>();
+			var descriptors = new ModelRefMap<RootDescriptor>();
 			for (var type : ModelType.values()) {
-				Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
+				if (type == ModelType.CATEGORY) {
+					new CategoryDao(Database.get()).getAll().forEach(
+							c -> descriptors.put(ModelType.CATEGORY, ModelType.CATEGORY.name() + "/" + c.toPath(), Descriptor.of(c)));
+				} else {
+					Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
+				}
 			}
 			var commit = repo.commits.find().refs(Constants.REMOTE_REF).latest();
 			boolean wasStashed = stashDifferences(repo, commit, credentials.ident, descriptors);
@@ -182,7 +189,7 @@ public class RepositoryUpgrade {
 	}
 
 	private boolean stashDifferences(Repository repo, Commit commit, PersonIdent user,
-			TypedRefIdMap<RootDescriptor> descriptors)
+			ModelRefMap<RootDescriptor> descriptors)
 			throws IOException, InvocationTargetException, InterruptedException, GitAPIException {
 		var differences = Change.of(
 				repo.diffs.find().commit(commit).withDatabase().stream()
@@ -202,6 +209,8 @@ public class RepositoryUpgrade {
 			return false;
 		if (ObjectId.zeroId().equals(diff.oldObjectId))
 			return false;
+		if (diff.isCategory)
+			return true;
 		var ref = new Reference(diff.path, diff.oldCommitId, diff.oldObjectId);
 		var remoteModel = Repository.CURRENT.datasets.parse(ref, "lastChange", "version");
 		if (remoteModel == null)
@@ -237,9 +246,9 @@ public class RepositoryUpgrade {
 
 	private class EqualResolver implements ConflictResolver {
 
-		private final TypedRefIdMap<RootDescriptor> descriptors;
+		private final ModelRefMap<RootDescriptor> descriptors;
 
-		private EqualResolver(TypedRefIdMap<RootDescriptor> descriptors) {
+		private EqualResolver(ModelRefMap<RootDescriptor> descriptors) {
 			this.descriptors = descriptors;
 		}
 

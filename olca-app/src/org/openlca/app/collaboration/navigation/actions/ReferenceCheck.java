@@ -30,14 +30,17 @@ class ReferenceCheck {
 	private final ModelReferences references;
 	private final Set<DiffNode> input;
 	private final TypedRefIdMap<DiffNode> selection;
-	private final TypedRefIdSet visited = new TypedRefIdSet();
+	private final TypedRefIdSet visited;
 
 	private ReferenceCheck(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		this.database = database;
-		this.diffs = TypedRefIdMap.of(all);
+		this.diffs = new TypedRefIdMap<>();
+		all.stream().filter(diff -> !diff.isCategory)
+				.forEach(diff -> this.diffs.put(diff, diff));
 		this.input = input;
 		this.selection = new TypedRefIdMap<>();
 		input.forEach(node -> selection.put(node.contentAsTriDiff(), node));
+		this.visited = new TypedRefIdSet();
 		this.references = App.exec("Collecting references", () -> ModelReferences.scan(Database.get()));
 	}
 
