@@ -199,7 +199,7 @@ public class RepositoryUpgrade {
 			return false;
 		Actions.run(GitStashCreate.on(repo)
 				.as(user)
-				.reference(commit)
+				.parent(commit)
 				.changes(differences));
 		return true;
 	}
