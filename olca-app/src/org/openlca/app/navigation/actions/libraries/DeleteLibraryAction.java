@@ -1,8 +1,11 @@
 package org.openlca.app.navigation.actions.libraries;
 
+import static org.openlca.app.licence.LibrarySession.removeSession;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -19,9 +22,8 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.Library;
+import org.openlca.core.library.Unmounter;
 import org.openlca.util.Dirs;
-
-import static org.openlca.app.licence.LibrarySession.removeSession;
 
 public class DeleteLibraryAction extends Action implements INavigationAction {
 
@@ -41,7 +43,9 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Remove library";
+		if (element != null && element.getDatabase().isEmpty())
+			return "Remove library";
+		return "Remove library (experimental)";
 	}
 
 	@Override
@@ -60,12 +64,20 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		// check if this is a mounted library
 		var db = element.getDatabase();
 		if (db.isPresent()) {
-			// TODO: unmount a library from a database
-			MsgBox.info("Not yet supported",
-					"Removing a library from a database is not yet supported.");
-			return;
+			if (Question.ask("Removing library warning",
+					"This action might break your database, if the database uses any dataset of present in the library. "
+							+ "It is recommended to run a database validation after removing a library, to ensure database integrity.\r\n\r\n"
+							+ "Do you want to continue")) {
+				App.runWithProgress("Removing library " + lib.name() + " ...",
+						() -> new Unmounter(db.get()).unmountUnsafe(lib.name()),
+						() -> Navigator.refresh());
+			}
+		} else {
+			delete(lib);
 		}
+	}
 
+	private void delete(Library lib) {
 		// ask and delete the library
 		boolean b = Question.ask("Delete library?",
 				"Do you really want to delete the library? " +
@@ -82,7 +94,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 			if (u.isError()) {
 				ErrorReporter.on(
 						"Failed to check usage of library '"
-								+ lib.name() + "'", u.error);
+								+ lib.name() + "'",
+						u.error);
 				return;
 			}
 			MsgBox.info("Cannot delete library",
@@ -126,9 +139,10 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 				return usage;
 
 			// then check in databases
-			return Database.getConfigurations()
-					.getAll()
-					.stream()
+			var configs = Database.getConfigurations();
+			return Stream.concat(
+					configs.getDerbyConfigs().stream(),
+					configs.getMySqlConfigs().stream())
 					.parallel()
 					.map(config -> Usage.of(config, lib))
 					.filter(Optional::isPresent)
@@ -174,4 +188,5 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 					: "library " + name;
 		}
 	}
+
 }

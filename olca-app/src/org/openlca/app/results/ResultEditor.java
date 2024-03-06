@@ -23,10 +23,12 @@ import org.openlca.app.results.slca.ui.SocialResultPage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MemoryError;
+import org.openlca.app.util.Numbers;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
+import org.openlca.util.Strings;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,10 +47,32 @@ public class ResultEditor extends FormEditor {
 	public static void open(ResultBundle bundle) {
 		if (bundle == null)
 			return;
-		var name = M.ResultsOf + ": " + Labels.name(bundle.setup().target());
+		var name = nameOf(bundle.setup());
 		var id = Cache.getAppCache().put(bundle);
 		var input = new SimpleEditorInput(id, name);
 		Editors.open(input, ResultEditor.ID);
+	}
+
+	private static String nameOf(CalculationSetup setup) {
+		var name = M.Result + ": " + Labels.name(setup.target())
+				+ "; " + Numbers.decimalFormat(setup.amount(), 2)
+				+ " " + Labels.name(setup.unit());
+		if (setup.impactMethod() != null) {
+			name += "; " + Labels.name(setup.impactMethod());
+		}
+		if (setup.allocation() != null) {
+			name += switch (setup.allocation()) {
+				case CAUSAL -> "; causal alloc.";
+				case ECONOMIC -> "; economic alloc.";
+				case PHYSICAL -> "; physical alloc.";
+				case USE_DEFAULT -> "; default alloc.";
+				default -> "";
+			};
+		}
+		if (Strings.notEmpty(setup.parameterSetName())) {
+			name += "; " + setup.parameterSetName();
+		}
+		return name;
 	}
 
 	@Override

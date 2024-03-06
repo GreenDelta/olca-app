@@ -27,7 +27,7 @@ class RefJson {
 			return null;
 		if (ref.objectId == null || ref.objectId.equals(ObjectId.zeroId()))
 			return getLocalJson(ref.type, ref.refId);
-		var json = gson.fromJson(Repository.get().datasets.get(ref), JsonObject.class);
+		var json = gson.fromJson(Repository.CURRENT.datasets.get(ref), JsonObject.class);
 		if (json == null)
 			return null;
 		split(json, ref.type);

@@ -18,8 +18,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Question;
-import org.openlca.core.database.Daos;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver;
@@ -30,9 +28,9 @@ import org.openlca.git.model.Diff;
 import org.openlca.git.model.ModelRef;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.Diffs;
 import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.jsonld.Json;
+import org.openlca.util.Strings;
 
 import com.google.common.base.Predicates;
 import com.google.gson.JsonObject;
@@ -57,7 +55,7 @@ class ConflictResolutionMap implements ConflictResolver {
 			return null;
 		return resolution.type;
 	}
-	
+
 	@Override
 	public ConflictResolution resolveConflict(ModelRef ref, JsonObject remote) {
 		return resolutions.get(ref);
@@ -75,7 +73,7 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	private static ConflictResult resolve(String ref, boolean stashCommit)
 			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		var commit = repo.commits.find().refs(ref).latest();
 		var commonParent = repo.localHistory.commonParentOf(ref);
 		var workspaceConflicts = workspaceDiffs(commit, commonParent);
@@ -111,24 +109,24 @@ class ConflictResolutionMap implements ConflictResolver {
 	}
 
 	private static Conflicts workspaceDiffs(Commit commit, Commit commonParent) throws IOException {
-		var repo = Repository.get();
-		var workspaceChanges = Diffs.of(repo.git).with(Database.get(), repo.gitIndex);
+		var repo = Repository.CURRENT;
+		var workspaceChanges = repo.diffs.find().withDatabase();
 		if (workspaceChanges.isEmpty())
 			return Conflicts.none();
-		var remoteChanges = Diffs.of(repo.git, commonParent).with(commit);
+		var remoteChanges = repo.diffs.find().commit(commonParent).with(commit);
 		var diffs = between(workspaceChanges, remoteChanges);
 		return check(diffs);
 	}
 
 	private static Conflicts localDiffs(Commit commit, Commit commonParent) throws IOException {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		var localCommit = repo.commits.get(repo.commits.resolve(Constants.LOCAL_BRANCH));
 		if (localCommit == null)
 			return Conflicts.none();
-		var localChanges = Diffs.of(repo.git, commonParent).with(localCommit);
+		var localChanges = repo.diffs.find().commit(commonParent).with(localCommit);
 		if (localChanges.isEmpty())
 			return Conflicts.none();
-		var remoteChanges = Diffs.of(repo.git, commonParent).with(commit);
+		var remoteChanges = repo.diffs.find().commit(commonParent).with(commit);
 		if (remoteChanges.isEmpty())
 			return Conflicts.none();
 		var diffs = between(localChanges, remoteChanges);
@@ -153,7 +151,8 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	private static TriDiff findConflict(Diff element, List<Diff> others) {
 		return others.stream()
-				.filter(e -> e.path.equals(element.path))
+				.filter(e -> e.path.equals(element.path)
+						|| (e.type == element.type && Strings.nullOrEqual(e.refId, element.refId)))
 				.findFirst()
 				.map(e -> new TriDiff(element, e))
 				.orElse(null);
@@ -170,19 +169,17 @@ class ConflictResolutionMap implements ConflictResolver {
 
 	private static boolean stashChanges(boolean discard)
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
-		var repo = Repository.get();
-		if (!discard && Actions.getStashCommit(repo.git) != null) {
+		var repo = Repository.CURRENT;
+		if (!discard && repo.commits.stash() != null) {
 			var answers = Arrays.asList("Cancel", "Discard existing stash");
 			var result = Question.ask("Stash workspace",
 					"You already have stashed changes, how do you want to proceed?",
 					answers.toArray(new String[answers.size()]));
 			if (result == 0)
 				return false;
-			GitStashDrop.from(repo.git).run();
+			GitStashDrop.from(repo).run();
 		}
-		var stashCreate = GitStashCreate.from(Database.get())
-				.to(repo.git)
-				.update(repo.gitIndex);
+		var stashCreate = GitStashCreate.on(repo);
 		if (discard) {
 			stashCreate = stashCreate.discard();
 		} else {
@@ -213,12 +210,10 @@ class ConflictResolutionMap implements ConflictResolver {
 	private static Conflicts check(List<TriDiff> conflicts) {
 		var equal = new ArrayList<TriDiff>();
 		var remaining = new ArrayList<TriDiff>();
-		var descriptors = new TypedRefIdMap<RootDescriptor>();
-		for (var type : ModelType.values()) {
-			Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
-		}
 		conflicts.forEach(conflict -> {
-			if (equalsDescriptor(conflict, descriptors.get(conflict))) {
+			if (conflict.isCategory)
+				return;
+			if (equalsDescriptor(conflict, Repository.CURRENT.descriptors.get(conflict))) {
 				equal.add(conflict);
 			} else {
 				remaining.add(conflict);
@@ -245,12 +240,16 @@ class ConflictResolutionMap implements ConflictResolver {
 		if (ObjectId.zeroId().equals(diff.rightNewObjectId))
 			return false;
 		var ref = new Reference(diff.path, diff.commitId, diff.rightNewObjectId);
-		var remoteModel = Repository.get().datasets.parse(ref, "lastChange", "version");
+		var remoteModel = Repository.CURRENT.datasets.parse(ref, "lastChange", "version");
 		if (remoteModel == null)
 			return false;
 		var version = Version.fromString(string(remoteModel, "version")).getValue();
 		var lastChange = date(remoteModel, "lastChange");
-		return version == d.version && lastChange == d.lastChange;
+		var category = Repository.CURRENT.descriptors.categoryPaths.pathOf(d.category);
+		if (category == null) {
+			category = "";
+		}
+		return version == d.version && lastChange == d.lastChange && category.equals(diff.category);
 	}
 
 	private static String string(Map<String, Object> map, String field) {
@@ -283,7 +282,7 @@ class ConflictResolutionMap implements ConflictResolver {
 		private static Conflicts none() {
 			return new Conflicts(new ArrayList<>(), new ArrayList<>());
 		}
-		
+
 	}
 
 }

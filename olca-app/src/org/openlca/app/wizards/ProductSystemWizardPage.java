@@ -61,7 +61,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		createProcessTree(comp);
 		createOptions(comp);
 		if (refProcess != null) {
-			nameText.setText(refProcess.name);
+			nameText.setText(Strings.orEmpty(Labels.name(refProcess)));
 			var d = Descriptor.of(refProcess);
 			var elem = Navigator.find(processTree, d);
 			if (elem != null) {
@@ -75,26 +75,35 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		processTree = NavigationTree.forSingleSelection(comp, ModelType.PROCESS);
 		processTree.addFilter(new EmptyCategoryFilter());
 		processTree.addFilter(new ModelTextFilter(filterText, processTree));
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		var gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 200;
 		processTree.getTree().setLayoutData(gd);
-		processTree.addSelectionChangedListener(this::processSelected);
+		processTree.addSelectionChangedListener(this::onProcessSelected);
 	}
 
-	private void processSelected(SelectionChangedEvent e) {
+	private void onProcessSelected(SelectionChangedEvent e) {
+
+		// the current name can be replaced if it is empty or if it is
+		// equal to the name of the previously selected process
+		var currentName = nameText.getText();
+		boolean replaceName = Strings.nullOrEmpty(currentName)
+				|| Strings.nullOrEqual(currentName, Labels.name(refProcess));
+
 		Object obj = Selections.firstOf(e);
-		if (!(obj instanceof ModelElement)) {
+		if (!(obj instanceof ModelElement elem)) {
 			refProcess = null;
+			if (replaceName) {
+				nameText.setText("");
+			}
 			checkInput();
 			return;
 		}
-		ModelElement elem = (ModelElement) obj;
+
 		try {
-			ProcessDao dao = new ProcessDao(Database.get());
+			var dao = new ProcessDao(Database.get());
 			refProcess = dao.getForId(elem.getContent().id);
-			if (Strings.nullOrEmpty(nameText.getText())) {
-				String name = Labels.name(refProcess);
-				nameText.setText(name != null ? name : "");
+			if (replaceName) {
+				nameText.setText(Strings.orEmpty(Labels.name(refProcess)));
 			}
 			checkInput();
 		} catch (Exception ex) {

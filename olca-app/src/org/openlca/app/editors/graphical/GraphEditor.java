@@ -284,7 +284,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 
 	/**
 	 * Save the dirty processes collected along the way and the product system.
-	 * Compare to other editor, the GraphEditor is not editing a single type of
+	 * Compare to another editor, the GraphEditor is not editing a single type of
 	 * entity.
 	 */
 	public void doSave() {

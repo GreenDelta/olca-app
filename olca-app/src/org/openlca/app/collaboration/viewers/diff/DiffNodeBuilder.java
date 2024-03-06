@@ -1,7 +1,7 @@
 package org.openlca.app.collaboration.viewers.diff;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.openlca.core.database.IDatabase;
@@ -10,8 +10,8 @@ import org.openlca.util.Strings;
 
 public class DiffNodeBuilder {
 
-	private final Map<String, DiffNode> nodes = new HashMap<>();
-	private final Map<String, TriDiff> diffs = new HashMap<>();
+	private final Map<String, DiffNode> nodes = new LinkedHashMap<>();
+	private final Map<String, TriDiff> diffs = new LinkedHashMap<>();
 	private final String database;
 
 	public DiffNodeBuilder(IDatabase database) {
@@ -23,7 +23,7 @@ public class DiffNodeBuilder {
 			return null;
 		var root = new DiffNode(null, database);
 		nodes.put(null, root);
-		for (TriDiff diff : this.diffs.values()) {
+		for (var diff : this.diffs.values()) {
 			build(diff);
 		}
 		return root;
@@ -45,14 +45,13 @@ public class DiffNodeBuilder {
 		createNode(diff);
 	}
 
-	private DiffNode createNode(TriDiff diff) {
-		var parent = !Strings.nullOrEmpty(diff.category)
+	private void createNode(TriDiff diff) {
+		var parent = !Strings.nullOrEmpty(diff.category) 
 				? getOrCreateCategoryNode(diff.type, diff.category)
 				: getOrCreateModelTypeNode(diff.type);
 		var node = new DiffNode(parent, diff);
 		parent.children.add(node);
 		nodes.put(getKey(diff), node);
-		return node;
 	}
 
 	private DiffNode getOrCreateCategoryNode(ModelType type, String category) {

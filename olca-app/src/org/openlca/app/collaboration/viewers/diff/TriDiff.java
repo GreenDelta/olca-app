@@ -4,6 +4,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
+import org.openlca.git.util.GitUtil;
 
 /**
  * Used to compare three states of the same ModelRef, e.g. HEAD state, workspace
@@ -11,19 +12,30 @@ import org.openlca.git.model.Reference;
  */
 public class TriDiff extends Reference {
 
+	public final String leftOldPath;
 	public final DiffType leftDiffType;
 	public final ObjectId leftNewObjectId;
+	public final String rightOldPath;
 	public final DiffType rightDiffType;
 	public final ObjectId rightNewObjectId;
 
 	public TriDiff(Diff left, Diff right) {
-		super(any(left, right).path, any(left, right).oldCommitId, any(left, right).oldObjectId);
+		super(getPath(left, right), any(left, right).oldCommitId, any(left, right).oldObjectId);
+		this.leftOldPath = left != null ? left.oldPath : null;
 		this.leftDiffType = left != null ? left.diffType : null;
 		this.leftNewObjectId = left != null ? left.newObjectId : ObjectId.zeroId();
+		this.rightOldPath = right != null ? right.oldPath : null;
 		this.rightDiffType = right != null ? right.diffType : null;
 		this.rightNewObjectId = right != null ? right.newObjectId : ObjectId.zeroId();
 	}
 
+	private static String getPath(Diff left, Diff right) {
+		var any = any(left, right);
+		if (any.isEmptyCategory)
+			return any.path + "/" + GitUtil.EMPTY_CATEGORY_FLAG;
+		return any.path;
+	}
+	
 	private static Diff any(Diff left, Diff right) {
 		return right != null ? right : left;
 	}
@@ -50,7 +62,7 @@ public class TriDiff extends Reference {
 		if (leftDiffType == null || rightDiffType == null)
 			return false;
 		switch (leftDiffType) {
-			case ADDED, MODIFIED:
+			case ADDED, MODIFIED, MOVED:
 				return !hasEqualObjectId();
 			case DELETED:
 				return rightDiffType != DiffType.DELETED;

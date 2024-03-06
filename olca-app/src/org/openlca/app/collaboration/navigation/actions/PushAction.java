@@ -33,19 +33,19 @@ public class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return Repository.get().client != null
-				&& !Repository.get().localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty();
+		return Repository.CURRENT.client != null
+				&& !Repository.CURRENT.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty();
 	}
 
 	@Override
 	public void run() {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		try {
 			var credentials = AuthenticationDialog.promptCredentials(repo);
 			if (credentials == null)
 				return;
 			var result = Actions.run(credentials,
-					GitPush.from(repo.git));
+					GitPush.from(repo));
 			if (result == null)
 				return;
 			if (result.newCommits().isEmpty()) {

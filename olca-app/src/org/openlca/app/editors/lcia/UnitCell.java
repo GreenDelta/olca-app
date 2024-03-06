@@ -73,20 +73,10 @@ class UnitCell extends ComboBoxCellModifier<ImpactFactor, UnitItem> {
 		editor.setDirty(true);
 	}
 
-	static class UnitItem implements Comparable<UnitItem> {
-
-		final ImpactFactor factor;
-		final Unit unit;
-		final FlowPropertyFactor property;
-
-		UnitItem(
-				ImpactFactor factor,
-				FlowPropertyFactor property,
-				Unit unit) {
-			this.factor = factor;
-			this.property = property;
-			this.unit = unit;
-		}
+	record UnitItem(
+			ImpactFactor factor,
+			FlowPropertyFactor property,
+			Unit unit) implements Comparable<UnitItem> {
 
 		@Override
 		public String toString() {
@@ -97,7 +87,7 @@ class UnitCell extends ComboBoxCellModifier<ImpactFactor, UnitItem> {
 			if (f.flowPropertyFactors.size() == 1)
 				return name;
 			FlowProperty fp = property.flowProperty;
-			return name + " - " + fp.name + "";
+			return name + " - " + fp.name;
 		}
 
 		@Override
@@ -122,9 +112,8 @@ class UnitCell extends ComboBoxCellModifier<ImpactFactor, UnitItem> {
 				return false;
 			if (this == obj)
 				return true;
-			if (!(obj instanceof UnitItem))
+			if (!(obj instanceof UnitItem other))
 				return false;
-			UnitItem other = (UnitItem) obj;
 			return Objects.equals(this.unit, other.unit)
 					&& Objects.equals(this.factor, other.factor)
 					&& Objects.equals(this.property, other.property);

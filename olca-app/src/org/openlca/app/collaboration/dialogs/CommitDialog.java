@@ -1,7 +1,6 @@
 package org.openlca.app.collaboration.dialogs;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -15,11 +14,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
-import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
-import org.openlca.git.util.TypedRefIdSet;
+import org.openlca.git.util.ModelRefSet;
 
 public class CommitDialog extends FormDialog {
 
@@ -29,8 +27,8 @@ public class CommitDialog extends FormDialog {
 	private final boolean isStashCommit;
 	private String message;
 	private CommitViewer viewer;
-	private TypedRefIdSet initialSelection;
-	private TypedRefIdSet newLibraryDatasets;
+	private ModelRefSet initialSelection;
+	private ModelRefSet newLibraryDatasets;
 
 	public CommitDialog(DiffNode node, boolean canPush, boolean isStashCommit) {
 		super(UI.shell());
@@ -40,11 +38,11 @@ public class CommitDialog extends FormDialog {
 		setBlockOnOpen(true);
 	}
 
-	public void setInitialSelection(TypedRefIdSet initialSelection) {
+	public void setInitialSelection(ModelRefSet initialSelection) {
 		this.initialSelection = initialSelection;
 	}
 
-	public void setNewLibraryDatasets(TypedRefIdSet newLibraryDatasets) {
+	public void setNewLibraryDatasets(ModelRefSet newLibraryDatasets) {
 		this.newLibraryDatasets = newLibraryDatasets;
 	}
 
@@ -137,10 +135,8 @@ public class CommitDialog extends FormDialog {
 		return message;
 	}
 
-	public Set<TriDiff> getSelected() {
-		return viewer.getChecked().stream()
-				.map(n -> n.contentAsTriDiff())
-				.collect(Collectors.toSet());
+	public Set<DiffNode> getSelected() {
+		return viewer.getChecked();
 	}
 
 }

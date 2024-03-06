@@ -9,13 +9,13 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
-import org.openlca.git.util.TypedRefIdSet;
+import org.openlca.git.util.ModelRefSet;
 
 public class CommitViewer extends DiffNodeViewer {
 
 	// The option lockedElements will prevent the user to uncheck certain
 	// elements
-	private TypedRefIdSet lockedElements;
+	private ModelRefSet lockedElements;
 	private DiffNodeCheckedContentProvider selectionProvider;
 	private final Runnable onCheckStateChanged;
 
@@ -44,11 +44,11 @@ public class CommitViewer extends DiffNodeViewer {
 		return (CheckboxTreeViewer) super.getViewer();
 	}
 
-	public void setLockedElements(TypedRefIdSet value) {
+	public void setLockedElements(ModelRefSet value) {
 		this.lockedElements = value;
 	}
 
-	public void setSelection(TypedRefIdSet initialSelection, DiffNode root) {
+	public void setSelection(ModelRefSet initialSelection, DiffNode root) {
 		var selection = collectChildren(initialSelection, root);
 		selectionProvider.setSelection(selection);
 	}
@@ -60,17 +60,15 @@ public class CommitViewer extends DiffNodeViewer {
 	}
 
 	// if models is null, select all
-	private Set<DiffNode> collectChildren(TypedRefIdSet models, DiffNode node) {
+	private Set<DiffNode> collectChildren(ModelRefSet models, DiffNode node) {
 		var nodes = new HashSet<DiffNode>();
 		for (var child : node.children) {
-			if (child.isModelNode()) {
-				var d = child.contentAsTriDiff();
+			if (child.content instanceof TriDiff d) {
 				if (models == null || models.contains(d)) {
 					nodes.add(child);
 				}
-			} else {
-				nodes.addAll(collectChildren(models, child));
 			}
+			nodes.addAll(collectChildren(models, child));
 		}
 		return nodes;
 	}
@@ -87,7 +85,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected boolean isLeaf(DiffNode element) {
-			return element.isModelNode();
+			return element.content instanceof TriDiff d && element.children.isEmpty();
 		}
 
 		@Override
@@ -101,8 +99,13 @@ public class CommitViewer extends DiffNodeViewer {
 		}
 
 		@Override
+		protected boolean isSelectable(DiffNode element) {
+			return element.content instanceof TriDiff;
+		}
+
+		@Override
 		protected void setSelection(DiffNode element, boolean checked) {
-			if (!element.isModelNode()) {
+			if (!isSelectable(element)) {
 				super.setSelection(element, checked);
 				return;
 			}

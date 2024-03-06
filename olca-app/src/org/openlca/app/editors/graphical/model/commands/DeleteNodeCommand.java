@@ -86,7 +86,7 @@ public class DeleteNodeCommand extends Command {
 
 		deleteManager.process(node.descriptor.id);
 		for (Node node : connectedNodes) {
-			deleteManager.nodeChains(node);
+			deleteManager.removeNodeChains(node);
 		}
 
 		graph.firePropertyChange(CHILDREN_PROP, null, null);

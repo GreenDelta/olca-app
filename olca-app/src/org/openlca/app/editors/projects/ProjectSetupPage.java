@@ -181,7 +181,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		v.productSystem = system;
 		v.name = Strings.uniqueNameOf(
 				system.name, project.variants, vi -> vi.name);
-		v.allocationMethod = AllocationMethod.NONE;
+		v.allocationMethod = AllocationMethod.USE_DEFAULT;
 		v.amount = system.targetAmount;
 		v.flowPropertyFactor = system.targetFlowPropertyFactor;
 		v.unit = system.targetUnit;

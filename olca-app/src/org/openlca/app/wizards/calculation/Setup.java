@@ -33,19 +33,22 @@ class Setup {
 		dqSetup = new DQSetup();
 
 		// add parameter redefinitions
-		if (system != null && system.parameterSets.size() > 0) {
+		if (system != null && !system.parameterSets.isEmpty()) {
 			var baseline = system.parameterSets.stream()
 					.filter(ps -> ps.isBaseline)
 					.findFirst()
 					.orElse(system.parameterSets.get(0));
-			if (baseline != null) {
-				calcSetup.withParameters(baseline.parameters);
+			if (!baseline.parameters.isEmpty()) {
+				setParameters(baseline);
 			}
 		}
 	}
 
 	void setParameters(ParameterRedefSet params) {
-		calcSetup.withParameters(params.parameters);
+		if (params == null)
+			return;
+		calcSetup.withParameterSetName(params.name)
+				.withParameters(params.parameters);
 	}
 
 	void setMethod(ImpactMethodDescriptor method) {

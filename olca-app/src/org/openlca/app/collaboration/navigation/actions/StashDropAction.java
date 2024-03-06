@@ -27,9 +27,9 @@ public class StashDropAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		try {
-			return Actions.getStashCommit(repo.git) != null;
+			return repo.commits.stash() != null;
 		} catch (GitAPIException e) {
 			return false;
 		}
@@ -37,9 +37,9 @@ public class StashDropAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var repo = Repository.get();
+		var repo = Repository.CURRENT;
 		try {
-			GitStashDrop.from(repo.git).run();
+			GitStashDrop.from(repo).run();
 		} catch (IOException e) {
 			Actions.handleException("Error dropping stash", e);
 		} finally {

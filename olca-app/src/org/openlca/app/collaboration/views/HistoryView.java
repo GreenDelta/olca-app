@@ -28,7 +28,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
-import org.openlca.git.util.Diffs;
 import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
@@ -68,7 +67,7 @@ public class HistoryView extends ViewPart {
 		historyViewer.addSelectionChangedListener((commit) -> {
 			referenceViewer.select(null);
 			var diffs = Repository.isConnected() && commit != null
-					? Diffs.of(Repository.get().git, commit).withPreviousCommit()
+					? Repository.CURRENT.diffs.find().commit(commit).withPreviousCommit()
 					: new ArrayList<Diff>();
 			referenceViewer.setInput(diffs);
 		});
@@ -83,7 +82,7 @@ public class HistoryView extends ViewPart {
 		};
 		UI.gridData(referenceViewer.getViewer().getTable(), true, true);
 		referenceViewer.addSelectionChangedListener((diff) -> {
-			if (diff == null || !Repository.isConnected()) {
+			if (diff == null || !Repository.isConnected() || diff.isCategory) {
 				diffViewer.setInput(null);
 				return;
 			}
@@ -102,7 +101,7 @@ public class HistoryView extends ViewPart {
 	private JsonObject getJson(Reference ref) {
 		if (ref == null || ObjectId.zeroId().equals(ref.objectId))
 			return null;
-		var datasets = Repository.get().datasets;
+		var datasets = Repository.CURRENT.datasets;
 		var json = datasets.get(ref);
 		if (Strings.nullOrEmpty(json))
 			return null;
@@ -139,7 +138,7 @@ public class HistoryView extends ViewPart {
 	public static void refresh() {
 		if (instance == null)
 			return;
-		instance.historyViewer.setRepository(Repository.get());
+		instance.historyViewer.setRepository(Repository.CURRENT);
 	}
 
 	@Override
@@ -159,6 +158,8 @@ public class HistoryView extends ViewPart {
 		public String getText(Object element) {
 			if (!(element instanceof Diff diff))
 				return null;
+			if (diff.isCategory)
+				return diff.getCategoryPath();
 			var text = diff.category;
 			if (!text.isEmpty()) {
 				text += "/";
@@ -167,7 +168,7 @@ public class HistoryView extends ViewPart {
 			if (descriptor != null)
 				return text + descriptor.name;
 			var side = ObjectId.zeroId().equals(diff.oldObjectId) ? Side.NEW : Side.OLD;
-			return text + Repository.get().datasets.getName(diff.toReference(side));
+			return text + Repository.CURRENT.datasets.getName(diff.toReference(side));
 		}
 
 		@Override
@@ -180,6 +181,8 @@ public class HistoryView extends ViewPart {
 			} else if (diff.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
+			if (diff.isCategory)
+				return Images.getForCategory(diff.type, overlay);
 			return Images.get(diff.type, overlay);
 		}
 

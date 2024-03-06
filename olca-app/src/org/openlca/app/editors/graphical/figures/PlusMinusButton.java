@@ -14,6 +14,9 @@ public class PlusMinusButton extends Clickable {
 
 	public final PlusMinusFigure icon;
 
+	/**
+	 * @param side Side.INPUT or Side.OUTPUT.
+	 */
 	public PlusMinusButton(Node node, Side side) {
 		setContents(icon = new PlusMinusFigure(node, side));
 		setVisible(side == Side.INPUT

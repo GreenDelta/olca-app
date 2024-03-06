@@ -6,24 +6,23 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.ProgressMonitor;
-import org.eclipse.jgit.lib.Repository;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
+import org.openlca.app.collaboration.util.SslCertificates;
+import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
-import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
+import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.actions.GitStashApply;
-import org.openlca.git.model.Commit;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +38,22 @@ class Actions {
 	}
 
 	static void handleException(String message, Exception e) {
+		var msg = e.getMessage();
+		if (e instanceof UnsupportedClientVersionException ue) {
+			msg = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
+		} else if (e instanceof WebRequestException we) {
+			if (we.isSslCertificateException()) {
+				if (Question.ask("SSL Certificate unknown",
+						"The site " + we.getHost() + " you are trying to connect to uses an unknown SSL certificate. "
+								+ "Do you want to add the certificate to the list of trusted certificates? "
+								+ "You will need to rerun the current action to continue after adding it")) {
+					var cert = SslCertificates.downloadCertificate(we.getHost(), we.getPort());
+					SslCertificates.importCertificate(cert, we.getHost());
+				}
+			}
+		}
 		log.error(message, e);
-		MsgBox.error(e.getMessage());
+		MsgBox.error(msg);
 	}
 
 	static <T> T run(GitCredentialsProvider credentials, GitRemoteAction<T> runnable)
@@ -49,7 +62,7 @@ class Actions {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitRemoteRunner<>(runnable);
 		service.run(true, false, runner::run);
-		var repo = org.openlca.app.db.Repository.get();
+		var repo = org.openlca.app.db.Repository.CURRENT;
 		if (runner.exception == null) {
 			if (Strings.nullOrEmpty(credentials.token)) {
 				repo.useTwoFactorAuth(false);
@@ -101,13 +114,6 @@ class Actions {
 		return runner.result;
 	}
 
-	static Commit getStashCommit(Repository git) throws GitAPIException {
-		var commits = Git.wrap(git).stashList().call();
-		if (commits == null || commits.isEmpty())
-			return null;
-		return new Commit(commits.iterator().next());
-	}
-
 	static void askApplyStash() throws InvocationTargetException, GitAPIException, IOException, InterruptedException {
 		var answers = Arrays.asList("No", "Yes");
 		var result = Question.ask("Apply stashed changes",
@@ -119,16 +125,14 @@ class Actions {
 	}
 
 	static boolean applyStash() throws GitAPIException, InvocationTargetException, IOException, InterruptedException {
-		var repo = org.openlca.app.db.Repository.get();
+		var repo = org.openlca.app.db.Repository.CURRENT;
 		var libraryResolver = WorkspaceLibraryResolver.forStash();
 		if (libraryResolver == null)
 			return false;
 		var conflictResult = ConflictResolutionMap.forStash();
 		if (conflictResult == null)
 			return false;
-		Actions.run(GitStashApply.from(repo.git)
-				.to(Database.get())
-				.update(repo.gitIndex)
+		Actions.run(GitStashApply.on(repo)
 				.resolveConflictsWith(conflictResult.resolutions())
 				.resolveLibrariesWith(libraryResolver));
 		return true;
@@ -186,6 +190,11 @@ class Actions {
 				public void beginTask(String title, int totalWork) {
 					monitor.beginTask(title, totalWork);
 				}
+
+				@Override
+				public void showDuration(boolean arg0) {
+
+				}
 			};
 		}
 
@@ -217,6 +226,7 @@ class Actions {
 				@Override
 				public void beginTask(String name, int totalWork) {
 					monitor.beginTask(name, totalWork);
+					monitor.subTask("");
 				}
 
 				@Override

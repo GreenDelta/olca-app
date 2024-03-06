@@ -18,15 +18,13 @@ public class DeleteManager {
 
 	private final Graph graph;
 	private final GraphEditor editor;
-	public static final String QUESTION =
-			"- Keep: keep the supply chain even if it is not connected to " +
-					"the reference process." +
-					"\n- Hide: hide the supply chain but keep the processes as part " +
-					"of the product system," +
-					"\n- Delete: delete the supply chain (processes) from the " +
-					"product system," +
-					"\nPlease note that clicking delete won't delete the providers " +
-					"that supply the reference process, but only hide them.";
+	public static final String QUESTION = """
+			- Keep: keep the supply chain even if it is not connected to the reference process.
+			- Hide: hide the supply chain but keep the processes as part of the product system,
+			- Delete: delete the supply chain (processes) from the product system,
+
+			Please note that clicking delete won't delete the providers that supply the reference process, but only hide them.
+			""";
 
 	private DeleteManager(Graph graph) {
 		this.graph = graph;
@@ -41,7 +39,7 @@ public class DeleteManager {
 	 * Remove the chain of Nodes associated with the link if it is not connected
 	 * to the reference Node.
 	 */
-	protected void nodeChains(Node node) {
+	protected void removeNodeChains(Node node) {
 		if (node == null || Objects.equals(node, graph.getReferenceNode()))
 			return;
 
@@ -52,6 +50,7 @@ public class DeleteManager {
 			CollapseCommand.collapse(graph, node, node, Side.OUTPUT);
 		}
 
+		// Remove the Nodes if it is not connected to any other node.
 		var links = node.getAllLinks();
 		var linkStream = links.stream()
 				.map(GraphLink.class::cast)
@@ -79,8 +78,8 @@ public class DeleteManager {
 
 	/**
 	 * Deletes the process link and the graph link and remove the supply chain
-	 * depending on user's answer.
-	 * Returns the provider of the link if the user shows to delete or hide the
+	 * depending on the user's answer.
+	 * Returns the provider of the link if the user chooses to delete or hide the
 	 * supply chain.
 	 */
 	public Node link(ProcessLink link, int answer) {
@@ -98,8 +97,8 @@ public class DeleteManager {
 			}
 			case Delete -> {
 				var r = ProviderChainRemoval.on(graph.getProductSystem());
-				r.remove(link);
-				graph.linkSearch.remove(link);
+				var links = r.remove(link);
+				graph.linkSearch.removeAll(links);
 				return provider;
 			}
 			case Cancel -> {
@@ -121,9 +120,8 @@ public class DeleteManager {
 		// Remove the provider and their chains if not graphically connected to the
 		// reference node.
 		for (Node node : providerNodes) {
-			nodeChains(node);
+			removeNodeChains(node);
 		}
-
 		graph.firePropertyChange(CHILDREN_PROP, null, null);
 		editor.setDirty();
 	}

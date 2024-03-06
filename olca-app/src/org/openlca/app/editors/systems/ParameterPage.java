@@ -1,12 +1,6 @@
 package org.openlca.app.editors.systems;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import org.eclipse.jface.action.Action;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
@@ -19,10 +13,12 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.util.Strings;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class ParameterPage extends ModelPage<ProductSystem> {
 
@@ -71,8 +67,9 @@ class ParameterPage extends ModelPage<ProductSystem> {
 				return 1;
 			return Strings.compare(s1.name, s2.name);
 		});
-		for (ParameterRedefSet s : paramSets()) {
-			sections.add(new ParameterSection(s));
+		for (int i = 0; i < sets.size(); i++) {
+			var s = sets.get(i);
+			sections.add(new ParameterSection(i, s));
 		}
 
 		// render the add button at the end of the list
@@ -81,8 +78,10 @@ class ParameterPage extends ModelPage<ProductSystem> {
 	}
 
 	private void addNew(ParameterRedefSet s) {
-		getModel().parameterSets.add(s);
-		sections.add(new ParameterSection(s));
+		var sets = paramSets();
+		var pos = sets.size();
+		sets.add(s);
+		sections.add(new ParameterSection(pos, s));
 		addButton.render();
 		form.reflow(true);
 		editor.setDirty(true);
@@ -90,12 +89,14 @@ class ParameterPage extends ModelPage<ProductSystem> {
 
 	private class ParameterSection {
 
+		int pos;
 		ParameterRedefSet paramSet;
 		Section section;
 		ParameterRedefTable paramTable;
 
-		ParameterSection(ParameterRedefSet paramSet) {
-			this.paramSet = paramSet;
+		ParameterSection(int pos, ParameterRedefSet set) {
+			this.pos = pos;
+			this.paramSet = set;
 			render();
 		}
 
@@ -158,9 +159,10 @@ class ParameterPage extends ModelPage<ProductSystem> {
 
 		void update() {
 			// sync JPA state
-			for (ParameterRedefSet s : paramSets()) {
-				if (Objects.equals(s, this.paramSet)) {
-					this.paramSet = s;
+			var sets = paramSets();
+			for (int i = 0; i < sets.size(); i++) {
+				if (i == pos) {
+					this.paramSet = sets.get(i);
 					paramTable.update();
 					break;
 				}
@@ -168,18 +170,24 @@ class ParameterPage extends ModelPage<ProductSystem> {
 		}
 
 		void onRemove() {
-			sections.remove(this);
-			editor.getModel().parameterSets.remove(paramSet);
+			var sets = paramSets();
+			sets.remove(pos);
+			sections.remove(pos);
+			for (var section : sections) {
+				if (section.pos > pos) {
+					section.pos--;
+				}
+			}
 			section.dispose();
 			form.reflow(true);
 			editor.setDirty(true);
 		}
 
 		void onCopy() {
-			ParameterRedefSet s = new ParameterRedefSet();
+			var s = new ParameterRedefSet();
 			s.name = paramSet.name + " - Copy";
 			s.description = paramSet.description;
-			for (ParameterRedef redef : paramSet.parameters) {
+			for (var redef : paramSet.parameters) {
 				s.parameters.add(redef.copy());
 			}
 			addNew(s);
@@ -199,18 +207,17 @@ class ParameterPage extends ModelPage<ProductSystem> {
 				comp.dispose();
 			}
 			comp = UI.composite(body, tk);
-			GridLayout btnGrid = UI.gridLayout(comp, 1);
-			btnGrid.marginLeft = 0;
-			btnGrid.marginTop = 0;
-			btnGrid.marginBottom = 10;
-			Button addButton = UI.button(comp, tk, "Add parameter set");
-			addButton.setImage(Icon.ADD.get());
-			Controls.onSelect(addButton, e -> {
-				ParameterRedefSet s = new ParameterRedefSet();
+			var grid = UI.gridLayout(comp, 1);
+			grid.marginLeft = 0;
+			grid.marginTop = 0;
+			grid.marginBottom = 10;
+			var btn = UI.button(comp, tk, "Add parameter set");
+			btn.setImage(Icon.ADD.get());
+			Controls.onSelect(btn, e -> {
+				var s = new ParameterRedefSet();
 				s.name = "New parameter set";
 				addNew(s);
 			});
 		}
 	}
-
 }

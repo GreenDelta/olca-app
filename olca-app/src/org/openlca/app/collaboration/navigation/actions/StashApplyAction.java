@@ -28,8 +28,8 @@ public class StashApplyAction extends Action implements INavigationAction {
 	@Override
 	public boolean isEnabled() {
 		try {
-			var repo = Repository.get();
-			return Actions.getStashCommit(repo.git) != null;
+			var repo = Repository.CURRENT;
+			return repo.commits.stash() != null;
 		} catch (GitAPIException e) {
 			return false;
 		}

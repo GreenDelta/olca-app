@@ -1,11 +1,5 @@
 package org.openlca.app.editors.lcia;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.FlowDao;
@@ -19,6 +13,11 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 class FactorClipboard {
 
@@ -71,7 +70,7 @@ class FactorClipboard {
 					String path = CategoryPath.getFull(flow.category);
 					return Strings.nullOrEqual(path, category);
 				})
-				.collect(Collectors.toList());
+				.toList();
 		if (candidates.isEmpty())
 			return null;
 

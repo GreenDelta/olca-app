@@ -66,6 +66,11 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				viewer.setInput(impact().impactFactors);
 			}
 		});
+		editor.onSaved(() -> {
+			if (viewer != null) {
+				viewer.setInput(impact().impactFactors);
+			}
+		});
 	}
 
 	private ImpactCategory impact() {
@@ -91,13 +96,13 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	public void render(Composite parent, Section section) {
 		viewer = Tables.createViewer(parent,
-			M.Flow,
-			M.Category,
-			M.Factor,
-			M.Unit,
-			M.Uncertainty,
-			M.Location,
-			"" /* comment */);
+				M.Flow,
+				M.Category,
+				M.Factor,
+				M.Unit,
+				M.Uncertainty,
+				M.Location,
+				"" /* comment */);
 		var label = new FactorLabel();
 		Viewers.sortByLabels(viewer, label, 0, 1, 3, 4, 5);
 		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.value, 2);
@@ -114,17 +119,17 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	private void bindModifySupport(TableViewer viewer) {
 		var support = new ModifySupport<ImpactFactor>(viewer);
 		support.bind(M.Unit, new UnitCell(editor))
-			.bind(M.Uncertainty, new UncertaintyCellEditor(
-				viewer.getTable(), editor))
-			.bind(M.Location, new LocationModifier(
-				viewer.getTable(), editor))
-			.bind("", new CommentDialogModifier<>(
-				editor.getComments(),
-				f -> CommentPaths.get(impact(), f)));
+				.bind(M.Uncertainty, new UncertaintyCellEditor(
+						viewer.getTable(), editor))
+				.bind(M.Location, new LocationModifier(
+						viewer.getTable(), editor))
+				.bind("", new CommentDialogModifier<>(
+						editor.getComments(),
+						f -> CommentPaths.get(impact(), f)));
 
 		// factor editor with auto-completion support for parameter names
 		var factorEditor = new FormulaCellEditor(
-			viewer, () -> editor.getModel().parameters);
+				viewer, () -> editor.getModel().parameters);
 		support.bind(M.Factor, factorEditor);
 		factorEditor.onEdited((obj, factor) -> {
 			if (!(obj instanceof ImpactFactor f))
@@ -214,7 +219,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	private void onPaste(String text) {
 		List<ImpactFactor> factors = App.exec(
-			"Parse factors", () -> FactorClipboard.read(text));
+				"Parse factors", () -> FactorClipboard.read(text));
 		if (factors.isEmpty())
 			return;
 		impact().impactFactors.addAll(factors);
@@ -223,7 +228,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	}
 
 	private class FactorLabel extends LabelProvider
-		implements ITableLabelProvider {
+			implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
@@ -233,7 +238,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				return Images.get(f.flow);
 			if (col == 6)
 				return Images.get(editor.getComments(),
-					CommentPaths.get(impact(), f));
+						CommentPaths.get(impact(), f));
 			return null;
 		}
 
@@ -245,8 +250,8 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				case 0 -> Labels.name(f.flow);
 				case 1 -> Labels.category(f.flow);
 				case 2 -> f.formula == null || !showFormulas
-					? Double.toString(f.value)
-					: f.formula;
+						? Double.toString(f.value)
+						: f.formula;
 				case 3 -> getFactorUnit(f);
 				case 4 -> Uncertainty.string(f.uncertainty);
 				case 5 -> Labels.code(f.location);
@@ -292,7 +297,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			if (factor == null)
 				return null;
 			ModelSelector dialog = new ModelSelector(
-				ModelType.LOCATION);
+					ModelType.LOCATION);
 			dialog.isEmptyOk = true;
 			if (dialog.open() != Window.OK)
 				return null;

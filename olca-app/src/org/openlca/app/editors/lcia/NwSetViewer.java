@@ -20,7 +20,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 	private static final String NAME = M.NormalizationAndWeightingSet;
 	private static final String UNIT = M.ReferenceUnit;
 
-	private ImpactMethodEditor editor;
+	private final ImpactMethodEditor editor;
 
 	public NwSetViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
@@ -48,7 +48,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { NAME, UNIT };
+		return new String[]{NAME, UNIT};
 	}
 
 	@OnAdd
@@ -72,7 +72,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 		editor.setDirty(true);
 	}
 
-	private class SetLabelProvider extends LabelProvider implements
+	private static class SetLabelProvider extends LabelProvider implements
 			ITableLabelProvider {
 
 		@Override
@@ -82,17 +82,13 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof NwSet))
+			if (!(obj instanceof NwSet set))
 				return null;
-			NwSet set = (NwSet) obj;
-			switch (col) {
-			case 0:
-				return set.name;
-			case 1:
-				return set.weightedScoreUnit;
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> set.name;
+				case 1 -> set.weightedScoreUnit;
+				default -> null;
+			};
 		}
 	}
 }

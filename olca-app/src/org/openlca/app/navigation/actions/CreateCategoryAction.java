@@ -64,9 +64,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			return;
 		try {
 			category = tryInsert(category);
-			if (category == null)
-				return;
-			// we have to refresh the category starting from its root
+			// we have to refresh the category starting from it's root
 			// otherwise the object model is out of sync.
 			var element = Navigator.findElement(category.modelType);
 			Navigator.refresh(element);

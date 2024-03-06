@@ -153,7 +153,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 
 	@Override
 	protected AbstractWizardPage<ProductSystem> createPage() {
-		ProductSystemWizardPage page = new ProductSystemWizardPage();
+		var page = new ProductSystemWizardPage();
 		page.setProcess(process);
 		return page;
 	}
