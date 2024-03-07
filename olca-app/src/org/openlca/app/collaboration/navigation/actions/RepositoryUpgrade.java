@@ -33,7 +33,6 @@ import org.openlca.git.model.Change;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.ModelRef;
-import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.ModelRefMap;
 import org.openlca.jsonld.Json;
@@ -168,7 +167,7 @@ public class RepositoryUpgrade {
 			for (var type : ModelType.values()) {
 				if (type == ModelType.CATEGORY) {
 					new CategoryDao(Database.get()).getAll().forEach(
-							c -> descriptors.put(ModelType.CATEGORY, ModelType.CATEGORY.name() + "/" + c.toPath(), Descriptor.of(c)));
+							c -> descriptors.put(c.modelType, c.modelType.name() + "/" + c.toPath(), Descriptor.of(c)));
 				} else {
 					Daos.root(Database.get(), type).getDescriptors().forEach(d -> descriptors.put(d.type, d.refId, d));
 				}
@@ -207,12 +206,11 @@ public class RepositoryUpgrade {
 	private static boolean equalsDescriptor(Diff diff, RootDescriptor d) {
 		if (d == null)
 			return false;
-		if (ObjectId.zeroId().equals(diff.oldObjectId))
+		if (diff.oldRef == null || ObjectId.zeroId().equals(diff.oldRef.objectId))
 			return false;
 		if (diff.isCategory)
 			return true;
-		var ref = new Reference(diff.path, diff.oldCommitId, diff.oldObjectId);
-		var remoteModel = Repository.CURRENT.datasets.parse(ref, "lastChange", "version");
+		var remoteModel = Repository.CURRENT.datasets.parse(diff.oldRef, "lastChange", "version");
 		if (remoteModel == null)
 			return false;
 		var version = Version.fromString(string(remoteModel, "version")).getValue();

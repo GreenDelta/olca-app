@@ -20,13 +20,37 @@ public class TriDiff extends Reference {
 	public final ObjectId rightNewObjectId;
 
 	public TriDiff(Diff left, Diff right) {
-		super(getPath(left, right), any(left, right).oldCommitId, any(left, right).oldObjectId);
-		this.leftOldPath = left != null ? left.oldPath : null;
+		super(getPath(left, right), oldCommitId(any(left, right)), oldObjectId(any(left, right)));
+		this.leftOldPath = oldPath(left);
 		this.leftDiffType = left != null ? left.diffType : null;
-		this.leftNewObjectId = left != null ? left.newObjectId : ObjectId.zeroId();
-		this.rightOldPath = right != null ? right.oldPath : null;
+		this.leftNewObjectId = newObjectId(left);
+		this.rightOldPath = oldPath(right);
 		this.rightDiffType = right != null ? right.diffType : null;
-		this.rightNewObjectId = right != null ? right.newObjectId : ObjectId.zeroId();
+		this.rightNewObjectId = newObjectId(right);
+	}
+	
+	private static String oldPath(Diff diff) {
+		if (diff == null || diff.oldRef == null)
+			return null;
+		return diff.oldRef.path;
+	}
+
+	private static ObjectId oldObjectId(Diff diff) {
+		if (diff == null || diff.oldRef == null || diff.oldRef.objectId == null)
+			return ObjectId.zeroId();
+		return diff.oldRef.objectId;
+	}
+	
+	private static String oldCommitId(Diff diff) {
+		if (diff == null || diff.oldRef == null || diff.oldRef.commitId == null)
+			return null;
+		return diff.oldRef.commitId;
+	}
+
+	private static ObjectId newObjectId(Diff diff) {
+		if (diff == null || diff.newRef == null || diff.newRef.objectId == null)
+			return ObjectId.zeroId();
+		return diff.newRef.objectId;
 	}
 
 	private static String getPath(Diff left, Diff right) {
@@ -35,7 +59,7 @@ public class TriDiff extends Reference {
 			return any.path + "/" + GitUtil.EMPTY_CATEGORY_FLAG;
 		return any.path;
 	}
-	
+
 	private static Diff any(Diff left, Diff right) {
 		return right != null ? right : left;
 	}

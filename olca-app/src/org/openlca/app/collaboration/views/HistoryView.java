@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.views;
 import java.util.ArrayList;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -86,8 +85,8 @@ public class HistoryView extends ViewPart {
 				diffViewer.setInput(null);
 				return;
 			}
-			var previousElement = getJson(diff.toReference(Side.OLD));
-			var currentElement = getJson(diff.toReference(Side.NEW));
+			var previousElement = getJson(diff.oldRef);
+			var currentElement = getJson(diff.newRef);
 			var node = new ModelNodeBuilder().build(previousElement, currentElement);
 			diffViewer.setInput(node);
 		});
@@ -167,8 +166,8 @@ public class HistoryView extends ViewPart {
 			var descriptor = Database.get().getDescriptor(diff.type.getModelClass(), diff.refId);
 			if (descriptor != null)
 				return text + descriptor.name;
-			var side = ObjectId.zeroId().equals(diff.oldObjectId) ? Side.NEW : Side.OLD;
-			return text + Repository.CURRENT.datasets.getName(diff.toReference(side));
+			var ref = diff.oldRef == null ? diff.newRef : diff.oldRef;
+			return text + Repository.CURRENT.datasets.getName(ref);
 		}
 
 		@Override
