@@ -27,6 +27,7 @@ import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Repository;
 import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.app.navigation.actions.DeleteMappingAction;
 import org.openlca.app.navigation.actions.DeleteModelAction;
@@ -156,13 +157,13 @@ public class Navigator extends CommonNavigator {
 	 */
 	public static void refresh(INavigationElement<?> element) {
 		if (element instanceof ModelTypeElement e) {
-			NavCache.refresh(e.getContent());			
+			NavCache.refresh(e.getContent());
 		} else {
-			NavCache.refresh();						
+			NavCache.refresh();
 		}
 		doRefresh(element);
 	}
-	
+
 	/**
 	 * Refreshes the content *under* the given elements.
 	 */
@@ -427,6 +428,9 @@ public class Navigator extends CommonNavigator {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (e.keyCode == SWT.F5) {
+				if (Repository.isConnected()) {
+					App.runWithProgress("Updating local index", Repository.CURRENT.index::reload);
+				}
 				Navigator.refresh();
 			}
 		}
