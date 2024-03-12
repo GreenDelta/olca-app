@@ -62,6 +62,8 @@ public class CloneAction extends Action implements INavigationAction {
 		var url = dialog.url();
 		var repoName = url.substring(url.lastIndexOf("/") + 1);
 		var config = initDatabase(repoName);
+		if (config == null)
+			return;
 		try {
 			if (!initRepository(config.name(), dialog)) {
 				onError(config);
@@ -89,7 +91,7 @@ public class CloneAction extends Action implements INavigationAction {
 		if (db == null)
 			return null;
 		Upgrades.on(db);
-		Database.register((DerbyConfig) config);
+		Database.register(config);
 		return config;
 	}
 

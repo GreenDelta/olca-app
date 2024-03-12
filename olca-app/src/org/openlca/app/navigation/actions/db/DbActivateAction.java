@@ -41,7 +41,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private DatabaseConfig config;
-	
+
 	public DbActivateAction() {
 		setText(M.OpenDatabase);
 		setImageDescriptor(Icon.CONNECT.descriptor());
@@ -57,9 +57,8 @@ public class DbActivateAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
+		if (!(first instanceof DatabaseElement e))
 			return false;
-		var e = (DatabaseElement) first;
 		var config = e.getContent();
 		if (Database.isActive(config))
 			return false;
@@ -224,7 +223,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 	private class UpgradeQuestionDialog extends Dialog {
 
 		private boolean backupDatabase = true;
-		
+
 		public UpgradeQuestionDialog() {
 			super(UI.shell());
 		}
