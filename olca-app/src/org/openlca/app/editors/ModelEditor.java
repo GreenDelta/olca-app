@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.util.Comments;
+import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -132,7 +133,9 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 				|| !Repository.isConnected()
 				|| !Repository.CURRENT.isCollaborationServer())
 			return;
-		comments = Repository.CURRENT.client.getComments(type, refId);
+		comments = new Comments(WebRequests.execute(
+				() -> Repository.CURRENT.server.getComments(type.name(), refId),
+				new ArrayList<>()));
 	}
 
 	@Override

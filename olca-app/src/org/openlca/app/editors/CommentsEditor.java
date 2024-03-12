@@ -7,10 +7,11 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.model.Comment;
+import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.collaboration.api.CommentsInvocation.Comment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,9 @@ public class CommentsEditor extends SimpleFormEditor {
 		setTitleImage(Icon.COMMENTS_VIEW.get());
 		List<Comment> comments = new ArrayList<>();
 		if (Repository.CURRENT.isCollaborationServer()) {
-			comments = Repository.CURRENT.client.getAllComments();
+			comments = WebRequests.execute(
+					Repository.CURRENT.server::getComments,
+					new ArrayList<>());
 		}
 		return new CommentsPage(this, comments);
 	}

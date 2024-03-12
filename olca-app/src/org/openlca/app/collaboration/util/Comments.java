@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.openlca.app.collaboration.model.Comment;
+import org.openlca.collaboration.api.CommentsInvocation.Comment;
 
 public class Comments {
 

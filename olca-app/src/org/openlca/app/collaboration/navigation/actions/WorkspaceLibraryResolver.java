@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.App;
+import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.rcp.Workspace;
@@ -95,7 +96,8 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		var repo = org.openlca.app.db.Repository.CURRENT;
 		if (!repo.isCollaborationServer())
 			return null;
-		var stream = repo.client.downloadLibrary(newLib.id());
+		var stream = WebRequests.execute(
+				() -> repo.server.downloadLibrary(newLib.id()));
 		if (stream == null)
 			return null;
 		return App.exec("Downloading and extracting library " + newLib.id(),

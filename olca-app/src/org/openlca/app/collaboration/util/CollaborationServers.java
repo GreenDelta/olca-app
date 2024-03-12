@@ -5,21 +5,21 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.openlca.app.collaboration.api.RepositoryClient;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
+import org.openlca.collaboration.api.CollaborationServer;
 import org.openlca.core.database.config.DerbyConfig;
 
-public class RepositoryClients {
+public class CollaborationServers {
 	
-	public static List<RepositoryClient> get() {
+	public static List<CollaborationServer> get() {
 		return Database.getConfigurations().getDerbyConfigs().stream()
-				.map(RepositoryClients::getClient)
+				.map(CollaborationServers::get)
 				.filter(Objects::nonNull)
 				.toList();
 	}
 
-	private static RepositoryClient getClient(DerbyConfig dbConfig) {
+	private static CollaborationServer get(DerbyConfig dbConfig) {
 		var gitDir = Repository.gitDir(dbConfig.name());
 		if (!gitDir.exists())
 			return null;
@@ -28,7 +28,7 @@ public class RepositoryClients {
 			var config = repo.getConfig();
 			if (!Repository.isCollaborationServer(config))
 				return null;
-			return Repository.client(repo);
+			return Repository.server(repo);
 		} catch (IOException e) {
 			return null;
 		}

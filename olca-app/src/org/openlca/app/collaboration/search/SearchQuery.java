@@ -1,13 +1,12 @@
 package org.openlca.app.collaboration.search;
 
-import org.openlca.app.collaboration.api.RepositoryClient;
-import org.openlca.core.model.ModelType;
+import org.openlca.collaboration.api.CollaborationServer;
 
 public class SearchQuery {
 
-	public RepositoryClient client;
+	public CollaborationServer server;
 	public String query;
-	public ModelType type;
+	public String type;
 	public int page;
 	public int pageSize;
 

@@ -33,7 +33,7 @@ public class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return Repository.CURRENT.client != null
+		return Repository.CURRENT.server != null
 				&& !Repository.CURRENT.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty();
 	}
 

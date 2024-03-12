@@ -33,7 +33,7 @@
 			<artifactId>olca-license</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-proto-io</artifactId>
@@ -44,6 +44,12 @@
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-git</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openlca</groupId>
+			<artifactId>olca-cs</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 
 		<dependency>

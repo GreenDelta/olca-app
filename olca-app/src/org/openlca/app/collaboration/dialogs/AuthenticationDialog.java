@@ -10,6 +10,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.db.Repository;
 import org.openlca.app.tools.authentification.AuthenticationGroup;
 import org.openlca.app.util.UI;
+import org.openlca.collaboration.api.Credentials;
 import org.openlca.util.Strings;
 
 public class AuthenticationDialog extends FormDialog {
@@ -32,7 +33,7 @@ public class AuthenticationDialog extends FormDialog {
 	}
 
 	public static GitCredentialsProvider promptCredentials(Repository repo) {
-		var url = repo.client.serverUrl + "/" + repo.client.repositoryId;
+		var url = repo.server.url + "/" + repo.server.repositoryId;
 		return promptCredentials(repo, url, false);
 	}
 
@@ -41,7 +42,7 @@ public class AuthenticationDialog extends FormDialog {
 	}
 
 	public static GitCredentialsProvider forcePromptCredentials(Repository repo) {
-		var url = repo.client.serverUrl + "/" + repo.client.repositoryId;
+		var url = repo.server.url + "/" + repo.server.repositoryId;
 		return promptCredentials(repo, url, true);
 	}
 
@@ -58,8 +59,7 @@ public class AuthenticationDialog extends FormDialog {
 		if (!Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password) && !forceAll) {
 			if (!useTwoFactorAuth)
 				return new GitCredentialsProvider(user, password);
-			if (!forceAll)
-				return promptToken(user, password);
+			return promptToken(user, password);
 		}
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
@@ -112,7 +112,7 @@ public class AuthenticationDialog extends FormDialog {
 				"Authenticate " + url,
 				"Enter your credentials for the Git repository.");
 		var body = UI.composite(formBody, form.getToolkit());
-		UI.gridLayout(body,  1);
+		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
 		auth.onChange(this::updateButtons)
 				.render(body, form.getToolkit(), SWT.FOCUSED);
@@ -135,7 +135,7 @@ public class AuthenticationDialog extends FormDialog {
 		return auth;
 	}
 
-	public static class GitCredentialsProvider extends UsernamePasswordCredentialsProvider {
+	public static class GitCredentialsProvider extends UsernamePasswordCredentialsProvider implements Credentials {
 
 		public final String user;
 		public final PersonIdent ident;
@@ -152,6 +152,43 @@ public class AuthenticationDialog extends FormDialog {
 			this.ident = new PersonIdent(user, "");
 			this.password = password;
 			this.token = token;
+		}
+
+		@Override
+		public String username() {
+			return user;
+		}
+
+		@Override
+		public String password() {
+			return password;
+		}
+
+		@Override
+		public String token() {
+			return token;
+		}
+
+		@Override
+		public String promptToken() {
+			var auth = AuthenticationDialog.promptToken(user, password);
+			return auth != null && auth.token != null
+					? auth.token
+					: null;
+		}
+
+		@Override
+		public boolean onUnauthenticated() {
+			return prompt();
+		}
+
+		@Override
+		public boolean onUnauthorized() {
+			return prompt();
+		}
+
+		private boolean prompt() {
+			return promptCredentials(Repository.CURRENT) != null;
 		}
 
 	}

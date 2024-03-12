@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.openlca.app.collaboration.util.Ssl;
+import org.openlca.collaboration.api.Ssl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

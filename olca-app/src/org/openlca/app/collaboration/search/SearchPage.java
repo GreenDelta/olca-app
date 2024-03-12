@@ -21,10 +21,8 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.api.RepositoryClient;
-import org.openlca.app.collaboration.model.SearchResult;
-import org.openlca.app.collaboration.model.SearchResult.Dataset;
-import org.openlca.app.collaboration.util.RepositoryClients;
+import org.openlca.app.collaboration.util.CollaborationServers;
+import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
@@ -34,14 +32,15 @@ import org.openlca.app.util.Desktop;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
+import org.openlca.collaboration.api.CollaborationServer;
+import org.openlca.collaboration.api.SearchInvocation.Dataset;
+import org.openlca.collaboration.api.SearchInvocation.SearchResult;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.util.TypedRefId;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
 
 class SearchPage extends FormPage {
 
@@ -55,12 +54,12 @@ class SearchPage extends FormPage {
 	private Composite headerComposite;
 	private Section pageSection;
 	private Composite pageComposite;
-	private final List<RepositoryClient> clients = RepositoryClients.get();
+	private final List<CollaborationServer> servers = CollaborationServers.get();
 
 	public SearchPage(SearchView view, SearchQuery query) {
 		super(view, "SearchResultView.Page", M.SearchResults);
 		this.query = query;
-		this.query.client = !clients.isEmpty() ? clients.get(0) : null;
+		this.query.server = !servers.isEmpty() ? servers.get(0) : null;
 	}
 
 	@Override
@@ -98,11 +97,11 @@ class SearchPage extends FormPage {
 
 	private void createRepositoryViewer() {
 		UI.label(headerComposite, tk, "Repository");
-		var viewer = new AbstractComboViewer<RepositoryClient>(headerComposite) {
+		var viewer = new AbstractComboViewer<CollaborationServer>(headerComposite) {
 
 			@Override
-			public Class<RepositoryClient> getType() {
-				return RepositoryClient.class;
+			public Class<CollaborationServer> getType() {
+				return CollaborationServer.class;
 			}
 
 			@Override
@@ -110,20 +109,20 @@ class SearchPage extends FormPage {
 				return new LabelProvider() {
 					@Override
 					public String getText(Object element) {
-						var client = (RepositoryClient) element;
-						return client.serverUrl + "/" + client.repositoryId;
+						var server = (CollaborationServer) element;
+						return server.url + "/" + server.repositoryId;
 					}
 				};
 			}
 
 		};
-		viewer.setInput(clients);
-		viewer.select(query.client);
+		viewer.setInput(servers);
+		viewer.select(query.server);
 		viewer.addSelectionChangedListener(c -> {
-			if (query.client != null) {
-				query.client.close();
+			if (query.server != null) {
+				WebRequests.execute(query.server::close);
 			}
-			query.client = c;
+			query.server = c;
 			runSearch(1);
 		});
 	}
@@ -138,9 +137,10 @@ class SearchPage extends FormPage {
 		};
 		viewer.setNullable(true);
 		viewer.setInput(ModelType.values());
-		viewer.select(query.type);
+		if (!Strings.nullOrEmpty(query.type))
+		viewer.select(ModelType.valueOf(query.type));
 		viewer.addSelectionChangedListener(type -> {
-			query.type = type;
+			query.type = type != null ? type.name() : null;
 			runSearch(1);
 		});
 	}
@@ -168,16 +168,16 @@ class SearchPage extends FormPage {
 			UI.gridLayout(header, 2, 10, 0);
 			var link = tk.createImageHyperlink(header, SWT.TOP);
 			link.setText(dataset.name());
-			link.setImage(Images.get(dataset.type()));
+			link.setImage(Images.get(ModelType.valueOf(dataset.type())));
 			link.setForeground(Colors.linkBlue());
 			link.setData(getDatasetLink(dataset));
 			link.addHyperlinkListener(click);
 			var button = tk.createButton(header, M.Import, SWT.PUSH);
 			button.setData(dataset);
 			Controls.onSelect(button, this::onImport);
-			var category = !Strings.isNullOrEmpty(dataset.category()) ? dataset.category() : "Uncategorized";
+			var category = !Strings.nullOrEmpty(dataset.category()) ? dataset.category() : "Uncategorized";
 			var categoryLabel = tk.createLabel(comp, category);
-			if (Strings.isNullOrEmpty(dataset.category())) {
+			if (Strings.nullOrEmpty(dataset.category())) {
 				categoryLabel.setFont(UI.italicFont());
 			}
 			categoryLabel.setForeground(Colors.get(0, 128, 42));
@@ -230,13 +230,12 @@ class SearchPage extends FormPage {
 		}
 		var b = (Button) e.widget;
 		var data = (Dataset) b.getData();
-		var id = new TypedRefId(data.type(), data.refId());
 		App.runWithProgress(M.DownloadingData, () -> {
 			File tmp = null;
 			ZipStore store = null;
 			try {
 				tmp = Files.createTempFile("cs-json-", ".zip").toFile();
-				if (!query.client.downloadJson(id, tmp))
+				if (!query.server.downloadJson(data.type(), data.refId(), tmp))
 					return;
 				store = ZipStore.open(tmp);
 				var jsonImport = new JsonImport(store, Database.get());
@@ -269,14 +268,14 @@ class SearchPage extends FormPage {
 
 	private String getDatasetLink(Dataset dataset) {
 		var url = getRepositoryLink(dataset);
-		url += "/dataset/" + dataset.type().name();
+		url += "/dataset/" + dataset.type();
 		url += "/" + dataset.refId();
 		url += "?commitId=" + dataset.commitId();
 		return url;
 	}
 
 	private String getRepositoryLink(Dataset dataset) {
-		var url = query.client.serverUrl;
+		var url = query.server.url;
 		url += "/" + dataset.repositoryId();
 		return url;
 	}

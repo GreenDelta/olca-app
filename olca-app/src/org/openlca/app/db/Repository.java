@@ -7,8 +7,10 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.openlca.app.collaboration.api.RepositoryClient;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
+import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.collaboration.api.CollaborationServer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
@@ -21,12 +23,12 @@ public class Repository extends ClientRepository {
 	private static final Logger log = LoggerFactory.getLogger(Repository.class);
 	public static Repository CURRENT;
 	public static final String GIT_DIR = "repositories";
-	public final RepositoryClient client;
+	public final CollaborationServer server;
 	private String password;
 
 	private Repository(File gitDir, IDatabase database) throws IOException {
 		super(gitDir, database);
-		client = client(this);
+		server = server(this);
 	}
 
 	public static void checkIfCollaborationServer() {
@@ -36,14 +38,14 @@ public class Repository extends ClientRepository {
 	public static void checkIfCollaborationServer(FileRepository gitRepo) throws IOException {
 		if (gitRepo == null)
 			return;
-		var client = client(gitRepo);
-		isCollaborationServer(gitRepo.getConfig(), client != null && client.isCollaborationServer());
+		var server = server(gitRepo);
+		isCollaborationServer(gitRepo.getConfig(), server != null && WebRequests.execute(server::isCollaborationServer, false));
 	}
 
 	public static void checkIfCollaborationServer(Repository repo) {
 		if (repo == null)
 			return;
-		repo.isCollaborationServer(repo.client != null && repo.client.isCollaborationServer());
+		repo.isCollaborationServer(repo.server != null && WebRequests.execute(repo.server::isCollaborationServer, false));
 	}
 
 	public static Repository open(File gitDir, IDatabase database) {
@@ -79,7 +81,7 @@ public class Repository extends ClientRepository {
 		return new File(repos, databaseName);
 	}
 
-	public static RepositoryClient client(org.eclipse.jgit.lib.Repository repo) throws IOException {
+	public static CollaborationServer server(org.eclipse.jgit.lib.Repository repo) throws IOException {
 		var url = url(repo);
 		if (Strings.nullOrEmpty(url))
 			return null;
@@ -87,12 +89,14 @@ public class Repository extends ClientRepository {
 			var splitIndex = url.lastIndexOf(":");
 			var serverUrl = url.substring(0, splitIndex);
 			var repositoryId = url.substring(splitIndex + 1);
-			return new RepositoryClient(serverUrl, repositoryId);
+			return new CollaborationServer(serverUrl, repositoryId,
+					() -> AuthenticationDialog.promptCredentials(serverUrl + "/" + repositoryId));
 		} else if (url.startsWith("http")) {
 			var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
 			var serverUrl = url.substring(0, splitIndex);
 			var repositoryId = url.substring(splitIndex + 1);
-			return new RepositoryClient(serverUrl, repositoryId);
+			return new CollaborationServer(serverUrl, repositoryId,
+					() -> AuthenticationDialog.promptCredentials(serverUrl + "/" + repositoryId));
 		}
 		throw new IllegalArgumentException("Unsupported protocol");
 	}
@@ -103,8 +107,8 @@ public class Repository extends ClientRepository {
 
 	@Override
 	public void close() {
-		if (client != null) {
-			client.close();
+		if (server != null) {
+			WebRequests.execute(server::close);
 		}
 		super.close();
 		CURRENT = null;
@@ -171,7 +175,7 @@ public class Repository extends ClientRepository {
 	}
 
 	public boolean isCollaborationServer() {
-		return isCollaborationServer(getConfig()) && client != null;
+		return isCollaborationServer(getConfig()) && server != null;
 	}
 
 	public static void isCollaborationServer(StoredConfig config, boolean value) {

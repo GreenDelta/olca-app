@@ -11,12 +11,12 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.model.Comment;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
+import org.openlca.collaboration.api.CommentsInvocation.Comment;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;
@@ -71,7 +71,7 @@ public class CommentsPage extends FormPage {
 			if (type == null || refId == null)
 				return null;
 			App.open(getDescriptor(
-					ModelType.valueOf(type.toString()),
+					type.toString(),
 					refId.toString()));
 			return null;
 		});
@@ -79,7 +79,7 @@ public class CommentsPage extends FormPage {
 		UI.onLoaded(browser, HtmlFolder.getUrl("comments.html"), () -> {
 			for (Comment comment : comments) {
 				var json = gson.fromJson(gson.toJson(comment), JsonObject.class);
-				Json.put(json, "label", CommentLabels.get(comment.type(), comment.path()));
+				Json.put(json, "label", CommentLabels.get(ModelType.parse(comment.type()), comment.path()));
 				Json.put(json, "fullPath", getFullPath(comment));
 				browser.execute("add(" + gson.toJson(json) + ");");
 			}
@@ -99,8 +99,8 @@ public class CommentsPage extends FormPage {
 		return Strings.join(categories, '/') + "/" + descriptor.name;
 	}
 
-	private RootDescriptor getDescriptor(ModelType type, String refId) {
-		return Daos.root(Database.get(), type).getDescriptorForRefId(refId);
+	private RootDescriptor getDescriptor(String type, String refId) {
+		return Daos.root(Database.get(), ModelType.valueOf(type)).getDescriptorForRefId(refId);
 	}
 
 	private Category getCategory(RootDescriptor descriptor) {
@@ -116,7 +116,7 @@ public class CommentsPage extends FormPage {
 		}
 
 		public void openModel(String type, String refId) {
-			App.open(getDescriptor(ModelType.valueOf(type), refId));
+			App.open(getDescriptor(type, refId));
 		}
 
 	}
