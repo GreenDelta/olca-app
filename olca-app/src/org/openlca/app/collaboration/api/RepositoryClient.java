@@ -4,19 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.model.Announcement;
 import org.openlca.app.collaboration.model.Comment;
-import org.openlca.app.collaboration.model.Restriction;
 import org.openlca.app.collaboration.model.SearchResult;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.db.Repository;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.model.ModelRef;
 import org.openlca.git.util.TypedRefId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,15 +60,6 @@ public class RepositoryClient {
 		}
 	}
 
-	public List<Restriction> checkRestrictions(Collection<? extends ModelRef> refs) {
-		try {
-			return executeLoggedIn(new RestrictionCheckInvocation(repositoryId, refs));
-		} catch (WebRequestException e) {
-			log.error("Repository client request failed", e);
-			return new ArrayList<>();
-		}
-	}
-
 	public List<Comment> getAllComments() {
 		try {
 			return executeLoggedIn(new CommentsInvocation(repositoryId));
@@ -98,6 +86,7 @@ public class RepositoryClient {
 			return null;
 		}
 	}
+
 	public boolean downloadJson(TypedRefId id, File toFile) {
 		try {
 			var token = executeLoggedIn(new DownloadJsonPrepareInvocation(repositoryId, id));
