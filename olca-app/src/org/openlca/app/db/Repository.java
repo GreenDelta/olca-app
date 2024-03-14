@@ -39,13 +39,15 @@ public class Repository extends ClientRepository {
 		if (gitRepo == null)
 			return;
 		var server = server(gitRepo);
-		isCollaborationServer(gitRepo.getConfig(), server != null && WebRequests.execute(server::isCollaborationServer, false));
+		isCollaborationServer(gitRepo.getConfig(),
+				server != null && WebRequests.execute(server::isCollaborationServer, false));
 	}
 
 	public static void checkIfCollaborationServer(Repository repo) {
 		if (repo == null)
 			return;
-		repo.isCollaborationServer(repo.server != null && WebRequests.execute(repo.server::isCollaborationServer, false));
+		repo.isCollaborationServer(
+				repo.server != null && WebRequests.execute(repo.server::isCollaborationServer, false));
 	}
 
 	public static Repository open(File gitDir, IDatabase database) {
@@ -88,15 +90,25 @@ public class Repository extends ClientRepository {
 		if (url.startsWith("git@")) {
 			var splitIndex = url.lastIndexOf(":");
 			var serverUrl = url.substring(0, splitIndex);
-			var repositoryId = url.substring(splitIndex + 1);
-			return new CollaborationServer(serverUrl, repositoryId,
-					() -> AuthenticationDialog.promptCredentials(serverUrl + "/" + repositoryId));
+			return new CollaborationServer(serverUrl, () -> AuthenticationDialog.promptCredentials(serverUrl));
 		} else if (url.startsWith("http")) {
 			var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
 			var serverUrl = url.substring(0, splitIndex);
-			var repositoryId = url.substring(splitIndex + 1);
-			return new CollaborationServer(serverUrl, repositoryId,
-					() -> AuthenticationDialog.promptCredentials(serverUrl + "/" + repositoryId));
+			return new CollaborationServer(serverUrl, () -> AuthenticationDialog.promptCredentials(serverUrl));
+		}
+		throw new IllegalArgumentException("Unsupported protocol");
+	}
+
+	public String getId() {
+		var url = url(this);
+		if (Strings.nullOrEmpty(url))
+			return null;
+		if (url.startsWith("git@")) {
+			var splitIndex = url.lastIndexOf(":");
+			return url.substring(splitIndex + 1);
+		} else if (url.startsWith("http")) {
+			var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
+			return url.substring(splitIndex + 1);
 		}
 		throw new IllegalArgumentException("Unsupported protocol");
 	}

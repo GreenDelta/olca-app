@@ -7,6 +7,9 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
+import org.openlca.app.collaboration.navigation.elements.EntryElement;
+import org.openlca.app.collaboration.navigation.elements.RepositoryElement;
+import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -33,16 +36,16 @@ public class NavigationComparator extends ViewerComparator {
 		if (e1 instanceof GroupElement)
 			return 0;
 
-		if (e1 instanceof ModelTypeElement && e2 instanceof ModelTypeElement) {
-			return ModelTypeOrder.compare(
-					((ModelTypeElement) e1).getContent(),
-					((ModelTypeElement) e2).getContent());
-		}
+		if (e1 instanceof ModelTypeElement m1 && e2 instanceof ModelTypeElement m2)
+			return ModelTypeOrder.compare(m1.getContent(), m2.getContent());
+
+		if (e1 instanceof EntryElement ee1 && e2 instanceof EntryElement ee2 && ee1.isModelType())
+			return ModelTypeOrder.compare(ee1.getModelType(), ee2.getModelType());
 
 		// for script elements folders come before files
-		if (e1 instanceof ScriptElement) {
-			var f1 = ((ScriptElement) e1).getContent();
-			var f2 = ((ScriptElement) e2).getContent();
+		if (e1 instanceof ScriptElement s1 && e2 instanceof ScriptElement s2) {
+			var f1 = s1.getContent();
+			var f2 = s2.getContent();
 			if (f1.isDirectory() && !f2.isDirectory())
 				return -1;
 			if (!f1.isDirectory() && f2.isDirectory())
@@ -60,13 +63,13 @@ public class NavigationComparator extends ViewerComparator {
 			return 0;
 		if (o instanceof DatabaseElement)
 			return 1;
-		if (o instanceof ModelTypeElement)
+		if (o instanceof ModelTypeElement || (o instanceof EntryElement e && e.isModelType()))
 			return 2;
 		if (o instanceof GroupElement)
 			return 3;
-		if (o instanceof CategoryElement)
+		if (o instanceof CategoryElement || (o instanceof EntryElement e && e.isCategory()))
 			return 4;
-		if (o instanceof ModelElement)
+		if (o instanceof ModelElement || (o instanceof EntryElement e && e.isDataset()))
 			return 5;
 		if (o instanceof LibraryDirElement)
 			return 6;
@@ -74,7 +77,11 @@ public class NavigationComparator extends ViewerComparator {
 			return 7;
 		if (o instanceof ScriptElement)
 			return 8;
-		return 10;
+		if (o instanceof ServerElement)
+			return 9;
+		if (o instanceof RepositoryElement)
+			return 10;
+		return 11;
 	}
 
 	private String getLabel(Viewer viewer, Object obj) {
@@ -89,8 +96,8 @@ public class NavigationComparator extends ViewerComparator {
 				return "";
 			var changed = RepositoryLabel.CHANGED_STATE;
 			return label.startsWith(changed)
-				? label.substring(changed.length())
-				: label;
+					? label.substring(changed.length())
+					: label;
 		}
 		return obj.toString();
 	}

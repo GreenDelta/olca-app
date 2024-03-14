@@ -18,7 +18,7 @@ import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
-import org.openlca.collaboration.api.WebRequests.WebRequestException;
+import org.openlca.collaboration.model.WebRequestException;
 import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;

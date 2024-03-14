@@ -1,6 +1,6 @@
 package org.openlca.app.collaboration.util;
 
-import org.openlca.collaboration.api.WebRequests.WebRequestException;
+import org.openlca.collaboration.model.WebRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ public class WebRequests {
 		try {
 			request.execute();
 		} catch (WebRequestException e) {
-			log.error("");
+			log.error("Error during collaboration server request", e);
 		}
 	}
 
@@ -24,7 +24,7 @@ public class WebRequests {
 		try {
 			return request.execute();
 		} catch (WebRequestException e) {
-			log.error("");
+			log.error("Error during collaboration server request", e);
 			return defaultValue;
 		}
 	}

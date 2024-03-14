@@ -33,8 +33,8 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.collaboration.api.CollaborationServer;
-import org.openlca.collaboration.api.SearchInvocation.Dataset;
-import org.openlca.collaboration.api.SearchInvocation.SearchResult;
+import org.openlca.collaboration.model.Dataset;
+import org.openlca.collaboration.model.SearchResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
@@ -70,7 +70,7 @@ class SearchPage extends FormPage {
 		renderPage(null);
 	}
 
-	private void renderPage(SearchResult result) {
+	private void renderPage(SearchResult<Dataset> result) {
 		if (headerSection != null) {
 			headerComposite.dispose();
 			headerSection.dispose();
@@ -96,7 +96,7 @@ class SearchPage extends FormPage {
 	}
 
 	private void createRepositoryViewer() {
-		UI.label(headerComposite, tk, "Repository");
+		UI.label(headerComposite, tk, "Server");
 		var viewer = new AbstractComboViewer<CollaborationServer>(headerComposite) {
 
 			@Override
@@ -110,7 +110,7 @@ class SearchPage extends FormPage {
 					@Override
 					public String getText(Object element) {
 						var server = (CollaborationServer) element;
-						return server.url + "/" + server.repositoryId;
+						return server.url;
 					}
 				};
 			}
@@ -157,7 +157,7 @@ class SearchPage extends FormPage {
 		Controls.onSelect(button, e -> runSearch(1));
 	}
 
-	private void createItems(SearchResult result) {
+	private void createItems(SearchResult<Dataset> result) {
 		var click = new LinkClick();
 		for (var dataset : result.data()) {
 			var comp = tk.createComposite(pageComposite);
@@ -189,7 +189,7 @@ class SearchPage extends FormPage {
 		}
 	}
 
-	private void renderPager(SearchResult result) {
+	private void renderPager(SearchResult<Dataset> result) {
 		var paging = result.resultInfo();
 		if (paging.pageCount() < 2)
 			return;
@@ -235,7 +235,7 @@ class SearchPage extends FormPage {
 			ZipStore store = null;
 			try {
 				tmp = Files.createTempFile("cs-json-", ".zip").toFile();
-				if (!query.server.downloadJson(data.type(), data.refId(), tmp))
+				if (!query.server.downloadJson(data.repositoryId(), data.type(), data.refId(), tmp))
 					return;
 				store = ZipStore.open(tmp);
 				var jsonImport = new JsonImport(store, Database.get());

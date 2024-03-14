@@ -10,7 +10,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.db.Repository;
 import org.openlca.app.tools.authentification.AuthenticationGroup;
 import org.openlca.app.util.UI;
-import org.openlca.collaboration.api.Credentials;
+import org.openlca.collaboration.model.Credentials;
 import org.openlca.util.Strings;
 
 public class AuthenticationDialog extends FormDialog {
@@ -33,8 +33,7 @@ public class AuthenticationDialog extends FormDialog {
 	}
 
 	public static GitCredentialsProvider promptCredentials(Repository repo) {
-		var url = repo.server.url + "/" + repo.server.repositoryId;
-		return promptCredentials(repo, url, false);
+		return promptCredentials(repo, repo.server.url, false);
 	}
 
 	public static GitCredentialsProvider forcePromptCredentials(String url) {
@@ -42,8 +41,7 @@ public class AuthenticationDialog extends FormDialog {
 	}
 
 	public static GitCredentialsProvider forcePromptCredentials(Repository repo) {
-		var url = repo.server.url + "/" + repo.server.repositoryId;
-		return promptCredentials(repo, url, true);
+		return promptCredentials(repo, repo.server.url, true);
 	}
 
 	private static GitCredentialsProvider promptCredentials(Repository repo, String url, boolean forceAll) {
@@ -191,6 +189,10 @@ public class AuthenticationDialog extends FormDialog {
 			return promptCredentials(Repository.CURRENT) != null;
 		}
 
+		public static GitCredentialsProvider anonymous() {
+			return new GitCredentialsProvider(null, null);
+		}
+		
 	}
 
 }

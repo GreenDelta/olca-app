@@ -10,7 +10,7 @@ import org.openlca.core.model.ModelType;
 
 public class GroupElement extends NavigationElement<Group> {
 
-	GroupElement(INavigationElement<?> parent, Group group) {
+	protected GroupElement(INavigationElement<?> parent, Group group) {
 		super(parent, group);
 	}
 

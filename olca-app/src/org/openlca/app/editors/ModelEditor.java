@@ -134,7 +134,7 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 				|| !Repository.CURRENT.isCollaborationServer())
 			return;
 		comments = new Comments(WebRequests.execute(
-				() -> Repository.CURRENT.server.getComments(type.name(), refId),
+				() -> Repository.CURRENT.server.getComments(Repository.CURRENT.getId(), type.name(), refId),
 				new ArrayList<>()));
 	}
 

@@ -8,7 +8,7 @@ import java.util.Optional;
  * Basic implementation of a navigation element which manages an internal cache
  * for its child elements.
  */
-abstract class NavigationElement<T> implements INavigationElement<T> {
+public abstract class NavigationElement<T> implements INavigationElement<T> {
 
 	private List<INavigationElement<?>> cache;
 	private T content;

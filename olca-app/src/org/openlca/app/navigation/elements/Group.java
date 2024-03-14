@@ -17,7 +17,7 @@ public class Group {
 		this.types = types;
 	}
 
-	static Group of(String label, GroupType type, ModelType... types) {
+	public static Group of(String label, GroupType type, ModelType... types) {
 		return new Group(label, type, types);
 	}
 

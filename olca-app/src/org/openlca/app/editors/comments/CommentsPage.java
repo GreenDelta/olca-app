@@ -16,7 +16,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
-import org.openlca.collaboration.api.CommentsInvocation.Comment;
+import org.openlca.collaboration.model.Comment;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;

@@ -12,6 +12,10 @@ public interface INavigationElement<T> {
 
 	List<INavigationElement<?>> getChildren();
 
+	default boolean hasChildren() {
+		return !getChildren().isEmpty();
+	}
+
 	T getContent();
 
 	void update();
