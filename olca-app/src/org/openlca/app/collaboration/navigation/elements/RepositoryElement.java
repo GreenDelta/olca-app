@@ -31,8 +31,9 @@ public class RepositoryElement extends NavigationElement<Repository>
 	protected List<INavigationElement<?>> queryChilds() {
 		var children = new ArrayList<INavigationElement<?>>();
 		var counts = WebRequests.execute(
-				() -> getServer().browse(getRepositoryId(), "").stream()
-						.collect(Collectors.toMap(Entry::path, Entry::count)));
+				() -> getServer().browse(getRepositoryId(), ""), new ArrayList<Entry>())
+				.stream()
+				.collect(Collectors.toMap(Entry::path, Entry::count));
 		Arrays.asList(
 				ModelType.PROJECT,
 				ModelType.PRODUCT_SYSTEM,

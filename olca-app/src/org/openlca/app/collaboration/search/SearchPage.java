@@ -21,7 +21,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.util.CollaborationServers;
+import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
@@ -54,7 +54,7 @@ class SearchPage extends FormPage {
 	private Composite headerComposite;
 	private Section pageSection;
 	private Composite pageComposite;
-	private final List<CollaborationServer> servers = CollaborationServers.get();
+	private final List<CollaborationServer> servers = ServerConfigurations.get();
 
 	public SearchPage(SearchView view, SearchQuery query) {
 		super(view, "SearchResultView.Page", M.SearchResults);

@@ -7,8 +7,12 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.core.runtime.PlatformObject;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
+import org.openlca.app.collaboration.navigation.ServerConfigurations;
+import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.collaboration.api.CollaborationServer;
 import org.openlca.util.Dirs;
 
 /**
@@ -58,6 +62,10 @@ public class NavigationRoot extends PlatformObject implements
 		if (scriptRoot.exists() && !Dirs.isEmpty(scriptRoot)) {
 			childs.add(new ScriptElement(this, scriptRoot));
 		}
+
+		ServerConfigurations.get().stream()
+				.map(config -> new ServerElement(this, config))
+				.forEach(childs::add);
 
 		return childs;
 	}

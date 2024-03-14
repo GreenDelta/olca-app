@@ -26,6 +26,7 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.collaboration.navigation.NavCache;
+import org.openlca.app.collaboration.navigation.elements.EntryElement;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.libraries.LibraryEditor;
@@ -47,6 +48,7 @@ import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.navigation.elements.ScriptElement;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.Desktop;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.Category;
@@ -83,25 +85,28 @@ public class Navigator extends CommonNavigator {
 
 		viewer.addDoubleClickListener(evt -> {
 			var elem = Selections.firstOf(evt);
-			if (elem instanceof ModelElement) {
-				var model = ((ModelElement) elem).getContent();
+			if (elem instanceof ModelElement e) {
+				var model = e.getContent();
 				App.open(model);
-			} else if (elem instanceof DatabaseElement) {
-				var config = ((DatabaseElement) elem).getContent();
+			} else if (elem instanceof DatabaseElement e) {
+				var config = e.getContent();
 				if (config != null && !Database.isActive(config)) {
 					new DbActivateAction(config).run();
 				}
-			} else if (elem instanceof ScriptElement) {
-				var file = ((ScriptElement) elem).getContent();
+			} else if (elem instanceof ScriptElement e) {
+				var file = e.getContent();
 				if (file.isDirectory())
 					return;
 				OpenScriptAction.run(file);
-			} else if (elem instanceof LibraryElement) {
-				var library = ((LibraryElement) elem).getContent();
+			} else if (elem instanceof LibraryElement e) {
+				var library = e.getContent();
 				LibraryEditor.open(library);
-			} else if (elem instanceof MappingFileElement) {
-				var mapping = ((MappingFileElement) elem).getContent();
+			} else if (elem instanceof MappingFileElement e) {
+				var mapping = e.getContent();
 				OpenMappingAction.run(mapping);
+			} else if (elem instanceof EntryElement e && e.isDataset()) {
+				var url = e.getUrl();
+				Desktop.browse(url);
 			}
 		});
 

@@ -26,9 +26,9 @@ public class EntryElement extends NavigationElement<Entry> implements IRepositor
 			return new ArrayList<>();
 		var children = new ArrayList<INavigationElement<?>>();
 		WebRequests.execute(
-				() -> getServer().browse(getRepositoryId(), getContent().path()).stream()
-						.map(e -> new EntryElement(this, e))
-						.forEach(children::add));
+				() -> getServer().browse(getRepositoryId(), getContent().path()), new ArrayList<Entry>()).stream()
+				.map(e -> new EntryElement(this, e))
+				.forEach(children::add);
 		return children;
 	}
 
@@ -41,6 +41,12 @@ public class EntryElement extends NavigationElement<Entry> implements IRepositor
 		if (getContent().typeOfEntry() == TypeOfEntry.MODEL_TYPE)
 			return ModelType.parse(getContent().path());
 		return new ModelRef(getContent().path()).type;
+	}
+
+	public String getRefId() {
+		if (getContent().typeOfEntry() != TypeOfEntry.DATASET)
+			return null;
+		return new ModelRef(getContent().path()).refId;
 	}
 
 	public ProcessType getProcessType() {
@@ -67,6 +73,12 @@ public class EntryElement extends NavigationElement<Entry> implements IRepositor
 
 	public boolean isModelType() {
 		return getContent().typeOfEntry() == TypeOfEntry.MODEL_TYPE;
+	}
+
+	public String getUrl() {
+		if (!isDataset())
+			return null;
+		return getServer().url + "/" + getRepositoryId() + "/dataset/" + getModelType().name() + "/" + getRefId();
 	}
 
 	static EntryElement of(INavigationElement<?> parent, ModelType type, int count) {

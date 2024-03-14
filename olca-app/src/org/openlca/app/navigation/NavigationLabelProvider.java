@@ -151,6 +151,12 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (elem instanceof DatabaseDirElement)
 			return Icon.FOLDER.get();
 
+		if (elem instanceof ServerElement serverElem)
+			return Icon.COLLABORATION_SERVER_LOGO.get();
+
+		if (elem instanceof RepositoryElement repositoryElem)
+			return Icon.REPOSITORY.get();
+
 		if (elem instanceof EntryElement entryElem) {
 			if (entryElem.isModelType() || entryElem.isCategory())
 				return Images.getForCategory(entryElem.getModelType());

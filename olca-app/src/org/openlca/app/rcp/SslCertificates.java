@@ -3,6 +3,8 @@ package org.openlca.app.rcp;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.cert.CertificateException;
 
 import org.openlca.collaboration.Ssl;
 import org.slf4j.Logger;
@@ -36,8 +38,8 @@ class SslCertificates {
 				Ssl.addCertificate(name, stream);
 				added = true;
 				log.debug("Sucessfully added certificate " + name);
-			} catch (IOException e) {
-				log.error("Error loading certificate " + name, e);
+			} catch (IOException | CertificateException | KeyStoreException e) {
+				log.error("Error adding certificate " + name, e);
 			}
 		}
 		if (!added)

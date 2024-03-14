@@ -1,6 +1,6 @@
 package org.openlca.app.collaboration.search;
 
-import org.openlca.app.collaboration.util.CollaborationServers;
+import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.collaboration.model.Dataset;
 import org.openlca.collaboration.model.SearchResult;
@@ -9,7 +9,7 @@ public class Search {
 
 	public static SearchResult<Dataset> run(SearchQuery query) {
 		if (query.server == null) {
-			var clients = CollaborationServers.get();
+			var clients = ServerConfigurations.get();
 			if (clients.isEmpty())
 				return new SearchResult<Dataset>();
 			query.server = clients.get(0);
