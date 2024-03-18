@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.model;
 import com.google.gson.JsonArray;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
@@ -138,14 +137,10 @@ public class GraphFactory {
 	public static List<Exchange> getExchanges(RootEntity entity, ModelType type) {
 		return switch (type) {
 			case PROCESS -> {
-				var p = (Process) entity;
-				if (p == null)
-					yield Collections.emptyList();
-				if (p.isFromLibrary()) {
-					Libraries.fillExchangesOf(p);
-					yield libraryProcessExchanges(p);
-				}
-				yield p.exchanges;
+				var process = (Process) entity;
+				yield process == null
+						? Collections.emptyList()
+						: process.exchanges;
 			}
 			case PRODUCT_SYSTEM -> {
 				var system = (ProductSystem) entity;
@@ -175,14 +170,6 @@ public class GraphFactory {
 		return getExchanges(entity, type).stream()
 				.filter(e -> (e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW)
 						|| (!e.isInput && e.flow.flowType == FlowType.WASTE_FLOW))
-				.toList();
-	}
-
-	private static List<Exchange> libraryProcessExchanges(Process p) {
-		return p.exchanges.stream()
-				.filter(e -> (
-						!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW)
-						|| (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW))
 				.toList();
 	}
 
