@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/angus-activation-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/aopalliance-repackaged-3.0.5.jar"/>
@@ -74,6 +75,9 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-git-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-grpc-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-3.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.1.2-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-license-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-native-0.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-process-xls-2.1.1-SNAPSHOT.jar"/>
