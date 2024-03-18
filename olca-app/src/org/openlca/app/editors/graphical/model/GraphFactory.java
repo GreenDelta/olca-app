@@ -1,7 +1,5 @@
 package org.openlca.app.editors.graphical.model;
 
-import java.util.*;
-
 import com.google.gson.JsonArray;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
@@ -11,10 +9,22 @@ import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
-import org.openlca.core.model.*;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Result;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
 import static org.openlca.app.editors.graphical.model.Node.OUTPUT_PROP;
@@ -133,6 +143,7 @@ public class GraphFactory {
 					yield Collections.emptyList();
 				if (p.isFromLibrary()) {
 					Libraries.fillExchangesOf(p);
+					yield libraryProcessExchanges(p);
 				}
 				yield p.exchanges;
 			}
@@ -164,6 +175,14 @@ public class GraphFactory {
 		return getExchanges(entity, type).stream()
 				.filter(e -> (e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW)
 						|| (!e.isInput && e.flow.flowType == FlowType.WASTE_FLOW))
+				.toList();
+	}
+
+	private static List<Exchange> libraryProcessExchanges(Process p) {
+		return p.exchanges.stream()
+				.filter(e -> (
+						!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW)
+						|| (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW))
 				.toList();
 	}
 
