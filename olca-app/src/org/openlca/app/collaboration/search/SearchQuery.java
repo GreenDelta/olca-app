@@ -1,10 +1,10 @@
 package org.openlca.app.collaboration.search;
 
-import org.openlca.collaboration.api.CollaborationServer;
+import org.openlca.collaboration.client.CSClient;
 
 public class SearchQuery {
 
-	public CollaborationServer server;
+	public CSClient server;
 	public String query;
 	public String type;
 	public int page;

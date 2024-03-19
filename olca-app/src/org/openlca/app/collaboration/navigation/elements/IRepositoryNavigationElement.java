@@ -1,11 +1,11 @@
 package org.openlca.app.collaboration.navigation.elements;
 
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.collaboration.api.CollaborationServer;
+import org.openlca.collaboration.client.CSClient;
 
 public interface IRepositoryNavigationElement<T> extends INavigationElement<T> {
 
-	default CollaborationServer getServer() {
+	default CSClient getServer() {
 		if (this instanceof ServerElement e)
 			return e.server;
 		if (getParent() instanceof IRepositoryNavigationElement e)

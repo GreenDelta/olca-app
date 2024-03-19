@@ -20,6 +20,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.12.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-math3-3.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/cs-client-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/curvesapi-1.06.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derby-10.16.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derbyshared-10.16.1.1.jar"/>
@@ -70,7 +71,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.13.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/npy-0.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-cs-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-2.0.0.jar"/>

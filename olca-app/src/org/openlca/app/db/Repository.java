@@ -11,7 +11,7 @@ import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.collaboration.api.CollaborationServer;
+import org.openlca.collaboration.client.CSClient;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
@@ -23,20 +23,24 @@ public class Repository extends ClientRepository {
 	private static final Logger log = LoggerFactory.getLogger(Repository.class);
 	public static Repository CURRENT;
 	public static final String GIT_DIR = "repositories";
+	public final String url;
 	public final String id;
-	public final CollaborationServer server;
+	public final CSClient client;
 
 	private Repository(File gitDir, IDatabase database) throws IOException {
 		super(gitDir, database);
-		var url = url();
+		this.url = url();
 		if (url != null && (!url.startsWith("git@") && !url.startsWith("http")))
 			throw new IllegalArgumentException("Unsupported protocol");
 		var splitIndex = url.startsWith("git@")
 				? url.lastIndexOf(":")
 				: url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
 		var serverUrl = url.substring(0, splitIndex);
-		this.server = new CollaborationServer(serverUrl,
-				() -> AuthenticationDialog.promptCredentials(serverUrl, user()));
+		var isCollaborationServer = WebRequests.execute(
+				() -> CSClient.isCollaborationServer(url), false);
+		this.client = isCollaborationServer
+				? new CSClient(serverUrl, () -> AuthenticationDialog.promptCredentials(serverUrl, user()))
+				: null;
 		this.id = url.substring(splitIndex + 1);
 	}
 
@@ -58,11 +62,7 @@ public class Repository extends ClientRepository {
 	}
 
 	public static Repository initialize(File gitDir, IDatabase database) {
-		var repo = open(gitDir, database, true);
-		if (repo != null) {
-			repo.checkIfCollaborationServer();
-		}
-		return repo;
+		return open(gitDir, database, true);
 	}
 
 	public static Repository open(File gitDir, IDatabase database) {
@@ -96,14 +96,8 @@ public class Repository extends ClientRepository {
 		return CURRENT != null;
 	}
 
-	public void checkIfCollaborationServer() {
-		isCollaborationServer(server != null &&
-				WebRequests.execute(
-						() -> server.isCollaborationServer(), false));
-	}
-
 	public PersonIdent promptUser() {
-		var ident = AuthenticationDialog.promptUser(server.url, user());
+		var ident = AuthenticationDialog.promptUser(url, user());
 		if (ident == null)
 			return null;
 		user(ident.getName());
@@ -111,7 +105,7 @@ public class Repository extends ClientRepository {
 	}
 
 	public GitCredentialsProvider promptCredentials() {
-		var credentials = AuthenticationDialog.promptCredentials(server.url, user());
+		var credentials = AuthenticationDialog.promptCredentials(url, user());
 		if (credentials == null)
 			return null;
 		user(credentials.user);
@@ -119,11 +113,15 @@ public class Repository extends ClientRepository {
 	}
 
 	public GitCredentialsProvider promptToken() {
-		var credentials = AuthenticationDialog.promptToken(server.url, user());
+		var credentials = AuthenticationDialog.promptToken(url, user());
 		if (credentials == null)
 			return null;
 		user(credentials.user);
 		return credentials;
+	}
+
+	public boolean isCollaborationServer() {
+		return client != null;
 	}
 
 	public String user() {
@@ -133,16 +131,6 @@ public class Repository extends ClientRepository {
 	public void user(String user) {
 		var config = getConfig();
 		config.setString("user", null, "name", user);
-		saveConfig(config);
-	}
-
-	public boolean isCollaborationServer() {
-		return server != null && getConfig().getBoolean("remote", "origin", "isCollaborationServer", false);
-	}
-
-	public void isCollaborationServer(boolean value) {
-		var config = getConfig();
-		config.setBoolean("remote", "origin", "isCollaborationServer", value);
 		saveConfig(config);
 	}
 
@@ -156,8 +144,8 @@ public class Repository extends ClientRepository {
 
 	@Override
 	public void close() {
-		if (server != null) {
-			WebRequests.execute(server::close);
+		if (client != null) {
+			WebRequests.execute(client::close);
 		}
 		super.close();
 		CURRENT = null;

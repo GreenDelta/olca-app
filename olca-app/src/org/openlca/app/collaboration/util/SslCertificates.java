@@ -15,7 +15,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import org.openlca.app.rcp.Workspace;
-import org.openlca.collaboration.Ssl;
+import org.openlca.collaboration.client.Ssl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

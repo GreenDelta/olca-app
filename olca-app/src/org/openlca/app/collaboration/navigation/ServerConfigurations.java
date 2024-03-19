@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.collaboration.api.CollaborationServer;
+import org.openlca.collaboration.client.CSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +72,8 @@ public class ServerConfigurations {
 			this(url, null);
 		}
 		
-		public CollaborationServer open() {
-			return new CollaborationServer(url,
+		public CSClient open() {
+			return new CSClient(url,
 					() -> AuthenticationDialog.promptCredentials(url, user));
 		}
 

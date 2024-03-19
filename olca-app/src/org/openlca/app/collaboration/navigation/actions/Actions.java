@@ -72,7 +72,7 @@ class Actions {
 		var passwordMissing = m.endsWith("424 null");
 		var notPermitted = m.contains("not permitted on");
 		if (notPermitted) {
-			CredentialStore.clearPassword(repo.server.url, repo.user());
+			CredentialStore.clearPassword(repo.url, repo.user());
 			throw new TransportException("You do not have sufficient access to this repository");
 		}
 		if (passwordMissing) {
@@ -82,7 +82,7 @@ class Actions {
 		if (!notAuthorized && !tokenRequired)
 			throw runner.exception;
 		if (notAuthorized) {
-			CredentialStore.clearPassword(repo.server.url, repo.user());
+			CredentialStore.clearPassword(repo.url, repo.user());
 			credentials = repo.promptCredentials();
 		} else if (tokenRequired) {
 			credentials = repo.promptToken();

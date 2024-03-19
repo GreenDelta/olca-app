@@ -12,7 +12,7 @@ import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.collaboration.api.CollaborationServer;
+import org.openlca.collaboration.client.CSClient;
 import org.openlca.util.Dirs;
 
 /**

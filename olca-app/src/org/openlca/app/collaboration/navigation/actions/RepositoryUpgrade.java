@@ -181,7 +181,7 @@ public class RepositoryUpgrade {
 				return true;
 			return Actions.applyStash();
 		} catch (GitAPIException | InvocationTargetException | InterruptedException | IOException e) {
-			log.warn("Error pulling from " + repo.server.url + "/" + repo.id, e);
+			log.warn("Error pulling from " + repo.url + "/" + repo.id, e);
 			return false;
 		}
 	}

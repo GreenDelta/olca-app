@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.cert.CertificateException;
 
-import org.openlca.collaboration.Ssl;
+import org.openlca.collaboration.client.Ssl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

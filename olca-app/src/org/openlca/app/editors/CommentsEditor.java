@@ -46,7 +46,7 @@ public class CommentsEditor extends SimpleFormEditor {
 		List<Comment> comments = new ArrayList<>();
 		if (Repository.CURRENT.isCollaborationServer()) {
 			comments = WebRequests.execute(
-					() -> Repository.CURRENT.server.getComments(Repository.CURRENT.id),
+					() -> Repository.CURRENT.client.getComments(Repository.CURRENT.id),
 					new ArrayList<>());
 		}
 		return new CommentsPage(this, comments);

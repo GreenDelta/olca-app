@@ -7,13 +7,13 @@ import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfi
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.NavigationElement;
-import org.openlca.collaboration.api.CollaborationServer;
+import org.openlca.collaboration.client.CSClient;
 import org.openlca.collaboration.model.Repository;
 
 public class ServerElement extends NavigationElement<ServerConfig>
 		implements IRepositoryNavigationElement<ServerConfig> {
 
-	protected final CollaborationServer server;
+	protected final CSClient server;
 
 	public ServerElement(INavigationElement<?> parent, ServerConfig content) {
 		super(parent, content);

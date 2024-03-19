@@ -58,8 +58,8 @@ public class RepositoryLabel {
 		if (!Strings.nullOrEmpty(user)) {
 			text += user + "@";
 		}
-		if (repo.server != null) {
-			text += repo.server.url + "/" + repo.id;
+		if (repo.client != null) {
+			text += repo.url + "/" + repo.id;
 		} else {
 			text += "local";
 		}

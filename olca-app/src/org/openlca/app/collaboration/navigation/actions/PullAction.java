@@ -33,7 +33,7 @@ public class PullAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return Repository.CURRENT.server != null;
+		return true;
 	}
 
 	@Override

@@ -97,7 +97,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		if (!repo.isCollaborationServer())
 			return null;
 		var stream = WebRequests.execute(
-				() -> repo.server.downloadLibrary(newLib.id()));
+				() -> repo.client.downloadLibrary(newLib.id()));
 		if (stream == null)
 			return null;
 		return App.exec("Downloading and extracting library " + newLib.id(),
