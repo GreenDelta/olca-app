@@ -80,7 +80,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-license-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-native-0.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-process-xls-2.1.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-process-xls-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-io-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.5.jar"/>
