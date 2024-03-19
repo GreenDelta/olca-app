@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.MergeDialog;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
@@ -183,7 +182,9 @@ class ConflictResolutionMap implements ConflictResolver {
 		if (discard) {
 			stashCreate = stashCreate.discard();
 		} else {
-			var user = AuthenticationDialog.promptUser(repo);
+			var user = repo.promptUser();
+			if (user == null)
+				return false;
 			stashCreate = stashCreate.as(user);
 		}
 		Actions.run(stashCreate);

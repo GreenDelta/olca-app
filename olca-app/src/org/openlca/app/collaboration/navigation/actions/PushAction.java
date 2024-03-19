@@ -9,7 +9,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -41,7 +40,7 @@ public class PushAction extends Action implements INavigationAction {
 	public void run() {
 		var repo = Repository.CURRENT;
 		try {
-			var credentials = AuthenticationDialog.promptCredentials(repo);
+			var credentials = repo.promptCredentials();
 			if (credentials == null)
 				return;
 			var result = Actions.run(credentials,

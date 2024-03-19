@@ -41,7 +41,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private DatabaseConfig config;
-	
+
 	public DbActivateAction() {
 		setText(M.OpenDatabase);
 		setImageDescriptor(Icon.CONNECT.descriptor());
@@ -130,17 +130,17 @@ public class DbActivateAction extends Action implements INavigationAction {
 		private void handleVersionState(VersionState state) {
 			log.trace("Check version state");
 			switch (state) {
-			case HIGHER_VERSION:
-				error(M.DatabaseNewerThanThisError);
-				break;
-			case NEEDS_UPGRADE:
-				askRunUpgrades();
-				break;
-			case UP_TO_DATE:
-				refresh();
-				break;
-			default:
-				break;
+				case HIGHER_VERSION:
+					error(M.DatabaseNewerThanThisError);
+					break;
+				case NEEDS_UPGRADE:
+					askRunUpgrades();
+					break;
+				case UP_TO_DATE:
+					refresh();
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -160,7 +160,9 @@ public class DbActivateAction extends Action implements INavigationAction {
 					}
 				}
 			}
-			Repository.checkIfCollaborationServer();
+			if (Repository.isConnected()) {
+				Repository.CURRENT.checkIfCollaborationServer();
+			}
 			Announcements.check();
 			HistoryView.refresh();
 			CompareView.clear();
@@ -224,7 +226,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 	private class UpgradeQuestionDialog extends Dialog {
 
 		private boolean backupDatabase = true;
-		
+
 		public UpgradeQuestionDialog() {
 			super(UI.shell());
 		}

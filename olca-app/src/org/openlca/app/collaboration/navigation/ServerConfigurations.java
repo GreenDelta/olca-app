@@ -27,14 +27,23 @@ public class ServerConfigurations {
 		return CONFIGS;
 	}
 
-	public static void add(ServerConfig config) {
-		CONFIGS.add(config);
+	public static void put(ServerConfig config) {
+		var index = CONFIGS.indexOf(config);
+		if (index == -1) {
+			CONFIGS.add(config);
+		} else {
+			CONFIGS.set(index, config);
+		}
 		write();
 	}
 
 	public static void remove(ServerConfig config) {
 		CONFIGS.remove(config);
 		write();
+	}
+
+	public static void update(ServerConfig config) {
+
 	}
 
 	private static List<ServerConfig> read() {
@@ -57,11 +66,15 @@ public class ServerConfigurations {
 		}
 	}
 
-	public record ServerConfig(String url) {
+	public record ServerConfig(String url, String user) {
 
+		public ServerConfig(String url) {
+			this(url, null);
+		}
+		
 		public CollaborationServer open() {
 			return new CollaborationServer(url,
-					() -> AuthenticationDialog.promptCredentials(url));
+					() -> AuthenticationDialog.promptCredentials(url, user));
 		}
 
 	}

@@ -10,8 +10,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
+import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.collaboration.util.SslCertificates;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
@@ -23,7 +23,6 @@ import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.actions.GitStashApply;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,12 +62,8 @@ class Actions {
 		var runner = new GitRemoteRunner<>(runnable);
 		service.run(true, false, runner::run);
 		var repo = org.openlca.app.db.Repository.CURRENT;
-		if (runner.exception == null) {
-			if (Strings.nullOrEmpty(credentials.token)) {
-				repo.useTwoFactorAuth(false);
-			}
+		if (runner.exception == null)
 			return runner.result;
-		}
 		if (!(runner.exception instanceof TransportException))
 			throw runner.exception;
 		var m = runner.exception.getMessage();
@@ -77,10 +72,7 @@ class Actions {
 		var passwordMissing = m.endsWith("424 null");
 		var notPermitted = m.contains("not permitted on");
 		if (notPermitted) {
-			if (Strings.nullOrEmpty(credentials.token)) {
-				repo.useTwoFactorAuth(false);
-			}
-			repo.invalidateCredentials();
+			CredentialStore.clearPassword(repo.server.url, repo.user());
 			throw new TransportException("You do not have sufficient access to this repository");
 		}
 		if (passwordMissing) {
@@ -90,11 +82,10 @@ class Actions {
 		if (!notAuthorized && !tokenRequired)
 			throw runner.exception;
 		if (notAuthorized) {
-			repo.invalidateCredentials();
-			credentials = AuthenticationDialog.forcePromptCredentials(repo);
+			CredentialStore.clearPassword(repo.server.url, repo.user());
+			credentials = repo.promptCredentials();
 		} else if (tokenRequired) {
-			repo.useTwoFactorAuth(true);
-			credentials = AuthenticationDialog.promptToken(repo);
+			credentials = repo.promptToken();
 		}
 		if (credentials == null)
 			return null;

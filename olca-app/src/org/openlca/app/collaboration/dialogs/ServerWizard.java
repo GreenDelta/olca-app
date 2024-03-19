@@ -34,7 +34,7 @@ public class ServerWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-		ServerConfigurations.add(new ServerConfig(page.location.url()));
+		ServerConfigurations.put(new ServerConfig(page.location.url()));
 		Navigator.refresh();
 		return true;
 	}

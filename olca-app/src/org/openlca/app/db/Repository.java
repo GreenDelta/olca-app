@@ -5,16 +5,16 @@ import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.collaboration.api.CollaborationServer;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,31 +23,46 @@ public class Repository extends ClientRepository {
 	private static final Logger log = LoggerFactory.getLogger(Repository.class);
 	public static Repository CURRENT;
 	public static final String GIT_DIR = "repositories";
+	public final String id;
 	public final CollaborationServer server;
-	private String password;
 
 	private Repository(File gitDir, IDatabase database) throws IOException {
 		super(gitDir, database);
-		server = server(this);
+		var url = url();
+		if (url != null && (!url.startsWith("git@") && !url.startsWith("http")))
+			throw new IllegalArgumentException("Unsupported protocol");
+		var splitIndex = url.startsWith("git@")
+				? url.lastIndexOf(":")
+				: url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
+		var serverUrl = url.substring(0, splitIndex);
+		this.server = new CollaborationServer(serverUrl,
+				() -> AuthenticationDialog.promptCredentials(serverUrl, user()));
+		this.id = url.substring(splitIndex + 1);
 	}
 
-	public static void checkIfCollaborationServer() {
-		checkIfCollaborationServer(CURRENT);
+	private String url() {
+		try (var git = new Git(this)) {
+			var configs = git.remoteList().call();
+			var config = configs.stream()
+					.filter(c -> c.getName().equals(Constants.DEFAULT_REMOTE))
+					.findFirst()
+					.orElse(null);
+			if (config == null || config.getURIs().isEmpty())
+				return null;
+			var uri = config.getURIs().get(0);
+			return uri.toString();
+		} catch (GitAPIException e) {
+			log.error("Error reading Git config", e);
+			return null;
+		}
 	}
 
-	public static void checkIfCollaborationServer(FileRepository gitRepo) throws IOException {
-		if (gitRepo == null)
-			return;
-		var server = server(gitRepo);
-		isCollaborationServer(gitRepo.getConfig(),
-				server != null && WebRequests.execute(server::isCollaborationServer, false));
-	}
-
-	public static void checkIfCollaborationServer(Repository repo) {
-		if (repo == null)
-			return;
-		repo.isCollaborationServer(
-				repo.server != null && WebRequests.execute(repo.server::isCollaborationServer, false));
+	public static Repository initialize(File gitDir, IDatabase database) {
+		var repo = open(gitDir, database, true);
+		if (repo != null) {
+			repo.checkIfCollaborationServer();
+		}
+		return repo;
 	}
 
 	public static Repository open(File gitDir, IDatabase database) {
@@ -72,49 +87,71 @@ public class Repository extends ClientRepository {
 		}
 	}
 
-	public static Repository initialize(File gitDir, IDatabase database) {
-		var repo = open(gitDir, database, true);
-		checkIfCollaborationServer(repo);
-		return repo;
-	}
-
 	public static File gitDir(String databaseName) {
 		var repos = new File(Workspace.root(), GIT_DIR);
 		return new File(repos, databaseName);
 	}
 
-	public static CollaborationServer server(org.eclipse.jgit.lib.Repository repo) throws IOException {
-		var url = url(repo);
-		if (Strings.nullOrEmpty(url))
-			return null;
-		if (url.startsWith("git@")) {
-			var splitIndex = url.lastIndexOf(":");
-			var serverUrl = url.substring(0, splitIndex);
-			return new CollaborationServer(serverUrl, () -> AuthenticationDialog.promptCredentials(serverUrl));
-		} else if (url.startsWith("http")) {
-			var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
-			var serverUrl = url.substring(0, splitIndex);
-			return new CollaborationServer(serverUrl, () -> AuthenticationDialog.promptCredentials(serverUrl));
-		}
-		throw new IllegalArgumentException("Unsupported protocol");
-	}
-
-	public String getId() {
-		var url = url(this);
-		if (Strings.nullOrEmpty(url))
-			return null;
-		if (url.startsWith("git@")) {
-			var splitIndex = url.lastIndexOf(":");
-			return url.substring(splitIndex + 1);
-		} else if (url.startsWith("http")) {
-			var splitIndex = url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
-			return url.substring(splitIndex + 1);
-		}
-		throw new IllegalArgumentException("Unsupported protocol");
-	}
-
 	public static boolean isConnected() {
 		return CURRENT != null;
+	}
+
+	public void checkIfCollaborationServer() {
+		isCollaborationServer(server != null &&
+				WebRequests.execute(
+						() -> server.isCollaborationServer(), false));
+	}
+
+	public PersonIdent promptUser() {
+		var ident = AuthenticationDialog.promptUser(server.url, user());
+		if (ident == null)
+			return null;
+		user(ident.getName());
+		return ident;
+	}
+
+	public GitCredentialsProvider promptCredentials() {
+		var credentials = AuthenticationDialog.promptCredentials(server.url, user());
+		if (credentials == null)
+			return null;
+		user(credentials.user);
+		return credentials;
+	}
+
+	public GitCredentialsProvider promptToken() {
+		var credentials = AuthenticationDialog.promptToken(server.url, user());
+		if (credentials == null)
+			return null;
+		user(credentials.user);
+		return credentials;
+	}
+
+	public String user() {
+		return getConfig().getString("user", null, "name");
+	}
+
+	public void user(String user) {
+		var config = getConfig();
+		config.setString("user", null, "name", user);
+		saveConfig(config);
+	}
+
+	public boolean isCollaborationServer() {
+		return server != null && getConfig().getBoolean("remote", "origin", "isCollaborationServer", false);
+	}
+
+	public void isCollaborationServer(boolean value) {
+		var config = getConfig();
+		config.setBoolean("remote", "origin", "isCollaborationServer", value);
+		saveConfig(config);
+	}
+
+	private void saveConfig(StoredConfig config) {
+		try {
+			config.save();
+		} catch (IOException e) {
+			log.error("Error saving Git config", e);
+		}
 	}
 
 	@Override
@@ -125,86 +162,4 @@ public class Repository extends ClientRepository {
 		super.close();
 		CURRENT = null;
 	}
-
-	public String url() {
-		return url(this);
-	}
-
-	private static String url(org.eclipse.jgit.lib.Repository repo) {
-		try (var git = new Git(repo)) {
-			var configs = git.remoteList().call();
-			var config = configs.stream()
-					.filter(c -> c.getName().equals(Constants.DEFAULT_REMOTE))
-					.findFirst()
-					.orElse(null);
-			if (config == null || config.getURIs().isEmpty())
-				return null;
-			var uri = config.getURIs().get(0);
-			return uri.toString();
-		} catch (GitAPIException e) {
-			log.error("Error reading Git config", e);
-			return null;
-		}
-	}
-
-	public String user() {
-		return getConfig().getString("user", null, "name");
-	}
-
-	public void user(String user) {
-		if (!user.equals(user())) {
-			useTwoFactorAuth(false);
-		}
-		var config = getConfig();
-		config.setString("user", null, "name", user);
-		saveConfig(config);
-	}
-
-	public String password() {
-		return password;
-	}
-
-	public void password(String password) {
-		this.password = password;
-	}
-
-	public void invalidateCredentials() {
-		this.password = null;
-	}
-
-	public boolean useTwoFactorAuth() {
-		return getConfig().getBoolean("user", null, "useTwoFactorAuth", false);
-	}
-
-	public void useTwoFactorAuth(boolean value) {
-		var config = getConfig();
-		config.setString("user", null, "useTwoFactorAuth", Boolean.toString(value));
-		saveConfig(config);
-	}
-
-	public static boolean isCollaborationServer(StoredConfig config) {
-		return config.getBoolean("remote", "origin", "isCollaborationServer", false);
-	}
-
-	public boolean isCollaborationServer() {
-		return isCollaborationServer(getConfig()) && server != null;
-	}
-
-	public static void isCollaborationServer(StoredConfig config, boolean value) {
-		config.setBoolean("remote", "origin", "isCollaborationServer", value);
-		saveConfig(config);
-	}
-
-	public void isCollaborationServer(boolean value) {
-		isCollaborationServer(getConfig(), value);
-	}
-
-	private static void saveConfig(StoredConfig config) {
-		try {
-			config.save();
-		} catch (IOException e) {
-			log.error("Error saving Git config", e);
-		}
-	}
-
 }

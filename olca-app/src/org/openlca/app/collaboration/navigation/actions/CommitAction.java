@@ -10,7 +10,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.collaboration.navigation.NavCache;
@@ -59,8 +58,8 @@ public class CommitAction extends Action implements INavigationAction {
 			if (input == null || input.action() == CommitDialog.CANCEL)
 				return false;
 			var doPush = input.action() == CommitDialog.COMMIT_AND_PUSH;
-			var credentials = doPush ? AuthenticationDialog.promptCredentials(repo) : null;
-			var user = doPush && credentials != null ? credentials.ident : AuthenticationDialog.promptUser(repo);
+			var credentials = doPush ? repo.promptCredentials() : null;
+			var user = doPush && credentials != null ? credentials.ident : repo.promptUser();
 			if (credentials == null && user == null)
 				return false;
 			Actions.run(GitCommit.on(repo)

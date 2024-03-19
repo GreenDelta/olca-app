@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.tools.authentification.AuthenticationGroup;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
@@ -66,8 +65,8 @@ public class ConnectDialog extends FormDialog {
 		return auth.user();
 	}
 
-	public GitCredentialsProvider credentials() {
-		return new GitCredentialsProvider(auth.user(), auth.password());
+	public String password() {
+		return auth.password();
 	}
 
 }

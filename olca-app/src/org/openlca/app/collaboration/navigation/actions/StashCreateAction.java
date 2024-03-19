@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Repository;
@@ -49,7 +48,7 @@ public class StashCreateAction extends Action implements INavigationAction {
 			var input = Datasets.select(selection, false, true);
 			if (input == null)
 				return;
-			var user = AuthenticationDialog.promptUser(repo);
+			var user = repo.promptUser();
 			if (user == null)
 				return;
 			Actions.run(GitStashCreate.on(repo)

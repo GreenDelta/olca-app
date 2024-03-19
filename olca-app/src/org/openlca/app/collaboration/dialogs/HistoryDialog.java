@@ -58,10 +58,10 @@ public class HistoryDialog extends FormDialog {
 		if (repo == null || !repo.isCollaborationServer())
 			return;
 		Commit element = Selections.firstOf(event);
-		var repoUrl = repo.url();
+		var repoUrl = repo.server.url;
 		if (Strings.nullOrEmpty(repoUrl))
 			return;
-		var url = repo.url() + "/" + "commit" + "/" + element.id;
+		var url = repoUrl + "/" + "commit" + "/" + element.id;
 		Desktop.browse(url);
 	}
 	

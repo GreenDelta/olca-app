@@ -59,7 +59,7 @@ public class RepositoryLabel {
 			text += user + "@";
 		}
 		if (repo.server != null) {
-			text += repo.server.url + "/" + repo.getId();
+			text += repo.server.url + "/" + repo.id;
 		} else {
 			text += "local";
 		}

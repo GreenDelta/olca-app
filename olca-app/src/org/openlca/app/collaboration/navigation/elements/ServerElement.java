@@ -14,7 +14,7 @@ public class ServerElement extends NavigationElement<ServerConfig>
 		implements IRepositoryNavigationElement<ServerConfig> {
 
 	protected final CollaborationServer server;
-	
+
 	public ServerElement(INavigationElement<?> parent, ServerConfig content) {
 		super(parent, content);
 		this.server = content.open();
@@ -32,8 +32,6 @@ public class ServerElement extends NavigationElement<ServerConfig>
 				() -> server.listRepositories(), new ArrayList<Repository>()).stream()
 				.map(repo -> new RepositoryElement(this, repo))
 				.forEach(children::add);
-		if (children.isEmpty())
-			return null;
 		return children;
 	}
 

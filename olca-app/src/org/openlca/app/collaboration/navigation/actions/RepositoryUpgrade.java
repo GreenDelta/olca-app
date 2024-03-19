@@ -10,7 +10,6 @@ import java.util.Map;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -79,7 +78,7 @@ public class RepositoryUpgrade {
 		var repo = initGit(config.url, config.username);
 		if (repo == null)
 			return false;
-		var credentials = AuthenticationDialog.promptCredentials(repo);
+		var credentials = repo.promptCredentials();
 		if (credentials == null)
 			return false;
 		return pull(repo, credentials);
@@ -182,7 +181,7 @@ public class RepositoryUpgrade {
 				return true;
 			return Actions.applyStash();
 		} catch (GitAPIException | InvocationTargetException | InterruptedException | IOException e) {
-			log.warn("Error pulling from " + repo.server.url + "/" + repo.getId(), e);
+			log.warn("Error pulling from " + repo.server.url + "/" + repo.id, e);
 			return false;
 		}
 	}

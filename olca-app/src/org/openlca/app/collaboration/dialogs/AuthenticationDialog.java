@@ -7,7 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.openlca.app.db.Repository;
+import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.tools.authentification.AuthenticationGroup;
 import org.openlca.app.util.UI;
 import org.openlca.collaboration.model.Credentials;
@@ -15,100 +15,81 @@ import org.openlca.util.Strings;
 
 public class AuthenticationDialog extends FormDialog {
 
-	private final AuthenticationGroup auth = new AuthenticationGroup();
+	public final AuthenticationGroup auth = new AuthenticationGroup();
 	private final String url;
+	private final String user;
 
-	private AuthenticationDialog() {
-		this("");
+	public AuthenticationDialog(String url) {
+		this(url, null);
 	}
 
-	private AuthenticationDialog(String url) {
+	public AuthenticationDialog(String url, String user) {
 		super(UI.shell());
 		this.url = url;
+		this.user = user;
 		setBlockOnOpen(true);
 	}
 
 	public static GitCredentialsProvider promptCredentials(String url) {
-		return promptCredentials(null, url, false);
+		return promptCredentials(url, null);
 	}
 
-	public static GitCredentialsProvider promptCredentials(Repository repo) {
-		return promptCredentials(repo, repo.server.url, false);
-	}
-
-	public static GitCredentialsProvider forcePromptCredentials(String url) {
-		return promptCredentials(null, url, true);
-	}
-
-	public static GitCredentialsProvider forcePromptCredentials(Repository repo) {
-		return promptCredentials(repo, repo.server.url, true);
-	}
-
-	private static GitCredentialsProvider promptCredentials(Repository repo, String url, boolean forceAll) {
+	public static GitCredentialsProvider promptCredentials(String url, String user) {
+		if (Strings.nullOrEmpty(user)) {
+			user = CredentialStore.getUsername(url);
+		}
+		var password = CredentialStore.getPassword(url, user);
+		if (!Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password))
+			return new GitCredentialsProvider(url, user, password, null);
 		var dialog = new AuthenticationDialog(url);
 		var auth = dialog.auth;
-		var user = repo != null ? repo.user() : null;
-		var password = repo != null ? repo.password() : null;
-		var useTwoFactorAuth = repo != null ? repo.useTwoFactorAuth() : false;
 		auth.withUser(user).withPassword(password);
-		if (useTwoFactorAuth) {
-			auth.withToken();
-		}
-		if (!Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password) && !forceAll) {
-			if (!useTwoFactorAuth)
-				return new GitCredentialsProvider(user, password);
-			return promptToken(user, password);
-		}
 		if (dialog.open() == AuthenticationDialog.CANCEL)
-			return null;
-		if (auth == null || Strings.nullOrEmpty(auth.user()) || Strings.nullOrEmpty(auth.password()))
 			return null;
 		user = auth.user();
 		password = auth.password();
+		if (auth == null || Strings.nullOrEmpty(user) || Strings.nullOrEmpty(password))
+			return null;
 		var token = auth.token();
-		if (repo != null) {
-			repo.user(user);
-			repo.password(password);
-		}
-		return new GitCredentialsProvider(user, password, token);
+		CredentialStore.put(url, user, password);
+		return new GitCredentialsProvider(url, user, password, token);
 	}
 
-	public static PersonIdent promptUser(Repository repo) {
-		var user = repo != null ? repo.user() : null;
+	public static PersonIdent promptUser(String url, String user) {
 		if (!Strings.nullOrEmpty(user))
 			return new PersonIdent(user, "");
-		var dialog = new AuthenticationDialog();
+		var dialog = new AuthenticationDialog(url);
 		var auth = dialog.auth;
 		auth.withUser(user);
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
 		user = auth.user();
-		if (repo != null) {
-			repo.user(user);
-		}
 		return new PersonIdent(user, "");
 	}
 
-	public static GitCredentialsProvider promptToken(Repository repo) {
-		if (repo == null)
-			return null;
-		return promptToken(repo.user(), repo.password());
-	}
-
-	public static GitCredentialsProvider promptToken(String user, String password) {
-		var dialog = new AuthenticationDialog();
+	public static GitCredentialsProvider promptToken(String url, String user) {
+		var dialog = new AuthenticationDialog(url, user);
 		var auth = dialog.auth;
+		if (Strings.nullOrEmpty(user)) {
+			auth.withUser();
+		}
+		var password = CredentialStore.getPassword(url, user);
+		if (Strings.nullOrEmpty(password)) {
+			auth.withPassword();
+		}
 		auth.withToken();
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
-		return new GitCredentialsProvider(user, password, auth.token());
+		return new GitCredentialsProvider(url, user, password, auth.token());
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
-		var formBody = UI.header(form, form.getToolkit(),
-				"Authenticate " + url,
-				"Enter your credentials for the Git repository.");
+		var message = "Please enter your credentials for " + url;
+		if (!Strings.nullOrEmpty(user)) {
+			message += " and user " + user;
+		}
+		var formBody = UI.header(form, form.getToolkit(), "Authenticate", message);
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
@@ -135,17 +116,15 @@ public class AuthenticationDialog extends FormDialog {
 
 	public static class GitCredentialsProvider extends UsernamePasswordCredentialsProvider implements Credentials {
 
+		private final String url;
 		public final String user;
 		public final PersonIdent ident;
 		public final String password;
 		public final String token;
 
-		GitCredentialsProvider(String user, String password) {
-			this(user, password, null);
-		}
-
-		private GitCredentialsProvider(String user, String password, String token) {
+		private GitCredentialsProvider(String url, String user, String password, String token) {
 			super(user, Strings.nullOrEmpty(token) ? password : password + "&token=" + token);
+			this.url = url;
 			this.user = user;
 			this.ident = new PersonIdent(user, "");
 			this.password = password;
@@ -169,7 +148,7 @@ public class AuthenticationDialog extends FormDialog {
 
 		@Override
 		public String promptToken() {
-			var auth = AuthenticationDialog.promptToken(user, password);
+			var auth = AuthenticationDialog.promptToken(url, user);
 			return auth != null && auth.token != null
 					? auth.token
 					: null;
@@ -177,22 +156,14 @@ public class AuthenticationDialog extends FormDialog {
 
 		@Override
 		public boolean onUnauthenticated() {
-			return prompt();
+			return promptCredentials(url, user) != null;
 		}
 
 		@Override
 		public boolean onUnauthorized() {
-			return prompt();
+			return promptCredentials(url, user) != null;
 		}
 
-		private boolean prompt() {
-			return promptCredentials(Repository.CURRENT) != null;
-		}
-
-		public static GitCredentialsProvider anonymous() {
-			return new GitCredentialsProvider(null, null);
-		}
-		
 	}
 
 }

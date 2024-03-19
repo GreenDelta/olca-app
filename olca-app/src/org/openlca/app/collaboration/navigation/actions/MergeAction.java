@@ -8,7 +8,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -47,8 +46,10 @@ public class MergeAction extends Action implements INavigationAction {
 			if (conflictResult == null)
 				return;
 			var user = !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty()
-					? AuthenticationDialog.promptUser(repo)
+					? repo.promptUser()
 					: null;
+			if (user == null)
+				return;
 			var mergeResult = Actions.run(GitMerge
 					.on(repo)
 					.as(user)
