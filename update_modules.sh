@@ -5,14 +5,14 @@
 current_path=$(pwd)
 app_path=$(pwd)/olca-app
 modules_path=$(pwd)/../olca-modules
-cs_api_path=$(pwd)/../olca-cs
+cs_client_path=$(pwd)/../cs-client
 
 echo "install olca-modules from $modules_path" 
 cd $modules_path
 mvn install -DskipTests=true
 
-echo "install olca-cs from $cs_api_path"
-cd $cs_api_path
+echo "install cs-client from $cs_client_path"
+cd $cs_client_path
 mvn install -DskipTests=true
 
 echo "update packages in $app_path/libs"
