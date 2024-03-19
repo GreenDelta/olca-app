@@ -242,7 +242,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return groupElem.getContent().label;
 
 		if (elem instanceof ServerElement serverElem)
-			return serverElem.getContent().url;
+			return serverElem.getContent().url();
 		if (elem instanceof RepositoryElement repoElem)
 			return repoElem.getRepositoryId();
 		if (elem instanceof EntryElement entryElem)

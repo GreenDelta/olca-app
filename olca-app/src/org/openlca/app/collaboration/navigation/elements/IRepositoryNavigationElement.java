@@ -7,7 +7,7 @@ public interface IRepositoryNavigationElement<T> extends INavigationElement<T> {
 
 	default CollaborationServer getServer() {
 		if (this instanceof ServerElement e)
-			return e.getContent();
+			return e.server;
 		if (getParent() instanceof IRepositoryNavigationElement e)
 			return e.getServer();
 		return null;

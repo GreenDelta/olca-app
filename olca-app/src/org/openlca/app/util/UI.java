@@ -2,6 +2,7 @@ package org.openlca.app.util;
 
 import static org.openlca.util.OS.WINDOWS;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.eclipse.jface.resource.JFaceResources;
@@ -436,6 +437,25 @@ public class UI {
 		return checkbox(comp, toolkit);
 	}
 
+	public static Button[] radioGroup(Composite comp, FormToolkit tk, String[] labels, Consumer<Integer> onChange) {
+		if (labels == null || labels.length == 0)
+			return new Button[0];
+		var group = UI.composite(comp, tk);
+		UI.gridLayout(group, 4);
+		UI.gridData(group, true, false);
+		var buttons = new Button[labels.length];
+		var i = 0;
+		for (var label : labels) {
+			var radio = UI.radio(group);
+			radio.setSelection(i == 0);
+			var answer = i;
+			Controls.onSelect(radio, (e -> onChange.accept(answer)));
+			buttons[i++] = radio;
+			UI.label(group, label);
+		}
+		return buttons;
+	}
+
 	/**
 	 * Creates a radio button.
 	 */
@@ -664,7 +684,6 @@ public class UI {
 		tk.adapt(cLabel);
 		return cLabel;
 	}
-
 
 	public static CLabel cLabel(Composite comp, FormToolkit tk) {
 		return cLabel(comp, tk, SWT.NONE);

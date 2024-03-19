@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 public class AuthenticationDialog extends FormDialog {
 
 	static Logger log = LoggerFactory.getLogger(AuthenticationDialog.class);
-	private final AuthenticationGroup auth = new AuthenticationGroup();
 	private final String library;
+	private final AuthenticationGroup auth = new AuthenticationGroup()
+			.withUser().withPassword()
+			.onChange(this::updateButtons);
 
 	public AuthenticationDialog(String library) {
 		super(UI.shell());
@@ -28,7 +30,6 @@ public class AuthenticationDialog extends FormDialog {
 	public static Credentials promptCredentials(String library) {
 		var dialog = new AuthenticationDialog(library);
 		var auth = dialog.auth;
-		auth.withUser().withPassword();
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
 		if (Strings.nullOrEmpty(auth.user())
@@ -43,10 +44,9 @@ public class AuthenticationDialog extends FormDialog {
 				String.join(" - ", M.Authentication, library),
 				M.PleaseEnterYourCredentialsLibrary);
 		var body = UI.composite(formBody, form.getToolkit());
-		UI.gridLayout(body,  1);
+		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
-		auth.onChange(this::updateButtons)
-				.render(body, form.getToolkit(), SWT.FOCUSED, M.EmailOrUsername);
+		auth.render(body, form.getToolkit(), SWT.FOCUSED, M.EmailOrUsername);
 		form.getForm().reflow(true);
 	}
 

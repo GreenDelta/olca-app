@@ -22,6 +22,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
+import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
@@ -32,7 +33,6 @@ import org.openlca.app.util.Desktop;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
-import org.openlca.collaboration.api.CollaborationServer;
 import org.openlca.collaboration.model.Dataset;
 import org.openlca.collaboration.model.SearchResult;
 import org.openlca.core.model.ModelType;
@@ -54,12 +54,14 @@ class SearchPage extends FormPage {
 	private Composite headerComposite;
 	private Section pageSection;
 	private Composite pageComposite;
-	private final List<CollaborationServer> servers = ServerConfigurations.get();
-
+	private final List<ServerConfig> servers = ServerConfigurations.get();
+	private ServerConfig selected;
+	
 	public SearchPage(SearchView view, SearchQuery query) {
 		super(view, "SearchResultView.Page", M.SearchResults);
 		this.query = query;
-		this.query.server = !servers.isEmpty() ? servers.get(0) : null;
+		this.selected = !servers.isEmpty() ? servers.get(0) : null;
+		this.query.server = !servers.isEmpty() ? servers.get(0).open() : null;
 	}
 
 	@Override
@@ -97,11 +99,11 @@ class SearchPage extends FormPage {
 
 	private void createRepositoryViewer() {
 		UI.label(headerComposite, tk, "Server");
-		var viewer = new AbstractComboViewer<CollaborationServer>(headerComposite) {
+		var viewer = new AbstractComboViewer<ServerConfig>(headerComposite) {
 
 			@Override
-			public Class<CollaborationServer> getType() {
-				return CollaborationServer.class;
+			public Class<ServerConfig> getType() {
+				return ServerConfig.class;
 			}
 
 			@Override
@@ -109,20 +111,21 @@ class SearchPage extends FormPage {
 				return new LabelProvider() {
 					@Override
 					public String getText(Object element) {
-						var server = (CollaborationServer) element;
-						return server.url;
+						var server = (ServerConfig) element;
+						return server.url();
 					}
 				};
 			}
 
 		};
 		viewer.setInput(servers);
-		viewer.select(query.server);
+		viewer.select(selected);
 		viewer.addSelectionChangedListener(c -> {
 			if (query.server != null) {
 				WebRequests.execute(query.server::close);
 			}
-			query.server = c;
+			selected = c;
+			query.server = selected.open();
 			runSearch(1);
 		});
 	}

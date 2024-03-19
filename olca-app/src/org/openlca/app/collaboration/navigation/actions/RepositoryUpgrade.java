@@ -144,7 +144,7 @@ public class RepositoryUpgrade {
 				return repo;
 			}
 			url = Input.promptString("Could not connect",
-					"Could not connect, this might be an older version of the collaboration server? Please specify the url to the updated repository:",
+					"Could not connect, this might be an older version of the Collaboration Server? Please specify the url to the updated repository:",
 					url);
 			if (url == null)
 				return null;

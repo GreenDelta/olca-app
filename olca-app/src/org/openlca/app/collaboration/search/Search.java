@@ -12,7 +12,7 @@ public class Search {
 			var clients = ServerConfigurations.get();
 			if (clients.isEmpty())
 				return new SearchResult<Dataset>();
-			query.server = clients.get(0);
+			query.server = clients.get(0).open();
 		}
 		return WebRequests.execute(
 				() -> query.server.search(query.query, query.type, query.page, query.pageSize),

@@ -282,6 +282,10 @@ public class Images {
 		return ImageManager.descriptor(Icon.DATABASE, Overlay.NEW);
 	}
 
+	public static ImageDescriptor newServer() {
+		return ImageManager.descriptor(Icon.COLLABORATION_SERVER_LOGO, Overlay.NEW);
+	}
+
 	public static Image licensedLibrary(boolean isValid) {
 		var overlay = isValid ? Overlay.VALID : Overlay.INVALID;
 		return ImageManager.get(Icon.LIBRARY, overlay);

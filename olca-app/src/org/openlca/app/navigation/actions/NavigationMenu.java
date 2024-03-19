@@ -1,5 +1,8 @@
 package org.openlca.app.navigation.actions;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -14,17 +17,28 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.RepositoryMenu;
 import org.openlca.app.collaboration.navigation.actions.CloneAction;
+import org.openlca.app.collaboration.navigation.actions.RegisterServerAction;
+import org.openlca.app.collaboration.navigation.actions.UnregisterServerAction;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.navigation.actions.db.*;
+import org.openlca.app.navigation.actions.db.DbActivateAction;
+import org.openlca.app.navigation.actions.db.DbCategoryAction;
+import org.openlca.app.navigation.actions.db.DbCloseAction;
+import org.openlca.app.navigation.actions.db.DbCopyAction;
+import org.openlca.app.navigation.actions.db.DbCreateAction;
+import org.openlca.app.navigation.actions.db.DbDeleteAction;
+import org.openlca.app.navigation.actions.db.DbExportAction;
+import org.openlca.app.navigation.actions.db.DbRenameAction;
+import org.openlca.app.navigation.actions.db.DbRestoreAction;
+import org.openlca.app.navigation.actions.db.DbValidationAction;
 import org.openlca.app.navigation.actions.libraries.AddLibraryAction;
 import org.openlca.app.navigation.actions.libraries.DeleteLibraryAction;
 import org.openlca.app.navigation.actions.libraries.ExportLibraryAction;
 import org.openlca.app.navigation.actions.libraries.OpenLibraryAction;
+import org.openlca.app.navigation.actions.libraries.UpdateLibraryAction;
 import org.openlca.app.navigation.actions.nexus.XNexusCsvIndexExportAction;
 import org.openlca.app.navigation.actions.nexus.XNexusEcoinventIndexExportAction;
 import org.openlca.app.navigation.actions.nexus.XNexusIndexExportAction;
-import org.openlca.app.navigation.actions.libraries.UpdateLibraryAction;
 import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
@@ -35,9 +49,6 @@ import org.openlca.app.tools.FileImport;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.viewers.Selections;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Adds the actions to the context menu of the navigation tree.
@@ -89,6 +100,11 @@ public class NavigationMenu extends CommonActionProvider {
 				new DbCloseAction(),
 				new AddLibraryAction());
 
+		// server actions
+		addActions(selection, menu,
+				new RegisterServerAction(),
+				new UnregisterServerAction());
+		
 		// dev. extensions
 		if (App.runsInDevMode()) {
 			addActions(selection, menu,

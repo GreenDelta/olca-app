@@ -2,10 +2,10 @@ package org.openlca.app.collaboration.navigation;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.rcp.Workspace;
@@ -20,34 +20,50 @@ public class ServerConfigurations {
 
 	private final static Logger log = LoggerFactory.getLogger(ServerConfigurations.class);
 	private final static String FILE_NAME = "servers.json";
+	private final static File FILE = new File(Workspace.root(), FILE_NAME);
+	private static List<ServerConfig> CONFIGS = read();
 
-	private static List<CollaborationServer> SERVERS;
-
-	public static List<CollaborationServer> get() {
-		if (SERVERS == null) {
-			SERVERS = read();
-		}
-		return SERVERS;
+	public static List<ServerConfig> get() {
+		return CONFIGS;
 	}
 
-	private static List<CollaborationServer> read() {
-		var file = new File(Workspace.root(), FILE_NAME);
-		if (!file.exists())
-			return new ArrayList<>();
-		try {
-			return new Gson().fromJson(new FileReader(file), new TypeToken<List<ServerConfig>>() {
-			}).stream()
-					.map(config -> new CollaborationServer(config.url,
-							() -> AuthenticationDialog.promptCredentials(config.url)))
-					.collect(Collectors.toList());
+	public static void add(ServerConfig config) {
+		CONFIGS.add(config);
+		write();
+	}
 
+	public static void remove(ServerConfig config) {
+		CONFIGS.remove(config);
+		write();
+	}
+
+	private static List<ServerConfig> read() {
+		if (!FILE.exists())
+			return new ArrayList<>();
+		try (var reader = new FileReader(FILE)) {
+			return new Gson().fromJson(reader, new TypeToken<List<ServerConfig>>() {
+			});
 		} catch (IOException e) {
 			log.error("Error reading " + FILE_NAME, e);
 			return new ArrayList<>();
 		}
 	}
 
-	private record ServerConfig(String url, String username) {
+	private static void write() {
+		try (var writer = new FileWriter(FILE)) {
+			new Gson().toJson(CONFIGS, writer);
+		} catch (IOException e) {
+			log.error("Error writing " + FILE_NAME, e);
+		}
+	}
+
+	public record ServerConfig(String url) {
+
+		public CollaborationServer open() {
+			return new CollaborationServer(url,
+					() -> AuthenticationDialog.promptCredentials(url));
+		}
+
 	}
 
 }

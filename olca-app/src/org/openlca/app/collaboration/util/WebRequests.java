@@ -12,7 +12,7 @@ public class WebRequests {
 		try {
 			request.execute();
 		} catch (WebRequestException e) {
-			log.error("Error during collaboration server request", e);
+			log.error("Error during Collaboration Server request", e);
 		}
 	}
 
@@ -22,9 +22,12 @@ public class WebRequests {
 
 	public static <T> T execute(RequestWithResponse<T> request, T defaultValue) {
 		try {
-			return request.execute();
+			var value = request.execute();
+			if (value == null)
+				return defaultValue;
+			return value;
 		} catch (WebRequestException e) {
-			log.error("Error during collaboration server request", e);
+			log.error("Error during Collaboration Server request", e);
 			return defaultValue;
 		}
 	}
