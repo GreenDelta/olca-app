@@ -161,7 +161,7 @@ class SodaPage extends FormPage {
 
 		App.runWithProgress("Import datasets ...", () -> {
 			var imp = Import.of(client, db)
-					.withLanguageOrder(IoPreference.getIlcdLanguage());
+					.withPreferredLanguage(IoPreference.getIlcdLanguage());
 			for (var d : selection) {
 				imp.write(d.toRef().getType(), d.getUUID());
 			}
@@ -185,10 +185,10 @@ class SodaPage extends FormPage {
 			if (!(obj instanceof Descriptor<?> d))
 				return null;
 			return switch (col) {
-				case 0 -> LangString.getFirst(d.getName(), lang);
+				case 0 -> LangString.getOrDefault(d.getName(), lang);
 				case 1 -> d.getUUID();
 				case 2 -> d.getVersion();
-				case 3 -> Strings.cut(LangString.getFirst(d.getComment(), lang), 75);
+				case 3 -> Strings.cut(LangString.getOrDefault(d.getComment(), lang), 75);
 				default -> null;
 			};
 		}

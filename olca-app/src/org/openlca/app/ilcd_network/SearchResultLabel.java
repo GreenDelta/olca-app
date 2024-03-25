@@ -26,7 +26,7 @@ class SearchResultLabel extends LabelProvider implements ITableLabelProvider {
 	private String createLabel(ProcessDescriptor process, int col) {
 		return switch (col) {
 			case SearchResultViewer.NAME_COLUMN ->
-					LangString.getFirst(process.getName(), "en");
+					LangString.getDefault(process.getName());
 			case SearchResultViewer.LOCATION_COLUMN -> process.getLocation();
 			case SearchResultViewer.TIME_COLUMN -> createTimeLabel(process);
 			case SearchResultViewer.TYPE_COLUMN -> createTypeLabel(process);

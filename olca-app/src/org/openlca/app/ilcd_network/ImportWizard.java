@@ -53,7 +53,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		var processes = processSearchPage.getSelectedProcesses();
 		var client = IoPreference.createClient();
 		var config = Import.of(client, database)
-				.withLanguageOrder(IoPreference.getIlcdLanguage(), "en");
+				.withPreferredLanguage(IoPreference.getIlcdLanguage());
 		getContainer().run(true, true, monitor -> {
 			monitor.beginTask(M.ILCD_RunImport, IProgressMonitor.UNKNOWN);
 			try {

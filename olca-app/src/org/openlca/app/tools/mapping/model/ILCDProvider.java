@@ -74,7 +74,7 @@ public class ILCDProvider implements FlowProvider {
 			store.each(FlowProperty.class, fp -> {
 				Descriptor d = new FlowPropertyDescriptor();
 				d.refId = FlowProperties.getUUID(fp);
-				d.name = LangString.getFirst(FlowProperties.getName(fp), "en");
+				d.name = LangString.getDefault(FlowProperties.getName(fp));
 				props.put(d.refId, d);
 				Ref ug = FlowProperties.getUnitGroupRef(fp);
 				if (ug != null) {
@@ -91,7 +91,7 @@ public class ILCDProvider implements FlowProvider {
 				// flow
 				FlowDescriptor d = new FlowDescriptor();
 				flowRef.flow = d;
-				d.name = Flows.getFullName(f);
+				d.name = Flows.getFullName(f, "en");
 				d.flowType = map(Flows.getType(f));
 				d.refId = Flows.getUUID(f);
 
