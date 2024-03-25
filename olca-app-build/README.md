@@ -37,7 +37,11 @@ and native libraries if these are missing.
 1. Check that the `olca-app` and `olca-modules` repositories are on the master
    branch and are in sync with our GitHub repository.
 
-2. Run the `prepare-release.py` script that updates the olca-modules libraries
+2. Copy the welcome page background image into
+   `olca-app/olca-app-html/images/background_start_page.jpg`.
+   This image is not stored on GitHub as it is often modified and quite large.
+
+3. Run the `prepare-release.py` script that updates the olca-modules libraries
    in the olca-app, creates fresh database templates, updates the html-pages,
    creates the Jython bindings from the current modules, etc.:
 
@@ -46,16 +50,16 @@ and native libraries if these are missing.
    python prepare-release.py
    ```
 
-3. Run the PDE export as described above.
+4. Run the PDE export as described above.
 
-4. Run the packaging module `package`.
+5. Run the packaging module `package`.
 
    ```bash
    cd olca-app-build
    python -m package
    ```
 
-   Note: To also create the Windows installer, add `--winstaller` to the 
+   Note: To also create the Windows installer, add `--winstaller` to the
    command and to package _MKL_ native library instead of _BLAS_, add  `--mkl`.
 
 -------------
@@ -175,4 +179,4 @@ Multiple steps are necessary to combine the different icons into a `.ico` file:
 
 ```bash
 convert 16_8bit.bmp 16_32bit.bmp 32_8bit.bmp 32_32bit.bmp 48_8bit.bmp 48_32bit.bmp 256_32bit.bmp logo.ico
-``` 
+```
