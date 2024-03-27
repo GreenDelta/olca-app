@@ -275,6 +275,13 @@
 				name="Validation result">
 		</editor>
 
+		<editor
+				class="org.openlca.app.tools.soda.SodaClientTool"
+				default="false"
+				id="SodaClientTool"
+				name="soda4LCA client">
+		</editor>
+
 	</extension>
 
 	<extension
@@ -495,6 +502,10 @@
 					name="startupMessageRect"
 					value="7,525,445,20">
 			</property>
+   <property
+         name="preferenceCustomization"
+         value="plugin_customization.ini">
+   </property>
 		</product>
 	</extension>
 

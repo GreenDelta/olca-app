@@ -20,6 +20,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Categories;
 import org.openlca.app.util.ErrorReporter;
@@ -69,11 +70,15 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 				&& comments.hasAnyPath(path);
 	}
 
-	protected void addCommentPage() throws PartInitException {
-		if (!App.isCommentingEnabled() || comments == null
-				|| !comments.hasRefId(model.refId))
-			return;
-		addPage(new CommentsPage(this, comments, model));
+	protected void addExtensionPages() throws PartInitException {
+		if (App.isCommentingEnabled()
+				&& comments != null
+				&& comments.hasRefId(model.refId)) {
+			addPage(new CommentsPage(this, comments, model));
+		}
+		if (FeatureFlag.ADDITIONAL_PROPERTIES.isEnabled()) {
+			addPage(new AdditionalPropertiesPage<>(this));
+		}
 	}
 
 	public void emitEvent(String eventId) {

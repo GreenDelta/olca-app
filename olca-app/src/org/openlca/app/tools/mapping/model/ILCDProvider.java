@@ -26,7 +26,7 @@ import org.openlca.ilcd.util.FlowProperties;
 import org.openlca.ilcd.util.Flows;
 import org.openlca.ilcd.util.UnitGroups;
 import org.openlca.io.ilcd.input.FlowImport;
-import org.openlca.io.ilcd.input.ImportConfig;
+import org.openlca.io.ilcd.input.Import;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,20 +65,20 @@ public class ILCDProvider implements FlowProvider {
 				if (unit == null)
 					return;
 				Descriptor d = new UnitDescriptor();
-				d.name = unit.name;
-				units.put(ug.getUUID(), d);
+				d.name = unit.getName();
+				units.put(UnitGroups.getUUID(ug), d);
 			});
 
 			// collect flow properties
 			Map<String, Descriptor> props = new HashMap<>();
 			store.each(FlowProperty.class, fp -> {
 				Descriptor d = new FlowPropertyDescriptor();
-				d.refId = fp.getUUID();
-				d.name = LangString.getFirst(fp.getName(), "en");
+				d.refId = FlowProperties.getUUID(fp);
+				d.name = LangString.getDefault(FlowProperties.getName(fp));
 				props.put(d.refId, d);
 				Ref ug = FlowProperties.getUnitGroupRef(fp);
 				if (ug != null) {
-					Descriptor unit = units.get(ug.uuid);
+					Descriptor unit = units.get(ug.getUUID());
 					units.put(d.refId, unit);
 				}
 			});
@@ -91,9 +91,9 @@ public class ILCDProvider implements FlowProvider {
 				// flow
 				FlowDescriptor d = new FlowDescriptor();
 				flowRef.flow = d;
-				d.name = Flows.getFullName(f);
+				d.name = Flows.getFullName(f, "en");
 				d.flowType = map(Flows.getType(f));
-				d.refId = f.getUUID();
+				d.refId = Flows.getUUID(f);
 
 				// category path
 				String[] cpath = Categories.getPath(f);
@@ -101,9 +101,9 @@ public class ILCDProvider implements FlowProvider {
 
 				// flow property & unit
 				FlowPropertyRef refProp = Flows.getReferenceFlowProperty(f);
-				if (refProp == null || refProp.flowProperty == null)
+				if (refProp == null || refProp.getFlowProperty() == null)
 					return;
-				String propID = refProp.flowProperty.uuid;
+				String propID = refProp.getFlowProperty().getUUID();
 				flowRef.property = props.get(propID);
 				flowRef.unit = units.get(propID);
 			});
@@ -130,9 +130,9 @@ public class ILCDProvider implements FlowProvider {
 		if (refs == null || db == null)
 			return;
 		try (var store = new ZipStore(file)) {
-			var conf = new ImportConfig(store, db);
+			var imp = Import.of(store, db);
 			for (FlowRef ref : refs) {
-				FlowImport.get(conf, ref.flow.refId);
+				FlowImport.get(imp, ref.flow.refId);
 			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());

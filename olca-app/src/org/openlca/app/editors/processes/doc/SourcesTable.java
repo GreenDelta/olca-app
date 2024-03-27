@@ -1,4 +1,4 @@
-package org.openlca.app.editors.processes;
+package org.openlca.app.editors.processes.doc;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.openlca.app.App;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
+import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.Viewers;
@@ -18,7 +19,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDocumentation;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.Descriptor;
 
@@ -88,7 +89,7 @@ class SourcesTable extends AbstractTableViewer<Source> {
 		var p = editor.getModel();
 		var doc = p.documentation;
 		if (doc == null) {
-			doc = new ProcessDocumentation();
+			doc = new ProcessDoc();
 			p.documentation = doc;
 		}
 		if (doc.sources.contains(source))

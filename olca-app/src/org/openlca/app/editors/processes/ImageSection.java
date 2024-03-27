@@ -17,7 +17,6 @@ import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.Source;
 import org.openlca.util.Strings;
 
@@ -44,7 +43,7 @@ class ImageSection {
 			c.dispose();
 		}
 		controls.clear();
-		ProcessDocumentation doc = editor.getModel().documentation;
+		var doc = editor.getModel().documentation;
 		if (doc == null)
 			return;
 

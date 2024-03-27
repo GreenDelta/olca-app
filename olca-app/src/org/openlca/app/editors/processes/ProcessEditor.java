@@ -12,12 +12,13 @@ import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.editors.parameters.ParameterChangeSupport;
 import org.openlca.app.editors.parameters.ParameterPage;
 import org.openlca.app.editors.processes.allocation.AllocationPage;
+import org.openlca.app.editors.processes.doc.DocPage;
 import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDocumentation;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.util.AllocationUtils;
 
 public class ProcessEditor extends ModelEditor<Process> {
@@ -39,7 +40,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 		super.init(site, input);
 		var process = getModel();
 		if (process.documentation == null) {
-			process.documentation = new ProcessDocumentation();
+			process.documentation = new ProcessDoc();
 		}
 		evalFormulas();
 		parameterSupport = new ParameterChangeSupport();
@@ -75,13 +76,12 @@ public class ProcessEditor extends ModelEditor<Process> {
 		try {
 			addPage(new InfoPage(this));
 			addPage(new ProcessExchangePage(this));
-			addPage(new AdminInfoPage(this));
-			addPage(new ModelingPage(this));
+			addPage(new DocPage(this));
 			addPage(ParameterPage.create(this));
 			addPage(new AllocationPage(this));
 			addPage(new SocialAspectsPage(this));
 			addPage(new ImpactPage(this));
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add page", e);
 		}

@@ -10,7 +10,7 @@ import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDocumentation;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.ProcessType;
 
 import com.google.common.base.Strings;
@@ -55,7 +55,7 @@ class ProcessCreator {
 			p.description = description;
 			p.lastChange = System.currentTimeMillis();
 			p.processType = ProcessType.UNIT_PROCESS;
-			var doc = new ProcessDocumentation();
+			var doc = new ProcessDoc();
 			doc.creationDate = Calendar.getInstance().getTime();
 			p.documentation = doc;
 			return p;

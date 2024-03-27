@@ -17,34 +17,29 @@ class SearchResultLabel extends LabelProvider implements ITableLabelProvider {
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		String text = null;
-		if (element instanceof ProcessDescriptor) {
-			ProcessDescriptor process = (ProcessDescriptor) element;
+		if (element instanceof ProcessDescriptor process) {
 			text = createLabel(process, columnIndex);
 		}
 		return text;
 	}
 
-	private String createLabel(ProcessDescriptor process, int columnIndex) {
-		switch (columnIndex) {
-		case SearchResultViewer.NAME_COLUMN:
-			return LangString.getFirst(process.name, "en");
-		case SearchResultViewer.LOCATION_COLUMN:
-			return process.location;
-		case SearchResultViewer.TIME_COLUMN:
-			return createTimeLabel(process);
-		case SearchResultViewer.TYPE_COLUMN:
-			return createTypeLabel(process);
-		default:
-			return null;
-		}
+	private String createLabel(ProcessDescriptor process, int col) {
+		return switch (col) {
+			case SearchResultViewer.NAME_COLUMN ->
+					LangString.getDefault(process.getName());
+			case SearchResultViewer.LOCATION_COLUMN -> process.getLocation();
+			case SearchResultViewer.TIME_COLUMN -> createTimeLabel(process);
+			case SearchResultViewer.TYPE_COLUMN -> createTypeLabel(process);
+			default -> null;
+		};
 	}
 
 	private String createTimeLabel(ProcessDescriptor process) {
 		String timeSpan = "";
-		Time time = process.time;
+		Time time = process.getTime();
 		if (time != null) {
-			String startYear = yearToString(time.referenceYear);
-			String endYear = yearToString(time.validUntil);
+			String startYear = yearToString(time.getReferenceYear());
+			String endYear = yearToString(time.getValidUntil());
 			timeSpan = startYear + " - " + endYear;
 		}
 		return timeSpan;
@@ -57,9 +52,9 @@ class SearchResultLabel extends LabelProvider implements ITableLabelProvider {
 	}
 
 	private String createTypeLabel(ProcessDescriptor process) {
-		if (process == null || process.type == null)
+		if (process == null || process.getProcessType() == null)
 			return null;
-		return process.type.value();
+		return process.getProcessType().value();
 	}
 
 }

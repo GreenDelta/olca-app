@@ -16,7 +16,6 @@ import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DatabaseConfigList;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -41,21 +40,42 @@ public class Database {
 
 	public static IDatabase activate(DatabaseConfig config) {
 		try {
-			database = config.connect(Workspace.dbDir());
-			Cache.create(database);
-			Database.config = config;
-			Logger log = LoggerFactory.getLogger(Database.class);
-			log.trace("activated database {} with version{}",
-					database.getName(), database.getVersion());
-			Repository.open(Repository.gitDir(database.getName()), database);
-			RcpWindowAdvisor.updateWindowTitle();
+			var db = config.connect(Workspace.dbDir());
+			setActive(config, db);
+			LoggerFactory.getLogger(Database.class)
+					.info("activated database {} with version{}",
+							db.getName(), db.getVersion());
+			// setting the active database may fail, the global
+			// database variable is then null and this is what we
+			// return here
 			return database;
 		} catch (Exception e) {
-			database = null;
-			Cache.close();
-			Database.config = null;
+			try {
+				close();
+			} catch (Exception ce) {
+				LoggerFactory.getLogger(Database.class)
+						.error("failed to close database resources", ce);
+			}
 			ErrorReporter.on("failed to activate database: " + config, e);
 			return null;
+		}
+	}
+
+	public static void setActive(DatabaseConfig config, IDatabase db) {
+		try {
+			database = db;
+			Database.config = config;
+			Cache.create(database);
+			Repository.open(Repository.gitDir(database.getName()), database);
+			RcpWindowAdvisor.updateWindowTitle();
+		} catch (RuntimeException e) {
+			if (Repository.CURRENT != null) {
+				Repository.CURRENT.close();
+			}
+			Cache.close();
+			database = null;
+			Database.config = null;
+			throw e;
 		}
 	}
 
@@ -69,17 +89,21 @@ public class Database {
 	 * Closes the active database.
 	 */
 	public static void close() throws Exception {
-		if (database == null)
-			return;
-		Cache.close();
-		CopyPaste.clearCache();
-		database.close();
-		database = null;
-		config = null;
-		if (Repository.CURRENT != null) {
-			Repository.CURRENT.close();
+		try {
+			Cache.close();
+			CopyPaste.clearCache();
+			if (Repository.CURRENT != null) {
+				Repository.CURRENT.close();
+			}
+			database.close();
+			database = null;
+			config = null;
+			RcpWindowAdvisor.updateWindowTitle();
+		} catch (RuntimeException e){
+			// if an error occurs we still reset these globals
+			config = null;
+			database = null;
 		}
-		RcpWindowAdvisor.updateWindowTitle();
 	}
 
 	private static DatabaseConfigList readConfigs() {
@@ -174,10 +198,9 @@ public class Database {
 	 * database. Such a name is valid if a folder with that name can be created
 	 * in the workspace and when no database with the same name already exists.
 	 *
-	 * @param name
-	 *            the name of the new database
+	 * @param name the name of the new database
 	 * @return the validation error for display or {@code null} when the name is
-	 *         valid
+	 * valid
 	 */
 	public static String validateNewName(String name) {
 		if (name == null || name.isBlank() || name.isEmpty())

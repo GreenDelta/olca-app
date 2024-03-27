@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="libs/angus-activation-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/aopalliance-repackaged-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/aopalliance-repackaged-3.0.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcpkix-jdk15on-1.70.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcprov-jdk15on-1.70.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcutil-jdk15on-1.70.jar"/>
@@ -33,30 +34,30 @@
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.10.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-32.0.0-jre.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/HikariCP-5.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/hk2-api-3.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/hk2-locator-3.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/hk2-utils-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/hk2-api-3.0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/hk2-locator-3.0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/hk2-utils-3.0.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/j2objc-annotations-2.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-core-2.15.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jakarta.annotation-api-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jakarta.inject-api-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-api-2.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.annotation-api-2.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.inject-api-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.persistence-api-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jakarta.ws.rs-api-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jakarta.xml.bind-api-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.ws.rs-api-3.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.xml.bind-api-4.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/JavaEWAH-1.2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/javassist-3.25.0-GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/javassist-3.29.2-GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/javax.annotation-api-1.3.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jaxb-core-3.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jaxb-impl-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jaxb-core-4.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jaxb-impl-4.0.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jcl-over-slf4j-2.0.10.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-client-1.19.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jersey-client-3.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jersey-common-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-client-3.1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-common-3.1.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jersey-core-1.19.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jersey-hk2-3.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jersey-media-jaxb-3.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jersey-media-multipart-3.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-hk2-3.1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-media-jaxb-3.1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jersey-media-multipart-3.1.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr305-3.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jsr311-api-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jts-core-1.19.0.jar"/>
@@ -66,7 +67,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/logback-core-1.4.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mapdb-2.0-beta7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/mariadb-java-client-2.7.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.15.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/npy-0.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-2.0.0.jar"/>
@@ -74,12 +75,12 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-git-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-grpc-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-3.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-license-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-native-0.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-process-xls-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-process-xls-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-io-2.1.2-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.5.jar"/>

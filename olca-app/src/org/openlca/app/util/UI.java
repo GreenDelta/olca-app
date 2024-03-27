@@ -549,7 +549,7 @@ public class UI {
 	}
 
 	public static Text emptyText(Composite comp, FormToolkit tk) {
-		return emptyText(comp, tk, SWT.NONE);
+		return emptyText(comp, tk, SWT.BORDER);
 	}
 
 	public static Text emptyText(Composite comp, FormToolkit tk, int style) {

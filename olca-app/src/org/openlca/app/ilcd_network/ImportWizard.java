@@ -16,7 +16,7 @@ import org.openlca.app.rcp.RcpActivator;
 import org.openlca.core.database.IDatabase;
 import org.openlca.ilcd.descriptors.ProcessDescriptor;
 import org.openlca.ilcd.processes.Process;
-import org.openlca.io.ilcd.input.ImportConfig;
+import org.openlca.io.ilcd.input.Import;
 import org.openlca.io.ilcd.input.ProcessImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,9 +52,8 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	private void tryImport() throws Exception {
 		var processes = processSearchPage.getSelectedProcesses();
 		var client = IoPreference.createClient();
-		client.connect();
-		var config = new ImportConfig(client, database)
-				.withLanguageOrder(IoPreference.getIlcdLanguage(), "en");
+		var config = Import.of(client, database)
+				.withPreferredLanguage(IoPreference.getIlcdLanguage());
 		getContainer().run(true, true, monitor -> {
 			monitor.beginTask(M.ILCD_RunImport, IProgressMonitor.UNKNOWN);
 			try {
@@ -64,14 +63,15 @@ public class ImportWizard extends Wizard implements IImportWizard {
 			}
 			monitor.done();
 		});
+		client.close();
 	}
 
 	private void importProcesses(List<ProcessDescriptor> descriptors,
-			ImportConfig config) throws Exception {
+			Import imp) {
 		for (var d : descriptors) {
-			var p = config.store().get(Process.class, d.uuid);
+			var p = imp.store().get(Process.class, d.getUUID());
 			if (p != null) {
-				new ProcessImport(config).run(p);
+				new ProcessImport(imp, p).run();
 			}
 		}
 	}
@@ -94,6 +94,6 @@ public class ImportWizard extends Wizard implements IImportWizard {
 	@Override
 	public boolean canFinish() {
 		return database != null
-				&& processSearchPage.getSelectedProcesses().size() > 0;
+				&& !processSearchPage.getSelectedProcesses().isEmpty();
 	}
 }

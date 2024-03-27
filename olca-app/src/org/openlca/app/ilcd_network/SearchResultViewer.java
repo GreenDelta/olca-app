@@ -7,12 +7,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
 import org.openlca.app.M;
 
-/**
- * The table viewer for search results.
- * 
- * @author Michael Srocka
- * 
- */
 class SearchResultViewer extends TableViewer {
 
 	static final int NAME_COLUMN = 0;
@@ -20,9 +14,9 @@ class SearchResultViewer extends TableViewer {
 	static final int TIME_COLUMN = 2;
 	static final int TYPE_COLUMN = 3;
 
-	private String[] columnLabel = { M.Name, M.Location,
+	private final String[] columnLabel = { M.Name, M.Location,
 			M.Time, M.Type };
-	private int[] columnWidth = { 200, 80, 80, 80 };
+	private final int[] columnWidth = { 200, 80, 80, 80 };
 
 	/**
 	 * Create a new viewer.

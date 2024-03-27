@@ -29,7 +29,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 	protected void addPages() {
 		try {
 			addPage(infoPage = new GlobalParameterInfoPage(this));
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add page", e);
 		}

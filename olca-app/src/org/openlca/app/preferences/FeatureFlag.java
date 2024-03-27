@@ -10,7 +10,9 @@ public enum FeatureFlag {
 
 	TAG_RESULTS("Enable contributions by tags in result views"),
 
-	MATRIX_IMAGE_EXPORT("Enable matrix image export");
+	MATRIX_IMAGE_EXPORT("Enable matrix image export"),
+
+	ADDITIONAL_PROPERTIES("Show additional properties of data sets");
 
 	private final String description;
 
