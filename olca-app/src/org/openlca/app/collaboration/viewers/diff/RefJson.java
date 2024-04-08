@@ -23,7 +23,7 @@ class RefJson {
 	private static Gson gson = new Gson();
 
 	static JsonObject get(Reference ref) {
-		if (ref == null)
+		if (ref == null || ref.isCategory)
 			return null;
 		if (ref.objectId == null || ref.objectId.equals(ObjectId.zeroId()))
 			return getLocalJson(ref.type, ref.refId);

@@ -74,7 +74,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	protected void onDoubleClick(DoubleClickEvent event) {
 		var selected = getSelected(event);
-		if (selected == null)
+		if (selected == null || selected.isCategoryNode())
 			return;
 		var diff = selected.contentAsTriDiff();
 		var node = createNode(diff);
