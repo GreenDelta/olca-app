@@ -92,7 +92,7 @@ public class RepositoryLabel {
 		return hasChanged(NavCache.get(elem));
 	}
 
-	public static boolean hasChanged(NavElement elem) {
+	private static boolean hasChanged(NavElement elem) {
 		if (Database.get() == null || !Repository.isConnected() || elem == null || elem.isFromLibrary())
 			return false;
 		if (elem.is(ElementType.MODEL)) {
