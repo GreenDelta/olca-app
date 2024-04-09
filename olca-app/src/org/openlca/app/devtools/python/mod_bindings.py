@@ -17,6 +17,8 @@ import org.openlca.core.model.AllocationMethod as AllocationMethod
 import org.openlca.util.AllocationRef as AllocationRef
 import org.openlca.util.AllocationUtils as AllocationUtils
 import org.openlca.io.openepd.Api as Api
+import org.openlca.core.model.doc.AspectMap as AspectMap
+import org.openlca.core.model.doc.AspectMapConverter as AspectMapConverter
 import org.openlca.util.AutoTagger as AutoTagger
 import org.openlca.core.database.BaseDao as BaseDao
 import org.openlca.jsonld.input.BatchImport as BatchImport
@@ -48,6 +50,7 @@ import org.openlca.core.database.usage.CategoryUseSearch as CategoryUseSearch
 import org.openlca.io.xls.results.CellWriter as CellWriter
 import org.openlca.io.simapro.csv.Compartment as Compartment
 import org.openlca.text.CompartmentStemmer as CompartmentStemmer
+import org.openlca.core.model.doc.ComplianceDeclaration as ComplianceDeclaration
 import org.openlca.core.matrix.format.CompressedRowMatrix as CompressedRowMatrix
 import org.openlca.io.ilcd.input.ContactImport as ContactImport
 import org.openlca.core.results.Contribution as Contribution
@@ -388,7 +391,7 @@ import org.openlca.core.model.Process as Process
 import org.openlca.core.database.ProcessDao as ProcessDao
 import org.openlca.core.model.descriptors.ProcessDescriptor as ProcessDescriptor
 import org.openlca.core.database.descriptors.ProcessDescriptors as ProcessDescriptors
-import org.openlca.core.model.ProcessDocumentation as ProcessDocumentation
+import org.openlca.core.model.doc.ProcessDoc as ProcessDoc
 import org.openlca.io.ilcd.output.ProcessExport as ProcessExport
 import org.openlca.core.model.ProcessGroup as ProcessGroup
 import org.openlca.core.model.ProcessGroupSet as ProcessGroupSet
@@ -452,6 +455,10 @@ import org.openlca.jsonld.input.ResultReader as ResultReader
 import org.openlca.core.database.usage.ResultUsageSearch as ResultUsageSearch
 import org.openlca.jsonld.output.ResultWriter as ResultWriter
 import org.openlca.util.Results as Results
+import org.openlca.core.model.doc.Review as Review
+import org.openlca.core.model.doc.ReviewScope as ReviewScope
+import org.openlca.core.model.doc.ReviewScopeConverter as ReviewScopeConverter
+import org.openlca.core.model.doc.ReviewScopeMap as ReviewScopeMap
 import org.openlca.core.model.RiskLevel as RiskLevel
 import org.openlca.core.model.descriptors.RootDescriptor as RootDescriptor
 import org.openlca.core.model.RootEntity as RootEntity
@@ -544,10 +551,10 @@ import org.openlca.jsonld.output.UnitWriter as UnitWriter
 import org.openlca.core.library.Unmounter as Unmounter
 import org.openlca.jsonld.input.UpdateMode as UpdateMode
 import org.openlca.core.database.upgrades.Upgrade11 as Upgrade11
+import org.openlca.core.database.upgrades.Upgrade12 as Upgrade12
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree
-import org.openlca.jsonld.output.Util as Util
 import org.openlca.validation.Validation as Validation
 import org.openlca.core.model.Version as Version
 import org.openlca.core.database.upgrades.VersionState as VersionState
