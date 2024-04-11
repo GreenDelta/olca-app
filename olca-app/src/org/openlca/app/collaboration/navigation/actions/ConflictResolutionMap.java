@@ -91,18 +91,22 @@ class ConflictResolutionMap implements ConflictResolver {
 		var result = Question.ask("Handle conflicts",
 				"There are conflicts with uncommitted changes, how do you want to proceed?",
 				answers.toArray(new String[answers.size()]));
-		if (result == 0)
-			return null;
-		if (result == 1 && !stashChanges(true))
-			return null;
-		if (result == 2) {
-			var resolved = commitChanges(ref, stashCommit);
-			if (resolved == null)
+		switch (result) {
+			case 0:
 				return null;
-			return new ConflictResult(resolved, false);
+			case 1:
+				Actions.run(GitDiscard.on(repo));
+				break;
+			case 2:
+				var resolved = commitChanges(ref, stashCommit);
+				if (resolved == null)
+					return null;
+				return new ConflictResult(resolved, false);
+			case 3:
+				if (!stashChanges())
+					return null;
+				break;
 		}
-		if (result == 3 && !stashChanges(false))
-			return null;
 		var resolved = resolve(commit, localDiffs(commit, commonParent), Conflicts.none());
 		if (resolved == null)
 			return null;
@@ -168,10 +172,13 @@ class ConflictResolutionMap implements ConflictResolver {
 		return resolve(ref, stashCommit).resolutions;
 	}
 
-	private static boolean stashChanges(boolean discard)
+	private static boolean stashChanges()
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
 		var repo = Repository.CURRENT;
-		if (!discard && repo.commits.stash() != null) {
+		var user = AuthenticationDialog.promptUser(repo);
+		if (user == null)
+			return false;
+		if (repo.commits.stash() != null) {
 			var answers = Arrays.asList("Cancel", "Discard existing stash");
 			var result = Question.ask("Stash workspace",
 					"You already have stashed changes, how do you want to proceed?",
@@ -180,14 +187,7 @@ class ConflictResolutionMap implements ConflictResolver {
 				return false;
 			GitStashDrop.from(repo).run();
 		}
-		if (discard) {
-			Actions.run(GitDiscard.on(repo));
-		} else {
-			var user = AuthenticationDialog.promptUser(repo);
-			if (user == null)
-				return false;
-			Actions.run(GitStashCreate.on(repo).as(user));
-		}
+		Actions.run(GitStashCreate.on(repo).as(user));
 		return true;
 	}
 
