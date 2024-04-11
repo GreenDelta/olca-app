@@ -21,6 +21,7 @@ import org.openlca.app.util.Question;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver;
+import org.openlca.git.actions.GitDiscard;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.actions.GitStashDrop;
 import org.openlca.git.model.Commit;
@@ -179,14 +180,14 @@ class ConflictResolutionMap implements ConflictResolver {
 				return false;
 			GitStashDrop.from(repo).run();
 		}
-		var stashCreate = GitStashCreate.on(repo);
 		if (discard) {
-			stashCreate = stashCreate.discard();
+			Actions.run(GitDiscard.on(repo));
 		} else {
 			var user = AuthenticationDialog.promptUser(repo);
-			stashCreate = stashCreate.as(user);
+			if (user == null)
+				return false;
+			Actions.run(GitStashCreate.on(repo).as(user));
 		}
-		Actions.run(stashCreate);
 		return true;
 	}
 

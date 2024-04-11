@@ -18,7 +18,7 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
-import org.openlca.git.actions.GitStashCreate;
+import org.openlca.git.actions.GitDiscard;
 import org.openlca.git.model.Change;
 
 public class DiscardAction extends Action implements INavigationAction {
@@ -59,9 +59,8 @@ public class DiscardAction extends Action implements INavigationAction {
 							.withDatabase())
 					.map(Change::of)
 					.forEach(selected::addAll);
-			Actions.run(GitStashCreate.on(repo)
-					.changes(selected)
-					.discard());
+			Actions.run(GitDiscard.on(repo)
+					.changes(selected));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error discarding changes", e);
 		} finally {
