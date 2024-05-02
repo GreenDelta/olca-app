@@ -25,6 +25,7 @@ class LoginDialog extends FormDialog {
 	private Text userText;
 	private Text pwText;
 	private Connection con;
+	private boolean hasEpds;
 
 	static Optional<Connection> show() {
 		var dialog = new LoginDialog();
@@ -56,6 +57,12 @@ class LoginDialog extends FormDialog {
 		var comp = tk.createComposite(body);
 		UI.fillHorizontal(comp);
 		UI.gridLayout(comp, 2);
+
+		var nodeCombo = SodaNodeCombo.create(comp, tk);
+		nodeCombo.onSelect(node -> {
+			urlText.setText(node.url());
+			hasEpds = node.hasEpds();
+		});
 
 		urlText = UI.labeledText(comp, tk, "URL");
 		UI.filler(comp, tk);
@@ -102,14 +109,16 @@ class LoginDialog extends FormDialog {
 			String url,
 			boolean anonymous,
 			String user,
-			String password) {
+			String password,
+			boolean hasEpds) {
 
 		static LoginData of(LoginDialog d) {
 			return new LoginData(
 					d.urlText.getText().strip(),
 					d.anoCheck.getSelection(),
 					d.userText.getText().strip(),
-					d.pwText.getText().strip());
+					d.pwText.getText().strip(),
+					d.hasEpds);
 		}
 
 		String validate() {
@@ -149,9 +158,8 @@ class LoginDialog extends FormDialog {
 					client.login(user, password);
 				}
 				var stocks = client.getDataStockList().getDataStocks();
-				return new Connection(client, stocks, url, user, null);
+				return new Connection(client, stocks, url, user, hasEpds, null);
 			} catch (Exception e) {
-
 				return Connection.error(e.getMessage());
 			}
 		}

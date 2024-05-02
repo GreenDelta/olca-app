@@ -10,11 +10,12 @@ record Connection(
 		List<DataStock> stocks,
 		String url,
 		String user,
+		boolean hasEpds,
 		String error
 ) {
 
 	static Connection error(String error) {
-		return new Connection(null, null, null, null, error);
+		return new Connection(null, null, null, null, false, error);
 	}
 
 	boolean hasError() {

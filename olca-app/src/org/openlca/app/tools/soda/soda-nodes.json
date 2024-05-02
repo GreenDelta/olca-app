@@ -1,0 +1,107 @@
+[
+  {
+    "name": "BRE EPD Hub",
+    "url": "https://soda4lca.bregroup.com",
+    "hasEPDs": true
+  },
+  {
+    "name": "DAPCONS - Programa DAPconstrucción",
+    "url": "https://soda.dapcons.com",
+    "hasEPDs": true
+  },
+  {
+    "name": "ECO Platform Small Data Providers",
+    "url": "https://ecosmdp.eco-platform.org",
+    "hasEPDs": true
+  },
+  {
+    "name": "International EPD System - Data hub",
+    "url": "https://data.environdec.com",
+    "hasEPDs": true
+  },
+  {
+    "name": "EPD Norway",
+    "url": "https://epdnorway.lca-data.com",
+    "hasEPDs": true
+  },
+  {
+    "name": "EPD Italy",
+    "url": "https://node.epditaly.it",
+    "hasEPDs": true
+  },
+  {
+    "name": "EPD Ireland",
+    "url": "https://epdireland.lca-data.com",
+    "hasEPDs": true
+  },
+  {
+    "name": "Institut Bauen und Umwelt e.V.",
+    "url": "https://ibudata.lca-data.com",
+    "hasEPDs": true
+  },
+  {
+    "name": "ITB-EPD Poland",
+    "url": "https://itb.lca-data.com",
+    "hasEPDs": true
+  },
+  {
+    "name": "MRPI",
+    "url": "https://data.mrpi.nl",
+    "hasEPDs": true
+  },
+  {
+    "name": "InData - Reference data",
+    "url": "https://data.indata.network",
+    "hasEPDs": true
+  },
+  {
+    "name": "OEKOBAU.DAT",
+    "url": "https://oekobaudat.de/OEKOBAU.DAT/",
+    "hasEPDs": true
+  },
+  {
+    "name": "Construction Products EPD Databases",
+    "url": "https://data.lcadatabase.com/",
+    "hasEPDs": true
+  },
+  {
+    "name": "ecosystem LCI Database",
+    "url": "https://weee-lci.ecosystem.eco/",
+    "hasEPDs": false
+  },
+  {
+    "name": "Cycleco",
+    "url": "https://node.cycleco.eu/node/",
+    "hasEPDs": false
+  },
+  {
+    "name": "European Founded Research Projects",
+    "url": "http://eplca.jrc.ec.europa.eu/EUFRP/",
+    "hasEPDs": false
+  },
+  {
+    "name": "Plastics Europe Public LCI Database",
+    "url": "https://plasticseurope.lca-data.com/",
+    "hasEPDs": false
+  },
+  {
+    "name": "Small Data Providers Database",
+    "url": "https://eplca.jrc.ec.europa.eu/SDPDB/",
+    "hasEPDs": false
+  },
+  {
+    "name": "Sphera Node on the Life Cycle Data Network",
+    "url": "http://lcdn.thinkstep.com",
+    "hasEPDs": false
+  },
+  {
+    "name": "ecoinvent - Data on the Production of Chemicals",
+    "url": "https://ecoinvent.lca-data.com/",
+    "hasEPDs": false
+  },
+  {
+    "name": "TianGong Life Cycle Inventory",
+    "url": "https://lcadata.tiangong.world/",
+    "hasEPDs": false
+  }
+]
