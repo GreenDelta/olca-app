@@ -1,5 +1,8 @@
 package org.openlca.app.tools.soda;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -21,15 +24,13 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.wizards.io.ImportLogDialog;
 import org.openlca.ilcd.commons.DataSetType;
 import org.openlca.ilcd.commons.LangString;
 import org.openlca.ilcd.descriptors.Descriptor;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.io.ilcd.input.Import;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.List;
 
 class SodaPage extends FormPage {
 
@@ -131,7 +132,7 @@ class SodaPage extends FormPage {
 
 		var err = new String[1];
 		var result = new ArrayList<Descriptor<?>>();
-		App.run("Search datasets ...", () -> {
+		App.runWithProgress("Search datasets ...", () -> {
 			try {
 				var list = client.search(clazz, name);
 				result.addAll(list.getDescriptors());
@@ -159,13 +160,16 @@ class SodaPage extends FormPage {
 			return;
 		}
 
+		var imp = Import.of(client, db)
+				.withPreferredLanguage(IoPreference.getIlcdLanguage());
 		App.runWithProgress("Import datasets ...", () -> {
-			var imp = Import.of(client, db)
-					.withPreferredLanguage(IoPreference.getIlcdLanguage());
 			for (var d : selection) {
 				imp.write(d.toRef().getType(), d.getUUID());
 			}
-		}, Navigator::refresh);
+		}, () -> {
+			ImportLogDialog.show(imp);
+			Navigator.refresh();
+		});
 	}
 
 	private static class TableLabel extends BaseLabelProvider
@@ -193,7 +197,8 @@ class SodaPage extends FormPage {
 				case 0 -> LangString.getOrDefault(d.getName(), lang);
 				case 1 -> d.getUUID();
 				case 2 -> d.getVersion();
-				case 3 -> Strings.cut(LangString.getOrDefault(d.getComment(), lang), 75);
+				case 3 ->
+						Strings.cut(LangString.getOrDefault(d.getComment(), lang), 75);
 				default -> null;
 			};
 		}

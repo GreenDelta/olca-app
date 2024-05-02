@@ -25,6 +25,7 @@ import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.soda.SodaClientTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
 
@@ -70,10 +71,12 @@ public class Editors {
 					continue;
 				if (editor instanceof LogFileEditor)
 					continue;
+				if (editor instanceof SodaClientTool)
+					continue;
 
 				refs.add(ref);
 			}
-			if (refs.size() == 0)
+			if (refs.isEmpty())
 				return true;
 			var restArray = refs.toArray(new IEditorReference[0]);
 			var page = getActivePage();
