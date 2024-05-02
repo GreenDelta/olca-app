@@ -35,7 +35,7 @@ record SodaNode(
 				var node = new SodaNode(
 						Json.getString(obj, "name"),
 						Json.getString(obj, "url"),
-						Json.getBool(obj, "hasEpds", false)
+						Json.getBool(obj, "hasEPDs", false)
 				);
 				nodes.add(node);
 			}

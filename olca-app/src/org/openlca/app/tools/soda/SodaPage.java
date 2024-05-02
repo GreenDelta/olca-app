@@ -102,7 +102,7 @@ class SodaPage extends FormPage {
 		UI.fillHorizontal(searchComp);
 		UI.gridLayout(searchComp, 4);
 
-		var typeCombo = TypeCombo.create(searchComp, tk);
+		var typeCombo = TypeCombo.create(searchComp, tk, con.hasEpds());
 		var searchText = tk.createText(searchComp, "", SWT.BORDER);
 		UI.fillHorizontal(searchText);
 		searchText.setMessage("Search dataset ...");
@@ -118,7 +118,7 @@ class SodaPage extends FormPage {
 		table = Tables.createViewer(comp, M.Name, "UUID", M.Version, M.Comment);
 		UI.gridData(table.getControl(), true, true);
 		Tables.bindColumnWidths(table, 0.3, 0.2, 0.2, 0.3);
-		table.setLabelProvider(new TableLabel());
+		table.setLabelProvider(new TableLabel(con.hasEpds()));
 		var importAction = Actions.create(
 				"Import selected", Icon.IMPORT.descriptor(), this::runImport);
 		Actions.bind(table, importAction);
@@ -171,12 +171,17 @@ class SodaPage extends FormPage {
 	private static class TableLabel extends BaseLabelProvider
 			implements ITableLabelProvider {
 
+		private final boolean hasEpds;
 		private final String lang = IoPreference.getIlcdLanguage();
+
+		TableLabel(boolean hasEpds) {
+			this.hasEpds = hasEpds;
+		}
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
 			return col == 0 && obj instanceof Descriptor<?> d
-					? Util.imageOf(d.toRef().getType())
+					? Util.imageOf(d.toRef().getType(), hasEpds)
 					: null;
 		}
 

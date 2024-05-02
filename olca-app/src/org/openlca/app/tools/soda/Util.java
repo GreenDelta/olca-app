@@ -20,7 +20,7 @@ class Util {
 	private Util() {
 	}
 
-	static ModelType modelTypeOf(DataSetType type) {
+	static ModelType modelTypeOf(DataSetType type, boolean hasEpds) {
 		if (type == null)
 			return null;
 		return switch (type) {
@@ -28,7 +28,7 @@ class Util {
 			case MODEL -> ModelType.PRODUCT_SYSTEM;
 			case FLOW -> ModelType.FLOW;
 			case SOURCE -> ModelType.SOURCE;
-			case PROCESS -> ModelType.PROCESS;
+			case PROCESS -> hasEpds ? ModelType.EPD : ModelType.PROCESS;
 			case FLOW_PROPERTY -> ModelType.FLOW_PROPERTY;
 			case UNIT_GROUP -> ModelType.UNIT_GROUP;
 			case IMPACT_METHOD -> ModelType.IMPACT_CATEGORY;
@@ -36,13 +36,13 @@ class Util {
 		};
 	}
 
-	static Image imageOf(DataSetType type) {
-		var t = modelTypeOf(type);
+	static Image imageOf(DataSetType type, boolean hasEpds) {
+		var t = modelTypeOf(type, hasEpds);
 		return t != null ? Images.get(t) : null;
 	}
 
-	static String labelOf(DataSetType type) {
-		var t = modelTypeOf(type);
+	static String labelOf(DataSetType type, boolean hasEpds) {
+		var t = modelTypeOf(type, hasEpds);
 		return t != null ? Labels.plural(t) : "";
 	}
 
