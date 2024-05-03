@@ -9,7 +9,7 @@ import java.util.UUID;
  */
 public class AppCache {
 
-	private Map<String, Object> map = new HashMap<>();
+	private final Map<String, Object> map = new HashMap<>();
 
 	public AppCache() {
 	}
