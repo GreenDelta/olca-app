@@ -46,7 +46,7 @@ class ValueLabels {
 	private static String getInputParameterValue(String value) {
 		if (value.equalsIgnoreCase("true"))
 			return M.InputParameter;
-		return M.DependenantParameter;
+		return M.DependentParameter;
 	}
 
 	private static String getInputValue(String value) {

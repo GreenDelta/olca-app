@@ -51,7 +51,7 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return M.DeleteProcesslink;
+		return M.DeleteProcessLink;
 	}
 
 	@Override

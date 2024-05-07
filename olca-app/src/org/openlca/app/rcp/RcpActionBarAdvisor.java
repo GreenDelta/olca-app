@@ -142,7 +142,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private void fillToolsMenu(IMenuManager menuBar) {
 		var menu = new MenuManager("Tools");
-		var viewMenu = new MenuManager(M.Showviews);
+		var viewMenu = new MenuManager(M.ShowViews);
 		viewMenu.add(showViews);
 		menu.add(viewMenu);
 		menu.add(new Separator());
