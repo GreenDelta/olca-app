@@ -2,7 +2,6 @@ package org.openlca.app.rcp.images;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.PlatformUI;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.navigation.elements.Group;
 import org.openlca.app.navigation.elements.GroupType;
@@ -138,7 +137,7 @@ public class Images {
 		var icon = Icon.LIBRARY;
 		return overlay == null
 				? icon.get()
-				: ImageManager.get(icon, overlay);		
+				: ImageManager.get(icon, overlay);
 	}
 
 	public static Image get(ModelType type, Overlay overlay) {
@@ -448,13 +447,4 @@ public class Images {
 			default -> null;
 		};
 	}
-
-	/**
-	 * Returns the shared image with the given name from the Eclipse platform. See
-	 * ISharedImages for the image names.
-	 */
-	public static Image platformImage(String name) {
-		return PlatformUI.getWorkbench().getSharedImages().getImage(name);
-	}
-
 }

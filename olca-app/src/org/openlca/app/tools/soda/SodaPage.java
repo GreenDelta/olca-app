@@ -24,6 +24,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.wizards.io.ImportLogDialog;
 import org.openlca.ilcd.commons.DataSetType;
@@ -123,7 +124,8 @@ class SodaPage extends FormPage {
 		table.setLabelProvider(new TableLabel(con.hasEpds()));
 		var importAction = Actions.create(
 				"Import selected", Icon.IMPORT.descriptor(), this::runImport);
-		Actions.bind(table, importAction);
+		var copyAction = TableClipboard.onCopySelected(table);
+		Actions.bind(table, importAction, copyAction);
 	}
 
 	private void runSearch(DataSetType type, String name) {
