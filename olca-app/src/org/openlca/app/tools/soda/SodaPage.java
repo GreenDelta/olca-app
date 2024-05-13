@@ -21,6 +21,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
@@ -159,6 +160,12 @@ class SodaPage extends FormPage {
 							" you want to import the datasets first.");
 			return;
 		}
+
+		var b = Question.ask("Import selected datasets?",
+				"Do you want to import the selected datasets" +
+						" into the currently active database?");
+		if (!b)
+			return;
 
 		var imp = Import.of(client, db)
 				.withPreferredLanguage(IoPreference.getIlcdLanguage());

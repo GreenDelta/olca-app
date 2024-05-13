@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.openlca.core.database.IDatabase;
@@ -17,9 +16,7 @@ import org.openlca.core.model.descriptors.UnitDescriptor;
 import org.openlca.ilcd.commons.LangString;
 import org.openlca.ilcd.commons.Ref;
 import org.openlca.ilcd.flowproperties.FlowProperty;
-import org.openlca.ilcd.flows.FlowPropertyRef;
 import org.openlca.ilcd.io.ZipStore;
-import org.openlca.ilcd.units.Unit;
 import org.openlca.ilcd.units.UnitGroup;
 import org.openlca.ilcd.util.Categories;
 import org.openlca.ilcd.util.FlowProperties;
@@ -56,23 +53,23 @@ public class ILCDProvider implements FlowProvider {
 		if (refs != null)
 			return refs;
 		refs = new ArrayList<>();
-		try (ZipStore store = new ZipStore(file)) {
+		try (var store = new ZipStore(file)) {
 
 			// collect units
-			Map<String, Descriptor> units = new HashMap<>();
-			store.each(UnitGroup.class, ug -> {
-				Unit unit = UnitGroups.getReferenceUnit(ug);
+			var units = new HashMap<String, Descriptor>();
+			for (var ug : store.iter(UnitGroup.class)) {
+				var unit = UnitGroups.getReferenceUnit(ug);
 				if (unit == null)
-					return;
-				Descriptor d = new UnitDescriptor();
+					continue;
+				var d = new UnitDescriptor();
 				d.name = unit.getName();
 				units.put(UnitGroups.getUUID(ug), d);
-			});
+			}
 
 			// collect flow properties
-			Map<String, Descriptor> props = new HashMap<>();
-			store.each(FlowProperty.class, fp -> {
-				Descriptor d = new FlowPropertyDescriptor();
+			var props = new HashMap<String, Descriptor>();
+			for (var fp : store.iter(FlowProperty.class)) {
+				var d = new FlowPropertyDescriptor();
 				d.refId = FlowProperties.getUUID(fp);
 				d.name = LangString.getDefault(FlowProperties.getName(fp));
 				props.put(d.refId, d);
@@ -81,18 +78,18 @@ public class ILCDProvider implements FlowProvider {
 					Descriptor unit = units.get(ug.getUUID());
 					units.put(d.refId, unit);
 				}
-			});
+			}
 
 			// collect flows
-			store.each(org.openlca.ilcd.flows.Flow.class, f -> {
-				FlowRef flowRef = new FlowRef();
+			for (var f : store.iter(org.openlca.ilcd.flows.Flow.class)) {
+				var flowRef = new FlowRef();
 				refs.add(flowRef);
 
 				// flow
-				FlowDescriptor d = new FlowDescriptor();
+				var d = new FlowDescriptor();
 				flowRef.flow = d;
 				d.name = Flows.getFullName(f, "en");
-				d.flowType = map(Flows.getType(f));
+				d.flowType = map(Flows.getFlowType(f));
 				d.refId = Flows.getUUID(f);
 
 				// category path
@@ -100,13 +97,13 @@ public class ILCDProvider implements FlowProvider {
 				flowRef.flowCategory = String.join("/", cpath);
 
 				// flow property & unit
-				FlowPropertyRef refProp = Flows.getReferenceFlowProperty(f);
+				var refProp = Flows.getReferenceFlowProperty(f);
 				if (refProp == null || refProp.getFlowProperty() == null)
-					return;
+					continue;
 				String propID = refProp.getFlowProperty().getUUID();
 				flowRef.property = props.get(propID);
 				flowRef.unit = units.get(propID);
-			});
+			}
 
 		} catch (Exception e) {
 			var log = LoggerFactory.getLogger(getClass());
