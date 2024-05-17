@@ -1,15 +1,20 @@
 package org.openlca.app.editors.projects;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentControl;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.projects.reports.model.Report;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
@@ -24,6 +29,8 @@ import org.openlca.core.model.NwSet;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
+
+import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
 
 class CalculationSetupSection {
 
@@ -103,6 +110,10 @@ class CalculationSetupSection {
 					editor.setActivePage(reportPage.getId());
 					editor.setDirty(true);
 
+					// switching focus to make sure the theme is fully applied to the page
+					Navigator.showView();
+					editor.setFocus();
+
 					// dispose the button row and repaint the form
 					afterButton.dispose();
 					reportBtn.dispose();
@@ -112,8 +123,8 @@ class CalculationSetupSection {
 						c = c.getParent();
 						if (c == null)
 							break;
-						if (c instanceof ScrolledForm) {
-							((ScrolledForm) c).reflow(true);
+						if (c instanceof ScrolledForm f) {
+							f.reflow(true);
 							break;
 						}
 					}
@@ -124,13 +135,36 @@ class CalculationSetupSection {
 		}
 	}
 
+	private void setReportPageListener(ReportEditorPage reportPage) {
+		var graphInit = new AtomicReference<IPageChangedListener>();
+		IPageChangedListener fn = e -> {
+			if (e.getSelectedPage() != reportPage)
+				return;
+			var listener = graphInit.get();
+			if (listener == null)
+				return;
+
+			// setting the focus to the navigator and then to the editor to properly apply the theme
+			var navigator = Navigator.getInstance();
+			if (navigator != null) {
+				navigator.setFocus();
+			}
+			editor.setFocus();
+
+			editor.removePageChangedListener(listener);
+			graphInit.set(null);
+		};
+		graphInit.set(fn);
+		editor.addPageChangedListener(fn);
+	}
+
 	private void addListeners() {
 		methodCombo.addSelectionChangedListener(this::onMethodChange);
 		nwSetCombo.addSelectionChangedListener(d -> {
 			var project = editor.getModel();
 			project.nwSet = d == null
-				? null
-				: new NwSetDao(db).getForId(d.id);
+					? null
+					: new NwSetDao(db).getForId(d.id);
 			editor.setDirty(true);
 		});
 	}
@@ -148,8 +182,8 @@ class CalculationSetupSection {
 
 		// handle change
 		project.impactMethod = method == null
-			? null
-			: new ImpactMethodDao(db).getForId(method.id);
+				? null
+				: new ImpactMethodDao(db).getForId(method.id);
 		project.nwSet = null;
 		nwSetCombo.select(null);
 		nwSetCombo.setInput(method);

@@ -21,6 +21,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -295,7 +296,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	/**
-	 * Returns the instance of the navigation view or NULL if there is# no such
+	 * Returns the instance of the navigation view or NULL if there is no such
 	 * instance available.
 	 */
 	public static Navigator getInstance() {
@@ -312,6 +313,22 @@ public class Navigator extends CommonNavigator {
 		return part instanceof Navigator navi
 				? navi
 				: null;
+	}
+
+	/**
+	 * Shows the view of the Navigator if an instance exists.
+	 */
+	public static void showView() throws PartInitException {
+		var workbench = PlatformUI.getWorkbench();
+		if (workbench == null)
+			return;
+		var window = workbench.getActiveWorkbenchWindow();
+		if (window == null)
+			return;
+		var page = window.getActivePage();
+		if (page == null)
+			return;
+		page.showView(ID);
 	}
 
 	/**

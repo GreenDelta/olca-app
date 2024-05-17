@@ -110,8 +110,7 @@ public abstract class EditorActionBarContributor extends
 	public static void refreshActionBar(MultiPageEditorPart part) {
 		var log = LoggerFactory.getLogger(EditorActionBarContributor.class);
 		try {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-					.showView(Navigator.ID);
+			Navigator.showView();
 			part.setFocus();
 		} catch (PartInitException ex) {
 			log.error("Error when focusing on the graphical editor.", ex);
