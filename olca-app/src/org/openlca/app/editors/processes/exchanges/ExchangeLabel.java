@@ -25,7 +25,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
 class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
@@ -85,9 +84,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			return null;
 		return switch (col) {
 			case 0 -> Labels.name(e.flow);
-			case 1 -> e.flow == null
-					? null
-					: CategoryPath.getShort(e.flow.category);
+			case 1 -> getCategory(e);
 			case 2 -> getAmountText(e);
 			case 3 -> Labels.name(e.unit);
 			case 4 -> getCostValue(e);
@@ -109,6 +106,15 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			case 10 -> e.description;
 			default -> null;
 		};
+	}
+
+	private String getCategory(Exchange e) {
+		if (e.flow == null || e.flow.category == null)
+			return null;
+		var path = e.flow.category.toPath();
+		return path.startsWith("Elementary flows/")
+				? "../" + path.substring(17)
+				: path;
 	}
 
 	private String getDefaultProvider(Exchange e) {
