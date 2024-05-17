@@ -1,8 +1,6 @@
 package org.openlca.app.editors.comments;
 
 import org.openlca.core.model.AllocationFactor;
-import org.openlca.core.model.DQIndicator;
-import org.openlca.core.model.DQScore;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ImpactCategory;
@@ -19,27 +17,30 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-// TODO: add null checks?
 public class CommentPaths {
 
-	public static String get(String path) {
-		return path;
-	}
-
 	public static String get(Unit unit) {
-		return "units[" + unit.name + "]";
+		return unit != null
+				? "units[" + unit.name + "]"
+				: null;
 	}
 
 	public static String get(Source source) {
-		return "documentation.sources[" + source.refId + "]";
+		return source != null
+				? "documentation.sources[" + source.refId + "]"
+				: null;
 	}
 
 	public static String get(SocialAspect aspect) {
-		return "socialAspects[" + aspect.indicator.refId + "]";
+		return aspect != null && aspect.indicator != null
+				? "socialAspects[" + aspect.indicator.refId + "]"
+				: null;
 	}
 
 	public static String get(Exchange exchange) {
-		return "exchanges[" + exchange.internalId + "]";
+		return exchange != null
+				? "exchanges[" + exchange.internalId + "]"
+				: null;
 	}
 
 	public static String get(AllocationFactor factor, Exchange product) {
@@ -47,6 +48,11 @@ public class CommentPaths {
 	}
 
 	public static String get(AllocationFactor factor, Exchange product, Exchange exchange) {
+		if (factor == null
+				|| factor.method == null
+				|| product == null
+				|| product.flow == null)
+			return null;
 		String type = factor.method.name();
 		String id = product.flow.refId;
 		if (exchange != null) {
@@ -56,55 +62,64 @@ public class CommentPaths {
 	}
 
 	public static String get(Parameter parameter) {
-		return "parameters[" + parameter.name + "]";
+		return parameter != null
+				? "parameters[" + parameter.name + "]"
+				: null;
 	}
 
 	public static String get(FlowPropertyFactor factor) {
-		return "flowProperties[" + factor.flowProperty.refId + "]";
+		return factor != null && factor.flowProperty != null
+				? "flowProperties[" + factor.flowProperty.refId + "]"
+				: null;
 	}
 
 	public static String get(NwSet nwSet) {
-		return "nwSets[" + nwSet.refId + "]";
+		return nwSet != null
+				? "nwSets[" + nwSet.refId + "]"
+				: null;
 	}
 
 	public static String get(NwSet nwSet, NwFactor factor) {
-		return get(nwSet) + ".factors[" + factor.impactCategory.refId + "]";
+		return nwSet != null && factor != null && factor.impactCategory != null
+				? get(nwSet) + ".factors[" + factor.impactCategory.refId + "]"
+				: null;
 	}
 
 	public static String get(ImpactCategory category) {
-		return get(Descriptor.of(category));
+		return category != null
+				? get(Descriptor.of(category))
+				: null;
 	}
 
 	public static String get(ImpactDescriptor category) {
-		return "impactCategories[" + category.refId + "]";
+		return category != null
+				? "impactCategories[" + category.refId + "]"
+				: null;
 	}
 
 	public static String get(ImpactCategory category, ImpactFactor factor) {
-		return get(category) + ".impactFactors[" + factor.flow.refId + "]";
+		return category != null && factor != null && factor.flow != null
+				? get(category) + ".impactFactors[" + factor.flow.refId + "]"
+				: null;
 	}
 
-	public static String get(DQIndicator indicator) {
-		return "indicators[" + indicator.position + "]";
-	}
-
-	public static String get(DQScore score) {
-		return "scores[" + score.position + "]";
-	}
-
-	public static String get(DQIndicator indicator, DQScore score) {
-		return get(indicator) + "." + get(score);
-	}
-
-	public static String get(ParameterRedef redef, RootDescriptor contextElement) {
-		String context = contextElement != null ? contextElement.refId : "global";
-		return "parameterRedefs[" + context + "-" + redef.name + "]";
+	public static String get(ParameterRedef redef, RootDescriptor context) {
+		if (redef == null)
+			return null;
+		var ctx = context != null ? context.refId : "global";
+		return "parameterRedefs[" + ctx + "-" + redef.name + "]";
 	}
 
 	public static String get(ProjectVariant variant) {
-		return "variants[" + variant.productSystem.refId + "-" + variant.name + "]";
+		return variant != null && variant.productSystem != null
+				? "variants[" + variant.productSystem.refId + "-" + variant.name + "]"
+				: null;
 	}
 
-	public static String get(ProjectVariant variant, ParameterRedef redef, RootDescriptor contextElement) {
-		return get(variant) + "." + get(redef, contextElement);
+	public static String get(
+			ProjectVariant variant, ParameterRedef redef, RootDescriptor context) {
+		return variant != null && redef != null && context != null
+				? get(variant) + "." + get(redef, context)
+				: null;
 	}
 }

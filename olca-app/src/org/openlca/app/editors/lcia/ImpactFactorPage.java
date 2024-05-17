@@ -151,6 +151,8 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		factors.sort((o1, o2) -> {
 			Flow f1 = o1.flow;
 			Flow f2 = o2.flow;
+			if (f1 == null || f2 == null)
+				return 0;
 			int c = Strings.compare(f1.name, f2.name);
 			if (c != 0)
 				return c;
