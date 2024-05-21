@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -18,8 +19,10 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -68,10 +71,19 @@ class SodaPage extends FormPage {
 		createStockCombo(comp, tk);
 	}
 
-	private void createStockCombo(Composite comp, FormToolkit tk) {
+	private void createStockCombo(Composite outer, FormToolkit tk) {
 		if (con.stocks().isEmpty())
 			return;
-		var combo = UI.labeledCombo(comp, tk, "Data stock");
+
+		UI.label(outer, tk, "Data stock");
+		var inner = UI.composite(outer, tk);
+		UI.fillHorizontal(inner);
+		var grid = UI.gridLayout(inner, 2);
+		grid.marginWidth = 0;
+		grid.marginTop = 0;
+
+		var combo = new Combo(inner, SWT.READ_ONLY);
+		UI.fillHorizontal(combo);
 		var items = new String[con.stocks().size() + 1];
 		items[0] = "Undefined / Default";
 		int i = 1;
@@ -82,18 +94,33 @@ class SodaPage extends FormPage {
 
 		combo.setItems(items);
 		combo.select(0);
+
+		var downloadBtn = UI.button(inner, tk, "Download");
+		downloadBtn.setImage(Images.get(FileType.ZIP));
+		downloadBtn.setEnabled(false);
+
 		Controls.onSelect(combo, $ -> {
 			int k = combo.getSelectionIndex();
 			if (k == 0) {
 				client.useDataStock(null);
+				downloadBtn.setEnabled(false);
 				return;
 			}
 			var stock = con.stocks().get(k - 1);
-			client.useDataStock(stock != null
+			var stockId = stock != null
 					? stock.getUUID()
-					: null);
+					: null;
+			client.useDataStock(stockId);
+			downloadBtn.setEnabled(stockId != null);
 		});
 
+		Controls.onSelect(downloadBtn, $ -> {
+			int k = combo.getSelectionIndex();
+			if (k == 0)
+				return;
+			var stock = con.stocks().get(k - 1);
+			StockDownload.run(client, stock);
+		});
 	}
 
 	private void createDataSection(Composite body, FormToolkit tk) {
