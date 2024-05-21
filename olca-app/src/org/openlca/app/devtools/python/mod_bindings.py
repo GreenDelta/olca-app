@@ -523,6 +523,7 @@ import org.openlca.core.matrix.index.TechIndex as TechIndex
 import org.openlca.core.matrix.linking.TechIndexBuilder as TechIndexBuilder
 import org.openlca.core.matrix.linking.TechIndexCutoffBuilder as TechIndexCutoffBuilder
 import org.openlca.util.TopoSort as TopoSort
+import org.openlca.core.database.TransDeps as TransDeps
 import org.openlca.util.Triple as Triple
 import org.openlca.core.matrix.uncertainties.UMatrix as UMatrix
 import org.openlca.core.matrix.solvers.UmfFactorizedMatrix as UmfFactorizedMatrix
