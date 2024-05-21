@@ -41,7 +41,7 @@ class MappingPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.header(mform, "Flow mapping");
+		ScrolledForm form = UI.header(mform, M.FlowMapping);
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.body(form, tk);
 		createInfoSection(tk, body);

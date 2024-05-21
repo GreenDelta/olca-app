@@ -78,7 +78,7 @@ public class CommitAction extends Action implements INavigationAction {
 				return false;
 			}
 			Collections.reverse(result.newCommits());
-			new HistoryDialog("Pushed commits", result.newCommits()).open();
+			new HistoryDialog(M.PushedCommits, result.newCommits()).open();
 			return true;
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during commit", e);

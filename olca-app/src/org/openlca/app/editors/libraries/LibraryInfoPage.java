@@ -28,7 +28,7 @@ public class LibraryInfoPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var title = M.GeneralInformation + ": " + info.name();
+		var title = String.join(" - ", M.GeneralInformation, info.name());
 		var form = UI.header(mForm, title, Icon.LIBRARY.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);

@@ -30,7 +30,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 	private final List<ParameterSection> sections = new ArrayList<>();
 
 	public ParameterPage(ProductSystemEditor editor) {
-		super(editor, "ParameterPage2", "Parameters");
+		super(editor, "ParameterPage2", M.Parameters);
 		this.editor = editor;
 		editor.onSaved(() -> sections.forEach(ParameterSection::update));
 	}

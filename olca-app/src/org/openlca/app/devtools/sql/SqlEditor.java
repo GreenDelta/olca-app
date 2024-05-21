@@ -75,7 +75,7 @@ public class SqlEditor extends ScriptingEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.header(mform, "SQL Query Browser", Icon.SQL.get());
+			var form = UI.header(mform, M.SqlQueryBrowser, Icon.SQL.get());
 			var tk = mform.getToolkit();
 			var body = UI.body(form, tk);
 			createStatementSection(body, tk);

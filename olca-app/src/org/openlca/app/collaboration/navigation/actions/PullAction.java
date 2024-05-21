@@ -49,7 +49,7 @@ public class PullAction extends Action implements INavigationAction {
 			if (newCommits == null)
 				return;
 			if (!newCommits.isEmpty()) {
-				new HistoryDialog("Fetched commits", newCommits).open();
+				new HistoryDialog(M.FetchedCommits, newCommits).open();
 			}
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)

@@ -18,7 +18,7 @@ public class DocPage extends ModelPage<Process> {
 	private final ProcessEditor editor;
 
 	public DocPage(ProcessEditor editor) {
-		super(editor, "ProcessInfoPage", "Documentation");
+		super(editor, "ProcessInfoPage", M.Documentation);
 		this.editor = editor;
 	}
 

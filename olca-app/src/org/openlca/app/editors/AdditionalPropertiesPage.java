@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -32,7 +33,7 @@ import org.openlca.util.Strings;
 public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T> {
 
 	public AdditionalPropertiesPage(ModelEditor<T> editor) {
-		super(editor, "AdditionalPropertiesPage", "Additional properties");
+		super(editor, "AdditionalPropertiesPage", M.AdditionalProperties);
 	}
 
 	@Override

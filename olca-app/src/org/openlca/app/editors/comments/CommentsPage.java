@@ -54,7 +54,7 @@ public class CommentsPage extends FormPage {
 		var title = getTitle();
 		Image image = null;
 		if (model != null) {
-			title += ": " + model.name;
+			title += String.join(" - ", title, model.name);
 			image = Images.get(model);
 		}
 		var form = UI.header(mForm, title, image);

@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.nexus.Types.AggregationType;
 import org.openlca.app.navigation.actions.nexus.Types.BiogenicCarbonModeling;
@@ -44,8 +45,7 @@ class MetaDataDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.header(mform,
-				"Specify database wide meta data (* -> multiple values can be separated by a comma ',')");
+		var form = UI.header(mform, M.SpecifyMetadata);
 		var toolkit = mform.getToolkit();
 		var body = UI.dialogBody(form, toolkit);
 

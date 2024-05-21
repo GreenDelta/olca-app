@@ -35,7 +35,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 	private Button validationBtn;
 
 	public GeoPage(ImpactCategoryEditor editor) {
-		super(editor, "GeoPage", "Regionalized calculation");
+		super(editor, "GeoPage", M.RegionalizedCalculation);
 		this.editor = editor;
 	}
 

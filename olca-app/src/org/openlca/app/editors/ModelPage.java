@@ -35,7 +35,7 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	public String getFormTitle() {
-		return getTitle() + ": " + Labels.name(getModel());
+		return String.join(" - ", getTitle(), Labels.name(getModel()));
 	}
 
 	@SuppressWarnings("unchecked")

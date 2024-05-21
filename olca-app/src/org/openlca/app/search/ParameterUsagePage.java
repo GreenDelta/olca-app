@@ -101,8 +101,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.header(
-				mform, M.UsageOf + " " + tree.param);
+			var form = UI.header(mform, String.join(" - ", M.Usage, tree.param));
 			var tk = mform.getToolkit();
 			var body = UI.body(form, tk);
 			ParameterUsageView.show(body, tree);

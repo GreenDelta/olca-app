@@ -54,7 +54,7 @@ public class PushAction extends Action implements INavigationAction {
 				MsgBox.error("Rejected - Not up to date - Please pull remote changes to continue");
 			} else {
 				Collections.reverse(result.newCommits());
-				new HistoryDialog("Pushed commits", result.newCommits()).open();
+				new HistoryDialog(M.PushedCommits, result.newCommits()).open();
 			}
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error pushing to remote", e);

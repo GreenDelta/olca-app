@@ -7,6 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.db.Repository;
 import org.openlca.app.tools.authentification.AuthenticationGroup;
 import org.openlca.app.util.UI;
@@ -109,8 +110,8 @@ public class AuthenticationDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
-				"Authenticate " + url,
-				"Enter your credentials for the Git repository.");
+				String.join(" - ", M.Authenticate, url),
+				M.EnterGitCredentials);
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body,  1);
 		UI.gridData(body, true, true).widthHint = 500;

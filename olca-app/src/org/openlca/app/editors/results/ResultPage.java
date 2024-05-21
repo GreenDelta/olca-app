@@ -17,7 +17,7 @@ class ResultPage extends ModelPage<Result> {
 	private final ResultEditor editor;
 
 	ResultPage(ResultEditor editor) {
-		super(editor, "ResultPage", "Result");
+		super(editor, "ResultPage", M.Result);
 		this.editor = editor;
 	}
 

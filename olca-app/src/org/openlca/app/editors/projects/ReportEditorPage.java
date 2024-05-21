@@ -45,7 +45,7 @@ class ReportEditorPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.header(mform, "Report");
+		var form = UI.header(mform, M.Report);
 		tk = mform.getToolkit();
 		var body = UI.body(form, tk);
 		createInfoSection(body);

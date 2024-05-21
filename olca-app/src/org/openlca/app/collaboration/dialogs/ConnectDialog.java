@@ -34,8 +34,8 @@ public class ConnectDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
-				"Connect Git repository",
-				"Enter the location of the Git repository.");
+				M.ConnectGitRepo,
+				M.EnterGitLocation);
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body,  1);
 		UI.gridData(body, true, true).widthHint = 500;

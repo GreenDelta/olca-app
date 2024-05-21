@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -32,8 +33,8 @@ public class LibraryDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
-				"Locate library",
-				"Please specify a location for the missing library '" + link.id() + "'");
+				M.LocateLibrary,
+				String.join(" - ", M.SpecifyLibraryLocation, link.id()));
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;

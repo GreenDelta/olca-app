@@ -30,6 +30,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
@@ -81,7 +82,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
-			var form = UI.header(mForm, "Import details", Icon.IMPORT.get());
+			var form = UI.header(mForm, M.ImportDetails, Icon.IMPORT.get());
 			var tk = mForm.getToolkit();
 			var body = UI.body(form, tk);
 

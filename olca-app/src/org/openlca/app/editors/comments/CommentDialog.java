@@ -32,7 +32,8 @@ public class CommentDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.header(mForm, M.Comments + ": " + CommentLabels.get(path));
+		var title = String.join(" - ", M.Comments, CommentLabels.get(path));
+		var form = UI.header(mForm, title);
 		var body = UI.body(form, mForm.getToolkit());
 		body.setLayout(new FillLayout());
 		var browser = new Browser(body, SWT.NONE);

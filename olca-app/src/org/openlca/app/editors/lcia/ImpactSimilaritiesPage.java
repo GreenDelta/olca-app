@@ -32,7 +32,7 @@ import org.openlca.util.Strings;
 class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 
 	ImpactSimilaritiesPage(ImpactCategoryEditor editor) {
-		super(editor, "Similarities", "Similarities");
+		super(editor, "Similarities", M.Similarities);
 	}
 
 	@Override

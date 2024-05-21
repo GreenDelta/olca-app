@@ -31,7 +31,7 @@ public class LibraryLicensePage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var title = M.LicenseInformation + ": " + info.name();
+		var title = String.join(" - ", M.LicenseInformation, info.name());
 		var form = UI.header(mForm, title, Icon.LIBRARY.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);

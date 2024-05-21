@@ -67,7 +67,7 @@ public class ValidationResultView extends SimpleFormEditor {
 
 		@Override
 		public void createFormContent(IManagedForm mform) {
-			var form = UI.header(mform, "Validation results");
+			var form = UI.header(mform, M.ValidationResults);
 			var tk = mform.getToolkit();
 			var body = UI.body(form, tk);
 			var table = Tables.createViewer(body, M.DataSet, M.Message);

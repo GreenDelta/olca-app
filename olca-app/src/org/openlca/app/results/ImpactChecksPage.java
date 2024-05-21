@@ -51,9 +51,7 @@ public class ImpactChecksPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.header(mForm,
-				"Flows that are not covered by the "
-						+ "selected LCIA method",
+		var form = UI.header(mForm, M.FlowNotCovered,
 				Icon.ANALYSIS_RESULT.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);

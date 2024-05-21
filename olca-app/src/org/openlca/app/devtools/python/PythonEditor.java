@@ -10,6 +10,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.devtools.ScriptingEditor;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
@@ -57,7 +58,7 @@ public class PythonEditor extends ScriptingEditor {
 		private Browser browser;
 
 		public Page() {
-			super(PythonEditor.this, "PythonEditorPage", "Python");
+			super(PythonEditor.this, "PythonEditorPage", M.Python);
 		}
 
 		@Override

@@ -30,7 +30,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
-		var form = UI.header(mForm, M.Database + ": " + config.name());
+		var form = UI.header(mForm, String.join(" - ", M.Database, config.name()));
 		var body = UI.dialogBody(form, tk);
 		var content = UI.composite(body, tk);
 		UI.gridLayout(content, 2);
