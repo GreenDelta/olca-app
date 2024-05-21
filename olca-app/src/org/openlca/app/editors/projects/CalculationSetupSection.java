@@ -8,6 +8,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.rcp.images.Images;
@@ -102,6 +103,7 @@ class CalculationSetupSection {
 					editor.addPage(reportPage);
 					editor.setActivePage(reportPage.getId());
 					editor.setDirty(true);
+					applyTheme();
 
 					// dispose the button row and repaint the form
 					afterButton.dispose();
@@ -129,8 +131,8 @@ class CalculationSetupSection {
 		nwSetCombo.addSelectionChangedListener(d -> {
 			var project = editor.getModel();
 			project.nwSet = d == null
-				? null
-				: new NwSetDao(db).getForId(d.id);
+					? null
+					: new NwSetDao(db).getForId(d.id);
 			editor.setDirty(true);
 		});
 	}
@@ -148,8 +150,8 @@ class CalculationSetupSection {
 
 		// handle change
 		project.impactMethod = method == null
-			? null
-			: new ImpactMethodDao(db).getForId(method.id);
+				? null
+				: new ImpactMethodDao(db).getForId(method.id);
 		project.nwSet = null;
 		nwSetCombo.select(null);
 		nwSetCombo.setInput(method);
@@ -174,5 +176,21 @@ class CalculationSetupSection {
 		}
 		nwSetCombo.setInput(nws);
 		nwSetCombo.select(selected);
+	}
+
+	private void applyTheme() {
+		// on Windows, when we are in dark mode and add
+		// the report page, the background of that page
+		// is still white. to apply the dark theme, a
+		// hack is to set the focus to the navigation
+		// and then bring it back
+		var page = Editors.getActivePage();
+		if (page == null)
+			return;
+		var navi = page.findView("views.navigation");
+		if (navi != null) {
+			navi.setFocus();
+		}
+		editor.setFocus();
 	}
 }
