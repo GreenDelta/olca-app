@@ -1,6 +1,5 @@
 package org.openlca.app.tools.soda;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -30,7 +29,6 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.wizards.io.ImportLogDialog;
-import org.openlca.ilcd.commons.DataSetType;
 import org.openlca.ilcd.commons.LangString;
 import org.openlca.ilcd.descriptors.Descriptor;
 import org.openlca.ilcd.io.SodaClient;
@@ -127,23 +125,7 @@ class SodaPage extends FormPage {
 		var section = UI.section(body, tk, "Datasets");
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
-
-		var searchComp = tk.createComposite(comp);
-		UI.fillHorizontal(searchComp);
-		UI.gridLayout(searchComp, 4);
-
-		var typeCombo = TypeCombo.create(searchComp, tk, con.hasEpds());
-		var searchText = tk.createText(searchComp, "", SWT.BORDER);
-		UI.fillHorizontal(searchText);
-		searchText.setMessage("Search dataset ...");
-		var button = tk.createButton(searchComp, "Search", SWT.NONE);
-		Controls.onSelect(button,
-				e -> runSearch(typeCombo.selected(), searchText.getText()));
-		searchText.addTraverseListener(e -> {
-			if (e.detail == SWT.TRAVERSE_RETURN) {
-				runSearch(typeCombo.selected(), searchText.getText());
-			}
-		});
+		var search = SearchBar.create(con, comp, tk);
 
 		table = Tables.createViewer(comp, M.Name, "UUID", M.Version, M.Comment);
 		UI.gridData(table.getControl(), true, true);
@@ -153,28 +135,7 @@ class SodaPage extends FormPage {
 				"Import selected", Icon.IMPORT.descriptor(), this::runImport);
 		var copyAction = TableClipboard.onCopySelected(table);
 		Actions.bind(table, importAction, copyAction);
-	}
-
-	private void runSearch(DataSetType type, String name) {
-		var clazz = Util.classOf(type);
-		if (clazz == null)
-			return;
-
-		var err = new String[1];
-		var result = new ArrayList<Descriptor<?>>();
-		App.runWithProgress("Search datasets ...", () -> {
-			try {
-				var list = client.search(clazz, name);
-				result.addAll(list.getDescriptors());
-			} catch (Exception e) {
-				err[0] = e.getMessage();
-			}
-		}, () -> {
-			if (err[0] == null)
-				table.setInput(result);
-			else
-				MsgBox.error("Searching for datasets failed", err[0]);
-		});
+		search.onResults(table::setInput);
 	}
 
 	private void runImport() {
