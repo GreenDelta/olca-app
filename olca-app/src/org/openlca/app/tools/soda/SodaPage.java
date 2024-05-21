@@ -41,14 +41,14 @@ class SodaPage extends FormPage {
 	private TableViewer table;
 
 	SodaPage(SodaClientTool tool, Connection con) {
-		super(tool, "SodaClientTool.Page", "soda4LCA client");
+		super(tool, "SodaClientTool.Page", "soda4LCA");
 		this.con = con;
 		this.client = con.client();
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.header(mForm, "soda4LCA client");
+		var form = UI.header(mForm, "soda4LCA");
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		createConnectionSection(body, tk);

@@ -8,6 +8,7 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.util.Strings;
 
 
@@ -29,6 +30,7 @@ public class SodaClientTool extends SimpleFormEditor {
 			throws PartInitException {
 		var inp = (SimpleEditorInput) input;
 		con = Cache.getAppCache().remove(inp.id, Connection.class);
+		setTitleImage(Icon.SODA.get());
 		super.init(site, input);
 	}
 

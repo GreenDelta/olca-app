@@ -279,7 +279,7 @@
 				class="org.openlca.app.tools.soda.SodaClientTool"
 				default="false"
 				id="SodaClientTool"
-				name="soda4LCA client">
+				name="soda4LCA">
 		</editor>
 
 	</extension>
