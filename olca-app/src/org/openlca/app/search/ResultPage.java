@@ -48,6 +48,7 @@ class ResultPage extends FormPage {
 	private ScrolledForm form;
 	private Composite formBody;
 	private Composite pageComposite;
+	private Label filterLabel;
 
 	public ResultPage(SearchPage view, String title, List<Descriptor> results) {
 		super(view, "SearchResultView.Page", M.SearchResults);
@@ -72,11 +73,16 @@ class ResultPage extends FormPage {
 	private void createFilter() {
 		var filterComposite = UI.composite(formBody, tk);
 		UI.gridLayout(filterComposite, 2, 10, 10);
-		Label label = UI.label(filterComposite, tk, M.Filter);
-		label.setFont(UI.boldFont());
+		filterLabel = UI.label(filterComposite, tk, "");
+		setFilterLabelText();
+		filterLabel.setFont(UI.boldFont());
 		Text text = UI.emptyText(filterComposite, tk);
 		UI.gridData(text, false, false).widthHint = 350;
 		text.addModifyListener(e -> filterResults(text.getText()));
+	}
+
+	private void setFilterLabelText() {
+		filterLabel.setText(M.Filter + " (" + results.size() + ")");
 	}
 
 	private void filterResults(String filter) {
@@ -104,6 +110,7 @@ class ResultPage extends FormPage {
 				return dist1 - dist2;
 			});
 		}
+		setFilterLabelText();
 		currentPage = 0;
 		pageCount = (int) Math.ceil((double) results.size() / (double) PAGE_SIZE);
 		renderPage();
