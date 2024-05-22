@@ -58,7 +58,7 @@ class TreeExportDialog extends FormDialog {
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 3, 10, 5);
-		var fileText = UI.labeledText(comp, tk, "Export to file");
+		var fileText = UI.labeledText(comp, tk, M.ExportToFile);
 		fileText.setEditable(false);
 		fileText.setBackground(Colors.white());
 		var fileBtn = UI.button(comp, tk, M.Browse);
@@ -78,12 +78,12 @@ class TreeExportDialog extends FormDialog {
 
 		// number of levels
 		UI.gridLayout(comp, 3, 10, 5);
-		maxDepthText = UI.labeledText(comp, tk, "Max. number of levels");
+		maxDepthText = UI.labeledText(comp, tk, M.MaxNumberLevels);
 		maxDepthText.setText("5");
 		var maxDepthBtn = tk.createButton(comp, "Unlimited", SWT.CHECK);
 
 		// minimum contribution
-		minContrText = UI.labeledText(comp, tk, "Min. contribution %");
+		minContrText = UI.labeledText(comp, tk, M.MinContribPerc);
 		minContrText.setText("1e-5");
 		var contrBtn = tk.createButton(comp, "Unlimited", SWT.CHECK);
 		Controls.onSelect(contrBtn, _e -> {
@@ -91,7 +91,7 @@ class TreeExportDialog extends FormDialog {
 		});
 
 		// recursion limit
-		maxRecurText = UI.labeledText(comp, tk, "Max. recursion depth");
+		maxRecurText = UI.labeledText(comp, tk, M.MaxRecursionDepth);
 		maxRecurText.setText("1");
 		maxRecurText.setEnabled(false);
 		UI.label(comp, tk, "Repetitions");

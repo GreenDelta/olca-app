@@ -67,7 +67,7 @@ public class LoginPanel {
 		});
 
 		// user
-		var userText = UI.labeledText(comp, tk, "User");
+		var userText = UI.labeledText(comp, tk, M.User);
 		if (Strings.notEmpty(credentials.user())) {
 			userText.setText(credentials.user());
 		}

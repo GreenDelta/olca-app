@@ -96,7 +96,7 @@ public class ImportDialog extends FormDialog {
 				.orElse("- none -"));
 
 		// amount
-		var amountText = UI.labeledText(comp, tk, "Declared unit");
+		var amountText = UI.labeledText(comp, tk, M.DeclaredUnit);
 		amountText.setEditable(false);
 		amountText.setText(getDeclaredUnit());
 	}

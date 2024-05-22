@@ -65,7 +65,7 @@ public class InfoSection {
 		ModelPage.text(container, M.Name, "name", editor, tk)
 				.setEditable(editor.isEditable());
 		if (entity.isFromLibrary()) {
-			ModelPage.text(container, "Library", "library", editor, tk)
+			ModelPage.text(container, M.Library, "library", editor, tk)
 					.setEditable(false);
 		}
 

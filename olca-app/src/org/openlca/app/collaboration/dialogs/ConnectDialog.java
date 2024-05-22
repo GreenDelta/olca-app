@@ -55,7 +55,7 @@ public class ConnectDialog extends FormDialog {
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
 		var urlText = UI.labeledText(group, tk, M.URL);
-		var protocolText = UI.labeledText(group, tk, "Protocol");
+		var protocolText = UI.labeledText(group, tk, M.Protocol);
 		protocolText.setEnabled(false);
 		var hostText = UI.labeledText(group, tk, M.Host);
 		hostText.setEnabled(false);

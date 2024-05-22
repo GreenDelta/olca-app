@@ -65,7 +65,7 @@ public class SaveResultDialog extends FormDialog {
 		var nameComp = UI.composite(body, tk);
 		UI.gridLayout(nameComp, 2);
 		UI.fillHorizontal(nameComp);
-		nameText = UI.labeledText(nameComp, tk, "Name");
+		nameText = UI.labeledText(nameComp, tk, M.Name);
 		Controls.onPainted(nameText, () -> {
 			var name = Labels.name(editor.setup().target());
 			if (name != null) {
@@ -82,7 +82,7 @@ public class SaveResultDialog extends FormDialog {
 		processRadio = processSelector.button;
 
 		metaCheck = UI.checkbox(processSelector.group, tk);
-	  metaCheck.setText(M.CopyMetaDataFromReferenceProcess);
+		metaCheck.setText(M.CopyMetaDataFromReferenceProcess);
 		metaCheck.setSelection(true);
 		metaCheck.setEnabled(false);
 

@@ -105,7 +105,7 @@ class EpdModuleDialog extends FormDialog {
 		nameCombo.addModifyListener($ -> module.name = nameCombo.getText());
 
 		// result multiplier
-		var factorText = UI.labeledText(comp, tk, "Result multiplier");
+		var factorText = UI.labeledText(comp, tk, M.ResultMultiplier);
 		Controls.set(factorText, module.multiplier, f -> module.multiplier = f);
 
 		// result tree

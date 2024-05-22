@@ -1,5 +1,9 @@
 package org.openlca.app.tools.soda;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Optional;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
@@ -8,15 +12,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.util.Strings;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Optional;
 
 class LoginDialog extends FormDialog {
 
@@ -69,11 +70,11 @@ class LoginDialog extends FormDialog {
 		urlText.setText("https://replace.this.url.to/Node");
 		anoCheck = tk.createButton(comp, "Anonymous access", SWT.CHECK);
 		anoCheck.setSelection(true);
-		userText = UI.labeledText(comp, tk, "User");
+		userText = UI.labeledText(comp, tk, M.User);
 		userText.setText("anonymous");
 		userText.setEnabled(false);
 		pwText = UI.labeledText(
-				comp, tk, "Password", SWT.BORDER | SWT.PASSWORD);
+				comp, tk, M.Password, SWT.BORDER | SWT.PASSWORD);
 		pwText.setEnabled(false);
 
 		Controls.onSelect(anoCheck, $ -> {

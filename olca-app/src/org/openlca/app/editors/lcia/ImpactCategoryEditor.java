@@ -111,7 +111,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 			// source, code, reference unit
 			modelLink(comp, M.Source, "source");
-			text(comp, "Code", "code");
+			text(comp, M.Code, "code");
 			text(comp, M.ReferenceUnit, "referenceUnit");
 
 			// impact direction
@@ -169,7 +169,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		}
 
 		private static class MethodLabel extends LabelProvider
-			implements ITableLabelProvider {
+				implements ITableLabelProvider {
 
 			@Override
 			public Image getColumnImage(Object obj, int col) {

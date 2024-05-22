@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -86,7 +87,7 @@ public class RenameParameterDialog extends FormDialog {
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
 
-		text = UI.labeledText(comp, tk, "New name");
+		text = UI.labeledText(comp, tk, NLS.bind(M.New, M.Name));
 		if (newName != null) {
 			text.setText(newName);
 		} else if (param.name != null) {

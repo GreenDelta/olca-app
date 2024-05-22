@@ -76,7 +76,7 @@ public class AuthenticationGroup {
 			}
 		}
 		if (withToken) {
-			var t = createText(group, tk, SWT.NONE, "Token", token, text -> this.token = text);
+			var t = createText(group, tk, SWT.NONE, M.Token, token, text -> this.token = text);
 			if (autoFocus && !Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password)) {
 				t.setFocus();
 			}

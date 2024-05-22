@@ -50,9 +50,9 @@ class MetaDataDialog extends FormDialog {
 		var body = UI.dialogBody(form, toolkit);
 
 		var general = UI.formSection(body, toolkit, "General meta data");
-		createMultiString(general, toolkit, "Nomenclature",
+		createMultiString(general, toolkit, M.Nomenclature,
 				v -> metaData.supportedNomenclatures = v);
-		createMultiString(general, toolkit, "Impact methods",
+		createMultiString(general, toolkit, M.ImpactMethods,
 				v -> metaData.lciaMethods = v);
 		createSelect(general, toolkit, "Inventory modeling type", ModelingType.class,
 				v -> metaData.modelingType = v);
@@ -82,7 +82,7 @@ class MetaDataDialog extends FormDialog {
 				v -> metaData.sourceReliability = v);
 		createSelect(process, toolkit, "Aggregation type", AggregationType.class,
 				v -> metaData.aggregationType = v);
-		createMultiString(process, toolkit, "System model",
+		createMultiString(process, toolkit, M.SystemModel,
 				v -> metaData.systemModel = v);
 
 		if (!new ProductSystemDao(Database.get()).getDescriptors().isEmpty()) {
@@ -90,26 +90,29 @@ class MetaDataDialog extends FormDialog {
 			var check = UI.labeledCheckbox(system, toolkit, "Export product systems");
 			check.setSelection(true);
 			Controls.onSelect(check, $ -> metaData.exportSystems = check.getSelection());
-			createString(system, toolkit, "Creator",
+			createString(system, toolkit, M.Creator,
 					v -> metaData.creator = v);
-			createString(system, toolkit, "Intended audience",
+			createString(system, toolkit, M.IntendedAudience,
 					v -> metaData.intendedAudience = v);
 		}
 
 		form.reflow(true);
 	}
 
-	private void createMultiString(Composite parent, FormToolkit toolkit, String label, Consumer<List<String>> setter) {
-		var text = UI.labeledText(parent, toolkit, label + "*");
+	private void createMultiString(Composite parent, FormToolkit toolkit,
+			String label, Consumer<List<String>> setter) {
+		var text = UI.labeledText(parent, toolkit, M.bindAsterisk(label));
 		text.addModifyListener($ -> setter.accept(Arrays.asList(text.getText().split(","))));
 	}
 
-	private void createString(Composite parent, FormToolkit toolkit, String label, Consumer<String> setter) {
+	private void createString(Composite parent, FormToolkit toolkit, String label,
+			Consumer<String> setter) {
 		var text = UI.labeledText(parent, toolkit, label);
 		text.addModifyListener($ -> setter.accept(text.getText()));
 	}
 
-	private <T extends Enum<?>> void createSelect(Composite parent, FormToolkit toolkit, String label, Class<T> clazz,
+	private <T extends Enum<?>> void createSelect(Composite parent,
+			FormToolkit toolkit, String label, Class<T> clazz,
 			Consumer<List<T>> setter) {
 		UI.label(parent, toolkit, label);
 		var combo = new EnumCombo<T>(parent, clazz);

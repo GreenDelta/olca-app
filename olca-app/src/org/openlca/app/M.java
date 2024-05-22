@@ -180,6 +180,7 @@ public class M extends NLS {
 	public static String CreatingEcoSpoldFolder;
 	public static String CreatingProductSystem;
 	public static String CreationDate;
+	public static String Creator;
 	public static String Currencies;
 	public static String Currency;
 	public static String CurrencyCode;
@@ -218,6 +219,7 @@ public class M extends NLS {
 	public static String DatabaseWasExportedToFile;
 	public static String DaysAgo;
 	public static String DaysFromNow;
+	public static String DeclaredUnit;
 	public static String DefaultFlowProperty;
 	public static String DefaultMethod;
 	public static String DefaultProvider;
@@ -296,6 +298,7 @@ public class M extends NLS {
 	public static String ExportReport;
 	public static String ExportResultsToExcel;
 	public static String ExportToExcel;
+	public static String ExportToFile;
 	public static String ExportedProductNames;
 	public static String ExportingProcesses;
 	public static String ExternalFile;
@@ -385,6 +388,7 @@ public class M extends NLS {
 	public static String ImpactFactor;
 	public static String ImpactFactors;
 	public static String ImpactMethod;
+	public static String ImpactMethods;
 	public static String ImpactResult;
 	public static String ImpactResults;
 	public static String Import;
@@ -414,6 +418,7 @@ public class M extends NLS {
 	public static String Inputs;
 	public static String InputsOutputs;
 	public static String IntendedApplication;
+	public static String IntendedAudience;
 	public static String InvalidAllocationFactor;
 	public static String InvalidFormula;
 	public static String InvalidMemoryValue;
@@ -454,6 +459,7 @@ public class M extends NLS {
 	public static String LazyOnDemand;
 	public static String LciaCategoryDescriptionTable;
 	public static String LciaResultTable;
+	public static String Library;
 	public static String LicenseCorrupted;
 	public static String LicenseExpired;
 	public static String LicenseInformation;
@@ -479,6 +485,8 @@ public class M extends NLS {
 	public static String Manufacturer;
 	public static String Map;
 	public static String MarkAsMerged;
+	public static String MaxNumberLevels;
+	public static String MaxRecursionDepth;
 	public static String Maximize;
 	public static String MaximizeAll;
 	public static String Maximum;
@@ -492,6 +500,7 @@ public class M extends NLS {
 	public static String MemoryToLowMessage;
 	public static String Merge;
 	public static String Message;
+	public static String MinContribPerc;
 	public static String Minimap;
 	public static String Minimize;
 	public static String MinimizeAll;
@@ -518,6 +527,7 @@ public class M extends NLS {
 	public static String NetCosts;
 	public static String Netcosts;
 	public static String NeverUpdateExists;
+	public static String New;
 	public static String NewActor;
 	public static String NewCategory;
 	public static String NewCurrency;
@@ -551,6 +561,7 @@ public class M extends NLS {
 	public static String NoReferenceSet;
 	public static String NoRisk;
 	public static String NoUnitGroupSelected;
+	public static String Nomenclature;
 	public static String None;
 	public static String NormalDistribution;
 	public static String NormalisationBarChart;
@@ -647,6 +658,7 @@ public class M extends NLS {
 	public static String ProjectSetup;
 	public static String Projects;
 	public static String Properties;
+	public static String Protocol;
 	public static String Provider;
 	public static String ProviderLinking;
 	public static String Providers;
@@ -699,6 +711,7 @@ public class M extends NLS {
 	public static String RestoreDatabase;
 	public static String Result;
 	public static String ResultMatricesOptional;
+	public static String ResultMultiplier;
 	public static String Results;
 	public static String Reviewer;
 	public static String RiskLevel;
@@ -795,6 +808,7 @@ public class M extends NLS {
 	public static String StopIPCInfo;
 	public static String Synonyms;
 	public static String SystemDefinesUncertainties;
+	public static String SystemModel;
 	public static String SystemProcess;
 	public static String SystemSaveProceedQuestion;
 
@@ -819,6 +833,7 @@ public class M extends NLS {
 	public static String ToggleEditMode;
 	public static String ToggleMinimap;
 	public static String ToggleShowElementaryFlows;
+	public static String Token;
 	public static String TotalAddedValue;
 	public static String TotalNetcosts;
 	public static String TotalRequirements;
@@ -917,6 +932,14 @@ public class M extends NLS {
 	}
 
 	private M() {
+	}
+
+	public static String bindParenthesis(String primary, String secondary) {
+		return String.format("%s (%s)", primary, secondary);
+	}
+
+	public static String bindAsterisk(String s) {
+		return String.format("%s*", s);
 	}
 
 	private static Map<String, String> getMap() {

@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Controls;
@@ -76,7 +77,7 @@ public class ImportLibraryDialog extends FormDialog {
 		UI.gridLayout(comp, 2);
 
 		// name & description
-		var name = UI.labeledText(comp, tk, "Library");
+		var name = UI.labeledText(comp, tk, M.Library);
 		name.setEditable(false);
 		Controls.set(name, info.name());
 		var desc = UI.multiText(comp, tk, "Description");
