@@ -91,8 +91,8 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	private static class Page extends WizardPage {
 
-		List<File> files;
 		private final boolean[] _updateMode = {false, true, false};
+		List<File> files;
 
 		Page(File initial) {
 			super("ExcelImportWizard.Page");
@@ -120,7 +120,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 					.render(body);
 
 			var group = UI.group(body);
-			group.setText("When a process with an ID already exists");
+			group.setText(M.WhenProcessWithId);
 			UI.fillHorizontal(group);
 			UI.gridLayout(group, 1);
 			for (int i = 0; i < _updateMode.length; i++) {

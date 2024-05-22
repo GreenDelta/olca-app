@@ -37,7 +37,7 @@ public class ConnectDialog extends FormDialog {
 				M.ConnectGitRepo,
 				M.EnterGitLocation);
 		var body = UI.composite(formBody, form.getToolkit());
-		UI.gridLayout(body,  1);
+		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
 		createLocationGroup(body, form.getToolkit());
 		if (withPassword) {
@@ -51,7 +51,7 @@ public class ConnectDialog extends FormDialog {
 
 	private void createLocationGroup(Composite parent, FormToolkit tk) {
 		var group = UI.group(parent, tk);
-		group.setText("Location");
+		group.setText(M.Location);
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
 		var urlText = UI.labeledText(group, tk, M.URL);

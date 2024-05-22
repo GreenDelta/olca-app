@@ -137,7 +137,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			var group = UI.group(optComp);
 			UI.gridLayout(group, 1, 5, 10);
 			UI.fillHorizontal(group);
-			group.setText("Generate");
+			group.setText(M.Generate);
 			option(group, M.ProductSystemForLc,
 					createProductSystems);
 			option(group, M.ParametersForScenarios,

@@ -27,6 +27,12 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 	private Page page;
 	private File initialFile;
 
+	public GeoJsonImportWizard() {
+		setWindowTitle("Import GeoJSON");
+		setDefaultPageImageDescriptor(Icon.IMPORT.descriptor());
+		setNeedsProgressMonitor(true);
+	}
+
 	public static void of(File file) {
 		if (Database.isNoneActive()) {
 			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
@@ -35,12 +41,6 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 		Wizards.forImport(
 				"wizard.import.geojson",
 				(GeoJsonImportWizard w) -> w.initialFile = file);
-	}
-
-	public GeoJsonImportWizard() {
-		setWindowTitle("Import GeoJSON");
-		setDefaultPageImageDescriptor(Icon.IMPORT.descriptor());
-		setNeedsProgressMonitor(true);
 	}
 
 	@Override
@@ -81,14 +81,13 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 
 	private static class Page extends WizardPage {
 
-		File json;
-		GeoJsonImport.Mode mode = GeoJsonImport.Mode.NEW_ONLY;
-
 		private final GeoJsonImport.Mode[] mods = {
 				GeoJsonImport.Mode.NEW_ONLY,
 				GeoJsonImport.Mode.UPDATE_ONLY,
 				GeoJsonImport.Mode.NEW_AND_UPDATE
 		};
+		File json;
+		GeoJsonImport.Mode mode = GeoJsonImport.Mode.NEW_ONLY;
 
 		Page(File json) {
 			super("GeoJsonImport.Page");
@@ -121,7 +120,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 			UI.gridLayout(groupComp, 1).marginTop = 0;
 			UI.fillHorizontal(groupComp);
 			var group = UI.group(groupComp);
-			group.setText("Import mode");
+			group.setText(M.ImportMode);
 			UI.gridData(group, true, false);
 			UI.gridLayout(group, 1);
 			for (var m : mods) {

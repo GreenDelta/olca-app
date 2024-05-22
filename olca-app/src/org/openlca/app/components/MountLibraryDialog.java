@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
@@ -36,11 +37,38 @@ public class MountLibraryDialog extends FormDialog {
 	private final Library library;
 	private final List<Section> sections = new ArrayList<>();
 
+	private MountLibraryDialog(Library library,
+			PreMountCheck.Result checkResult) {
+		super(UI.shell());
+		this.library = library;
+
+		// create the dialog sections for the states in the check-result
+		var stateMap = new EnumMap<PreMountState, List<Library>>(PreMountState.class);
+		for (var libState : checkResult.getStates()) {
+			var lib = libState.first;
+			var state = libState.second;
+			stateMap.computeIfAbsent(state, s -> new ArrayList<>()).add(lib);
+		}
+		var stateOrder = new PreMountState[]{
+				PreMountState.NEW,
+				PreMountState.PRESENT,
+				PreMountState.TAG_CONFLICT,
+				PreMountState.CONFLICT,
+		};
+		for (var state : stateOrder) {
+			var libs = stateMap.get(state);
+			if (libs == null || libs.isEmpty())
+				continue;
+			sections.add(Section.of(state, libs));
+		}
+	}
+
 	public static void show(Library library, PreMountCheck.Result checkResult) {
 		show(library, checkResult, null);
 	}
 
-	public static void show(Library library, PreMountCheck.Result checkResult, Consumer<Set<Library>> callback) {
+	public static void show(Library library, PreMountCheck.Result checkResult,
+			Consumer<Set<Library>> callback) {
 		if (checkResult.isError()) {
 			ErrorReporter.on(
 					"Failed to check library: " + library,
@@ -89,31 +117,6 @@ public class MountLibraryDialog extends FormDialog {
 						callback.accept(actions.keySet());
 					}
 				});
-	}
-
-	private MountLibraryDialog(Library library, PreMountCheck.Result checkResult) {
-		super(UI.shell());
-		this.library = library;
-
-		// create the dialog sections for the states in the check-result
-		var stateMap = new EnumMap<PreMountState, List<Library>>(PreMountState.class);
-		for (var libState : checkResult.getStates()) {
-			var lib = libState.first;
-			var state = libState.second;
-			stateMap.computeIfAbsent(state, s -> new ArrayList<>()).add(lib);
-		}
-		var stateOrder = new PreMountState[] {
-				PreMountState.NEW,
-				PreMountState.PRESENT,
-				PreMountState.TAG_CONFLICT,
-				PreMountState.CONFLICT,
-		};
-		for (var state : stateOrder) {
-			var libs = stateMap.get(state);
-			if (libs == null || libs.isEmpty())
-				continue;
-			sections.add(Section.of(state, libs));
-		}
 	}
 
 	private Map<Library, MountAction> collectActions() {
@@ -199,10 +202,10 @@ public class MountLibraryDialog extends FormDialog {
 
 		private String title() {
 			return switch (state) {
-				case NEW -> "New libraries";
-				case PRESENT -> "Already existing libraries";
-				case TAG_CONFLICT -> "Tag conflicts";
-				case CONFLICT -> "Data conflicts";
+				case NEW -> M.NewLibraries;
+				case PRESENT -> M.AlreadyExistingLibraries;
+				case TAG_CONFLICT -> M.TagConflicts;
+				case CONFLICT -> M.DataConflicts;
 			};
 		}
 

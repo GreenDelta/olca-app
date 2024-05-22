@@ -1,5 +1,9 @@
 package org.openlca.app.results;
 
+import java.io.File;
+import java.util.EnumSet;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -25,10 +29,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.io.xls.results.system.MatrixPage;
 import org.openlca.io.xls.results.system.ResultExport;
-
-import java.io.File;
-import java.util.EnumSet;
-import java.util.List;
 
 class ExcelExportWizard extends Wizard {
 
@@ -97,9 +97,9 @@ class ExcelExportWizard extends Wizard {
 	private static class Page extends WizardPage {
 
 		private final ResultEditor editor;
+		private final EnumSet<MatrixPage> matrices = EnumSet.noneOf(MatrixPage.class);
 		private File file;
 		private boolean skipZeros = true;
-		private final EnumSet<MatrixPage> matrices = EnumSet.noneOf(MatrixPage.class);
 
 		Page(ResultEditor editor) {
 			super("ExcelExportPage");
@@ -119,7 +119,7 @@ class ExcelExportWizard extends Wizard {
 
 			var group = new Group(body, SWT.NONE);
 			UI.fillHorizontal(group);
-			group.setText("Result matrices (optional)");
+			group.setText(M.ResultMatricesOptional);
 			UI.gridLayout(group, 1);
 			new Label(group, SWT.NONE).setText(
 					"Note that some of these matrices " +

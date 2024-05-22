@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 public class M extends NLS {
+
 	// A
 	public static String ALocationCodeIsRequired;
 	public static String AboutOpenLCA;
@@ -44,6 +45,7 @@ public class M extends NLS {
 	public static String AllocationFactors;
 	public static String AllocationMethod;
 	public static String AlreadyConnected;
+	public static String AlreadyExistingLibraries;
 	public static String AlreadyPresent;
 	public static String AlwaysUpdateInDb;
 	public static String AlwaysUseProvider;
@@ -191,6 +193,7 @@ public class M extends NLS {
 	public static String DBImportVersionNewerMessage;
 	public static String DataCollectionPeriod;
 	public static String DataCompleteness;
+	public static String DataConflicts;
 	public static String DataDocumentor;
 	public static String DataGenerator;
 	public static String DataQuality;
@@ -293,6 +296,7 @@ public class M extends NLS {
 	public static String ExportReport;
 	public static String ExportResultsToExcel;
 	public static String ExportToExcel;
+	public static String ExportedProductNames;
 	public static String ExportingProcesses;
 	public static String ExternalFile;
 
@@ -329,7 +333,9 @@ public class M extends NLS {
 	public static String FromFile;
 
 	// G
+	public static String GeneralExportSettings;
 	public static String GeneralInformation;
+	public static String Generate;
 	public static String GenerateMapFlow;
 	public static String Geography;
 	public static String GeographyDescription;
@@ -388,6 +394,7 @@ public class M extends NLS {
 	public static String ImportEcoSpold;
 	public static String ImportEcoSpold02DataSets;
 	public static String ImportILCD;
+	public static String ImportMode;
 	public static String ImportNewLocations;
 	public static String ImportRemoteDataset;
 	public static String ImportUpdateLocations;
@@ -523,6 +530,7 @@ public class M extends NLS {
 	public static String NewImpactCategory;
 	public static String NewImpactMethod;
 	public static String NewLCIAMethod;
+	public static String NewLibraries;
 	public static String NewLocation;
 	public static String NewParameter;
 	public static String NewProcess;
@@ -690,6 +698,7 @@ public class M extends NLS {
 	public static String Resize;
 	public static String RestoreDatabase;
 	public static String Result;
+	public static String ResultMatricesOptional;
 	public static String Results;
 	public static String Reviewer;
 	public static String RiskLevel;
@@ -790,6 +799,7 @@ public class M extends NLS {
 	public static String SystemSaveProceedQuestion;
 
 	// T
+	public static String TagConflicts;
 	public static String TargetAmount;
 	public static String Technology;
 	public static String TechnologyDescription;
@@ -847,6 +857,7 @@ public class M extends NLS {
 	public static String UpdateMinorVersion;
 	public static String UpdateNewerVersion;
 	public static String UpdateReferenceCurrency;
+	public static String UpdatingExistingData;
 	public static String UpstreamInclDirect;
 	public static String UpstreamTotal;
 	public static String Urn;
@@ -883,6 +894,7 @@ public class M extends NLS {
 	public static String WeightingFactor;
 	public static String Welcome;
 	public static String West;
+	public static String WhenProcessWithId;
 	public static String With;
 	public static String WithCosts;
 	public static String WithDataQualityValues;

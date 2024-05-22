@@ -100,7 +100,7 @@ public class SimaProProcessExportWizard
 			UI.gridLayout(body, 1);
 
 			var generalGroup = new Group(body, SWT.NONE);
-			generalGroup.setText("General export settings");
+			generalGroup.setText(M.GeneralExportSettings);
 			UI.gridLayout(generalGroup, 1);
 			UI.fillHorizontal(generalGroup);
 
@@ -118,7 +118,7 @@ public class SimaProProcessExportWizard
 
 			// product names
 			var productGroup = new Group(body, SWT.NONE);
-			productGroup.setText("Exported product names");
+			productGroup.setText(M.ExportedProductNames);
 			UI.fillHorizontal(productGroup);
 			UI.gridLayout(productGroup, 1);
 

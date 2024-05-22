@@ -31,6 +31,13 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	private Page page;
 	private File initialFile;
 
+	public JsonImportWizard() {
+		setNeedsProgressMonitor(true);
+		setWindowTitle("openLCA JSON-LD Import");
+		setDefaultPageImageDescriptor(
+				Icon.IMPORT_ZIP_WIZARD.descriptor());
+	}
+
 	public static void of(File file) {
 		if (Database.isNoneActive()) {
 			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
@@ -39,13 +46,6 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 		Wizards.forImport(
 				"wizard.import.json",
 				(JsonImportWizard w) -> w.initialFile = file);
-	}
-
-	public JsonImportWizard() {
-		setNeedsProgressMonitor(true);
-		setWindowTitle("openLCA JSON-LD Import");
-		setDefaultPageImageDescriptor(
-				Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			UI.gridLayout(groupComp, 1).marginTop = 0;
 			UI.fillHorizontal(groupComp);
 			var group = UI.group(groupComp);
-			group.setText("Updating existing data sets in the database");
+			group.setText(M.UpdatingExistingData);
 			UI.gridData(group, true, false);
 			UI.gridLayout(group, 1);
 			for (UpdateMode mode : mods) {
