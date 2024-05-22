@@ -134,9 +134,9 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			UI.fillHorizontal(fileComp);
 			UI.gridLayout(fileComp, 3).marginBottom = 0;
 			FileSelector.on(file -> {
-				zip = file;
-				setPageComplete(true);
-			})
+						zip = file;
+						setPageComplete(true);
+					})
 					.withTitle("Select a zip file with openLCA data...")
 					.withExtensions("*.zip")
 					.withSelection(zip)
@@ -161,9 +161,9 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 		private String getText(UpdateMode mode) {
 			return switch (mode) {
-				case NEVER -> "Never update a data set that already exists";
-				case IF_NEWER -> "Update data sets with newer versions";
-				case ALWAYS -> "Overwrite all existing data sets";
+				case NEVER -> M.NeverUpdateExists;
+				case IF_NEWER -> M.UpdateNewerVersion;
+				case ALWAYS -> M.OverwriteAllData;
 			};
 		}
 	}

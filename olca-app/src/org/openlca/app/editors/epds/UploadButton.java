@@ -3,6 +3,7 @@ package org.openlca.app.editors.epds;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.output.ExportDialog;
 import org.openlca.app.util.Controls;
@@ -25,7 +26,7 @@ record UploadButton(EpdEditor editor) {
 			var check = EpdConverter.validate(epd());
 			if (check.hasError()) {
 				MsgBox.error("Validation error",
-					"EPD cannot be converted to an openEPD document: " + check.error());
+						"EPD cannot be converted to an openEPD document: " + check.error());
 				return;
 			}
 			var state = ExportDialog.of(epd());
@@ -42,8 +43,8 @@ record UploadButton(EpdEditor editor) {
 
 	private void update(Button btn) {
 		var text = epd().urn != null && epd().urn.startsWith("openEPD:")
-			? "Update EPD results on EC3"
-			: "Upload as draft to EC3";
+				? M.UpdateEc3
+				: M.UpdateEc3Draft;
 		btn.setText(text);
 		btn.getParent().layout();
 	}

@@ -39,7 +39,7 @@ def sort_m_file():
 
     # print the lines if necessary.
     sorted_messages = sorted(messages)
-    if messages == sorted_messages:
+    if messages != sorted_messages:
         letters = string.ascii_uppercase
         print('\n// A')
         i = 0

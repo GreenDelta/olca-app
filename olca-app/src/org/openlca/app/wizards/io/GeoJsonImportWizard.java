@@ -135,9 +135,9 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 
 		private String getText(GeoJsonImport.Mode mode) {
 			return switch (mode) {
-				case NEW_ONLY -> "Import new locations only";
-				case UPDATE_ONLY -> "Update existing locations only";
-				case NEW_AND_UPDATE -> "Import new and update existing locations";
+				case NEW_ONLY -> M.ImportNewLocations;
+				case UPDATE_ONLY -> M.UpdateExistingLocations;
+				case NEW_AND_UPDATE -> M.ImportUpdateLocations;
 			};
 		}
 	}

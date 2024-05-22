@@ -58,7 +58,7 @@ public class ImpactChecksPage extends FormPage {
 
 		// the grouping check
 		var group = UI.checkbox(body, tk);
-		group.setText("Group by LCIA category");
+		group.setText(M.GroupByCategory);
 		group.setSelection(true);
 		Controls.onSelect(group, e -> tree.setInput(
 				group.getSelection()

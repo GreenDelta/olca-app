@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -56,12 +57,12 @@ class FilterCombo {
 
 	private static String label(int type) {
 		return switch (type) {
-			case ALL -> "All columns";
-			case NAMES -> "Names";
-			case SCOPES -> "Parameter scopes";
-			case FORMULAS -> "Formulas";
-			case DESCRIPTIONS -> "Descriptions";
-			case ERRORS -> "Evaluation errors";
+			case ALL -> M.AllColumns;
+			case NAMES -> M.Names;
+			case SCOPES -> M.ParameterScopes;
+			case FORMULAS -> M.Formulas;
+			case DESCRIPTIONS -> M.Descriptions;
+			case ERRORS -> M.EvaluationErrors;
 			default -> "?";
 		};
 	}

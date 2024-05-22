@@ -92,7 +92,7 @@ class JsonImportDialog extends Dialog {
 		label.setForeground(Colors.linkBlue());
 
 		Button openCheck = UI.radio(root);
-		openCheck.setText("Open mapping definition");
+		openCheck.setText(M.OpenMapDef);
 		Combo combo = new Combo(root, SWT.READ_ONLY);
 		Controls.onSelect(combo, e -> {
 			selectedMap = flowMaps.get(combo.getSelectionIndex());
@@ -104,7 +104,7 @@ class JsonImportDialog extends Dialog {
 		});
 
 		Button genCheck = new Button(root, SWT.RADIO);
-		genCheck.setText("Generate mapping based on flow attributes");
+		genCheck.setText(M.GenerateMapFlow);
 		Controls.onSelect(genCheck, e -> {
 			selectedMap = null;
 			combo.setEnabled(false);

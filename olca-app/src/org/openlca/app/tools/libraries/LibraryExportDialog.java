@@ -1,5 +1,9 @@
 package org.openlca.app.tools.libraries;
 
+import java.io.File;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
@@ -24,10 +28,6 @@ import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Process;
 import org.openlca.util.Databases;
 import org.openlca.util.Strings;
-
-import java.io.File;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 public class LibraryExportDialog extends FormDialog {
 
@@ -118,28 +118,27 @@ public class LibraryExportDialog extends FormDialog {
 
 		// inversion check
 		if (props.hasInventory) {
-			check.apply("Precalculate matrices", b -> config.withInversion = b)
+			check.apply(M.PrecalculateMatrices, b -> config.withInversion = b)
 					.setSelection(config.withInversion);
 		}
 
 		// uncertainty check
 		if (props.hasUncertainty) {
-			check.apply(
-							"With uncertainty distributions",
+			check.apply(M.WithUncertaintyDistributions,
 							b -> config.withUncertainties = b)
 					.setSelection(config.withUncertainties);
 		}
 
 		// regionalization check
 		if (props.hasInventory || props.hasImpacts) {
-			check.apply("Regionalized", b -> config.regionalized = b)
+			check.apply(M.Regionalized, b -> config.regionalized = b)
 					.setSelection(config.regionalized);
 		}
 
 		// data quality check
 		if (props.hasInventory && props.flowDqs != null) {
 			var dqCheck = check.apply(
-					"With data quality values (" + props.flowDqs.name + ")",
+					String.join(" - ", M.WithDataQualityValues, props.flowDqs.name),
 					b -> config.dqSystem = b
 							? props.flowDqs
 							: null);

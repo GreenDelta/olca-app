@@ -37,7 +37,10 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.*;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.io.ImportLog;
@@ -58,14 +61,14 @@ public class ImportLogView extends SimpleFormEditor {
 
 	@Override
 	public void init(IEditorSite site, IEditorInput raw)
-		throws PartInitException {
+			throws PartInitException {
 		super.init(site, raw);
 		if (!(raw instanceof SimpleEditorInput input))
 			return;
 		var obj = Cache.getAppCache().remove(input.id);
 		messages = obj instanceof ImportLog log
-			? log.messages()
-			: Collections.emptySet();
+				? log.messages()
+				: Collections.emptySet();
 	}
 
 	@Override
@@ -92,7 +95,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 			// table
 			var table = Tables.createViewer(
-				body, "Status", "Data set", "Message");
+					body, "Status", "Data set", "Message");
 			table.setLabelProvider(new MessageLabel());
 			Tables.bindColumnWidths(table, 0.2, 0.4, 0.4);
 			filter.apply(table);
@@ -123,7 +126,7 @@ public class ImportLogView extends SimpleFormEditor {
 	}
 
 	private static class MessageLabel extends BaseLabelProvider implements
-		ITableLabelProvider {
+			ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -209,16 +212,17 @@ public class ImportLogView extends SimpleFormEditor {
 			Controls.onReturn(searchText, $ -> update());
 
 			// type button
-			var typeBtn = UI.button(searchComp, tk, "All types");
+			var typeBtn = UI.button(searchComp, tk, M.AllTypes);
 			var typeItems = TypeItem.allOf(messages);
 			typeBtn.setImage(Icon.DOWN.get());
 			var typeMenu = new Menu(typeBtn);
 			for (var item : typeItems) {
 				item.mountTo(typeMenu, selectedType -> {
 					type = selectedType;
-					typeBtn.setText(selectedType == null
-						? "All types"
-						: Labels.of(selectedType));
+					var text = selectedType == null
+							? M.AllTypes
+							: Labels.of(selectedType);
+					typeBtn.setText(text);
 					typeBtn.pack();
 					typeBtn.getParent().layout();
 					update();
@@ -286,25 +290,25 @@ public class ImportLogView extends SimpleFormEditor {
 			var stream = messages.stream();
 			if (!states.isEmpty()) {
 				stream = stream.filter(
-					m -> m.state() != null && states.contains(m.state()));
+						m -> m.state() != null && states.contains(m.state()));
 			}
 			if (type != null) {
 				stream = stream.filter(
-					m -> {
-						var d = m.descriptor();
-						return d != null && d.type == type;
-					});
+						m -> {
+							var d = m.descriptor();
+							return d != null && d.type == type;
+						});
 			}
 
 			// text filter
 			var phrase = text == null
-				? null
-				: text.trim();
+					? null
+					: text.trim();
 			if (Strings.notEmpty(phrase)) {
 				var words = Arrays.stream(phrase.split(" "))
-					.map(s -> s.trim().toLowerCase())
-					.filter(Strings::notEmpty)
-					.toList();
+						.map(s -> s.trim().toLowerCase())
+						.filter(Strings::notEmpty)
+						.toList();
 				stream = stream.filter(m -> matches(m, words));
 			}
 
@@ -313,15 +317,15 @@ public class ImportLogView extends SimpleFormEditor {
 		}
 
 		private boolean matches(Message message, List<String> words) {
-			if(words.isEmpty())
+			if (words.isEmpty())
 				return true;
 			for (var word : words) {
 				var s = message.message();
 				if (s != null && s.toLowerCase().contains(word))
 					continue;
 				s = message.descriptor() != null
-					? Labels.name(message.descriptor())
-					: null;
+						? Labels.name(message.descriptor())
+						: null;
 				if (s != null && s.toLowerCase().contains(word))
 					continue;
 				s = MessageLabel.of(message.state());
@@ -343,24 +347,24 @@ public class ImportLogView extends SimpleFormEditor {
 				if (d == null || d.type == null)
 					continue;
 				map.compute(d.type,
-					(type, count) -> count != null ? count + 1 : 1);
+						(type, count) -> count != null ? count + 1 : 1);
 			}
 
 			var items = new ArrayList<TypeItem>(map.size() + 1);
 			items.add(new TypeItem(null, messages.size()));
 			map.entrySet().stream()
-				.filter(e -> e.getValue() != null)
-				.map(e -> new TypeItem(e.getKey(), e.getValue()))
-				.sorted(Comparator.comparingInt(TypeItem::count).reversed())
-				.forEach(items::add);
+					.filter(e -> e.getValue() != null)
+					.map(e -> new TypeItem(e.getKey(), e.getValue()))
+					.sorted(Comparator.comparingInt(TypeItem::count).reversed())
+					.forEach(items::add);
 			return items;
 		}
 
 		@Override
 		public String toString() {
 			return type == null
-				? "All types (" + count + ")"
-				: Labels.of(type) + " (" + count + ")";
+					? "All types (" + count + ")"
+					: Labels.of(type) + " (" + count + ")";
 		}
 
 		void mountTo(Menu menu, Consumer<ModelType> fn) {

@@ -62,7 +62,7 @@ public class LibraryDialog extends FormDialog {
 			text.addFocusListener(FocusListener.focusGainedAdapter(e -> select(check, text)));
 			UI.gridData(text, true, false);
 			var browseButton = UI.button(composite, tk);
-			browseButton.setText("Browse");
+			browseButton.setText(M.Browse);
 			Controls.onSelect(browseButton, e -> {
 				select(check, text);
 				var zolca = FileChooser.open("*.zip");
@@ -85,7 +85,8 @@ public class LibraryDialog extends FormDialog {
 		updateButtons();
 	}
 
-	private Button createCheckboxSection(Composite parent, FormToolkit tk, String label, Mode mode, Renderer renderer) {
+	private Button createCheckboxSection(Composite parent, FormToolkit tk,
+			String label, Mode mode, Renderer renderer) {
 		var check = UI.radio(parent, tk, label);
 		check.setSelection(mode == selectedMode);
 		var composite = UI.composite(parent, tk);

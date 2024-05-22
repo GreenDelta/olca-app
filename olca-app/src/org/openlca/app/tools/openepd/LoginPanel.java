@@ -115,8 +115,8 @@ public class LoginPanel {
 			var fromLogin = Ec3Client.tryLogin(credentials);
 			if (fromLogin.isEmpty()) {
 				MsgBox.error("Login failed",
-					"Failed to login into the EC3 API with" +
-						" the given user name and password.");
+						"Failed to login into the EC3 API with" +
+								" the given user name and password.");
 				credentials.token(null);
 				client = null;
 				return Optional.empty();
@@ -154,11 +154,11 @@ public class LoginPanel {
 		if (button == null || button.isDisposed())
 			return;
 		var label = Strings.notEmpty(credentials.token())
-			? "Logout"
-			: "Login";
+				? M.Logout
+				: M.Login;
 		var tooltip = Strings.notEmpty(credentials.token())
-			? "Delete the current access token"
-			: "Get a new access token";
+				? "Delete the current access token"
+				: "Get a new access token";
 		button.setText(label);
 		button.setToolTipText(tooltip);
 		button.getParent().layout();

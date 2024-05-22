@@ -140,9 +140,9 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 		private String updateLabel(int i) {
 			return switch (i) {
-				case 0 -> "Keep the version in the database";
-				case 1 -> "Update it in the database if it is newer";
-				case 2 -> "Always update it in the database";
+				case 0 -> M.KeepVersionDb;
+				case 1 -> M.UpdateIfNewer;
+				case 2 -> M.AlwaysUpdateInDb;
 				default -> "?";
 			};
 		}
