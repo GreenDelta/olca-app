@@ -61,7 +61,7 @@ class SodaPage extends FormPage {
 	}
 
 	private void createConnectionSection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Connection");
+		var comp = UI.formSection(body, tk, M.Connection);
 		var urlText = UI.labeledText(comp, tk, "URL");
 		urlText.setText(con.toString());
 		urlText.setEditable(false);

@@ -40,7 +40,7 @@ class CalculationSetupSection {
 	}
 
 	public void render(Composite body, FormToolkit tk) {
-		var rootComp = UI.formSection(body, tk, "Calculation setup", 1);
+		var rootComp = UI.formSection(body, tk, M.CalculationSetup, 1);
 		var formComp = UI.composite(rootComp, tk);
 		UI.gridLayout(formComp, 3);
 		UI.gridData(formComp, true, false);

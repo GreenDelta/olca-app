@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
@@ -31,7 +32,7 @@ class CurrencyTable {
 	}
 
 	void create(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Other currencies", 1);
+		var comp = UI.formSection(body, tk, M.OtherCurrencies, 1);
 		table = Tables.createViewer(comp, "Name", "Code", "Exchange rate");
 		Tables.bindColumnWidths(table, 0.4, 0.2, 0.4);
 		table.setLabelProvider(new Label());

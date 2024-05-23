@@ -87,7 +87,7 @@ public class ExportDialog extends FormDialog {
 		loginPanel = LoginPanel.create(body, tk);
 
 		// info section
-		var comp = UI.formSection(body, tk, "Product information", 3);
+		var comp = UI.formSection(body, tk, M.ProductInformation, 3);
 		UI.label(comp, tk, M.Product);
 		UI.label(comp, tk, doc.productName);
 		UI.filler(comp, tk);

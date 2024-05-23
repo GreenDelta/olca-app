@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -34,7 +35,7 @@ class CompletenessTable {
 	}
 
 	void render(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Completeness", 1);
+		var comp = UI.formSection(body, tk, M.Completeness, 1);
 		var table = Tables.createViewer(comp,
 				"Aspect",
 				labelOf(FlowCompleteness.ALL_RELEVANT_FLOWS_QUANTIFIED),

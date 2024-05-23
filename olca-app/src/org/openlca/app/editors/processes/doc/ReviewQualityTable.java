@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
@@ -34,7 +35,7 @@ class ReviewQualityTable {
 	}
 
 	void render(Composite root, FormToolkit tk) {
-		var comp = UI.formSection(root, tk, "Quality assessment", 1);
+		var comp = UI.formSection(root, tk, M.QualityAssessment, 1);
 
 		var qs = Quality.values();
 		var props = new String[qs.length + 1];

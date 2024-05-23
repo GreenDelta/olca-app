@@ -53,7 +53,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 	}
 
 	private void setupSection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Setup");
+		var comp = UI.formSection(body, tk, M.Setup);
 		UI.gridLayout(comp, 2);
 
 		// file text

@@ -246,7 +246,7 @@ public class UI {
 	}
 
 	/**
-	 * Create a two columns section with a title.
+	 * Create a two-column section with a title.
 	 */
 	public static Composite formSection(Composite parent, FormToolkit tk,
 			String label) {

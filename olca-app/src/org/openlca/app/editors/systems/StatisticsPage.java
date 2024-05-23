@@ -65,7 +65,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private void generalSection(FormToolkit tk, Composite body) {
-		Composite comp = UI.formSection(body, tk, "General statistics");
+		Composite comp = UI.formSection(body, tk, M.GeneralStatistics);
 		UI.gridLayout(comp, 2, 15, 10);
 
 		UI.label(comp, tk, "Number of processes");
@@ -101,7 +101,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private void providerSection(FormToolkit tk, Composite body) {
-		Composite comp = UI.formSection(body, tk, "Provider linking");
+		Composite comp = UI.formSection(body, tk, M.ProviderLinking);
 		UI.gridLayout(comp, 2, 15, 10);
 
 		UI.label(comp, tk, "Links that are linked with default providers");
@@ -119,8 +119,8 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 
 	private void linkDegreeTable(Composite body, FormToolkit tk, boolean inDegree) {
 		String title = inDegree
-			? "Processes with highest in-degree (linked inputs)"
-			: "Processes with highest out-degree (linked outputs)";
+			? M.ProcessesWithHighestInDegree
+			: M.ProcessesWithHighestOutDegree;
 		Composite comp = UI.formSection(body, tk, title);
 		UI.gridLayout(comp, 1, 0, 10);
 		TableViewer table = Tables.createViewer(

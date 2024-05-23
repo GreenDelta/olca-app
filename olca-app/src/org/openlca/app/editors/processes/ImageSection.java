@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.UI;
@@ -62,7 +63,7 @@ class ImageSection {
 			return;
 
 		if (comp == null) {
-			comp = UI.formSection(body, tk, "Attached images");
+			comp = UI.formSection(body, tk, M.AttachedImages);
 		}
 		files.forEach(this::createControls);
 

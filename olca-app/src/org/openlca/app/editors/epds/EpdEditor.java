@@ -53,7 +53,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 		}
 
 		private void referenceSection(Composite body, FormToolkit tk) {
-			var comp = UI.formSection(body, tk, "References", 3);
+			var comp = UI.formSection(body, tk, M.References, 3);
 			modelLink(comp, "Manufacturer", "manufacturer");
 			modelLink(comp, "Program operator", "programOperator");
 			modelLink(comp, "PCR", "pcr");

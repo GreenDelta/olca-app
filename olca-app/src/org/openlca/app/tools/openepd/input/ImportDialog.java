@@ -80,7 +80,7 @@ public class ImportDialog extends FormDialog {
 	}
 
 	private void createProductSection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Declared product");
+		var comp = UI.formSection(body, tk, M.DeclaredProduct);
 
 		// name
 		var nameText = UI.labeledText(comp, tk, M.Product);

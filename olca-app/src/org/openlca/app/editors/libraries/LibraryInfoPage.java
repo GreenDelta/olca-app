@@ -56,7 +56,7 @@ public class LibraryInfoPage extends FormPage {
 	}
 
 	private void renderDepTable(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Library dependencies", 1);
+		var comp = UI.formSection(body, tk, M.LibraryDependencies, 1);
 		var table = Tables.createViewer(comp, "Library");
 		Tables.bindColumnWidths(table, 1.0);
 		table.setInput(info.dependencies());

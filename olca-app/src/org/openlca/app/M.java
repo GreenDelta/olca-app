@@ -14,6 +14,54 @@ import com.google.gson.Gson;
 
 public class M extends NLS {
 
+	public static String Tags;
+	public static String AmountFormula;
+	public static String UseAdvice;
+	public static String Key;
+	public static String ActivityValue;
+	public static String RecommendedSettingProductSystems;
+	public static String AllProductInputsWasteOutputsAreLinked;
+	public static String ThereAreProcessesWithoutDefaultProviders;
+	public static String AllProductAndWasteHaveSingleProvider;
+	public static String ThereAreProductWasteWithMultipleProviders;
+	public static String DeclaredProduct;
+	public static String Setup;
+	public static String AttachedImages;
+	public static String GeneralStatistics;
+	public static String ProcessesWithHighestInDegree;
+	public static String ProcessesWithHighestOutDegree;
+	public static String GeneralMetaData;
+	public static String InventoryModelType;
+	public static String MultifunctionalModeling;
+	public static String BiogenicCarbonModeling;
+	public static String EndOfLifeModeling;
+	public static String WaterModeling;
+	public static String InfrastructureModeling;
+	public static String EmissionModeling;
+	public static String CarbonStorageModeling;
+	public static String ReviewType;
+	public static String ReviewSystem;
+	public static String ProcessMetaData;
+	public static String RepresentativenessType;
+	public static String SourceReliability;
+	public static String ProductSystemMetaData;
+	public static String DirectDownload;
+	public static String OtherCurrencies;
+	public static String References;
+	public static String LibraryDependencies;
+	public static String Completeness;
+	public static String ComplianceDetails;
+	public static String QualityAssessment;
+	public static String CalculationSetup;
+	public static String ProductInformation;
+	public static String ;
+	public static String ;
+	public static String ;
+	public static String ;
+	public static String ;
+	public static String ;
+	public static String ;
+
 	// A
 	public static String ALocationCodeIsRequired;
 	public static String AboutOpenLCA;

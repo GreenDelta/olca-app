@@ -3,12 +3,6 @@ package org.openlca.app.editors;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -30,6 +24,13 @@ import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.model.RootEntity;
 import org.openlca.util.Strings;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T> {
 
 	public AdditionalPropertiesPage(ModelEditor<T> editor) {
@@ -41,7 +42,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 		var form = UI.header(this);
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
-		var tree = Trees.createViewer(body, "Key", "Value");
+		var tree = Trees.createViewer(body, M.Key, M.Value);
 		tree.setLabelProvider(new JsonLabel());
 		tree.setAutoExpandLevel(2);
 		tree.setContentProvider(new JsonContent());

@@ -11,13 +11,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
-import org.openlca.app.util.*;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Popup;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.io.openepd.Api;
@@ -60,7 +65,7 @@ public class EpdPanel extends SimpleFormEditor {
 			var loginPanel = LoginPanel.create(body, tk);
 
 			// direct download
-			var downloadComp = UI.formSection(body, tk, "Direct download");
+			var downloadComp = UI.formSection(body, tk, M.DirectDownload);
 			UI.gridLayout(downloadComp, 3);
 			UI.label(downloadComp, tk, "URL or ID");
 			var urlText = UI.labeledText(downloadComp, "", SWT.BORDER);
