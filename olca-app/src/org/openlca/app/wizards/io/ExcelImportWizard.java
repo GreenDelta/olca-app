@@ -69,7 +69,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			return false;
 		try {
 			getContainer().run(true, true, monitor -> {
-				monitor.beginTask(M.Import, files.size());
+				monitor.beginTask(M.ImportDots, files.size());
 				var reader = XlsProcessReader.of(Database.get())
 						.withUpdates(page.updateMode());
 				for (var file : files) {

@@ -146,7 +146,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 					monitor.subTask(M.UpdateDatabase);
 					Upgrades.on(sourceDb);
 				}
-				monitor.subTask(M.ImportData + "...");
+				monitor.subTask(M.ImportDataDots);
 				var dbImport = new DatabaseImport(sourceDb, Database.get());
 				log.trace("run data import");
 				dbImport.run();

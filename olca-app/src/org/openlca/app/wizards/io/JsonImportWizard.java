@@ -89,7 +89,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 					return;
 				try {
 					getContainer().run(true, true, (monitor) -> {
-						monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
+						monitor.beginTask(M.ImportDots, IProgressMonitor.UNKNOWN);
 						try {
 							var importer = new JsonImport(store, Database.get());
 							importer.setUpdateMode(mode);

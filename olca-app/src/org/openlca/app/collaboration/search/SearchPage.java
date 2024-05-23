@@ -172,7 +172,7 @@ class SearchPage extends FormPage {
 			link.setForeground(Colors.linkBlue());
 			link.setData(getDatasetLink(dataset));
 			link.addHyperlinkListener(click);
-			var button = tk.createButton(header, M.Import, SWT.PUSH);
+			var button = tk.createButton(header, M.ImportDots, SWT.PUSH);
 			button.setData(dataset);
 			Controls.onSelect(button, this::onImport);
 			var category = !Strings.isNullOrEmpty(dataset.category()) ? dataset.category() : "Uncategorized";
