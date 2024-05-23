@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -26,7 +27,7 @@ class XEI3MetaDataImportAction extends Action implements
 
 	public XEI3MetaDataImportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Import ecoinvent 3 meta data");
+		setText(M.ImportEcoinvent3Metadata);
 	}
 
 	@Override

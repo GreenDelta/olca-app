@@ -115,8 +115,8 @@ public class SqlEditor extends ScriptingEditor {
 		private class RunAction extends Action {
 
 			RunAction() {
-				setToolTipText("Run SQL statement");
-				setText("Run SQL statement");
+				setToolTipText(M.RunSqlStatement);
+				setText(M.RunSqlStatement);
 				setImageDescriptor(Icon.RUN.descriptor());
 			}
 

@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.window.Window;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -38,7 +37,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		editor = part;
 		setId(GraphActionIds.LINK_UPDATE);
 		setImageDescriptor(Icon.UPDATE.descriptor());
-		setText(NLS.bind(M.Update, M.ProcessLinks));
+		setText(M.UpdateProcessLinks);
 	}
 
 	@Override

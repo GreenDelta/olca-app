@@ -215,7 +215,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		}
 
 		private void onSearchOnlineSelection() {
-			setText("Search in Collaboration Server");
+			setText(M.SearchCollaborationServer);
 			setImageDescriptor(Icon.COLLABORATION_SERVER_LOGO.descriptor());
 			typeFilter = null;
 			searchOnline = true;

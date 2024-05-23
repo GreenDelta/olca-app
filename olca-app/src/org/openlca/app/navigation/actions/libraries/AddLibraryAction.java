@@ -37,16 +37,16 @@ import org.openlca.core.library.PreMountCheck;
 public class AddLibraryAction extends Action implements INavigationAction {
 
 	private Consumer<Set<Library>> callback;
-	
+
 	public AddLibraryAction() {
-		setText("Add a library");
+		setText(M.AddLibrary);
 		setImageDescriptor(Icon.LIBRARY.descriptor());
 	}
 
 	void setCallback(Consumer<Set<Library>> callback) {
 		this.callback = callback;
 	}
-	
+
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)

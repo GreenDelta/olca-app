@@ -26,6 +26,7 @@ public class M extends NLS {
 	public static String Add;
 	public static String AddIndicator;
 	public static String AddInputFlow;
+	public static String AddLibrary;
 	public static String AddNewChildCategory;
 	public static String AddOutputFlow;
 	public static String AddProcess;
@@ -113,6 +114,7 @@ public class M extends NLS {
 	public static String CommitAndPush;
 	public static String CommitChangesToRepository;
 	public static String CommitDate;
+	public static String CommitDots;
 	public static String CommitMessage;
 	public static String CommitReferenceNotice;
 	public static String Committer;
@@ -142,10 +144,13 @@ public class M extends NLS {
 	public static String ContributionTree;
 	public static String ContributionTreeLocations;
 	public static String ConversionFactor;
+	public static String ConvertGlobalParameter;
 	public static String Copy;
 	public static String CopyAllFromRightToLeft;
 	public static String CopyMetaDataFromReferenceProcess;
+	public static String CopySelection;
 	public static String CopySelectionFromRightToLeft;
+	public static String CopyTable;
 	public static String Copyright;
 	public static String CostCategory;
 	public static String CostFormula;
@@ -293,8 +298,12 @@ public class M extends NLS {
 	public static String ExportDatabase;
 	public static String ExportDone;
 	public static String ExportEcoSpold;
+	public static String ExportEcoinventNexusJsonIndex;
 	public static String ExportILCD;
+	public static String ExportNexusCsvIndex;
+	public static String ExportNexusJsonIndex;
 	public static String ExportProcess;
+	public static String ExportReferenceData;
 	public static String ExportReport;
 	public static String ExportResultsToExcel;
 	public static String ExportToExcel;
@@ -397,9 +406,11 @@ public class M extends NLS {
 	public static String ImportDetails;
 	public static String ImportEcoSpold;
 	public static String ImportEcoSpold02DataSets;
+	public static String ImportEcoinvent3Metadata;
 	public static String ImportILCD;
 	public static String ImportMode;
 	public static String ImportNewLocations;
+	public static String ImportReferenceData;
 	public static String ImportRemoteDataset;
 	public static String ImportUpdateLocations;
 	public static String IncludeCostCalculation;
@@ -455,7 +466,7 @@ public class M extends NLS {
 	public static String LastChange;
 	public static String Latitude;
 	public static String Layout;
-	public static String LayoutAs;
+	public static String LayoutAsTree;
 	public static String LazyOnDemand;
 	public static String LciaCategoryDescriptionTable;
 	public static String LciaResultTable;
@@ -499,6 +510,7 @@ public class M extends NLS {
 	public static String MemoryToHighMessage;
 	public static String MemoryToLowMessage;
 	public static String Merge;
+	public static String MergeEi3MarketProcesses;
 	public static String Message;
 	public static String MinContribPerc;
 	public static String Minimap;
@@ -535,6 +547,7 @@ public class M extends NLS {
 	public static String NewDatabase;
 	public static String NewDatabase_AlreadyExists;
 	public static String NewDatabase_InvalidName;
+	public static String NewEpd;
 	public static String NewFlow;
 	public static String NewFlowProperty;
 	public static String NewImpactCategory;
@@ -546,6 +559,7 @@ public class M extends NLS {
 	public static String NewProcess;
 	public static String NewProductSystem;
 	public static String NewProject;
+	public static String NewResult;
 	public static String NewSection;
 	public static String NewSocialIndicator;
 	public static String NewSource;
@@ -717,6 +731,7 @@ public class M extends NLS {
 	public static String RiskLevel;
 	public static String RoundingMode;
 	public static String RunCalculation;
+	public static String RunSqlStatement;
 
 	// S
 	public static String SamplingProcedure;
@@ -730,6 +745,7 @@ public class M extends NLS {
 	public static String Scores;
 	public static String Search;
 	public static String SearchAllTypes;
+	public static String SearchCollaborationServer;
 	public static String SearchInActors;
 	public static String SearchInCurrencies;
 	public static String SearchInDataQualitySystems;
@@ -764,6 +780,7 @@ public class M extends NLS {
 	public static String SelectSystemDatabases;
 	public static String SetAsQuantitativeReference;
 	public static String SetAsReferenceCurrency;
+	public static String SetFolder;
 	public static String SetReferenceCurrencyQuestion;
 	public static String Settings;
 	public static String SettingsOfTheSankeyDiagram;
@@ -865,14 +882,15 @@ public class M extends NLS {
 	public static String UpdateDatabase;
 	public static String UpdateDatabaseQuestion;
 	public static String UpdateEc3;
-	public static String UploadAsDraftToEC3;
 	public static String UpdateExistingLocations;
 	public static String UpdateIfNewer;
 	public static String UpdateMajorVersion;
 	public static String UpdateMinorVersion;
 	public static String UpdateNewerVersion;
+	public static String UpdateProcessLinks;
 	public static String UpdateReferenceCurrency;
 	public static String UpdatingExistingData;
+	public static String UploadAsDraftToEC3;
 	public static String UpstreamInclDirect;
 	public static String UpstreamTotal;
 	public static String Urn;

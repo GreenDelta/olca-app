@@ -354,8 +354,8 @@ public class ParameterSection {
 	private class ConvertToGlobalAction extends Action {
 
 		ConvertToGlobalAction() {
-			setText("Convert to global parameter");
-			setToolTipText("Convert to global parameter");
+			setText(M.ConvertGlobalParameter);
+			setToolTipText(M.ConvertGlobalParameter);
 			setImageDescriptor(Icon.UP.descriptor());
 		}
 

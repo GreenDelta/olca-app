@@ -23,9 +23,9 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.io.CategoryPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class XNexusIndexExportAction extends Action implements INavigationAction
 
 	public XNexusIndexExportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Export Nexus JSON Index");
+		setText(M.ExportNexusJsonIndex);
 	}
 
 	@Override

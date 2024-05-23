@@ -28,7 +28,7 @@ public class XNexusCsvIndexExportAction extends Action implements INavigationAct
 
 	public XNexusCsvIndexExportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Export Nexus CSV Index");
+		setText(M.ExportNexusCsvIndex);
 	}
 
 	@Override

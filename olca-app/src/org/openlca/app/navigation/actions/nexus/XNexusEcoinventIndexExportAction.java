@@ -40,7 +40,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 	public XNexusEcoinventIndexExportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Export Ecoinvent Nexus JSON Index");
+		setText(M.ExportEcoinventNexusJsonIndex);
 	}
 
 	@Override

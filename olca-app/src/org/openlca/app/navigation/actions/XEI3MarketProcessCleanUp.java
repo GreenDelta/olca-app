@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -15,7 +16,7 @@ class XEI3MarketProcessCleanUp extends Action implements
 
 	public XEI3MarketProcessCleanUp() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Merge EI3 market processes");
+		setText(M.MergeEi3MarketProcesses);
 	}
 
 	@Override

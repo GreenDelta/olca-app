@@ -119,8 +119,8 @@ public final class TableClipboard {
 			this.selectedOnly = selectedOnly;
 			setImageDescriptor(Icon.COPY.descriptor());
 			var text = selectedOnly
-					? "Copy selection"
-					: "Copy table";
+					? M.CopySelection
+					: M.CopyTable;
 			setText(text);
 			setToolTipText(text);
 

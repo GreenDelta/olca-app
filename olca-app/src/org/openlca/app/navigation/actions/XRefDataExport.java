@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -16,7 +17,7 @@ class XRefDataExport extends Action implements INavigationAction {
 
 	public XRefDataExport() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Export reference data");
+		setText(M.ExportReferenceData);
 	}
 
 	@Override
