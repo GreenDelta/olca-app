@@ -32,7 +32,7 @@ public class CommentDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var title = String.join(" - ", M.Comments, CommentLabels.get(path));
+		var title = M.Comments + " - " + CommentLabels.get(path);
 		var form = UI.header(mForm, title);
 		var body = UI.body(form, mForm.getToolkit());
 		body.setLayout(new FillLayout());

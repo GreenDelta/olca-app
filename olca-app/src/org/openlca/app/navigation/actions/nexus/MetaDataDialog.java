@@ -101,7 +101,7 @@ class MetaDataDialog extends FormDialog {
 
 	private void createMultiString(Composite parent, FormToolkit toolkit,
 			String label, Consumer<List<String>> setter) {
-		var text = UI.labeledText(parent, toolkit, M.bindAsterisk(label));
+		var text = UI.labeledText(parent, toolkit, label + "*");
 		text.addModifyListener($ -> setter.accept(Arrays.asList(text.getText().split(","))));
 	}
 

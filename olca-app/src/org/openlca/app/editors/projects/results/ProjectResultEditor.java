@@ -93,7 +93,7 @@ public class ProjectResultEditor extends FormEditor {
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var form = UI.header(mform,
-					String.join(" - ", M.Results, Labels.name(data.project())));
+					M.Results + " - " + Labels.name(data.project()));
 			var tk = mform.getToolkit();
 			var body = UI.body(form, tk);
 

@@ -138,7 +138,7 @@ public class LibraryExportDialog extends FormDialog {
 		// data quality check
 		if (props.hasInventory && props.flowDqs != null) {
 			var dqCheck = check.apply(
-					String.join(" - ", M.WithDataQualityValues, props.flowDqs.name),
+					M.WithDataQualityValues + " - " + props.flowDqs.name,
 					b -> config.dqSystem = b
 							? props.flowDqs
 							: null);

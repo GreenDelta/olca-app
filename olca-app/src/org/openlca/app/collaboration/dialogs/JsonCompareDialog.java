@@ -59,7 +59,7 @@ public class JsonCompareDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mform) {
 		var title = canMerge ? M.Merge : M.Compare;
 		if (this.title != null) {
-			title += String.join(" - ", title, this.title);
+			title += " - " + this.title;
 		}
 		var form = UI.header(mform, title);
 		if (logo != null) {

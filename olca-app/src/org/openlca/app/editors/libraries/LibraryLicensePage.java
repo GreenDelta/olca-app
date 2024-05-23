@@ -1,5 +1,9 @@
 package org.openlca.app.editors.libraries;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -12,10 +16,6 @@ import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryInfo;
 import org.openlca.license.certificate.CertificateInfo;
 import org.openlca.license.certificate.Person;
-
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class LibraryLicensePage extends FormPage {
 
@@ -31,7 +31,7 @@ public class LibraryLicensePage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var title = String.join(" - ", M.LicenseInformation, info.name());
+		var title = M.LicenseInformation + " - " + info.name();
 		var form = UI.header(mForm, title, Icon.LIBRARY.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);

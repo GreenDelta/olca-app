@@ -34,7 +34,7 @@ public class LibraryDialog extends FormDialog {
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
 				M.LocateLibrary,
-				String.join(" - ", M.SpecifyLibraryLocation, link.id()));
+				M.SpecifyLibraryLocation + " - " + link.id());
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;

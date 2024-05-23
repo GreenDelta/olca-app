@@ -110,7 +110,7 @@ public class AuthenticationDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
-				String.join(" - ", M.Authenticate, url),
+				M.Authenticate + " - " +  url,
 				M.EnterGitCredentials);
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body,  1);

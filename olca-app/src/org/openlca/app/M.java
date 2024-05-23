@@ -555,6 +555,7 @@ public class M extends NLS {
 	public static String NewLCIAMethod;
 	public static String NewLibraries;
 	public static String NewLocation;
+	public static String NewName;
 	public static String NewParameter;
 	public static String NewProcess;
 	public static String NewProductSystem;
@@ -950,14 +951,6 @@ public class M extends NLS {
 	}
 
 	private M() {
-	}
-
-	public static String bindParenthesis(String primary, String secondary) {
-		return String.format("%s (%s)", primary, secondary);
-	}
-
-	public static String bindAsterisk(String s) {
-		return String.format("%s*", s);
 	}
 
 	private static Map<String, String> getMap() {
