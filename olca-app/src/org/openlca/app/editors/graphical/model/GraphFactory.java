@@ -1,6 +1,16 @@
 package org.openlca.app.editors.graphical.model;
 
-import com.google.gson.JsonArray;
+import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
+import static org.openlca.app.editors.graphical.model.Node.OUTPUT_PROP;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
@@ -19,16 +29,7 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-
-import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
-import static org.openlca.app.editors.graphical.model.Node.OUTPUT_PROP;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
+import com.google.gson.JsonArray;
 
 /**
  * This class provides methods to initialize the model objects before drawing
@@ -253,7 +254,7 @@ public class GraphFactory {
 		return graph;
 	}
 
-	private Graph createGraph(GraphEditor editor) {
+	public Graph createGraph(GraphEditor editor) {
 		// No saved settings applied => try to find a good configuration
 		var graph = new Graph(editor);
 

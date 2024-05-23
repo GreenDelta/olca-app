@@ -783,6 +783,8 @@ public class M extends NLS {
 	public static String ResetSelection;
 	public static String Resize;
 	public static String RestoreDatabase;
+	public static String RestoreLayout;
+	public static String RestoreLayoutQ;
 	public static String Restriction;
 	public static String Result;
 	public static String Results;
