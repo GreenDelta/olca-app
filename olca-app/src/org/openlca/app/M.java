@@ -865,7 +865,7 @@ public class M extends NLS {
 	public static String UpdateDatabase;
 	public static String UpdateDatabaseQuestion;
 	public static String UpdateEc3;
-	public static String UpdateEc3Draft;
+	public static String UploadAsDraftToEC3;
 	public static String UpdateExistingLocations;
 	public static String UpdateIfNewer;
 	public static String UpdateMajorVersion;

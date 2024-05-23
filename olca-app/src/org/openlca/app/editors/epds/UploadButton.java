@@ -44,7 +44,7 @@ record UploadButton(EpdEditor editor) {
 	private void update(Button btn) {
 		var text = epd().urn != null && epd().urn.startsWith("openEPD:")
 				? M.UpdateEc3
-				: M.UpdateEc3Draft;
+				: M.UploadAsDraftToEC3;
 		btn.setText(text);
 		btn.getParent().layout();
 	}
