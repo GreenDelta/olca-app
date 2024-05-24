@@ -12,8 +12,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.ES1Provider;
-import org.openlca.app.tools.mapping.model.ILCDProvider;
 import org.openlca.app.tools.mapping.model.FlowProvider;
+import org.openlca.app.tools.mapping.model.ILCDProvider;
 import org.openlca.app.tools.mapping.model.JsonProvider;
 import org.openlca.app.tools.mapping.model.SimaProCsvProvider;
 import org.openlca.app.util.Controls;
@@ -39,7 +39,7 @@ class ProviderRow {
 		var fileLink = UI.imageHyperlink(inner, tk);
 		fileLink.setImage(Icon.FILE.get());
 		fileLink.setToolTipText("Select file");
-		var label = UI.label(inner, tk, "- none -");
+		var label = UI.label(inner, tk, M.NoneHyphen);
 
 		// select database as provider
 		Controls.onClick(dbLink, e -> {
@@ -97,7 +97,7 @@ class ProviderRow {
 
 	private String label(FlowProvider provider) {
 		if (provider == null)
-			return "- none -";
+			return M.NoneHyphen;
 		if (provider instanceof DBProvider p)
 			return "db://" + p.db().getName();
 		if (provider instanceof JsonProvider p )

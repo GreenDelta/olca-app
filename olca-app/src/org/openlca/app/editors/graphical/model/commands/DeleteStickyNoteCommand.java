@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.StickyNote;
 
@@ -28,7 +29,7 @@ public class DeleteStickyNoteCommand extends Command {
 		if (parent == null || child == null) {
 			throw new IllegalArgumentException();
 		}
-		setLabel("delete note");
+		setLabel(M.DeleteNote);
 		this.parent = parent;
 		this.child = child;
 	}

@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
@@ -19,9 +20,9 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.SourceDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.doc.ProcessDoc;
 
 class SourcesTable extends AbstractTableViewer<Source> {
 
@@ -50,7 +51,7 @@ class SourcesTable extends AbstractTableViewer<Source> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { "Name", "" };
+		return new String[] { M.Name, "" };
 	}
 
 	void setInput(Process process) {

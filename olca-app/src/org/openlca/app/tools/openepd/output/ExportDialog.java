@@ -236,7 +236,7 @@ public class ExportDialog extends FormDialog {
 
 		void updateLink(ImageHyperlink link, String path) {
 			if (Strings.nullOrEmpty(path)) {
-				link.setText(" - none -");
+				link.setText(M.NoneHyphen);
 			} else {
 				link.setText(path);
 			}

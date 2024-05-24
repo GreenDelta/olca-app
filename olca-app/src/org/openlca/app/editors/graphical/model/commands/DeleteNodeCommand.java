@@ -33,7 +33,7 @@ public class DeleteNodeCommand extends Command {
 	public DeleteNodeCommand(Graph graph, Node node) {
 		this.graph = graph;
 		editor = graph.getEditor();
-		setLabel("delete node");
+		setLabel(M.Delete);
 		this.node = node;
 	}
 

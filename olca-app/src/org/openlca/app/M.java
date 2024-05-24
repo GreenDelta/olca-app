@@ -255,6 +255,7 @@ public class M extends NLS {
 	public static String DeleteDatabase;
 	public static String DeleteFile;
 	public static String DeleteFileQuestion;
+	public static String DeleteFlow;
 	public static String DeleteLibraryQ;
 	public static String DeleteLibraryQuestion;
 	public static String DeleteLinkDelete;
@@ -263,6 +264,7 @@ public class M extends NLS {
 	public static String DeleteLocalDataset;
 	public static String DeleteMappingFileQ;
 	public static String DeleteMappingFileQuestion;
+	public static String DeleteNote;
 	public static String DeleteProcessLink;
 	public static String DeleteReportSectionQuestion;
 	public static String DeleteSection;
@@ -306,6 +308,7 @@ public class M extends NLS {
 	public static String Edit;
 	public static String EditFlow;
 	public static String EditMode;
+	public static String EditSettings;
 	public static String EditStickyNote;
 	public static String ElementaryFlow;
 	public static String Email;
@@ -651,6 +654,7 @@ public class M extends NLS {
 	public static String NoUnitGroupSelected;
 	public static String Nomenclature;
 	public static String None;
+	public static String NoneHyphen;
 	public static String NormalDistribution;
 	public static String NormalisationBarChart;
 	public static String NormalisationRadarChart;
@@ -872,6 +876,7 @@ public class M extends NLS {
 	public static String SelectLanguageNoteMessage;
 	public static String SelectNext;
 	public static String SelectObjectPage_Description;
+	public static String SelectOneOrMoreFiles;
 	public static String SelectPrevious;
 	public static String SelectProvider;
 	public static String SelectProviders;

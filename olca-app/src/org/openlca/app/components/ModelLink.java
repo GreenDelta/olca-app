@@ -143,7 +143,7 @@ public class ModelLink<T extends RootEntity> {
 		if (link == null)
 			return;
 		var text = model == null
-			? "- none -"
+			? M.NoneHyphen
 			: Labels.name(model);
 		link.setText(Strings.cut(text, 120));
 		link.setToolTipText(text);

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.gef.commands.Command;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
@@ -58,7 +57,7 @@ public class DeleteExchangeCommand extends Command {
 		if (parent == null || child == null) {
 			throw new IllegalArgumentException();
 		}
-		setLabel(NLS.bind(M.Delete.toLowerCase(), M.Flow));
+		setLabel(M.DeleteFlow);
 		this.parent = parent;
 		this.child = child;
 		node = child.getNode();

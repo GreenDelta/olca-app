@@ -93,7 +93,7 @@ public class ImportDialog extends FormDialog {
 		Controls.set(categoryText,
 			EpdImport.categoryOf(epdDoc)
 				.map(path -> String.join(" >> ", path))
-				.orElse("- none -"));
+				.orElse(M.NoneHyphen));
 
 		// amount
 		var amountText = UI.labeledText(comp, tk, M.DeclaredUnit);

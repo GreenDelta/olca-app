@@ -102,7 +102,7 @@ public class LibraryLicensePage extends FormPage {
 
 	private static String noneIfBlank(String string) {
 		return string.isBlank()
-				? "- none -"
+				? M.NoneHyphen
 				: string;
 	}
 

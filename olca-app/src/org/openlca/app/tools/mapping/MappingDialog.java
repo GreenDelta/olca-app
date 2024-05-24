@@ -254,7 +254,7 @@ class MappingDialog extends FormDialog {
 
 			// flow name
 			if (ref.flow == null) {
-				flowLink.setText("- none -");
+				flowLink.setText(M.NoneHyphen);
 			} else {
 				String t = ref.flow.name;
 				if (t == null) {
@@ -356,7 +356,7 @@ class MappingDialog extends FormDialog {
 
 			// fill the provider combo
 			String[] items = new String[providers.size() + 1];
-			items[0] = "- none -";
+			items[0] = M.NoneHyphen;
 			int selected = 0;
 			for (int i = 0; i < providers.size(); i++) {
 				ProcessDescriptor p = providers.get(i);

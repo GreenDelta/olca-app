@@ -75,7 +75,7 @@ public class InfoSection {
 			? Categories.path(entity.category)
 			: Collections.emptyList();
 		if (path.isEmpty()) {
-			UI.label(container, tk, "- none -");
+			UI.label(container, tk, M.NoneHyphen);
 		} else {
 			var category = String.join("/", path);
 			var link = UI.formCategoryLink(container, tk, category, Images.get(entity.category));

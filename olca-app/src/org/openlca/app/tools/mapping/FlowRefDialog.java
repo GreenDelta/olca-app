@@ -247,7 +247,7 @@ class FlowRefDialog extends FormDialog {
 
 	private static String label(FlowRef ref) {
 		if (ref == null || ref.flow == null)
-			return "- none -";
+			return M.NoneHyphen;
 		String s = ref.flow.name != null
 				? ref.flow.name
 				: ref.flow.refId;

@@ -55,7 +55,7 @@ record UrnLink(EpdEditor editor) {
 		if (link == null || link.isDisposed())
 			return;
 		link.setText(Strings.nullOrEmpty(epd().urn)
-			? "- none -"
+			? M.NoneHyphen
 			: epd().urn
 		);
 		link.getParent().pack();
