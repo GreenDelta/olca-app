@@ -89,8 +89,8 @@ public class MountLibraryDialog extends FormDialog {
 			return;
 		}
 		if (state == PreMountState.PRESENT) {
-			var b = Question.ask("Library already present",
-					"The library was already added to the database. Continue anyhow?");
+			var b = Question.ask(M.LibraryAlreadyPresent,
+					M.LibraryAlreadyPresentQuestion);
 			if (!b) {
 				if (callback != null) {
 					callback.accept(Collections.emptySet());

@@ -163,9 +163,8 @@ class SodaPage extends FormPage {
 			return;
 		}
 
-		var b = Question.ask("Import selected datasets?",
-				"Do you want to import the selected datasets" +
-						" into the currently active database?");
+		var b = Question.ask(M.ImportSelectedDatabaseQ,
+				M.ImportSelectedDatabaseQuestion);
 		if (!b)
 			return;
 

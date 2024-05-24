@@ -218,11 +218,8 @@ public class MatrixExportDialog extends FormDialog {
 		var content = config.folder.listFiles();
 		var hasContent = content != null && content.length > 0;
 		if (hasContent) {
-			var b = Question.ask(
-					"Export folder not empty",
-					"The export folder is not empty. Existing files " +
-							"may are overwritten during the export. Do you " +
-							"want to continue?");
+			var b = Question.ask(M.ExportFolderNotEmpty,
+					M.ExportFolderNotEmptyQuestion);
 			if (!b)
 				return;
 		}

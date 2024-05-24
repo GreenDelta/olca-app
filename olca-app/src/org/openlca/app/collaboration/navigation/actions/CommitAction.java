@@ -95,18 +95,18 @@ public class CommitAction extends Action implements INavigationAction {
 				.toList();
 		if (withSlash.isEmpty())
 			return true;
-		var message = "The following categories contain a slash (/) in their name, which is not allowed. A simple fix is to replace / with \\. Should this be done now?\r\n";
+		var message = M.CategoriesContainASlash + "\r\n";
 		for (var i = 0; i < Math.min(5, withSlash.size()); i++) {
 			var category = dao.getForId(withSlash.get(i).id);
-			message += "\r\n* " + category.name + " in " + Labels.plural(category.modelType);
+			message += "\r\n* " + category.name + " - " + Labels.plural(category.modelType);
 			if (category.category != null) {
 				message += "/" + category.category.toPath();
 			}
 		}
 		if (withSlash.size() > 5) {
-			message += "\r\n  and " + (withSlash.size() - 5) + " more";
+			message += "\r\n* " + (withSlash.size() - 5) + " " + M.More.toLowerCase();
 		}
-		if (!Question.ask("Invalid category names", message))
+		if (!Question.ask(M.InvalidCategoryNames, message))
 			return false;
 		for (var descriptor : withSlash) {
 			var category = dao.getForId(descriptor.id);

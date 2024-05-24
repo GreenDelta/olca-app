@@ -36,8 +36,7 @@ class RefCurrencyUpdate implements Runnable {
 			return;
 		if (Objects.equals(c, c.referenceCurrency))
 			return;
-		boolean b = Question.ask(M.SetAsReferenceCurrency,
-				M.SetReferenceCurrencyQuestion);
+		boolean b = Question.ask(M.SetAsReferenceCurrency, M.SetReferenceCurrencyQ);
 		if (!b)
 			return;
 		closeEditors();

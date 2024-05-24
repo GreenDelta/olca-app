@@ -170,8 +170,8 @@ public class FileImport {
 	private void importZOLCA(File file) {
 		var db = Database.get();
 		if (db == null) {
-			var b = Question.ask("Import database?",
-				"Import file '" + file.getName() + "' as new database?");
+			var b = Question.ask(M.ImportDatabaseQ,
+				M.ImportFileAsDatabase + "\r\n" + file.getName());
 			if (b) {
 				DbRestoreAction.run(file);
 			}

@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -64,10 +65,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		// check if this is a mounted library
 		var db = element.getDatabase();
 		if (db.isPresent()) {
-			if (Question.ask("Removing library warning",
-					"This action might break your database, if the database uses any dataset of present in the library. "
-							+ "It is recommended to run a database validation after removing a library, to ensure database integrity.\r\n\r\n"
-							+ "Do you want to continue")) {
+			if (Question.ask(M.RemovingLibraryWarning,
+					M.RemovingLibraryExplanations + "\r\n" + M.DoYouWantToContinue)) {
 				App.runWithProgress("Removing library " + lib.name() + " ...",
 						() -> new Unmounter(db.get()).unmountUnsafe(lib.name()),
 						() -> Navigator.refresh());
@@ -79,9 +78,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 
 	private void delete(Library lib) {
 		// ask and delete the library
-		boolean b = Question.ask("Delete library?",
-				"Do you really want to delete the library? " +
-						"Make sure that you have a backup of it.");
+		boolean b = Question.ask(M.DeleteLibraryQ, M.DeleteLibraryQuestion);
 		if (!b)
 			return;
 

@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.MergeDialog;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
@@ -84,12 +85,11 @@ class ConflictResolutionMap implements ConflictResolver {
 				return null;
 			return new ConflictResult(resolved, false);
 		}
-		var answers = new ArrayList<>(Arrays.asList("Cancel", "Discard changes", "Commit changes"));
+		var answers = new ArrayList<>(Arrays.asList(M.Cancel, M.DiscardChanges, M.CommitChanges));
 		if (!stashCommit) {
-			answers.add("Stash changes");
+			answers.add(M.StashChanges);
 		}
-		var result = Question.ask("Handle conflicts",
-				"There are conflicts with uncommitted changes, how do you want to proceed?",
+		var result = Question.ask(M.HandleConflicts, M.HandleConflictsQuestion,
 				answers.toArray(new String[answers.size()]));
 		switch (result) {
 			case 0:
@@ -179,9 +179,8 @@ class ConflictResolutionMap implements ConflictResolver {
 		if (user == null)
 			return false;
 		if (repo.commits.stash() != null) {
-			var answers = Arrays.asList("Cancel", "Discard existing stash");
-			var result = Question.ask("Stash workspace",
-					"You already have stashed changes, how do you want to proceed?",
+			var answers = Arrays.asList(M.Cancel, M.DiscardExistingStash);
+			var result = Question.ask(M.StashWorkspace, M.StashWorkspaceQuestion,
 					answers.toArray(new String[answers.size()]));
 			if (result == 0)
 				return false;

@@ -1,15 +1,15 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
+
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.util.Question;
 import org.openlca.core.model.ProcessLink;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
 
 public class RemoveSupplyChainCommand extends Command {
 
@@ -30,9 +30,11 @@ public class RemoveSupplyChainCommand extends Command {
 
 	@Override
 	public void execute() {
-		answer = Question.ask("Deleting the supply chain",
+		answer = Question.ask(M.DeletingTheSupplyChainDots,
 				DeleteManager.QUESTION,
-				Arrays.stream(DeleteManager.Answer.values()).map(Enum::name).toArray(String[]::new));
+				Arrays.stream(DeleteManager.Answer.values())
+						.map(Enum::name)
+						.toArray(String[]::new));
 
 		if (answer != DeleteManager.Answer.Cancel.ordinal()) {
 			redo();

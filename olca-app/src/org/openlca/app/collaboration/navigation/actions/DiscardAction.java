@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.collaboration.util.PathFilters;
@@ -47,8 +48,7 @@ public class DiscardAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (!Question.ask("Discard changes",
-				"Do you really want to discard the selected changes? This action can not be undone."))
+		if (!Question.ask(M.DiscardChangesQ, M.DiscardChangesQuestion))
 			return;
 		var repo = Repository.CURRENT;
 		try {

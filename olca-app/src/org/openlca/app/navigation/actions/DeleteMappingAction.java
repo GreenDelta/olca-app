@@ -46,9 +46,8 @@ public class DeleteMappingAction extends Action implements INavigationAction {
 		var db = Database.get();
 		if (db == null)
 			return;
-		var delete = Question.ask(
-				"Delete mapping file(s)?",
-				"Do you want to delete the selected mapping file(s)?");
+		var delete = Question.ask(M.DeleteMappingFileQ,
+				M.DeleteMappingFileQuestion);
 		if (!delete)
 			return;
 		var dao = new MappingFileDao(db);

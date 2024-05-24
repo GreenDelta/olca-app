@@ -324,11 +324,8 @@ public class ParameterSection {
 				return;
 			}
 
-			boolean b = Question.ask("Rename parameter?",
-					"The parameter is already used." +
-					"This will rename the parameter where it " +
-					"is used and save the data set. " +
-					"Should we do that?");
+			boolean b = Question.ask(M.RenameParameterQ,
+					M.RenameParameterQuestion);
 			if (!b)
 				return;
 
@@ -373,10 +370,8 @@ public class ParameterSection {
 			}
 
 			// ask
-			boolean b = Question.ask(
-					"Convert to global parameter?",
-					"Do you want to convert the selected parameter '"
-							+ param.name + "' into a global parameter?");
+			boolean b = Question.ask(M.ConvertToGlobalParameterQ,
+					M.ConvertToGlobalParameterQuestion + "\r\n" + param.name);
 			if (!b)
 				return;
 

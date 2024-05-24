@@ -52,10 +52,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		var dialog = new Dialog(editor);
 		if (dialog.open() != Window.OK)
 			return;
-		boolean doIt = Question.ask(
-				"Execute update?",
-				"Do you want to execute the update? " +
-						"This will save reload the updated product system.");
+		boolean doIt = Question.ask(M.ExecuteUpdateQ, M.ExecuteUpdateQuestion);
 		if (!doIt)
 			return;
 

@@ -1,5 +1,13 @@
 package org.openlca.app.editors.lcia.geo;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -36,14 +44,6 @@ import org.openlca.geo.lcia.GeoFactorCalculator;
 import org.openlca.geo.lcia.GeoFlowBinding;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 class GeoFlowSection {
 
@@ -218,8 +218,7 @@ class GeoFlowSection {
 							"present in the CFs could be found.");
 			return;
 		}
-		var b = Question.ask("Run calculation?",
-				"Calculate factors for " + locations.size() + " additional locations?");
+		var b = Question.ask(M.RunCalculationQ, M.CalculateForAdditionalLocations);
 		if (b) {
 			runCalculation(locations);
 		}

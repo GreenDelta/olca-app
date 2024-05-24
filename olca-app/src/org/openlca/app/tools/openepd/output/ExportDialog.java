@@ -127,12 +127,12 @@ public class ExportDialog extends FormDialog {
 			return;
 
 		var qTitle = existingId == null
-			? "Upload as draft?"
-			: "Update existing EPD?";
+			? M.UploadAsDraftQ
+			: M.UpdateExistingEpdQ;
 		var qText = existingId == null
-			? "Upload this as draft to " + loginPanel.url() + "?"
-			: "Update existing EPD on " + loginPanel.url() + "?";
-		if (!Question.ask(qTitle, qText))
+			? M.UploadDraftToDestinationQ
+			: M.UpdateExistingEpdToDestinationQ;
+		if (!Question.ask(qTitle, qText + "\r\n" + loginPanel.url()))
 			return;
 
 		MappedExportResult.of(mappings).applyOn(doc);

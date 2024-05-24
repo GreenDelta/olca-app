@@ -2,7 +2,6 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -10,6 +9,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.SslCertificates;
@@ -43,10 +43,7 @@ class Actions {
 			msg = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
 		} else if (e instanceof WebRequestException we) {
 			if (we.isSslCertificateException()) {
-				if (Question.ask("SSL Certificate unknown",
-						"The site " + we.getHost() + " you are trying to connect to uses an unknown SSL certificate. "
-								+ "Do you want to add the certificate to the list of trusted certificates? "
-								+ "You will need to rerun the current action to continue after adding it")) {
+				if (Question.ask(M.SslCertificateUnknown, M.SslCertificateUnknownQuestion)) {
 					var cert = SslCertificates.downloadCertificate(we.getHost(), we.getPort());
 					SslCertificates.importCertificate(cert, we.getHost());
 				}
@@ -115,10 +112,10 @@ class Actions {
 	}
 
 	static void askApplyStash() throws InvocationTargetException, GitAPIException, IOException, InterruptedException {
-		var answers = Arrays.asList("No", "Yes");
-		var result = Question.ask("Apply stashed changes",
-				"Do you want to apply the changes you stashed before the commit?",
-				answers.toArray(new String[answers.size()]));
+		var answers = new String[] {M.Yes, M.No};
+		var result = Question.ask(M.ApplyStashedChanges,
+				M.ApplyStashedChangesQuestion,
+				answers);
 		if (result == 0)
 			return;
 		applyStash();

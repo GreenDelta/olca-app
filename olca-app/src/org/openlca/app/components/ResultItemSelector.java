@@ -62,7 +62,7 @@ public class ResultItemSelector {
 		} else {
 			var costs = new CostResultDescriptor();
 			costs.forAddedValue = false;
-			costs.name = M.Netcosts;
+			costs.name = M.NetCosts;
 			var addedValue = new CostResultDescriptor();
 			addedValue.forAddedValue = true;
 			addedValue.name = M.AddedValue;

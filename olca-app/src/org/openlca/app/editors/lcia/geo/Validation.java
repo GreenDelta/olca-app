@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -121,12 +122,7 @@ class Validation {
 			boolean hasInvalid = stats.totalInvalid() > 0;
 			if (!hasInvalid || buttonId != IDialogConstants.OK_ID)
 				return;
-			var b = Question.ask("Repair geometries?",
-					"This will try to fix problems like self-intersecting" +
-							"polygons in the setup. Note that the geometries in" +
-							"the setup will be directly changed. You may want to" +
-							"save this as a new setup then. Do you want to run " +
-							"this repair?");
+			var b = Question.ask(M.RepairGeometriesQ, M.RepairGeometriesQuestion);
 			if (b) {
 				super.okPressed();
 				Repair.run(setup);

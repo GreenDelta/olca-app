@@ -72,9 +72,7 @@ public class MappingMenu extends EditorActionBarContributor {
 			return;
 		}
 
-		boolean b = Question.ask("Generate mappings?",
-				"Do you want to (try to) generate mappings for all "
-						+ "unmapped flows of the source system?");
+		boolean b = Question.ask(M.GenerateMappingsQ, M.GenerateMappingsQuestion);
 		if (!b)
 			return;
 		Generator gen = new Generator(source, target, tool.mapping);

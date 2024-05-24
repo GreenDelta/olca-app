@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -47,14 +48,14 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 	public void run() {
 		if (element == null)
 			return;
-		if (!Question.ask("Updating library warning",
-				"This action might break your database, if in the library update... \r\n\r\n"
-						+ "* Datasets were removed, which are linked to another dataset (e.g. Actor in a Process)\r\n"
-						+ "* Units or flow property factors were removed, which are used in an exchange or impact factor\r\n"
-						+ "* Product or waste flows were removed from a process, which are linked in a product system\r\n"
-						+ "* Parameters were removed or parameter names were changed, which are used in a formula\r\n\r\n"
-						+ "It is recommended to run a database validation after replacing a library, to ensure database integrity.\r\n\r\n"
-						+ "Do you want to continue?"))
+		if (!Question.ask(M.UpdatingLibraryWarning,
+				M.ActionMightBrakeDatabase + "\r\n\r\n"
+						+ "* " + M.DatasetsLinkedToDatasetRemoved + "\r\n"
+						+ "* " + M.UnitsUsedInExchangeRemoved + "\r\n"
+						+ "* " + M.FlowsLinkedToProductSystemRemoved + "\r\n"
+						+ "* " + M.ParametersUsedInFormulaRemoved + "\r\n\r\n"
+						+ M.RunDatabaseValidationAfterReplacingLibrary + "\r\n\r\n"
+						+ M.DoYouWantToContinue))
 			return;
 		var addAction = new AddLibraryAction();
 		addAction.accept(Collections.singletonList(Navigator.findElement(Database.get())));

@@ -51,12 +51,10 @@ public class DeleteScriptAction extends Action implements INavigationAction {
 				.map(e -> e.getContent())
 				.filter(File::exists)
 				.filter(file -> file.isDirectory()
-						? Question.ask("Delete all files in folder",
-						"Do you want to delete all files in "
-								+ file.getName() + "?")
-						: Question.ask("Delete file",
-						"Do you want to delete the file "
-								+ file.getName() + "?"))
+						? Question.ask(M.DeleteAllFileInFolder,
+						M.DeleteAllFileInFolderQuestion + "\r\n" + file.getName())
+						: Question.ask(M.DeleteFile,
+						M.DeleteFileQuestion + "\r\n" + file.getName()))
 				.forEach(file -> {
 					try {
 						FileUtils.forceDelete(file);
