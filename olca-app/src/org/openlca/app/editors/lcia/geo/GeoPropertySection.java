@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.components.mapview.MapDialog;
 import org.openlca.app.db.Database;
@@ -132,8 +133,8 @@ class GeoPropertySection {
 
 	private void bindModifiers() {
 		ModifySupport<GeoProperty> ms = new ModifySupport<>(table);
-		ms.bind("Aggregation type", new AggTypeCell());
-		ms.bind("Default value", new TextCellModifier<>() {
+		ms.bind(M.AggregationType, new AggTypeCell());
+		ms.bind(M.DefaultValue, new TextCellModifier<>() {
 			@Override
 			protected String getText(GeoProperty param) {
 				return param == null ? ""

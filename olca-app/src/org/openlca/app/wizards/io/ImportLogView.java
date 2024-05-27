@@ -80,7 +80,7 @@ public class ImportLogView extends SimpleFormEditor {
 	private class Page extends FormPage {
 
 		Page() {
-			super(ImportLogView.this, "ImportLogView.Page", "Import details");
+			super(ImportLogView.this, "ImportLogView.Page", M.ImportDetails);
 		}
 
 		@Override

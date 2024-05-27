@@ -134,8 +134,8 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			entries.add(new Entry("APOS"));
 			setInput();
 			var ms = new ModifySupport<Entry>(viewer);
-			ms.bind("System model", new SystemModelCell());
-			ms.bind("Database", new DatabaseCell());
+			ms.bind(M.SystemModel, new SystemModelCell());
+			ms.bind(M.Database, new DatabaseCell());
 
 			// actions
 			var onAdd = Actions.create(

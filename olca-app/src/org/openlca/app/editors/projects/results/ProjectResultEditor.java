@@ -86,7 +86,7 @@ public class ProjectResultEditor extends FormEditor {
 		private final ProjectResultData data;
 
 		ResultPage(ProjectResultEditor editor) {
-			super(editor, "ProjectResultEditor.Page", "Results");
+			super(editor, "ProjectResultEditor.Page", M.Results);
 			this.data = editor.data;
 		}
 

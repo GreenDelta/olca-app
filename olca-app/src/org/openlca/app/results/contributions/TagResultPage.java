@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.rcp.images.Icon;
@@ -33,7 +34,7 @@ public class TagResultPage extends FormPage {
 	private TableViewer table;
 
 	public TagResultPage(ResultEditor editor) {
-		super(editor, "TagResultPage", "Tags");
+		super(editor, "TagResultPage", M.Tags);
 		this.editor = editor;
 		this.tagResults = new ArrayList<>();
 	}

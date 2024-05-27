@@ -35,7 +35,7 @@ class MappingPage extends FormPage {
 	TableViewer table;
 
 	public MappingPage(MappingTool tool) {
-		super(tool, "MappingPage", "Flow mapping");
+		super(tool, "MappingPage", M.FlowMapping);
 		this.tool = tool;
 	}
 

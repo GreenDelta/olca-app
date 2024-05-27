@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.M;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
@@ -49,11 +50,11 @@ public record MappingTable(
 
 		// bind modifiers
 		var modifier = new ModifySupport<IndicatorMapping>(table)
-			.bind("Factor", new FactorColumn());
+			.bind(M.Factor, new FactorColumn());
 		if (isForImport) {
-			modifier.bind("Indicator", new IndicatorColumn());
+			modifier.bind(M.Indicator, new IndicatorColumn());
 		} else {
-			modifier.bind("openEPD Indicator", new EpdIndicatorColumn());
+			modifier.bind(M.OpenEpdIndicator, new EpdIndicatorColumn());
 		}
 		for (var scope : mapping.scopes()) {
 			modifier.bind(scope, new ScopeColumn(scope));

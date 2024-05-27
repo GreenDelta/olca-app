@@ -95,7 +95,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 		public Page(ParameterUsageTree tree) {
 			super(ParameterUsagePage.this,
 				"ParameterUsagePage",
-				M.UsageOf + " " + tree.param);
+				M.Usage + " - " + tree.param);
 			this.tree = tree;
 		}
 

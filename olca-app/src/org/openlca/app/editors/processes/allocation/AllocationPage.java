@@ -204,9 +204,9 @@ public class AllocationPage extends ModelPage<Process> {
 			.bind(M.Physical, new ValueModifier(AllocationMethod.PHYSICAL))
 			.bind(M.Economic, new ValueModifier(AllocationMethod.ECONOMIC));
 		if (withComments) {
-			modifier.bind(M.Physical + "-comment",
+			modifier.bind(M.PhysicalComment,
 				commentModifier(AllocationMethod.PHYSICAL));
-			modifier.bind(M.Economic + "-comment",
+			modifier.bind(M.EconomicComment,
 				commentModifier(AllocationMethod.ECONOMIC));
 			Tables.bindColumnWidths(table, 0.3, 0.3, 0, 0.3, 0);
 		} else {

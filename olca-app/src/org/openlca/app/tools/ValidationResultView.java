@@ -61,7 +61,7 @@ public class ValidationResultView extends SimpleFormEditor {
 		private final List<Item> items;
 
 		Page(ValidationResultView view) {
-			super(view, "ValidationResultView", "Validation results");
+			super(view, "ValidationResultView", M.ValidationResults);
 			this.items = view.items;
 		}
 

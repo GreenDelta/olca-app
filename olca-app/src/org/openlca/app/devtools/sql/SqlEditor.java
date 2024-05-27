@@ -70,7 +70,7 @@ public class SqlEditor extends ScriptingEditor {
 		private RunAction runAction;
 
 		public Page() {
-			super(SqlEditor.this, "SqlEditorPage", "SQL Query Browser");
+			super(SqlEditor.this, "SqlEditorPage", M.SqlQueryBrowser);
 		}
 
 		@Override

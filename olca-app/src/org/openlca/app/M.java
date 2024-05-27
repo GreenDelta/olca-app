@@ -13,52 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 public class M extends NLS {
-	public static String PhysicalComment;
-	public static String EconomicComment;
-	public static String AsGlobalScript;
-	public static String AsScriptInDb;
-	public static String EnableProcessEditing;
-	public static String KeepAllExistingLinks;
-	public static String PreferLinksWithSameLocations;
-	public static String CalculateFromCostsRevenues;
-	public static String ImportFromFileDots;
-	public static String Unlimited;
-	public static String AsStandaloneDatabase;
-	public static String IntoActiveDb;
-	public static String DeleteReplacedAndUnusedFlows;
-	public static String AnonymousAccess;
-	public static String CreateFlowBindingForAllFlows;
-	public static String AddATag;
-	public static String DirectCalculation;
-	public static String CalculateFactors;
-	public static String CreateReport;
-	public static String AddParameterSet;
-	public static String CheckMappings;
-	public static String Download;
-	public static String StartAsGrpcService;
-	public static String Experimental;
-	public static String Excel;
-	public static String PythonNumpyScipy;
-	public static String SaveResultAsDots;
-	public static String Errors;
-	public static String Warnings;
-	public static String All;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
-	public static String ;
 
 	// A
 	public static String ALocationCodeIsRequired;
@@ -72,11 +26,13 @@ public class M extends NLS {
 	public static String Actor;
 	public static String Actors;
 	public static String Add;
+	public static String AddATag;
 	public static String AddIndicator;
 	public static String AddInputFlow;
 	public static String AddLibrary;
 	public static String AddNewChildCategory;
 	public static String AddOutputFlow;
+	public static String AddParameterSet;
 	public static String AddProcess;
 	public static String AddScore;
 	public static String AddSection;
@@ -88,7 +44,9 @@ public class M extends NLS {
 	public static String AdministrativeInformation;
 	public static String Aggregation;
 	public static String AggregationType;
+	public static String All;
 	public static String AllColumns;
+	public static String AllFlowsQuantified;
 	public static String AllProductAndWasteHaveSingleProvider;
 	public static String AllProductInputsWasteOutputsAreLinked;
 	public static String AllTypes;
@@ -102,10 +60,14 @@ public class M extends NLS {
 	public static String AlwaysUseProvider;
 	public static String Amount;
 	public static String AmountFormula;
+	public static String AnonymousAccess;
 	public static String ApplyFormat;
 	public static String ApplyStashedChanges;
 	public static String ApplyStashedChangesQuestion;
 	public static String AsDefinedInProcesses;
+	public static String AsGlobalScript;
+	public static String AsScriptInDb;
+	public static String AsStandaloneDatabase;
 	public static String AssessDataQuality;
 	public static String AssignUnits;
 	public static String AttachedImages;
@@ -132,7 +94,9 @@ public class M extends NLS {
 	// C
 	public static String CASNumber;
 	public static String Calculate;
+	public static String CalculateFactors;
 	public static String CalculateForAdditionalLocations;
+	public static String CalculateFromCostsRevenues;
 	public static String CalculateResults;
 	public static String CalculationProperties;
 	public static String CalculationSetup;
@@ -160,6 +124,7 @@ public class M extends NLS {
 	public static String Change;
 	public static String CharactFactorsForSub;
 	public static String CheckLinkingProperties;
+	public static String CheckMappings;
 	public static String City;
 	public static String Close;
 	public static String CloseAll;
@@ -232,10 +197,12 @@ public class M extends NLS {
 	public static String CreateDatabase;
 	public static String CreateDefaultLciaMethodsQ;
 	public static String CreateDefaultValuesForMissingFields;
+	public static String CreateFlowBindingForAllFlows;
 	public static String CreateNew;
 	public static String CreateProcess;
 	public static String CreateProcesslink;
 	public static String CreateProductSystem;
+	public static String CreateReport;
 	public static String CreatesANewActor;
 	public static String CreatesANewDataQualitySystem;
 	public static String CreatesANewFlow;
@@ -295,6 +262,7 @@ public class M extends NLS {
 	public static String DefaultFlowProperty;
 	public static String DefaultMethod;
 	public static String DefaultProvider;
+	public static String DefaultValue;
 	public static String Delete;
 	public static String DeleteAllFileInFolder;
 	public static String DeleteAllFileInFolderQuestion;
@@ -312,6 +280,7 @@ public class M extends NLS {
 	public static String DeleteMappingFileQuestion;
 	public static String DeleteNote;
 	public static String DeleteProcessLink;
+	public static String DeleteReplacedAndUnusedFlows;
 	public static String DeleteReportSectionQuestion;
 	public static String DeleteSection;
 	public static String DeleteWontDeleteProviders;
@@ -324,6 +293,7 @@ public class M extends NLS {
 	public static String Descriptions;
 	public static String DeveloperTools;
 	public static String Direct;
+	public static String DirectCalculation;
 	public static String DirectContributionsFlowResultsOverview;
 	public static String DirectContributionsImpactCategoryResultsOverview;
 	public static String DirectDownload;
@@ -340,6 +310,7 @@ public class M extends NLS {
 	public static String DoYouWantToContinue;
 	public static String Documentation;
 	public static String DontShowSmallerThen;
+	public static String Download;
 	public static String DownloadAdditionalLibs;
 	public static String DownloadCalculationLibraries;
 	public static String DownloadCalculationLibrariesQuestion;
@@ -351,6 +322,7 @@ public class M extends NLS {
 	public static String EcoSpold2Export;
 	public static String EcoSpoldConfiguration;
 	public static String Economic;
+	public static String EconomicComment;
 	public static String Edit;
 	public static String EditFlow;
 	public static String EditMode;
@@ -363,15 +335,18 @@ public class M extends NLS {
 	public static String EmptyDatabase;
 	public static String EmptyValueMessage;
 	public static String EnableComments;
+	public static String EnableProcessEditing;
 	public static String EndDate;
 	public static String EndOfLifeModeling;
 	public static String EnterGitCredentials;
 	public static String EnterGitLocation;
 	public static String Error;
+	public static String Errors;
 	public static String EvaluateAllFormulas;
 	public static String EvaluationErrors;
 	public static String EvaluationSchema;
 	public static String Example;
+	public static String Excel;
 	public static String ExcelExport;
 	public static String ExchangeDataQualitySchema;
 	public static String ExchangesAreUsed;
@@ -386,6 +361,7 @@ public class M extends NLS {
 	public static String Expand;
 	public static String ExpandAll;
 	public static String ExpandAllQ;
+	public static String Experimental;
 	public static String Expired;
 	public static String ExpiryDate;
 	public static String Export;
@@ -435,6 +411,7 @@ public class M extends NLS {
 	public static String FlowType;
 	public static String Flows;
 	public static String FlowsLinkedToProductSystemRemoved;
+	public static String FlowsMissing;
 	public static String Focus;
 	public static String Folder;
 	public static String Formula;
@@ -517,6 +494,7 @@ public class M extends NLS {
 	public static String ImportEcoSpold02DataSets;
 	public static String ImportEcoinvent3Metadata;
 	public static String ImportFileAsDatabase;
+	public static String ImportFromFileDots;
 	public static String ImportILCD;
 	public static String ImportMode;
 	public static String ImportNewLocations;
@@ -543,6 +521,7 @@ public class M extends NLS {
 	public static String InputsOutputs;
 	public static String IntendedApplication;
 	public static String IntendedAudience;
+	public static String IntoActiveDb;
 	public static String InvalidAllocationFactor;
 	public static String InvalidCategoryNames;
 	public static String InvalidFormula;
@@ -567,6 +546,7 @@ public class M extends NLS {
 // J
 
 	// K
+	public static String KeepAllExistingLinks;
 	public static String KeepDatasetDeleted;
 	public static String KeepLocalDataset;
 	public static String KeepVersionDb;
@@ -697,6 +677,7 @@ public class M extends NLS {
 	public static String NoReferenceFlowPropertySelected;
 	public static String NoReferenceSet;
 	public static String NoRisk;
+	public static String NoStatement;
 	public static String NoUnitGroupSelected;
 	public static String Nomenclature;
 	public static String None;
@@ -714,6 +695,7 @@ public class M extends NLS {
 	public static String NotAllMethodsAreMapped;
 	public static String NotAnIntegerNumber;
 	public static String NotApplicable;
+	public static String NotRelevant;
 	public static String Note;
 	public static String NoteDefaultProviders;
 	public static String NumberFormatPage_Description;
@@ -729,6 +711,7 @@ public class M extends NLS {
 	public static String Open;
 	public static String OpenDatabase;
 	public static String OpenEditor;
+	public static String OpenEpdIndicator;
 	public static String OpenFlow;
 	public static String OpenInEditor;
 	public static String OpenLCALog;
@@ -754,6 +737,7 @@ public class M extends NLS {
 	public static String ParameterDescriptionTable;
 	public static String ParameterScope;
 	public static String ParameterScopes;
+	public static String ParameterSet;
 	public static String ParameterSets;
 	public static String ParameterValueTable;
 	public static String ParameterWithSameNameExists;
@@ -767,6 +751,7 @@ public class M extends NLS {
 	public static String PedigreeMatrixMessage;
 	public static String Physical;
 	public static String PhysicalAndEconomicAllocation;
+	public static String PhysicalComment;
 	public static String PleaseEnterAName;
 	public static String PleaseEnterANewName;
 	public static String PleaseEnterTheNameOfTheNewCategory;
@@ -776,6 +761,7 @@ public class M extends NLS {
 	public static String PrecalculateMatrices;
 	public static String Prefer;
 	public static String PreferDefaultProviders;
+	public static String PreferLinksWithSameLocations;
 	public static String Preferences;
 	public static String PreferredProcessType;
 	public static String Price;
@@ -813,6 +799,7 @@ public class M extends NLS {
 	public static String Push;
 	public static String PushedCommits;
 	public static String Python;
+	public static String PythonNumpyScipy;
 
 	// Q
 	public static String QualityAssessment;
@@ -891,6 +878,7 @@ public class M extends NLS {
 	public static String SaveChanges;
 	public static String SaveChangesQuestion;
 	public static String SaveQ;
+	public static String SaveResultAsDots;
 	public static String Scores;
 	public static String Search;
 	public static String SearchAllTypes;
@@ -955,6 +943,7 @@ public class M extends NLS {
 	public static String SocialIndicator;
 	public static String SocialIndicators;
 	public static String SocialSchema;
+	public static String Soda4LcaClient;
 	public static String SomeElementsAreNotSaved;
 	public static String SomeParametersWereNotAdded;
 	public static String Source;
@@ -971,6 +960,7 @@ public class M extends NLS {
 	public static String StandardDeviation;
 	public static String StandardDeviationFormula;
 	public static String Start;
+	public static String StartAsGrpcService;
 	public static String StartDate;
 	public static String StartIPCInfo;
 	public static String StartIPCServer;
@@ -1037,6 +1027,7 @@ public class M extends NLS {
 	public static String UnitsUsedInExchangeRemoved;
 	public static String Unknown;
 	public static String UnknownQ;
+	public static String Unlimited;
 	public static String UnsavedChanges;
 	public static String Up;
 	public static String Update;
@@ -1088,6 +1079,7 @@ public class M extends NLS {
 
 	// W
 	public static String Warning;
+	public static String Warnings;
 	public static String Waste;
 	public static String WaterModeling;
 	public static String Website;

@@ -34,7 +34,7 @@ public class SocialResultPage extends FormPage {
 	private final SocialResult result;
 
 	public SocialResultPage(ResultEditor editor, SocialResult result) {
-		super(editor, "SocialResultPage", "Social assessment");
+		super(editor, "SocialResultPage", M.SocialAssessment);
 		this.editor = editor;
 		this.result = result;
 	}

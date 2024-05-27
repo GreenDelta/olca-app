@@ -41,7 +41,7 @@ class SodaPage extends FormPage {
 	private TableViewer table;
 
 	SodaPage(SodaClientTool tool, Connection con) {
-		super(tool, "SodaClientTool.Page", "soda4LCA client");
+		super(tool, "SodaClientTool.Page", M.Soda4LcaClient);
 		this.con = con;
 		this.client = con.client();
 	}

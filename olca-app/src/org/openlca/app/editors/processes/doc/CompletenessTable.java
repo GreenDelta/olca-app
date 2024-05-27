@@ -71,10 +71,10 @@ class CompletenessTable {
 		if (v == null)
 			return "?";
 		return switch (v) {
-			case ALL_RELEVANT_FLOWS_QUANTIFIED -> "All flows quantified";
-			case RELEVANT_FLOWS_MISSING -> "Flows missing";
-			case TOPIC_NOT_RELEVANT -> "Not relevant";
-			case NO_STATEMENT -> "No statement";
+			case ALL_RELEVANT_FLOWS_QUANTIFIED -> M.AllFlowsQuantified;
+			case RELEVANT_FLOWS_MISSING -> M.FlowsMissing;
+			case TOPIC_NOT_RELEVANT -> M.NotRelevant;
+			case NO_STATEMENT -> M.NoStatement;
 		};
 	}
 
