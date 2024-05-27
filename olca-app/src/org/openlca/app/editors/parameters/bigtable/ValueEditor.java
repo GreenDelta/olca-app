@@ -159,8 +159,7 @@ class ValueEditor {
 		@Override
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
-			newShell.setText(
-				"Set a new value for " + param.parameter.name);
+			newShell.setText(M.SetNewValue + " - " + param.parameter.name);
 		}
 
 		@Override

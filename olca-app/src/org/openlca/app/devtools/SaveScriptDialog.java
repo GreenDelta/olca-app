@@ -73,7 +73,7 @@ public class SaveScriptDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Save script");
+		shell.setText(M.SaveScript);
 	}
 
 	@Override

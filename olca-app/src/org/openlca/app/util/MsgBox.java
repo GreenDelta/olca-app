@@ -72,7 +72,7 @@ public class MsgBox {
 		private final Type type;
 
 		public BoxJob(String title, String message, Type type) {
-			super("Open message box");
+			super(M.OpenMessageBox);
 			this.title = title == null ? "?" : title;
 			this.message = message == null ? "?" : message;
 			this.type = type;

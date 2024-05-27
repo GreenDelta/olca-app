@@ -3,6 +3,7 @@ package org.openlca.app.wizards.io;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.openlca.app.M;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.io.Import;
@@ -31,7 +32,7 @@ record ImportMonitor(IProgressMonitor monitor) {
 			}
 		});
 
-		monitor.beginTask("Import: ", IProgressMonitor.UNKNOWN);
+		monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
 		var watcher = new Thread(imp);
 		watcher.start();
 

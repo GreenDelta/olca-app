@@ -190,7 +190,7 @@ class TreeExportDialog extends FormDialog {
 
 		// close the dialog and start the export
 		super.okPressed();
-		App.runWithProgress("Exporting contribution tree ...", export);
+		App.runWithProgress(M.ExportingContributionTreeDots, export);
 	}
 
 }

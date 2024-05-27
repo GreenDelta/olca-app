@@ -133,7 +133,7 @@ public class MountLibraryDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Add library " + library.name());
+		newShell.setText(M.AddLibrary + " - " + library.name());
 	}
 
 	@Override

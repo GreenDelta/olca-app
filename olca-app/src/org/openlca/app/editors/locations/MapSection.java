@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.components.mapview.LayerConfig;
 import org.openlca.app.components.mapview.MapView;
 import org.openlca.app.util.Actions;
@@ -20,9 +21,9 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
+import org.openlca.util.Strings;
 
 import com.google.gson.GsonBuilder;
-import org.openlca.util.Strings;
 
 class MapSection {
 
@@ -91,7 +92,7 @@ class MapSection {
 
 		@Override
 		protected Control createDialogArea(Composite root) {
-			getShell().setText("Enter GeoJSON");
+			getShell().setText(M.EnterGeoJson);
 			var area = (Composite) super.createDialogArea(root);
 			UI.gridLayout(area, 1);
 			new Label(area, SWT.NONE).setText(

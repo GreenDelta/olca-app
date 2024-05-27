@@ -141,7 +141,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillToolsMenu(IMenuManager menuBar) {
-		var menu = new MenuManager("Tools");
+		var menu = new MenuManager(M.Tools);
 		var viewMenu = new MenuManager(M.ShowViews);
 		viewMenu.add(showViews);
 		menu.add(viewMenu);
@@ -160,7 +160,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			ReplaceProvidersDialog::openDialog));
 
 		// flow mapping
-		var mappings = new MenuManager("Flow mapping (experimental)");
+		var mappings = new MenuManager(M.FlowMappingExperimental);
 		menu.add(mappings);
 		mappings.add(Actions.create("New", MappingTool::createNew));
 		mappings.add(Actions.create("Open file", MappingTool::openFile));
@@ -222,7 +222,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			return;
 
 		try {
-			App.runWithProgress("Run import", imp);
+			App.runWithProgress(M.RunImport, imp);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("EcoSpold 2 import failed", e);

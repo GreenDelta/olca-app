@@ -8,6 +8,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.Ec3;
 import org.openlca.app.util.Desktop;
@@ -104,7 +105,7 @@ public record ExportState(State state, String id) {
 		@Override
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
-			newShell.setText("Uploaded to EC3");
+			newShell.setText(M.UploadToEc3);
 		}
 
 		@Override
@@ -139,7 +140,7 @@ public record ExportState(State state, String id) {
 
 		@Override
 		protected void createButtonsForButtonBar(Composite parent) {
-			createButton(parent, IDialogConstants.OK_ID, "Open EPD on EC3", true);
+			createButton(parent, IDialogConstants.OK_ID, M.OpenEpdOnEc3, true);
 			createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CLOSE_LABEL, false);
 		}

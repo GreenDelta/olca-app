@@ -97,7 +97,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 		Page(File initial) {
 			super("ILCDImportWizard.Page");
 			setTitle(M.ImportILCD);
-			setDescription("Import a zip file with ILCD data sets");
+			setDescription(M.ImportZipFileWithTheIlcdDataSets);
 			zip = initial;
 			setPageComplete(zip != null);
 		}

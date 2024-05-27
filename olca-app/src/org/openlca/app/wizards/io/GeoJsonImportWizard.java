@@ -28,7 +28,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 	private File initialFile;
 
 	public GeoJsonImportWizard() {
-		setWindowTitle("Import GeoJSON");
+		setWindowTitle(M.ImportGeoJson);
 		setDefaultPageImageDescriptor(Icon.IMPORT.descriptor());
 		setNeedsProgressMonitor(true);
 	}
@@ -63,7 +63,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 			return false;
 		try {
 			getContainer().run(true, false, m -> {
-				m.beginTask("Import geometries from GeoJSON...",
+				m.beginTask(M.ImportGeometriesFromGeoJsonDots,
 						IProgressMonitor.UNKNOWN);
 				new GeoJsonImport(page.json, Database.get())
 						.withMode(page.mode)
@@ -92,7 +92,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 		Page(File json) {
 			super("GeoJsonImport.Page");
 			setTitle(M.ImportGeographiesFromGeoJson);
-			setDescription("Select a GeoJSON file and an import mode");
+			setDescription(M.SelectAGeoJsonFileAndAnImportMode);
 			this.json = json;
 			setPageComplete(json != null);
 		}

@@ -73,7 +73,7 @@ class JsonImportDialog extends Dialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Open flow mapping");
+		shell.setText(M.OpenFlowMapping);
 		UI.center(UI.shell(), shell);
 	}
 

@@ -100,8 +100,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 	}
 
 	private boolean isUnused(IProgressMonitor monitor) {
-		monitor.beginTask(
-				"Search for parameter usage",
+		monitor.beginTask(M.SearchForParameterUsage,
 				IProgressMonitor.UNKNOWN);
 		var db = Database.get();
 		var param = getModel();

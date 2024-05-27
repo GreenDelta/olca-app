@@ -33,7 +33,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 	public JsonImportWizard() {
 		setNeedsProgressMonitor(true);
-		setWindowTitle("openLCA JSON-LD Import");
+		setWindowTitle(M.OpenLcaJsonLdImport);
 		setDefaultPageImageDescriptor(
 				Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}

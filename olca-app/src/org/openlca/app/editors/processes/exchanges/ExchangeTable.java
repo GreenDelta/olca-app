@@ -274,7 +274,7 @@ class ExchangeTable {
 
 	private void onPaste(String text) {
 		List<Exchange> exchanges = new ArrayList<>();
-		App.runWithProgress("Paste exchanges ...",
+		App.runWithProgress(M.PasteExchangesDots,
 				() -> exchanges.addAll(Clipboard.read(text, forInputs)));
 		if (exchanges.isEmpty())
 			return;

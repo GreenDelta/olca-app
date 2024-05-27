@@ -236,7 +236,7 @@ public class AddExchangeCommand extends Command {
 		protected void createButtonsForButtonBar(Composite comp) {
 			createButton(comp, _CREATE, M.CreateNew, false)
 				.setEnabled(false);
-			createButton(comp, _SELECT, "Select existing", false)
+			createButton(comp, _SELECT, M.SelectExisting, false)
 				.setEnabled(false);
 			createButton(comp, _CANCEL, M.Cancel, true);
 		}

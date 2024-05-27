@@ -68,7 +68,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 
 		@Override
 		protected Control createDialogArea(Composite root) {
-			getShell().setText("Edit additional properties");
+			getShell().setText(M.EditAdditionalProperties);
 			var comp = (Composite) super.createDialogArea(root);
 			UI.gridLayout(comp, 1);
 			new Label(comp, SWT.NONE).setText(

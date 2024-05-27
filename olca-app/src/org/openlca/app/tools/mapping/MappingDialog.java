@@ -93,7 +93,7 @@ class MappingDialog extends FormDialog {
 
 	@Override
 	protected void configureShell(Shell shell) {
-		shell.setText("Flow mapping");
+		shell.setText(M.FlowMapping);
 		UI.center(UI.shell(), shell);
 		super.configureShell(shell);
 	}

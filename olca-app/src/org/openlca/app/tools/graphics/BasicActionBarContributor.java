@@ -10,10 +10,11 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
+import org.openlca.app.M;
+import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.actions.retarget.FocusRetargetAction;
 import org.openlca.app.tools.graphics.actions.retarget.LayoutAsTreeRetargetAction;
 import org.openlca.app.tools.graphics.actions.retarget.MinimapRetargetAction;
-import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.actions.retarget.SaveImageRetargetAction;
 import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
 
@@ -63,7 +64,7 @@ public class BasicActionBarContributor extends ActionBarContributor {
 	}
 
 	public void contributeToViewMenu(IMenuManager menuManager) {
-		viewMenu = new MenuManager("View");
+		viewMenu = new MenuManager(M.View);
 		viewMenu.add(getAction(GEFActionConstants.ZOOM_IN));
 		viewMenu.add(getAction(GEFActionConstants.ZOOM_OUT));
 		viewMenu.add(new Separator());
@@ -76,8 +77,8 @@ public class BasicActionBarContributor extends ActionBarContributor {
 	}
 
 	public void contributeToEditMenu(IMenuManager menuManager) {
-		editMenu = new MenuManager("Edit");
-		menuManager.insertAfter("File", editMenu);
+		editMenu = new MenuManager(M.Edit);
+		menuManager.insertAfter(M.File, editMenu);
 	}
 
 	public MenuManager getViewMenu() {

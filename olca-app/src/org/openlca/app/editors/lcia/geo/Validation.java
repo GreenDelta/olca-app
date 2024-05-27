@@ -41,10 +41,10 @@ class Validation {
 
 		// schedule a validation job
 		var validation = FeatureValidation.of(setup.features);
-		var job = new UIJob("Validate geometries") {
+		var job = new UIJob(M.ValidateGeometries) {
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
-				monitor.beginTask("Validate geometries", validation.count());
+				monitor.beginTask(M.ValidateGeometries, validation.count());
 				validation.onValidated((count) -> {
 					monitor.worked(count);
 					if (monitor.isCanceled()) {
@@ -85,7 +85,7 @@ class Validation {
 		@Override
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("Validation results");
+			shell.setText(M.ValidationResults);
 		}
 
 		@Override
@@ -111,7 +111,7 @@ class Validation {
 						IDialogConstants.OK_LABEL, true);
 			} else {
 				createButton(comp, IDialogConstants.OK_ID,
-						"Try to fix", true);
+						M.TryToFix, true);
 				createButton(comp, IDialogConstants.CANCEL_ID,
 						IDialogConstants.CANCEL_LABEL, true);
 			}

@@ -50,7 +50,7 @@ public class ValidationDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Validate database " + db.getName());
+		shell.setText(M.ValidateDatabase + " - " + db.getName());
 	}
 
 	@Override

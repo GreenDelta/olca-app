@@ -140,7 +140,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		static void checkLinking(Process process) {
 			var ref = new AtomicReference<LinkingProperties>();
-			App.runWithProgress("Check database links", () -> {
+			App.runWithProgress(M.CheckDatabaseLinks, () -> {
 				var props = LinkingProperties.check(Database.get());
 				ref.set(props);
 			});

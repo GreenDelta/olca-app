@@ -97,8 +97,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 		Page(File initial) {
 			super("ExcelImportWizard.Page");
 			setTitle(M.ImportProcessesFromExcelFiles);
-			setDescription(
-					"Note that only files in the openLCA process format are supported");
+			setDescription(M.OnlyFileInTheOpenLcaFormatAreSupported);
 			files = initial != null
 					? List.of(initial)
 					: List.of();

@@ -62,7 +62,7 @@ public class ImportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Import an openEPD document");
+		newShell.setText(M.ImportAnOpenEpdDocument);
 	}
 
 	@Override

@@ -1,5 +1,12 @@
 package org.openlca.app.editors.processes.doc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -9,6 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -19,13 +27,6 @@ import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.processes.ReviewMethod;
 import org.openlca.ilcd.processes.ReviewScope;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 class ReviewScopeSection {
 
@@ -126,7 +127,7 @@ class ReviewScopeSection {
 			return true;
 		}
 
-		boolean removeFrom(Review rev) {			
+		boolean removeFrom(Review rev) {
 			var scope = rev.scopes.get(this.scope);
 			return scope != null && scope.methods.remove(method);
 		}
@@ -173,7 +174,7 @@ class ReviewScopeSection {
 		@Override
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("Add a review method");
+			shell.setText(M.AddReviewMethod);
 		}
 
 		@Override

@@ -35,7 +35,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 		if (param == null || Strings.nullOrEmpty(param.name))
 			return;
 		var ref = new AtomicReference<>();
-		App.runWithProgress("Search for usage",
+		App.runWithProgress(M.SearchForUsage,
 			() -> ref.set(ParameterUsageTree.of(param, owner, Database.get())),
 			() -> {
 				String resultKey = Cache.getAppCache().put(ref.get());

@@ -392,7 +392,7 @@ public class InfoSection {
 		@Override
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("Add a new tag");
+			shell.setText(M.AddNewTag);
 			UI.center(UI.shell(), shell);
 		}
 

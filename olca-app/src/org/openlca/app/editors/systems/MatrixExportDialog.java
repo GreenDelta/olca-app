@@ -70,7 +70,7 @@ public class MatrixExportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Export matrices");
+		newShell.setText(M.ExportMatrices);
 	}
 
 	@Override
@@ -225,7 +225,7 @@ public class MatrixExportDialog extends FormDialog {
 		}
 
 		super.okPressed();
-		App.runWithProgress("Export matrices", () -> {
+		App.runWithProgress(M.ExportMatrices, () -> {
 			try {
 				config.exec();
 			} catch (Exception e) {

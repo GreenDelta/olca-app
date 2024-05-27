@@ -1,18 +1,19 @@
 package org.openlca.app.wizards.io;
 
+import java.util.stream.Collectors;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Popup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.io.simapro.csv.output.MethodWriter;
-
-import java.util.stream.Collectors;
 
 public class SimaProMethodExportWizard
 		extends Wizard implements IExportWizard {
@@ -21,7 +22,7 @@ public class SimaProMethodExportWizard
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("Export LCIA methods to a SimaPro CSV file");
+		setWindowTitle(M.ExportLciaMethodsToASCsvFile);
 		setNeedsProgressMonitor(true);
 	}
 
@@ -47,8 +48,7 @@ public class SimaProMethodExportWizard
 		try {
 			var file = page.getExportDestination();
 			getContainer().run(true, true, monitor -> {
-				monitor.beginTask(
-						"Exporting data sets...", IProgressMonitor.UNKNOWN);
+				monitor.beginTask(M.ExportingDataSetsDots, IProgressMonitor.UNKNOWN);
 				new MethodWriter(Database.get(), file)
 						.write(methods);
 				monitor.done();

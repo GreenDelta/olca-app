@@ -10,7 +10,7 @@ public class EpdWizard extends AbstractWizard<Epd> {
 
 	@Override
 	protected String getTitle() {
-		return "New EPD";
+		return M.NewEpd;
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class LibraryExportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Create a library");
+		newShell.setText(M.CreateALibrary);
 	}
 
 	@Override

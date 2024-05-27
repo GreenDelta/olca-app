@@ -30,7 +30,7 @@ class SimulationProgress implements IRunnableWithProgress {
 	@Override
 	public void run(IProgressMonitor monitor)
 			throws InvocationTargetException, InterruptedException {
-		monitor.beginTask(M.MonteCarloSimulation + "...", numberOfRuns);
+		monitor.beginTask(M.MonteCarloSimulationDots, numberOfRuns);
 		for (int i = 0; i < numberOfRuns; i++) {
 			if (monitor.isCanceled()) {
 				display.asyncExec(page::progressDone);

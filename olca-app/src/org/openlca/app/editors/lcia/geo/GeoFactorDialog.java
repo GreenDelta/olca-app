@@ -50,7 +50,7 @@ class GeoFactorDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Calculated factors");
+		shell.setText(M.CalculatedFactors);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ class GeoFactorDialog extends FormDialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite comp) {
 		createButton(comp, IDialogConstants.OK_ID,
-				"Add new factors", true);
+				M.AddNewFactors, true);
 		createButton(comp, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
 	}
@@ -75,10 +75,10 @@ class GeoFactorDialog extends FormDialog {
 		var radioComp = UI.composite(body, tk);
 		UI.gridLayout(radioComp, 3);
 		UI.label(radioComp, tk, M.MergeFactors);
-		var keep = UI.radio(radioComp, tk, "Keep existing");
+		var keep = UI.radio(radioComp, tk, M.KeepExisting);
 		keep.setSelection(keepExisting);
 		Controls.onSelect(keep, $ -> keepExisting = keep.getSelection());
-		var repl = UI.radio(radioComp, tk, "Replace existing");
+		var repl = UI.radio(radioComp, tk, M.ReplaceExisting);
 		repl.setSelection(!keepExisting);
 		Controls.onSelect(repl, $ -> keepExisting = !repl.getSelection());
 

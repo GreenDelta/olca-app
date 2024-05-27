@@ -42,7 +42,7 @@ public class RepositoryMenu {
 				new FetchAction(),
 				new MergeAction(),
 				new PullAction());
-		added += subMenu("Stash", Icon.STASH.descriptor(), selection, repoMenu,
+		added += subMenu(M.Stash, Icon.STASH.descriptor(), selection, repoMenu,
 				new StashCreateAction(),
 				new StashApplyAction(),
 				new StashDropAction());
@@ -105,5 +105,5 @@ public class RepositoryMenu {
 		}
 		return false;
 	}
-	
+
 }

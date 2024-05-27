@@ -10,7 +10,7 @@ public class ResultWizard extends AbstractWizard<Result> {
 
 	@Override
 	protected String getTitle() {
-		return "New result";
+		return M.NewResult;
 	}
 
 	@Override

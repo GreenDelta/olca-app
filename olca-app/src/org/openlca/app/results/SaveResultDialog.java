@@ -48,7 +48,7 @@ public class SaveResultDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Save result");
+		shell.setText(M.SaveResult);
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class SaveResultDialog extends FormDialog {
 		static Selector forResult(Composite comp, FormToolkit tk) {
 			makeIcon(comp, tk, Images.get(ModelType.RESULT));
 			var group = makeGroup(comp, tk);
-			var button = UI.radio(group, tk, "As result");
+			var button = UI.radio(group, tk, M.AsResult);
 			button.setSelection(true);
 			return new Selector(group, button);
 		}
@@ -163,7 +163,7 @@ public class SaveResultDialog extends FormDialog {
 		static Selector forProcess(Composite comp, FormToolkit tk) {
 			makeIcon(comp, tk, Images.get(ProcessType.LCI_RESULT));
 			var group = makeGroup(comp, tk);
-			var button = UI.radio(group, tk, "As system process");
+			var button = UI.radio(group, tk, M.AsSystemProcess);
 			button.setSelection(false);
 			return new Selector(group, button);
 		}

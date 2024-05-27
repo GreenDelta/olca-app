@@ -43,7 +43,7 @@ public class LibraryDialog extends FormDialog {
 	}
 
 	private void createContent(Composite parent, FormToolkit tk) {
-		urlCheck = createCheckboxSection(parent, tk, "From url", Mode.URL, (composite, check) -> {
+		urlCheck = createCheckboxSection(parent, tk, M.FromUrl, Mode.URL, (composite, check) -> {
 			var text = UI.text(composite, tk);
 			if (!Strings.nullOrEmpty(link.url())) {
 				location = link.url();
@@ -56,7 +56,7 @@ public class LibraryDialog extends FormDialog {
 			text.addFocusListener(FocusListener.focusGainedAdapter(e -> select(check, text)));
 			return text;
 		});
-		fileCheck = createCheckboxSection(parent, tk, "From file", Mode.FILE, (composite, check) -> {
+		fileCheck = createCheckboxSection(parent, tk, M.FromFile, Mode.FILE, (composite, check) -> {
 			UI.gridLayout(composite, 2);
 			var text = UI.text(composite, tk, SWT.READ_ONLY | SWT.BORDER);
 			text.addFocusListener(FocusListener.focusGainedAdapter(e -> select(check, text)));

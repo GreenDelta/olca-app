@@ -45,7 +45,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 
 	public static void show() {
 		AtomicReference<LinkingProperties> ref = new AtomicReference<>();
-		App.runWithProgress("Check database links", () -> {
+		App.runWithProgress(M.CheckDatabaseLinks, () -> {
 			LinkingProperties props = LinkingProperties.check(Database.get());
 			ref.set(props);
 		});

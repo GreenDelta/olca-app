@@ -67,7 +67,7 @@ public class RenameParameterDialog extends FormDialog {
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		UI.center(UI.shell(), shell);
-		shell.setText("Rename parameter " + param.name);
+		shell.setText(M.RenameParameter + " - " + param.name);
 	}
 
 	@Override

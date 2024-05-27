@@ -78,7 +78,7 @@ class EpdModuleDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Edit EPD module");
+		newShell.setText(M.EditEpdModule);
 	}
 
 	@Override

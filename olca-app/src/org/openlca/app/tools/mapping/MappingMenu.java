@@ -23,7 +23,7 @@ public class MappingMenu extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToMenu(IMenuManager root) {
-		MenuManager menu = new MenuManager("Flow mapping");
+		MenuManager menu = new MenuManager(M.FlowMapping);
 		root.add(menu);
 		menu.add(Actions.create(M.SaveAs, this::onSave));
 		menu.add(Actions.create("Generate mappings", this::onGenerate));
@@ -46,7 +46,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		var file = FileChooser.forSavingFile(M.Export, name);
 		if (file == null)
 			return;
-		App.runWithProgress("Save flow mapping ...", () -> {
+		App.runWithProgress(M.SaveFlowMappingDots, () -> {
 			try {
 				FlowMap.toCsv(map, file);
 			} catch (Exception e) {

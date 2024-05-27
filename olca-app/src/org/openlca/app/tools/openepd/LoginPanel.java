@@ -177,7 +177,7 @@ public class LoginPanel {
 		@Override
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
-			newShell.setText("Login with your EC3 Account");
+			newShell.setText(M.LoginWithYourEc3Account);
 		}
 
 		@Override

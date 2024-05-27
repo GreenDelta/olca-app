@@ -95,7 +95,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		@Override
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
-			newShell.setText("Add a library to " + db.getName());
+			newShell.setText(M.AddLibrary + " - " + db.getName());
 		}
 
 		@Override

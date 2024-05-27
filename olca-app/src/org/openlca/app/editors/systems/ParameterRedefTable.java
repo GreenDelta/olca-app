@@ -180,7 +180,7 @@ class ParameterRedefTable {
 
 	private void onPaste(String text) {
 		List<ParameterRedef> newList = new ArrayList<>();
-		App.runWithProgress("Paste parameters ...",
+		App.runWithProgress(M.PasteParametersDots,
 				() -> newList.addAll(ParameterClipboard.read(text)));
 		if (newList.isEmpty())
 			return;

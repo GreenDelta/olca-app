@@ -67,7 +67,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 
 		App.close(system);
 		GraphFile.clear(editor);
-		App.runWithProgress("Update links", () -> {
+		App.runWithProgress(M.UpdateLinks, () -> {
 			try {
 				var productSystem = dialog.config.execute();
 				App.open(productSystem);
@@ -98,7 +98,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
 			if (newShell != null) {
-				newShell.setText("Update links");
+				newShell.setText(M.UpdateLinks);
 			}
 		}
 

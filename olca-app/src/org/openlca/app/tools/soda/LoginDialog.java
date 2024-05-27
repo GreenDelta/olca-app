@@ -43,7 +43,7 @@ class LoginDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Connect to a data node");
+		newShell.setText(M.ConnectToADataNode);
 	}
 
 	@Override

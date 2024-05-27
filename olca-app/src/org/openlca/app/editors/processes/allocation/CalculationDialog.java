@@ -75,7 +75,7 @@ class CalculationDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Calculate default factors");
+		newShell.setText(M.CalculatedDefaultFactors);
 	}
 
 	@Override

@@ -21,8 +21,8 @@ public class ImportLogDialog extends FormDialog {
 		if (imp == null || imp.log() == null)
 			return;
 		var title = imp.isCanceled()
-				? "Import canceled"
-				: "Import finished";
+				? M.ImportCanceled
+				: M.ImportFinished;
 		App.runInUI(title,
 				() -> new ImportLogDialog(imp.log(), title).open());
 	}
@@ -49,7 +49,7 @@ public class ImportLogDialog extends FormDialog {
 		createButton(parent, IDialogConstants.OK_ID,
 				IDialogConstants.OK_LABEL, true);
 		createButton(parent, IDialogConstants.DETAILS_ID,
-				"Details...", false);
+				M.DetailsDots, false);
 	}
 
 	@Override

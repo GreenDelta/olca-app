@@ -59,7 +59,7 @@ public class ImportLibraryDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Import library " + info.name());
+		newShell.setText(M.ImportLibrary + " - " + info.name());
 	}
 
 	@Override

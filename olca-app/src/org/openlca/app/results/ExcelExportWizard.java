@@ -38,7 +38,7 @@ class ExcelExportWizard extends Wizard {
 	private ExcelExportWizard(ResultEditor editor) {
 		this.editor = editor;
 		setNeedsProgressMonitor(true);
-		setWindowTitle("Export");
+		setWindowTitle(M.Export);
 	}
 
 	static Action createAction() {
@@ -82,7 +82,7 @@ class ExcelExportWizard extends Wizard {
 		}
 		try {
 			getContainer().run(true, true, monitor -> {
-				monitor.beginTask("Exporting file", 1);
+				monitor.beginTask(M.ExportingFile, 1);
 				export.run();
 				// TODO: forward cancel...
 				monitor.done();
@@ -105,7 +105,7 @@ class ExcelExportWizard extends Wizard {
 			super("ExcelExportPage");
 			this.editor = editor;
 			setTitle(M.ExportResultsToExcel);
-			setDescription("Specify an export file and optional settings");
+			setDescription(M.SpecifyAnExportFileAndOptionalSettings);
 			setImageDescriptor(Icon.EXPORT_WIZARD.descriptor());
 			setPageComplete(false);
 		}

@@ -54,7 +54,7 @@ class ReplacerDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Replace flows in database");
+		shell.setText(M.ReplaceFlowsInDatabase);
 		UI.center(UI.shell(), shell);
 	}
 

@@ -72,7 +72,7 @@ public class ExportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Export an openEPD document");
+		newShell.setText(M.ExportAnOpenEpdDocument);
 	}
 
 	@Override
@@ -113,9 +113,9 @@ public class ExportDialog extends FormDialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID,
-			existingId == null ? "Upload" : "Update",
+			existingId == null ? M.Upload : M.Update,
 			true);
-		createButton(parent, 999, "Save as file", false);
+		createButton(parent, 999, M.SaveAsFile, false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
 			IDialogConstants.CANCEL_LABEL, false);
 	}

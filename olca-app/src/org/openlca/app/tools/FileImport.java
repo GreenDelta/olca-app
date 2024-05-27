@@ -196,7 +196,7 @@ public class FileImport {
 		@Override
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("Import database");
+			shell.setText(M.ImportDatabase);
 			shell.setImage(Icon.IMPORT.get());
 		}
 

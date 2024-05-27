@@ -30,7 +30,7 @@ public class SimaProProcessExportWizard
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("Export processes to a SimaPro CSV file");
+		setWindowTitle(M.ExportProcessesToASimaproCsvFile);
 		setNeedsProgressMonitor(true);
 	}
 
