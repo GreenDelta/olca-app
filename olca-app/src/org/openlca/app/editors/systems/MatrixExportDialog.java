@@ -311,8 +311,8 @@ public class MatrixExportDialog extends FormDialog {
 		public String toString() {
 			return switch (this) {
 				case CSV -> "CSV";
-				case EXCEL -> "Excel";
-				case PYTHON -> "Python (NumPy, SciPy)";
+				case EXCEL -> M.Excel;
+				case PYTHON -> M.PythonNumpyScipy;
 			};
 		}
 	}

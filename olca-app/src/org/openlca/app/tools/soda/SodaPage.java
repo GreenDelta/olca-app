@@ -109,7 +109,7 @@ class SodaPage extends FormPage {
 		var searchText = tk.createText(searchComp, "", SWT.BORDER);
 		UI.fillHorizontal(searchText);
 		searchText.setMessage("Search dataset ...");
-		var button = tk.createButton(searchComp, "Search", SWT.NONE);
+		var button = tk.createButton(searchComp, M.Search, SWT.NONE);
 		Controls.onSelect(button,
 				e -> runSearch(typeCombo.selected(), searchText.getText()));
 		searchText.addTraverseListener(e -> {

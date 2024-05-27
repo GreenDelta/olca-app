@@ -236,9 +236,9 @@ public class ImportLogView extends SimpleFormEditor {
 			UI.filler(comp, tk);
 			var optComp = UI.composite(comp, tk);
 			UI.gridLayout(optComp, 6, 10, 0);
-			var errCheck = UI.button(optComp, tk, "Errors", SWT.CHECK);
-			var warnCheck = UI.button(optComp, tk, "Warnings", SWT.CHECK);
-			var allCheck = UI.button(optComp, tk, "All", SWT.CHECK);
+			var errCheck = UI.button(optComp, tk, M.Errors, SWT.CHECK);
+			var warnCheck = UI.button(optComp, tk, M.Warnings, SWT.CHECK);
+			var allCheck = UI.button(optComp, tk, M.All, SWT.CHECK);
 			allCheck.setSelection(true);
 
 			BiConsumer<Button, State> stateCheck = (button, state) -> {

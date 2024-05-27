@@ -91,7 +91,7 @@ class CalculationSetupSection {
 		// report button
 		if (editor.report == null) {
 			var beforeReport = UI.filler(comp, tk);
-			var reportBtn = UI.button(comp, tk, "Create report");
+			var reportBtn = UI.button(comp, tk, M.CreateReport);
 			var afterButton = UI.filler(comp, tk);
 			reportBtn.setImage(Images.get(ModelType.PROJECT));
 			Controls.onSelect(reportBtn, $ -> {

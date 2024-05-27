@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.FileDialog;
@@ -210,16 +211,14 @@ public class FileImport {
 			var body = UI.dialogBody(form.getForm(), tk);
 			tk.createLabel(body, "Import file " + zolca.getName());
 
-			var opt1 = tk.createButton(body,
-				"As standalone database", SWT.RADIO);
+			var opt1 = tk.createButton(body, M.AsStandaloneDatabase, SWT.RADIO);
 			opt1.setSelection(!intoActiveDB);
 			Controls.onSelect(opt1,
 				_e -> intoActiveDB = !opt1.getSelection());
 
 			var opt2 = tk.createButton(body,
-				"Into the active database " +
-					activeDB.getName(),
-				SWT.RADIO);
+					NLS.bind(M.IntoActiveDb, activeDB.getName()),
+					SWT.RADIO);
 			opt2.setSelection(intoActiveDB);
 			Controls.onSelect(opt2,
 				_e -> intoActiveDB = opt2.getSelection());

@@ -79,7 +79,7 @@ class InfoSection {
 		var excelBtn = UI.button(inner, tk, M.ExportToExcel);
 		excelBtn.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(excelBtn, e -> ExcelExportWizard.open());
-		var resultBtn = UI.button(inner, tk, "Save result as ...", SWT.NONE);
+		var resultBtn = UI.button(inner, tk, M.SaveResultAsDots, SWT.NONE);
 		resultBtn.setImage(Icon.SAVE_AS.get());
 		Controls.onSelect(resultBtn, e -> {
 			ResultEditor editor = Editors.getActive();

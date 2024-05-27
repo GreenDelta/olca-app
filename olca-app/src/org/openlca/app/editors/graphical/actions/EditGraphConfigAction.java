@@ -1,5 +1,11 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_MANHATTAN;
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_NULL;
+
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -18,16 +24,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.themes.Themes;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
-
-import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
-import static org.openlca.app.tools.graphics.figures.Connection.*;
 
 public class EditGraphConfigAction extends WorkbenchPartAction {
 
@@ -95,7 +97,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			// show elementary flows
 			UI.filler(body, tk);
 			var elems = tk.createButton(
-				body, "Show elementary flows", SWT.CHECK);
+				body, M.ShowElementaryFlows, SWT.CHECK);
 			elems.setSelection(config.showElementaryFlows());
 			Controls.onSelect(elems,
 					e -> config.setShowElementaryFlows(elems.getSelection()));
@@ -103,7 +105,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			// edit mode
 			UI.filler(body, tk);
 			var isNodeEditingEnabled = tk.createButton(
-				body, "Enable process editing", SWT.CHECK);
+				body, M.EnableProcessEditing, SWT.CHECK);
 			isNodeEditingEnabled.setSelection(config.isNodeEditingEnabled());
 			Controls.onSelect(isNodeEditingEnabled,
 				e -> config.setNodeEditingEnabled(

@@ -68,7 +68,7 @@ class LoginDialog extends FormDialog {
 		urlText = UI.labeledText(comp, tk, "URL");
 		UI.filler(comp, tk);
 		urlText.setText("https://replace.this.url.to/Node");
-		anoCheck = tk.createButton(comp, "Anonymous access", SWT.CHECK);
+		anoCheck = tk.createButton(comp, M.AnonymousAccess, SWT.CHECK);
 		anoCheck.setSelection(true);
 		userText = UI.labeledText(comp, tk, M.User);
 		userText.setText("anonymous");

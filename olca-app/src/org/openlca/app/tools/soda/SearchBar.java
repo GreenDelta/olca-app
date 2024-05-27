@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -49,7 +50,7 @@ class SearchBar {
 		sizeSpin = new Spinner(comp, SWT.BORDER);
 		sizeSpin.setValues(50, 50, 500, 0, 50, 50);
 
-		var button = tk.createButton(comp, "Search", SWT.NONE);
+		var button = tk.createButton(comp, M.Search, SWT.NONE);
 		button.setImage(Icon.SEARCH.get());
 		Controls.onSelect(button,	e -> runSearch());
 		searchText.addTraverseListener(e -> {

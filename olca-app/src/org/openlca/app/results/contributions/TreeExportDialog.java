@@ -80,12 +80,12 @@ class TreeExportDialog extends FormDialog {
 		UI.gridLayout(comp, 3, 10, 5);
 		maxDepthText = UI.labeledText(comp, tk, M.MaxNumberLevels);
 		maxDepthText.setText("5");
-		var maxDepthBtn = tk.createButton(comp, "Unlimited", SWT.CHECK);
+		var maxDepthBtn = tk.createButton(comp, M.Unlimited, SWT.CHECK);
 
 		// minimum contribution
 		minContrText = UI.labeledText(comp, tk, M.MinContribPerc);
 		minContrText.setText("1e-5");
-		var contrBtn = tk.createButton(comp, "Unlimited", SWT.CHECK);
+		var contrBtn = tk.createButton(comp, M.Unlimited, SWT.CHECK);
 		Controls.onSelect(contrBtn, _e -> {
 			minContrText.setEnabled(!minContrText.isEnabled());
 		});

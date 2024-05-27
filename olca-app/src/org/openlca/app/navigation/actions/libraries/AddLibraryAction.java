@@ -116,7 +116,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			combo = new LibCombo(UI.labeledCombo(comp, tk, "Library"));
 			UI.filler(comp, tk);
 			var importButton = tk.createButton(
-				comp, "Import from file ...", SWT.NONE);
+				comp, M.ImportFromFileDots, SWT.NONE);
 			Controls.onSelect(importButton, $ -> {
 				var file = FileChooser.openFile()
 					.withTitle("Select a library package")

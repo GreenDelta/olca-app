@@ -161,7 +161,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private void createCalcButton(Composite comp, FormToolkit tk) {
 		UI.filler(comp, tk);
-		var btn = UI.button(comp, tk, "Calculate factors");
+		var btn = UI.button(comp, tk, M.CalculateFactors);
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {
 			var refs = CalculationDialog.of(process());
@@ -185,8 +185,8 @@ public class AllocationPage extends ModelPage<Process> {
 		var comp = UI.sectionClient(section, tk, 1);
 
 		var columns = withComments
-			? new String[]{M.Product, M.Physical, M.Physical + "-comment",
-			M.Economic, M.Economic + "-comment"}
+			? new String[]{M.Product, M.Physical, M.PhysicalComment,
+			M.Economic, M.EconomicComment}
 			: new String[]{M.Product, M.Physical, M.Economic};
 		table = Tables.createViewer(comp, columns);
 		table.setColumnProperties(columns);

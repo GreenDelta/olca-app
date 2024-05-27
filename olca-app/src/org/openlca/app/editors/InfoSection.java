@@ -164,7 +164,7 @@ public class InfoSection {
 		var comp = UI.composite(container, tk);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
-		var btn = UI.button(comp, tk, "Add a tag");
+		var btn = UI.button(comp, tk, M.AddATag);
 		btn.setEnabled(editor.isEditable());
 
 		var tagComp = UI.composite(comp, tk);

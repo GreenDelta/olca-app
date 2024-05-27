@@ -1,5 +1,8 @@
 package org.openlca.app.editors.systems;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -16,9 +19,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.List;
 
 class ParameterPage extends ModelPage<ProductSystem> {
 
@@ -211,7 +211,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			grid.marginLeft = 0;
 			grid.marginTop = 0;
 			grid.marginBottom = 10;
-			var btn = UI.button(comp, tk, "Add parameter set");
+			var btn = UI.button(comp, tk, M.AddParameterSet);
 			btn.setImage(Icon.ADD.get());
 			Controls.onSelect(btn, e -> {
 				var s = new ParameterRedefSet();

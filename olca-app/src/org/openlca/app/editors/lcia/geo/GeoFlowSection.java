@@ -81,8 +81,7 @@ class GeoFlowSection {
 				"Create for used flows",
 				Icon.EDIT.descriptor(),
 				this::onCreateForUsedFlows);
-		createForUsed.setToolTipText(
-				"Creates flow bindings for all flows used in this impact category");
+		createForUsed.setToolTipText(M.CreateFlowBindingForAllFlows);
 		var remove = Actions.onRemove(this::onRemove);
 		var calc = Actions.onCalculate(this::onCalculate);
 		var calcMissing = Actions.create(

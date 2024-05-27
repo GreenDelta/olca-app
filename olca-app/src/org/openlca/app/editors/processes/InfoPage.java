@@ -68,14 +68,14 @@ class InfoPage extends ModelPage<Process> {
 		int columns = withDirect ? 3 : 2;
 		UI.gridLayout(inner, columns, 5, 0);
 
-		// create product system
+		// create a product system
 		var b = UI.button(inner, tk, M.CreateProductSystem);
 		b.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
 		Controls.onSelect(b, e -> ProcessToolbar.createSystem(getModel()));
 
 		// direct calculation
 		if (withDirect) {
-			b = UI.button(inner, tk, "Direct calculation");
+			b = UI.button(inner, tk, M.DirectCalculation);
 			b.setImage(Icon.RUN.get());
 			Controls.onSelect(
 				b, e -> ProcessToolbar.directCalculation(getModel()));

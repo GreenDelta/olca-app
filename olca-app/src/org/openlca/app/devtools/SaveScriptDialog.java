@@ -97,15 +97,14 @@ public class SaveScriptDialog extends FormDialog {
 			return;
 
 		UI.filler(body, tk);
-		var global = tk.createButton(
-				body, "As global script", SWT.RADIO);
+		var global = tk.createButton(body, M.AsGlobalScript, SWT.RADIO);
 		global.setSelection(true);
 		Controls.onSelect(
 				global, e -> asGlobal = global.getSelection());
 
 		UI.filler(body, tk);
 		var local = tk.createButton(
-				body, "As script in database " + db.getName(),
+				body, M.AsScriptInDb + " - " + db.getName(),
 				SWT.RADIO);
 		local.setSelection(false);
 		Controls.onSelect(
