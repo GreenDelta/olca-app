@@ -27,6 +27,7 @@ public class M extends NLS {
 	public static String Actors;
 	public static String Add;
 	public static String AddATag;
+	public static String AddFlow;
 	public static String AddIndicator;
 	public static String AddInputFlow;
 	public static String AddLibrary;
@@ -61,6 +62,9 @@ public class M extends NLS {
 	public static String Amount;
 	public static String AmountFormula;
 	public static String AnonymousAccess;
+	public static String AppendLocationCodes;
+	public static String AppendProcessNames;
+	public static String AppendProcessTypes;
 	public static String ApplyFormat;
 	public static String ApplyStashedChanges;
 	public static String ApplyStashedChangesQuestion;
@@ -74,6 +78,7 @@ public class M extends NLS {
 	public static String Authenticate;
 	public static String Authentication;
 	public static String AutoLinkProcesses;
+	public static String Avoided;
 	public static String AvoidedProduct;
 	public static String AvoidedWaste;
 
@@ -125,6 +130,7 @@ public class M extends NLS {
 	public static String CharactFactorsForSub;
 	public static String CheckLinkingProperties;
 	public static String CheckMappings;
+	public static String CheckMultiProviderLinksExperimental;
 	public static String City;
 	public static String Close;
 	public static String CloseAll;
@@ -194,6 +200,7 @@ public class M extends NLS {
 	public static String CreateANewDatabase;
 	public static String CreateANewFlowForTheProcess;
 	public static String CreateAWasteTreatmentProcess;
+	public static String CreateBackupOfTheDbFirst;
 	public static String CreateDatabase;
 	public static String CreateDefaultLciaMethodsQ;
 	public static String CreateDefaultValuesForMissingFields;
@@ -297,7 +304,9 @@ public class M extends NLS {
 	public static String DirectContributionsFlowResultsOverview;
 	public static String DirectContributionsImpactCategoryResultsOverview;
 	public static String DirectDownload;
+	public static String DirectImpactContributions;
 	public static String DirectImpacts;
+	public static String DirectInventoryContributions;
 	public static String Direction;
 	public static String DiscardChanges;
 	public static String DiscardChangesQ;
@@ -369,6 +378,7 @@ public class M extends NLS {
 	public static String ExportDataSets;
 	public static String ExportDataSetsInOneFile;
 	public static String ExportDatabase;
+	public static String ExportDefaultProvidersOfProductsAndWastes;
 	public static String ExportDone;
 	public static String ExportEcoSpold;
 	public static String ExportEcoinventNexusJsonIndex;
@@ -476,6 +486,7 @@ public class M extends NLS {
 	public static String ImpactAssessmentMethod;
 	public static String ImpactAssessmentMethods;
 	public static String ImpactAssessmentResults;
+	public static String ImpactByFlow;
 	public static String ImpactCategories;
 	public static String ImpactCategory;
 	public static String ImpactFactor;
@@ -514,6 +525,7 @@ public class M extends NLS {
 	public static String InfrastructureModeling;
 	public static String InfrastructureProcess;
 	public static String Input;
+	public static String InputFlows;
 	public static String InputParameter;
 	public static String InputParameters;
 	public static String InputResults;
@@ -566,6 +578,7 @@ public class M extends NLS {
 	public static String LazyOnDemand;
 	public static String LciaCategoryDescriptionTable;
 	public static String LciaResultTable;
+	public static String Libraries;
 	public static String Library;
 	public static String LibraryAlreadyPresent;
 	public static String LibraryAlreadyPresentQuestion;
@@ -594,6 +607,7 @@ public class M extends NLS {
 	// M
 	public static String Manufacturer;
 	public static String Map;
+	public static String MappingFiles;
 	public static String MarkAsMerged;
 	public static String MaxNumberLevels;
 	public static String MaxRecursionDepth;
@@ -604,6 +618,7 @@ public class M extends NLS {
 	public static String MaximumMemoryUsage;
 	public static String Mean;
 	public static String MeanFormula;
+	public static String Median;
 	public static String MediumOpportunity;
 	public static String MediumRisk;
 	public static String MemoryToHighMessage;
@@ -723,6 +738,7 @@ public class M extends NLS {
 	public static String OtherCurrencies;
 	public static String OutOfMemory;
 	public static String Output;
+	public static String OutputFlows;
 	public static String OutputResults;
 	public static String Outputs;
 	public static String OverwriteAllData;
@@ -749,6 +765,8 @@ public class M extends NLS {
 	public static String Pcr;
 	public static String PedigreeMatrix;
 	public static String PedigreeMatrixMessage;
+	public static String Percentile5;
+	public static String Percentile95;
 	public static String Physical;
 	public static String PhysicalAndEconomicAllocation;
 	public static String PhysicalComment;
@@ -936,6 +954,7 @@ public class M extends NLS {
 	public static String SingleScoreTable;
 	public static String SizeAfterCompression;
 	public static String SizeBeforeCompression;
+	public static String SkipZeroValues;
 	public static String SocialAspect;
 	public static String SocialAspects;
 	public static String SocialAssessment;
@@ -1050,7 +1069,9 @@ public class M extends NLS {
 	public static String UploadAsDraftQ;
 	public static String UploadAsDraftToEC3;
 	public static String UploadDraftToDestinationQ;
+	public static String UpstreamImpacts;
 	public static String UpstreamInclDirect;
+	public static String UpstreamInventories;
 	public static String UpstreamTotal;
 	public static String Urn;
 	public static String Usage;
@@ -1058,6 +1079,7 @@ public class M extends NLS {
 	public static String UsageType;
 	public static String UseAdvice;
 	public static String UseAsUncertainty;
+	public static String UseMatchingTopCategoriesAsProcessTypes;
 	public static String UseMaximumScoreForZeroValues;
 	public static String UsedInProcesses;
 	public static String User;

@@ -46,7 +46,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		page = ModelSelectionPage.forFile("zip", ModelType.values())
 				.withExtension(parent -> {
 					var providerCheck = UI.checkbox(parent,
-							"Export default providers of product inputs and waste outputs");
+							M.ExportDefaultProvidersOfProductsAndWastes);
 					providerCheck.setToolTipText(
 							"Note that this exports the providers recursively, means also " +
 									"providers of providers, which can result in very large " +

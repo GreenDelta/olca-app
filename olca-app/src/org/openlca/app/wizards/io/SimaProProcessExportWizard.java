@@ -105,7 +105,7 @@ public class SimaProProcessExportWizard
 			UI.fillHorizontal(generalGroup);
 
 			var categoryCheck = UI.checkbox(
-					generalGroup, "Use matching top categories as process types");
+					generalGroup, M.UseMatchingTopCategoriesAsProcessTypes);
 			categoryCheck.setSelection(withTopCategoryToType);
 			Controls.onSelect(categoryCheck,
 					$ -> withTopCategoryToType = categoryCheck.getSelection());
@@ -139,22 +139,21 @@ public class SimaProProcessExportWizard
 			};
 			updateExample.run();
 
-			var processCheck = UI.checkbox(productGroup, "Append process names");
+			var processCheck = UI.checkbox(productGroup, M.AppendProcessNames);
 			processCheck.setSelection(withProcessSuffix);
 			Controls.onSelect(processCheck, $ -> {
 				withProcessSuffix = processCheck.getSelection();
 				updateExample.run();
 			});
 
-			var locationCheck = UI.checkbox(productGroup, "Append location codes");
+			var locationCheck = UI.checkbox(productGroup, M.AppendLocationCodes);
 			locationCheck.setSelection(withLocationSuffix);
 			Controls.onSelect(locationCheck, $ -> {
 				withLocationSuffix = locationCheck.getSelection();
 				updateExample.run();
 			});
 
-			var typeCheck = UI.checkbox(productGroup,
-					"Append process types (U: unit process, S: system/LCI result)");
+			var typeCheck = UI.checkbox(productGroup, M.AppendProcessTypes);
 			typeCheck.setSelection(withTypeSuffix);
 			Controls.onSelect(typeCheck, $ -> {
 				withTypeSuffix = typeCheck.getSelection();

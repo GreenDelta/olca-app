@@ -244,7 +244,7 @@ class CalculationWizardPage extends WizardPage {
 	}
 
 	private void addRegioAndCostChecks(Composite comp) {
-		var regioCheck = UI.checkbox(comp, "Regionalized calculation");
+		var regioCheck = UI.checkbox(comp, M.RegionalizedCalculation);
 		regioCheck.setSelection(setup.calcSetup.hasRegionalization());
 		Controls.onSelect(regioCheck,
 				_e -> setup.calcSetup.withRegionalization(regioCheck.getSelection()));

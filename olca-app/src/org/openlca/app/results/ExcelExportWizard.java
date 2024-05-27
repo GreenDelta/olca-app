@@ -125,7 +125,7 @@ class ExcelExportWizard extends Wizard {
 					"Note that some of these matrices " +
 							"can result in very long export times");
 
-			var zeroCheck = UI.checkbox(group, "Skip zero values");
+			var zeroCheck = UI.checkbox(group, M.SkipZeroValues);
 			zeroCheck.setSelection(skipZeros);
 			Controls.onSelect(zeroCheck, $ -> skipZeros = zeroCheck.getSelection());
 
@@ -167,11 +167,11 @@ class ExcelExportWizard extends Wizard {
 
 		private String labelOf(MatrixPage matrix) {
 			return switch (matrix) {
-				case DIRECT_INVENTORIES -> "Direct inventory contributions";
-				case TOTAL_INVENTORIES -> "Upstream inventories";
-				case DIRECT_IMPACTS -> "Direct impact contributions";
-				case TOTAL_IMPACTS -> "Upstream impacts";
-				case FLOW_IMPACTS -> "Impacts by flow";
+				case DIRECT_INVENTORIES -> M.DirectInventoryContributions;
+				case TOTAL_INVENTORIES -> M.UpstreamInventories;
+				case DIRECT_IMPACTS -> M.DirectImpactContributions;
+				case TOTAL_IMPACTS -> M.UpstreamImpacts;
+				case FLOW_IMPACTS -> M.ImpactByFlow;
 			};
 		}
 

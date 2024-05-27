@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -233,12 +234,12 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof Descriptor d)
 			return Labels.name(d);
 		if (content instanceof LibraryDir)
-			return "Libraries";
+			return M.Libraries;
 		if (content instanceof Library lib) {
 			return lib.name();
 		}
 		if (elem instanceof MappingDirElement)
-			return "Mapping files";
+			return M.MappingFiles;
 
 		if (content instanceof File file)
 			return file.getName();

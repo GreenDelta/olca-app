@@ -1,18 +1,24 @@
 package org.openlca.app.editors.graphical.figures;
 
+import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
+import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
+import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
+
 import java.util.List;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.GridData;
+import org.eclipse.draw2d.GridLayout;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.tools.graphics.figures.GridPos;
-
-import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
-import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
-import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
 
 public class IOPaneFigure extends ComponentFigure {
 
@@ -49,7 +55,7 @@ public class IOPaneFigure extends ComponentFigure {
 				add(addExchangeButton, new GridData(alignment, SWT.BOTTOM, false, false));
 			}
 
-			setToolTip(new Label(pane.isForInputs() ? "Input flows" : "Output flows"));
+			setToolTip(new Label(pane.isForInputs() ? M.InputFlows : M.OutputFlows));
 			setForegroundColor(theme.boxBackgroundColor(box));
 			setOpaque(true);
 		}
@@ -139,7 +145,7 @@ public class IOPaneFigure extends ComponentFigure {
 
 			var theme = pane.getGraph().getConfig().getTheme();
 			Label label = new Label(
-				pane.isForInputs() ? ">> input flows" : "output flows >>");
+				pane.isForInputs() ? "⇨ " + M.InputFlows : M.OutputFlows + " ⇨");
 			label.setForegroundColor(theme.infoLabelColor());
 			var alignment = pane.isForInputs() ? SWT.LEAD : SWT.TRAIL;
 			add(label, new GridData(alignment, SWT.TOP, true, false));

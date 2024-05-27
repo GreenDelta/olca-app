@@ -7,6 +7,7 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.geometry.Point;
+import org.openlca.app.M;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.results.Statistics;
 import org.openlca.core.results.Statistics.Histogram;
@@ -39,12 +40,12 @@ public class StatisticFigure extends Figure {
 		GridLayout gl = new GridLayout();
 		gl.numColumns = 12;
 		setLayoutManager(gl);
-		numberLabel = initLabel("results");
-		meanLabel = initLabel("mean");
-		standardDevLabel = initLabel("standard deviation");
-		perc5Label = initLabel("5% percentile");
-		perc95Label = initLabel("95% percentile");
-		medianLabel = initLabel("median");
+		numberLabel = initLabel(M.Results);
+		meanLabel = initLabel(M.Mean);
+		standardDevLabel = initLabel(M.StandardDeviation);
+		perc5Label = initLabel(M.Percentile5);
+		perc95Label = initLabel(M.Percentile95);
+		medianLabel = initLabel(M.Median);
 	}
 
 	private Label initLabel(String text) {
