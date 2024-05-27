@@ -160,7 +160,7 @@ public class InfoSection {
 	}
 
 	private void createTags(FormToolkit tk) {
-		UI.label(container, tk, "Tags");
+		UI.label(container, tk, M.Tags);
 		var comp = UI.composite(container, tk);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
@@ -342,13 +342,13 @@ public class InfoSection {
 			var textComp = UI.composite(body, tk);
 			UI.gridLayout(textComp, 2, 10, 0);
 			UI.gridData(textComp, true, false);
-			var label = UI.label(textComp, tk, "New tag");
+			var label = UI.label(textComp, tk, M.NewTag);
 			label.setFont(UI.boldFont());
 			text = UI.text(textComp, SWT.SEARCH);
 			UI.gridData(text, true, false);
 
 			// list with existing tags
-			UI.label(body, tk, "Used tags");
+			UI.label(body, tk, M.UsedTag);
 			var list = UI.list(body);
 			UI.gridData(list, true, true);
 			if (candidates != null) {

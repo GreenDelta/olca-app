@@ -104,7 +104,7 @@ class ExcelExportWizard extends Wizard {
 		Page(ResultEditor editor) {
 			super("ExcelExportPage");
 			this.editor = editor;
-			setTitle("Export results to Excel");
+			setTitle(M.ExportResultsToExcel);
 			setDescription("Specify an export file and optional settings");
 			setImageDescriptor(Icon.EXPORT_WIZARD.descriptor());
 			setPageComplete(false);

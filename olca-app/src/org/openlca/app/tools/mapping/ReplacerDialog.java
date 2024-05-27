@@ -63,8 +63,7 @@ class ReplacerDialog extends FormDialog {
 		var tk = form.getToolkit();
 		var comp = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(comp, 1, 10, 10);
-		UI.label(comp, tk, "This will replace the flows in the database " +
-				"(the source system) with the flows in the target system.");
+		UI.label(comp, tk, M.ThisWillReplaceFlowsInTheDb);
 		tree = new ModelCheckBoxTree(
 				ModelType.PROCESS,
 				ModelType.IMPACT_METHOD);

@@ -11,7 +11,11 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ContributionCutoff;
 import org.openlca.app.results.ResultEditor;
-import org.openlca.app.util.*;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.DQUI;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.TreeClipboard.Provider;
@@ -64,7 +68,7 @@ public class ImpactTreePage extends FormPage {
 	private void createOptions(Composite parent, FormToolkit tk) {
 		var comp = UI.composite(parent, tk);
 		UI.gridLayout(comp, 5);
-		UI.label(comp, tk, "Sub-group by:");
+		UI.label(comp, tk, M.SubgroupBy);
 		var flowCheck = UI.radio(comp, tk, M.Flows);
 		flowCheck.setSelection(flowsFirst);
 		var processCheck = UI.radio(comp, tk, M.Processes);

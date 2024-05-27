@@ -43,10 +43,10 @@ class SearchBar {
 		UI.fillHorizontal(searchText);
 		searchText.setMessage("Search dataset ...");
 
-		UI.label(comp, tk, "Page: ");
+		UI.label(comp, tk, M.Page + ": ");
 		pageSpin = new Spinner(comp, SWT.BORDER);
 		pageSpin.setValues(1, 1, 100, 0, 1, 10);
-		UI.label(comp, tk, "Page size: ");
+		UI.label(comp, tk, M.PageSize + ": ");
 		sizeSpin = new Spinner(comp, SWT.BORDER);
 		sizeSpin.setValues(50, 50, 500, 0, 50, 50);
 

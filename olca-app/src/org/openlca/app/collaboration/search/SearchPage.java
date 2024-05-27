@@ -97,7 +97,7 @@ class SearchPage extends FormPage {
 	}
 
 	private void createRepositoryViewer() {
-		UI.label(headerComposite, tk, "Repository");
+		UI.label(headerComposite, tk, M.Repository);
 		var viewer = new AbstractComboViewer<RepositoryClient>(headerComposite) {
 
 			@Override
@@ -146,7 +146,7 @@ class SearchPage extends FormPage {
 	}
 
 	private void createQueryText() {
-		UI.label(headerComposite, tk, "Query");
+		UI.label(headerComposite, tk, M.Query);
 		var comp = UI.composite(headerComposite, tk);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
@@ -175,7 +175,7 @@ class SearchPage extends FormPage {
 			var button = tk.createButton(header, M.ImportDots, SWT.PUSH);
 			button.setData(dataset);
 			Controls.onSelect(button, this::onImport);
-			var category = !Strings.isNullOrEmpty(dataset.category()) ? dataset.category() : "Uncategorized";
+			var category = !Strings.isNullOrEmpty(dataset.category()) ? dataset.category() : M.Uncategorized;
 			var categoryLabel = tk.createLabel(comp, category);
 			if (Strings.isNullOrEmpty(dataset.category())) {
 				categoryLabel.setFont(UI.italicFont());

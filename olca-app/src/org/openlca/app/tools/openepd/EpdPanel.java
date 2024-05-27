@@ -67,7 +67,7 @@ public class EpdPanel extends SimpleFormEditor {
 			// direct download
 			var downloadComp = UI.formSection(body, tk, M.DirectDownload);
 			UI.gridLayout(downloadComp, 3);
-			UI.label(downloadComp, tk, "URL or ID");
+			UI.label(downloadComp, tk, M.UrlOrId);
 			var urlText = UI.labeledText(downloadComp, "", SWT.BORDER);
 			UI.fillHorizontal(urlText);
 			var downloadBtn = UI.button(downloadComp, tk, M.Download);
@@ -89,7 +89,7 @@ public class EpdPanel extends SimpleFormEditor {
 			UI.fillHorizontal(searchText);
 			var searchButton = UI.button(searchComp, tk, M.Search);
 			searchButton.setImage(Icon.SEARCH.get());
-			UI.label(searchComp, tk, "Max. count:");
+			UI.label(searchComp, tk, M.MaxCount);
 			var spinner = UI.spinner(searchComp, tk, SWT.BORDER);
 			spinner.setValues(100, 10, 1000, 0, 50, 100);
 

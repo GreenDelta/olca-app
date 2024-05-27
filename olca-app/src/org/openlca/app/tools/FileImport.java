@@ -209,7 +209,7 @@ public class FileImport {
 		protected void createFormContent(IManagedForm form) {
 			var tk = form.getToolkit();
 			var body = UI.dialogBody(form.getForm(), tk);
-			tk.createLabel(body, "Import file " + zolca.getName());
+			tk.createLabel(body, M.ImportFile + " - " + zolca.getName());
 
 			var opt1 = tk.createButton(body, M.AsStandaloneDatabase, SWT.RADIO);
 			opt1.setSelection(!intoActiveDB);

@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Actions;
@@ -114,7 +115,7 @@ class ComplianceSection {
 			UI.gridLayout(comp, 2, 10, 0);
 			UI.fillHorizontal(comp);
 
-			UI.label(comp, tk, "Compliance system");
+			UI.label(comp, tk, M.ComplianceSystem);
 			ModelLink.of(Source.class)
 					.setModel(_dec.system)
 					.onChange(source -> {

@@ -113,7 +113,7 @@ class MappingDialog extends FormDialog {
 		UI.gridData(comp, true, false);
 
 		// source flow
-		Fn.with(UI.label(comp, tk, "Source flow"), label -> {
+		Fn.with(UI.label(comp, tk, M.SourceFlow), label -> {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
@@ -123,7 +123,7 @@ class MappingDialog extends FormDialog {
 			comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
 
 		// target flow
-		Fn.with(UI.label(comp, tk, "Target flow"), label -> {
+		Fn.with(UI.label(comp, tk, M.TargetFlow), label -> {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});

@@ -45,7 +45,7 @@ class MappingSelector {
 	}
 
 	void render(Composite comp) {
-		UI.label(comp, "Flow mapping");
+		UI.label(comp, M.FlowMapping);
 
 		// initialize the combo box
 		var combo = new Combo(comp, SWT.READ_ONLY);

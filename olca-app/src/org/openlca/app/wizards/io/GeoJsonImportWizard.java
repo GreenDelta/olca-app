@@ -91,7 +91,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 
 		Page(File json) {
 			super("GeoJsonImport.Page");
-			setTitle("Import geographies from GeoJSON");
+			setTitle(M.ImportGeographiesFromGeoJson);
 			setDescription("Select a GeoJSON file and an import mode");
 			this.json = json;
 			setPageComplete(json != null);

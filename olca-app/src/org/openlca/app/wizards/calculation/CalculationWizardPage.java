@@ -101,7 +101,7 @@ class CalculationWizardPage extends WizardPage {
 			return Strings.compare(s1.name, s2.name);
 		});
 
-		UI.label(comp, "Parameter set");
+		UI.label(comp, M.ParameterSet);
 		var combo = UI.tableCombo(comp, null, SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
 

@@ -86,7 +86,7 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 
 		Page() {
 			super("ILCDImportWizard.Page");
-			setTitle("Import an HSC Sim Flow Sheet");
+			setTitle(M.ImportAnHscSimFlowSheet);
 			setDescription("Select a *.json file with the flow sheet");
 			setPageComplete(false);
 		}

@@ -58,7 +58,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 
 		// file text
 		UI.gridData(comp, true, false);
-		UI.label(comp, tk, "GeoJSON or setup file");
+		UI.label(comp, tk, M.GeoJsonOrSetupFile);
 		fileText = UI.emptyText(comp, tk);
 		fileText.setEditable(false);
 		UI.gridData(fileText, true, false);

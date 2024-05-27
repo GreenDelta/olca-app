@@ -89,7 +89,7 @@ public class SimaProProcessExportWizard
 
 		ConfigPage() {
 			super("ConfigPage");
-			setTitle("Export configuration");
+			setTitle(M.ExportConfiguration);
 			setPageComplete(true);
 		}
 

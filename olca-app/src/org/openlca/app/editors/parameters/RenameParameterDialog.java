@@ -108,14 +108,11 @@ public class RenameParameterDialog extends FormDialog {
 		});
 
 		if (usageTree.nodes.isEmpty()) {
-			UI.label(body, tk,
-					"The parameter is currently not used"
-							+ " so it is safe to rename it.");
+			UI.label(body, tk, M.ParameterNotUsedSafeToRename);
 			return;
 		}
 
-		UI.label(body, tk,
-				"The parameter will be also renamed where it is used:")
+		UI.label(body, tk, M.ParameterWillBeRenamedWhereItIsUsed)
 				.setFont(UI.boldFont());
 
 		// create the usage tree

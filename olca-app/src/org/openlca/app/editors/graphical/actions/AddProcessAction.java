@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.eclipse.gef.RequestConstants.REQ_CREATE;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -36,8 +38,6 @@ import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
-
-import static org.eclipse.gef.RequestConstants.REQ_CREATE;
 
 public class AddProcessAction extends WorkbenchPartAction {
 
@@ -90,7 +90,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 			UI.gridLayout(body, 1);
 
 			// create new text
-			var nameLabel = UI.label(body, tk, "Create with name");
+			var nameLabel = UI.label(body, tk, M.CreateWithName);
 			nameLabel.setFont(UI.boldFont());
 			text = UI.text(body, SWT.NONE);
 			text.addModifyListener(e -> {
@@ -99,7 +99,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 			});
 
 			// tree
-			var selectLabel = UI.label(body, tk, "Or select existing");
+			var selectLabel = UI.label(body, tk, M.OrSelectExisting);
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.PROCESS);
 			UI.gridData(tree.getControl(), true, true);

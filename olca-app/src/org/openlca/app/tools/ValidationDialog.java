@@ -3,13 +3,21 @@ package org.openlca.app.tools;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.util.*;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.validation.Validation;
 
@@ -71,7 +79,7 @@ public class ValidationDialog extends FormDialog {
 		UI.gridData(progressComp, true, false).horizontalSpan = 2;
 		UI.gridLayout(progressComp, 1);
 		infoLabel = UI.label(
-			progressComp, tk, "Validation is running ...");
+			progressComp, tk, M.ValidationIsRunningDots);
 		UI.gridData(infoLabel, true, false);
 		infoLabel.setVisible(false);
 		progressBar = new ProgressBar(progressComp, SWT.SMOOTH);

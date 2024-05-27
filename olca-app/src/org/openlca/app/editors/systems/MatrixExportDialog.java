@@ -132,7 +132,7 @@ public class MatrixExportDialog extends FormDialog {
 	}
 
 	private void formatSelection(Composite body, FormToolkit tk) {
-		UI.label(body, tk, "Format");
+		UI.label(body, tk, M.Format);
 		var inner = UI.composite(body, tk);
 		UI.gridData(inner, true, false);
 		var formats = Format.values();
@@ -166,7 +166,7 @@ public class MatrixExportDialog extends FormDialog {
 			return Strings.compare(s1.name, s2.name);
 		});
 
-		UI.label(comp, tk, "Parameter set");
+		UI.label(comp, tk, M.ParameterSet);
 		var combo = UI.tableCombo(comp, tk,
 				SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);

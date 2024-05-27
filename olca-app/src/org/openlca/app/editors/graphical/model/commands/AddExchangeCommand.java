@@ -139,7 +139,7 @@ public class AddExchangeCommand extends Command {
 			UI.gridLayout(body, 1);
 
 			// create new text
-			var nameLabel = UI.label(body, tk, "Create a new flow");
+			var nameLabel = UI.label(body, tk, M.CreateANewFlow);
 			nameLabel.setFont(UI.boldFont());
 			text = UI.text(body, SWT.NONE);
 			text.addModifyListener(e -> {
@@ -188,7 +188,7 @@ public class AddExchangeCommand extends Command {
 				prop -> this.quantity = prop);
 
 			// tree
-			var selectLabel = UI.label(body, tk, "Or select an existing");
+			var selectLabel = UI.label(body, tk, M.OrSelectExisting);
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.FLOW);
 			tree.addFilter(productFilter);

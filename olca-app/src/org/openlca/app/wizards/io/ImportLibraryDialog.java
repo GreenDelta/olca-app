@@ -87,7 +87,7 @@ public class ImportLibraryDialog extends FormDialog {
 		// dependencies
 		if (info.dependencies().isEmpty())
 			return;
-		UI.label(comp, tk, "Dependencies");
+		UI.label(comp, tk, M.Dependencies);
 		var depText = new StringBuilder("<ul>");
 		var libDir = Workspace.getLibraryDir();
 		for (var dep : info.dependencies()) {

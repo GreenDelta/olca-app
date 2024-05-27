@@ -1,5 +1,9 @@
 package org.openlca.app.editors.processes.doc;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -7,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
@@ -26,10 +31,6 @@ import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.commons.ReviewType;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 class ReviewSection {
 
@@ -137,7 +138,7 @@ class ReviewSection {
 			UI.fillHorizontal(comp);
 			typeCombo(comp);
 
-			UI.label(comp, tk, "Review report");
+			UI.label(comp, tk, M.ReviewReport);
 			ModelLink.of(Source.class)
 					.setModel(_rev.report)
 					.onChange(source -> {

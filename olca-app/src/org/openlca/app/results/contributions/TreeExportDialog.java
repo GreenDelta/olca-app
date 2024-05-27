@@ -94,7 +94,7 @@ class TreeExportDialog extends FormDialog {
 		maxRecurText = UI.labeledText(comp, tk, M.MaxRecursionDepth);
 		maxRecurText.setText("1");
 		maxRecurText.setEnabled(false);
-		UI.label(comp, tk, "Repetitions");
+		UI.label(comp, tk, M.Repetitions);
 
 		Controls.onSelect(maxDepthBtn, _e -> {
 			boolean b = !maxDepthText.isEnabled();

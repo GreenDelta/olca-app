@@ -2,6 +2,7 @@ package org.openlca.app.wizards;
 
 import java.util.UUID;
 
+import org.openlca.app.M;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
 
@@ -26,7 +27,7 @@ public class ResultWizard extends AbstractWizard<Result> {
 
 		private Page() {
 			super("ResultWizardPage");
-			setTitle("New result");
+			setTitle(M.NewResult);
 			setPageComplete(false);
 		}
 

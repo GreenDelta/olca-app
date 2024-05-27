@@ -105,7 +105,7 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 		Page(File initial) {
 			super("EcoSpold2ImportWizard.Page");
-			setTitle("Import EcoSpold 2 data sets");
+			setTitle(M.ImportEcoSpold2DataSets);
 			setDescription("Import data sets from EcoSpold 2 files");
 			this._files = initial != null
 					? List.of(initial)

@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 
@@ -47,8 +48,8 @@ class LinkingMatrix {
 		grid.marginWidth = 10;
 		body.setLayout(grid);
 
-		headerCell(body, tk, "Linking properties");
-		headerCell(body, tk, "Product system creation: Linking option");
+		headerCell(body, tk, M.LinkingProperties);
+		headerCell(body, tk, M.ProductSystemCreationLinkingOption);
 
 		filler(body);
 		filler(body);

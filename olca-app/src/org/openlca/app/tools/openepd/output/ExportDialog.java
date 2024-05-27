@@ -93,7 +93,7 @@ public class ExportDialog extends FormDialog {
 		UI.filler(comp, tk);
 
 		// declared unit
-		UI.label(comp, tk, "Declared unit");
+		UI.label(comp, tk, M.DeclaredUnit);
 		UI.label(comp, tk, doc.declaredUnit != null
 			? doc.declaredUnit.toString()
 			: "?");
@@ -248,7 +248,7 @@ public class ExportDialog extends FormDialog {
 	record MassField(ExportDialog dialog) {
 
 		void render(Composite comp, FormToolkit tk) {
-			UI.label(comp, tk, "Mass per declared unit");
+			UI.label(comp, tk, M.MassPerDeclaredUnit);
 			var mass = dialog.doc.kgPerDeclaredUnit;
 			if (mass != null) {
 				var num = mass.amount() + " kg";

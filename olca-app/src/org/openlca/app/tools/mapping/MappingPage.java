@@ -54,11 +54,11 @@ class MappingPage extends FormPage {
 		var name = UI.labeledText(comp, tk, M.Name);
 		Controls.set(name, this.tool.mapping.name);
 
-		UI.label(comp, tk, "Source system");
+		UI.label(comp, tk, M.SourceSystem);
 		ProviderRow sourceRow = new ProviderRow(comp, tk);
 		sourceRow.onSelect = p -> tool.sourceSystem = p;
 
-		UI.label(comp, tk, "Target system");
+		UI.label(comp, tk, M.TargetSystem);
 		ProviderRow targetRow = new ProviderRow(comp, tk);
 		targetRow.onSelect = p -> tool.targetSystem = p;
 

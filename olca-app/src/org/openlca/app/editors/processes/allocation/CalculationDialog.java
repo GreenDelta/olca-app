@@ -82,9 +82,7 @@ class CalculationDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
-		tk.createLabel(body,
-			"Select the flow properties that should be used for" +
-				" calculating the respective allocation factors.");
+		tk.createLabel(body, M.SelectFlowPropertiesForCalculation);
 		var comp = UI.composite(body, tk);
 		UI.gridLayout(comp, 2);
 		UI.fillHorizontal(comp);

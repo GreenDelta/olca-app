@@ -1,5 +1,8 @@
 package org.openlca.app.editors.lcia.geo;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -27,9 +30,6 @@ import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.geo.lcia.GeoFactorMerge;
 import org.openlca.util.Strings;
-
-import java.util.List;
-import java.util.Map;
 
 class GeoFactorDialog extends FormDialog {
 
@@ -74,7 +74,7 @@ class GeoFactorDialog extends FormDialog {
 		// merge strategy
 		var radioComp = UI.composite(body, tk);
 		UI.gridLayout(radioComp, 3);
-		UI.label(radioComp, tk, "Merge factors: ");
+		UI.label(radioComp, tk, M.MergeFactors);
 		var keep = UI.radio(radioComp, tk, "Keep existing");
 		keep.setSelection(keepExisting);
 		Controls.onSelect(keep, $ -> keepExisting = keep.getSelection());
