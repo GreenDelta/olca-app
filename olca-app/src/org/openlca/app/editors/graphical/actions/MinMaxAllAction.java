@@ -55,8 +55,8 @@ public class MinMaxAllAction extends StackAction {
 		cc.setDebugLabel((type == MINIMIZE ? "Minimize" : "Maximize")
 				+ " all node");
 		cc.setLabel(type == MINIMIZE
-			? M.MinimizeAll.toLowerCase()
-			: M.MaximizeAll.toLowerCase());
+			? M.MinimizeAll
+			: M.MaximizeAll);
 
 		for (MinMaxComponent component : editor.getModel().getMinMaxComponents()) {
 			var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);

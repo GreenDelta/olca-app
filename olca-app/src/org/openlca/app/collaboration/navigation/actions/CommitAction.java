@@ -104,7 +104,7 @@ public class CommitAction extends Action implements INavigationAction {
 			}
 		}
 		if (withSlash.size() > 5) {
-			message += "\r\n* " + (withSlash.size() - 5) + " " + M.More.toLowerCase();
+			message += "\r\n* " + M.More + " (" + (withSlash.size() - 5) + ")";
 		}
 		if (!Question.ask(M.InvalidCategoryNames, message))
 			return false;

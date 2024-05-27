@@ -115,7 +115,7 @@ class FlowUseSection {
 		if (rest < 1)
 			return;
 		var link = UI.imageHyperlink(composite, tk, SWT.TOP);
-		link.setText(rest + " " + M.More);
+		link.setText(M.More + " (" + rest + ")");
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link,

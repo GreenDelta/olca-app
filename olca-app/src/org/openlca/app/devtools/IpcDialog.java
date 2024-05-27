@@ -92,8 +92,7 @@ public class IpcDialog extends FormDialog {
 			}
 		});
 		UI.filler(comp, tk);
-		grpcCheck = UI.button(comp, tk,
-				M.StartAsGrpcService + " (" + M.Experimental.toLowerCase() + ")",
+		grpcCheck = UI.button(comp, tk, M.StartAsGrpcServiceExperimental,
 				SWT.CHECK);
 
 		// status text and grpc check
