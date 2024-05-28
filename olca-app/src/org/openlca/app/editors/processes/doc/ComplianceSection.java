@@ -43,7 +43,7 @@ class ComplianceSection {
 	void render(Composite body, FormToolkit tk, ScrolledForm form) {
 		this.tk = tk;
 		this.form = form;
-		var section = UI.section(body, tk, "Compliance declarations");
+		var section = UI.section(body, tk, M.ComplianceDeclarations);
 		parent = UI.sectionClient(section, tk, 1);
 		var decs = declarations();
 		for (int pos = 0; pos < decs.size(); pos++) {
@@ -100,7 +100,7 @@ class ComplianceSection {
 		}
 
 		private String header() {
-			var h = "Compliance system #" + (pos + 1);
+			var h = M.ComplianceSystem + " #" + (pos + 1);
 			if (_dec.system != null) {
 				var name = Labels.name(_dec.system);
 				if (Strings.notEmpty(name)) {

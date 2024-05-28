@@ -115,8 +115,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 				tree.setInput(obj);
 				super.okPressed();
 			} catch (Exception e) {
-				MsgBox.error("Failed to parse JSON",
-						"Please check the format of the given JSON string.");
+				MsgBox.error(M.FailedToParseJson, M.FailedToParseJsonErr);
 			}
 		}
 	}

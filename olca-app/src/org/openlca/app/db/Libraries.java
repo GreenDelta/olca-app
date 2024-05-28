@@ -1,14 +1,17 @@
 package org.openlca.app.db;
 
+import static org.openlca.app.licence.LibrarySession.retrieveSession;
+import static org.openlca.license.Licensor.JSON;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.io.ByteArrayInputStream;
-import java.io.FileReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,10 +21,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.app.licence.LibrarySession;
 import org.openlca.app.rcp.Workspace;
@@ -43,8 +44,9 @@ import org.openlca.license.certificate.CertificateInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openlca.app.licence.LibrarySession.retrieveSession;
-import static org.openlca.license.Licensor.JSON;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 
 
 public final class Libraries {
@@ -209,7 +211,7 @@ public final class Libraries {
 			return null;
 		var info = LibraryPackage.getInfo(file);
 		if (info == null) {
-			MsgBox.error(file.getName() + " is not a valid library package.");
+			MsgBox.error(M.NotAValidLibraryPackage + " - " + file.getName());
 			return null;
 		}
 		var libDir = Workspace.getLibraryDir();
@@ -221,7 +223,7 @@ public final class Libraries {
 		try (var stream = new URL(url).openStream()) {
 			return importFromStream(stream);
 		} catch (IOException e) {
-			MsgBox.error("Error trying to resolve library url", e);
+			MsgBox.error(M.ErrorTryingToResolveLibraryUrl, e);
 			return null;
 		}
 	}

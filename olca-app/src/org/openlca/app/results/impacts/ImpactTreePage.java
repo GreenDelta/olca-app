@@ -54,7 +54,7 @@ public class ImpactTreePage extends FormPage {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		var section = UI.section(body, tk,
-				M.ImpactAnalysis + ": " + Labels.name(setup.impactMethod()));
+				M.ImpactAnalysis + " - " + Labels.name(setup.impactMethod()));
 		UI.gridData(section, true, true);
 		var comp = UI.composite(section, tk);
 		section.setClient(comp);

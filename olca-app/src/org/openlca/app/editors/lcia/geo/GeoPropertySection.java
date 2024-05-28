@@ -45,7 +45,7 @@ class GeoPropertySection {
 	void drawOn(Composite body, FormToolkit tk) {
 
 		// create the section
-		Section section = UI.section(body, tk, "GeoJSON Parameters");
+		Section section = UI.section(body, tk, M.GeoJsonParameters);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 
@@ -62,10 +62,10 @@ class GeoPropertySection {
 		bindModifiers();
 
 		// bind the "open map" action
-		var openMap = Actions.create("Open map",
+		var openMap = Actions.create(M.OpenMap,
 				Icon.MAP.descriptor(), this::showMap);
 		var calcIntersections = Actions.create(
-				"Test intersections", this::showIntersections);
+				M.TestIntersections, this::showIntersections);
 		Actions.bind(table, openMap, calcIntersections);
 		Actions.bind(section, openMap);
 
@@ -149,8 +149,7 @@ class GeoPropertySection {
 					param.defaultValue = Double.parseDouble(s);
 					table.refresh();
 				} catch (Exception e) {
-					MsgBox.error("Not a number",
-							"The string " + s + " is not a valid number");
+					MsgBox.error(M.NotANumber, M.NotValidNumber + " - " + s);
 				}
 			}
 		});

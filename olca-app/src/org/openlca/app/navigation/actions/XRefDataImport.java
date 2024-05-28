@@ -40,7 +40,7 @@ class XRefDataImport extends Action implements INavigationAction {
 			return;
 		Cache.evictAll();
 		RefDataImport refImport = new RefDataImport(dir, Database.get());
-		App.run("Import reference data", refImport, () -> {
+		App.run(M.ImportReferenceData, refImport, () -> {
 			Cache.evictAll();
 			Navigator.refresh();
 		});

@@ -43,7 +43,7 @@ public class LoginPanel {
 	}
 
 	private void render(Composite body, FormToolkit tk) {
-		var section = UI.section(body, tk, "EC3 Login");
+		var section = UI.section(body, tk, M.Ec3Login);
 		var comp = UI.sectionClient(section, tk, 2);
 
 		// EC3 URL
@@ -114,9 +114,7 @@ public class LoginPanel {
 
 			var fromLogin = Ec3Client.tryLogin(credentials);
 			if (fromLogin.isEmpty()) {
-				MsgBox.error("Login failed",
-						"Failed to login into the EC3 API with" +
-								" the given user name and password.");
+				MsgBox.error(M.LoginFailed, M.LoginFailedEc3Err);
 				credentials.token(null);
 				client = null;
 				return Optional.empty();
@@ -157,8 +155,8 @@ public class LoginPanel {
 				? M.Logout
 				: M.Login;
 		var tooltip = Strings.notEmpty(credentials.token())
-				? "Delete the current access token"
-				: "Get a new access token";
+				? M.DeleteCurrentAccessToken
+				: M.GetANewAccessToken;
 		button.setText(label);
 		button.setToolTipText(tooltip);
 		button.getParent().layout();

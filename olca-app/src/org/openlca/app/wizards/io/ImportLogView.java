@@ -198,7 +198,7 @@ public class ImportLogView extends SimpleFormEditor {
 			UI.fillHorizontal(comp);
 
 			var icon = UI.imageHyperlink(comp, tk, SWT.BORDER);
-			icon.setToolTipText("Click to search or press enter");
+			icon.setToolTipText(M.ClickToSearchOrPressEnter);
 			icon.setImage(Icon.SEARCH.get());
 			Controls.onClick(icon, $ -> update());
 

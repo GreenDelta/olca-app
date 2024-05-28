@@ -115,7 +115,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			text(comp, M.ReferenceUnit, "referenceUnit");
 
 			// impact direction
-			var combo = UI.labeledCombo(comp, tk, "Impact direction");
+			var combo = UI.labeledCombo(comp, tk, M.ImpactDirection);
 			combo.setItems("Unspecified", M.Input, M.Output);
 			UI.gridData(combo, false, false).widthHint = 150;
 			var dir = getModel().direction;
@@ -140,8 +140,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		}
 
 		private void createUsageTable(FormToolkit tk, Composite body) {
-			var section = UI.section(body, tk,
-				"Used in impact assessment methods");
+			var section = UI.section(body, tk, M.UsedInImpactAssessmentMethods);
 			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
 			var table = Tables.createViewer(comp, M.Name, M.Category);

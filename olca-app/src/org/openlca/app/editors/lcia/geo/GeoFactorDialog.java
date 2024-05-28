@@ -90,7 +90,7 @@ class GeoFactorDialog extends FormDialog {
 		table.setInput(factors);
 
 		var mapAction = Actions.create(
-				"Show factors for flow", Icon.MAP.descriptor(), () -> openMap(table));
+				M.ShowFactorsForFlow, Icon.MAP.descriptor(), () -> openMap(table));
 		Actions.bind(table, mapAction);
 	}
 

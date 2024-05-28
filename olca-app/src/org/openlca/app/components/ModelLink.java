@@ -77,7 +77,7 @@ public class ModelLink<T extends RootEntity> {
 
 		// selection button
 		var btn = UI.imageHyperlink(comp, tk, SWT.BORDER);
-		btn.setToolTipText("Select a data set");
+		btn.setToolTipText(M.SelectADataset);
 		btn.setImage(Images.get(modelType));
 		btn.setEnabled(editable);
 		Controls.onClick(btn, $ -> doSelect.run());

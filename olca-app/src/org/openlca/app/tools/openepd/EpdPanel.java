@@ -79,7 +79,7 @@ public class EpdPanel extends SimpleFormEditor {
 			});
 
 			// search panel
-			var section = UI.section(body, tk, "Find EPDs");
+			var section = UI.section(body, tk, M.FindEpds);
 			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
 			var searchComp = UI.composite(comp, tk);
@@ -128,7 +128,7 @@ public class EpdPanel extends SimpleFormEditor {
 			table.setLabelProvider(new TableLabel());
 
 			var onImport = Actions.create(
-				"Import EPD results", Icon.IMPORT.descriptor(), () -> {
+				M.ImportEpdResults, Icon.IMPORT.descriptor(), () -> {
 					var epd = FullEpd.fetch(table, loginPanel);
 					if (epd.isEmpty())
 						return;
@@ -136,7 +136,7 @@ public class EpdPanel extends SimpleFormEditor {
 				});
 
 			var onSaveFile = Actions.create(
-				"Save as file", Icon.FILE.descriptor(), () -> {
+				M.SaveAsFile, Icon.FILE.descriptor(), () -> {
 					var epd = FullEpd.fetch(table, loginPanel);
 					if (epd.isEmpty())
 						return;
@@ -145,7 +145,7 @@ public class EpdPanel extends SimpleFormEditor {
 					if (file == null)
 						return;
 					Json.write(epd.json, file);
-					Popup.info("Saved file", "Saved file " + file.getName());
+					Popup.info(M.SavedFile, M.SavedFile + " - " + file.getName());
 				});
 
 			Actions.bind(table, onImport, onSaveFile);
@@ -154,7 +154,7 @@ public class EpdPanel extends SimpleFormEditor {
 
 		private void directDownload(Ec3Client client, String url) {
 			if (Strings.nullOrEmpty(url)) {
-				MsgBox.error("No URL or ID provided");
+				MsgBox.error(M.NoUrlOrIdProvided);
 				return;
 			}
 
@@ -170,7 +170,7 @@ public class EpdPanel extends SimpleFormEditor {
 				}
 			}
 			if (last == null) {
-				MsgBox.error("No valid URL or ID of an EPD provided.");
+				MsgBox.error(M.NoValidUrlOrEpdIdProvided);
 				return;
 			}
 
@@ -178,8 +178,7 @@ public class EpdPanel extends SimpleFormEditor {
 			var json = App.exec(
 				"Download EPD " + id, () -> Api.getRawEpd(client, id));
 			if (json.isEmpty()) {
-				MsgBox.error(
-					"Could not download an EPD for the given ID '" + id + "'.");
+				MsgBox.error(M.CouldNotDownloadEpdId + " (" + id + ")");
 				return;
 			}
 			var epd = EpdDoc.fromJson(json.get()).orElse(null);
@@ -212,7 +211,7 @@ public class EpdPanel extends SimpleFormEditor {
 				var json = App.exec(
 					"Download EPD", () -> Api.getRawEpd(client, info.epdId));
 				if (json.isEmpty()) {
-					MsgBox.error("Failed to download EPD " + info.epdId);
+					MsgBox.error(M.FailedToDownloadEpd + " (" + info.epdId + ")");
 					return empty();
 				}
 				return new FullEpd(info, json.get());

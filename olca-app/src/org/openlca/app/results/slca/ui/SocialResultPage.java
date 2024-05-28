@@ -46,7 +46,7 @@ public class SocialResultPage extends FormPage {
 				Icon.ANALYSIS_RESULT.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
-		var section = UI.section(body, tk, "Indicator results");
+		var section = UI.section(body, tk, M.IndicatorResults);
 		var comp = UI.sectionClient(section, tk, 1);
 		UI.gridData(section, true, true);
 

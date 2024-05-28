@@ -54,7 +54,7 @@ class JsonImportDialog extends Dialog {
 			}
 			return d.selectedMap;
 		} catch (Exception e) {
-			MsgBox.error("Failed to open file as JSON-LD package");
+			MsgBox.error(M.FailedToOpenFileAsJsonLdPackage);
 			Logger log = LoggerFactory.getLogger(JsonImportDialog.class);
 			log.error("failed to open JSON-LD package " + file, e);
 			return null;

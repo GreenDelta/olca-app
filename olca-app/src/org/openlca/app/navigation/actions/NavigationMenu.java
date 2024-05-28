@@ -72,7 +72,7 @@ public class NavigationMenu extends CommonActionProvider {
 		};
 
 		var refresh = Actions.create(
-				"Refresh",
+				M.Refresh,
 				Icon.REFRESH.descriptor(),
 				Navigator::refresh);
 		add.accept(refresh);
@@ -191,7 +191,7 @@ public class NavigationMenu extends CommonActionProvider {
 		// Git clone
 		menu.add(CloneAction.forImportMenu());
 		// open the generic import dialog
-		menu.add(Actions.create(M.Other + "...", icon, () -> {
+		menu.add(Actions.create(M.OtherDots, icon, () -> {
 			try {
 				PlatformUI.getWorkbench()
 						.getService(IHandlerService.class)

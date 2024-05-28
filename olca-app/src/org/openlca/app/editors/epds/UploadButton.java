@@ -25,8 +25,8 @@ record UploadButton(EpdEditor editor) {
 		Controls.onSelect(btn, $ -> {
 			var check = EpdConverter.validate(epd());
 			if (check.hasError()) {
-				MsgBox.error("Validation error",
-						"EPD cannot be converted to an openEPD document: " + check.error());
+				MsgBox.error(M.ValidationError,
+						M.EpdCannotBeConvertedToOpenEpd + check.error());
 				return;
 			}
 			var state = ExportDialog.of(epd());

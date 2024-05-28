@@ -60,7 +60,7 @@ public class DeleteScriptAction extends Action implements INavigationAction {
 						FileUtils.forceDelete(file);
 						deleted.set(true);
 					} catch (Exception e) {
-						MsgBox.error("Failed to delete file: " + file.getName());
+						MsgBox.error(M.FailedToDeleteFile + " - " + file.getName());
 					}
 				});
 

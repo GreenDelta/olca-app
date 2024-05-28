@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.editors.projects.ProjectResultData;
@@ -62,7 +63,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	@Override
 	public void renderOn(Composite body, FormToolkit tk) {
-		var section = UI.section(body, tk, "Result contributions");
+		var section = UI.section(body, tk, M.ResultContributions);
 		var comp = UI.sectionClient(section, tk, 1);
 		UI.gridLayout(comp, 1);
 

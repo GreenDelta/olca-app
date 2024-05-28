@@ -38,7 +38,7 @@ class MapSection {
 	}
 
 	void render(Composite body, FormToolkit tk) {
-		var section = UI.section(body, tk, "Geographic data");
+		var section = UI.section(body, tk, M.GeographicData);
 		UI.gridData(section, true, true).minimumHeight = 250;
 		var comp = UI.sectionClient(section, tk);
 		comp.setLayout(new FillLayout());
@@ -143,8 +143,7 @@ class MapSection {
 					location().geodata = GeoJSON.pack(feature);
 				}
 			} catch (Exception e) {
-				MsgBox.error("Failed to parse GeoJSON",
-						"Please check the format of the given GeoJSON string.");
+				MsgBox.error(M.FailedToParseGeoJson, M.FailedToParseGeoJsonErr);
 			} finally {
 				editor.setDirty(true);
 				updateMap();

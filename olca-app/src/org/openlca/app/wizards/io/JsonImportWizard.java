@@ -137,7 +137,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 						zip = file;
 						setPageComplete(true);
 					})
-					.withTitle("Select a zip file with openLCA data...")
+					.withTitle(M.SelectAZipFileWithOpenLcaDataDots)
 					.withExtensions("*.zip")
 					.withSelection(zip)
 					.render(fileComp);

@@ -1,5 +1,8 @@
 package org.openlca.app.results.analysis.sankey.actions;
 
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+import static org.openlca.app.results.analysis.sankey.requests.SankeyRequestConstants.REQ_EDIT_CONFIG;
+
 import java.util.HashMap;
 
 import org.eclipse.gef.Request;
@@ -12,9 +15,6 @@ import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.util.Popup;
-
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
-import static org.openlca.app.results.analysis.sankey.requests.SankeyRequestConstants.REQ_EDIT_CONFIG;
 
 public class EditSankeyConfigAction extends WorkbenchPartAction {
 
@@ -40,7 +40,7 @@ public class EditSankeyConfigAction extends WorkbenchPartAction {
 
 		if (!config.equals(editor.config)) {
 			if (getCommand().canExecute()) getCommand().execute();
-			else Popup.info("Failed to apply the new settings");
+			else Popup.info(M.FailedToApplyTheNewSettings);
 		}
 	}
 

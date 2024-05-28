@@ -111,7 +111,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 
 	private void onSaveFile() {
 		if (setup == null) {
-			MsgBox.error("No setup loaded", "Nothing to save.");
+			MsgBox.error(M.NoSetupLoaded, M.NothingToSave);
 			return;
 		}
 		File file;
@@ -128,7 +128,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		try {
 			setup.writeTo(file);
 			fileText.setText(file.getAbsolutePath());
-			Popup.info("Saved setup to file " + file.getName());
+			Popup.info(M.SaveSetupToFile + " - " + file.getName());
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to save setup for calculation " +
 											 "of regionalized characterization factors " +

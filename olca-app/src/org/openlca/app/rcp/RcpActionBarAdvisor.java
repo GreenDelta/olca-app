@@ -162,15 +162,15 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		// flow mapping
 		var mappings = new MenuManager(M.FlowMappingExperimental);
 		menu.add(mappings);
-		mappings.add(Actions.create("New", MappingTool::createNew));
-		mappings.add(Actions.create("Open file", MappingTool::openFile));
+		mappings.add(Actions.create(M.New, MappingTool::createNew));
+		mappings.add(Actions.create(M.OpenFile, MappingTool::openFile));
 
 		// library export
 		menu.add(Actions.create(
-			"Library export (experimental)", LibraryExportDialog::show));
+				M.LibraryExportExperimental, LibraryExportDialog::show));
 
 		// openEPD
-		menu.add(Actions.create("Get EPDs from EC3",
+		menu.add(Actions.create(M.GetEpdsFromEc3,
 			Icon.BUILDING.descriptor(), EpdPanel::open));
 		menu.add(Actions.create("soda4LCA",
 				Icon.SODA.descriptor(), SodaClientTool::open));
@@ -185,9 +185,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			menu.add(new Separator());
 			MenuManager eiMenu = new MenuManager("ecoinvent 3.x");
 			menu.add(eiMenu);
-			eiMenu.add(Actions.create("Import processes",
+			eiMenu.add(Actions.create(M.ImportProcesses,
 				() -> runSpold2Import(ModelType.PROCESS)));
-			eiMenu.add(Actions.create("Import LCIA methods",
+			eiMenu.add(Actions.create(M.ImportLciaMethods,
 				() -> runSpold2Import(ModelType.IMPACT_METHOD)));
 		}
 		menuBar.add(menu);
@@ -196,8 +196,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private void runSpold2Import(ModelType type) {
 		var db = Database.get();
 		if (db == null) {
-			MsgBox.error("No database opened",
-				"You need to open a database for the import");
+			MsgBox.error(M.NoDatabaseOpened, M.NoDatabaseOpenedErr);
 			return;
 		}
 		File file = FileChooser.open("*.zip");
@@ -236,9 +235,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		var devMenu = new MenuManager(M.DeveloperTools);
 		menu.add(devMenu);
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
-		devMenu.add(Actions.create("Console", Icon.CONSOLE.descriptor(), Console::show));
-		devMenu.add(Actions.create("Python", Icon.PYTHON.descriptor(), PythonEditor::open));
-		devMenu.add(Actions.create("IPC Server", Icon.IPC.descriptor(), IpcDialog::show));
+		devMenu.add(Actions.create(M.Console, Icon.CONSOLE.descriptor(), Console::show));
+		devMenu.add(Actions.create(M.Python, Icon.PYTHON.descriptor(), PythonEditor::open));
+		devMenu.add(Actions.create(M.IpcServer, Icon.IPC.descriptor(), IpcDialog::show));
 	}
 
 	@Override

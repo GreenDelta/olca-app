@@ -26,8 +26,8 @@ public class MappingMenu extends EditorActionBarContributor {
 		MenuManager menu = new MenuManager(M.FlowMapping);
 		root.add(menu);
 		menu.add(Actions.create(M.SaveAs, this::onSave));
-		menu.add(Actions.create("Generate mappings", this::onGenerate));
-		menu.add(Actions.create("Apply on database", this::onApply));
+		menu.add(Actions.create(M.GenerateMappings, this::onGenerate));
+		menu.add(Actions.create(M.ApplyOnDatabase, this::onApply));
 	}
 
 	private void onSave() {
@@ -64,11 +64,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		FlowProvider source = tool.sourceSystem;
 		FlowProvider target = tool.targetSystem;
 		if (source == null || target == null) {
-			MsgBox.error("No source or target system selected",
-					"In order to generate a mapping you need to "
-							+ "assign a data provider (database, "
-							+ "JSON-LD, or ILCD package) for the "
-							+ "source and target system.");
+			MsgBox.error(M.NoSystemSelected, M.NoSystemSelectedErr);
 			return;
 		}
 
@@ -89,22 +85,17 @@ public class MappingMenu extends EditorActionBarContributor {
 		// check if we can apply the mapping
 		FlowProvider source = tool.sourceSystem;
 		if (!(source instanceof DBProvider)) {
-			MsgBox.error("Source system should be a database",
-					"This only works when the source system "
-							+ "is a database where the flows should "
-							+ "be replaced with flows from the target "
-							+ "system (which could be the same database).");
+			MsgBox.error(M.SourceSystemShouldBeADatabase,
+					M.SourceSystemShouldBeADatabaseErr);
 			return;
 		}
 		FlowProvider target = tool.targetSystem;
 		if (target == null) {
-			MsgBox.error("No target system selected",
-					"No target system was selected.");
+			MsgBox.error(M.NoTargetSystemSelected, M.NoTargetSystemSelectedErr);
 			return;
 		}
 		if (!tool.checked.get()) {
-			MsgBox.error("Unchecked mappings",
-					"You should first run a check before applying the mapping.");
+			MsgBox.error(M.UncheckedMappings, M.UncheckedMappingsErr);
 			return;
 		}
 

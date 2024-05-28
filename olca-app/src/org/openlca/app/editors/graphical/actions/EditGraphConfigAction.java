@@ -54,7 +54,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 
 		if (!config.equals(editor.config)) {
 			if (getCommand().canExecute()) getCommand().execute();
-			else Popup.info("Failed to apply the new settings");
+			else Popup.info(M.FailedToApplyTheNewSettings);
 		}
 	}
 
@@ -113,7 +113,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		}
 
 		private void connectionRoutersCombo(FormToolkit tk, Composite comp) {
-			var combo = UI.labeledCombo(comp, tk, "Connections");
+			var combo = UI.labeledCombo(comp, tk, M.Connections);
 			UI.gridData(combo, true, false);
 			var connectionRouters = new String[]{
 				ROUTER_NULL,
@@ -132,7 +132,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 		}
 
 		private void themeCombo(FormToolkit tk, Composite comp) {
-			var combo = UI.labeledCombo(comp, tk, "Theme");
+			var combo = UI.labeledCombo(comp, tk, M.Theme);
 			UI.gridData(combo, true, false);
 			var themes = Themes.loadFromWorkspace(Themes.MODEL);
 			var current = config.getTheme();

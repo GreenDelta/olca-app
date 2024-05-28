@@ -125,8 +125,7 @@ class EpdModuleDialog extends FormDialog {
 	protected void okPressed() {
 		// check that the module name is not empty
 		if (Strings.nullOrEmpty(module.name)) {
-			MsgBox.error("Empty name",
-				"An empty name is not allowed for an EPD module.");
+			MsgBox.error(M.EmptyName, M.EmptyNameEpdErr);
 			return;
 		}
 
@@ -137,8 +136,8 @@ class EpdModuleDialog extends FormDialog {
 				continue;
 			if (Strings.nullOrEqual(other.name, module.name)
 				&& Objects.equals(other.result, module.result)) {
-				MsgBox.error("Duplicate module",
-					"Module " + module.name + " already exists.");
+				MsgBox.error(M.DuplicateModule,
+					M.ThisModuleAlreadyExists + " - " + module.name);
 				return;
 			}
 		}

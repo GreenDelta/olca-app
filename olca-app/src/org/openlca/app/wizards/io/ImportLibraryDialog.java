@@ -26,14 +26,14 @@ public class ImportLibraryDialog extends FormDialog {
 	public static Optional<Library> open(File file) {
 		var info = LibraryPackage.getInfo(file);
 		if (info == null) {
-			MsgBox.error("Not a library package",
-				"The file " + file.getName() + " is not a library package.");
+			MsgBox.error(M.NotALibraryPackage,
+					M.FileIsNotALibraryPackage + " - " + file.getName());
 			return Optional.empty();
 		}
 		var libDir = Workspace.getLibraryDir();
 		var existing = libDir.getLibrary(info.name());
 		if (existing.isPresent()) {
-			MsgBox.error("Library " + info.name() + " already exists");
+			MsgBox.error(M.LibraryAlreadyPresent + " - " + info.name());
 			return Optional.empty();
 		}
 		var dialog = new ImportLibraryDialog(info);
@@ -45,7 +45,7 @@ public class ImportLibraryDialog extends FormDialog {
 			() -> LibraryPackage.unzip(file, Workspace.getLibraryDir()));
 		var imported = libDir.getLibrary(info.name());
 		if (imported.isEmpty()){
-			MsgBox.error("Failed to import library");
+			MsgBox.error(M.FailedToImportLibrary);
 		}
 		Navigator.refresh();
 		return imported;
@@ -80,7 +80,7 @@ public class ImportLibraryDialog extends FormDialog {
 		var name = UI.labeledText(comp, tk, M.Library);
 		name.setEditable(false);
 		Controls.set(name, info.name());
-		var desc = UI.multiText(comp, tk, "Description");
+		var desc = UI.multiText(comp, tk, M.Description);
 		desc.setEditable(false);
 		Controls.set(desc, info.description());
 

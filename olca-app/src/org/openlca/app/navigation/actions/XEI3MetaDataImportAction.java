@@ -63,9 +63,9 @@ class XEI3MetaDataImportAction extends Action implements
 	}
 
 	private void updateIsicTree() {
-		App.run("Update flow categories",
+		App.run(M.UpdateFlowCategories,
 				new IsicCategoryTreeSync(Database.get(), ModelType.FLOW));
-		App.run("Update process categories",
+		App.run(M.UpdateProcessCategories,
 				new IsicCategoryTreeSync(Database.get(), ModelType.PROCESS),
 				Navigator::refresh);
 	}

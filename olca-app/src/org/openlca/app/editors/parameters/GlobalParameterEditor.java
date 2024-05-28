@@ -46,7 +46,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 		var newName = getModel().name;
 		if (!Parameters.isValidName(newName)) {
 			MsgBox.error(M.InvalidParameterName,
-					newName + " " + M.IsNotValidParameterName);
+					M.NotValidParameterName + " - " + newName);
 			return;
 		}
 		if (otherGlobalExists(newName)) {

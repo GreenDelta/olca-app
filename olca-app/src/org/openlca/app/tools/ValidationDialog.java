@@ -102,7 +102,7 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createValidationMessageCombo(Composite comp, FormToolkit tk) {
-		combo = UI.labeledCombo(comp, tk, "Validation messages");
+		combo = UI.labeledCombo(comp, tk, M.ValidationMessages);
 		UI.gridData(combo, true, false);
 		combo.setItems(
 				"All messages",

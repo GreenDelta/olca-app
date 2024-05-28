@@ -219,9 +219,8 @@ public class ExportDialog extends FormDialog {
 			if (!d.categories.isEmpty()) {
 				d.categories.save(categoryCacheFile());
 			} else {
-				MsgBox.error("No categories could be loaded",
-					"No categories could be loaded from "
-						+ d.loginPanel.url());
+				MsgBox.error(M.NoCategoryCouldBeLoaded,
+						M.NoCategoryCouldBeLoadedErr + " - " + d.loginPanel.url());
 			}
 			return d.categories;
 		}
@@ -283,7 +282,7 @@ public class ExportDialog extends FormDialog {
 			} else {
 				epd.kgPerDeclaredUnit = null;
 				text.setBackground(Colors.errorColor());
-				text.setToolTipText("This field is requited.");
+				text.setToolTipText(M.ThisFieldIsRequired);
 			}
 		}
 	}

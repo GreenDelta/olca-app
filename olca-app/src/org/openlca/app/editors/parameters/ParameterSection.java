@@ -305,8 +305,8 @@ public class ParameterSection {
 
 			// check the parameter name
 			if (!Parameters.isValidName(name)) {
-				MsgBox.error(M.InvalidParameterName, name + " "
-						+ M.IsNotValidParameterName);
+				MsgBox.error(M.InvalidParameterName,
+						M.NotValidParameterName + " - " + name);
 				return;
 			}
 			if (exists(name)) {
@@ -343,7 +343,7 @@ public class ParameterSection {
 						param, entity(), Database.get(), name);
 				App.open(entity);
 			} catch (Exception e) {
-				MsgBox.error("Renaming failed: " + e.getMessage());
+				MsgBox.error(M.RenamingFailed + " - " + e.getMessage());
 			}
 		}
 	}

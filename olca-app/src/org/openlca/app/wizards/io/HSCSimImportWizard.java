@@ -103,7 +103,7 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 						json = file;
 						setPageComplete(true);
 					})
-					.withTitle("Select a *.json file with the flow sheet")
+					.withTitle(M.SelectAJsonFileWithTheFlowSheet)
 					.withExtensions("*.json")
 					.withSelection(json)
 					.render(comp);

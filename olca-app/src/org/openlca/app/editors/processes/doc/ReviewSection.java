@@ -56,7 +56,7 @@ class ReviewSection {
 	void render(Composite body, FormToolkit tk, ScrolledForm form) {
 		this.tk = tk;
 		this.form = form;
-		var section = UI.section(body, tk, "Reviews");
+		var section = UI.section(body, tk, M.Reviews);
 		parent = UI.sectionClient(section, tk, 1);
 		var revs = reviews();
 		for (int i = 0; i < revs.size(); i++) {
@@ -116,7 +116,7 @@ class ReviewSection {
 		}
 
 		private String header() {
-			var buff = new StringBuilder("Review #" + (pos + 1));
+			var buff = new StringBuilder(M.Review + " #" + (pos + 1));
 			if (Strings.notEmpty(_rev.type)) {
 				buff.append(" - ").append(_rev.type);
 			}
@@ -160,7 +160,7 @@ class ReviewSection {
 		}
 
 		private void typeCombo(Composite comp) {
-			var combo = UI.labeledCombo(comp, tk, "Review type");
+			var combo = UI.labeledCombo(comp, tk, M.ReviewType);
 			var values = ReviewType.values();
 			var items = new ArrayList<String>(1 + values.length);
 			items.add("");
@@ -194,7 +194,7 @@ class ReviewSection {
 		}
 
 		private void reviewerTable(Composite root) {
-			var section = UI.section(root, tk, "Reviewers");
+			var section = UI.section(root, tk, M.Reviewers);
 			var comp = UI.sectionClient(section, tk, 1);
 			var table = Tables.createViewer(comp, "Reviewer");
 			Tables.bindColumnWidths(table, 1.0);

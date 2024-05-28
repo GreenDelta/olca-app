@@ -70,8 +70,8 @@ public class SimaProProcessExportWizard
 				monitor.done();
 			});
 			Popup.info(
-					"Export done",
-					"Wrote " + models.size() + " data sets to " + file.getName());
+					M.ExportDone,
+					M.DataSetWritten + " - " + file.getName());
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("SimaPro CSV export failed", e);

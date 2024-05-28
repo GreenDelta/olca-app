@@ -68,7 +68,7 @@ public class XNexusIndexExportAction extends Action implements INavigationAction
 		File file = FileChooser.forSavingFile(M.Export, defaultName);
 		if (file == null)
 			return;
-		App.run("Export Nexus JSON index", new Runner(file, db));
+		App.run(M.ExportNexusJsonIndex, new Runner(file, db));
 	}
 
 	private class Runner implements Runnable {

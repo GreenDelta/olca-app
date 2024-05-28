@@ -238,7 +238,7 @@ class CalculationWizardPage extends WizardPage {
 			try {
 				setup.simulationRuns = Integer.parseInt(count);
 			} catch (Exception e) {
-				MsgBox.error(M.InvalidNumber, count + " " + M.IsNotValidNumber);
+				MsgBox.error(M.InvalidNumber, M.NotValidNumber + " - " + count);
 			}
 		});
 	}

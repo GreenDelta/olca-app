@@ -83,7 +83,7 @@ public class SqlEditor extends ScriptingEditor {
 		}
 
 		private void createStatementSection(Composite body, FormToolkit toolkit) {
-			Section section = UI.section(body, toolkit, "SQL Statement");
+			Section section = UI.section(body, toolkit, M.SqlStatement);
 			Composite composite = UI.sectionClient(section, toolkit, 1);
 			queryText = UI.styledText(composite, toolkit);
 			UI.gridData(queryText, true, false).heightHint = 150;
@@ -104,7 +104,7 @@ public class SqlEditor extends ScriptingEditor {
 		}
 
 		private void createResultSection(Composite body, FormToolkit toolkit) {
-			Section section = UI.section(body, toolkit, "Results");
+			Section section = UI.section(body, toolkit, M.Results);
 			UI.gridData(section, true, true);
 			Composite composite = UI.sectionClient(section, toolkit, 1);
 			composite.setLayout(new FillLayout());

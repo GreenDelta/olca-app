@@ -117,9 +117,7 @@ class TreeExportDialog extends FormDialog {
 	@Override
 	protected void okPressed() {
 		if (file == null) {
-			MsgBox.error(
-					"No file selected",
-					"No file was selected");
+			MsgBox.error(M.NoFileSelected, M.NoFileSelectedErr);
 			return;
 		}
 
@@ -133,15 +131,13 @@ class TreeExportDialog extends FormDialog {
 			try {
 				export.maxDepth = Integer.parseInt(maxDepth);
 				if (export.maxDepth <= 0) {
-					MsgBox.error("Invalid value",
-							maxDepth + " is an invalid value for the"
-							+ " maximum number of levels.");
+					MsgBox.error(M.InvalidValue,
+							M.InvalidValueForMaxDepth + " - " + maxDepth);
 					return;
 				}
 			} catch (Exception e) {
-				MsgBox.error("Invalid value",
-						maxDepth + " is an invalid value for the"
-						+ " maximum number of levels.");
+				MsgBox.error(M.InvalidValue,
+						M.InvalidValueForMaxDepth + " - " + maxDepth);
 				return;
 			}
 
@@ -153,15 +149,13 @@ class TreeExportDialog extends FormDialog {
 			try {
 				export.maxRecursionDepth = Integer.parseInt(maxRecur);
 				if (export.maxRecursionDepth < 0) {
-					MsgBox.error("Invalid value", maxRecur
-							+ " is an invalid value for the"
-							+ " maximum recursion depth.");
+					MsgBox.error(M.InvalidValue,
+							M.InvalidValueForRecursionDepth + " - " + maxRecur);
 					return;
 				}
 			} catch (Exception e) {
-				MsgBox.error("Invalid value",
-						maxRecur + " is an invalid value for the"
-								+ " maximum recursion depth.");
+				MsgBox.error(M.InvalidValue,
+						M.InvalidValueForRecursionDepth + " - " + maxRecur);
 				return;
 			}
 
@@ -175,15 +169,13 @@ class TreeExportDialog extends FormDialog {
 			try {
 				export.minContribution = Double.parseDouble(minContr) / 100;
 				if (export.minContribution <= 0) {
-					MsgBox.error("Invalid value", minContr
-							+ " is an invalid value for the"
-							+ " minimum contribution.");
+					MsgBox.error(M.InvalidValue,
+							M.InvalidValueForMinimumContribution + " - " + minContr);
 					return;
 				}
 			} catch (Exception e) {
-				MsgBox.error("Invalid value", minContr
-						+ " is an invalid value for the"
-						+ " minimum contribution.");
+				MsgBox.error(M.InvalidValue,
+						M.InvalidValueForMinimumContribution + " - " + minContr);
 				return;
 			}
 		}

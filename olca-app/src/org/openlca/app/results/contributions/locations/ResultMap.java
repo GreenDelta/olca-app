@@ -151,8 +151,8 @@ class ResultMap {
 			return;
 		try {
 			GeoJSON.write(coll, file);
-			Popup.info("Export done",
-					"Result map was written to " + file.getName());
+			Popup.info(M.ExportDone,
+					M.ResultMapWritten + " - " + file.getName());
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to export result map to: " + file, e);
 		}

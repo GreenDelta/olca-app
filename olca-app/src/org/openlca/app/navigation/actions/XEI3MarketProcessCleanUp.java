@@ -32,7 +32,7 @@ class XEI3MarketProcessCleanUp extends Action implements
 
 	@Override
 	public void run() {
-		App.run("Merge market processes",
+		App.run(M.MergeMarketProcesses,
 				new MarketProcessCleanUp(Database.get()));
 	}
 }

@@ -95,7 +95,7 @@ class SearchBar {
 			}
 		}, () -> {
 			if (err[0] != null) {
-				MsgBox.error("Searching for datasets failed", err[0]);
+				MsgBox.error(M.SearchingForDataSetsFailed, err[0]);
 				return;
 			}
 			if (consumer != null) {

@@ -226,7 +226,7 @@ class ValueEditor {
 						value = Double.parseDouble(textVal);
 						onError.accept(null);
 					} catch (Exception e) {
-						onError.accept(textVal + " " + M.IsNotValidNumber);
+						onError.accept(M.NotValidNumber + " - " + textVal);
 					}
 				} else {
 

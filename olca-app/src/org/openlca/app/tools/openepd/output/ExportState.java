@@ -78,7 +78,7 @@ public record ExportState(State state, String id) {
 			return;
 		switch (state) {
 			case FILE -> Popup.info(
-				"Exported as file", "The EPD was exported as file: " + id);
+				M.ExportedAsFile, M.TheEpdWasExportedAsFile + " - " + id);
 			case UPDATED, CREATED -> Ec3Dialog.show(this);
 			default -> {
 			}

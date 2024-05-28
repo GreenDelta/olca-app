@@ -78,8 +78,7 @@ public class AllocationPage extends ModelPage<Process> {
 			return false;
 		if (Strings.nullOrEmpty(value)) {
 			MsgBox.error(
-					M.InvalidAllocationFactor,
-					"An empty value is not allowed");
+					M.InvalidAllocationFactor, M.EmptyValueNotAllowed);
 			return false;
 		}
 
@@ -111,7 +110,7 @@ public class AllocationPage extends ModelPage<Process> {
 			factor.value = val;
 			return true;
 		} catch (Exception e) {
-			MsgBox.error(M.InvalidAllocationFactor, value + M.IsNotValidNumber);
+			MsgBox.error(M.InvalidAllocationFactor, M.NotValidNumber + " - " + value);
 			return false;
 		}
 	}

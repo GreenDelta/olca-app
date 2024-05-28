@@ -124,7 +124,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 					selected = i;
 				}
 			}
-			var combo = UI.labeledCombo(body, tk, "Provider selection");
+			var combo = UI.labeledCombo(body, tk, M.ProviderSelection);
 			combo.setItems(items);
 			combo.select(selected);
 			config.withProviderLinking(options[selected]);

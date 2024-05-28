@@ -145,7 +145,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 
 			// only non-baseline scenarios can be removed
 			Action onCopy = Actions.create(
-					"Copy parameter set",
+					M.CopyParameterSet,
 					Icon.COPY.descriptor(),
 					this::onCopy);
 			if (paramSet.isBaseline) {

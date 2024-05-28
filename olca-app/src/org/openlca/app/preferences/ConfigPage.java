@@ -127,7 +127,7 @@ public class ConfigPage extends PreferencePage implements
 
 		var useEdge = new Button(comp, SWT.CHECK);
 		useEdge.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		useEdge.setToolTipText("WebView2 needs to be installed for this");
+		useEdge.setToolTipText(M.WebView2NeedsToBeInstalledForThis);
 		useEdge.setSelection(iniFile.useEdgeBrowser());
 		Controls.onSelect(
 				useEdge, $ -> {

@@ -28,7 +28,7 @@ public class EpdWizard extends AbstractWizard<Epd> {
 		public Page() {
 			super("EpdPage");
 			setTitle(M.NewEpd);
-			setMessage("Create a new environmental product declaration");
+			setMessage(M.CreateANewEnvironmentalProductDeclaration);
 			setPageComplete(false);
 		}
 

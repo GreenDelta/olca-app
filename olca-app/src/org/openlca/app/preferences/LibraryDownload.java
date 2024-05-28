@@ -34,9 +34,7 @@ public class LibraryDownload {
 			}
 		}, () -> {
 			if (!success.get()) {
-				MsgBox.error("The download of the libraries or "
-						+ "loading them failed. Please check the "
-						+ "log file for details.");
+				MsgBox.error(M.LibraryDownloadErr);
 			} else {
 				MsgBox.info("Download finished", "Note that you need to "
 						+ "restart openLCA in order to use "

@@ -81,13 +81,13 @@ class SearchPage extends FormPage {
 			pageSection.dispose();
 		}
 		form.setText(M.SearchResults + " " + (result != null ? result.resultInfo().totalCount() : 0) + " " + M.Results);
-		headerSection = UI.section(formBody, tk, "Search settings");
+		headerSection = UI.section(formBody, tk, M.SearchSettings);
 		headerComposite = UI.sectionClient(headerSection, tk, 2);
 		createRepositoryViewer();
 		createModelTypeViewer();
 		createQueryText();
 		if (result != null) {
-			pageSection = UI.section(formBody, tk, "Search results");
+			pageSection = UI.section(formBody, tk, M.SearchResults);
 			pageComposite = UI.sectionClient(pageSection, tk, 1);
 			createItems(result);
 			renderPager(result);

@@ -137,7 +137,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			if (props.multiProviderFlows.isEmpty())
 				return;
 			Section section = UI.section(body, tk,
-					"Product or waste flows with multiple providers");
+					M.ProductOrWasteWithMultipleProviders);
 			UI.gridData(section, true, true);
 			Composite comp = UI.sectionClient(section, tk);
 			UI.gridLayout(comp, 1);

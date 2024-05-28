@@ -34,8 +34,7 @@ class Validation {
 		if (setup == null
 				|| setup.features == null
 				|| setup.features.isEmpty()) {
-			MsgBox.error("Invalid setup",
-					"Could not find any geometry in the setup.");
+			MsgBox.error(M.InvalidSetup, M.CouldNotFindAnyGeography);
 			return;
 		}
 

@@ -69,7 +69,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			return false;
 		var db = Database.get();
 		if (db == null) {
-			MsgBox.error("No database is opened");
+			MsgBox.error(M.NoDatabaseOpened);
 			return false;
 		}
 

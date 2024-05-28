@@ -40,8 +40,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 		var form = UI.header(this);
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
-		var section = UI.section(body, tk,
-				"Similarity to other impact categories");
+		var section = UI.section(body, tk, M.SimilarityToOtherImpactCategories);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(

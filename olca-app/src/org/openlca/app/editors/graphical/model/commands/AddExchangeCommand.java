@@ -278,12 +278,12 @@ public class AddExchangeCommand extends Command {
 				? db.get(FlowProperty.class, quantity.id)
 				: null;
 			if (prop == null) {
-				MsgBox.error("Cannot create a flow without a quantity");
+				MsgBox.error(M.CannotCreateAFlowWithoutQuantity);
 				return null;
 			}
 			var name = this.text.getText().trim();
 			if (Strings.nullOrEmpty(name)) {
-				MsgBox.error("A name is required.");
+				MsgBox.error(M.ANameIsRequired);
 				return null;
 			}
 			var type = this.type == null

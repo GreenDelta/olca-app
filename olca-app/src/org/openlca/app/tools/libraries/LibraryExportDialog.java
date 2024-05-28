@@ -45,9 +45,7 @@ public class LibraryExportDialog extends FormDialog {
 	public static void show() {
 		var db = Database.get();
 		if (db == null) {
-			MsgBox.error(M.NoDatabaseOpened,
-					"You need to open the database first from which" +
-							" you want to create the library.");
+			MsgBox.error(M.NoDatabaseOpened, M.NoDatabaseOpenedLibraryErr);
 			return;
 		}
 		try {
@@ -55,9 +53,7 @@ public class LibraryExportDialog extends FormDialog {
 					"Collect database properties...",
 					() -> Props.of(db));
 			if (props.hasLibraryProcesses) {
-				MsgBox.error("Contains library processes",
-						"The database is already connected to a process library. Libraries" +
-								" with dependencies to process libraries are not supported.");
+				MsgBox.error(M.ContainsLibraryProcesses, M.ContainsLibraryProcessesErr);
 				return;
 			}
 			new LibraryExportDialog(props).open();
@@ -153,8 +149,7 @@ public class LibraryExportDialog extends FormDialog {
 		var info = config.toInfo();
 		var id = info.name();
 		if (libDir.hasLibrary(id)) {
-			MsgBox.error("Library " + id + " already exists",
-					"A library with this name and version already exists");
+			MsgBox.error(M.LibraryAlreadyPresent, M.LibraryAlreadyPresentErr);
 			return;
 		}
 		var exportDir = new File(libDir.folder(), id);

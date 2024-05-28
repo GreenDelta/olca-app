@@ -67,10 +67,10 @@ class MappingPage extends FormPage {
 		Runnable updateCheckState = () -> {
 			if (tool.checked.get()) {
 				checkButton.setImage(Icon.ACCEPT.get());
-				checkButton.setToolTipText("Click to check the mappings.");
+				checkButton.setToolTipText(M.ClickToCheckTheMappings);
 			} else {
 				checkButton.setImage(Icon.WARNING.get());
-				checkButton.setToolTipText("No check was performed yet.");
+				checkButton.setToolTipText(M.NoCheckWasPerformedYet);
 			}
 		};
 		updateCheckState.run();
@@ -92,7 +92,7 @@ class MappingPage extends FormPage {
 	}
 
 	private void createTable(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, "Flow mapping");
+		Section section = UI.section(body, tk, M.FlowMapping);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);

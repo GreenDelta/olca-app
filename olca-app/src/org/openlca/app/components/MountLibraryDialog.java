@@ -180,7 +180,7 @@ public class MountLibraryDialog extends FormDialog {
 			var comp = tk.createComposite(group);
 			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 2);
-			var combo = UI.labeledCombo(comp, tk, "Action");
+			var combo = UI.labeledCombo(comp, tk, M.Action);
 			var items = new String[actions.size()];
 			var selectedIdx = -1;
 			for (int i = 0; i < actions.size(); i++) {

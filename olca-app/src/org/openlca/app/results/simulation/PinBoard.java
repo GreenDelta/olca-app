@@ -53,7 +53,7 @@ class PinBoard {
 	}
 
 	void create(FormToolkit tk, Composite body) {
-		Section section = UI.section(body, tk, "Pinned contributions");
+		Section section = UI.section(body, tk, M.PinnedContributions);
 		section.setExpanded(false);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
@@ -87,7 +87,7 @@ class PinBoard {
 		Tables.onDoubleClick(table, e -> open.run());
 
 		Action pin = Actions.create(
-				"Pin / Unpin", Icon.CHECK_TRUE.descriptor(), () -> {
+				M.PinUnpin, Icon.CHECK_TRUE.descriptor(), () -> {
 					TechFlow pp = Viewers.getFirstSelected(table);
 					onPin(pp);
 				});

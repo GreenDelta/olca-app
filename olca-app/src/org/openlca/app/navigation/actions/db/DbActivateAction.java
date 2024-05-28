@@ -154,12 +154,12 @@ public class DbActivateAction extends Action implements INavigationAction {
 					db = null;
 					var success = new DbExportAction().run(config);
 					if (!success) {
-						error("Database export failed");
+						error(M.DatabaseExportFailed);
 						return;
 					}
 					db = config.connect(Workspace.dbDir());
 				} catch (Exception e) {
-					error("Database export and reconnection failed");
+					error(M.DatabaseExportAndReconnectionFailed);
 					return;
 				}
 			}

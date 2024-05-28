@@ -80,7 +80,7 @@ public class DbExportAction extends Action implements INavigationAction {
 			log.trace("delete existing file {}", zip);
 			boolean deleted = zip.delete();
 			if (!deleted) {
-				MsgBox.error(M.CouldNotOverwriteFile + ": " + zip.getName());
+				MsgBox.error(M.CouldNotOverwriteFile + " - " + zip.getName());
 				return false;
 			}
 		}
@@ -154,6 +154,6 @@ public class DbExportAction extends Action implements INavigationAction {
 			CompareView.clear();
 		}
 		HistoryView.refresh();
-		Popup.info(M.ExportDone, M.DatabaseWasExportedToFile + ": " + zip.getName());
+		Popup.info(M.ExportDone, M.DatabaseWasExportedToFile + " - " + zip.getName());
 	}
 }

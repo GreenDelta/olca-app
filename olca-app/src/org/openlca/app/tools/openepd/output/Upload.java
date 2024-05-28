@@ -41,7 +41,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			// check the unit of an existing EPD
 			var oldDoc = EpdDoc.fromJson(json).orElse(null);
 			if (oldDoc == null) {
-				MsgBox.error("Could not read EPD from server");
+				MsgBox.error(M.CouldNotReadEpdFromServer);
 				return ExportState.error();
 			}
 
@@ -134,7 +134,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 		if (resp.hasJson()) {
 			JsonErrorDialog.show(message, resp.json());
 		} else {
-			MsgBox.error("Upload failed", message);
+			MsgBox.error(M.UploadFailed, message);
 		}
 		return ExportState.error();
 	}

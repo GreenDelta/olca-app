@@ -11,6 +11,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.AppCache;
 import org.openlca.app.db.Cache;
@@ -69,7 +70,7 @@ public class MappingTool extends SimpleFormEditor {
 						+ "flow mappings from CSV files and JSON-LD packages.");
 			}
 		} catch (Exception e) {
-			MsgBox.error("Could not open file", e);
+			MsgBox.error(M.CouldNotOpenFile, e);
 		}
 	}
 

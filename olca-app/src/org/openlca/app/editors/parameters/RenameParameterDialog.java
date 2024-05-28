@@ -54,7 +54,7 @@ public class RenameParameterDialog extends FormDialog {
 		var db = Database.get();
 		var tree = new AtomicReference<ParameterUsageTree>();
 		App.run(
-				"Collect dependencies",
+				M.CollectDependencies,
 				() -> tree.set(ParameterUsageTree.of(param, db)),
 				() -> {
 					var dialog = new RenameParameterDialog(param, tree.get());

@@ -67,7 +67,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 		var newName = dialog.getValue();
 		var err = Database.validateNewName(newName);
 		if (err != null) {
-			MsgBox.error("Invalid database name", err);
+			MsgBox.error(M.InvalidDatabaseName, err);
 			return;
 		}
 		App.runInUI("Copy database", () -> doCopy(newName));

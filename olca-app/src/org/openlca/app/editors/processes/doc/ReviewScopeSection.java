@@ -39,7 +39,7 @@ class ReviewScopeSection {
 	}
 
 	void render(Composite root, FormToolkit tk) {
-		var section = UI.section(root, tk, "Review methods");
+		var section = UI.section(root, tk, M.ReviewMethods);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(comp, "Scope", "Method");
 		Tables.bindColumnWidths(table, 0.4, 0.6);
@@ -188,7 +188,7 @@ class ReviewScopeSection {
 			var body = UI.dialogBody(mForm.getForm(), tk);
 			UI.gridLayout(body, 2);
 
-			var scopeCombo = UI.labeledCombo(body, tk, "Scope");
+			var scopeCombo = UI.labeledCombo(body, tk, M.Scope);
 			var scopes = ReviewScope.values();
 			var scopeItems = new String[scopes.length];
 			for (int i = 0; i < scopes.length; i++) {
@@ -203,7 +203,7 @@ class ReviewScopeSection {
 				this.scope = scopeItems[i];
 			});
 
-			var methodCombo = UI.labeledCombo(body, tk, "Method");
+			var methodCombo = UI.labeledCombo(body, tk, M.Method);
 			var methods = ReviewMethod.values();
 			var methodItems = new String[methods.length];
 			for (int i = 0; i < methods.length; i++) {

@@ -163,7 +163,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			var dialog = MessageDialogWithToggle.openError(
 					UI.shell(),
 					M.CannotDelete,
-					d.name + ": " + M.CannotDeleteMessage,
+					d.name + " - " + M.CannotDeleteMessage,
 					M.DoNotShowThisMessageAgain,
 					false,
 					null,

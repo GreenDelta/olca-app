@@ -47,7 +47,7 @@ public class TagResultPage extends FormPage {
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
 
-		var section = UI.section(body, tk, "Contributions by tag");
+		var section = UI.section(body, tk, M.ContributionsByTag);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);

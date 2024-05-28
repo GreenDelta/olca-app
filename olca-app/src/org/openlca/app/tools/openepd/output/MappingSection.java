@@ -2,6 +2,7 @@ package org.openlca.app.tools.openepd.output;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.tools.openepd.MappingTable;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -13,8 +14,8 @@ record MappingSection(MethodMapping mapping) {
 
 	void render(Composite body, FormToolkit tk) {
 		var title = mapping.method() != null
-			? "Results: " + Labels.name(mapping.method())
-			: "Results";
+			? M.Results + " - " + Labels.name(mapping.method())
+			: M.Results;
 		var section = UI.section(body, tk, title);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
@@ -25,7 +26,7 @@ record MappingSection(MethodMapping mapping) {
 	private void createCombo(Composite parent, FormToolkit tk) {
 		var comp = UI.composite(parent, tk);
 		UI.gridLayout(comp, 2);
-		var combo = UI.labeledCombo(comp, tk, "openEPD LCIA Method");
+		var combo = UI.labeledCombo(comp, tk, M.OpenEpdLciaMethod);
 		var methods = Method.values();
 		var items = new String[methods.length];
 		int selectionIdx = -1;

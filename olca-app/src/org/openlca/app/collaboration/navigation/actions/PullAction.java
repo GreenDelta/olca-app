@@ -68,7 +68,7 @@ public class PullAction extends Action implements INavigationAction {
 				Actions.askApplyStash();
 			}
 			if (mergeResult == MergeResult.MOUNT_ERROR) {
-				MsgBox.error("Could not mount library");
+				MsgBox.error(M.CouldNotMountLibrary);
 			} else if (mergeResult == MergeResult.NO_CHANGES) {
 				if (newCommits.isEmpty()) {
 					MsgBox.info("No commits to fetch - Everything up to date");

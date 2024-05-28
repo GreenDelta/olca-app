@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
@@ -24,7 +25,7 @@ class SodaNodeCombo {
 	}
 
 	private void render(Composite comp, FormToolkit tk) {
-		var combo = UI.labeledCombo(comp, tk, "Known hosts");
+		var combo = UI.labeledCombo(comp, tk, M.KnownHosts);
 		var items = new String[nodes.size() + 1];
 		items[0] = "";
 		for (int i = 0; i < nodes.size(); i++) {

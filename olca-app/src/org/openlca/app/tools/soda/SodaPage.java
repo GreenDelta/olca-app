@@ -71,7 +71,7 @@ class SodaPage extends FormPage {
 	private void createStockCombo(Composite comp, FormToolkit tk) {
 		if (con.stocks().isEmpty())
 			return;
-		var combo = UI.labeledCombo(comp, tk, "Data stock");
+		var combo = UI.labeledCombo(comp, tk, M.DataStock);
 		var items = new String[con.stocks().size() + 1];
 		items[0] = "Undefined / Default";
 		int i = 1;
@@ -97,7 +97,7 @@ class SodaPage extends FormPage {
 	}
 
 	private void createDataSection(Composite body, FormToolkit tk) {
-		var section = UI.section(body, tk, "Datasets");
+		var section = UI.section(body, tk, M.DataSet);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
 
@@ -123,7 +123,7 @@ class SodaPage extends FormPage {
 		Tables.bindColumnWidths(table, 0.3, 0.2, 0.2, 0.3);
 		table.setLabelProvider(new TableLabel(con.hasEpds()));
 		var importAction = Actions.create(
-				"Import selected", Icon.IMPORT.descriptor(), this::runImport);
+				M.ImportSelected, Icon.IMPORT.descriptor(), this::runImport);
 		var copyAction = TableClipboard.onCopySelected(table);
 		Actions.bind(table, importAction, copyAction);
 	}
@@ -146,7 +146,7 @@ class SodaPage extends FormPage {
 			if (err[0] == null)
 				table.setInput(result);
 			else
-				MsgBox.error("Searching for datasets failed", err[0]);
+				MsgBox.error(M.SearchingForDataSetsFailed, err[0]);
 		});
 	}
 

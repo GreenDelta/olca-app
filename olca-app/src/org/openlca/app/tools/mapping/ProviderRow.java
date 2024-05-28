@@ -35,10 +35,10 @@ class ProviderRow {
 		UI.gridLayout(inner, 3, 5, 0);
 		var dbLink = UI.imageHyperlink(inner, tk);
 		dbLink.setImage(Icon.DATABASE.get());
-		dbLink.setToolTipText("Select database");
+		dbLink.setToolTipText(M.SelectDatabase);
 		var fileLink = UI.imageHyperlink(inner, tk);
 		fileLink.setImage(Icon.FILE.get());
-		fileLink.setToolTipText("Select file");
+		fileLink.setToolTipText(M.SelectFile);
 		var label = UI.label(inner, tk, M.NoneHyphen);
 
 		// select database as provider
@@ -64,9 +64,7 @@ class ProviderRow {
 
 			var provider = providerOf(file);
 			if (provider == null) {
-				MsgBox.error(
-						"Unknown supported flow source (supported are ILCD," +
-								" JSON-LD, SimaPro CSV, or EcoSpold 1 files.");
+				MsgBox.error(M.UnknownSupportedFlowSourceErr);
 				return;
 			}
 			fireSelect(label, provider);

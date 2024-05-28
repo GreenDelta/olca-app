@@ -144,7 +144,7 @@ class ExchangeDialog extends FormDialog {
 	protected void okPressed() {
 		int i = combo.getSelectionIndex();
 		if (units.isEmpty() || i < 0) {
-			MsgBox.error("No unit selected");
+			MsgBox.error(M.NoUnitSelected);
 			return;
 		}
 		var unit = units.get(i);
@@ -152,7 +152,7 @@ class ExchangeDialog extends FormDialog {
 		try {
 			exchange.amount = Double.parseDouble(text.getText());
 		} catch (Exception e) {
-			MsgBox.error(text.getText() + " is not a number.");
+			MsgBox.error(M.NotANumber + " - " + text.getText());
 			return;
 		}
 

@@ -53,7 +53,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 				.getLibraries()
 				.isEmpty();
 		if (withDirect) {
-			toolbar.add(Actions.create("Direct calculation",
+			toolbar.add(Actions.create(M.DirectCalculation,
 					Icon.RUN.descriptor(),
 					() -> directCalculation(getProcess())));
 		}
@@ -146,7 +146,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 			});
 			var props = ref.get();
 			if (props == null) {
-				MsgBox.error("The linking check gave no results");
+				MsgBox.error(M.LinkingCheckGaveNoResults);
 				return;
 			}
 			if (props.multiProviderFlows.isEmpty()

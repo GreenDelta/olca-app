@@ -199,8 +199,7 @@ class MappingDialog extends FormDialog {
 					: tool.targetSystem;
 
 				if (p == null) {
-					MsgBox.error("Cannot select flow",
-						"No data source for flows connected");
+					MsgBox.error(M.CannotSelectFlow, M.NoDataSourceForFlowConnected);
 					return;
 				}
 

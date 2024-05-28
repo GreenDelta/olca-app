@@ -122,7 +122,7 @@ class ParameterRedefTable {
 		});
 
 		var toggleProtection = Actions.create(
-				"Toggle protection", Icon.LOCK.descriptor(), () -> {
+				M.ToggleProtection, Icon.LOCK.descriptor(), () -> {
 					ParameterRedef redef = Viewers.getFirstSelected(table);
 					if (redef == null)
 						return;

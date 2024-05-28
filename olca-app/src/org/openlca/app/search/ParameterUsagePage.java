@@ -79,7 +79,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 	private static class Input extends SimpleEditorInput {
 
 		Input(String param, String resultKey) {
-			super(resultKey, M.UsageOf + " " + param);
+			super(resultKey, M.Usage + " - " + param);
 		}
 
 		@Override

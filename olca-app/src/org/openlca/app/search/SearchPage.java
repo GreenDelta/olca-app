@@ -37,7 +37,7 @@ public class SearchPage extends SimpleFormEditor {
 	public static void forUsage(RootDescriptor d) {
 		if (d == null || d.type == null)
 			return;
-		String title = "Find usages of " + Labels.name(d);
+		String title = M.FindUsages + " - " + Labels.name(d);
 		AtomicReference<List<Descriptor>> ref = new AtomicReference<>();
 		App.run(title, () -> {
 			var list = UsageSearch.of(d.type, Database.get()).find(d.id);

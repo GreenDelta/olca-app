@@ -57,7 +57,7 @@ class GeoFlowSection {
 	void drawOn(Composite body, FormToolkit tk) {
 
 		// create the section
-		Section section = UI.section(body, tk, "Flow bindings");
+		Section section = UI.section(body, tk, M.FlowBindings);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
@@ -78,14 +78,14 @@ class GeoFlowSection {
 		// bind actions
 		var add = Actions.onAdd(this::onAdd);
 		var createForUsed = Actions.create(
-				"Create for used flows",
+				M.CreateForUsedFlows,
 				Icon.EDIT.descriptor(),
 				this::onCreateForUsedFlows);
 		createForUsed.setToolTipText(M.CreateFlowBindingForAllFlows);
 		var remove = Actions.onRemove(this::onRemove);
 		var calc = Actions.onCalculate(this::onCalculate);
 		var calcMissing = Actions.create(
-				"Calculate all missing locations",
+				M.CalculateAllMissingLocations,
 				Icon.ANALYSIS_RESULT.descriptor(),
 				this::onCalculateAllMissing);
 		Actions.bind(table, add, createForUsed, remove, calc, calcMissing);
@@ -235,18 +235,15 @@ class GeoFlowSection {
 	private boolean canCalculate() {
 		var setup = page.setup;
 		if (setup == null) {
-			MsgBox.error("Invalid calculation setup",
-					"No GeoJSON file is selected.");
+			MsgBox.error(M.InvalidCalculationSetup, M.NoGeoJsonFileSelected);
 			return false;
 		}
 		if (setup.bindings.isEmpty()) {
-			MsgBox.error("Invalid calculation setup",
-					"No flow bindings are defined.");
+			MsgBox.error(M.InvalidCalculationSetup, M.NoFlowBindingsDefined);
 			return false;
 		}
 		if (setup.features.isEmpty()) {
-			MsgBox.error("Invalid calculation setup",
-					"Could not find geographic features.");
+			MsgBox.error(M.InvalidCalculationSetup, M.CouldNotFindGeographicFeatures);
 			return false;
 		}
 		return true;

@@ -164,16 +164,11 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 			return;
 		}
 		if (refProcess == null) {
-			setMessage("No reference process is selected. " +
-							"This will create a product system " +
-							"with an empty reference process.",
+			setMessage(M.NoReferenceProcessSelectedInfo,
 					IMessageProvider.WARNING);
 			linkingPanel.setEnabled(false);
 		} else if (!hasRefFlow()) {
-			setMessage("The selected process does not have " +
-							"a product output or waste input as " +
-							"reference flow.",
-					IMessageProvider.WARNING);
+			setMessage(M.ProcessDoesNotHaveReferenceFlow, IMessageProvider.WARNING);
 			linkingPanel.setEnabled(true);
 		} else {
 			linkingPanel.setEnabled(true);

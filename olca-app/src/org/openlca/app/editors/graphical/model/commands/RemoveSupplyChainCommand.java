@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Locale;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.App;
@@ -20,7 +19,7 @@ public class RemoveSupplyChainCommand extends Command {
 	public RemoveSupplyChainCommand(ArrayList<ProcessLink> links, Graph graph) {
 		this.graph = graph;
 		providerLinks = links;
-		setLabel(M.RemoveSupplyChain.toLowerCase(Locale.ROOT));
+		setLabel(M.RemoveSupplyChain);
 	}
 
 	@Override

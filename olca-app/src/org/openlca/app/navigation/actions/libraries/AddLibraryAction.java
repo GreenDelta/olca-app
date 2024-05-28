@@ -70,7 +70,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 
 		var lib = dialog.combo.selected;
 		if (db.getLibraries().contains(lib.name())) {
-			MsgBox.error("Library " + lib.name() + " is already present.");
+			MsgBox.error(M.TheLibraryIsAlreadyPresent + " - " + lib.name());
 			return;
 		}
 		var checkResult = App.exec(
@@ -113,7 +113,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			UI.fillHorizontal(comp);
 			UI.gridLayout(comp, 2);
 
-			combo = new LibCombo(UI.labeledCombo(comp, tk, "Library"));
+			combo = new LibCombo(UI.labeledCombo(comp, tk, M.Library));
 			UI.filler(comp, tk);
 			var importButton = tk.createButton(
 				comp, M.ImportFromFileDots, SWT.NONE);

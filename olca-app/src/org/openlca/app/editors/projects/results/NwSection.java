@@ -57,8 +57,8 @@ class NwSection extends LabelProvider implements TableSection {
 	@Override
 	public void renderOn(Composite body, FormToolkit tk) {
 		var title = type == Type.NORMALIZATION
-			? "Normalized results"
-			: "Weighted results";
+			? M.NormalizedResults
+			: M.WeightedResults;
 		var section = UI.section(body, tk,
 			title + (unit != null ? " [" + unit + "]" : ""));
 		var comp = UI.sectionClient(section, tk, 1);

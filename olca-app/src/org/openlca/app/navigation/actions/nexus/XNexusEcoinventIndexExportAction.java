@@ -139,12 +139,12 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 			// actions
 			var onAdd = Actions.create(
-					"Add system model", Icon.ADD.descriptor(), () -> {
+					M.AddSystemModel, Icon.ADD.descriptor(), () -> {
 						entries.add(new Entry("model"));
 						setInput();
 					});
 			var onRemove = Actions.create(
-					"Remove system model", Icon.DELETE.descriptor(), () -> {
+					M.RemoveSystemModel, Icon.DELETE.descriptor(), () -> {
 						if (Viewers.getFirstSelected(viewer) instanceof Entry e) {
 							entries.remove(e);
 							setInput();

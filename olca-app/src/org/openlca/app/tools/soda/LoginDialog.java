@@ -91,15 +91,14 @@ class LoginDialog extends FormDialog {
 		var data = LoginData.of(this);
 		var err = data.validate();
 		if (err != null) {
-			MsgBox.error("Invalid login data", err);
+			MsgBox.error(M.InvalidLoginData, err);
 			return;
 		}
 
 		var con = App.exec("Connect to node ...", data::login);
 		if (con.hasError()) {
-			MsgBox.error(
-					"Connection failed",
-					"Failed to connect to node: " + con.error());
+			MsgBox.error(M.ConnectionFailed,
+					M.FailedToConnectToNode + " - " + con.error());
 			return;
 		}
 		this.con = con;

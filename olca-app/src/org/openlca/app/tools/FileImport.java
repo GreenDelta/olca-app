@@ -49,7 +49,7 @@ public class FileImport {
 			return;
 		var file = new File(path);
 		if (!file.exists() || file.isDirectory()) {
-			MsgBox.error("Not a file", path + " is not an existing file.");
+			MsgBox.error(M.NotAFile, M.NotAnExistingFile + " - " + path);
 			return;
 		}
 
