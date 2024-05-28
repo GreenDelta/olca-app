@@ -55,7 +55,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 		var config = Import.of(client, database)
 				.withPreferredLanguage(IoPreference.getIlcdLanguage());
 		getContainer().run(true, true, monitor -> {
-			monitor.beginTask(M.ILCD_RunImport, IProgressMonitor.UNKNOWN);
+			monitor.beginTask(M.RunImport, IProgressMonitor.UNKNOWN);
 			try {
 				importProcesses(processes, config);
 			} catch (Exception e) {
@@ -78,7 +78,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle(M.ILCD_NetworkImport);
+		setWindowTitle(M.NetworkImport);
 		setDefaultPageImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
 				RcpActivator.PLUGIN_ID, "/icons/network_wiz.png"));
 		setNeedsProgressMonitor(true);

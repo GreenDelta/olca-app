@@ -142,13 +142,13 @@ public class IoPreferencePage extends PreferencePage implements
 			if (stock == null
 					|| !stock.isReadAllowed()
 					|| !stock.isExportAllowed()) {
-				MsgBox.warning(M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
+				MsgBox.warning(M.YouDoNotHaveReadOrWriteAccess);
 				return;
 			}
-			MsgBox.info(M.ILCD_CONNECTION_WORKS_MSG
+			MsgBox.info(M.ConnectionWorks
 					+ " (Data stock = " + stock.getShortName() + ")");
 		} catch (Exception e) {
-			MsgBox.error(M.IlcdConnectionFailedErr + " - " + e.getMessage());
+			MsgBox.error(M.ILCDConnectionFailedErr + " - " + e.getMessage());
 		}
 	}
 

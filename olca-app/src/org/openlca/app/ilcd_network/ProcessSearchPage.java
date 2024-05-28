@@ -36,7 +36,7 @@ public class ProcessSearchPage extends WizardPage {
 	public ProcessSearchPage() {
 		super("ILCD-ProcessSearchPage");
 		setTitle(M.Search);
-		setDescription(M.ILCD_SearchPageDescription);
+		setDescription(M.SearchAndSelectProcessesForTheImport);
 		setPageComplete(false);
 	}
 
@@ -93,7 +93,7 @@ public class ProcessSearchPage extends WizardPage {
 				viewer.setInput(result.getDescriptors().toArray());
 			}
 		} catch (Exception e) {
-			MsgBox.error(M.IlcdNetworkSearchFailed + " " + e.getMessage());
+			MsgBox.error(M.ILCDNetworkSearchFailed + " " + e.getMessage());
 		}
 	}
 

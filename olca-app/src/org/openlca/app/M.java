@@ -192,6 +192,7 @@ public class M extends NLS {
 	public static String Connection;
 	public static String ConnectionFailed;
 	public static String ConnectionWithAnonymousAccess;
+	public static String ConnectionWorks;
 	public static String Connections;
 	public static String Console;
 	public static String ConsumedBy;
@@ -585,19 +586,14 @@ public class M extends NLS {
 	public static String Host;
 
 	// I
+	public static String ILCDConnectionFailedErr;
 	public static String ILCDNetworkExport;
 	public static String ILCDNetworkExportDescription;
+	public static String ILCDNetworkSearchFailed;
 	public static String ILCDNetworkSettings;
 	public static String ILCDOtherSettings;
-	public static String ILCD_CONNECTION_WORKS_MSG;
-	public static String ILCD_NO_READ_OR_WRITE_ACCESS_MSG;
-	public static String ILCD_NetworkImport;
-	public static String ILCD_RunImport;
-	public static String ILCD_SearchPageDescription;
 	public static String Id;
 	public static String IgnoreDefaultProviders;
-	public static String IlcdConnectionFailedErr;
-	public static String IlcdNetworkSearchFailed;
 	public static String ImageExport;
 	public static String ImpactAnalysis;
 	public static String ImpactAssessmentMethod;
@@ -829,6 +825,7 @@ public class M extends NLS {
 	public static String NeedOpenDatabase;
 	public static String NetCosts;
 	public static String Netcosts;
+	public static String NetworkImport;
 	public static String NeverUpdateExists;
 	public static String New;
 	public static String NewActor;
@@ -1173,6 +1170,7 @@ public class M extends NLS {
 	public static String ScriptAlreadyExistsErr;
 	public static String Search;
 	public static String SearchAllTypes;
+	public static String SearchAndSelectProcessesForTheImport;
 	public static String SearchCollaborationServer;
 	public static String SearchForParameterUsage;
 	public static String SearchForUsage;
@@ -1466,6 +1464,7 @@ public class M extends NLS {
 	// Y
 	public static String Year;
 	public static String Yes;
+	public static String YouDoNotHaveReadOrWriteAccess;
 
 	// Z
 	public static String ZipCode;
