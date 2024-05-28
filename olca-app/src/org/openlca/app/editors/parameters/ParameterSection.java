@@ -365,7 +365,7 @@ public class ParameterSection {
 				return;
 			String err = check(param);
 			if (err != null) {
-				MsgBox.info("Cannot be converted to global parameter", err);
+				MsgBox.info(M.CannotBeConvertedToGlobalParameter, err);
 				return;
 			}
 

@@ -164,7 +164,7 @@ class InfoPage extends ModelPage<Process> {
 		Hyperlink link = UI.hyperLink(parent, tk, dqLabel.get());
 		Controls.onClick(link, e -> {
 			if (getModel().dqSystem == null) {
-				MsgBox.info("No data quality system is selected");
+				MsgBox.info(M.NoDataQualitySystemSelected);
 				return;
 			}
 			String oldVal = getModel().dqEntry;

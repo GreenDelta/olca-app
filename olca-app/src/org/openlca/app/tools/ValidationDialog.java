@@ -105,9 +105,9 @@ public class ValidationDialog extends FormDialog {
 		combo = UI.labeledCombo(comp, tk, M.ValidationMessages);
 		UI.gridData(combo, true, false);
 		combo.setItems(
-				"All messages",
-				"Warnings and errors",
-				"Errors only");
+				M.AllMessages,
+				M.WarningAndErrors,
+				M.ErrorsOnly);
 		combo.select(1);
 		UI.fillHorizontal(combo);
 	}

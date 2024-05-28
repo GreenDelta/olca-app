@@ -102,8 +102,8 @@ public class SaveResultDialog extends FormDialog {
 			.createProcess(processRadio.getSelection())
 			.withMetaData(metaCheck.getSelection());
 		var label = processRadio.getSelection()
-			? "Save as system process ..."
-			: "Save as result ...";
+			? M.SaveAsSystemProcessDots
+			: M.SaveAsResultDots;
 		var entity = App.exec(label, exec::run);
 		App.open(entity);
 		Navigator.refresh();

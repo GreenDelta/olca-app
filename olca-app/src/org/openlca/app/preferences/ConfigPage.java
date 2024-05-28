@@ -75,8 +75,8 @@ public class ConfigPage extends PreferencePage implements
 		}
 
 		UI.filler(comp);
-		createNoteComposite(comp.getFont(), comp, M.Note
-				+ ": ", M.SelectLanguageNoteMessage);
+		createNoteComposite(comp.getFont(), comp, M.Note,
+				M.SelectLanguageNoteMessage);
 
 		return body;
 	}

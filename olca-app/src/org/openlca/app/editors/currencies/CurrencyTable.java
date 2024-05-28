@@ -33,7 +33,7 @@ class CurrencyTable {
 
 	void create(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, M.OtherCurrencies, 1);
-		table = Tables.createViewer(comp, "Name", "Code", "Exchange rate");
+		table = Tables.createViewer(comp, M.Name, M.Code, M.ExchangeRate);
 		Tables.bindColumnWidths(table, 0.4, 0.2, 0.4);
 		table.setLabelProvider(new Label());
 		table.setInput(getOthers());

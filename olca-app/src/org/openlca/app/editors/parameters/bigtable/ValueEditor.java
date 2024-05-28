@@ -16,7 +16,6 @@ import org.openlca.app.components.UncertaintyDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
@@ -119,16 +118,12 @@ class ValueEditor {
 		var p = param.parameter;
 		if (param.owner == null
 			&& App.hasDirtyEditor(p)) {
-			MsgBox.info("Cannot edit " + p.name,
-				"The parameter is currently "
-					+ "modified in another editor.");
+			MsgBox.info(M.CannotEditParameter, M.CannotEditParameterInfo);
 			return true;
 		}
 		if (param.owner != null
 			&& App.hasDirtyEditor(param.owner)) {
-			var label = Strings.cut(Labels.name(param.owner), 50);
-			MsgBox.info("Cannot edit " + p.name,
-				label + " is currently modified in another editor.");
+			MsgBox.info(M.CannotEditParameter, M.CannotEditParameterInfo);
 			return true;
 		}
 		return false;
@@ -238,7 +233,7 @@ class ValueEditor {
 						formula = textVal;
 						onError.accept(null);
 					} catch (Exception e) {
-						onError.accept("Formula error: " + Strings.cut(e.getMessage(), 80));
+						onError.accept(M.FormulaError + " - " + Strings.cut(e.getMessage(), 80));
 					}
 				}
 			});

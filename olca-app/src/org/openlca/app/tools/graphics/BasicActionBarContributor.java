@@ -73,7 +73,7 @@ public class BasicActionBarContributor extends ActionBarContributor {
 		viewMenu.add(getAction(ActionIds.LAYOUT_TREE));
 		viewMenu.add(getAction(ActionIds.SAVE_IMAGE));
 		viewMenu.add(getAction(ActionIds.MINIMAP));
-		menuManager.insertAfter("File", viewMenu);
+		menuManager.insertAfter(M.File, viewMenu);
 	}
 
 	public void contributeToEditMenu(IMenuManager menuManager) {

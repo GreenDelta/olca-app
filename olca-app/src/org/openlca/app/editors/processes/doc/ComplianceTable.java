@@ -36,7 +36,7 @@ class ComplianceTable {
 		var comp = UI.formSection(root, tk, M.ComplianceDetails, 1);
 		var table = Tables.createViewer(
 				comp,
-				"Aspect",
+				M.Aspect,
 				Compliance.FULLY_COMPLIANT.value(),
 				Compliance.NOT_COMPLIANT.value(),
 				Compliance.NOT_DEFINED.value());

@@ -36,9 +36,7 @@ public class LibraryDownload {
 			if (!success.get()) {
 				MsgBox.error(M.LibraryDownloadErr);
 			} else {
-				MsgBox.info("Download finished", "Note that you need to "
-						+ "restart openLCA in order to use "
-						+ "the downloaded libraries.");
+				MsgBox.info(M.DownloadFinished, M.DownloadFinishedInfo);
 			}
 		});
 	}

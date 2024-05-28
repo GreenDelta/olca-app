@@ -209,7 +209,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 
 		private void createSearchOnlineItem(Menu menu) {
 			var item = new MenuItem(menu, SWT.NONE);
-			item.setText("Search in Collaboration Server");
+			item.setText(M.SearchInCollaborationServer);
 			item.setImage(Icon.COLLABORATION_SERVER_LOGO.get());
 			Controls.onSelect(item, e -> onSearchOnlineSelection());
 		}

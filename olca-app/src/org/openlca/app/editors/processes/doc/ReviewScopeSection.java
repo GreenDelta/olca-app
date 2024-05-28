@@ -41,7 +41,7 @@ class ReviewScopeSection {
 	void render(Composite root, FormToolkit tk) {
 		var section = UI.section(root, tk, M.ReviewMethods);
 		var comp = UI.sectionClient(section, tk, 1);
-		var table = Tables.createViewer(comp, "Scope", "Method");
+		var table = Tables.createViewer(comp, M.Scope, M.Method);
 		Tables.bindColumnWidths(table, 0.4, 0.6);
 		table.setLabelProvider(new TableLabel());
 		table.setInput(Item.allOf(sync.get()));

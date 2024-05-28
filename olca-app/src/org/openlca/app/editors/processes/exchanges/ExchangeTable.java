@@ -232,8 +232,7 @@ class ExchangeTable {
 	private void onRemove() {
 		Process process = editor.getModel();
 		List<Exchange> selection = Viewers.getAllSelected(viewer);
-		Boolean b = App.exec(
-				"Check usage of exchanges",
+		Boolean b = App.exec(M.CheckUsageOfExchangesDots,
 				() -> Exchanges.canRemove(process, selection));
 		if (b == null || !b)
 			return;

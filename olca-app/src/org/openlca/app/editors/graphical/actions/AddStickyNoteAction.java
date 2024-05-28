@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.eclipse.gef.RequestConstants.REQ_CREATE;
+
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
@@ -11,8 +13,6 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
-
-import static org.eclipse.gef.RequestConstants.REQ_CREATE;
 
 public class AddStickyNoteAction extends WorkbenchPartAction {
 
@@ -46,7 +46,7 @@ public class AddStickyNoteAction extends WorkbenchPartAction {
 		if (command.canExecute())
 			execute(command);
 		else {
-			MsgBox.info("No sticky note can be added to the graph.");
+			MsgBox.info(M.StickyNoteCannotBeAddedToTheGraph);
 		}
 	}
 

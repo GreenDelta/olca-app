@@ -73,7 +73,7 @@ class SodaPage extends FormPage {
 			return;
 		var combo = UI.labeledCombo(comp, tk, M.DataStock);
 		var items = new String[con.stocks().size() + 1];
-		items[0] = "Undefined / Default";
+		items[0] = M.UndefinedDefault;
 		int i = 1;
 		for (var stock : con.stocks()) {
 			items[i] = stock.getShortName();
@@ -108,7 +108,7 @@ class SodaPage extends FormPage {
 		var typeCombo = TypeCombo.create(searchComp, tk, con.hasEpds());
 		var searchText = tk.createText(searchComp, "", SWT.BORDER);
 		UI.fillHorizontal(searchText);
-		searchText.setMessage("Search dataset ...");
+		searchText.setMessage(M.SearchDataSetDots);
 		var button = tk.createButton(searchComp, M.Search, SWT.NONE);
 		Controls.onSelect(button,
 				e -> runSearch(typeCombo.selected(), searchText.getText()));
@@ -157,9 +157,7 @@ class SodaPage extends FormPage {
 
 		var db = Database.get();
 		if (db == null) {
-			MsgBox.info("No database open",
-					"You need to open the database where" +
-							" you want to import the datasets first.");
+			MsgBox.info(M.NoDatabaseOpened, M.NoDatabaseOpenedImportInfo);
 			return;
 		}
 

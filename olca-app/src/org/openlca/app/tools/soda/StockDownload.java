@@ -30,8 +30,7 @@ class StockDownload {
 
 	private void run() {
 
-		var file = FileChooser.forSavingFile(
-				"Download data stock as zip file",
+		var file = FileChooser.forSavingFile(M.DownloadedDataStockAsZipFile,
 				stock.getShortName() + ".zip");
 		if (file == null)
 			return;

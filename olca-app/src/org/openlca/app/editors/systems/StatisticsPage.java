@@ -124,7 +124,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		Composite comp = UI.formSection(body, tk, title);
 		UI.gridLayout(comp, 1, 0, 10);
 		TableViewer table = Tables.createViewer(
-			comp, "Processes", "Number of linked inputs");
+			comp, M.Processes, M.NumberOfLinkedInputs);
 		Tables.bindColumnWidths(table, 0.5, 0.5);
 		table.setLabelProvider(new LinkDegreeLabel(() -> {
 			if (stats == null)

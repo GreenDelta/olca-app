@@ -48,7 +48,7 @@ public class ErrorReporter extends FormDialog {
 	public static void on(String message, String details, Throwable error) {
 		var log = LoggerFactory.getLogger(ErrorReporter.class);
 		log.error(message, error);
-		App.runInUI("Show error reporter",
+		App.runInUI(M.ShowErrorReporter,
 				() -> new ErrorReporter(message, details, error).open());
 	}
 

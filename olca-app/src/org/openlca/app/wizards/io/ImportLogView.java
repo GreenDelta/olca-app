@@ -55,7 +55,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 	public static void open(ImportLog log) {
 		var id = Cache.getAppCache().put(log);
-		var input = new SimpleEditorInput(id, "Import details");
+		var input = new SimpleEditorInput(id, M.ImportDetails);
 		Editors.open(input, "ImportLogView");
 	}
 
@@ -95,7 +95,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 			// table
 			var table = Tables.createViewer(
-					body, "Status", "Data set", "Message");
+					body, M.Status, M.DataSet, M.Message);
 			table.setLabelProvider(new MessageLabel());
 			Tables.bindColumnWidths(table, 0.2, 0.4, 0.4);
 			filter.apply(table);
@@ -363,7 +363,7 @@ public class ImportLogView extends SimpleFormEditor {
 		@Override
 		public String toString() {
 			return type == null
-					? "All types (" + count + ")"
+					? M.AllTypes + " (" + count + ")"
 					: Labels.of(type) + " (" + count + ")";
 		}
 

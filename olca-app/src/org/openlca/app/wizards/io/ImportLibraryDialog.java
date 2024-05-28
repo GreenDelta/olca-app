@@ -41,7 +41,7 @@ public class ImportLibraryDialog extends FormDialog {
 			return Optional.empty();
 
 		App.exec(
-			"Import library " + info.name(),
+			M.ImportLibrary + " - " + info.name(),
 			() -> LibraryPackage.unzip(file, Workspace.getLibraryDir()));
 		var imported = libDir.getLibrary(info.name());
 		if (imported.isEmpty()){

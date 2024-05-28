@@ -41,7 +41,7 @@ class SearchBar {
 		typeCombo = TypeCombo.create(comp, tk, con.hasEpds());
 		searchText = tk.createText(comp, "", SWT.BORDER);
 		UI.fillHorizontal(searchText);
-		searchText.setMessage("Search dataset ...");
+		searchText.setMessage(M.SearchADataSetDots);
 
 		UI.label(comp, tk, M.Page + ": ");
 		pageSpin = new Spinner(comp, SWT.BORDER);

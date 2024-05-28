@@ -122,7 +122,7 @@ public class EpdPanel extends SimpleFormEditor {
 
 		private TableViewer createTable(Composite comp, LoginPanel loginPanel) {
 			var table = Tables.createViewer(
-				comp, "EPD", "Manufacturer", "Category", "Declared unit");
+				comp, "EPD", M.Manufacturer, M.Category, M.DeclaredUnit);
 			Tables.bindColumnWidths(table, 0.25, 0.25, 0.25, 0.25);
 			UI.gridData(table.getControl(), true, true);
 			table.setLabelProvider(new TableLabel());
@@ -140,8 +140,8 @@ public class EpdPanel extends SimpleFormEditor {
 					var epd = FullEpd.fetch(table, loginPanel);
 					if (epd.isEmpty())
 						return;
-					var file = FileChooser.forSavingFile(
-						"Save openEPD", epd.descriptor.epdId + ".json");
+					var file = FileChooser.forSavingFile(M.SaveOpenEpd,
+							epd.descriptor.epdId + ".json");
 					if (file == null)
 						return;
 					Json.write(epd.json, file);
@@ -176,7 +176,7 @@ public class EpdPanel extends SimpleFormEditor {
 
 			var id = last;
 			var json = App.exec(
-				"Download EPD " + id, () -> Api.getRawEpd(client, id));
+				M.DownloadEpd + " - " + id, () -> Api.getRawEpd(client, id));
 			if (json.isEmpty()) {
 				MsgBox.error(M.CouldNotDownloadEpdId + " (" + id + ")");
 				return;
@@ -209,7 +209,7 @@ public class EpdPanel extends SimpleFormEditor {
 				if (client == null)
 					return empty();
 				var json = App.exec(
-					"Download EPD", () -> Api.getRawEpd(client, info.epdId));
+					M.DownloadEpdDots, () -> Api.getRawEpd(client, info.epdId));
 				if (json.isEmpty()) {
 					MsgBox.error(M.FailedToDownloadEpd + " (" + info.epdId + ")");
 					return empty();

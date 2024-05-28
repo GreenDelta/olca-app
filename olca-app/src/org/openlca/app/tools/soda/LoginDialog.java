@@ -95,7 +95,7 @@ class LoginDialog extends FormDialog {
 			return;
 		}
 
-		var con = App.exec("Connect to node ...", data::login);
+		var con = App.exec(M.ConnectToNodeDots, data::login);
 		if (con.hasError()) {
 			MsgBox.error(M.ConnectionFailed,
 					M.FailedToConnectToNode + " - " + con.error());

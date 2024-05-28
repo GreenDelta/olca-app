@@ -80,8 +80,8 @@ public class CurrencyTable extends SimpleFormEditor {
 			var table = Tables.createViewer(body,
 				M.Name,
 				M.Code,
-				"Exchange rate",
-				"ID");
+				M.ExchangeRate,
+				M.Id);
 			Tables.bindColumnWidths(table, 0.3, 0.1, 0.2, 0.4);
 
 			var label = new Label();

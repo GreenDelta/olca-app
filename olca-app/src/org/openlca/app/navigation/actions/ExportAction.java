@@ -42,8 +42,7 @@ public class ExportAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		if (Database.get() == null) {
-			MsgBox.info("No opened database",
-					"You need to open the database for the export first.");
+			MsgBox.info(M.NoDatabaseOpened, M.NoDatabaseOpenedInfo);
 			return;
 		}
 		try {

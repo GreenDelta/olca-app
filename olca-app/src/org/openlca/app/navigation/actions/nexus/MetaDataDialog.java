@@ -87,7 +87,7 @@ class MetaDataDialog extends FormDialog {
 
 		if (!new ProductSystemDao(Database.get()).getDescriptors().isEmpty()) {
 			var system = UI.formSection(body, toolkit, M.ProductSystemMetaData);
-			var check = UI.labeledCheckbox(system, toolkit, "Export product systems");
+			var check = UI.labeledCheckbox(system, toolkit, M.ExportProductSystems);
 			check.setSelection(true);
 			Controls.onSelect(check, $ -> metaData.exportSystems = check.getSelection());
 			createString(system, toolkit, M.Creator,

@@ -43,7 +43,7 @@ class ResultPage extends ModelPage<Result> {
 
 		// LCIA method
 		ModelLink.of(ImpactMethod.class)
-			.renderOn(comp, tk, "LCIA method")
+			.renderOn(comp, tk, M.LciaMethod)
 			.setModel(getModel().impactMethod)
 			.onChange(method -> {
 				var result = editor.getModel();

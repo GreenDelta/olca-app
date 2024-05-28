@@ -38,7 +38,7 @@ public class ValidationResultView extends SimpleFormEditor {
 			return;
 		var cacheKey = Cache.getAppCache().put(items);
 		Editors.open(
-			new SimpleEditorInput(cacheKey, "Validation result"),
+			new SimpleEditorInput(cacheKey, M.ValidationResult),
 			"ValidationResultView");
 	}
 

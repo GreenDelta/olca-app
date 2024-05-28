@@ -80,7 +80,7 @@ class SearchPage extends FormPage {
 			pageComposite.dispose();
 			pageSection.dispose();
 		}
-		form.setText(M.SearchResults + " " + (result != null ? result.resultInfo().totalCount() : 0) + " " + M.Results);
+		form.setText(M.SearchResults + " (" + (result != null ? result.resultInfo().totalCount() : 0) + ")");
 		headerSection = UI.section(formBody, tk, M.SearchSettings);
 		headerComposite = UI.sectionClient(headerSection, tk, 2);
 		createRepositoryViewer();

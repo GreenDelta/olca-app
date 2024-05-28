@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical;
 
+import static org.eclipse.gef.RequestConstants.REQ_CREATE;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.draw2d.geometry.Point;
@@ -10,6 +12,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
 import org.openlca.app.util.Labels;
@@ -17,8 +20,6 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-
-import static org.eclipse.gef.RequestConstants.REQ_CREATE;
 
 class GraphDropListener extends DropTargetAdapter {
 
@@ -71,8 +72,8 @@ class GraphDropListener extends DropTargetAdapter {
 				if (command.canExecute())
 					commandStack.execute(command);
 				else {
-					MsgBox.info("This item cannot be added to the product system '"
-						+ Labels.name(d) + "'.");
+					MsgBox.info(M.ItemCannotBeAddedToProductSystem
+							+ " - " + Labels.name(d));
 				}
 			})
 			.filter(d -> graph.getNode(d.id) != null)
@@ -88,9 +89,8 @@ class GraphDropListener extends DropTargetAdapter {
 
 	private boolean productSystemContains(Descriptor d) {
 		if (editor.getProductSystem().processes.contains(d.id)) {
-			MsgBox.info("The product system already"
-				+ " contains process '"
-				+ Labels.name(d) + "'.");
+			MsgBox.info(M.ProductSystemAlreadyContainsProcess
+				+ " - " + Labels.name(d));
 			return true;
 		}
 		else return false;

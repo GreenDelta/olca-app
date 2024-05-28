@@ -148,7 +148,7 @@ class ReviewSection {
 					.setEditable(editor.isEditable())
 					.renderOn(comp, tk);
 
-			var details = UI.labeledMultiText(comp, tk, "Review details", 40);
+			var details = UI.labeledMultiText(comp, tk, M.ReviewDetails, 40);
 			if (_rev.details != null) {
 				details.setText(_rev.details);
 			}
@@ -196,7 +196,7 @@ class ReviewSection {
 		private void reviewerTable(Composite root) {
 			var section = UI.section(root, tk, M.Reviewers);
 			var comp = UI.sectionClient(section, tk, 1);
-			var table = Tables.createViewer(comp, "Reviewer");
+			var table = Tables.createViewer(comp, M.Reviewer);
 			Tables.bindColumnWidths(table, 1.0);
 			table.setLabelProvider(new ActorTableLabel());
 			table.setInput(_rev.reviewers);

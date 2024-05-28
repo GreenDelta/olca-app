@@ -162,7 +162,7 @@ public class TotalRequirementsSection {
 			? currency.code
 			: "?";
 		var value = Numbers.decimalFormat(v, 2) + " " + symbol;
-		tk.createLabel(comp, label + ": " + value)
+		tk.createLabel(comp, label + " - " + value)
 			.setFont(UI.boldFont());
 	}
 

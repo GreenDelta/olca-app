@@ -159,8 +159,8 @@ public class ExportDialog extends FormDialog {
 		// save as file
 		MappedExportResult.of(mappings).applyOn(doc);
 		var json = doc.toJson();
-		var file = FileChooser.forSavingFile(
-			"Save openEPD document", doc.productName + ".json");
+		var file = FileChooser.forSavingFile(M.SaveOpenEpdDocument,
+				doc.productName + ".json");
 		if (file == null)
 			return;
 		try {

@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.ConnectDialog;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Cache;
@@ -124,8 +125,8 @@ public class CloneAction extends Action implements INavigationAction {
 		var dir = DatabaseDir.getRootFolder(name);
 		if (!dir.exists())
 			return dir;
-		name = Input.prompt("Import a Git repository",
-				"Please enter a name for the database",
+		name = Input.prompt(M.ImportGitRepository,
+				M.PleaseEnterADatabaseName,
 				name,
 				v -> v,
 				Database::validateNewName);

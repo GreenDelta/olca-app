@@ -39,7 +39,7 @@ class ReviewQualityTable {
 
 		var qs = Quality.values();
 		var props = new String[qs.length + 1];
-		props[0] = "Aspect";
+		props[0] = M.Aspect;
 		for (int i = 0; i < qs.length; i++) {
 			props[i + 1] = qs[i].value();
 		}

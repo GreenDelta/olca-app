@@ -47,7 +47,7 @@ public class RemoveSupplyChainCommand extends Command {
 
 	@Override
 	public void redo() {
-		App.runInUI("Removing the supply chain", () -> {
+		App.runInUI(M.RemovingTheSupplyChain, () -> {
 			var graphLinks = providerLinks.stream().map(graph::getLink).toList();
 			DeleteManager.on(graph).graphLinks(graphLinks, answer);
 		});

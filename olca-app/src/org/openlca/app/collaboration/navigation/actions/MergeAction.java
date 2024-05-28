@@ -62,7 +62,7 @@ public class MergeAction extends Action implements INavigationAction {
 			if (mergeResult == MergeResult.MOUNT_ERROR) {
 				MsgBox.error(M.CouldNotMountLibrary);
 			} else if (mergeResult == MergeResult.NO_CHANGES) {
-				MsgBox.info("No changes to merge");
+				MsgBox.info(M.NoChangesToMerge);
 			}
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during Git merge", e);

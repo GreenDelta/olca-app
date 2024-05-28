@@ -44,7 +44,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(
-				comp, M.Name, "Similarity");
+				comp, M.Name, M.Similarity);
 		table.setLabelProvider(new Label());
 		Tables.bindColumnWidths(table, 0.5, 0.5);
 
@@ -61,7 +61,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 
 		// set input
 		form.reflow(true);
-		App.runInUI("Calculate similarities", () -> {
+		App.runInUI(M.CalculateSimilarities, () -> {
 			var items = Item.listOf(getModel());
 			table.setInput(items);
 		});

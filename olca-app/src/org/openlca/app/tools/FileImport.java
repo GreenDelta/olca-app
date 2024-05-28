@@ -86,11 +86,7 @@ public class FileImport {
 			}
 		}
 
-		MsgBox.info("Unknown format",
-			"openLCA could not detect the format of the file '"
-				+ file.getName() + "'. You can also try an "
-				+ "import option in the generic import dialog "
-				+ "under Import > Other");
+		MsgBox.info(M.UnknownFormat, M.UnknownFormatInfo);
 
 	}
 
@@ -98,9 +94,7 @@ public class FileImport {
 		switch (format) {
 			case ES1_XML, ES1_ZIP -> EcoSpold01ImportWizard.of(file);
 			case ES2_XML, ES2_ZIP -> MsgBox.info(
-					"EcoSpold v2", "The import of EcoSpold 2 files is not directly " +
-							"supported. If you want to import ecoinvent data sets, please " +
-							"visit nexus.openlca.org for ecoinvent databases for openLCA.");
+					M.EcoSpoldV2, M.EcoSpoldV2Info);
 			case EXCEL -> ExcelImportWizard.of(file);
 			case GEO_JSON -> GeoJsonImportWizard.of(file);
 			case ILCD_ZIP -> ILCDImportWizard.of(file);
@@ -109,12 +103,7 @@ public class FileImport {
 			case MAPPING_CSV -> importMappingFile(file);
 			case SIMAPRO_CSV -> SimaProCsvImportWizard.of(file);
 			case ZOLCA -> importZOLCA(file);
-			default -> MsgBox.info("No import found",
-				"Format '" + format + "' was detected but no" +
-					" import wizard could be found. You can" +
-					" try the generic import under 'Import >" +
-					" Other...' for selecting a more specific" +
-					" option.");
+			default -> MsgBox.info(M.NoImportFound, M.NoImportFoundInfo);
 		}
 	}
 
@@ -144,8 +133,8 @@ public class FileImport {
 			// open a friendly dialog
 			var dialog = new InputDialog(
 				UI.shell(),
-				"Save mapping in database",
-				"Please provide a unique name for the new mapping file",
+				M.SaveMappingInDatabase,
+				M.SaveMappingInDatabaseInfo,
 				proposed,
 				name -> {
 					if (Strings.nullOrEmpty(name))

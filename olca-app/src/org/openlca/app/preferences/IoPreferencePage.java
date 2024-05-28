@@ -146,7 +146,7 @@ public class IoPreferencePage extends PreferencePage implements
 				return;
 			}
 			MsgBox.info(M.ConnectionWorks
-					+ " (Data stock = " + stock.getShortName() + ")");
+					+ " (" + M.DataStock + " = " + stock.getShortName() + ")");
 		} catch (Exception e) {
 			MsgBox.error(M.ILCDConnectionFailedErr + " - " + e.getMessage());
 		}

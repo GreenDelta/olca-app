@@ -49,7 +49,7 @@ public class PushAction extends Action implements INavigationAction {
 			if (result == null)
 				return;
 			if (result.newCommits().isEmpty()) {
-				MsgBox.info("No commits to push - Everything up to date");
+				MsgBox.info(M.NoCommitToPushInfo);
 			} else if (result.status() == Status.REJECTED_NONFASTFORWARD) {
 				MsgBox.error(M.RejectedNotUpToDateErr);
 			} else {

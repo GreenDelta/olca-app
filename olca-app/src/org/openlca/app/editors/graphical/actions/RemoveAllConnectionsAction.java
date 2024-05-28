@@ -52,7 +52,7 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 		if (command != null) {
 			if (command.canExecute())
 				execute(getCommand());
-			else MsgBox.info("Connections cannot be removed.");
+			else MsgBox.info(M.ConnectionsCannotBeRemoved);
 		}
 	}
 

@@ -37,7 +37,7 @@ class CompletenessTable {
 	void render(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, M.Completeness, 1);
 		var table = Tables.createViewer(comp,
-				"Aspect",
+				M.Aspect,
 				labelOf(FlowCompleteness.ALL_RELEVANT_FLOWS_QUANTIFIED),
 				labelOf(FlowCompleteness.RELEVANT_FLOWS_MISSING),
 				labelOf(FlowCompleteness.TOPIC_NOT_RELEVANT),

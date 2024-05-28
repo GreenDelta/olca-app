@@ -50,7 +50,7 @@ public class LibraryExportDialog extends FormDialog {
 		}
 		try {
 			var props = App.exec(
-					"Collect database properties...",
+					M.CollectDatabasePropertiesDots,
 					() -> Props.of(db));
 			if (props.hasLibraryProcesses) {
 				MsgBox.error(M.ContainsLibraryProcesses, M.ContainsLibraryProcessesErr);

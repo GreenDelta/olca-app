@@ -46,7 +46,7 @@ public class LibraryInfoPage extends FormPage {
 			description.setText(info.description());
 		}
 
-		var isRegionalized = UI.labeledCheckbox(comp, tk, "Is regionalized");
+		var isRegionalized = UI.labeledCheckbox(comp, tk, M.IsRegionalized);
 		isRegionalized.setSelection(info.isRegionalized());
 		isRegionalized.setEnabled(false);
 
@@ -57,7 +57,7 @@ public class LibraryInfoPage extends FormPage {
 
 	private void renderDepTable(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, M.LibraryDependencies, 1);
-		var table = Tables.createViewer(comp, "Library");
+		var table = Tables.createViewer(comp, M.Library);
 		Tables.bindColumnWidths(table, 1.0);
 		table.setInput(info.dependencies());
 		table.setLabelProvider(new DepLabel());

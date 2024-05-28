@@ -77,7 +77,7 @@ class Validation {
 			if (validation.wasCanceled())
 				return;
 			App.runInUI(
-					"Show validation statistics",
+					M.ShowValidationStatistics,
 					() -> new StatsDialog(setup, validation.stats()).open());
 		}
 
@@ -97,7 +97,7 @@ class Validation {
 			var tk = form.getToolkit();
 			var body = UI.dialogBody(form.getForm(), tk);
 			var table = Tables.createViewer(body,
-					"Geometry type", "Valid features", "Invalid features");
+					M.GeometryType, M.ValidFeatures, M.InvalidFeatures);
 			table.setLabelProvider(new StatsLabel(stats));
 			table.setInput(Shape.values());
 			Tables.bindColumnWidths(table, 0.4, 0.3, 0.3);

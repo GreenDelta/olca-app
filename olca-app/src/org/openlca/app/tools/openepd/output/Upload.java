@@ -27,12 +27,10 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 		try {
 
 			// fetch an existing EPD
-			var json = App.exec("Get EPD",
+			var json = App.exec(M.GetEpd,
 				() -> NullDiff.clearNulls(jsonOf(client.getEpd(id))));
 			if (json == null) {
-				var create = errorAsk("EPD does not exist",
-					"An EPD with this ID does not exist. " +
-						"Do you want to create a new EPD instead?");
+				var create = errorAsk(M.EpdDoesNotExist, M.EpdDoesNotExistQuestion);
 				return create
 					? newDraft()
 					: ExportState.canceled();
@@ -49,7 +47,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			update(json, oldDoc);
 
 			// update the EPD on the server
-			var resp = App.exec("Upload EPD", () -> client.putEpd(id, json));
+			var resp = App.exec(M.UploadEpdDots, () -> client.putEpd(id, json));
 			return resp.isError()
 				? error(resp, M.FailedToUpdateEpd + " (" + id + ")")
 				: ExportState.updated(id);
@@ -98,7 +96,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			epd.pcr = null;
 			epd.verifier = null;
 
-			var resp = App.exec("Upload EPD", () -> client.postEpd(epd.toJson()));
+			var resp = App.exec(M.UploadEpdDots, () -> client.postEpd(epd.toJson()));
 			var json = jsonOf(resp);
 			if (resp.isError() || json == null)
 				return error(resp, M.FailedToUpdateEpdToEc3);
@@ -126,7 +124,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 	private boolean errorAsk(String title, String question) {
 		int r = MessageDialog.open(
 			MessageDialog.ERROR, UI.shell(), title, question, SWT.NONE,
-			"Continue", IDialogConstants.CANCEL_LABEL);
+			M.Continue, IDialogConstants.CANCEL_LABEL);
 		return r == IDialogConstants.OK_ID;
 	}
 

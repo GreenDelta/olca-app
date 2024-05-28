@@ -142,8 +142,7 @@ class ResultMap {
 
 	private void export() {
 		if (coll == null) {
-			MsgBox.info("No data",
-					"The map does not contain result data.");
+			MsgBox.info(M.NoData, M.MapDoesNotContainResultData);
 			return;
 		}
 		var file = FileChooser.forSavingFile(M.Export, "result.geojson");

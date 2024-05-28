@@ -127,10 +127,10 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			var tk = form.getToolkit();
 			UI.header(form, M.SelectSystemDatabases);
 			var body = UI.dialogBody(form.getForm(), tk);
-			viewer = Tables.createViewer(body, "System model", "Database");
+			viewer = Tables.createViewer(body, M.SystemModel, M.Database);
 			viewer.setLabelProvider(new Label());
-			entries.add(new Entry("Cut-off"));
-			entries.add(new Entry("Consequential long-term"));
+			entries.add(new Entry(M.Cutoff));
+			entries.add(new Entry(M.ConsequentialLongTerm));
 			entries.add(new Entry("APOS"));
 			setInput();
 			var ms = new ModifySupport<Entry>(viewer);
@@ -140,7 +140,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			// actions
 			var onAdd = Actions.create(
 					M.AddSystemModel, Icon.ADD.descriptor(), () -> {
-						entries.add(new Entry("model"));
+						entries.add(new Entry(M.Model));
 						setInput();
 					});
 			var onRemove = Actions.create(

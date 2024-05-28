@@ -81,8 +81,8 @@ public class MountLibraryDialog extends FormDialog {
 		var state = checkResult.getState(library).orElse(null);
 		if (state == null) {
 			MsgBox.info(
-					"No libraries to add",
-					"Found no libraries that could be added.");
+					M.NoLibrariesToAdd,
+					M.NoLibrariesToAddInfo);
 			if (callback != null) {
 				callback.accept(Collections.emptySet());
 			}

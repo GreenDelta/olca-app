@@ -44,9 +44,8 @@ class XEI3MetaDataImportAction extends Action implements
 	@Override
 	public void run() {
 		DirectoryDialog dialog = new DirectoryDialog(UI.shell());
-		dialog.setText("Master data directory");
-		dialog.setMessage("Select the EcoSpold 02 directory that contains the "
-				+ "master data.");
+		dialog.setText(M.MasterDataDirectory);
+		dialog.setMessage(M.SelectEcoSpold02Directory);
 		String path = dialog.open();
 		if (path == null)
 			return;

@@ -74,7 +74,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			return;
 		}
 		var checkResult = App.exec(
-			"Check library", () -> PreMountCheck.check(db, lib));
+			M.CheckLibraryDots, () -> PreMountCheck.check(db, lib));
 		if (checkResult.isError()) {
 			ErrorReporter.on("Failed to check library", checkResult.error());
 			return;
@@ -119,7 +119,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 				comp, M.ImportFromFileDots, SWT.NONE);
 			Controls.onSelect(importButton, $ -> {
 				var file = FileChooser.openFile()
-					.withTitle("Select a library package")
+					.withTitle(M.SelectLibraryPackage)
 					.withExtensions("*.zip")
 					.select()
 					.orElse(null);

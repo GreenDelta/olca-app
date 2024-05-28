@@ -74,7 +74,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 		}
 
 		// close a current database and open the new one
-		var db = App.exec("Open database...", () -> {
+		var db = App.exec(M.OpenDatabaseDots, () -> {
 			try {
 				log.trace("Close other database if open");
 				Database.close();

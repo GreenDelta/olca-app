@@ -103,7 +103,7 @@ public class ImportDialog extends FormDialog {
 
 	private String getDeclaredUnit() {
 		if (epdDoc.declaredUnit == null)
-			return "ERROR! no declared unit available";
+			return M.ErrorNoDeclaredUnitAvailable;
 		var unit = epdDoc.declaredUnit.unit();
 		var uMap = UnitMapping.createDefault(db);
 		var u = uMap.getEntry(unit);

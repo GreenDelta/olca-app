@@ -84,7 +84,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 
 		// check that it is not used
 		var usage = App.exec(
-				"Check if library is used ...",
+				M.CheckIfLibraryIsUsedDots,
 				() -> Usage.find(lib));
 		if (usage.isPresent()) {
 			var u = usage.get();
@@ -95,9 +95,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 						u.error);
 				return;
 			}
-			MsgBox.info("Cannot delete library",
-					"We cannot delete library " + lib.name() +
-							" as it is used in " + u.label());
+			MsgBox.info(M.CannotDeleteLibrary, M.CannotDeleteLibraryInfo
+					+ "\r\n " + u.label());
 			return;
 		}
 

@@ -79,9 +79,9 @@ public class ContributionTreePage extends FormPage {
 		var headers = new String[]{
 				M.Contribution,
 				M.Process,
-				"Required amount",
-				"Total result",
-				"Direct contribution"
+				M.RequiredAmount,
+				M.TotalResult,
+				M.DirectContribution
 		};
 		var label = new Label();
 		tree = Trees.createViewer(comp, headers, label);
@@ -148,11 +148,11 @@ public class ContributionTreePage extends FormPage {
 
 		private void updateUnit(String unit) {
 			var totalLabel = Strings.notEmpty(unit)
-					? "Total result [" + unit + "]"
-					: "Total result";
+					? M.TotalResult + " [" + unit + "]"
+					: M.TotalResult;
 			var directLabel = Strings.notEmpty(unit)
-					? "Direct contribution [" + unit + "]"
-					: "Direct contribution";
+					? M.DirectContribution + " [" + unit + "]"
+					: M.DirectContribution;
 			var t = tree.getTree();
 			t.getColumn(3).setText(totalLabel);
 			t.getColumn(4).setText(directLabel);

@@ -56,7 +56,7 @@ class ProviderRow {
 		Controls.onClick(fileLink, e -> {
 			var file = FileChooser.openFile()
 				.withExtensions("*.zip;*.csv;*.CSV;*.xml;*.XML")
-				.withTitle("Open a flow source")
+				.withTitle(M.OpenFlowSource)
 				.select()
 				.orElse(null);
 			if (file == null)

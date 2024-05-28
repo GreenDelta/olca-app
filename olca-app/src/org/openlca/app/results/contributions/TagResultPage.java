@@ -57,7 +57,7 @@ public class TagResultPage extends FormPage {
 			.withSelectionHandler(new SelectionHandler())
 			.create(comp, tk);
 
-		table = Tables.createViewer(comp, "Tag", "Contribution");
+		table = Tables.createViewer(comp, M.Tag, M.Contribution);
 		table.setLabelProvider(new TagItemLabel());
 		Tables.bindColumnWidths(table, 0.5, 0.5);
 		Actions.bind(section, TableClipboard.onCopyAll(table));

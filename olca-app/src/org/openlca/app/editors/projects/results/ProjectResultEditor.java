@@ -33,7 +33,7 @@ public class ProjectResultEditor extends FormEditor {
 			return;
 		var id = Cache.getAppCache().put(data);
 		var input = new SimpleEditorInput(
-				id, "Result of: " + Labels.name(data.project()));
+				id, M.Result + " - " + Labels.name(data.project()));
 		Editors.open(input, "ProjectResultEditor");
 	}
 

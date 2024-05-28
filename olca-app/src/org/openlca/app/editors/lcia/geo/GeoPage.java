@@ -94,7 +94,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		if (file == null)
 			return;
 		var nextSetup = App.exec(
-			"Parse setup ...",
+			M.ParseSetupDots,
 			() -> GeoFactorSetup.read(file, Database.get()));
 		if (nextSetup == null) {
 			ErrorReporter.on("Failed to read setup or" +

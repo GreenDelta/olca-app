@@ -65,17 +65,17 @@ public record MappingTable(
 	private String[] headers() {
 		var columns = new String[columnCount()];
 		if (isForImport) {
-			columns[0] = "openEPD Indicator";
-			columns[1] = "openEPD Unit";
-			columns[2] = "Indicator";
-			columns[3] = "Unit";
+			columns[0] = M.OpenEpdIndicator;
+			columns[1] = M.OpenEpdUnit;
+			columns[2] = M.Indicator;
+			columns[3] = M.Unit;
 		} else {
-			columns[0] = "Indicator";
-			columns[1] = "Unit";
-			columns[2] = "openEPD Indicator";
-			columns[3] = "openEPD Unit";
+			columns[0] = M.Indicator;
+			columns[1] = M.Unit;
+			columns[2] = M.OpenEpdIndicator;
+			columns[3] = M.OpenEpdUnit;
 		}
-		columns[4] = "Factor";
+		columns[4] = M.Factor;
 		for (int i = 0; i < mapping.scopes().size(); i++) {
 			columns[i + 5] = mapping.scopes().get(i);
 		}

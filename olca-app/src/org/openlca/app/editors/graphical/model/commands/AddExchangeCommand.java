@@ -80,10 +80,10 @@ public class AddExchangeCommand extends Command {
 		var flow = dialog.flow;
 
 		if (!pane.accepts(flow)) {
-			MsgBox.info("This flow cannot be added twice to the "
-					+ (pane.isForInputs() ? "inputs" : "outputs")
-					+ " of " + Labels.name(node.descriptor)
-					+ ".");
+			MsgBox.info((pane.isForInputs()
+					? M.FlowCannotBeAddedTwiceToInputs
+					: M.FlowCannotBeAddedTwiceToOutputs)
+					+ "\r\n " + Labels.name(node.descriptor));
 			return;
 		}
 

@@ -28,7 +28,7 @@ public class PythonEditor extends ScriptingEditor {
 
 	public static void open() {
 		var id = UUID.randomUUID() + "_new";
-		var input = new SimpleEditorInput(id, "Python");
+		var input = new SimpleEditorInput(id, M.Python);
 		Editors.open(input, "PythonEditor");
 	}
 
@@ -36,7 +36,7 @@ public class PythonEditor extends ScriptingEditor {
 		if (file == null || !file.exists())
 			return;
 		var id = file.getAbsolutePath();
-		var input = new SimpleEditorInput(id, "Python");
+		var input = new SimpleEditorInput(id, M.Python);
 		Editors.open(input, "PythonEditor");
 	}
 

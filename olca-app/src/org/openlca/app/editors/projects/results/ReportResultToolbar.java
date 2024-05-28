@@ -74,8 +74,8 @@ public class ReportResultToolbar extends EditorActionBarContributor {
 			if (editor == null || editor.data == null)
 				return;
 			var data = editor.data;
-			var file = FileChooser.forSavingFile(
-				"Export project result", "project result.xlsx");
+			var file = FileChooser.forSavingFile(M.ExportProjectResult,
+					"project result.xlsx");
 			if (file == null)
 				return;
 			var export = new ProjectResultExport(

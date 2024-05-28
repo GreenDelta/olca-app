@@ -71,9 +71,9 @@ public class PullAction extends Action implements INavigationAction {
 				MsgBox.error(M.CouldNotMountLibrary);
 			} else if (mergeResult == MergeResult.NO_CHANGES) {
 				if (newCommits.isEmpty()) {
-					MsgBox.info("No commits to fetch - Everything up to date");
+					MsgBox.info(M.NoCommitToFetchInfo);
 				} else {
-					MsgBox.info("No changes to merge");
+					MsgBox.info(M.NoChangesToMerge);
 				}
 			}
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {

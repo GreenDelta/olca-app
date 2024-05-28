@@ -41,7 +41,7 @@ class JsonImportDialog extends Dialog {
 			return null;
 		try {
 			JsonProvider provider = JsonProvider.of(file);
-			List<FlowMap> maps = App.exec("Search flow mappings ...",
+			List<FlowMap> maps = App.exec(M.SearchFlowMappingsDots,
 					() -> provider.getFlowMaps());
 
 			JsonImportDialog d = new JsonImportDialog(provider, maps);
@@ -49,7 +49,7 @@ class JsonImportDialog extends Dialog {
 				return null;
 			}
 			if (d.selectedMap == null) {
-				MsgBox.info("Not yet implemented.");
+				MsgBox.info(M.NotYetImplemented);
 				return null;
 			}
 			return d.selectedMap;

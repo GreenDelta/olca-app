@@ -204,10 +204,9 @@ public class Database {
 	 */
 	public static String validateNewName(String name) {
 		if (name == null || name.isBlank() || name.isEmpty())
-			return "An empty name is not allowed.";
+			return M.EmptyNameNotAllowed;
 		if (!name.strip().equals(name)) {
-			return "The given database name contains" +
-					" leading or trailing whitespaces.";
+			return M.EmptyNameNotAllowedDatabaseInfo;
 		}
 		try {
 			var dir = new File(Workspace.dbDir(), name);

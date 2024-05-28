@@ -14,7 +14,6 @@ import org.openlca.app.components.mapview.MapDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -51,11 +50,11 @@ class GeoPropertySection {
 
 		// create the table
 		table = Tables.createViewer(comp,
-				"Parameter",
-				"Identifier",
-				"Default value",
-				"Range",
-				"Aggregation type");
+				M.Parameter,
+				M.Identifier,
+				M.DefaultValue,
+				M.Range,
+				M.AggregationType);
 		table.setLabelProvider(new Label());
 		Tables.bindColumnWidths(
 				table, 0.2, 0.2, 0.2, 0.2, 0.2);
@@ -100,21 +99,18 @@ class GeoPropertySection {
 		var loc = Database.get().get(Location.class, d.id);
 		var geoData = GeoJSON.unpack(loc.geodata);
 		if (geoData == null || geoData.isEmpty()) {
-			MsgBox.info("No geographic data", "The selected location '"
-					+ Labels.name(loc) + "' has no geographic information attached.");
+			MsgBox.info(M.NoGeographicData, M.NoGeographicDataInfo);
 			return;
 		}
 
-		var shares = App.exec("Calculate intersections",
+		var shares = App.exec(M.CalculateIntersectionsDots,
 				() -> IntersectionCalculator.on(setup.features).shares(loc));
 		var coll = new FeatureCollection();
 		shares.stream()
 				.map(IntersectionShare::intersection)
 				.forEach(coll.features::add);
 		if (coll.isEmpty()) {
-			MsgBox.info("No intersections",
-					"The selected location '" + Labels.name(loc) +
-							"' has no intersections with the provided setup.");
+			MsgBox.info(M.NoIntersections, M.NoIntersectionsInfo);
 			return;
 		}
 

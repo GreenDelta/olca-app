@@ -76,10 +76,8 @@ class MappingPage extends FormPage {
 		updateCheckState.run();
 		Controls.onSelect(checkButton, _e -> {
 			if (tool.sourceSystem == null || tool.targetSystem == null) {
-				MsgBox.warning("No source or target system",
-						"You need to select a source and target"
-								+ " system against which you want"
-								+ " to check the mapping.");
+				MsgBox.warning(M.NoSourceOrTargetSystem,
+						M.NoSourceOrTargetSystemMappingInfo);
 				return;
 			}
 			App.runWithProgress("Check mappings", this::syncMappings, () -> {
@@ -98,13 +96,13 @@ class MappingPage extends FormPage {
 		UI.gridLayout(comp, 1);
 		table = Tables.createViewer(
 				comp,
-				"Status",
-				"Source flow",
-				"Source category",
-				"Target flow",
-				"Target category",
-				"Conversion factor",
-				"Default provider");
+				M.Status,
+				M.SourceFlow,
+				M.SourceCategory,
+				M.TargetFlow,
+				M.TargetCategory,
+				M.ConversionFactor,
+				M.DefaultProvider);
 		TableLabel label = new TableLabel();
 		table.setLabelProvider(new TableLabel());
 		Viewers.sortByLabels(table, label);

@@ -126,7 +126,7 @@ class ComplianceSection {
 					.setEditable(editor.isEditable())
 					.renderOn(comp, tk);
 
-			var details = UI.labeledMultiText(comp, tk, "Comment", 40);
+			var details = UI.labeledMultiText(comp, tk, M.Comment, 40);
 			if (_dec.comment != null) {
 				details.setText(_dec.comment);
 			}

@@ -30,8 +30,7 @@ class CalculationDispatch {
 		if (shouldCheckSystem()) {
 			LoggerFactory.getLogger(getClass())
 					.info("check if system {} is linked", system);
-			boolean linked = App.exec(
-					"Check product system ...",
+			boolean linked = App.exec(M.CheckProductSystemDots,
 					() -> ProductSystems.isConnected(system));
 			updateMarker(linked);
 			if (!linked) {

@@ -67,7 +67,7 @@ class GeoFlowSection {
 				M.Flow,
 				M.Category,
 				M.Formula,
-				"Default value",
+				M.DefaultValue,
 				M.Unit);
 		table.setLabelProvider(new Label());
 		Tables.bindColumnWidths(
@@ -131,7 +131,7 @@ class GeoFlowSection {
 	}
 
 	private void onCreateForUsedFlows() {
-		Set<Flow> flows = App.exec("Collect flows", () -> {
+		Set<Flow> flows = App.exec(M.CollectFlowsDots, () -> {
 			if (page.setup == null)
 				return Collections.emptySet();
 			var existing = page.setup.bindings.stream()
@@ -149,17 +149,12 @@ class GeoFlowSection {
 		});
 
 		if (flows.isEmpty()) {
-			MsgBox.info("No flows found",
-					"There are no flows in the characterization " +
-							"factors that do not have a binding yet");
+			MsgBox.info(M.NoFlowsFound, M.NoFlowsFoundInfo);
 			return;
 		}
 
-		var dialog = new InputDialog(UI.shell(),
-				"Provide a default formula",
-				"Please provide a default formula that " +
-						"should be used for the new bindings",
-				"1", null);
+		var dialog = new InputDialog(UI.shell(), M.ProvideDefaultFormula,
+				M.ProvideDefaultFormulaInfo, "1", null);
 		if (dialog.open() != Window.OK)
 			return;
 		var formula = dialog.getValue();
@@ -195,7 +190,7 @@ class GeoFlowSection {
 	private void onCalculateAllMissing() {
 		if (!canCalculate())
 			return;
-		var locations = App.exec("Collect locations", () -> {
+		var locations = App.exec(M.CollectLocationsDots, () -> {
 			var dao = new LocationDao(Database.get());
 			var used = page.editor.getModel()
 					.impactFactors.stream()
@@ -211,10 +206,7 @@ class GeoFlowSection {
 		});
 
 		if (locations.isEmpty()) {
-			MsgBox.info(
-					"No locations found",
-					"No locations with geo-data which are not already " +
-							"present in the CFs could be found.");
+			MsgBox.info(M.NoLocationsFound, M.NoLocationsFoundInfo);
 			return;
 		}
 		var b = Question.ask(M.RunCalculationQ, M.CalculateForAdditionalLocations);

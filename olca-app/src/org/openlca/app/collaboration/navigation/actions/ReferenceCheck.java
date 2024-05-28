@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitReferencesDialog;
 import org.openlca.app.collaboration.navigation.actions.ModelReferences.ModelReference;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
@@ -41,7 +42,7 @@ class ReferenceCheck {
 		this.selection = new TypedRefIdMap<>();
 		input.forEach(node -> selection.put(node.contentAsTriDiff(), node));
 		this.visited = new TypedRefIdSet();
-		this.references = App.exec("Collecting references", () -> ModelReferences.scan(Database.get()));
+		this.references = App.exec(M.CollectingReferencesDots, () -> ModelReferences.scan(Database.get()));
 	}
 
 	static Set<DiffNode> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {

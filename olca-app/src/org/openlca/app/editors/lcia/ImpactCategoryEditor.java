@@ -116,7 +116,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 			// impact direction
 			var combo = UI.labeledCombo(comp, tk, M.ImpactDirection);
-			combo.setItems("Unspecified", M.Input, M.Output);
+			combo.setItems(M.Unspecified, M.Input, M.Output);
 			UI.gridData(combo, false, false).widthHint = 150;
 			var dir = getModel().direction;
 			combo.select(dir != null

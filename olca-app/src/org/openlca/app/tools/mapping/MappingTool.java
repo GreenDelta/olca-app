@@ -66,8 +66,7 @@ public class MappingTool extends SimpleFormEditor {
 			} else if (format == Format.MAPPING_CSV) {
 				open(FlowMap.fromCsv(file));
 			} else {
-				MsgBox.info("Unsupported format file format. Supported are "
-						+ "flow mappings from CSV files and JSON-LD packages.");
+				MsgBox.info(M.UnsupportedFileFormatInfo);
 			}
 		} catch (Exception e) {
 			MsgBox.error(M.CouldNotOpenFile, e);
@@ -99,7 +98,7 @@ public class MappingTool extends SimpleFormEditor {
 		var cacheID = uid + " /mapping";
 		cache.put(cacheID, mapping);
 		Editors.open(
-				new SimpleEditorInput(cacheID, "Flow mapping"),
+				new SimpleEditorInput(cacheID, M.FlowMapping),
 				"MappingTool");
 	}
 
@@ -184,8 +183,8 @@ public class MappingTool extends SimpleFormEditor {
 		// open a friendly dialog
 		var dialog = new InputDialog(
 				UI.shell(),
-				"Save mapping in database",
-				"Please provide a unique name for the new mapping file",
+				M.SaveMappingInDatabase,
+				M.SaveMappingInDatabaseInfo,
 				proposedName,
 				name -> {
 					if (Strings.nullOrEmpty(name))

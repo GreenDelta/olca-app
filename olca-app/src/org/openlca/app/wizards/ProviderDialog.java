@@ -45,7 +45,7 @@ class ProviderDialog extends Dialog {
 		if (e == null)
 			return opts;
 		try {
-			App.runInUI("Select a provider", () -> {
+			App.runInUI(M.SelectProvider, () -> {
 				var dialog = new ProviderDialog(opts, e, providers);
 				dialog.open();
 			}).join();

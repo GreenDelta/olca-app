@@ -53,11 +53,8 @@ class Repair {
 	private static void showInfo(FeatureRepair repair) {
 		if (repair.wasCanceled())
 			return;
-		App.runInUI("Feature repair done", () -> {
-			var msg = repair.count() == 1
-					? "Checked one feature."
-					: "Checked " + repair.count() + " features.";
-			MsgBox.info("Feature repair done", msg);
+		App.runInUI(M.FeatureRepairDone, () -> {
+			MsgBox.info(M.FeatureRepairDone, M.CheckFeatures + " - " + repair.count());
 		});
 	}
 

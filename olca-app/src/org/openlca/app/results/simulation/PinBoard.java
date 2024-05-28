@@ -65,10 +65,10 @@ class PinBoard {
 		filter.addModifyListener(e -> table.setInput(selectInput()));
 
 		table = Tables.createViewer(comp,
-				"Pin / Unpin",
-				"Process / Sub-System",
+				M.PinUnpin,
+				M.ProcessSubSystem,
 				M.Product,
-				"Display in chart");
+				M.DisplayInChart);
 		Tables.bindColumnWidths(table, 0.15, 0.35, 0.35, 0.15);
 		Label label = new Label();
 		table.setLabelProvider(label);

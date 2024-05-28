@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.MountLibraryDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
@@ -64,9 +65,9 @@ class LibraryResolver {
 			return;
 		}
 		Library resolved = dialog.isFileSelected()
-				? App.exec("Extracting library " + link.id(),
+				? App.exec(M.ExtractingLibrary + " - " + link.id(),
 						() -> Libraries.importFromFile(new File(dialog.getLocation())))
-				: App.exec("Downloading and extracting library " + link.id(),
+				: App.exec(M.DownloadingAndExtractingLibrary + " - " + link.id(),
 						() -> Libraries.importFromUrl(dialog.getLocation()));
 		if (resolved == null) {
 			askFor(link);

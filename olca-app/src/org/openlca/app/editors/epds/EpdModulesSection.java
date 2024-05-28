@@ -40,11 +40,11 @@ class EpdModulesSection {
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk);
 		var table = Tables.createViewer(comp,
-			"Module",
-			"Result",
-			"LCIA Method",
-			"Result multiplier",
-			"Reference flow");
+				M.Module,
+				M.Result,
+				M.LciaMethod,
+				M.ResultMultiplier,
+				M.ReferenceFlow);
 		table.setLabelProvider(new LabelProvider());
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 

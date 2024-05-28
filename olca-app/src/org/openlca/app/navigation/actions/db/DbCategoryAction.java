@@ -53,9 +53,8 @@ public class DbCategoryAction extends Action implements INavigationAction {
 
 		var dialog = new InputDialog(
 				UI.shell(),
-				"Set the database folder",
-				"Please enter the path of the database folder. Forward slashes " +
-						"are used as separators, e.g. my/database/folder.",
+				M.SetDatabaseFolder,
+				M.SetDatabaseFolderInfo,
 				current,
 				null);
 		if (dialog.open() != Window.OK)
