@@ -84,11 +84,11 @@ public class JsonCompareDialog extends FormDialog {
 		} else if (hasLeft && hasRight) {
 			createButton(parent, IDialogConstants.OK_ID, M.MarkAsMerged, true);
 		} else if (hasRight) {
-			createButton(parent, KEEP, M.KeepDatasetDeleted, true);
-			createButton(parent, OVERWRITE, M.ImportRemoteDataset, false);
+			createButton(parent, KEEP, M.KeepDataSetDeleted, true);
+			createButton(parent, OVERWRITE, M.ImportRemoteDataSet, false);
 		} else {
-			createButton(parent, KEEP, M.KeepLocalDataset, false);
-			createButton(parent, OVERWRITE, M.DeleteLocalDataset, true);
+			createButton(parent, KEEP, M.KeepLocalDataSet, false);
+			createButton(parent, OVERWRITE, M.DeleteLocalDataSet, true);
 		}
 	}
 

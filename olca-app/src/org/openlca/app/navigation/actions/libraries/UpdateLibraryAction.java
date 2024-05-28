@@ -50,7 +50,7 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 			return;
 		if (!Question.ask(M.UpdatingLibraryWarning,
 				M.ActionMightBrakeDatabase + "\r\n\r\n"
-						+ "* " + M.DatasetsLinkedToDatasetRemoved + "\r\n"
+						+ "* " + M.DataSetsLinkedToDataSetRemoved + "\r\n"
 						+ "* " + M.UnitsUsedInExchangeRemoved + "\r\n"
 						+ "* " + M.FlowsLinkedToProductSystemRemoved + "\r\n"
 						+ "* " + M.ParametersUsedInFormulaRemoved + "\r\n\r\n"

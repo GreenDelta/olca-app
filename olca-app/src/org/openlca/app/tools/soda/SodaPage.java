@@ -163,8 +163,8 @@ class SodaPage extends FormPage {
 			return;
 		}
 
-		var b = Question.ask(M.ImportSelectedDatabaseQ,
-				M.ImportSelectedDatabaseQuestion);
+		var b = Question.ask(M.ImportSelectedDataSetQ,
+				M.ImportSelectedDataSetQuestion);
 		if (!b)
 			return;
 

@@ -267,6 +267,7 @@ public class M extends NLS {
 	public static String DataSet;
 	public static String DataSetOtherEvaluation;
 	public static String DataSetOwner;
+	public static String DataSetsLinkedToDataSetRemoved;
 	public static String DataSourceInformation;
 	public static String DataTreatment;
 	public static String Database;
@@ -278,7 +279,6 @@ public class M extends NLS {
 	public static String DatabaseRenameError;
 	public static String DatabaseVersionCheckFailed;
 	public static String DatabaseWasExportedToFile;
-	public static String DatasetsLinkedToDatasetRemoved;
 	public static String DaysAgo;
 	public static String DaysFromNow;
 	public static String DeclaredProduct;
@@ -299,7 +299,7 @@ public class M extends NLS {
 	public static String DeleteLinkDelete;
 	public static String DeleteLinkHide;
 	public static String DeleteLinkKeep;
-	public static String DeleteLocalDataset;
+	public static String DeleteLocalDataSet;
 	public static String DeleteMappingFileQ;
 	public static String DeleteMappingFileQuestion;
 	public static String DeleteNote;
@@ -563,9 +563,9 @@ public class M extends NLS {
 	public static String ImportOpenLcaDataPackage;
 	public static String ImportProcessesFromExcelFiles;
 	public static String ImportReferenceData;
-	public static String ImportRemoteDataset;
-	public static String ImportSelectedDatabaseQ;
-	public static String ImportSelectedDatabaseQuestion;
+	public static String ImportRemoteDataSet;
+	public static String ImportSelectedDataSetQ;
+	public static String ImportSelectedDataSetQuestion;
 	public static String ImportUpdateLocations;
 	public static String ImportZipFileWithTheIlcdDataSets;
 	public static String Imported;
@@ -614,9 +614,9 @@ public class M extends NLS {
 
 	// K
 	public static String KeepAllExistingLinks;
-	public static String KeepDatasetDeleted;
+	public static String KeepDataSetDeleted;
 	public static String KeepExisting;
-	public static String KeepLocalDataset;
+	public static String KeepLocalDataSet;
 	public static String KeepVersionDb;
 	public static String Key;
 
