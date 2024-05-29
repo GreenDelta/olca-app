@@ -42,7 +42,7 @@ class FlowRefDialog extends FormDialog {
 		if (provider == null || fn == null)
 			return;
 		AtomicReference<Tree> treeRef = new AtomicReference<>();
-		App.runWithProgress("Collect flows and build tree ...", () -> {
+		App.runWithProgress(M.CollectFlowAndBuildTreeDots, () -> {
 			Tree tree = Tree.build(provider.getFlowRefs());
 			treeRef.set(tree);
 		}, () -> {

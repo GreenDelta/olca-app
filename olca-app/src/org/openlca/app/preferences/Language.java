@@ -2,36 +2,38 @@ package org.openlca.app.preferences;
 
 import java.util.Objects;
 
+import org.openlca.app.M;
+
 /**
  * Enumeration of supported languages.
  */
 public enum Language {
 
-	ARABIC("Arabic", "ar"),
+	ARABIC(M.Arabic, "ar"),
 
-	BULGARIAN("Bulgarian", "bg"),
+	BULGARIAN(M.Bulgarian, "bg"),
 
-	CATALAN("Catalan", "ca"),
+	CATALAN(M.Catalan, "ca"),
 
-	CHINESESIMPLIFIED("Chinese (Simplified)", "zh_cn"),
+	CHINESESIMPLIFIED(M.ChineseSimplified, "zh_cn"),
 
-	CHINESETRADITIONAL("Chinese (Traditional)", "zh_tw"),
-	
-	ENGLISH("English", "en"),
+	CHINESETRADITIONAL(M.ChineseTraditional, "zh_tw"),
 
-	FRENCH("French", "fr"),
+	ENGLISH(M.English, "en"),
 
-	GERMAN("German", "de"),
+	FRENCH(M.French, "fr"),
 
-	HUNGARIAN("Hungarian", "hu"),
+	GERMAN(M.German, "de"),
 
-	ITALIAN("Italian", "it"),
+	HUNGARIAN(M.Hungarian, "hu"),
 
-	PORTUGUESE("Portuguese", "pt"),
+	ITALIAN(M.Italian, "it"),
 
-	SPANISH("Spanish", "es"),
+	PORTUGUESE(M.Portuguese, "pt"),
 
-	TURKISH("Turkish", "tr");
+	SPANISH(M.Spanish, "es"),
+
+	TURKISH(M.Turkish, "tr");
 
 	private final String code;
 	private final String displayName;

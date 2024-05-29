@@ -129,17 +129,17 @@ public class ExchangeFigure extends ComponentFigure {
 		if (exchange.isAvoided) {
 			prefix += " - " + M.Avoided;
 		}
-		var text = prefix + ": " + Labels.name(exchange.flow) + "\n";
+		var text = prefix + " - " + Labels.name(exchange.flow) + "\n";
 		if (exchange.flow.category != null) {
-			text += M.Category + ": " + Labels.category(
+			text += M.Category + " - " + Labels.category(
 					Descriptor.of(exchange.flow)) + "\n";
 		}
-		text += M.Amount + ": "
+		text += M.Amount + " - "
 				+ Numbers.format(exchange.amount)
 				+ " " + Labels.name(exchange.unit);
 
 		if (exchange.formula != null)
-			text += "\n" + M.Formula + ": " + exchange.formula;
+			text += "\n" + M.Formula + " - " + exchange.formula;
 
 		return text;
 	}

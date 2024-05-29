@@ -82,7 +82,7 @@ class EditorPage extends FormPage {
 		bindActions();
 		mform.reflow(true);
 		App.runWithProgress(
-			"Loading parameters ...",
+			M.LoadingParametersDots,
 			() -> Param.fetchAll(Database.get(), params),
 			() -> table.setInput(params));
 	}
@@ -110,7 +110,7 @@ class EditorPage extends FormPage {
 
 		var onEvaluate = Actions.create(
 			M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> App.runWithProgress(
-				M.EvaluateAllFormulas, this::evaluateFormulas, () -> {
+				M.EvaluateAllFormulasDots, this::evaluateFormulas, () -> {
 					table.setInput(params);
 					filter.setText("");
 				}));

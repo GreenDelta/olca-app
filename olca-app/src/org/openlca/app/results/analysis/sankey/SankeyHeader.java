@@ -1,5 +1,9 @@
 package org.openlca.app.results.analysis.sankey;
 
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+
+import java.beans.PropertyChangeEvent;
+
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -16,14 +20,14 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
 import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.frame.Header;
-import org.openlca.app.util.*;
+import org.openlca.app.util.Colors;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
+import org.openlca.app.util.UI;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-
-import java.beans.PropertyChangeEvent;
-
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
 public class SankeyHeader extends Header {
 
@@ -147,9 +151,9 @@ public class SankeyHeader extends Header {
 				&& getModel().getConfig().selection() != null) {
 			var selection = getModel().getConfig().selection();
 			if (selection instanceof EnviFlow)
-				referenceType.setText(M.Flow + ":");
+				referenceType.setText(M.Flow);
 			else if (selection instanceof ImpactDescriptor)
-				referenceType.setText(M.ImpactCategory + ":");
+				referenceType.setText(M.ImpactCategory);
 			else referenceType.setText(M.NoData);
 		} else referenceType.setText(M.NoData);
 	}
@@ -164,7 +168,7 @@ public class SankeyHeader extends Header {
 		if (getModel() != null
 				&& getModel().getConfig() != null) {
 			var cutoff = Numbers.format(getModel().getConfig().cutoff() * 100, 3);
-			minContributionShare.setText("Min. contribution share: " + cutoff + "%");
+			minContributionShare.setText(M.MinContributionShare + " " + cutoff + "%");
 		} else minContributionShare.setText(M.NoData);
 	}
 
@@ -178,7 +182,7 @@ public class SankeyHeader extends Header {
 		if (getModel() != null
 				&& getModel().getConfig() != null) {
 			var maxCount = getModel().getConfig().maxCount();
-			processMaxNumber.setText("Max. number of processes: " + maxCount);
+			processMaxNumber.setText(M.MaxNumberOfProcesses + " " + maxCount);
 		} else processMaxNumber.setText(M.NoData);
 	}
 

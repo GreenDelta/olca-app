@@ -5,6 +5,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.openlca.app.M;
 
 /**
  * The preference page for the logger configuration.
@@ -17,16 +18,16 @@ public class LoggerConfigPage extends FieldEditorPreferencePage implements
 		var parent = getFieldEditorParent();
 		var logConsole = new BooleanFieldEditor(
 			LoggerPreference.LOG_CONSOLE,
-			"Show log console",
+			M.ShowLogConsole,
 			getFieldEditorParent());
 		addField(logConsole);
 		String[][] logLevel = new String[][]{
-			{"All", LoggerPreference.LEVEL_ALL},
-			{"Information", LoggerPreference.LEVEL_INFO},
-			{"Warnings", LoggerPreference.LEVEL_WARN},
-			{"Errors", LoggerPreference.LEVEL_ERROR}};
+			{M.All, LoggerPreference.LEVEL_ALL},
+			{M.Information, LoggerPreference.LEVEL_INFO},
+			{M.Warnings, LoggerPreference.LEVEL_WARN},
+			{M.Errors, LoggerPreference.LEVEL_ERROR}};
 		var logRadios = new RadioGroupFieldEditor(
-			LoggerPreference.LOG_LEVEL, "Log-Level:", 1, logLevel, parent, true);
+			LoggerPreference.LOG_LEVEL, M.LogLevel, 1, logLevel, parent, true);
 		addField(logRadios);
 	}
 

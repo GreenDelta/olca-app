@@ -74,7 +74,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		if (!errors.isEmpty()) {
 			var message = errors.get(0);
 			if (errors.size() > 1)
-				message += " (" + (errors.size() - 1) + " more)";
+				message += " (" + (errors.size() - 1) + " " + M.More + ")";
 			MsgBox.error(M.FormulaEvaluationFailed, message);
 		}
 	}

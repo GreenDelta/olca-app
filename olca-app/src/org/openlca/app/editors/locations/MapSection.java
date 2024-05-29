@@ -3,6 +3,7 @@ package org.openlca.app.editors.locations;
 import java.io.StringReader;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
@@ -96,7 +97,7 @@ class MapSection {
 			var area = (Composite) super.createDialogArea(root);
 			UI.gridLayout(area, 1);
 			new Label(area, SWT.NONE).setText(
-					"See e.g. http://geojson.io for examples");
+					NLS.bind(M.ClickTheLinkForExamples, "http://geojson.io"));
 			text = new StyledText(area, SWT.MULTI | SWT.BORDER
 					| SWT.V_SCROLL | SWT.H_SCROLL);
 			text.setAlwaysShowScrollBars(false);

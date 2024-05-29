@@ -71,8 +71,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 			getShell().setText(M.EditAdditionalProperties);
 			var comp = (Composite) super.createDialogArea(root);
 			UI.gridLayout(comp, 1);
-			new Label(comp, SWT.NONE).setText(
-					"The content must be a valid JSON object, see json.org");
+			new Label(comp, SWT.NONE).setText(M.ContentMustBeValidJsonInfo);
 			text = new StyledText(comp,
 					SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 			text.setAlwaysShowScrollBars(false);

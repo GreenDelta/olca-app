@@ -47,7 +47,7 @@ public class ProjectResultEditor extends FormEditor {
 		if (!(obj instanceof ProjectResultData))
 			throw new PartInitException("editor input must be a project result");
 		data = (ProjectResultData) obj;
-		setPartName("Result of: " + Labels.name(data.project()));
+		setPartName(M.Result + " - " + Labels.name(data.project()));
 	}
 
 	@Override

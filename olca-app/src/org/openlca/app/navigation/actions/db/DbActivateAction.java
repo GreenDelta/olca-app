@@ -170,7 +170,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 			// thus we pass an atomic reference around
 			var nextDb = new AtomicReference<>(db);
 			db = null;
-			App.runWithProgress(M.UpdateDatabase, () -> {
+			App.runWithProgress(M.UpdateDatabaseDots, () -> {
 				try {
 					var udb = nextDb.get();
 					nextDb.set(null);

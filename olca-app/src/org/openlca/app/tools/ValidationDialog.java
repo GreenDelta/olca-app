@@ -88,7 +88,7 @@ public class ValidationDialog extends FormDialog {
 	}
 
 	private void createCountCombo(Composite body, FormToolkit tk) {
-		var messageLabel = UI.label(body, tk, "Maximum message count");
+		var messageLabel = UI.label(body, tk, M.MaximumMessageCount);
 		var gd = UI.gridData(messageLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
@@ -167,7 +167,7 @@ public class ValidationDialog extends FormDialog {
 		if (cancelButton != null) {
 			cancelButton.setEnabled(false);
 		}
-		infoLabel.setText("Cancelling validation ...");
+		infoLabel.setText(M.CancellingValidationDots);
 		infoLabel.getParent().redraw();
 		validation.cancel();
 	}

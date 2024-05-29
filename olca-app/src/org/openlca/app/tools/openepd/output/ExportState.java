@@ -1,6 +1,7 @@
 package org.openlca.app.tools.openepd.output;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -125,11 +126,10 @@ public record ExportState(State state, String id) {
 			var text = tk.createFormText(comp, false);
 			UI.fillHorizontal(text).widthHint = 400;
 			var prefix = state.isCreated()
-				? "Uploaded a new EPD draft."
-				: "Updated an existing EPD.";
-			text.setText(prefix + " You can further edit"
-				+ " and publish it on EC3 using the following URL: "
-				+ url, false, true);
+				? M.UploadedNewEpdDraft
+				: M.UploadedAnExistingEpd;
+			text.setText(prefix + " " + NLS.bind(M.YouCanFurtherEditWithUrl, url),
+					false, true);
 			text.addHyperlinkListener(new HyperlinkAdapter() {
 				@Override
 				public void linkActivated(HyperlinkEvent e) {

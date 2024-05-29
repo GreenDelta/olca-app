@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.openlca.app.M;
 import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.io.maps.FlowMapEntry;
@@ -64,15 +65,15 @@ public class Generator implements Runnable {
 
 	private MappingStatus getStatus(FlowRef source, FlowRef target) {
 		if (differentUnits(source, target))
-			return MappingStatus.warn("different units");
+			return MappingStatus.warn(M.DifferentUnits);
 
 		if (!Objects.equals(source.flow.refId, target.flow.refId))
-			return MappingStatus.warn("matched by flow attributes");
+			return MappingStatus.warn(M.MatchedByFlowAttributes);
 
 		if (target.provider != null)
-			return MappingStatus.warn("provider matched by attributes");
+			return MappingStatus.warn(M.ProviderMatchedByAttributes);
 
-		return MappingStatus.ok("matched by flow IDs");
+		return MappingStatus.ok(M.MatchedByFlowIds);
 	}
 
 	private boolean differentUnits(FlowRef source, FlowRef target) {

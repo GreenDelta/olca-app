@@ -1,6 +1,7 @@
 package org.openlca.app.results.analysis.sankey.model;
 
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.core.results.Sankey;
 
@@ -21,7 +22,7 @@ public class SankeyFactory {
 			return new Diagram(editor, config.orientation());
 
 		var diagram = new Diagram(editor, config.orientation());
-		App.runWithProgress("Calculate sankey results",
+		App.runWithProgress(M.CalculateSankeyResultsDots,
 				() -> editor.setSankey(Sankey.of(
 						config.selection(), editor.result.provider())
 						.withMinimumShare(config.cutoff())

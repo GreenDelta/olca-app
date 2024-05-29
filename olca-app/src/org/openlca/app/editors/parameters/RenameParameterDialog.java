@@ -148,7 +148,7 @@ public class RenameParameterDialog extends FormDialog {
 			return;
 		}
 		App.runWithProgress(
-				"Rename parameter",
+				M.RenameParameterDots,
 				() -> Parameters.rename(Database.get(), param, name),
 				Navigator::refresh);
 	}

@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.util.Labels;
@@ -131,7 +132,7 @@ public class Replacer implements Runnable {
 				if (flowID == null || e == null)
 					continue;
 				if (stats.hadFailures(flowID)) {
-					e.sourceFlow().status = MappingStatus.error("Replacement error");
+					e.sourceFlow().status = MappingStatus.error(M.ReplacementError);
 					continue;
 				}
 				if (deleteMapped && !usedFlows.contains(flowID)) {
@@ -140,9 +141,9 @@ public class Replacer implements Runnable {
 					dao.delete(flow);
 					log.info("removed mapped flow {} uuid={}",
 							Labels.name(flow), flow.refId);
-					e.sourceFlow().status = MappingStatus.ok("Applied and removed");
+					e.sourceFlow().status = MappingStatus.ok(M.AppliedAndRemoved);
 				} else {
-					e.sourceFlow().status = MappingStatus.ok("Applied (not removed)");
+					e.sourceFlow().status = MappingStatus.ok(M.AppliedNotRemoved);
 				}
 			}
 		} catch (Exception e) {

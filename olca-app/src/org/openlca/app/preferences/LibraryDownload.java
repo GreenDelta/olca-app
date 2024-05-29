@@ -23,7 +23,7 @@ public class LibraryDownload {
 			return;
 
 		var success = new AtomicBoolean(false);
-		App.runWithProgress("Download native libraries", () -> {
+		App.runWithProgress(M.DownloadNativeLibraryDots, () -> {
 			try {
 				LibDownload.fetch(Repo.GITHUB, Module.UMFPACK, Workspace.root());
 				NativeLib.reloadFrom(Workspace.root());

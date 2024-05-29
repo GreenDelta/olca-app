@@ -135,7 +135,7 @@ class SodaPage extends FormPage {
 
 		var err = new String[1];
 		var result = new ArrayList<Descriptor<?>>();
-		App.runWithProgress("Search datasets ...", () -> {
+		App.runWithProgress(M.SearchDataSetsDots, () -> {
 			try {
 				var list = client.search(clazz, name);
 				result.addAll(list.getDescriptors());
@@ -168,7 +168,7 @@ class SodaPage extends FormPage {
 
 		var imp = Import.of(client, db)
 				.withPreferredLanguage(IoPreference.getIlcdLanguage());
-		App.runWithProgress("Import datasets ...", () -> {
+		App.runWithProgress(M.ImportDataSetsDots, () -> {
 			for (var d : selection) {
 				imp.write(d.toRef().getType(), d.getUUID());
 			}

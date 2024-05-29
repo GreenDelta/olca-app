@@ -150,7 +150,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 			result += " " + unit;
 		}
 		return result + " | " + (cell.isRest
-			? "Others"
+			? M.Others
 			: Labels.name(cell.process));
 	}
 

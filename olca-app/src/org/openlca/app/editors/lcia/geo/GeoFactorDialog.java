@@ -111,7 +111,7 @@ class GeoFactorDialog extends FormDialog {
 				coll.features.add(feature);
 			}
 		}
-		var title = "Regionalized characterization factors for "
+		var title = M.RegionalizedCharacterizationFactor + " - "
 				+ Labels.name(flow);
 		MapDialog.show(title, map -> map.addLayer(coll).fillScale("cf"));
 	}

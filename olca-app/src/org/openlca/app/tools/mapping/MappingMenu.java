@@ -72,7 +72,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		if (!b)
 			return;
 		Generator gen = new Generator(source, target, tool.mapping);
-		App.runWithProgress("Generate mappings ...", gen, () -> {
+		App.runWithProgress(M.GenerateMappingsDots, gen, () -> {
 			tool.refresh();
 		});
 	}
@@ -103,7 +103,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		if (opt.isEmpty())
 			return;
 		var replacer = new Replacer(opt.get());
-		App.runWithProgress("Replace flows ...", replacer, () -> {
+		App.runWithProgress(M.ReplaceFlowDots, replacer, () -> {
 			tool.refresh();
 			Navigator.refresh();
 		});

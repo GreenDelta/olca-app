@@ -107,7 +107,7 @@ public class ConfigPage extends PreferencePage implements
 		var gd = UI.gridData(hideStartLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
-		hideStartLabel.setText("Hide welcome page");
+		hideStartLabel.setText(M.HideWelcomePage);
 
 		var hideStart = new Button(comp, SWT.CHECK);
 		hideStart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -120,7 +120,7 @@ public class ConfigPage extends PreferencePage implements
 	private void createEdgeCheck(Composite comp) {
 		// Edge browser check
 		var edgeLabel = new Label(comp, SWT.NONE);
-		edgeLabel.setText("Use Edge Browser");
+		edgeLabel.setText(M.UseEdgeBrowser);
 		var gd = UI.gridData(edgeLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;

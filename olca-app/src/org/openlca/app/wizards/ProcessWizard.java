@@ -156,7 +156,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 				if (createFlow) {
 					labelLayout.topControl = selectFlowPropertyLabel;
 					contentLayout.topControl = flowPropertyContainer;
-					qRefLabel.setText("Name of the new flow");
+					qRefLabel.setText(M.NameOfTheNewFlow);
 				} else {
 					labelLayout.topControl = selectProductLabel;
 					contentLayout.topControl = productTreeContainer;

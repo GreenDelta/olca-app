@@ -138,9 +138,9 @@ public class FileImport {
 				proposed,
 				name -> {
 					if (Strings.nullOrEmpty(name))
-						return "The name cannot be empty";
+						return M.NameCannotBeEmpty;
 					if (existing.contains(name.toLowerCase().trim()))
-						return "A flow mapping with this name already exists";
+						return M.FlowMappingWithThisNameExists;
 					return null;
 				});
 			if (dialog.open() != Window.OK)

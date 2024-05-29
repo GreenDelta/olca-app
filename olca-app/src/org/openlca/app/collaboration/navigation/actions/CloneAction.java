@@ -47,7 +47,7 @@ public class CloneAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return standalone ? "Import from Git..." : "From Git...";
+		return standalone ? M.ImportFromGitDots : M.FromGitDots;
 	}
 
 	@Override

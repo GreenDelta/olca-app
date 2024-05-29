@@ -65,7 +65,7 @@ public class TagResultPage extends FormPage {
 
 		form.reflow(true);
 
-		App.runWithProgress("Calculate tag results", () -> {
+		App.runWithProgress(M.CalculateTagsResultsDots, () -> {
 			tagResults.clear();
 			tagResults.addAll(TagResult.allOf(editor.result()));
 		}, selector::initWithEvent);
@@ -113,7 +113,7 @@ public class TagResultPage extends FormPage {
 				return;
 
 			var items = new ArrayList<TagItem>();
-			items.add(new TagItem("Total", total, unit, 1, true));
+			items.add(new TagItem(M.Total, total, unit, 1, true));
 
 			for (var tagResult : tagResults) {
 				var value = result.applyAsDouble(tagResult);

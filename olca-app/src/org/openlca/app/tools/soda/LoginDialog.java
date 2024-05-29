@@ -71,7 +71,7 @@ class LoginDialog extends FormDialog {
 		anoCheck = tk.createButton(comp, M.AnonymousAccess, SWT.CHECK);
 		anoCheck.setSelection(true);
 		userText = UI.labeledText(comp, tk, M.User);
-		userText.setText("anonymous");
+		userText.setText(M.Anonymous);
 		userText.setEnabled(false);
 		pwText = UI.labeledText(
 				comp, tk, M.Password, SWT.BORDER | SWT.PASSWORD);
@@ -79,7 +79,7 @@ class LoginDialog extends FormDialog {
 
 		Controls.onSelect(anoCheck, $ -> {
 			var anonymous = anoCheck.getSelection();
-			userText.setText(anonymous ? "anonymous" : "");
+			userText.setText(anonymous ? M.Anonymous : "");
 			pwText.setText("");
 			userText.setEnabled(!anonymous);
 			pwText.setEnabled(!anonymous);
@@ -123,22 +123,22 @@ class LoginDialog extends FormDialog {
 
 		String validate() {
 			if (Strings.nullOrEmpty(url))
-				return "No URL provided";
+				return M.NoUrlProvided;
 			if (!url.startsWith("http://") && !url.startsWith("https://"))
-				return "URL should start with http:// or https://";
+				return M.UrlShouldStartWithHttp;
 			try {
 				new URL(url);
 			} catch (MalformedURLException e) {
-				return "Invalid URL: " + e.getMessage();
+				return M.InvalidUrl + " - " + e.getMessage();
 			}
 
 			if (anonymous)
 				return null;
 
 			if (Strings.nullOrEmpty(user))
-				return "No user name provided";
+				return M.NoUserNameProvided;
 			if (Strings.nullOrEmpty(password))
-				return "No password provided";
+				return M.NoPasswordProvided;
 
 			return null;
 		}

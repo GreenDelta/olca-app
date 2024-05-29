@@ -63,8 +63,8 @@ class MappingDialog extends FormDialog {
 					? new FlowRef()
 					: flowRef;
 				r.status = r.flow == null
-					? MappingStatus.error("no flow set")
-					: MappingStatus.ok("edited or checked manually");
+					? MappingStatus.error(M.NoFlowSet)
+					: MappingStatus.ok(M.EditedOrCheckedManually);
 				return r;
 		};
 		entry.factor(copy.factor())

@@ -111,7 +111,7 @@ public class DbDeleteAction extends Action implements INavigationAction {
 
 	private MessageDialog createMessageDialog() {
 		String name = configs.size() == 1 ? configs.get(0).name()
-				: "the selected databases";
+				: M.TheSelectedDatabases;
 		return new MessageDialog(UI.shell(), M.Delete, null, NLS.bind(
 				M.DoYouReallyWantToDelete, name),
 				MessageDialog.QUESTION, new String[]{

@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.openlca.app.M;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.io.maps.MappingStatus;
 import org.openlca.core.model.FlowType;
@@ -41,8 +42,8 @@ final class Sync {
 			String flowID = mapRef.flow.refId;
 			FlowRef packRef = packRefs.get(flowID);
 			if (packRef == null) {
-				mapRef.status = MappingStatus.error("there is no flow with id="
-						+ flowID + " in the data package");
+				mapRef.status = MappingStatus.error(
+						M.NoFlowWithIdInDataPackageInfo  + " " + flowID);
 				return;
 			}
 
@@ -54,8 +55,8 @@ final class Sync {
 			} else {
 
 				if (packRef.property == null) {
-					mapRef.status = MappingStatus.error("the flow in the data package"
-							+ " has no corresponding flow property");
+					mapRef.status = MappingStatus.error(
+							M.FlowInDataPackageWithoutCorrespondingProperty);
 					return;
 				}
 
@@ -65,8 +66,7 @@ final class Sync {
 						&& packProp.name != null && mapProp.name != null
 						&& !Strings.nullOrEqual(packProp.name, mapProp.name)) {
 					mapRef.status = MappingStatus.error(
-							"the flow property in the data "
-							+ "package has the same ID but a different name: "
+							M.FlowPropertyInDataPackageHasDifferentName + " "
 							+ packProp.name + " != " + mapProp.name);
 					return;
 				}
@@ -91,8 +91,8 @@ final class Sync {
 				if (Strings.nullOrEqual(packUnit.refId, mapUnit.refId)
 						&& packUnit.name != null && mapUnit.name != null
 						&& !Strings.nullOrEqual(packUnit.name, mapUnit.name)) {
-					mapRef.status = MappingStatus.error("the flow unit in the data "
-							+ "package has the same ID but a different name: "
+					mapRef.status = MappingStatus.error(
+							M.FlowUnitInDataPackageHasDifferentName + " "
 							+ packUnit.name + " != " + mapUnit.name);
 					return;
 				}
@@ -104,7 +104,7 @@ final class Sync {
 			Sync.checkFlowLocation(mapRef, packRef.flowLocation);
 
 			if (mapRef.status == null) {
-				mapRef.status = MappingStatus.ok("flow in sync with data package");
+				mapRef.status = MappingStatus.ok(M.FlowInSyncWithDataPackage);
 			}
 
 		});
@@ -114,7 +114,7 @@ final class Sync {
 		if (ref == null)
 			return true;
 		if (ref.flow == null || ref.flow.refId == null) {
-			ref.status = MappingStatus.error("missing flow reference with UUID");
+			ref.status = MappingStatus.error(M.MissingFlowReferenceWithUuid);
 			return true;
 		}
 		return false;
@@ -126,7 +126,7 @@ final class Sync {
 		if (Strings.nullOrEmpty(ref.flow.name)) {
 			ref.flow.name = name;
 		} else if (!Strings.nullOrEqual(ref.flow.name, name)) {
-			addWarning(ref, "the flow in the mapping has a different name");
+			addWarning(ref, M.FlowInMappingDifferentName);
 		}
 	}
 
@@ -138,8 +138,7 @@ final class Sync {
 			return;
 		}
 		if (Strings.nullOrEmpty(path)) {
-			addWarning(ref, "the flow in the mapping "
-					+ "has a different category path");
+			addWarning(ref, M.FlowInMappingDifferentPath);
 			return;
 		}
 		String p1 = ref.flowCategory.toLowerCase();
@@ -151,8 +150,7 @@ final class Sync {
 			p2 = p2.substring(17);
 		}
 		if (!p1.equals(p2)) {
-			addWarning(ref, "the flow in the mapping "
-					+ "has a different category path");
+			addWarning(ref, M.FlowInMappingDifferentCategoryPath);
 		}
 	}
 
@@ -162,7 +160,7 @@ final class Sync {
 		if (ref.flow.flowType == null) {
 			ref.flow.flowType = type;
 		} else if (ref.flow.flowType != type) {
-			addWarning(ref, "the flow in the mapping has a different type");
+			addWarning(ref, M.FlowInMappingDifferentType);
 		}
 	}
 
@@ -172,8 +170,7 @@ final class Sync {
 		if (Strings.nullOrEmpty(ref.flowLocation)) {
 			ref.flowLocation = code;
 		} else if (!Strings.nullOrEqual(code, ref.flowLocation)) {
-			addWarning(ref, "the flow in the mapping "
-					+ "has a different location code");
+			addWarning(ref, M.FlowInMappingDifferentLocation);
 		}
 	}
 
@@ -183,8 +180,7 @@ final class Sync {
 		if (Strings.nullOrEmpty(ref.providerLocation)) {
 			ref.providerLocation = code;
 		} else if (!Strings.nullOrEqual(code, ref.providerLocation)) {
-			addWarning(ref, "the provider in the mapping "
-					+ "has a different location code");
+			addWarning(ref, M.ProviderInMappingDifferentLocation);
 		}
 	}
 

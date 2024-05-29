@@ -129,12 +129,12 @@ public class ImportDialog extends FormDialog {
 
 			var msg = new MessageDialog(
 				UI.shell(),
-				"Import finished",
+				M.ImportFinished,
 				null,
-				"Imported EPD and related data sets.",
+				M.ImportedEpdAndDataSets,
 				MessageDialog.INFORMATION,
 				new String[]{
-					IDialogConstants.OK_LABEL, "Open EPD", "Import details"},
+					IDialogConstants.OK_LABEL, "Open EPD", M.ImportDetails},
 				0);
 			msg.setBlockOnOpen(true);
 			var state = msg.open();

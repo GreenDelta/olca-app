@@ -106,7 +106,7 @@ public class EpdPanel extends SimpleFormEditor {
 				var epds = new ArrayList<Ec3EpdInfo>();
 				var query = searchText.getText();
 				var count = spinner.getSelection();
-				App.runWithProgress("Fetch EPDs", () -> {
+				App.runWithProgress(M.FetchEpdsDots, () -> {
 					var response = Api.descriptors(client)
 						.query(query)
 						.pageSize(count)

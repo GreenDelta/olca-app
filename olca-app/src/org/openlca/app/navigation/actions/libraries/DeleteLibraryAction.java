@@ -45,8 +45,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 	@Override
 	public String getText() {
 		if (element != null && element.getDatabase().isEmpty())
-			return "Remove library";
-		return "Remove library (experimental)";
+			return M.RemoveLibrary;
+		return M.RemoveLibraryExperimental;
 	}
 
 	@Override
@@ -67,9 +67,9 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		if (db.isPresent()) {
 			if (Question.ask(M.RemovingLibraryWarning,
 					M.RemovingLibraryExplanations + "\r\n" + M.DoYouWantToContinue)) {
-				App.runWithProgress("Removing library " + lib.name() + " ...",
+				App.runWithProgress(M.RemovingLibraryDots,
 						() -> new Unmounter(db.get()).unmountUnsafe(lib.name()),
-						() -> Navigator.refresh());
+						Navigator::refresh);
 			}
 		} else {
 			delete(lib);

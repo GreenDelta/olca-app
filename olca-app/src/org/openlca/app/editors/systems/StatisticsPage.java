@@ -151,7 +151,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private void calculate() {
-		App.runWithProgress("Updating statistics ...",
+		App.runWithProgress(M.UpdatingStatisticsDots,
 			() -> stats = Statistics.calculate(getModel(), Cache.getEntityCache()),
 			() -> {
 				if (stats != null) {

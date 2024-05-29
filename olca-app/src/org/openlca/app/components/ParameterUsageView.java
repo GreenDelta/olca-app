@@ -134,8 +134,8 @@ public class ParameterUsageView {
 				return "";
 			return switch (type) {
 				case FORMULA -> M.Formula;
-				case DEFINITION -> "Parameter definition";
-				case REDEFINITION -> "Parameter redefinition";
+				case DEFINITION -> M.ParameterDefinition;
+				case REDEFINITION -> M.ParameterRedefinition;
 			};
 		}
 	}

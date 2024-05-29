@@ -277,10 +277,10 @@ public class ContributionTreePage extends FormPage {
 			return switch (col) {
 				case 0 -> M.Contribution + " [%]";
 				case 1 -> M.Process;
-				case 2 -> "Required amount";
+				case 2 -> M.RequiredAmount;
 				case 3 -> M.Unit;
-				case 4 -> "Total result [" + label.getUnit() + "]";
-				case 5 -> "Direct contribution [" + label.getUnit() + "]";
+				case 4 -> M.TotalResult + " [" + label.getUnit() + "]";
+				case 5 -> M.DirectContribution + " [" + label.getUnit() + "]";
 				default -> null;
 			};
 		}

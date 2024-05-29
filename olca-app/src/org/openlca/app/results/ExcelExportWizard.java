@@ -121,9 +121,7 @@ class ExcelExportWizard extends Wizard {
 			UI.fillHorizontal(group);
 			group.setText(M.ResultMatricesOptional);
 			UI.gridLayout(group, 1);
-			new Label(group, SWT.NONE).setText(
-					"Note that some of these matrices " +
-							"can result in very long export times");
+			new Label(group, SWT.NONE).setText(M.MatricesExportTimeInfo);
 
 			var zeroCheck = UI.checkbox(group, M.SkipZeroValues);
 			zeroCheck.setSelection(skipZeros);

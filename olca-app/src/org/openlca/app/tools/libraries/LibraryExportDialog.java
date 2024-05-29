@@ -160,7 +160,7 @@ public class LibraryExportDialog extends FormDialog {
 				.withInversion(config.withInversion)
 				.withUncertainties(config.withUncertainties);
 		App.runWithProgress(
-				"Creating library " + id,
+				M.CreatingLibraryDots,
 				export,
 				Navigator::refresh);
 	}

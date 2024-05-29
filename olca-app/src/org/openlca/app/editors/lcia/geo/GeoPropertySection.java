@@ -77,7 +77,7 @@ class GeoPropertySection {
 			return;
 		GeoProperty gp = Viewers.getFirstSelected(table);
 		var param = gp != null ? gp.name : null;
-		var title = param != null ? param : "Features";
+		var title = param != null ? param : M.Features;
 		MapDialog.show(title, map -> {
 			if (param == null) {
 				map.addLayer(setup.features).center();
@@ -116,7 +116,7 @@ class GeoPropertySection {
 
 		GeoProperty gp = Viewers.getFirstSelected(table);
 		var param = gp != null ? gp.name : null;
-		MapDialog.show("Intersections", map -> {
+		MapDialog.show(M.Intersections, map -> {
 			if (param == null) {
 				map.addLayer(coll).center();
 			} else {

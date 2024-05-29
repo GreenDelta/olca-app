@@ -28,7 +28,7 @@ public class DiscardAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Discard changes";
+		return M.DiscardChanges;
 	}
 
 	@Override

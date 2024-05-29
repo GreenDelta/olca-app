@@ -35,7 +35,7 @@ public class CollaborationPreferencePage extends PreferencePage implements IWork
 
 	private void createReferenceCheckBox(Composite parent) {
 		var label = new Label(parent, SWT.NONE);
-		label.setText("Check referenced changes");
+		label.setText(M.CheckReferencedChanges);
 		var gd = UI.gridData(label, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;

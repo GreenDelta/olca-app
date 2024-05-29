@@ -36,7 +36,7 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Update library (experimental)";
+		return M.UpdateLibraryExperimental;
 	}
 
 	@Override
@@ -63,9 +63,9 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 			if (added.isEmpty())
 				return;
 			var lib = element.getContent();
-			App.runWithProgress("Removing library " + lib.name() + " ...",
+			App.runWithProgress(M.RemovingLibraryDots,
 					() -> new Unmounter(Database.get()).unmountUnsafe(lib.name()),
-					() -> Navigator.refresh());
+					Navigator::refresh);
 		});
 		addAction.run();
 	}

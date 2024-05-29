@@ -86,7 +86,7 @@ class SearchBar {
 
 		var err = new String[1];
 		var result = new ArrayList<Descriptor<?>>();
-		App.runWithProgress("Search datasets ...", () -> {
+		App.runWithProgress(M.SearchDataSetsDots, () -> {
 			try {
 				var list = client.query(clazz, q);
 				result.addAll(list.getDescriptors());

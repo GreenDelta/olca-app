@@ -107,7 +107,7 @@ public class MountLibraryDialog extends FormDialog {
 			return;
 		}
 		var actions = dialog.collectActions();
-		App.runWithProgress("Add library " + library.name() + " ...",
+		App.runWithProgress(M.AddLibraryDots,
 				() -> Mounter.of(Database.get(), library)
 						.apply(actions)
 						.run(),
@@ -211,13 +211,10 @@ public class MountLibraryDialog extends FormDialog {
 
 		private String info() {
 			return switch (state) {
-				case NEW -> "The following libraries will be added to the database:";
-				case PRESENT -> "The following libraries are already present:";
-				case TAG_CONFLICT -> "The data sets of these libraries are already"
-						+ " present in the database but under a different or no library tag:";
-				case CONFLICT -> "The data sets of these libraries are partly present,"
-						+ " have different library tags, or have other data conflicts. The"
-						+ " data sets in the database will be updated.";
+				case NEW -> M.LibrariesWillBeAddedInfo;
+				case PRESENT -> M.LibrariesAlreadyPresentInfo;
+				case TAG_CONFLICT -> M.LibrariesWithTagConflictInfo;
+				case CONFLICT -> M.LibrariesWithConflictInfo;
 			};
 		}
 
@@ -233,13 +230,13 @@ public class MountLibraryDialog extends FormDialog {
 
 		private String labelOf(MountAction action) {
 			var label = switch (action) {
-				case ADD -> "Add library";
-				case SKIP -> "Keep existing";
-				case RETAG -> "Update library tags only";
-				case UPDATE -> "Update data sets";
+				case ADD -> M.AddLibrary;
+				case SKIP -> M.KeepExisting;
+				case RETAG -> M.UpdateLibraryTagsOnly;
+				case UPDATE -> M.UpdateDataSets;
 			};
 			if (action == state.defaultAction()) {
-				label += " (recommended)";
+				label += " (" + M.Recommended + ")";
 			}
 			return label;
 		}

@@ -50,7 +50,7 @@ public class NumberFormatPage extends PreferencePage implements
 		UI.gridLayout(comp, 2);
 
 		Label description = new Label(comp, SWT.NONE);
-		description.setText(M.NumberFormatPage_Description);
+		description.setText(M.SetNumberOfDecimalPlaces);
 		UI.gridData(description, false, false).horizontalSpan = 2;
 
 		createNumberText(comp);
