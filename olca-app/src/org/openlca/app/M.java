@@ -72,6 +72,7 @@ public class M extends NLS {
 	public static String AmbiguousLinksInfo;
 	public static String Amount;
 	public static String AmountFormula;
+	public static String AmpFile;
 	public static String AnErrorOccurred;
 	public static String Anonymous;
 	public static String AnonymousAccess;

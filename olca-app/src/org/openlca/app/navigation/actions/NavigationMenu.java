@@ -185,7 +185,7 @@ public class NavigationMenu extends CommonActionProvider {
 
 		// try to determine the import from a file
 		menu.add(Actions.create(
-				M.File,
+				M.AmpFile,
 				Icon.FILE.descriptor(),
 				() -> new FileImport().run()));
 		// Git clone

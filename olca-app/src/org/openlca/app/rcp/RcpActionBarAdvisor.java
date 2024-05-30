@@ -120,7 +120,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private void fillFileMenu(IMenuManager menuBar) {
 		MenuManager menu = new MenuManager(
-			M.File, IWorkbenchActionConstants.M_FILE);
+			M.AmpFile, IWorkbenchActionConstants.M_FILE);
 		menu.add(saveAction);
 		menu.add(saveAsAction);
 		menu.add(saveAllAction);

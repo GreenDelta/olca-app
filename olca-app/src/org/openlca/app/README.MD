@@ -18,6 +18,7 @@ following suffixes should be added to the keys:
 - `Dots` for the ellipsis _..._,
 - `Q` for the question mark _?_,
 - `Bang` for the exclamation mark _!_ (not used yet),
+- `Amp` for the ampersand _&_ (`AmpFile=&File`),
 - no suffix for the full stop _._.
 
 For example `M.DeleteQ` is used for _Delete?_.
