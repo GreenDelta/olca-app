@@ -248,6 +248,8 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		var activePage = getSite().getWorkbenchWindow().getActivePage();
+		if (activePage == null)
+			return;
 		if (activePage.getActiveEditor().equals(this.systemEditor))
 			updateActions(getSelectionActions());
 	}

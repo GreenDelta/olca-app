@@ -1,19 +1,27 @@
 package org.openlca.app.results.analysis.sankey;
 
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+
+import java.util.Objects;
+
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.gef.*;
+import org.eclipse.gef.ContextMenuProvider;
+import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.analysis.sankey.actions.EditSankeyConfigAction;
 import org.openlca.app.results.analysis.sankey.actions.LayoutAction;
 import org.openlca.app.results.analysis.sankey.actions.OpenEditorAction;
-import org.openlca.app.results.analysis.sankey.model.SankeyFactory;
-import org.openlca.app.tools.graphics.actions.SaveImageAction;
-import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.analysis.sankey.edit.SankeyEditPartFactory;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
+import org.openlca.app.results.analysis.sankey.model.SankeyFactory;
+import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
 import org.openlca.app.tools.graphics.frame.Splitter;
 import org.openlca.core.math.data_quality.DQResult;
@@ -21,10 +29,6 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.Sankey;
-
-import java.util.Objects;
-
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
 public class SankeyEditor extends GraphicalEditorWithFrame {
 
@@ -134,6 +138,8 @@ public class SankeyEditor extends GraphicalEditorWithFrame {
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection)	{
 		var activePage = getSite().getWorkbenchWindow().getActivePage();
+		if (activePage == null)
+			return;
 		if (Objects.equals(activePage.getActiveEditor(), this.resultEditor))
 			updateActions(getSelectionActions());
 	}
