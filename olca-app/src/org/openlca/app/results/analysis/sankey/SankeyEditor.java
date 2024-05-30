@@ -2,8 +2,6 @@ package org.openlca.app.results.analysis.sankey;
 
 import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
-import java.util.Objects;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
@@ -137,10 +135,11 @@ public class SankeyEditor extends GraphicalEditorWithFrame {
 	 */
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection)	{
-		var activePage = getSite().getWorkbenchWindow().getActivePage();
-		if (activePage == null)
+		var activeEditor = getActiveEditor();
+		if (activeEditor == null)
 			return;
-		if (Objects.equals(activePage.getActiveEditor(), this.resultEditor))
+
+		if (activeEditor.equals(this.resultEditor))
 			updateActions(getSelectionActions());
 	}
 

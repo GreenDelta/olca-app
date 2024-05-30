@@ -17,6 +17,7 @@ import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.tools.graphics.actions.ActionIds;
 import org.openlca.app.tools.graphics.actions.FocusAction;
@@ -191,6 +192,19 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 			return getZoomManager();
 
 		return super.getAdapter(type);
+	}
+
+	protected IWorkbenchPart getActiveEditor() {
+		var site = getSite();
+		if (site == null)
+			return null;
+		var workbenchWindow = site.getWorkbenchWindow();
+		if (workbenchWindow == null)
+			return null;
+		var activePage = workbenchWindow.getActivePage();
+		if (activePage == null)
+			return null;
+		return activePage.getActiveEditor();
 	}
 
 	public boolean doFocus() {

@@ -246,11 +246,12 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	 *                  <code>INullSelectionListener</code> is implemented.
 	 */
 	@Override
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		var activePage = getSite().getWorkbenchWindow().getActivePage();
-		if (activePage == null)
+	public void selectionChanged(IWorkbenchPart part, ISelection selection)	{
+		var activeEditor = getActiveEditor();
+		if (activeEditor == null)
 			return;
-		if (activePage.getActiveEditor().equals(this.systemEditor))
+
+		if (activeEditor.equals(this.systemEditor))
 			updateActions(getSelectionActions());
 	}
 
