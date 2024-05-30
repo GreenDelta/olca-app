@@ -17,8 +17,8 @@ def main():
         call(["npm", "install"], cwd="./olca-app-html")
         call(["npm", "run", "build"], cwd="./olca-app-html")
         call(["node", "gen-jython-bindings.js"])
-        call("npm install", cwd="./olca-app-build/credits")
-        call("node credits-gen.js", cwd="./olca-app-build/credits")
+        call(["npm", "install"], cwd="./olca-app-build/credits")
+        call(["node", "credits-gen.js"], cwd="./olca-app-build/credits")
     else:
         call("mvn.cmd clean", cwd="./olca-app")
         call("update_modules.bat")
