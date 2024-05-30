@@ -168,7 +168,7 @@ public class SankeyHeader extends Header {
 		if (getModel() != null
 				&& getModel().getConfig() != null) {
 			var cutoff = Numbers.format(getModel().getConfig().cutoff() * 100, 3);
-			minContributionShare.setText(M.MinContributionShare + " " + cutoff + "%");
+			minContributionShare.setText(M.MinContributionShare + " - " + cutoff + "%");
 		} else minContributionShare.setText(M.NoData);
 	}
 
@@ -182,7 +182,7 @@ public class SankeyHeader extends Header {
 		if (getModel() != null
 				&& getModel().getConfig() != null) {
 			var maxCount = getModel().getConfig().maxCount();
-			processMaxNumber.setText(M.MaxNumberOfProcesses + " " + maxCount);
+			processMaxNumber.setText(M.MaxNumberOfProcesses + " - " + maxCount);
 		} else processMaxNumber.setText(M.NoData);
 	}
 
