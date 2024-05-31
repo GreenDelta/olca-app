@@ -1466,12 +1466,13 @@ public class M extends NLS {
 	public static String SessionCredentialNotValidErr;
 	public static String SetAsQuantitativeReference;
 	public static String SetAsReferenceCurrency;
+	public static String SetAsReferenceCurrencyQ;
 	public static String SetDatabaseFolder;
 	public static String SetDatabaseFolderInfo;
 	public static String SetFolder;
 	public static String SetNewValue;
 	public static String SetNumberOfDecimalPlaces;
-	public static String SetReferenceCurrencyQ;
+	public static String SetReferenceCurrencyQuestion;
 	public static String Settings;
 	public static String SettingsOfTheSankeyDiagram;
 	public static String Setup;
