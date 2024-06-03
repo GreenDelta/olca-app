@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
@@ -21,6 +22,20 @@ import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitMerge.MergeResult;
 
 public class PullAction extends Action implements INavigationAction {
+
+	private final boolean silent;
+
+	public PullAction() {
+		this(false);
+	}
+
+	private PullAction(boolean silent) {
+		this.silent = silent;
+	}
+
+	static PullAction silent() {
+		return new PullAction(true);
+	}
 
 	@Override
 	public String getText() {
@@ -69,7 +84,7 @@ public class PullAction extends Action implements INavigationAction {
 			}
 			if (mergeResult == MergeResult.MOUNT_ERROR) {
 				MsgBox.error("Could not mount library");
-			} else if (mergeResult == MergeResult.NO_CHANGES) {
+			} else if (mergeResult == MergeResult.NO_CHANGES && !silent) {
 				if (newCommits.isEmpty()) {
 					MsgBox.info("No commits to fetch - Everything up to date");
 				} else {
@@ -77,7 +92,13 @@ public class PullAction extends Action implements INavigationAction {
 				}
 			}
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
-			Actions.handleException("Error pulling data", e);
+			if (e instanceof TransportException && FetchAction.NOTHING_TO_FETCH.equals(e.getMessage())) {
+				if (!silent) {
+					MsgBox.info("No commits to fetch - Everything up to date");
+				}
+			} else {
+				Actions.handleException("Error pulling from remote", e);
+			}
 		} finally {
 			Cache.evictAll();
 			Actions.refresh();
