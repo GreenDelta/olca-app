@@ -1,4 +1,6 @@
 import string
+
+from typing import TextIO
 from datetime import datetime
 
 M_FILE = 'src/org/openlca/app/M.java'
@@ -15,20 +17,23 @@ def remove_unused():
     Removes the unused properties from the messages[...].properties file.
     """
     messages = get_messages()
-
-    def write():
-        date = datetime.now().strftime("#%a %b %d %H:%M:%S CET %Y\n")
-        f.write(date)
-        for line in sorted(lines[1:]):
-            message = line[:line.index('=')]
-            if message in messages:
-                f.write(line)
-
     for lang in LANGUAGES:
         with open(prop_file(lang)) as f:
             lines = f.readlines()
         with open(prop_file(lang), 'w') as f:
-            write()
+            write(f, lines, messages)
+
+
+def write(f: TextIO, lines: list[str], messages: list[str]):
+    """
+    Update the date, sort the message in alphabetical order and write the messages and translations.
+    """
+    date = datetime.now().strftime("#%a %b %d %H:%M:%S CET %Y\n")
+    f.write(date)
+    for line in sorted(lines[1:]):
+        message = line[:line.index('=')]
+        if message in messages:
+            f.write(line)
 
 
 def sort_m_file():
