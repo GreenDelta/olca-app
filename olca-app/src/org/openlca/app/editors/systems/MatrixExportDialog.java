@@ -4,6 +4,9 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -30,12 +33,16 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.Demand;
 import org.openlca.core.matrix.MatrixData;
 import org.openlca.core.matrix.index.ImpactIndex;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.matrix.io.MatrixExport;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Result;
+import org.openlca.core.results.LcaResult;
+import org.openlca.core.results.providers.ResultModelProvider;
 import org.openlca.io.xls.MatrixExcelExport;
 import org.openlca.util.Strings;
 
@@ -254,7 +261,8 @@ public class MatrixExportDialog extends FormDialog {
 					.withAllocation(allocation)
 					.withCosts(withCosts)
 					.withRegionalization(regionalized)
-					.withUncertainties(withUncertainties);
+					.withUncertainties(withUncertainties)
+					.withSubResults(subResultsOf(techIndex));
 
 			if (system != null) {
 				config.withDemand(Demand.of(system));
@@ -270,7 +278,7 @@ public class MatrixExportDialog extends FormDialog {
 			} else if (system != null) {
 				// if there is exactly one parameter set in
 				// the product system we do not show this in
-				// the UI but we add it by default here
+				// the UI, but we add it by default here
 				if (system.parameterSets.size() == 1) {
 					var ps = system.parameterSets.get(0);
 					config.withParameterRedefs(ps.parameters);
@@ -301,6 +309,25 @@ public class MatrixExportDialog extends FormDialog {
 			} catch (Exception e) {
 				ErrorReporter.on("failed to write " + target, e);
 			}
+		}
+
+		private Map<TechFlow, LcaResult> subResultsOf(TechIndex idx) {
+			// linked results or sub-systems can only exist in product systems
+			if (system == null)
+				return Collections.emptyMap();
+			var m = new HashMap<TechFlow, LcaResult>();
+			for (var techFlow : idx) {
+				// there could be sub-systems, and we would need to calculate
+				// them, but we do not do this here; but we can handle linked
+				// results
+				if (!techFlow.isResult())
+					continue;
+				var result = db.get(Result.class, techFlow.providerId());
+				if (result == null)
+					continue;
+				m.put(techFlow, new LcaResult(ResultModelProvider.of(result)));
+			}
+			return m;
 		}
 	}
 
