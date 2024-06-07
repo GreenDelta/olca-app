@@ -1,5 +1,10 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.eclipse.gef.RequestConstants.REQ_DELETE;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
@@ -14,11 +19,6 @@ import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.model.ProcessLink;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.eclipse.gef.RequestConstants.REQ_DELETE;
 
 public class RemoveAllConnectionsAction extends SelectionAction {
 
@@ -52,7 +52,7 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 		if (command != null) {
 			if (command.canExecute())
 				execute(getCommand());
-			else MsgBox.info("Connections cannot be removed.");
+			else MsgBox.info(M.ConnectionsCannotBeRemoved);
 		}
 	}
 
@@ -66,7 +66,7 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 
 		CompoundCommand cc = new CompoundCommand();
 		cc.setDebugLabel("Remove links");
-		cc.setLabel(M.RemoveConnections.toLowerCase());
+		cc.setLabel(M.RemoveConnections);
 
 		var parts = getSelectedObjects();
 		List<GraphLink> links = new ArrayList<>();

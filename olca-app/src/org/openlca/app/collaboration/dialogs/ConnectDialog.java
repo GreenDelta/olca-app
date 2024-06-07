@@ -34,10 +34,10 @@ public class ConnectDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
-				"Connect Git repository",
-				"Enter the location of the Git repository.");
+				M.ConnectGitRepo,
+				M.EnterGitLocation);
 		var body = UI.composite(formBody, form.getToolkit());
-		UI.gridLayout(body,  1);
+		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
 		createLocationGroup(body, form.getToolkit());
 		if (withPassword) {
@@ -51,11 +51,11 @@ public class ConnectDialog extends FormDialog {
 
 	private void createLocationGroup(Composite parent, FormToolkit tk) {
 		var group = UI.group(parent, tk);
-		group.setText("Location");
+		group.setText(M.Location);
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
 		var urlText = UI.labeledText(group, tk, M.URL);
-		var protocolText = UI.labeledText(group, tk, "Protocol");
+		var protocolText = UI.labeledText(group, tk, M.Protocol);
 		protocolText.setEnabled(false);
 		var hostText = UI.labeledText(group, tk, M.Host);
 		hostText.setEnabled(false);

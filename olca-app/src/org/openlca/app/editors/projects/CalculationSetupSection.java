@@ -40,7 +40,7 @@ class CalculationSetupSection {
 	}
 
 	public void render(Composite body, FormToolkit tk) {
-		var rootComp = UI.formSection(body, tk, "Calculation setup", 1);
+		var rootComp = UI.formSection(body, tk, M.CalculationSetup, 1);
 		var formComp = UI.composite(rootComp, tk);
 		UI.gridLayout(formComp, 3);
 		UI.gridData(formComp, true, false);
@@ -91,7 +91,7 @@ class CalculationSetupSection {
 		// report button
 		if (editor.report == null) {
 			var beforeReport = UI.filler(comp, tk);
-			var reportBtn = UI.button(comp, tk, "Create report");
+			var reportBtn = UI.button(comp, tk, M.CreateReport);
 			var afterButton = UI.filler(comp, tk);
 			reportBtn.setImage(Images.get(ModelType.PROJECT));
 			Controls.onSelect(reportBtn, $ -> {

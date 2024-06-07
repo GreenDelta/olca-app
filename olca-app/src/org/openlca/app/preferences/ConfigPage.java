@@ -5,7 +5,12 @@ import java.util.Objects;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
@@ -19,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConfigPage extends PreferencePage implements
-	IWorkbenchPreferencePage {
+		IWorkbenchPreferencePage {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -70,15 +75,15 @@ public class ConfigPage extends PreferencePage implements
 		}
 
 		UI.filler(comp);
-		createNoteComposite(comp.getFont(), comp, M.Note
-			+ ": ", M.SelectLanguageNoteMessage);
+		createNoteComposite(comp.getFont(), comp, M.Note,
+				M.SelectLanguageNoteMessage);
 
 		return body;
 	}
 
 	private void createNativeLib(Composite comp) {
 		var libButton = new Button(comp, SWT.NONE);
-		libButton.setText("Download additional calculation libraries");
+		libButton.setText(M.DownloadAdditionalLibs);
 		Controls.onSelect(
 				libButton,
 				_e -> LibraryDownload.open());
@@ -88,7 +93,7 @@ public class ConfigPage extends PreferencePage implements
 	private void createResetWindow(Composite comp) {
 		// reset window layout
 		Button b = new Button(comp, SWT.NONE);
-		b.setText("Reset window layout");
+		b.setText(M.ResetLayout);
 		Controls.onSelect(b, _e -> {
 			WindowLayout.reset();
 			b.setEnabled(false);
@@ -102,7 +107,7 @@ public class ConfigPage extends PreferencePage implements
 		var gd = UI.gridData(hideStartLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
-		hideStartLabel.setText("Hide welcome page");
+		hideStartLabel.setText(M.HideWelcomePage);
 
 		var hideStart = new Button(comp, SWT.CHECK);
 		hideStart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -115,14 +120,14 @@ public class ConfigPage extends PreferencePage implements
 	private void createEdgeCheck(Composite comp) {
 		// Edge browser check
 		var edgeLabel = new Label(comp, SWT.NONE);
-		edgeLabel.setText("Use Edge Browser");
+		edgeLabel.setText(M.UseEdgeBrowser);
 		var gd = UI.gridData(edgeLabel, false, false);
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
 
 		var useEdge = new Button(comp, SWT.CHECK);
 		useEdge.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		useEdge.setToolTipText("WebView2 needs to be installed for this");
+		useEdge.setToolTipText(M.WebView2NeedsToBeInstalledForThis);
 		useEdge.setSelection(iniFile.useEdgeBrowser());
 		Controls.onSelect(
 				useEdge, $ -> {

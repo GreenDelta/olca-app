@@ -78,8 +78,7 @@ public class AllocationPage extends ModelPage<Process> {
 			return false;
 		if (Strings.nullOrEmpty(value)) {
 			MsgBox.error(
-					M.InvalidAllocationFactor,
-					"An empty value is not allowed");
+					M.InvalidAllocationFactor, M.EmptyValueNotAllowed);
 			return false;
 		}
 
@@ -111,7 +110,7 @@ public class AllocationPage extends ModelPage<Process> {
 			factor.value = val;
 			return true;
 		} catch (Exception e) {
-			MsgBox.error(M.InvalidAllocationFactor, value + M.IsNotValidNumber);
+			MsgBox.error(M.InvalidAllocationFactor, M.NotValidNumber + " - " + value);
 			return false;
 		}
 	}
@@ -161,7 +160,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 	private void createCalcButton(Composite comp, FormToolkit tk) {
 		UI.filler(comp, tk);
-		var btn = UI.button(comp, tk, "Calculate factors");
+		var btn = UI.button(comp, tk, M.CalculateFactors);
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> {
 			var refs = CalculationDialog.of(process());
@@ -185,8 +184,8 @@ public class AllocationPage extends ModelPage<Process> {
 		var comp = UI.sectionClient(section, tk, 1);
 
 		var columns = withComments
-			? new String[]{M.Product, M.Physical, M.Physical + "-comment",
-			M.Economic, M.Economic + "-comment"}
+			? new String[]{M.Product, M.Physical, M.PhysicalComment,
+			M.Economic, M.EconomicComment}
 			: new String[]{M.Product, M.Physical, M.Economic};
 		table = Tables.createViewer(comp, columns);
 		table.setColumnProperties(columns);
@@ -204,9 +203,9 @@ public class AllocationPage extends ModelPage<Process> {
 			.bind(M.Physical, new ValueModifier(AllocationMethod.PHYSICAL))
 			.bind(M.Economic, new ValueModifier(AllocationMethod.ECONOMIC));
 		if (withComments) {
-			modifier.bind(M.Physical + "-comment",
+			modifier.bind(M.PhysicalComment,
 				commentModifier(AllocationMethod.PHYSICAL));
-			modifier.bind(M.Economic + "-comment",
+			modifier.bind(M.EconomicComment,
 				commentModifier(AllocationMethod.ECONOMIC));
 			Tables.bindColumnWidths(table, 0.3, 0.3, 0, 0.3, 0);
 		} else {

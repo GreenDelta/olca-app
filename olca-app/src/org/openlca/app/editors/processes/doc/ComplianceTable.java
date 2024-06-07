@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
@@ -32,10 +33,10 @@ class ComplianceTable {
 	}
 
 	void render(Composite root, FormToolkit tk) {
-		var comp = UI.formSection(root, tk, "Compliance details", 1);
+		var comp = UI.formSection(root, tk, M.ComplianceDetails, 1);
 		var table = Tables.createViewer(
 				comp,
-				"Aspect",
+				M.Aspect,
 				Compliance.FULLY_COMPLIANT.value(),
 				Compliance.NOT_COMPLIANT.value(),
 				Compliance.NOT_DEFINED.value());

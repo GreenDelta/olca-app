@@ -65,7 +65,7 @@ public class InfoSection {
 		ModelPage.text(container, M.Name, "name", editor, tk)
 				.setEditable(editor.isEditable());
 		if (entity.isFromLibrary()) {
-			ModelPage.text(container, "Library", "library", editor, tk)
+			ModelPage.text(container, M.Library, "library", editor, tk)
 					.setEditable(false);
 		}
 
@@ -75,7 +75,7 @@ public class InfoSection {
 			? Categories.path(entity.category)
 			: Collections.emptyList();
 		if (path.isEmpty()) {
-			UI.label(container, tk, "- none -");
+			UI.label(container, tk, M.NoneHyphen);
 		} else {
 			var category = String.join("/", path);
 			var link = UI.formCategoryLink(container, tk, category, Images.get(entity.category));
@@ -160,11 +160,11 @@ public class InfoSection {
 	}
 
 	private void createTags(FormToolkit tk) {
-		UI.label(container, tk, "Tags");
+		UI.label(container, tk, M.Tags);
 		var comp = UI.composite(container, tk);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
-		var btn = UI.button(comp, tk, "Add a tag");
+		var btn = UI.button(comp, tk, M.AddATag);
 		btn.setEnabled(editor.isEditable());
 
 		var tagComp = UI.composite(comp, tk);
@@ -342,13 +342,13 @@ public class InfoSection {
 			var textComp = UI.composite(body, tk);
 			UI.gridLayout(textComp, 2, 10, 0);
 			UI.gridData(textComp, true, false);
-			var label = UI.label(textComp, tk, "New tag");
+			var label = UI.label(textComp, tk, M.NewTag);
 			label.setFont(UI.boldFont());
 			text = UI.text(textComp, SWT.SEARCH);
 			UI.gridData(text, true, false);
 
 			// list with existing tags
-			UI.label(body, tk, "Used tags");
+			UI.label(body, tk, M.UsedTag);
 			var list = UI.list(body);
 			UI.gridData(list, true, true);
 			if (candidates != null) {
@@ -392,7 +392,7 @@ public class InfoSection {
 		@Override
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("Add a new tag");
+			shell.setText(M.AddNewTag);
 			UI.center(UI.shell(), shell);
 		}
 

@@ -85,7 +85,7 @@ public class FlowPropertyTable extends SimpleFormEditor {
 				M.Name,
 				M.Category,
 				M.ReferenceUnit,
-				"ID");
+				M.Id);
 			Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 
 			var label = new Label(Database.get());

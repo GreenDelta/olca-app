@@ -135,7 +135,7 @@ public class ModelSelector extends FormDialog {
 
 	private String getTitle() {
 		if (modelType == null)
-			return "unknown?";
+			return M.UnknownQ;
 		return switch (modelType) {
 			case ACTOR -> forMultiple ? M.Actors : M.Actor;
 			case FLOW -> forMultiple ? M.Flows : M.Flow;
@@ -149,13 +149,13 @@ public class ModelSelector extends FormDialog {
 			case SOCIAL_INDICATOR -> forMultiple ? M.SocialIndicators : M.SocialIndicator;
 			case SOURCE -> forMultiple ? M.Sources : M.Source;
 			case UNIT_GROUP -> forMultiple ? M.UnitGroups : M.UnitGroup;
-			case CATEGORY -> forMultiple ? "Categories" : M.Category;
+			case CATEGORY -> forMultiple ? M.Categories : M.Category;
 			case CURRENCY -> forMultiple ? M.Currencies : M.Currency;
 			case DQ_SYSTEM -> forMultiple ? M.DataQualitySystems : M.DataQualitySystem;
 			case IMPACT_CATEGORY -> forMultiple ? M.ImpactCategories : M.ImpactCategory;
 			case LOCATION -> forMultiple ? M.Locations : M.Location;
 			case PARAMETER -> forMultiple ? M.Parameters : M.Parameter;
-			default -> "unknown?";
+			default -> M.UnknownQ;
 		};
 	}
 

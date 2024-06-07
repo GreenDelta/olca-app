@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.json.content.IDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.util.Popup;
@@ -105,7 +106,7 @@ class MenuBarActions {
 		if (node != null) {
 			leftTree.select(node);
 		} else {
-			Popup.info("No more changes found");
+			Popup.info(M.NoMoreChangesFound);
 		}
 	}
 

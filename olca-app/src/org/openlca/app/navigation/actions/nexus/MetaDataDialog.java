@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.nexus.Types.AggregationType;
 import org.openlca.app.navigation.actions.nexus.Types.BiogenicCarbonModeling;
@@ -44,72 +45,74 @@ class MetaDataDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.header(mform,
-				"Specify database wide meta data (* -> multiple values can be separated by a comma ',')");
+		var form = UI.header(mform, M.SpecifyMetadata);
 		var toolkit = mform.getToolkit();
 		var body = UI.dialogBody(form, toolkit);
 
-		var general = UI.formSection(body, toolkit, "General meta data");
-		createMultiString(general, toolkit, "Nomenclature",
+		var general = UI.formSection(body, toolkit, M.GeneralMetaData);
+		createMultiString(general, toolkit, M.Nomenclature,
 				v -> metaData.supportedNomenclatures = v);
-		createMultiString(general, toolkit, "Impact methods",
+		createMultiString(general, toolkit, M.ImpactMethods,
 				v -> metaData.lciaMethods = v);
-		createSelect(general, toolkit, "Inventory modeling type", ModelingType.class,
+		createSelect(general, toolkit, M.InventoryModelType, ModelingType.class,
 				v -> metaData.modelingType = v);
-		createSelect(general, toolkit, "Multifunctional modeling", MultifunctionalModeling.class,
+		createSelect(general, toolkit, M.MultifunctionalModeling, MultifunctionalModeling.class,
 				v -> metaData.multifunctionalModeling = v);
-		createSelect(general, toolkit, "Biogenice carbon modeling", BiogenicCarbonModeling.class,
+		createSelect(general, toolkit, M.BiogenicCarbonModeling, BiogenicCarbonModeling.class,
 				v -> metaData.biogenicCarbonModeling = v);
-		createSelect(general, toolkit, "End of life modeling", EndOfLifeModeling.class,
+		createSelect(general, toolkit, M.EndOfLifeModeling, EndOfLifeModeling.class,
 				v -> metaData.endOfLifeModeling = v);
-		createSelect(general, toolkit, "Water modeling", WaterModeling.class,
+		createSelect(general, toolkit, M.WaterModeling, WaterModeling.class,
 				v -> metaData.waterModeling = v);
-		createSelect(general, toolkit, "Infrastructure modeling", InfrastructureModeling.class,
+		createSelect(general, toolkit, M.InfrastructureModeling, InfrastructureModeling.class,
 				v -> metaData.infrastructureModeling = v);
-		createSelect(general, toolkit, "Emission modeling", EmissionModeling.class,
+		createSelect(general, toolkit, M.EmissionModeling, EmissionModeling.class,
 				v -> metaData.emissionModeling = v);
-		createSelect(general, toolkit, "Carbon storage modeling", CarbonStorageModeling.class,
+		createSelect(general, toolkit, M.CarbonStorageModeling, CarbonStorageModeling.class,
 				v -> metaData.carbonStorageModeling = v);
-		createSelect(general, toolkit, "Review type", ReviewType.class,
+		createSelect(general, toolkit, M.ReviewType, ReviewType.class,
 				v -> metaData.reviewType = v);
-		createSelect(general, toolkit, "Review system", ReviewSystem.class,
+		createSelect(general, toolkit, M.ReviewSystem, ReviewSystem.class,
 				v -> metaData.reviewSystem = v);
 
-		var process = UI.formSection(body, toolkit, "Process meta data");
-		createSelect(process, toolkit, "Representativeness type", RepresentativenessType.class,
+		var process = UI.formSection(body, toolkit, M.ProcessMetaData);
+		createSelect(process, toolkit, M.RepresentativenessType, RepresentativenessType.class,
 				v -> metaData.representativenessType = v);
-		createSelect(process, toolkit, "Source reliability", SourceReliability.class,
+		createSelect(process, toolkit, M.SourceReliability, SourceReliability.class,
 				v -> metaData.sourceReliability = v);
-		createSelect(process, toolkit, "Aggregation type", AggregationType.class,
+		createSelect(process, toolkit, M.AggregationType, AggregationType.class,
 				v -> metaData.aggregationType = v);
-		createMultiString(process, toolkit, "System model",
+		createMultiString(process, toolkit, M.SystemModel,
 				v -> metaData.systemModel = v);
 
 		if (!new ProductSystemDao(Database.get()).getDescriptors().isEmpty()) {
-			var system = UI.formSection(body, toolkit, "Product system meta data");
-			var check = UI.labeledCheckbox(system, toolkit, "Export product systems");
+			var system = UI.formSection(body, toolkit, M.ProductSystemMetaData);
+			var check = UI.labeledCheckbox(system, toolkit, M.ExportProductSystems);
 			check.setSelection(true);
 			Controls.onSelect(check, $ -> metaData.exportSystems = check.getSelection());
-			createString(system, toolkit, "Creator",
+			createString(system, toolkit, M.Creator,
 					v -> metaData.creator = v);
-			createString(system, toolkit, "Intended audience",
+			createString(system, toolkit, M.IntendedAudience,
 					v -> metaData.intendedAudience = v);
 		}
 
 		form.reflow(true);
 	}
 
-	private void createMultiString(Composite parent, FormToolkit toolkit, String label, Consumer<List<String>> setter) {
+	private void createMultiString(Composite parent, FormToolkit toolkit,
+			String label, Consumer<List<String>> setter) {
 		var text = UI.labeledText(parent, toolkit, label + "*");
 		text.addModifyListener($ -> setter.accept(Arrays.asList(text.getText().split(","))));
 	}
 
-	private void createString(Composite parent, FormToolkit toolkit, String label, Consumer<String> setter) {
+	private void createString(Composite parent, FormToolkit toolkit, String label,
+			Consumer<String> setter) {
 		var text = UI.labeledText(parent, toolkit, label);
 		text.addModifyListener($ -> setter.accept(text.getText()));
 	}
 
-	private <T extends Enum<?>> void createSelect(Composite parent, FormToolkit toolkit, String label, Class<T> clazz,
+	private <T extends Enum<?>> void createSelect(Composite parent,
+			FormToolkit toolkit, String label, Class<T> clazz,
 			Consumer<List<T>> setter) {
 		UI.label(parent, toolkit, label);
 		var combo = new EnumCombo<T>(parent, clazz);

@@ -1,5 +1,12 @@
 package org.openlca.app.editors.processes.doc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -9,6 +16,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -19,13 +27,6 @@ import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.processes.ReviewMethod;
 import org.openlca.ilcd.processes.ReviewScope;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 class ReviewScopeSection {
 
@@ -38,9 +39,9 @@ class ReviewScopeSection {
 	}
 
 	void render(Composite root, FormToolkit tk) {
-		var section = UI.section(root, tk, "Review methods");
+		var section = UI.section(root, tk, M.ReviewMethods);
 		var comp = UI.sectionClient(section, tk, 1);
-		var table = Tables.createViewer(comp, "Scope", "Method");
+		var table = Tables.createViewer(comp, M.Scope, M.Method);
 		Tables.bindColumnWidths(table, 0.4, 0.6);
 		table.setLabelProvider(new TableLabel());
 		table.setInput(Item.allOf(sync.get()));
@@ -126,7 +127,7 @@ class ReviewScopeSection {
 			return true;
 		}
 
-		boolean removeFrom(Review rev) {			
+		boolean removeFrom(Review rev) {
 			var scope = rev.scopes.get(this.scope);
 			return scope != null && scope.methods.remove(method);
 		}
@@ -173,7 +174,7 @@ class ReviewScopeSection {
 		@Override
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("Add a review method");
+			shell.setText(M.AddReviewMethod);
 		}
 
 		@Override
@@ -187,7 +188,7 @@ class ReviewScopeSection {
 			var body = UI.dialogBody(mForm.getForm(), tk);
 			UI.gridLayout(body, 2);
 
-			var scopeCombo = UI.labeledCombo(body, tk, "Scope");
+			var scopeCombo = UI.labeledCombo(body, tk, M.Scope);
 			var scopes = ReviewScope.values();
 			var scopeItems = new String[scopes.length];
 			for (int i = 0; i < scopes.length; i++) {
@@ -202,7 +203,7 @@ class ReviewScopeSection {
 				this.scope = scopeItems[i];
 			});
 
-			var methodCombo = UI.labeledCombo(body, tk, "Method");
+			var methodCombo = UI.labeledCombo(body, tk, M.Method);
 			var methods = ReviewMethod.values();
 			var methodItems = new String[methods.length];
 			for (int i = 0; i < methods.length; i++) {

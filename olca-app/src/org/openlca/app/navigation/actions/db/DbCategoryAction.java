@@ -1,8 +1,12 @@
 package org.openlca.app.navigation.actions.db;
 
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -13,16 +17,13 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.config.DerbyConfig;
 
-import java.util.List;
-import java.util.Objects;
-
 public class DbCategoryAction extends Action implements INavigationAction {
 
 	private DatabaseElement elem;
 	private DerbyConfig config;
 
 	public DbCategoryAction() {
-		setText("Set folder");
+		setText(M.SetFolder);
 		setImageDescriptor(Icon.FOLDER.descriptor());
 	}
 
@@ -52,9 +53,8 @@ public class DbCategoryAction extends Action implements INavigationAction {
 
 		var dialog = new InputDialog(
 				UI.shell(),
-				"Set the database folder",
-				"Please enter the path of the database folder. Forward slashes " +
-						"are used as separators, e.g. my/database/folder.",
+				M.SetDatabaseFolder,
+				M.SetDatabaseFolderInfo,
 				current,
 				null);
 		if (dialog.open() != Window.OK)

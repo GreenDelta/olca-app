@@ -64,7 +64,7 @@ class Combo {
 		if (editor.result().hasCosts()) {
 			var d1 = new CostResultDescriptor();
 			d1.forAddedValue = false;
-			d1.name = M.Netcosts;
+			d1.name = M.NetCosts;
 			var d2 = new CostResultDescriptor();
 			d2.forAddedValue = true;
 			d2.name = M.AddedValue;

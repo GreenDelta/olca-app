@@ -1,14 +1,13 @@
 package org.openlca.app.results.analysis.sankey.model.commands;
 
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
-
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
 public class EditConfigCommand extends Command {
 
@@ -34,7 +33,7 @@ public class EditConfigCommand extends Command {
 		this.oldConfig = diagram.getConfig();
 		this.newConfig = newConfig;
 
-		setLabel(NLS.bind(M.Edit, M.Settings));
+		setLabel(M.EditSettings);
 	}
 
 	@Override

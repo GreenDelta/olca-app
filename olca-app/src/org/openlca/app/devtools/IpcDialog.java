@@ -92,8 +92,7 @@ public class IpcDialog extends FormDialog {
 			}
 		});
 		UI.filler(comp, tk);
-		grpcCheck = UI.button(comp, tk,
-				"Start as gRPC service (experimental)",
+		grpcCheck = UI.button(comp, tk, M.StartAsGrpcServiceExperimental,
 				SWT.CHECK);
 
 		// status text and grpc check
@@ -113,7 +112,7 @@ public class IpcDialog extends FormDialog {
 					.get();
 			var grpc = grpcCheck.getSelection();
 			App.run(
-					"Start server ...",
+					M.StartServerDots,
 					() -> {
 						if (grpc) {
 							grpcServer = new org.openlca.proto.io.server.Server(config);
@@ -135,7 +134,7 @@ public class IpcDialog extends FormDialog {
 						statusLabel.getParent().requestLayout();
 					});
 		} catch (Exception e) {
-			MsgBox.error("Failed to start the IPC server", e);
+			MsgBox.error(M.FailedToStartIpcServer, e);
 			if (server != null) {
 				try {
 					server.stop();
@@ -150,7 +149,7 @@ public class IpcDialog extends FormDialog {
 	private void onStop() {
 		try {
 			App.run(
-					"Stop server ...",
+					M.StopServerDots,
 					() -> {
 						if (server != null) {
 							server.stop();
@@ -170,7 +169,7 @@ public class IpcDialog extends FormDialog {
 						statusLabel.getParent().requestLayout();
 					});
 		} catch (Exception e) {
-			MsgBox.error("Failed to stop the IPC server", e);
+			MsgBox.error(M.FailedToStopIpcServer, e);
 		}
 	}
 

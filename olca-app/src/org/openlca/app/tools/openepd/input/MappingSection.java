@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.components.EntityCombo;
 import org.openlca.app.tools.openepd.MappingTable;
 import org.openlca.app.util.Labels;
@@ -38,7 +39,7 @@ class MappingSection {
 
 	void render(Composite body, FormToolkit tk) {
 		var section = UI.section(body, tk,
-			"openEPD method: " + mapping.epdMethod());
+				M.OpenEpdMethod + " - " + mapping.epdMethod());
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 		var top = UI.composite(comp, tk);
@@ -46,7 +47,7 @@ class MappingSection {
 		UI.gridLayout(top, 2, 10, 0);
 
 		// method combo
-		var combo = UI.labeledCombo(top, tk, "Mapped openLCA method");
+		var combo = UI.labeledCombo(top, tk, M.MappedOpenLcaMethod);
 		var methods = dialog.db.getAll(ImpactMethod.class);
 		methods.sort(Comparator.comparing(Labels::name));
 		var withNull = new ArrayList<ImpactMethod>(methods.size() + 1);

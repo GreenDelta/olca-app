@@ -1,13 +1,14 @@
 package org.openlca.app.editors.graphical;
 
+import java.util.Objects;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.descriptors.Descriptor;
-
-import java.util.Objects;
 
 public record GraphicalEditorInput(Descriptor descriptor)
 	implements IEditorInput {
@@ -54,7 +55,7 @@ public record GraphicalEditorInput(Descriptor descriptor)
 	@Override
 	public String getToolTipText() {
 		if (descriptor == null)
-			return "no content";
+			return M.NoContent;
 		return descriptor.name;
 	}
 

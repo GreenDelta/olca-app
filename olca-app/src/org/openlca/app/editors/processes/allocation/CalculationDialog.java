@@ -41,18 +41,14 @@ class CalculationDialog extends FormDialog {
 	static List<AllocationRef> of(Process p) {
 		var products = AllocationUtils.getProviderFlows(p);
 		if (products.size() < 2) {
-			MsgBox.error("Not a multi-functional process",
-				"Allocation factors cannot be calculated because " +
-					"this is not a process with multiple output " +
-					"products or waste inputs.");
+			MsgBox.error(M.NotAMultiFunctionalProcess,
+					M.NotAMultiFunctionalProcessErr);
 			return Collections.emptyList();
 		}
 		var props = AllocationUtils.allocationPropertiesOf(p);
 		if (props.isEmpty()) {
-			MsgBox.error("No common allocation properties",
-				"There is no common flow property of the product" +
-					" outputs and waste inputs that could be used" +
-					" to calculate allocation factors.");
+			MsgBox.error(M.NoCommonAllocationProperty,
+					M.NoCommonAllocationPropertyErr);
 			return Collections.emptyList();
 		}
 
@@ -75,16 +71,14 @@ class CalculationDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Calculate default factors");
+		newShell.setText(M.CalculatedDefaultFactors);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
-		tk.createLabel(body,
-			"Select the flow properties that should be used for" +
-				" calculating the respective allocation factors.");
+		tk.createLabel(body, M.SelectFlowPropertiesForCalculation);
 		var comp = UI.composite(body, tk);
 		UI.gridLayout(comp, 2);
 		UI.fillHorizontal(comp);
@@ -120,8 +114,8 @@ class CalculationDialog extends FormDialog {
 
 		Selector render(Composite comp, FormToolkit tk) {
 			var title = switch (method) {
-				case PHYSICAL -> "Physical allocation";
-				case ECONOMIC -> "Economic allocation";
+				case PHYSICAL -> M.PhysicalAllocation;
+				case ECONOMIC -> M.EconomicAllocation;
 				default -> M.CausalAllocation;
 			};
 
@@ -142,7 +136,7 @@ class CalculationDialog extends FormDialog {
 			if (method == AllocationMethod.ECONOMIC) {
 				UI.filler(comp);
 				var check = tk.createButton(
-					comp, "Calculate from costs/revenues", SWT.CHECK);
+					comp, M.CalculateFromCostsRevenues, SWT.CHECK);
 				Controls.onSelect(check, $ -> {
 					if (check.getSelection()) {
 						combo.setEnabled(false);

@@ -74,7 +74,7 @@ public class CommitReferencesDialog extends FormDialog {
 			viewer.selectAll();
 		});
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-		createButton(parent, IDialogConstants.OK_ID, isStashCommit ? "Stash" : M.Commit, true);
+		createButton(parent, IDialogConstants.OK_ID, isStashCommit ? M.Stash : M.Commit, true);
 	}
 
 	public Set<DiffNode> getSelected() {

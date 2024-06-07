@@ -122,7 +122,7 @@ class ParameterRedefTable {
 		});
 
 		var toggleProtection = Actions.create(
-				"Toggle protection", Icon.LOCK.descriptor(), () -> {
+				M.ToggleProtection, Icon.LOCK.descriptor(), () -> {
 					ParameterRedef redef = Viewers.getFirstSelected(table);
 					if (redef == null)
 						return;
@@ -180,7 +180,7 @@ class ParameterRedefTable {
 
 	private void onPaste(String text) {
 		List<ParameterRedef> newList = new ArrayList<>();
-		App.runWithProgress("Paste parameters ...",
+		App.runWithProgress(M.PasteParametersDots,
 				() -> newList.addAll(ParameterClipboard.read(text)));
 		if (newList.isEmpty())
 			return;

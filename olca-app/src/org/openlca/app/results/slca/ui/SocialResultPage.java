@@ -1,5 +1,9 @@
 package org.openlca.app.results.slca.ui;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -8,6 +12,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.ResultEditor;
@@ -23,17 +28,13 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.model.RiskLevel;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
-
 public class SocialResultPage extends FormPage {
 
 	private final ResultEditor editor;
 	private final SocialResult result;
 
 	public SocialResultPage(ResultEditor editor, SocialResult result) {
-		super(editor, "SocialResultPage", "Social assessment");
+		super(editor, "SocialResultPage", M.SocialAssessment);
 		this.editor = editor;
 		this.result = result;
 	}
@@ -45,7 +46,7 @@ public class SocialResultPage extends FormPage {
 				Icon.ANALYSIS_RESULT.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
-		var section = UI.section(body, tk, "Indicator results");
+		var section = UI.section(body, tk, M.IndicatorResults);
 		var comp = UI.sectionClient(section, tk, 1);
 		UI.gridData(section, true, true);
 
@@ -53,8 +54,8 @@ public class SocialResultPage extends FormPage {
 		var levels = RiskLevel.values();
 		var headers = new String[3 + levels.length];
 		headers[0] = "";
-		headers[1] = "Activity value";
-		headers[2] = "Raw value";
+		headers[1] = M.ActivityValue;
+		headers[2] = M.RawValue;
 		for (var rl : levels) {
 			int col = TreeGrid.columnOf(rl);
 			if (col < 0 || col >= headers.length)

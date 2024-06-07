@@ -45,7 +45,7 @@ class ReportEditorPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.header(mform, "Report");
+		var form = UI.header(mform, M.Report);
 		tk = mform.getToolkit();
 		var body = UI.body(form, tk);
 		createInfoSection(body);
@@ -65,9 +65,9 @@ class ReportEditorPage extends FormPage {
 	}
 
 	private void createProcessesSection(Composite body) {
-		var section = UI.section(
-			body, tk, "Selected processes (for contribution analyses)");
-		section.setExpanded(report().processes.size() != 0);
+		var section = UI.section(body, tk,
+				M.SelectedProcessesForContributionAnalyses);
+		section.setExpanded(!report().processes.isEmpty());
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(comp, M.Process);
 		table.setLabelProvider(new ProcessLabel());
@@ -85,7 +85,7 @@ class ReportEditorPage extends FormPage {
 				.filter(d -> d instanceof ProcessDescriptor
 					&& !existing.contains(d.refId))
 				.map(d -> (ProcessDescriptor) d)
-				.collect(Collectors.toList());
+				.toList();
 			if (!filtered.isEmpty()) {
 				report().processes.addAll(filtered);
 				table.setInput(report().processes);
@@ -131,17 +131,15 @@ class ReportEditorPage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof ProcessDescriptor))
+			if (!(obj instanceof ProcessDescriptor process))
 				return null;
-			var process = (ProcessDescriptor) obj;
 			return Images.get(process);
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof ProcessDescriptor))
+			if (!(obj instanceof ProcessDescriptor process))
 				return null;
-			var process = (ProcessDescriptor) obj;
 			return Labels.name(process);
 		}
 	}

@@ -64,7 +64,7 @@ public class PullAction extends Action implements INavigationAction {
 			if (newCommits == null)
 				return;
 			if (!newCommits.isEmpty()) {
-				new HistoryDialog("Fetched commits", newCommits).open();
+				new HistoryDialog(M.FetchedCommits, newCommits).open();
 			}
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
@@ -83,12 +83,12 @@ public class PullAction extends Action implements INavigationAction {
 				Actions.askApplyStash();
 			}
 			if (mergeResult == MergeResult.MOUNT_ERROR) {
-				MsgBox.error("Could not mount library");
+				MsgBox.error(M.CouldNotMountLibrary);
 			} else if (mergeResult == MergeResult.NO_CHANGES && !silent) {
 				if (newCommits.isEmpty()) {
-					MsgBox.info("No commits to fetch - Everything up to date");
+					MsgBox.info(M.NoCommitToFetchInfo);
 				} else {
-					MsgBox.info("No changes to merge");
+					MsgBox.info(M.NoChangesToMerge);
 				}
 			}
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {

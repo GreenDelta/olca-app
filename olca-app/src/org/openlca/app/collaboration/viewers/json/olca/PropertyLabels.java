@@ -78,7 +78,7 @@ class PropertyLabels {
 		put(type, prefix + "description", M.Description);
 		if (path == null) {
 			put(type, "category", M.Category);
-			put(type, "tags", "Tags");
+			put(type, "tags", M.Tags);
 		}
 	}
 
@@ -228,7 +228,7 @@ class PropertyLabels {
 		put(type, path + ".flowProperty", M.FlowProperty, ModelType.FLOW_PROPERTY);
 		put(type, path + ".unit", M.Unit);
 		put(type, path + ".amount", M.Amount);
-		put(type, path + ".amountFormula", "Amount formula");
+		put(type, path + ".amountFormula", M.AmountFormula);
 		put(type, path + ".isQuantitativeReference", M.QuantitativeReference);
 		put(type, path + ".isAvoidedProduct", M.AvoidedProduct);
 		put(type, path + ".defaultProvider", M.DefaultProvider, ModelType.PROCESS);

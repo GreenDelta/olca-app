@@ -21,7 +21,11 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.*;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.Numbers;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.trees.Trees;
@@ -130,7 +134,7 @@ class ImpactPage extends ModelPage<Process> {
 			return;
 		}
 		if (result == null) {
-			App.runInUI("Compute LCIA results ...", () -> {
+			App.runInUI(M.ComputeLciaResultsDots, () -> {
 				result = compute();
 				setTreeInput(method);
 			});

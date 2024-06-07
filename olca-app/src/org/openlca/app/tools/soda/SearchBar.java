@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -40,16 +41,16 @@ class SearchBar {
 		typeCombo = TypeCombo.create(comp, tk, con.hasEpds());
 		searchText = tk.createText(comp, "", SWT.BORDER);
 		UI.fillHorizontal(searchText);
-		searchText.setMessage("Search dataset ...");
+		searchText.setMessage(M.SearchADataSetDots);
 
-		UI.label(comp, tk, "Page: ");
+		UI.label(comp, tk, M.Page + ": ");
 		pageSpin = new Spinner(comp, SWT.BORDER);
 		pageSpin.setValues(1, 1, 100, 0, 1, 10);
-		UI.label(comp, tk, "Page size: ");
+		UI.label(comp, tk, M.PageSize + ": ");
 		sizeSpin = new Spinner(comp, SWT.BORDER);
 		sizeSpin.setValues(50, 50, 500, 0, 50, 50);
 
-		var button = tk.createButton(comp, "Search", SWT.NONE);
+		var button = tk.createButton(comp, M.Search, SWT.NONE);
 		button.setImage(Icon.SEARCH.get());
 		Controls.onSelect(button,	e -> runSearch());
 		searchText.addTraverseListener(e -> {
@@ -85,7 +86,7 @@ class SearchBar {
 
 		var err = new String[1];
 		var result = new ArrayList<Descriptor<?>>();
-		App.runWithProgress("Search datasets ...", () -> {
+		App.runWithProgress(M.SearchDataSetsDots, () -> {
 			try {
 				var list = client.query(clazz, q);
 				result.addAll(list.getDescriptors());
@@ -94,7 +95,7 @@ class SearchBar {
 			}
 		}, () -> {
 			if (err[0] != null) {
-				MsgBox.error("Searching for datasets failed", err[0]);
+				MsgBox.error(M.SearchingForDataSetsFailed, err[0]);
 				return;
 			}
 			if (consumer != null) {

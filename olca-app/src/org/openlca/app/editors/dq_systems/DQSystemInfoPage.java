@@ -196,7 +196,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	private void createAddScoreButton(Composite parent) {
 		var button = tk.createButton(parent, M.AddScore, SWT.NONE);
-		if (getModel().indicators.size() == 0) {
+		if (getModel().indicators.isEmpty()) {
 			button.setEnabled(false);
 			return;
 		}

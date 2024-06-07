@@ -33,13 +33,13 @@ public class ProjectResultEditor extends FormEditor {
 			return;
 		var id = Cache.getAppCache().put(data);
 		var input = new SimpleEditorInput(
-			id, "Result of: " + Labels.name(data.project()));
+				id, M.Result + " - " + Labels.name(data.project()));
 		Editors.open(input, "ProjectResultEditor");
 	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-		throws PartInitException {
+			throws PartInitException {
 		super.init(site, input);
 		setTitleImage(Images.get(ModelType.PROJECT));
 		var simpleInput = (SimpleEditorInput) input;
@@ -47,7 +47,7 @@ public class ProjectResultEditor extends FormEditor {
 		if (!(obj instanceof ProjectResultData))
 			throw new PartInitException("editor input must be a project result");
 		data = (ProjectResultData) obj;
-		setPartName("Result of: " + Labels.name(data.project()));
+		setPartName(M.Result + " - " + Labels.name(data.project()));
 	}
 
 	@Override
@@ -86,14 +86,14 @@ public class ProjectResultEditor extends FormEditor {
 		private final ProjectResultData data;
 
 		ResultPage(ProjectResultEditor editor) {
-			super(editor, "ProjectResultEditor.Page", "Results");
+			super(editor, "ProjectResultEditor.Page", M.Results);
 			this.data = editor.data;
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var form = UI.header(mform,
-				"Results of: " + Labels.name(data.project()));
+					M.Results + " - " + Labels.name(data.project()));
 			var tk = mform.getToolkit();
 			var body = UI.body(form, tk);
 

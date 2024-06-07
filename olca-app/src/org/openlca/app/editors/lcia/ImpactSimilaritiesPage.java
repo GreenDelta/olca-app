@@ -32,7 +32,7 @@ import org.openlca.util.Strings;
 class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 
 	ImpactSimilaritiesPage(ImpactCategoryEditor editor) {
-		super(editor, "Similarities", "Similarities");
+		super(editor, "Similarities", M.Similarities);
 	}
 
 	@Override
@@ -40,12 +40,11 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 		var form = UI.header(this);
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
-		var section = UI.section(body, tk,
-				"Similarity to other impact categories");
+		var section = UI.section(body, tk, M.SimilarityToOtherImpactCategories);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(
-				comp, M.Name, "Similarity");
+				comp, M.Name, M.Similarity);
 		table.setLabelProvider(new Label());
 		Tables.bindColumnWidths(table, 0.5, 0.5);
 
@@ -62,7 +61,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 
 		// set input
 		form.reflow(true);
-		App.runInUI("Calculate similarities", () -> {
+		App.runInUI(M.CalculateSimilarities, () -> {
 			var items = Item.listOf(getModel());
 			table.setInput(items);
 		});

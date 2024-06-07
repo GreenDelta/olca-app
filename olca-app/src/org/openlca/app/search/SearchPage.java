@@ -37,7 +37,7 @@ public class SearchPage extends SimpleFormEditor {
 	public static void forUsage(RootDescriptor d) {
 		if (d == null || d.type == null)
 			return;
-		String title = "Find usages of " + Labels.name(d);
+		String title = M.FindUsages + " - " + Labels.name(d);
 		AtomicReference<List<Descriptor>> ref = new AtomicReference<>();
 		App.run(title, () -> {
 			var list = UsageSearch.of(d.type, Database.get()).find(d.id);
@@ -70,8 +70,7 @@ public class SearchPage extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
-		String title = input.getName() +
-				" (" + results.size() + " " + M.Results + ")";
+		String title = input.getName();
 		return new ResultPage(this, title, results);
 	}
 
@@ -81,13 +80,13 @@ public class SearchPage extends SimpleFormEditor {
 		String resultKey;
 
 		public Input(String term, String resultKey) {
-			super(resultKey, M.SearchResults + ": " + term);
+			super(resultKey, M.SearchResults + " - " + term);
 			forSearch = true;
 			this.resultKey = resultKey;
 		}
 
 		public Input(RootDescriptor d, String resultKey) {
-			super(resultKey, M.UsageOf + " " + Labels.name(d));
+			super(resultKey, M.Usage + " - " + Labels.name(d));
 			forSearch = false;
 			this.resultKey = resultKey;
 		}

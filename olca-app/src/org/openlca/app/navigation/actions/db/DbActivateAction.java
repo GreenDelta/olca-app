@@ -1,5 +1,8 @@
 package org.openlca.app.navigation.actions.db;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Composite;
@@ -29,9 +32,6 @@ import org.openlca.core.database.upgrades.Upgrades;
 import org.openlca.core.database.upgrades.VersionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Activates a database with a version check and possible upgrade.
@@ -74,7 +74,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 		}
 
 		// close a current database and open the new one
-		var db = App.exec("Open database...", () -> {
+		var db = App.exec(M.OpenDatabaseDots, () -> {
 			try {
 				log.trace("Close other database if open");
 				Database.close();
@@ -154,12 +154,12 @@ public class DbActivateAction extends Action implements INavigationAction {
 					db = null;
 					var success = new DbExportAction().run(config);
 					if (!success) {
-						error("Database export failed");
+						error(M.DatabaseExportFailed);
 						return;
 					}
 					db = config.connect(Workspace.dbDir());
 				} catch (Exception e) {
-					error("Database export and reconnection failed");
+					error(M.DatabaseExportAndReconnectionFailed);
 					return;
 				}
 			}
@@ -170,7 +170,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 			// thus we pass an atomic reference around
 			var nextDb = new AtomicReference<>(db);
 			db = null;
-			App.runWithProgress(M.UpdateDatabase, () -> {
+			App.runWithProgress(M.UpdateDatabaseDots, () -> {
 				try {
 					var udb = nextDb.get();
 					nextDb.set(null);
@@ -256,8 +256,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 			getShell().setText(M.UpdateDatabase);
 			var comp = (Composite) super.createDialogArea(parent);
 			UI.label(comp, M.UpdateDatabaseQuestion);
-			var backupCheck = UI.checkbox(
-					comp, "Create a backup of the current database first");
+			var backupCheck = UI.checkbox(comp, M.CreateBackupOfTheDbFirst);
 			backupCheck.setSelection(backupDatabase);
 			Controls.onSelect(
 					backupCheck, e -> backupDatabase = backupCheck.getSelection());

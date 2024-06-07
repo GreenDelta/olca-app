@@ -136,8 +136,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		File dbFile = new File(dir, fileName);
 		if (dbFile.exists()) {
 			boolean doIt = Question
-					.ask(M.OverwriteFile,
-							M.SourceFileOverwriteFileQuestion);
+					.ask(M.OverwriteFile, M.SourceFileOverwriteFileQuestion);
 			if (!doIt)
 				return;
 		}

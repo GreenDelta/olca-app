@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Controls;
@@ -25,14 +26,14 @@ public class ImportLibraryDialog extends FormDialog {
 	public static Optional<Library> open(File file) {
 		var info = LibraryPackage.getInfo(file);
 		if (info == null) {
-			MsgBox.error("Not a library package",
-				"The file " + file.getName() + " is not a library package.");
+			MsgBox.error(M.NotALibraryPackage,
+					M.FileIsNotALibraryPackage + " - " + file.getName());
 			return Optional.empty();
 		}
 		var libDir = Workspace.getLibraryDir();
 		var existing = libDir.getLibrary(info.name());
 		if (existing.isPresent()) {
-			MsgBox.error("Library " + info.name() + " already exists");
+			MsgBox.error(M.LibraryAlreadyPresent + " - " + info.name());
 			return Optional.empty();
 		}
 		var dialog = new ImportLibraryDialog(info);
@@ -40,11 +41,11 @@ public class ImportLibraryDialog extends FormDialog {
 			return Optional.empty();
 
 		App.exec(
-			"Import library " + info.name(),
+			M.ImportLibrary + " - " + info.name(),
 			() -> LibraryPackage.unzip(file, Workspace.getLibraryDir()));
 		var imported = libDir.getLibrary(info.name());
 		if (imported.isEmpty()){
-			MsgBox.error("Failed to import library");
+			MsgBox.error(M.FailedToImportLibrary);
 		}
 		Navigator.refresh();
 		return imported;
@@ -58,7 +59,7 @@ public class ImportLibraryDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Import library " + info.name());
+		newShell.setText(M.ImportLibrary + " - " + info.name());
 	}
 
 	@Override
@@ -76,17 +77,17 @@ public class ImportLibraryDialog extends FormDialog {
 		UI.gridLayout(comp, 2);
 
 		// name & description
-		var name = UI.labeledText(comp, tk, "Library");
+		var name = UI.labeledText(comp, tk, M.Library);
 		name.setEditable(false);
 		Controls.set(name, info.name());
-		var desc = UI.multiText(comp, tk, "Description");
+		var desc = UI.multiText(comp, tk, M.Description);
 		desc.setEditable(false);
 		Controls.set(desc, info.description());
 
 		// dependencies
 		if (info.dependencies().isEmpty())
 			return;
-		UI.label(comp, tk, "Dependencies");
+		UI.label(comp, tk, M.Dependencies);
 		var depText = new StringBuilder("<ul>");
 		var libDir = Workspace.getLibraryDir();
 		for (var dep : info.dependencies()) {

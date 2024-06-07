@@ -45,10 +45,9 @@ public class ExportLibraryAction extends Action implements INavigationAction {
 			return;
 		try {
 			App.runWithProgress(
-				"Export library",
+				M.ExportLibraryDots,
 				() -> LibraryPackage.zip(library, target),
-				() -> Popup.info("Library exported to "
-					+ target.getName()));
+				() -> Popup.info(M.LibraryExported + " - " + target.getName()));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to export library "
 				+ library.name() + " to file "

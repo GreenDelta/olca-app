@@ -1,5 +1,8 @@
 package org.openlca.app.editors.epds;
 
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -8,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -19,9 +23,6 @@ import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.Strings;
-
-import java.util.List;
-import java.util.Objects;
 
 class EpdModulesSection {
 
@@ -35,15 +36,15 @@ class EpdModulesSection {
 	void render(Composite body, FormToolkit tk) {
 
 		// create the table
-		var section = UI.section(body, tk, "Modules");
+		var section = UI.section(body, tk, M.Modules);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk);
 		var table = Tables.createViewer(comp,
-			"Module",
-			"Result",
-			"LCIA Method",
-			"Result multiplier",
-			"Reference flow");
+				M.Module,
+				M.Result,
+				M.LciaMethod,
+				M.ResultMultiplier,
+				M.ReferenceFlow);
 		table.setLabelProvider(new LabelProvider());
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 
@@ -92,7 +93,7 @@ class EpdModulesSection {
 		});
 
 		var onOpenResult = Actions.create(
-			"Open result", Icon.FOLDER_OPEN.descriptor(), () -> {
+			M.OpenResult, Icon.FOLDER_OPEN.descriptor(), () -> {
 				var mod = selectedModuleOf(table);
 				if (mod != null && mod.result != null) {
 					App.open(mod.result);

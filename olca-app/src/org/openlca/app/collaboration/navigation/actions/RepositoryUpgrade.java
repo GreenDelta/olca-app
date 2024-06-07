@@ -10,6 +10,7 @@ import java.util.Map;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.db.Database;
@@ -60,12 +61,8 @@ public class RepositoryUpgrade {
 			var config = upgrade.init();
 			if (config == null)
 				return;
-			if (!Question.ask("Update repository connection", """
-					You were previously connected to a Collaboration Server version 1.
-					openLCA 2 requires Collaboration Server version 2. Do you want to
-					update your server connection? (This requires that the server you are
-					connected to is already updated; if that is not the case you will be
-					prompted for the URL of the new server)"""))
+			if (!Question.ask(M.UpdateRepositoryConnection,
+					M.UpdateRepositoryConnectionQuestion))
 				return;
 			if (!upgrade.run(config)) {
 				Dirs.delete(Repository.gitDir(database.getName()));
@@ -143,8 +140,8 @@ public class RepositoryUpgrade {
 				repo.user(user);
 				return repo;
 			}
-			url = Input.promptString("Could not connect",
-					"Could not connect, this might be an older version of the collaboration server? Please specify the url to the updated repository:",
+			url = Input.promptString(M.CouldNotConnect,
+					M.CouldNotConnectCollaborationServerInfo,
 					url);
 			if (url == null)
 				return null;

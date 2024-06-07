@@ -1,16 +1,17 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.eclipse.gef.commands.Command;
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Question;
 import org.openlca.core.model.ProcessLink;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 
 public class DeleteNodeCommand extends Command {
 
@@ -32,7 +33,7 @@ public class DeleteNodeCommand extends Command {
 	public DeleteNodeCommand(Graph graph, Node node) {
 		this.graph = graph;
 		editor = graph.getEditor();
-		setLabel("delete node");
+		setLabel(M.Delete);
 		this.node = node;
 	}
 
@@ -51,9 +52,11 @@ public class DeleteNodeCommand extends Command {
 
 	@Override
 	public void execute() {
-		answer = Question.ask("Deleting " + node.descriptor.name,
+		answer = Question.ask(M.DeletingDots,
 				DeleteManager.QUESTION,
-				Arrays.stream(DeleteManager.Answer.values()).map(Enum::name).toArray(String[]::new));
+				Arrays.stream(DeleteManager.Answer.values())
+						.map(Enum::name)
+						.toArray(String[]::new));
 
 		if (answer != DeleteManager.Answer.Cancel.ordinal()) {
 			redo();

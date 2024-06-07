@@ -71,9 +71,9 @@ class Dialog extends FormDialog {
 	}
 
 	private void activityRow(Composite body, FormToolkit tk) {
-		String label = M.ActivityVariable;
-		if (aspect.indicator.activityVariable != null)
-			label += " (" + aspect.indicator.activityVariable + ")";
+		String label = aspect.indicator.activityVariable == null
+				? M.ActivityVariable
+				: M.ActivityVariable + " (" + aspect.indicator.activityVariable + ")";
 		Text t = UI.labeledText(body, tk, label);
 		t.setText(Double.toString(aspect.activityValue));
 		t.addModifyListener(e -> {

@@ -12,7 +12,7 @@ import org.openlca.app.M;
 public class MemoryError {
 
 	public static void show() {
-		App.runInUI("Memory error in calculation...", () -> new Dialog().open());
+		App.runInUI(M.MemoryErrorInCalculationDots, () -> new Dialog().open());
 	}
 
 	private static class Dialog extends FormDialog {
@@ -50,7 +50,7 @@ public class MemoryError {
 			var label = tk.createLabel(
 					comp, M.CouldNotAllocateMemoryError, SWT.WRAP);
 			UI.fillHorizontal(label);
-			var link = UI.hyperLink(comp, tk, "Open preference dialog");
+			var link = UI.hyperLink(comp, tk, M.OpenPreferenceDialog);
 			Controls.onClick(link, $ -> openPreferences());
 		}
 

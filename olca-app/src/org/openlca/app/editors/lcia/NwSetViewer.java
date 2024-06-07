@@ -54,7 +54,7 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 	@OnAdd
 	protected void onCreate() {
 		NwSet set = new NwSet();
-		set.name = "Enter a name";
+		set.name = M.EnterAName;
 		set.refId = UUID.randomUUID().toString();
 		ImpactMethod method = editor.getModel();
 		method.nwSets.add(set);

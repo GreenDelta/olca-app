@@ -37,7 +37,7 @@ public class FetchAction extends Action implements INavigationAction {
 	public boolean isEnabled() {
 		return Repository.CURRENT.client != null;
 	}
-	
+
 	@Override
 	public void run() {
 		var repo = Repository.CURRENT;
@@ -50,13 +50,13 @@ public class FetchAction extends Action implements INavigationAction {
 			if (newCommits == null)
 				return;
 			if (newCommits.isEmpty()) {
-				MsgBox.info("No commits to fetch - Everything up to date");
+				MsgBox.info(M.NoCommitToFetchInfo);
 			} else {
-				new HistoryDialog("Fetched commits", newCommits).open();
+				new HistoryDialog(M.FetchedCommits, newCommits).open();
 			}
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
 			if (e instanceof TransportException && NOTHING_TO_FETCH.equals(e.getMessage())) {
-				MsgBox.info("No commits to fetch - Everything up to date");
+				MsgBox.info(M.NoCommitToFetchInfo);
 			} else {
 				Actions.handleException("Error fetching from remote", e);
 			}

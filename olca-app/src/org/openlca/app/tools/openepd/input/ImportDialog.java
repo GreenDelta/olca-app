@@ -44,8 +44,8 @@ public class ImportDialog extends FormDialog {
 		}
 		var epd = db.get(Epd.class, doc.id);
 		if (epd != null) {
-			MsgBox.error("EPD already exists",
-				"An EPD with ID=" + epd.refId + " already exists in the database.");
+			MsgBox.error(M.EpdAlreadyExists,
+					M.EpdAlreadyExistsErr + " - " + epd.refId);
 			return -1;
 		}
 		var mapping = ImpactMappings.askCreate(db, doc);
@@ -62,7 +62,7 @@ public class ImportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Import an openEPD document");
+		newShell.setText(M.ImportAnOpenEpdDocument);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class ImportDialog extends FormDialog {
 	}
 
 	private void createProductSection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Declared product");
+		var comp = UI.formSection(body, tk, M.DeclaredProduct);
 
 		// name
 		var nameText = UI.labeledText(comp, tk, M.Product);
@@ -93,17 +93,17 @@ public class ImportDialog extends FormDialog {
 		Controls.set(categoryText,
 			EpdImport.categoryOf(epdDoc)
 				.map(path -> String.join(" >> ", path))
-				.orElse("- none -"));
+				.orElse(M.NoneHyphen));
 
 		// amount
-		var amountText = UI.labeledText(comp, tk, "Declared unit");
+		var amountText = UI.labeledText(comp, tk, M.DeclaredUnit);
 		amountText.setEditable(false);
 		amountText.setText(getDeclaredUnit());
 	}
 
 	private String getDeclaredUnit() {
 		if (epdDoc.declaredUnit == null)
-			return "ERROR! no declared unit available";
+			return M.ErrorNoDeclaredUnitAvailable;
 		var unit = epdDoc.declaredUnit.unit();
 		var uMap = UnitMapping.createDefault(db);
 		var u = uMap.getEntry(unit);
@@ -116,11 +116,8 @@ public class ImportDialog extends FormDialog {
 	protected void okPressed() {
 
 		if (mapping.hasEmptyMappings()) {
-			boolean b = Question.ask("Missing mappings",
-				"Not all of the used impact assessment methods and categories of " +
-					"the openEPD document are mapped to corresponding impact assessment " +
-					"methods and categories in openLCA. These results will be skipped. " +
-					"Do you want to continue?");
+			boolean b = Question.ask(M.MissingMappings,
+					M.NotAllMethodsAreMapped + M.DoYouWantToContinue);
 			if (!b) {
 				return;
 			}
@@ -132,12 +129,12 @@ public class ImportDialog extends FormDialog {
 
 			var msg = new MessageDialog(
 				UI.shell(),
-				"Import finished",
+				M.ImportFinished,
 				null,
-				"Imported EPD and related data sets.",
+				M.ImportedEpdAndDataSets,
 				MessageDialog.INFORMATION,
 				new String[]{
-					IDialogConstants.OK_LABEL, "Open EPD", "Import details"},
+					IDialogConstants.OK_LABEL, "Open EPD", M.ImportDetails},
 				0);
 			msg.setBlockOnOpen(true);
 			var state = msg.open();

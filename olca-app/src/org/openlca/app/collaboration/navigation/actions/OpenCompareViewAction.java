@@ -22,7 +22,7 @@ public class OpenCompareViewAction extends Action implements INavigationAction {
 		if (compareWithHead) {
 			setText(M.HEADRevision);
 		} else {
-			setText(M.Commit + "...");
+			setText(M.CommitDots);
 			setImageDescriptor(Icon.COMPARE_COMMIT.descriptor());
 		}
 		this.compareWithHead = compareWithHead;

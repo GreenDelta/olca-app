@@ -54,7 +54,7 @@ public class RenameParameterDialog extends FormDialog {
 		var db = Database.get();
 		var tree = new AtomicReference<ParameterUsageTree>();
 		App.run(
-				"Collect dependencies",
+				M.CollectDependencies,
 				() -> tree.set(ParameterUsageTree.of(param, db)),
 				() -> {
 					var dialog = new RenameParameterDialog(param, tree.get());
@@ -67,7 +67,7 @@ public class RenameParameterDialog extends FormDialog {
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		UI.center(UI.shell(), shell);
-		shell.setText("Rename parameter " + param.name);
+		shell.setText(M.RenameParameter + " - " + param.name);
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class RenameParameterDialog extends FormDialog {
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);
 
-		text = UI.labeledText(comp, tk, "New name");
+		text = UI.labeledText(comp, tk, M.NewName);
 		if (newName != null) {
 			text.setText(newName);
 		} else if (param.name != null) {
@@ -108,14 +108,11 @@ public class RenameParameterDialog extends FormDialog {
 		});
 
 		if (usageTree.nodes.isEmpty()) {
-			UI.label(body, tk,
-					"The parameter is currently not used"
-							+ " so it is safe to rename it.");
+			UI.label(body, tk, M.ParameterNotUsedSafeToRename);
 			return;
 		}
 
-		UI.label(body, tk,
-				"The parameter will be also renamed where it is used:")
+		UI.label(body, tk, M.ParameterWillBeRenamedWhereItIsUsed)
 				.setFont(UI.boldFont());
 
 		// create the usage tree
@@ -151,7 +148,7 @@ public class RenameParameterDialog extends FormDialog {
 			return;
 		}
 		App.runWithProgress(
-				"Rename parameter",
+				M.RenameParameterDots,
 				() -> Parameters.rename(Database.get(), param, name),
 				Navigator::refresh);
 	}

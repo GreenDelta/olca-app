@@ -63,8 +63,8 @@ class MappingDialog extends FormDialog {
 					? new FlowRef()
 					: flowRef;
 				r.status = r.flow == null
-					? MappingStatus.error("no flow set")
-					: MappingStatus.ok("edited or checked manually");
+					? MappingStatus.error(M.NoFlowSet)
+					: MappingStatus.ok(M.EditedOrCheckedManually);
 				return r;
 		};
 		entry.factor(copy.factor())
@@ -93,7 +93,7 @@ class MappingDialog extends FormDialog {
 
 	@Override
 	protected void configureShell(Shell shell) {
-		shell.setText("Flow mapping");
+		shell.setText(M.FlowMapping);
 		UI.center(UI.shell(), shell);
 		super.configureShell(shell);
 	}
@@ -113,7 +113,7 @@ class MappingDialog extends FormDialog {
 		UI.gridData(comp, true, false);
 
 		// source flow
-		Fn.with(UI.label(comp, tk, "Source flow"), label -> {
+		Fn.with(UI.label(comp, tk, M.SourceFlow), label -> {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
@@ -123,7 +123,7 @@ class MappingDialog extends FormDialog {
 			comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
 
 		// target flow
-		Fn.with(UI.label(comp, tk, "Target flow"), label -> {
+		Fn.with(UI.label(comp, tk, M.TargetFlow), label -> {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
@@ -199,8 +199,7 @@ class MappingDialog extends FormDialog {
 					: tool.targetSystem;
 
 				if (p == null) {
-					MsgBox.error("Cannot select flow",
-						"No data source for flows connected");
+					MsgBox.error(M.CannotSelectFlow, M.NoDataSourceForFlowConnected);
 					return;
 				}
 
@@ -254,7 +253,7 @@ class MappingDialog extends FormDialog {
 
 			// flow name
 			if (ref.flow == null) {
-				flowLink.setText("- none -");
+				flowLink.setText(M.NoneHyphen);
 			} else {
 				String t = ref.flow.name;
 				if (t == null) {
@@ -356,7 +355,7 @@ class MappingDialog extends FormDialog {
 
 			// fill the provider combo
 			String[] items = new String[providers.size() + 1];
-			items[0] = "- none -";
+			items[0] = M.NoneHyphen;
 			int selected = 0;
 			for (int i = 0; i < providers.size(); i++) {
 				ProcessDescriptor p = providers.get(i);

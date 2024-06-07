@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.rcp.Workspace;
@@ -82,9 +83,9 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 			if (dialog.open() != LibraryDialog.OK)
 				return null;
 			if (dialog.isFileSelected())
-				return App.exec("Extracting library " + newLib.id(),
+				return App.exec(M.ExtractingLibrary + " - " + newLib.id(),
 						() -> Libraries.importFromFile(new File(dialog.getLocation())));
-			return App.exec("Downloading and extracting library " + newLib.id(),
+			return App.exec(M.DownloadingAndExtractingLibrary + " - " + newLib.id(),
 					() -> Libraries.importFromUrl(dialog.getLocation()));
 		} catch (IOException e) {
 			return null;
@@ -98,7 +99,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		var stream = repo.client.downloadLibrary(newLib.id());
 		if (stream == null)
 			return null;
-		return App.exec("Downloading and extracting library " + newLib.id(),
+		return App.exec(M.DownloadingAndExtractingLibrary + " - " + newLib.id(),
 				() -> Libraries.importFromStream(stream));
 	}
 

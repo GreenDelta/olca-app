@@ -1,12 +1,10 @@
 package org.openlca.app.tools.openepd.output;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -18,6 +16,9 @@ import org.openlca.io.openepd.EpdIndicatorResult;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Strings;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 public record Upload(Ec3Client client, EpdDoc epd) {
@@ -26,12 +27,10 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 		try {
 
 			// fetch an existing EPD
-			var json = App.exec("Get EPD",
+			var json = App.exec(M.GetEpd,
 				() -> NullDiff.clearNulls(jsonOf(client.getEpd(id))));
 			if (json == null) {
-				var create = errorAsk("EPD does not exist",
-					"An EPD with this ID does not exist. " +
-						"Do you want to create a new EPD instead?");
+				var create = errorAsk(M.EpdDoesNotExist, M.EpdDoesNotExistQuestion);
 				return create
 					? newDraft()
 					: ExportState.canceled();
@@ -40,7 +39,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			// check the unit of an existing EPD
 			var oldDoc = EpdDoc.fromJson(json).orElse(null);
 			if (oldDoc == null) {
-				MsgBox.error("Could not read EPD from server");
+				MsgBox.error(M.CouldNotReadEpdFromServer);
 				return ExportState.error();
 			}
 
@@ -48,12 +47,12 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			update(json, oldDoc);
 
 			// update the EPD on the server
-			var resp = App.exec("Upload EPD", () -> client.putEpd(id, json));
+			var resp = App.exec(M.UploadEpdDots, () -> client.putEpd(id, json));
 			return resp.isError()
-				? error(resp, "Failed to update EPD " + id)
+				? error(resp, M.FailedToUpdateEpd + " (" + id + ")")
 				: ExportState.updated(id);
 		} catch (Exception e) {
-			ErrorReporter.on("Failed to update EPD: " + id, e);
+			ErrorReporter.on(M.FailedToUpdateEpd + " (" + id + ")", e);
 			return ExportState.error();
 		}
 	}
@@ -97,15 +96,15 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 			epd.pcr = null;
 			epd.verifier = null;
 
-			var resp = App.exec("Upload EPD", () -> client.postEpd(epd.toJson()));
+			var resp = App.exec(M.UploadEpdDots, () -> client.postEpd(epd.toJson()));
 			var json = jsonOf(resp);
 			if (resp.isError() || json == null)
-				return error(resp, "Failed to upload EPD to EC3.");
+				return error(resp, M.FailedToUpdateEpdToEc3);
 
 			// extract the ID from the response
 			String id = Json.getString(json.getAsJsonObject(), "id");
 			return Strings.nullOrEmpty(id)
-				? error(resp, "No ID returned from server.")
+				? error(resp, M.NoIdReturnFromServer)
 				: ExportState.created(id);
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to upload EPD", e);
@@ -125,7 +124,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 	private boolean errorAsk(String title, String question) {
 		int r = MessageDialog.open(
 			MessageDialog.ERROR, UI.shell(), title, question, SWT.NONE,
-			"Continue", IDialogConstants.CANCEL_LABEL);
+			M.Continue, IDialogConstants.CANCEL_LABEL);
 		return r == IDialogConstants.OK_ID;
 	}
 
@@ -133,7 +132,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 		if (resp.hasJson()) {
 			JsonErrorDialog.show(message, resp.json());
 		} else {
-			MsgBox.error("Upload failed", message);
+			MsgBox.error(M.UploadFailed, message);
 		}
 		return ExportState.error();
 	}

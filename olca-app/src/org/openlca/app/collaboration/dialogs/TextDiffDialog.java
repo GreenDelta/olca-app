@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.DiffStyle;
 import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
@@ -36,7 +37,7 @@ public class TextDiffDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.header(mform, "Compare");
+		var form = UI.header(mform, M.Compare);
 		var body = form.getBody();
 		UI.gridLayout(body, 2, 0, 0).makeColumnsEqualWidth = true;
 		UI.gridData(body, true, true);

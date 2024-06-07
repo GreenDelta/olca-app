@@ -1,14 +1,16 @@
 package org.openlca.app.tools.openepd.output;
 
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 class JsonErrorDialog extends FormDialog {
 
@@ -30,7 +32,7 @@ class JsonErrorDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Error");
+		newShell.setText(M.Error);
 		newShell.setImage(Icon.ERROR.get());
 	}
 

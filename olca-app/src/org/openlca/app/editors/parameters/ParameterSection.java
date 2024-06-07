@@ -305,8 +305,8 @@ public class ParameterSection {
 
 			// check the parameter name
 			if (!Parameters.isValidName(name)) {
-				MsgBox.error(M.InvalidParameterName, name + " "
-						+ M.IsNotValidParameterName);
+				MsgBox.error(M.InvalidParameterName,
+						M.NotValidParameterName + " - " + name);
 				return;
 			}
 			if (exists(name)) {
@@ -324,11 +324,8 @@ public class ParameterSection {
 				return;
 			}
 
-			boolean b = Question.ask("Rename parameter?",
-					"The parameter is already used." +
-					"This will rename the parameter where it " +
-					"is used and save the data set. " +
-					"Should we do that?");
+			boolean b = Question.ask(M.RenameParameterQ,
+					M.RenameParameterQuestion);
 			if (!b)
 				return;
 
@@ -346,7 +343,7 @@ public class ParameterSection {
 						param, entity(), Database.get(), name);
 				App.open(entity);
 			} catch (Exception e) {
-				MsgBox.error("Renaming failed: " + e.getMessage());
+				MsgBox.error(M.RenamingFailed + " - " + e.getMessage());
 			}
 		}
 	}
@@ -354,8 +351,8 @@ public class ParameterSection {
 	private class ConvertToGlobalAction extends Action {
 
 		ConvertToGlobalAction() {
-			setText("Convert to global parameter");
-			setToolTipText("Convert to global parameter");
+			setText(M.ConvertGlobalParameter);
+			setToolTipText(M.ConvertGlobalParameter);
 			setImageDescriptor(Icon.UP.descriptor());
 		}
 
@@ -368,15 +365,13 @@ public class ParameterSection {
 				return;
 			String err = check(param);
 			if (err != null) {
-				MsgBox.info("Cannot be converted to global parameter", err);
+				MsgBox.info(M.CannotBeConvertedToGlobalParameter, err);
 				return;
 			}
 
 			// ask
-			boolean b = Question.ask(
-					"Convert to global parameter?",
-					"Do you want to convert the selected parameter '"
-							+ param.name + "' into a global parameter?");
+			boolean b = Question.ask(M.ConvertToGlobalParameterQ,
+					M.ConvertToGlobalParameterQuestion + "\r\n" + param.name);
 			if (!b)
 				return;
 
@@ -396,8 +391,7 @@ public class ParameterSection {
 			try {
 				var dao = new ParameterDao(Database.get());
 				if (dao.existsGlobal(param.name)) {
-					return "A global parameter with the name '"
-							+ param.name + "' already exists.";
+					return M.GlobalParameterAlreadyExistsErr + " (" + param.name + ")";
 				}
 
 				if (param.isInputParameter)
@@ -413,10 +407,7 @@ public class ParameterSection {
 					String local = localParam.name.trim().toLowerCase();
 					for (var variable : variables) {
 						if (variable.trim().toLowerCase().equals(local)) {
-							return "The parameter '" + param.name
-									+ "' cannot be converted into a global"
-									+ " parameter as its formula has references"
-									+ " to non-global parameters.";
+							return M.ParameterCannotBeGlobalErr + " (" + param.name + ")";
 						}
 					}
 				}

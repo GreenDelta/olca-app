@@ -1,13 +1,17 @@
 package org.openlca.app.results.analysis.sankey.figures;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.GridData;
+import org.eclipse.draw2d.GridLayout;
+import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
-import org.openlca.app.tools.graphics.figures.GridPos;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.analysis.sankey.model.SankeyNode;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
+import org.openlca.app.tools.graphics.figures.GridPos;
 import org.openlca.app.tools.graphics.figures.RoundBorder;
 import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.util.Labels;
@@ -81,7 +85,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 	private Label createDirectLabel() {
 		var percentage = Numbers.format(node.directShare * 100,
 				PERCENTAGE_SIGNIF_NUMBER);
-		var label = new Label(M.Direct + " (" + percentage + "%)" + ":");
+		var label = new Label(M.Direct + " (" + percentage + "%)");
 		label.setForegroundColor(theme.boxFontColor(box));
 		label.setFont(UI.boldFont());
 		return label;
@@ -97,7 +101,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 	private Label createUpstreamLabel() {
 		var percentage = Numbers.format(node.node.share * 100,
 				PERCENTAGE_SIGNIF_NUMBER);
-		var label = new Label(M.UpstreamTotal + " (" + percentage + "%)" + ":");
+		var label = new Label(M.UpstreamTotal + " (" + percentage + "%)");
 		label.setForegroundColor(theme.boxFontColor(box));
 		label.setFont(UI.boldFont());
 		return label;

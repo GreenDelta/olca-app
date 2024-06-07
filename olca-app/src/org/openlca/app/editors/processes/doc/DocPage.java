@@ -18,7 +18,7 @@ public class DocPage extends ModelPage<Process> {
 	private final ProcessEditor editor;
 
 	public DocPage(ProcessEditor editor) {
-		super(editor, "ProcessInfoPage", "Documentation");
+		super(editor, "ProcessInfoPage", M.Documentation);
 		this.editor = editor;
 	}
 
@@ -56,7 +56,7 @@ public class DocPage extends ModelPage<Process> {
 		multiText(comp, M.DataTreatment, "documentation.dataTreatment", 40);
 		multiText(comp, M.SamplingProcedure, "documentation.samplingProcedure", 40);
 		multiText(comp, M.DataCollectionPeriod, "documentation.dataCollectionPeriod", 40);
-		multiText(comp, "Use advice", "documentation.useAdvice", 40);
+		multiText(comp, M.UseAdvice, "documentation.useAdvice", 40);
 	}
 
 	private void createSourcesSection(Composite parent, FormToolkit tk) {

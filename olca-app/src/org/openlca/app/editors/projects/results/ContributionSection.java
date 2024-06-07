@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.editors.projects.ProjectResultData;
@@ -62,7 +63,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 	@Override
 	public void renderOn(Composite body, FormToolkit tk) {
-		var section = UI.section(body, tk, "Result contributions");
+		var section = UI.section(body, tk, M.ResultContributions);
 		var comp = UI.sectionClient(section, tk, 1);
 		UI.gridLayout(comp, 1);
 
@@ -79,7 +80,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 
 		// add the search text and count selector
 		var searchText = UI.emptyText(configComp, tk);
-		searchText.setMessage("Search a process ...");
+		searchText.setMessage(M.SearchAProcessDots);
 		UI.gridData(searchText, true, false);
 		searchText.addModifyListener($ -> {
 			query = searchText.getText();
@@ -149,7 +150,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 			result += " " + unit;
 		}
 		return result + " | " + (cell.isRest
-			? "Others"
+			? M.Others
 			: Labels.name(cell.process));
 	}
 

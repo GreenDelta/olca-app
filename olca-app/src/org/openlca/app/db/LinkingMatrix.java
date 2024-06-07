@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 
@@ -47,62 +48,62 @@ class LinkingMatrix {
 		grid.marginWidth = 10;
 		body.setLayout(grid);
 
-		headerCell(body, tk, "Linking properties");
-		headerCell(body, tk, "Product system creation: Linking option");
+		headerCell(body, tk, M.LinkingProperties);
+		headerCell(body, tk, M.ProductSystemCreationLinkingOption);
 
 		filler(body);
 		filler(body);
-		cell(body, "Product flows with multiple providers");
-		cell(body, "Ignore default providers", black, darkGrey);
-		cell(body, "Prefer default providers", black, darkGrey);
-		cell(body, "Only default providers", black, darkGrey);
+		cell(body, M.ProductFlowWithMultipleProviders);
+		cell(body, M.IgnoreDefaultProviders, black, darkGrey);
+		cell(body, M.PreferDefaultProviders, black, darkGrey);
+		cell(body, M.OnlyDefaultProviders, black, darkGrey);
 
-		cell(body, "Processes without default providers", 4);
-		cell(body, "Yes", 2, black, missingProviders ? darkGrey : lightGrey);
+		cell(body, M.ProcessesWithoutDefaultProvider, 4);
+		cell(body, M.Yes, 2, black, missingProviders ? darkGrey : lightGrey);
 		if (missingProviders & multiProviders) {
-			cell(body, "Yes", black, darkGrey);
-			cell(body, "ambiguous", white, darkRed);
-			cell(body, "ambiguous", white, darkRed);
-			cell(body, "incomplete", white, darkOrange);
+			cell(body, M.Yes, black, darkGrey);
+			cell(body, M.Ambiguous, white, darkRed);
+			cell(body, M.Ambiguous, white, darkRed);
+			cell(body, M.Incomplete, white, darkOrange);
 		} else {
-			cell(body, "Yes", black, lightGrey);
+			cell(body, M.Yes, black, lightGrey);
 			cell(body, "", black, lightRed);
 			cell(body, "", black, lightRed);
 			cell(body, "", black, lightOrange);
 		}
 
 		if (missingProviders && !multiProviders) {
-			cell(body, "No", black, darkGrey);
-			cell(body, "ok", white, darkGreen);
-			cell(body, "ok", white, darkGreen);
-			cell(body, "incomplete", white, darkOrange);
+			cell(body, M.No, black, darkGrey);
+			cell(body, M.OK, white, darkGreen);
+			cell(body, M.OK, white, darkGreen);
+			cell(body, M.Incomplete, white, darkOrange);
 		} else {
-			cell(body, "No", black, lightGrey);
+			cell(body, M.No, black, lightGrey);
 			cell(body, "", black, lightGreen);
 			cell(body, "", black, lightGreen);
 			cell(body, "", black, lightOrange);
 		}
 
-		cell(body, "No", 2, black, missingProviders ? lightGrey : darkGrey);
+		cell(body, M.No, 2, black, missingProviders ? lightGrey : darkGrey);
 		if (!missingProviders && multiProviders) {
-			cell(body, "Yes", black, darkGrey);
-			cell(body, "ambiguous", white, darkRed);
-			cell(body, "ok", white, darkGreen);
-			cell(body, "ok", white, darkGreen);
+			cell(body, M.Yes, black, darkGrey);
+			cell(body, M.Ambiguous, white, darkRed);
+			cell(body, M.OK, white, darkGreen);
+			cell(body, M.OK, white, darkGreen);
 		} else {
-			cell(body, "Yes", black, lightGrey);
+			cell(body, M.Yes, black, lightGrey);
 			cell(body, "", black, lightRed);
 			cell(body, "", black, lightGreen);
 			cell(body, "", black, lightGreen);
 		}
 
 		if (!missingProviders && !multiProviders) {
-			cell(body, "No", black, darkGrey);
-			cell(body, "ok", white, darkGreen);
-			cell(body, "ok", white, darkGreen);
-			cell(body, "ok", white, darkGreen);
+			cell(body, M.No, black, darkGrey);
+			cell(body, M.OK, white, darkGreen);
+			cell(body, M.OK, white, darkGreen);
+			cell(body, M.OK, white, darkGreen);
 		} else {
-			cell(body, "No", black, lightGrey);
+			cell(body, M.No, black, lightGrey);
 			cell(body, "", black, lightGreen);
 			cell(body, "", black, lightGreen);
 			cell(body, "", black, lightGreen);

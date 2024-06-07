@@ -11,13 +11,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.input.ImportDialog;
-import org.openlca.app.util.*;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Popup;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.io.openepd.Api;
@@ -60,12 +65,12 @@ public class EpdPanel extends SimpleFormEditor {
 			var loginPanel = LoginPanel.create(body, tk);
 
 			// direct download
-			var downloadComp = UI.formSection(body, tk, "Direct download");
+			var downloadComp = UI.formSection(body, tk, M.DirectDownload);
 			UI.gridLayout(downloadComp, 3);
-			UI.label(downloadComp, tk, "URL or ID");
+			UI.label(downloadComp, tk, M.UrlOrId);
 			var urlText = UI.labeledText(downloadComp, "", SWT.BORDER);
 			UI.fillHorizontal(urlText);
-			var downloadBtn = UI.button(downloadComp, tk, "Download");
+			var downloadBtn = UI.button(downloadComp, tk, M.Download);
 			Controls.onSelect(downloadBtn, $ -> {
 				var client = loginPanel.login().orElse(null);
 				if (client == null)
@@ -74,7 +79,7 @@ public class EpdPanel extends SimpleFormEditor {
 			});
 
 			// search panel
-			var section = UI.section(body, tk, "Find EPDs");
+			var section = UI.section(body, tk, M.FindEpds);
 			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
 			var searchComp = UI.composite(comp, tk);
@@ -82,9 +87,9 @@ public class EpdPanel extends SimpleFormEditor {
 			UI.gridLayout(searchComp, 4);
 			var searchText = UI.emptyText(searchComp, tk, SWT.BORDER);
 			UI.fillHorizontal(searchText);
-			var searchButton = UI.button(searchComp, tk, "Search");
+			var searchButton = UI.button(searchComp, tk, M.Search);
 			searchButton.setImage(Icon.SEARCH.get());
-			UI.label(searchComp, tk, "Max. count:");
+			UI.label(searchComp, tk, M.MaxCount);
 			var spinner = UI.spinner(searchComp, tk, SWT.BORDER);
 			spinner.setValues(100, 10, 1000, 0, 50, 100);
 
@@ -101,7 +106,7 @@ public class EpdPanel extends SimpleFormEditor {
 				var epds = new ArrayList<Ec3EpdInfo>();
 				var query = searchText.getText();
 				var count = spinner.getSelection();
-				App.runWithProgress("Fetch EPDs", () -> {
+				App.runWithProgress(M.FetchEpdsDots, () -> {
 					var response = Api.descriptors(client)
 						.query(query)
 						.pageSize(count)
@@ -117,13 +122,13 @@ public class EpdPanel extends SimpleFormEditor {
 
 		private TableViewer createTable(Composite comp, LoginPanel loginPanel) {
 			var table = Tables.createViewer(
-				comp, "EPD", "Manufacturer", "Category", "Declared unit");
+				comp, "EPD", M.Manufacturer, M.Category, M.DeclaredUnit);
 			Tables.bindColumnWidths(table, 0.25, 0.25, 0.25, 0.25);
 			UI.gridData(table.getControl(), true, true);
 			table.setLabelProvider(new TableLabel());
 
 			var onImport = Actions.create(
-				"Import EPD results", Icon.IMPORT.descriptor(), () -> {
+				M.ImportEpdResults, Icon.IMPORT.descriptor(), () -> {
 					var epd = FullEpd.fetch(table, loginPanel);
 					if (epd.isEmpty())
 						return;
@@ -131,16 +136,16 @@ public class EpdPanel extends SimpleFormEditor {
 				});
 
 			var onSaveFile = Actions.create(
-				"Save as file", Icon.FILE.descriptor(), () -> {
+				M.SaveAsFile, Icon.FILE.descriptor(), () -> {
 					var epd = FullEpd.fetch(table, loginPanel);
 					if (epd.isEmpty())
 						return;
-					var file = FileChooser.forSavingFile(
-						"Save openEPD", epd.descriptor.epdId + ".json");
+					var file = FileChooser.forSavingFile(M.SaveOpenEpd,
+							epd.descriptor.epdId + ".json");
 					if (file == null)
 						return;
 					Json.write(epd.json, file);
-					Popup.info("Saved file", "Saved file " + file.getName());
+					Popup.info(M.SavedFile, M.SavedFile + " - " + file.getName());
 				});
 
 			Actions.bind(table, onImport, onSaveFile);
@@ -149,7 +154,7 @@ public class EpdPanel extends SimpleFormEditor {
 
 		private void directDownload(Ec3Client client, String url) {
 			if (Strings.nullOrEmpty(url)) {
-				MsgBox.error("No URL or ID provided");
+				MsgBox.error(M.NoUrlOrIdProvided);
 				return;
 			}
 
@@ -165,16 +170,15 @@ public class EpdPanel extends SimpleFormEditor {
 				}
 			}
 			if (last == null) {
-				MsgBox.error("No valid URL or ID of an EPD provided.");
+				MsgBox.error(M.NoValidUrlOrEpdIdProvided);
 				return;
 			}
 
 			var id = last;
 			var json = App.exec(
-				"Download EPD " + id, () -> Api.getRawEpd(client, id));
+				M.DownloadEpd + " - " + id, () -> Api.getRawEpd(client, id));
 			if (json.isEmpty()) {
-				MsgBox.error(
-					"Could not download an EPD for the given ID '" + id + "'.");
+				MsgBox.error(M.CouldNotDownloadEpdId + " (" + id + ")");
 				return;
 			}
 			var epd = EpdDoc.fromJson(json.get()).orElse(null);
@@ -205,9 +209,9 @@ public class EpdPanel extends SimpleFormEditor {
 				if (client == null)
 					return empty();
 				var json = App.exec(
-					"Download EPD", () -> Api.getRawEpd(client, info.epdId));
+					M.DownloadEpdDots, () -> Api.getRawEpd(client, info.epdId));
 				if (json.isEmpty()) {
-					MsgBox.error("Failed to download EPD " + info.epdId);
+					MsgBox.error(M.FailedToDownloadEpd + " (" + info.epdId + ")");
 					return empty();
 				}
 				return new FullEpd(info, json.get());

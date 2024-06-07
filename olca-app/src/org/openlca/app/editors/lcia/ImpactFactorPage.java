@@ -221,7 +221,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
 	private void onPaste(String text) {
 		List<ImpactFactor> factors = App.exec(
-				"Parse factors", () -> FactorClipboard.read(text));
+				M.ParseFactorsDots, () -> FactorClipboard.read(text));
 		if (factors.isEmpty())
 			return;
 		impact().impactFactors.addAll(factors);

@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.util.PathFilters;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
@@ -64,7 +65,7 @@ class Datasets {
 				.toList();
 		var node = new DiffNodeBuilder(Database.get()).build(differences);
 		if (node == null) {
-			MsgBox.info("No changes to commit");
+			MsgBox.info(M.NoChangesToCommit);
 			return null;
 		}
 		var dialog = new CommitDialog(node, canPush, isStashCommit);

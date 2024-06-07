@@ -35,7 +35,7 @@ public class LinkAnchor extends AbstractConnectionAnchor {
 		// for exchanges, we move the anchor to the
 		// left or right side of the surrounding
 		// process box
-		else if (owner instanceof ExchangeFigure exchangeFigure) {
+		else if (owner instanceof ExchangeFigure) {
 			var nodeFigure = getNodeOwner();
 
 			if (nodeFigure == null)

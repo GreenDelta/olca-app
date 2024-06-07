@@ -56,7 +56,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 		if (!errors.isEmpty()) {
 			String message = errors.get(0);
 			if (errors.size() > 1)
-				message += " (" + (errors.size() - 1) + " more)";
+				message += " (" + (errors.size() - 1) + " " + M.More + ")";
 			MsgBox.error(M.FormulaEvaluationFailed, message);
 		}
 	}

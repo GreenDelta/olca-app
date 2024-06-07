@@ -72,7 +72,7 @@ public class ExportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Export an openEPD document");
+		newShell.setText(M.ExportAnOpenEpdDocument);
 	}
 
 	@Override
@@ -87,13 +87,13 @@ public class ExportDialog extends FormDialog {
 		loginPanel = LoginPanel.create(body, tk);
 
 		// info section
-		var comp = UI.formSection(body, tk, "Product information", 3);
+		var comp = UI.formSection(body, tk, M.ProductInformation, 3);
 		UI.label(comp, tk, M.Product);
 		UI.label(comp, tk, doc.productName);
 		UI.filler(comp, tk);
 
 		// declared unit
-		UI.label(comp, tk, "Declared unit");
+		UI.label(comp, tk, M.DeclaredUnit);
 		UI.label(comp, tk, doc.declaredUnit != null
 			? doc.declaredUnit.toString()
 			: "?");
@@ -113,9 +113,9 @@ public class ExportDialog extends FormDialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID,
-			existingId == null ? "Upload" : "Update",
+			existingId == null ? M.Upload : M.Update,
 			true);
-		createButton(parent, 999, "Save as file", false);
+		createButton(parent, 999, M.SaveAsFile, false);
 		createButton(parent, IDialogConstants.CANCEL_ID,
 			IDialogConstants.CANCEL_LABEL, false);
 	}
@@ -127,12 +127,12 @@ public class ExportDialog extends FormDialog {
 			return;
 
 		var qTitle = existingId == null
-			? "Upload as draft?"
-			: "Update existing EPD?";
+			? M.UploadAsDraftQ
+			: M.UpdateExistingEpdQ;
 		var qText = existingId == null
-			? "Upload this as draft to " + loginPanel.url() + "?"
-			: "Update existing EPD on " + loginPanel.url() + "?";
-		if (!Question.ask(qTitle, qText))
+			? M.UploadDraftToDestinationQ
+			: M.UpdateExistingEpdToDestinationQ;
+		if (!Question.ask(qTitle, qText + "\r\n" + loginPanel.url()))
 			return;
 
 		MappedExportResult.of(mappings).applyOn(doc);
@@ -159,8 +159,8 @@ public class ExportDialog extends FormDialog {
 		// save as file
 		MappedExportResult.of(mappings).applyOn(doc);
 		var json = doc.toJson();
-		var file = FileChooser.forSavingFile(
-			"Save openEPD document", doc.productName + ".json");
+		var file = FileChooser.forSavingFile(M.SaveOpenEpdDocument,
+				doc.productName + ".json");
 		if (file == null)
 			return;
 		try {
@@ -219,9 +219,8 @@ public class ExportDialog extends FormDialog {
 			if (!d.categories.isEmpty()) {
 				d.categories.save(categoryCacheFile());
 			} else {
-				MsgBox.error("No categories could be loaded",
-					"No categories could be loaded from "
-						+ d.loginPanel.url());
+				MsgBox.error(M.NoCategoryCouldBeLoaded,
+						M.NoCategoryCouldBeLoadedErr + " - " + d.loginPanel.url());
 			}
 			return d.categories;
 		}
@@ -236,7 +235,7 @@ public class ExportDialog extends FormDialog {
 
 		void updateLink(ImageHyperlink link, String path) {
 			if (Strings.nullOrEmpty(path)) {
-				link.setText(" - none -");
+				link.setText(M.NoneHyphen);
 			} else {
 				link.setText(path);
 			}
@@ -248,7 +247,7 @@ public class ExportDialog extends FormDialog {
 	record MassField(ExportDialog dialog) {
 
 		void render(Composite comp, FormToolkit tk) {
-			UI.label(comp, tk, "Mass per declared unit");
+			UI.label(comp, tk, M.MassPerDeclaredUnit);
 			var mass = dialog.doc.kgPerDeclaredUnit;
 			if (mass != null) {
 				var num = mass.amount() + " kg";
@@ -283,7 +282,7 @@ public class ExportDialog extends FormDialog {
 			} else {
 				epd.kgPerDeclaredUnit = null;
 				text.setBackground(Colors.errorColor());
-				text.setToolTipText("This field is requited.");
+				text.setToolTipText(M.ThisFieldIsRequired);
 			}
 		}
 	}

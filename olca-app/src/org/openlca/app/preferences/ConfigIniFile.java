@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.util.MsgBox;
 import org.openlca.util.OS;
 import org.slf4j.Logger;
@@ -83,8 +84,8 @@ class ConfigIniFile {
 		try {
 			var iniFile = getIniFile();
 			if (!iniFile.exists()) {
-				MsgBox.error(
-						"Could not find *.ini file", iniFile + " does not exist.");
+				MsgBox.error(M.CouldNotFindIniFile,
+						M.IniFileDoesNotExist + " - " + iniFile);
 				return;
 			}
 

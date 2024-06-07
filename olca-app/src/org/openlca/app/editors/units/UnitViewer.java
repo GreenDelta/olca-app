@@ -197,7 +197,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 				return;
 			if (!new UnitDao(Database.get()).getForName(text).isEmpty()
 					|| editor.getModel().getUnit(text) != null) {
-				MsgBox.error("A unit with the name '" + text + "' already exists");
+				MsgBox.error(M.AUnitWithThisNameAlreadyExists + " - " + text);
 				return;
 			}
 			unit.name = text;

@@ -69,7 +69,7 @@ class SingleScoreSection extends LabelProvider implements TableSection {
 
 	@Override
 	public void renderOn(Composite body, FormToolkit tk) {
-		var title = "Single score results";
+		var title = M.SingleScoreResults;
 		if (unit != null) {
 			title += " [" + unit + "]";
 		}

@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
@@ -39,7 +40,7 @@ public class OneClickExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("One Click LCA - Export");
+		setWindowTitle("One Click LCA - " + M.Export);
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class OneClickExportWizard extends Wizard implements IExportWizard {
 		}
 		try {
 			getContainer().run(true, true, monitor -> {
-				monitor.beginTask("Export processes", IProgressMonitor.UNKNOWN);
+				monitor.beginTask(M.ExportProcesses, IProgressMonitor.UNKNOWN);
 				export.run();
 				monitor.done();
 			});

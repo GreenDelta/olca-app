@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -26,7 +27,7 @@ class XEI3MetaDataImportAction extends Action implements
 
 	public XEI3MetaDataImportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Import ecoinvent 3 meta data");
+		setText(M.ImportEcoinvent3Metadata);
 	}
 
 	@Override
@@ -43,9 +44,8 @@ class XEI3MetaDataImportAction extends Action implements
 	@Override
 	public void run() {
 		DirectoryDialog dialog = new DirectoryDialog(UI.shell());
-		dialog.setText("Master data directory");
-		dialog.setMessage("Select the EcoSpold 02 directory that contains the "
-				+ "master data.");
+		dialog.setText(M.MasterDataDirectory);
+		dialog.setMessage(M.SelectEcoSpold02Directory);
 		String path = dialog.open();
 		if (path == null)
 			return;
@@ -62,9 +62,9 @@ class XEI3MetaDataImportAction extends Action implements
 	}
 
 	private void updateIsicTree() {
-		App.run("Update flow categories",
+		App.run(M.UpdateFlowCategories,
 				new IsicCategoryTreeSync(Database.get(), ModelType.FLOW));
-		App.run("Update process categories",
+		App.run(M.UpdateProcessCategories,
 				new IsicCategoryTreeSync(Database.get(), ModelType.PROCESS),
 				Navigator::refresh);
 	}

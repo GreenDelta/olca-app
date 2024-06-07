@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -34,9 +35,9 @@ class CompletenessTable {
 	}
 
 	void render(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Completeness", 1);
+		var comp = UI.formSection(body, tk, M.Completeness, 1);
 		var table = Tables.createViewer(comp,
-				"Aspect",
+				M.Aspect,
 				labelOf(FlowCompleteness.ALL_RELEVANT_FLOWS_QUANTIFIED),
 				labelOf(FlowCompleteness.RELEVANT_FLOWS_MISSING),
 				labelOf(FlowCompleteness.TOPIC_NOT_RELEVANT),
@@ -70,10 +71,10 @@ class CompletenessTable {
 		if (v == null)
 			return "?";
 		return switch (v) {
-			case ALL_RELEVANT_FLOWS_QUANTIFIED -> "All flows quantified";
-			case RELEVANT_FLOWS_MISSING -> "Flows missing";
-			case TOPIC_NOT_RELEVANT -> "Not relevant";
-			case NO_STATEMENT -> "No statement";
+			case ALL_RELEVANT_FLOWS_QUANTIFIED -> M.AllFlowsQuantified;
+			case RELEVANT_FLOWS_MISSING -> M.FlowsMissing;
+			case TOPIC_NOT_RELEVANT -> M.NotRelevant;
+			case NO_STATEMENT -> M.NoStatement;
 		};
 	}
 

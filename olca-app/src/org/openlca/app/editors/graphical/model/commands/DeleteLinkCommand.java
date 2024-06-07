@@ -37,12 +37,13 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public void execute() {
-		if (graphLinks.isEmpty())
-			return;
+		if (graphLinks.isEmpty()) return;
 
-		answer = Question.ask("Deleting the link...",
+		answer = Question.ask(M.DeletingTheLinkDots,
 				DeleteManager.QUESTION,
-				Arrays.stream(DeleteManager.Answer.values()).map(Enum::name).toArray(String[]::new));
+				Arrays.stream(DeleteManager.Answer.values())
+						.map(Enum::name)
+						.toArray(String[]::new));
 
 		if (answer != DeleteManager.Answer.Cancel.ordinal()) {
 			redo();
@@ -51,7 +52,7 @@ public class DeleteLinkCommand extends Command {
 
 	@Override
 	public String getLabel() {
-		return M.DeleteProcesslink;
+		return M.DeleteProcessLink;
 	}
 
 	@Override

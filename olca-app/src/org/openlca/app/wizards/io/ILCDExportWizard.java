@@ -51,7 +51,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 					UI.gridLayout(comp, 3);
 					FileSelector.on((file) -> template = file)
 							.withExtensions("*zip")
-							.withTitle("Use a zip file template:")
+							.withTitle(M.UseAZipFileTemplate)
 							.render(comp);
 				});
 		addPage(page);
@@ -110,8 +110,8 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 			return null;
 
 		if (template != null && template.equals(target)) {
-			MsgBox.error("Same file for export target and template",
-					"You selected the same file as export target and template.");
+			MsgBox.error(M.SameFileForExportTargetAndTemplate,
+					M.SameFileForExportTargetAndTemplateErr);
 			return null;
 		}
 
@@ -119,10 +119,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 			try {
 				Files.delete(target.toPath());
 			} catch (Exception e) {
-				MsgBox.error("Could not delete old file",
-						"The file you selected as export file exists and could not" +
-								" be deleted. It is maybe opened by another program or" +
-								" you do not have write access to it.");
+				MsgBox.error(M.CouldNotDeleteOldFile, M.CouldNotDeleteOldFileErr);
 				return null;
 			}
 		}
@@ -131,8 +128,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 			try {
 				Files.copy(template.toPath(), target.toPath());
 			} catch (Exception e) {
-				MsgBox.error("Failed to copy template file",
-						"Failed to copy the template file to the target location.");
+				MsgBox.error(M.FailedToCopyTemplateFile, M.FailedToCopyTemplateFileErr);
 				return null;
 			}
 		}

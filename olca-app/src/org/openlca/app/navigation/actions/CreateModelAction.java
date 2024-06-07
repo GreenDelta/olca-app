@@ -82,7 +82,7 @@ class CreateModelAction extends Action implements INavigationAction {
 	@Override
 	public String getText() {
 		if (type == null)
-			return M.Unknown + "?";
+			return M.UnknownQ;
 		return switch (type) {
 			case ACTOR -> M.NewActor;
 			case CURRENCY -> M.NewCurrency;
@@ -99,9 +99,9 @@ class CreateModelAction extends Action implements INavigationAction {
 			case LOCATION -> M.NewLocation;
 			case PARAMETER -> M.NewParameter;
 			case DQ_SYSTEM -> M.NewDataQualitySystem;
-			case RESULT -> "New result";
-			case EPD -> "New EPD";
-			default -> M.Unknown + "?";
+			case RESULT -> M.NewResult;
+			case EPD -> M.NewEpd;
+			default -> M.UnknownQ;
 		};
 	}
 

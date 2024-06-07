@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
 
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
@@ -73,7 +72,7 @@ public class SaveScriptDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Save script");
+		shell.setText(M.SaveScript);
 	}
 
 	@Override
@@ -86,7 +85,7 @@ public class SaveScriptDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 2);
-		var text = UI.labeledText(body, tk, NLS.bind(M.File, M.Name));
+		var text = UI.labeledText(body, tk, M.FileName);
 		text.setText(name);
 		text.addModifyListener(e -> name = text.getText());
 
@@ -97,15 +96,14 @@ public class SaveScriptDialog extends FormDialog {
 			return;
 
 		UI.filler(body, tk);
-		var global = tk.createButton(
-				body, "As global script", SWT.RADIO);
+		var global = tk.createButton(body, M.AsGlobalScript, SWT.RADIO);
 		global.setSelection(true);
 		Controls.onSelect(
 				global, e -> asGlobal = global.getSelection());
 
 		UI.filler(body, tk);
 		var local = tk.createButton(
-				body, "As script in database " + db.getName(),
+				body, M.AsScriptInDb + " - " + db.getName(),
 				SWT.RADIO);
 		local.setSelection(false);
 		Controls.onSelect(
@@ -115,16 +113,15 @@ public class SaveScriptDialog extends FormDialog {
 	@Override
 	protected void okPressed() {
 		if (name.isEmpty()) {
-			MsgBox.error("Empty name",
-					"An empty name is not allowed");
+			MsgBox.error(M.EmptyName, M.EmptyNameErr);
 			return;
 		}
 
 		try {
 			var file = new File(dir(), name);
 			if (file.exists()) {
-				MsgBox.error("Script already exists",
-						"The script " + name + " already exists");
+				MsgBox.error(M.ScriptAlreadyExists,
+						M.ScriptAlreadyExistsErr + " - " + name);
 				return;
 			}
 			Files.writeString(file.toPath(),

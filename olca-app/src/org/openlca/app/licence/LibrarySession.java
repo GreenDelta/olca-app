@@ -1,5 +1,9 @@
 package org.openlca.app.licence;
 
+import static org.openlca.license.access.LicenseStatus.VALID;
+import static org.openlca.license.access.LicenseStatus.WRONG_PASSWORD;
+import static org.openlca.license.access.LicenseStatus.WRONG_USER;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -7,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-import com.google.gson.stream.JsonReader;
 import org.openlca.app.M;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
@@ -17,7 +20,7 @@ import org.openlca.license.access.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openlca.license.access.LicenseStatus.*;
+import com.google.gson.stream.JsonReader;
 
 public class LibrarySession {
 
@@ -71,7 +74,7 @@ public class LibrarySession {
 				session = license.createSession(credentials);
 			}
 		} catch (IOException | IllegalArgumentException e) {
-			MsgBox.error("Failed to open the library.");
+			MsgBox.error(M.FailedToOpenTheLibrary);
 			return false;
 		}
 		if (session == null)
@@ -99,13 +102,11 @@ public class LibrarySession {
 
 		if (status == WRONG_USER || status == WRONG_PASSWORD) {
 			if (removeSession(library)) {
-				MsgBox.error("The session credentials are not valid. Please log "
-						+ "again.");
+				MsgBox.error(M.SessionCredentialNotValidErr);
 			}
 			return isValid(library);
 		} else {
-			MsgBox.error("The " + library + " library cannot be opened: "
-					+ Message.of(status));
+			MsgBox.error(M.LibraryCannotBeOpened + " - " + Message.of(status));
 			return false;
 		}
 	}

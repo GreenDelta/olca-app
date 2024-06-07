@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.util.UI;
 import org.openlca.core.io.ImportLog;
 import org.openlca.io.Import;
@@ -20,8 +21,8 @@ public class ImportLogDialog extends FormDialog {
 		if (imp == null || imp.log() == null)
 			return;
 		var title = imp.isCanceled()
-				? "Import canceled"
-				: "Import finished";
+				? M.ImportCanceled
+				: M.ImportFinished;
 		App.runInUI(title,
 				() -> new ImportLogDialog(imp.log(), title).open());
 	}
@@ -48,7 +49,7 @@ public class ImportLogDialog extends FormDialog {
 		createButton(parent, IDialogConstants.OK_ID,
 				IDialogConstants.OK_LABEL, true);
 		createButton(parent, IDialogConstants.DETAILS_ID,
-				"Details...", false);
+				M.DetailsDots, false);
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class ImportLogDialog extends FormDialog {
 		long count = log.messages().stream()
 				.filter(ImportLog.Message::hasDescriptor)
 				.count();
-		tk.createLabel(body, String.format("Handled %d data sets:", count))
+		tk.	createLabel(body, M.HandledDataSets + " (" + count + ")")
 				.setFont(UI.boldFont());
 
 		var comp = tk.createComposite(body);
@@ -93,12 +94,12 @@ public class ImportLogDialog extends FormDialog {
 		if (state == null)
 			return "?";
 		return switch (state) {
-			case IMPORTED -> "Imported:";
-			case UPDATED -> "Updated:";
-			case SKIPPED -> "Skipped:";
-			case ERROR -> "Errors:";
-			case WARNING -> "Warnings:";
-			case INFO -> "Other:";
+			case IMPORTED -> M.Imported;
+			case UPDATED -> M.Updated;
+			case SKIPPED -> M.Skipped;
+			case ERROR -> M.Errors;
+			case WARNING -> M.Warnings;
+			case INFO -> M.Other;
 		};
 	}
 

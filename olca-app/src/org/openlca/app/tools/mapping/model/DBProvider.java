@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.openlca.app.M;
 import org.openlca.app.util.Fn;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.FlowPropertyDao;
@@ -98,8 +99,8 @@ public class DBProvider implements FlowProvider {
 		// check the flow
 		Flow flow = new FlowDao(db).getForRefId(ref.flow.refId);
 		if (flow == null) {
-			ref.status = MappingStatus.error("there is no flow with id="
-				+ ref.flow.refId + " in the database");
+			ref.status = MappingStatus.error(
+					M.NoFlowWithIdInDatabaseInfo + " " + ref.flow.refId);
 			return null;
 		}
 
@@ -119,8 +120,7 @@ public class DBProvider implements FlowProvider {
 			}
 		}
 		if (prop == null || prop.unitGroup == null) {
-			ref.status = MappingStatus.error("the flow in the database has"
-				+ " no corresponding flow property");
+			ref.status = MappingStatus.error(M.FlowWithoutInDbCorrespondingProperty);
 			return null;
 		}
 
@@ -137,8 +137,7 @@ public class DBProvider implements FlowProvider {
 			}
 		}
 		if (u == null) {
-			ref.status = MappingStatus.error("the flow in the database has"
-				+ " no corresponding unit");
+			ref.status = MappingStatus.error(M.FlowInDbWithoutCorrespondingUnit);
 			return null;
 		}
 
@@ -147,8 +146,7 @@ public class DBProvider implements FlowProvider {
 		if (ref.provider != null) {
 			provider = new ProcessDao(db).getForRefId(ref.provider.refId);
 			if (provider == null) {
-				ref.status = MappingStatus.error(
-					"the provider does not exist in the database");
+				ref.status = MappingStatus.error(M.ProviderDoesNotExist);
 				return null;
 			}
 			boolean exists = provider.exchanges.stream().anyMatch(
@@ -157,8 +155,7 @@ public class DBProvider implements FlowProvider {
 					&& ((e.isInput && flow.flowType == FlowType.WASTE_FLOW)
 					|| (!e.isInput && flow.flowType == FlowType.PRODUCT_FLOW)));
 			if (!exists) {
-				ref.status = MappingStatus.error(
-					"the given provider does not deliver that flow");
+				ref.status = MappingStatus.error(M.ProviderDoesNotDeliverThatFlow);
 				return null;
 			}
 		}
@@ -192,7 +189,7 @@ public class DBProvider implements FlowProvider {
 		}
 
 		if (ref.status == null) {
-			ref.status = MappingStatus.ok("flow in sync. with database");
+			ref.status = MappingStatus.ok(M.FlowInSyncWithDatabase);
 		}
 		return flow;
 	}

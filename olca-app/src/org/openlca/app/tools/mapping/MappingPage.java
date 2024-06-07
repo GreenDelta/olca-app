@@ -35,13 +35,13 @@ class MappingPage extends FormPage {
 	TableViewer table;
 
 	public MappingPage(MappingTool tool) {
-		super(tool, "MappingPage", "Flow mapping");
+		super(tool, "MappingPage", M.FlowMapping);
 		this.tool = tool;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = UI.header(mform, "Flow mapping");
+		ScrolledForm form = UI.header(mform, M.FlowMapping);
 		FormToolkit tk = mform.getToolkit();
 		Composite body = UI.body(form, tk);
 		createInfoSection(tk, body);
@@ -54,35 +54,33 @@ class MappingPage extends FormPage {
 		var name = UI.labeledText(comp, tk, M.Name);
 		Controls.set(name, this.tool.mapping.name);
 
-		UI.label(comp, tk, "Source system");
+		UI.label(comp, tk, M.SourceSystem);
 		ProviderRow sourceRow = new ProviderRow(comp, tk);
 		sourceRow.onSelect = p -> tool.sourceSystem = p;
 
-		UI.label(comp, tk, "Target system");
+		UI.label(comp, tk, M.TargetSystem);
 		ProviderRow targetRow = new ProviderRow(comp, tk);
 		targetRow.onSelect = p -> tool.targetSystem = p;
 
 		UI.filler(comp);
-		Button checkButton = UI.button(comp, tk, "Check mappings");
+		Button checkButton = UI.button(comp, tk, M.CheckMappings);
 		Runnable updateCheckState = () -> {
 			if (tool.checked.get()) {
 				checkButton.setImage(Icon.ACCEPT.get());
-				checkButton.setToolTipText("Click to check the mappings.");
+				checkButton.setToolTipText(M.ClickToCheckTheMappings);
 			} else {
 				checkButton.setImage(Icon.WARNING.get());
-				checkButton.setToolTipText("No check was performed yet.");
+				checkButton.setToolTipText(M.NoCheckWasPerformedYet);
 			}
 		};
 		updateCheckState.run();
 		Controls.onSelect(checkButton, _e -> {
 			if (tool.sourceSystem == null || tool.targetSystem == null) {
-				MsgBox.warning("No source or target system",
-						"You need to select a source and target"
-								+ " system against which you want"
-								+ " to check the mapping.");
+				MsgBox.warning(M.NoSourceOrTargetSystem,
+						M.NoSourceOrTargetSystemMappingInfo);
 				return;
 			}
-			App.runWithProgress("Check mappings", this::syncMappings, () -> {
+			App.runWithProgress(M.CheckMappingsDots, this::syncMappings, () -> {
 				tool.checked.set(true);
 				table.setInput(tool.mapping.entries);
 				updateCheckState.run();
@@ -92,19 +90,19 @@ class MappingPage extends FormPage {
 	}
 
 	private void createTable(Composite body, FormToolkit tk) {
-		Section section = UI.section(body, tk, "Flow mapping");
+		Section section = UI.section(body, tk, M.FlowMapping);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 		table = Tables.createViewer(
 				comp,
-				"Status",
-				"Source flow",
-				"Source category",
-				"Target flow",
-				"Target category",
-				"Conversion factor",
-				"Default provider");
+				M.Status,
+				M.SourceFlow,
+				M.SourceCategory,
+				M.TargetFlow,
+				M.TargetCategory,
+				M.ConversionFactor,
+				M.DefaultProvider);
 		TableLabel label = new TableLabel();
 		table.setLabelProvider(new TableLabel());
 		Viewers.sortByLabels(table, label);

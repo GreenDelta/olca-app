@@ -46,7 +46,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 		var newName = getModel().name;
 		if (!Parameters.isValidName(newName)) {
 			MsgBox.error(M.InvalidParameterName,
-					newName + " " + M.IsNotValidParameterName);
+					M.NotValidParameterName + " - " + newName);
 			return;
 		}
 		if (otherGlobalExists(newName)) {
@@ -100,8 +100,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 	}
 
 	private boolean isUnused(IProgressMonitor monitor) {
-		monitor.beginTask(
-				"Search for parameter usage",
+		monitor.beginTask(M.SearchForParameterUsage,
 				IProgressMonitor.UNKNOWN);
 		var db = Database.get();
 		var param = getModel();

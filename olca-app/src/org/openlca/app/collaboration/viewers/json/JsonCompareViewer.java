@@ -4,6 +4,7 @@ import org.eclipse.jgit.diff.DiffEntry.Side;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.json.content.IDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.label.IJsonNodeLabelProvider;
@@ -85,7 +86,7 @@ public class JsonCompareViewer extends Composite {
 		var composite = UI.composite(container, toolkit);
 		UI.gridLayout(composite, 1, 0, 0);
 		UI.gridData(composite, true, true);
-		UI.label(composite, toolkit, side == Side.OLD ? "Existing or previous model" : "Updated model");
+		UI.label(composite, toolkit, side == Side.OLD ? M.ExistingOrPreviousModel : M.UpdatedModel);
 		return new JsonViewer(composite, side);
 	}
 

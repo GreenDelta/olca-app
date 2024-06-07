@@ -5,6 +5,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Popup;
@@ -29,14 +30,13 @@ class StockDownload {
 
 	private void run() {
 
-		var file = FileChooser.forSavingFile(
-				"Download data stock as zip file",
+		var file = FileChooser.forSavingFile(M.DownloadedDataStockAsZipFile,
 				stock.getShortName() + ".zip");
 		if (file == null)
 			return;
 
 		var err = new AtomicBoolean(false);
-		App.run("Downloading data stock", () -> {
+		App.run(M.DownloadingDataStock, () -> {
 			try (var stream = client.exportDataStock(stock.getUUID())) {
 				Files.copy(stream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (Exception e) {
@@ -45,7 +45,7 @@ class StockDownload {
 			}
 		}, () -> {
 			if (!err.get()) {
-				Popup.info("Downloaded data stock");
+				Popup.info(M.DownloadedDataStock);
 			}
 		});
 	}

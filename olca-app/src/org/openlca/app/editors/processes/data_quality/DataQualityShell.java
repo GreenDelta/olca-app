@@ -37,14 +37,16 @@ public class DataQualityShell extends Shell {
 	public Consumer<DataQualityShell> onDelete;
 	public Consumer<DataQualityShell> onUseUncertainties;
 
-	public static DataQualityShell withoutUncertainty(Shell parent, DQSystem system, String dqEntry) {
+	public static DataQualityShell withoutUncertainty(Shell parent,
+			DQSystem system, String dqEntry) {
 		DataQualityShell shell = new DataQualityShell(parent, system, dqEntry);
 		shell.create(false);
 		shell.initSelection(null);
 		return shell;
 	}
 
-	public static DataQualityShell withUncertainty(Shell parent, DQSystem system, String dqEntry, Double uncertainty) {
+	public static DataQualityShell withUncertainty(Shell parent, DQSystem system,
+			String dqEntry, Double uncertainty) {
 		DataQualityShell shell = new DataQualityShell(parent, system, dqEntry);
 		shell.create(true);
 		shell.initSelection(uncertainty);
@@ -195,7 +197,7 @@ public class DataQualityShell extends Shell {
 		valueText.setEditable(false);
 		UI.gridData(valueText, true, false);
 		Button button = UI.button(composite, toolkit);
-		button.setText("Use as uncertainty value");
+		button.setText(M.UseAsUncertainty);
 		Controls.onSelect(button, (e) -> onUseUncertainties.accept(this));
 	}
 

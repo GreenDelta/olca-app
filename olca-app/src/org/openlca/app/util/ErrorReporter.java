@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.nativelib.Module;
 import org.openlca.nativelib.NativeLib;
@@ -47,7 +48,7 @@ public class ErrorReporter extends FormDialog {
 	public static void on(String message, String details, Throwable error) {
 		var log = LoggerFactory.getLogger(ErrorReporter.class);
 		log.error(message, error);
-		App.runInUI("Show error reporter",
+		App.runInUI(M.ShowErrorReporter,
 				() -> new ErrorReporter(message, details, error).open());
 	}
 
@@ -65,7 +66,7 @@ public class ErrorReporter extends FormDialog {
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setImage(Icon.ERROR.get());
-		shell.setText("An error occurred");
+		shell.setText(M.AnErrorOccurred);
 	}
 
 	@Override

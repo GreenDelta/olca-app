@@ -27,7 +27,7 @@ class FilePanel {
 
 	private final Consumer<List<File>> handler;
 	private final List<File> files = new ArrayList<>();
-	private  String title = "Select one or more files";
+	private  String title = M.SelectOneOrMoreFiles;
 	private String[] extensions;
 
 	private FilePanel(Consumer<List<File>> handler) {

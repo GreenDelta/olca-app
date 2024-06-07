@@ -1,5 +1,13 @@
 package org.openlca.app.editors.lcia.geo;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -37,14 +45,6 @@ import org.openlca.geo.lcia.GeoFlowBinding;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-
 class GeoFlowSection {
 
 	private final GeoPage page;
@@ -57,7 +57,7 @@ class GeoFlowSection {
 	void drawOn(Composite body, FormToolkit tk) {
 
 		// create the section
-		Section section = UI.section(body, tk, "Flow bindings");
+		Section section = UI.section(body, tk, M.FlowBindings);
 		UI.gridData(section, true, true);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
@@ -67,7 +67,7 @@ class GeoFlowSection {
 				M.Flow,
 				M.Category,
 				M.Formula,
-				"Default value",
+				M.DefaultValue,
 				M.Unit);
 		table.setLabelProvider(new Label());
 		Tables.bindColumnWidths(
@@ -78,15 +78,14 @@ class GeoFlowSection {
 		// bind actions
 		var add = Actions.onAdd(this::onAdd);
 		var createForUsed = Actions.create(
-				"Create for used flows",
+				M.CreateForUsedFlows,
 				Icon.EDIT.descriptor(),
 				this::onCreateForUsedFlows);
-		createForUsed.setToolTipText(
-				"Creates flow bindings for all flows used in this impact category");
+		createForUsed.setToolTipText(M.CreateFlowBindingForAllFlows);
 		var remove = Actions.onRemove(this::onRemove);
 		var calc = Actions.onCalculate(this::onCalculate);
 		var calcMissing = Actions.create(
-				"Calculate all missing locations",
+				M.CalculateAllMissingLocations,
 				Icon.ANALYSIS_RESULT.descriptor(),
 				this::onCalculateAllMissing);
 		Actions.bind(table, add, createForUsed, remove, calc, calcMissing);
@@ -132,7 +131,7 @@ class GeoFlowSection {
 	}
 
 	private void onCreateForUsedFlows() {
-		Set<Flow> flows = App.exec("Collect flows", () -> {
+		Set<Flow> flows = App.exec(M.CollectFlowsDots, () -> {
 			if (page.setup == null)
 				return Collections.emptySet();
 			var existing = page.setup.bindings.stream()
@@ -150,17 +149,12 @@ class GeoFlowSection {
 		});
 
 		if (flows.isEmpty()) {
-			MsgBox.info("No flows found",
-					"There are no flows in the characterization " +
-							"factors that do not have a binding yet");
+			MsgBox.info(M.NoFlowsFound, M.NoFlowsFoundInfo);
 			return;
 		}
 
-		var dialog = new InputDialog(UI.shell(),
-				"Provide a default formula",
-				"Please provide a default formula that " +
-						"should be used for the new bindings",
-				"1", null);
+		var dialog = new InputDialog(UI.shell(), M.ProvideDefaultFormula,
+				M.ProvideDefaultFormulaInfo, "1", null);
 		if (dialog.open() != Window.OK)
 			return;
 		var formula = dialog.getValue();
@@ -196,7 +190,7 @@ class GeoFlowSection {
 	private void onCalculateAllMissing() {
 		if (!canCalculate())
 			return;
-		var locations = App.exec("Collect locations", () -> {
+		var locations = App.exec(M.CollectLocationsDots, () -> {
 			var dao = new LocationDao(Database.get());
 			var used = page.editor.getModel()
 					.impactFactors.stream()
@@ -212,14 +206,10 @@ class GeoFlowSection {
 		});
 
 		if (locations.isEmpty()) {
-			MsgBox.info(
-					"No locations found",
-					"No locations with geo-data which are not already " +
-							"present in the CFs could be found.");
+			MsgBox.info(M.NoLocationsFound, M.NoLocationsFoundInfo);
 			return;
 		}
-		var b = Question.ask("Run calculation?",
-				"Calculate factors for " + locations.size() + " additional locations?");
+		var b = Question.ask(M.RunCalculationQ, M.CalculateForAdditionalLocations);
 		if (b) {
 			runCalculation(locations);
 		}
@@ -229,7 +219,7 @@ class GeoFlowSection {
 		var calc = GeoFactorCalculator.of(
 				Database.get(), page.setup, locations);
 		var factors = new AtomicReference<List<ImpactFactor>>();
-		App.runWithProgress("Calculate regionalized factors",
+		App.runWithProgress(M.CalculateRegionalizedFactorsDots,
 				() -> factors.set(calc.calculate()),
 				() -> GeoFactorDialog.open(page, factors.get()));
 	}
@@ -237,18 +227,15 @@ class GeoFlowSection {
 	private boolean canCalculate() {
 		var setup = page.setup;
 		if (setup == null) {
-			MsgBox.error("Invalid calculation setup",
-					"No GeoJSON file is selected.");
+			MsgBox.error(M.InvalidCalculationSetup, M.NoGeoJsonFileSelected);
 			return false;
 		}
 		if (setup.bindings.isEmpty()) {
-			MsgBox.error("Invalid calculation setup",
-					"No flow bindings are defined.");
+			MsgBox.error(M.InvalidCalculationSetup, M.NoFlowBindingsDefined);
 			return false;
 		}
 		if (setup.features.isEmpty()) {
-			MsgBox.error("Invalid calculation setup",
-					"Could not find geographic features.");
+			MsgBox.error(M.InvalidCalculationSetup, M.CouldNotFindGeographicFeatures);
 			return false;
 		}
 		return true;

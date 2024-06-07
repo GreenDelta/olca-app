@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.rcp.images.Icon;
@@ -33,7 +34,7 @@ public class TagResultPage extends FormPage {
 	private TableViewer table;
 
 	public TagResultPage(ResultEditor editor) {
-		super(editor, "TagResultPage", "Tags");
+		super(editor, "TagResultPage", M.Tags);
 		this.editor = editor;
 		this.tagResults = new ArrayList<>();
 	}
@@ -46,7 +47,7 @@ public class TagResultPage extends FormPage {
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
 
-		var section = UI.section(body, tk, "Contributions by tag");
+		var section = UI.section(body, tk, M.ContributionsByTag);
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
@@ -56,7 +57,7 @@ public class TagResultPage extends FormPage {
 			.withSelectionHandler(new SelectionHandler())
 			.create(comp, tk);
 
-		table = Tables.createViewer(comp, "Tag", "Contribution");
+		table = Tables.createViewer(comp, M.Tag, M.Contribution);
 		table.setLabelProvider(new TagItemLabel());
 		Tables.bindColumnWidths(table, 0.5, 0.5);
 		Actions.bind(section, TableClipboard.onCopyAll(table));
@@ -64,7 +65,7 @@ public class TagResultPage extends FormPage {
 
 		form.reflow(true);
 
-		App.runWithProgress("Calculate tag results", () -> {
+		App.runWithProgress(M.CalculateTagsResultsDots, () -> {
 			tagResults.clear();
 			tagResults.addAll(TagResult.allOf(editor.result()));
 		}, selector::initWithEvent);
@@ -112,7 +113,7 @@ public class TagResultPage extends FormPage {
 				return;
 
 			var items = new ArrayList<TagItem>();
-			items.add(new TagItem("Total", total, unit, 1, true));
+			items.add(new TagItem(M.Total, total, unit, 1, true));
 
 			for (var tagResult : tagResults) {
 				var value = result.applyAsDouble(tagResult);

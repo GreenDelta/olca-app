@@ -1,10 +1,10 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.List;
+
 import org.openlca.app.tools.graphics.model.Component;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
-
-import java.util.List;
 
 
 /**

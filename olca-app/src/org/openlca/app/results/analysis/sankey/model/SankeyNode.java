@@ -1,5 +1,7 @@
 package org.openlca.app.results.analysis.sankey.model;
 
+import static org.openlca.app.results.analysis.sankey.layouts.SankeyLayout.DEFAULT_LOCATION;
+
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.db.Database;
@@ -13,8 +15,6 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Sankey;
 import org.openlca.util.Strings;
-
-import static org.openlca.app.results.analysis.sankey.layouts.SankeyLayout.DEFAULT_LOCATION;
 
 public class SankeyNode extends Component {
 
@@ -74,6 +74,9 @@ public class SankeyNode extends Component {
 		return Labels.name(product.provider());
 	}
 
+	/**
+	 * Used for debugging only
+	 */
 	public String toString() {
 		return "Node: "+ Labels.name(node.product);
 	}

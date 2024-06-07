@@ -33,8 +33,8 @@ import org.openlca.app.preferences.Preferences;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
+import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
@@ -89,7 +89,7 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	private void createTexts() {
-		setTitle("Select data sets");
+		setTitle(M.SelectDataSets);
 		setDescription(M.SelectObjectPage_Description);
 	}
 

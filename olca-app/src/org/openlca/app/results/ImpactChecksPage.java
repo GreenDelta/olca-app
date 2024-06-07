@@ -51,16 +51,14 @@ public class ImpactChecksPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.header(mForm,
-				"Flows that are not covered by the "
-						+ "selected LCIA method",
+		var form = UI.header(mForm, M.FlowNotCovered,
 				Icon.ANALYSIS_RESULT.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 
 		// the grouping check
 		var group = UI.checkbox(body, tk);
-		group.setText("Group by LCIA category");
+		group.setText(M.GroupByCategory);
 		group.setSelection(true);
 		Controls.onSelect(group, e -> tree.setInput(
 				group.getSelection()

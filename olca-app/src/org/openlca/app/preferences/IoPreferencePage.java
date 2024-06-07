@@ -1,5 +1,11 @@
 package org.openlca.app.preferences;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.PreferencePage;
@@ -22,12 +28,6 @@ import org.openlca.ilcd.io.AuthInfo;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.ilcd.io.SodaConnection;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 public class IoPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -142,14 +142,13 @@ public class IoPreferencePage extends PreferencePage implements
 			if (stock == null
 					|| !stock.isReadAllowed()
 					|| !stock.isExportAllowed()) {
-				MsgBox.warning(M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
+				MsgBox.warning(M.YouDoNotHaveReadOrWriteAccess);
 				return;
 			}
-			MsgBox.info(M.ILCD_CONNECTION_WORKS_MSG
-					+ " (Data stock = " + stock.getShortName() + ")");
+			MsgBox.info(M.ConnectionWorks
+					+ " (" + M.DataStock + " = " + stock.getShortName() + ")");
 		} catch (Exception e) {
-			MsgBox.error(M.ILCD_CONNECTION_FAILED_MSG
-					+ " (" + e.getMessage() + ")");
+			MsgBox.error(M.ILCDConnectionFailedErr + " - " + e.getMessage());
 		}
 	}
 

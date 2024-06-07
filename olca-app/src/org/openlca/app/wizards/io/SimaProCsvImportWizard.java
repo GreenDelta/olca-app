@@ -69,7 +69,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			return false;
 		var db = Database.get();
 		if (db == null) {
-			MsgBox.error("No database is opened");
+			MsgBox.error(M.NoDatabaseOpened);
 			return false;
 		}
 
@@ -92,10 +92,10 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 	private static class Page extends WizardPage {
 
-		List<File> files;
 		final AtomicBoolean createProductSystems = new AtomicBoolean(true);
 		final AtomicBoolean createScenarioParameters = new AtomicBoolean(true);
 		final AtomicBoolean expandImpactFactors = new AtomicBoolean(false);
+		List<File> files;
 		FlowMap flowMap;
 
 		Page(File initial) {
@@ -137,12 +137,12 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			var group = UI.group(optComp);
 			UI.gridLayout(group, 1, 5, 10);
 			UI.fillHorizontal(group);
-			group.setText("Generate");
-			option(group, "Product systems for life cycles",
+			group.setText(M.Generate);
+			option(group, M.ProductSystemForLc,
 					createProductSystems);
-			option(group, "Parameters for waste scenarios",
+			option(group, M.ParametersForScenarios,
 					createScenarioParameters);
-			option(group, "Characterization factors for sub-compartments",
+			option(group, M.CharactFactorsForSub,
 					expandImpactFactors);
 
 			setControl(body);

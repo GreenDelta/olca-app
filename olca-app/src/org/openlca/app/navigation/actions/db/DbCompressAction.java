@@ -102,10 +102,10 @@ public class DbCompressAction extends Action implements INavigationAction {
 		@Override
 		protected void okPressed() {
 			doIt();
-			afterLabel.setText(M.SizeAfterCompression + ": " + getSize() + " MB");
+			afterLabel.setText(M.SizeAfterCompression + " - " + getSize() + " MB");
 			afterLabel.getParent().layout();
 			getButton(IDialogConstants.OK_ID).setVisible(false);
-			getButton(IDialogConstants.CANCEL_ID).setText("Close");
+			getButton(IDialogConstants.CANCEL_ID).setText(M.Close);
 		}
 
 		private void doIt() {

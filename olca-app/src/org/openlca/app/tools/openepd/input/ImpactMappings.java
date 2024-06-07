@@ -2,6 +2,7 @@ package org.openlca.app.tools.openepd.input;
 
 import java.util.HashSet;
 
+import org.openlca.app.M;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
@@ -33,10 +34,8 @@ record ImpactMappings(IDatabase db, EpdDoc doc) {
 			return mapping;
 
 		// ask to create
-		var q = "The EPD data set contains one or more unknown LCIA methods: "
-			+ String.join(", ", unmapped) + ". Do you want to create default"
-			+ "LCIA methods and indicators?";
-		if (!Question.ask("Create default LCIA method(s)?", q))
+		var q = M.CreateDefaultLciaMethodsQ + "\r\n" +  String.join(", ", unmapped);
+		if (!Question.ask(M.CreateDefaultLciaMethodsQ, q))
 			return mapping;
 
 		var methodCategory = CategoryDao.sync(

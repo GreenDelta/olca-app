@@ -49,12 +49,12 @@ public class PushAction extends Action implements INavigationAction {
 			if (result == null)
 				return;
 			if (result.newCommits().isEmpty()) {
-				MsgBox.info("No commits to push - Everything up to date");
+				MsgBox.info(M.NoCommitToPushInfo);
 			} else if (result.status() == Status.REJECTED_NONFASTFORWARD) {
-				MsgBox.error("Rejected - Not up to date - Please pull remote changes to continue");
+				MsgBox.error(M.RejectedNotUpToDateErr);
 			} else {
 				Collections.reverse(result.newCommits());
-				new HistoryDialog("Pushed commits", result.newCommits()).open();
+				new HistoryDialog(M.PushedCommits, result.newCommits()).open();
 			}
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error pushing to remote", e);

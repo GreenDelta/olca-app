@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.FileDialog;
@@ -48,7 +49,7 @@ public class FileImport {
 			return;
 		var file = new File(path);
 		if (!file.exists() || file.isDirectory()) {
-			MsgBox.error("Not a file", path + " is not an existing file.");
+			MsgBox.error(M.NotAFile, M.NotAnExistingFile + " - " + path);
 			return;
 		}
 
@@ -85,11 +86,7 @@ public class FileImport {
 			}
 		}
 
-		MsgBox.info("Unknown format",
-			"openLCA could not detect the format of the file '"
-				+ file.getName() + "'. You can also try an "
-				+ "import option in the generic import dialog "
-				+ "under Import > Other");
+		MsgBox.info(M.UnknownFormat, M.UnknownFormatInfo);
 
 	}
 
@@ -97,9 +94,7 @@ public class FileImport {
 		switch (format) {
 			case ES1_XML, ES1_ZIP -> EcoSpold01ImportWizard.of(file);
 			case ES2_XML, ES2_ZIP -> MsgBox.info(
-					"EcoSpold v2", "The import of EcoSpold 2 files is not directly " +
-							"supported. If you want to import ecoinvent data sets, please " +
-							"visit nexus.openlca.org for ecoinvent databases for openLCA.");
+					M.EcoSpoldV2, M.EcoSpoldV2Info);
 			case EXCEL -> ExcelImportWizard.of(file);
 			case GEO_JSON -> GeoJsonImportWizard.of(file);
 			case ILCD_ZIP -> ILCDImportWizard.of(file);
@@ -108,12 +103,7 @@ public class FileImport {
 			case MAPPING_CSV -> importMappingFile(file);
 			case SIMAPRO_CSV -> SimaProCsvImportWizard.of(file);
 			case ZOLCA -> importZOLCA(file);
-			default -> MsgBox.info("No import found",
-				"Format '" + format + "' was detected but no" +
-					" import wizard could be found. You can" +
-					" try the generic import under 'Import >" +
-					" Other...' for selecting a more specific" +
-					" option.");
+			default -> MsgBox.info(M.NoImportFound, M.NoImportFoundInfo);
 		}
 	}
 
@@ -143,14 +133,14 @@ public class FileImport {
 			// open a friendly dialog
 			var dialog = new InputDialog(
 				UI.shell(),
-				"Save mapping in database",
-				"Please provide a unique name for the new mapping file",
+				M.SaveMappingInDatabase,
+				M.SaveMappingInDatabaseInfo,
 				proposed,
 				name -> {
 					if (Strings.nullOrEmpty(name))
-						return "The name cannot be empty";
+						return M.NameCannotBeEmpty;
 					if (existing.contains(name.toLowerCase().trim()))
-						return "A flow mapping with this name already exists";
+						return M.FlowMappingWithThisNameExists;
 					return null;
 				});
 			if (dialog.open() != Window.OK)
@@ -170,8 +160,8 @@ public class FileImport {
 	private void importZOLCA(File file) {
 		var db = Database.get();
 		if (db == null) {
-			var b = Question.ask("Import database?",
-				"Import file '" + file.getName() + "' as new database?");
+			var b = Question.ask(M.ImportDatabaseQ,
+				M.ImportFileAsDatabase + "\r\n" + file.getName());
 			if (b) {
 				DbRestoreAction.run(file);
 			}
@@ -195,7 +185,7 @@ public class FileImport {
 		@Override
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("Import database");
+			shell.setText(M.ImportDatabase);
 			shell.setImage(Icon.IMPORT.get());
 		}
 
@@ -208,18 +198,16 @@ public class FileImport {
 		protected void createFormContent(IManagedForm form) {
 			var tk = form.getToolkit();
 			var body = UI.dialogBody(form.getForm(), tk);
-			tk.createLabel(body, "Import file " + zolca.getName());
+			tk.createLabel(body, M.ImportFile + " - " + zolca.getName());
 
-			var opt1 = tk.createButton(body,
-				"As standalone database", SWT.RADIO);
+			var opt1 = tk.createButton(body, M.AsStandaloneDatabase, SWT.RADIO);
 			opt1.setSelection(!intoActiveDB);
 			Controls.onSelect(opt1,
 				_e -> intoActiveDB = !opt1.getSelection());
 
 			var opt2 = tk.createButton(body,
-				"Into the active database " +
-					activeDB.getName(),
-				SWT.RADIO);
+					NLS.bind(M.IntoActiveDb, activeDB.getName()),
+					SWT.RADIO);
 			opt2.setSelection(intoActiveDB);
 			Controls.onSelect(opt2,
 				_e -> intoActiveDB = opt2.getSelection());

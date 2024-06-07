@@ -35,7 +35,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 		if (param == null || Strings.nullOrEmpty(param.name))
 			return;
 		var ref = new AtomicReference<>();
-		App.runWithProgress("Search for usage",
+		App.runWithProgress(M.SearchForUsageDots,
 			() -> ref.set(ParameterUsageTree.of(param, owner, Database.get())),
 			() -> {
 				String resultKey = Cache.getAppCache().put(ref.get());
@@ -46,7 +46,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 
 	public static void show(String param) {
 		var ref = new AtomicReference<>();
-		App.runWithProgress("Search for usage of '" + param + "' ...",
+		App.runWithProgress(M.SearchForUsageDots,
 			() -> ref.set(ParameterUsageTree.of(param, Database.get())),
 			() -> {
 				String resultKey = Cache.getAppCache().put(ref.get());
@@ -79,7 +79,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 	private static class Input extends SimpleEditorInput {
 
 		Input(String param, String resultKey) {
-			super(resultKey, M.UsageOf + " " + param);
+			super(resultKey, M.Usage + " - " + param);
 		}
 
 		@Override
@@ -95,14 +95,13 @@ public class ParameterUsagePage extends SimpleFormEditor {
 		public Page(ParameterUsageTree tree) {
 			super(ParameterUsagePage.this,
 				"ParameterUsagePage",
-				M.UsageOf + " " + tree.param);
+				M.Usage + " - " + tree.param);
 			this.tree = tree;
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.header(
-				mform, M.UsageOf + " " + tree.param);
+			var form = UI.header(mform, M.Usage + " - " + tree.param);
 			var tk = mform.getToolkit();
 			var body = UI.body(form, tk);
 			ParameterUsageView.show(body, tree);

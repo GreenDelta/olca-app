@@ -29,7 +29,7 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("Import an HSC Sim Flow Sheet");
+		setWindowTitle(M.ImportAnHscSimFlowSheet);
 		setDefaultPageImageDescriptor(Icon.IMPORT_WIZARD.descriptor());
 		setNeedsProgressMonitor(true);
 	}
@@ -62,8 +62,7 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 		// run the import
 		try {
 			getContainer().run(true, true, m -> {
-				m.beginTask(
-						"Import " + file.getName(),
+				m.beginTask(M.Import + " " + file.getName(),
 						IProgressMonitor.UNKNOWN);
 				var flowMap = page.flowMap != null
 						? page.flowMap
@@ -86,8 +85,8 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 
 		Page() {
 			super("ILCDImportWizard.Page");
-			setTitle("Import an HSC Sim Flow Sheet");
-			setDescription("Select a *.json file with the flow sheet");
+			setTitle(M.ImportAnHscSimFlowSheet);
+			setDescription(M.SelectAJsonFileWithTheFlowSheet);
 			setPageComplete(false);
 		}
 
@@ -104,7 +103,7 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 						json = file;
 						setPageComplete(true);
 					})
-					.withTitle("Select a *.json file with the flow sheet")
+					.withTitle(M.SelectAJsonFileWithTheFlowSheet)
 					.withExtensions("*.json")
 					.withSelection(json)
 					.render(comp);

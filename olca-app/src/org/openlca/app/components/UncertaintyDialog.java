@@ -274,7 +274,7 @@ public class UncertaintyDialog extends Dialog {
 				try {
 					set(param, Double.parseDouble(s));
 				} catch (Exception e) {
-					MsgBox.error(s + " " + M.IsNotValidNumber);
+					MsgBox.error(M.NotValidNumber + " - " + s);
 				}
 			}
 			return _uncertainty;

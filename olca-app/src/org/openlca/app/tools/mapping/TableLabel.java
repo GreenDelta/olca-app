@@ -5,6 +5,7 @@ import java.util.function.Function;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -66,11 +67,11 @@ class TableLabel extends LabelProvider
 
 	private String stateText(FlowMapEntry e) {
 		if (e == null)
-			return "empty mapping";
+			return M.EmptyMapping;
 		if (e.sourceFlow() == null)
-			return "no source flow";
+			return M.NoSourceFlow;
 		if (e.targetFlow() == null)
-			return "no target flow";
+			return M.NoTargetFlow;
 
 		var s = status(e);
 		if (s == null)
@@ -78,9 +79,9 @@ class TableLabel extends LabelProvider
 		if (s.message() != null)
 			return s.message();
 		return switch (s.type()) {
-			case MappingStatus.OK -> "ok";
-			case MappingStatus.WARNING -> "warning";
-			case MappingStatus.ERROR -> "error";
+			case MappingStatus.OK -> M.OK;
+			case MappingStatus.WARNING -> M.Warning;
+			case MappingStatus.ERROR -> M.Error;
 			default -> "";
 		};
 	}
@@ -126,17 +127,18 @@ class TableLabel extends LabelProvider
 			if (Strings.nullOrEmpty(tm) || Strings.nullOrEqual(sm, tm))
 				return s;
 			return new MappingStatus(s.type(),
-				"source flow: " + sm + "; target flow: " + tm);
+				M.SourceFlow + " - " + sm + " ; " +  M.TargetFlow + " - " + tm);
 		}
 
 		// select the status which is worse
 		return switch (s.type()) {
 			case MappingStatus.OK -> new MappingStatus(
-				t.type(), "target flow: " + t.message());
+				t.type(), M.TargetFlow + " - " + t.message());
 			case MappingStatus.WARNING -> t.type() == MappingStatus.OK
-				? new MappingStatus(s.type(), "source flow: " + s.message())
-				: new MappingStatus(t.type(), "target flow: " + t.message());
-			default -> new MappingStatus(s.type(), "source flow: " + s.message());
+				? new MappingStatus(s.type(), M.SourceFlow + " - " + s.message())
+				: new MappingStatus(t.type(), M.TargetFlow + " - " + t.message());
+			default -> new MappingStatus(
+					s.type(), M.SourceFlow + " - " + s.message());
 		};
 	}
 

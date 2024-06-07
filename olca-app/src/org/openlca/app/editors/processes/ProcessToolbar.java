@@ -53,7 +53,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 				.getLibraries()
 				.isEmpty();
 		if (withDirect) {
-			toolbar.add(Actions.create("Direct calculation",
+			toolbar.add(Actions.create(M.DirectCalculation,
 					Icon.RUN.descriptor(),
 					() -> directCalculation(getProcess())));
 		}
@@ -112,18 +112,12 @@ public class ProcessToolbar extends EditorActionBarContributor {
 	private static class FactCalculationDialog {
 
 		static void show(Process process) {
-			String hint = "The direct calculation creates an in-memory "
-					+ "product system of all processes in the database. This only "
-					+ "gives correct results when there are unambiguous links "
-					+ "between these processes (e.g. every product is only produced "
-					+ "by a single process or every product input has a default "
-					+ "provider set). You can also check the linking properties of "
-					+ "the databases under 'Database > Check linking properties'.";
-			String[] buttons = {"Run calculation", "Check linking", "Cancel"};
+			String hint = M.DirectCalculationUnambiguousLinksInfo;
+			String[] buttons = {M.RunCalculation, M.CheckLinking, M.Cancel};
 
 			MessageDialog dialog = new MessageDialog(
 					UI.shell(),
-					"Direct calculation", // title
+					M.DirectCalculation, // title
 					null, // image
 					hint,
 					MessageDialog.INFORMATION, // image type
@@ -140,13 +134,13 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		static void checkLinking(Process process) {
 			var ref = new AtomicReference<LinkingProperties>();
-			App.runWithProgress("Check database links", () -> {
+			App.runWithProgress(M.CheckDatabaseLinks, () -> {
 				var props = LinkingProperties.check(Database.get());
 				ref.set(props);
 			});
 			var props = ref.get();
 			if (props == null) {
-				MsgBox.error("The linking check gave no results");
+				MsgBox.error(M.LinkingCheckGaveNoResults);
 				return;
 			}
 			if (props.multiProviderFlows.isEmpty()
@@ -158,13 +152,11 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		}
 
 		private static void handleAmbiguousLinks(LinkingProperties props) {
-			String msg = "There are ambiguous links between processes "
-					+ "in the database. This can lead to different results "
-					+ "in the calculation depending on the process linking.";
-			String[] buttons = {"Show details", "Cancel"};
+			String msg = M.AmbiguousLinksInfo;
+			String[] buttons = {M.ShowDetails, M.Cancel};
 			var dialog = new MessageDialog(
 					UI.shell(),
-					"Direct calculation", // title
+					M.DirectCalculation, // title
 					null, // image
 					msg,
 					MessageDialog.WARNING, // image type
@@ -177,11 +169,11 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		private static void handleUnambiguousLinks(
 				Process process, LinkingProperties props) {
-			var msg = "The processes in the database can be linked unambiguously";
-			String[] buttons = {"Run calculation", "Show details", "Cancel"};
+			var msg = M.ProcessesCanBeLinkedUnambiguously;
+			String[] buttons = {M.RunCalculation, M.ShowDetails, M.Cancel};
 			var dialog = new MessageDialog(
 					UI.shell(),
-					"Direct calculation", // title
+					M.DirectCalculation, // title
 					null, // image
 					msg,
 					MessageDialog.INFORMATION, // image type

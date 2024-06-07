@@ -70,7 +70,7 @@ public class MatrixExportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Export matrices");
+		newShell.setText(M.ExportMatrices);
 	}
 
 	@Override
@@ -103,10 +103,10 @@ public class MatrixExportDialog extends FormDialog {
 			button.setText(label);
 			Controls.onSelect(button, _e -> fn.accept(button.getSelection()));
 		};
-		check.accept("Regionalized", b -> config.regionalized = b);
-		check.accept("With costs", b -> config.withCosts = b);
-		check.accept("With uncertainty distributions",
-			b -> config.withUncertainties = b);
+		check.accept(M.Regionalized, b -> config.regionalized = b);
+		check.accept(M.WithCosts, b -> config.withCosts = b);
+		check.accept(M.WithUncertaintyDistributions,
+				b -> config.withUncertainties = b);
 	}
 
 	private void fileSelection(Composite body, FormToolkit tk) {
@@ -132,14 +132,14 @@ public class MatrixExportDialog extends FormDialog {
 	}
 
 	private void formatSelection(Composite body, FormToolkit tk) {
-		UI.label(body, tk, "Format");
+		UI.label(body, tk, M.Format);
 		var inner = UI.composite(body, tk);
 		UI.gridData(inner, true, false);
 		var formats = Format.values();
 		UI.gridLayout(inner, formats.length, 10, 0);
 		for (var format : formats) {
 			var radio = UI.button(
-				inner, tk, format.toString(), SWT.RADIO);
+					inner, tk, format.toString(), SWT.RADIO);
 			if (format == config.format) {
 				radio.setSelection(true);
 			}
@@ -166,14 +166,14 @@ public class MatrixExportDialog extends FormDialog {
 			return Strings.compare(s1.name, s2.name);
 		});
 
-		UI.label(comp, tk, "Parameter set");
+		UI.label(comp, tk, M.ParameterSet);
 		var combo = UI.tableCombo(comp, tk,
-			SWT.READ_ONLY | SWT.BORDER);
+				SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
 
 		for (var paramSet : paramSets) {
 			var item = new TableItem(
-				combo.getTable(), SWT.NONE);
+					combo.getTable(), SWT.NONE);
 			item.setText(paramSet.name);
 		}
 
@@ -188,11 +188,11 @@ public class MatrixExportDialog extends FormDialog {
 	private void allocationCombo(Composite comp, FormToolkit tk) {
 		UI.label(comp, tk, M.AllocationMethod);
 		var combo = new AllocationCombo(
-			comp, AllocationMethod.values());
+				comp, AllocationMethod.values());
 		combo.setNullable(false);
 		combo.select(AllocationMethod.USE_DEFAULT);
 		combo.addSelectionChangedListener(
-			method -> config.allocation = method);
+				method -> config.allocation = method);
 	}
 
 	private void methodCombo(Composite comp, FormToolkit tk) {
@@ -218,22 +218,19 @@ public class MatrixExportDialog extends FormDialog {
 		var content = config.folder.listFiles();
 		var hasContent = content != null && content.length > 0;
 		if (hasContent) {
-			var b = Question.ask(
-				"Export folder not empty",
-				"The export folder is not empty. Existing files " +
-				"may are overwritten during the export. Do you " +
-				"want to continue?");
+			var b = Question.ask(M.ExportFolderNotEmpty,
+					M.ExportFolderNotEmptyQuestion);
 			if (!b)
 				return;
 		}
 
 		super.okPressed();
-		App.runWithProgress("Export matrices", () -> {
+		App.runWithProgress(M.ExportMatrices, () -> {
 			try {
 				config.exec();
 			} catch (Exception e) {
 				ErrorReporter.on(
-					"Failed to export product system matrices", e);
+						"Failed to export product system matrices", e);
 			}
 		});
 	}
@@ -251,13 +248,13 @@ public class MatrixExportDialog extends FormDialog {
 
 		void exec() {
 			var techIndex = system == null
-				? TechIndex.of(db)
-				: TechIndex.of(db, system);
+					? TechIndex.of(db)
+					: TechIndex.of(db, system);
 			var config = MatrixData.of(db, techIndex)
-				.withAllocation(allocation)
-				.withCosts(withCosts)
-				.withRegionalization(regionalized)
-				.withUncertainties(withUncertainties);
+					.withAllocation(allocation)
+					.withCosts(withCosts)
+					.withRegionalization(regionalized)
+					.withUncertainties(withUncertainties);
 
 			if (system != null) {
 				config.withDemand(Demand.of(system));
@@ -314,8 +311,8 @@ public class MatrixExportDialog extends FormDialog {
 		public String toString() {
 			return switch (this) {
 				case CSV -> "CSV";
-				case EXCEL -> "Excel";
-				case PYTHON -> "Python (NumPy, SciPy)";
+				case EXCEL -> M.Excel;
+				case PYTHON -> M.PythonNumpyScipy;
 			};
 		}
 	}

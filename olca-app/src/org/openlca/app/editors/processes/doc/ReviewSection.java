@@ -1,5 +1,9 @@
 package org.openlca.app.editors.processes.doc;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -7,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
@@ -26,10 +31,6 @@ import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.commons.ReviewType;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 class ReviewSection {
 
@@ -55,7 +56,7 @@ class ReviewSection {
 	void render(Composite body, FormToolkit tk, ScrolledForm form) {
 		this.tk = tk;
 		this.form = form;
-		var section = UI.section(body, tk, "Reviews");
+		var section = UI.section(body, tk, M.Reviews);
 		parent = UI.sectionClient(section, tk, 1);
 		var revs = reviews();
 		for (int i = 0; i < revs.size(); i++) {
@@ -115,7 +116,7 @@ class ReviewSection {
 		}
 
 		private String header() {
-			var buff = new StringBuilder("Review #" + (pos + 1));
+			var buff = new StringBuilder(M.Review + " #" + (pos + 1));
 			if (Strings.notEmpty(_rev.type)) {
 				buff.append(" - ").append(_rev.type);
 			}
@@ -137,7 +138,7 @@ class ReviewSection {
 			UI.fillHorizontal(comp);
 			typeCombo(comp);
 
-			UI.label(comp, tk, "Review report");
+			UI.label(comp, tk, M.ReviewReport);
 			ModelLink.of(Source.class)
 					.setModel(_rev.report)
 					.onChange(source -> {
@@ -147,7 +148,7 @@ class ReviewSection {
 					.setEditable(editor.isEditable())
 					.renderOn(comp, tk);
 
-			var details = UI.labeledMultiText(comp, tk, "Review details", 40);
+			var details = UI.labeledMultiText(comp, tk, M.ReviewDetails, 40);
 			if (_rev.details != null) {
 				details.setText(_rev.details);
 			}
@@ -159,7 +160,7 @@ class ReviewSection {
 		}
 
 		private void typeCombo(Composite comp) {
-			var combo = UI.labeledCombo(comp, tk, "Review type");
+			var combo = UI.labeledCombo(comp, tk, M.ReviewType);
 			var values = ReviewType.values();
 			var items = new ArrayList<String>(1 + values.length);
 			items.add("");
@@ -193,9 +194,9 @@ class ReviewSection {
 		}
 
 		private void reviewerTable(Composite root) {
-			var section = UI.section(root, tk, "Reviewers");
+			var section = UI.section(root, tk, M.Reviewers);
 			var comp = UI.sectionClient(section, tk, 1);
-			var table = Tables.createViewer(comp, "Reviewer");
+			var table = Tables.createViewer(comp, M.Reviewer);
 			Tables.bindColumnWidths(table, 1.0);
 			table.setLabelProvider(new ActorTableLabel());
 			table.setInput(_rev.reviewers);

@@ -55,14 +55,14 @@ public class MergeAction extends Action implements INavigationAction {
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
 			if (mergeResult == MergeResult.ABORTED)
-				return;			
+				return;
 			if (conflictResult.stashedChanges()) {
 				Actions.askApplyStash();
 			}
 			if (mergeResult == MergeResult.MOUNT_ERROR) {
-				MsgBox.error("Could not mount library");
+				MsgBox.error(M.CouldNotMountLibrary);
 			} else if (mergeResult == MergeResult.NO_CHANGES) {
-				MsgBox.info("No changes to merge");
+				MsgBox.info(M.NoChangesToMerge);
 			}
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during Git merge", e);

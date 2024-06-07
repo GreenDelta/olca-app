@@ -8,6 +8,7 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.openlca.app.App;
 import org.openlca.app.Config;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.StartPage;
 import org.openlca.app.preferences.Preferences;
@@ -20,7 +21,7 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 	}
 
 	public static void updateWindowTitle() {
-		App.runInUI("update title", () -> {
+		App.runInUI(M.UpdateTitle, () -> {
 			try {
 				var wb = PlatformUI.getWorkbench();
 				if (wb == null)

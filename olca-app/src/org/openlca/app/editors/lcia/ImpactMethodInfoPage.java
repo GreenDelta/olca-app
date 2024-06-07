@@ -67,7 +67,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		UI.filler(comp, tk);
 
 		// code
-		var codeText = UI.labeledText(comp, tk, "Code");
+		var codeText = UI.labeledText(comp, tk, M.Code);
 		Controls.set(codeText, getModel().code, code -> {
 			getModel().code = code;
 			getEditor().setDirty();

@@ -1,5 +1,9 @@
 package org.openlca.app.tools.soda;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Optional;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
@@ -8,15 +12,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.util.Strings;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Optional;
 
 class LoginDialog extends FormDialog {
 
@@ -42,7 +43,7 @@ class LoginDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Connect to a data node");
+		newShell.setText(M.ConnectToADataNode);
 	}
 
 	@Override
@@ -67,18 +68,18 @@ class LoginDialog extends FormDialog {
 		urlText = UI.labeledText(comp, tk, "URL");
 		UI.filler(comp, tk);
 		urlText.setText("https://replace.this.url.to/Node");
-		anoCheck = tk.createButton(comp, "Anonymous access", SWT.CHECK);
+		anoCheck = tk.createButton(comp, M.AnonymousAccess, SWT.CHECK);
 		anoCheck.setSelection(true);
-		userText = UI.labeledText(comp, tk, "User");
-		userText.setText("anonymous");
+		userText = UI.labeledText(comp, tk, M.User);
+		userText.setText(M.Anonymous);
 		userText.setEnabled(false);
 		pwText = UI.labeledText(
-				comp, tk, "Password", SWT.BORDER | SWT.PASSWORD);
+				comp, tk, M.Password, SWT.BORDER | SWT.PASSWORD);
 		pwText.setEnabled(false);
 
 		Controls.onSelect(anoCheck, $ -> {
 			var anonymous = anoCheck.getSelection();
-			userText.setText(anonymous ? "anonymous" : "");
+			userText.setText(anonymous ? M.Anonymous : "");
 			pwText.setText("");
 			userText.setEnabled(!anonymous);
 			pwText.setEnabled(!anonymous);
@@ -90,15 +91,14 @@ class LoginDialog extends FormDialog {
 		var data = LoginData.of(this);
 		var err = data.validate();
 		if (err != null) {
-			MsgBox.error("Invalid login data", err);
+			MsgBox.error(M.InvalidLoginData, err);
 			return;
 		}
 
-		var con = App.exec("Connect to node ...", data::login);
+		var con = App.exec(M.ConnectToNodeDots, data::login);
 		if (con.hasError()) {
-			MsgBox.error(
-					"Connection failed",
-					"Failed to connect to node: " + con.error());
+			MsgBox.error(M.ConnectionFailed,
+					M.FailedToConnectToNode + " - " + con.error());
 			return;
 		}
 		this.con = con;
@@ -123,22 +123,22 @@ class LoginDialog extends FormDialog {
 
 		String validate() {
 			if (Strings.nullOrEmpty(url))
-				return "No URL provided";
+				return M.NoUrlProvided;
 			if (!url.startsWith("http://") && !url.startsWith("https://"))
-				return "URL should start with http:// or https://";
+				return M.UrlShouldStartWithHttp;
 			try {
 				new URL(url);
 			} catch (MalformedURLException e) {
-				return "Invalid URL: " + e.getMessage();
+				return M.InvalidUrl + " - " + e.getMessage();
 			}
 
 			if (anonymous)
 				return null;
 
 			if (Strings.nullOrEmpty(user))
-				return "No user name provided";
+				return M.NoUserNameProvided;
 			if (Strings.nullOrEmpty(password))
-				return "No password provided";
+				return M.NoPasswordProvided;
 
 			return null;
 		}

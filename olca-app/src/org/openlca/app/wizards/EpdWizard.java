@@ -1,15 +1,16 @@
 package org.openlca.app.wizards;
 
+import java.util.UUID;
+
+import org.openlca.app.M;
 import org.openlca.core.model.Epd;
 import org.openlca.core.model.ModelType;
-
-import java.util.UUID;
 
 public class EpdWizard extends AbstractWizard<Epd> {
 
 	@Override
 	protected String getTitle() {
-		return "New EPD";
+		return M.NewEpd;
 	}
 
 	@Override
@@ -26,8 +27,8 @@ public class EpdWizard extends AbstractWizard<Epd> {
 
 		public Page() {
 			super("EpdPage");
-			setTitle("New EPD");
-			setMessage("Create a new environmental product declaration");
+			setTitle(M.NewEpd);
+			setMessage(M.CreateANewEnvironmentalProductDeclaration);
 			setPageComplete(false);
 		}
 

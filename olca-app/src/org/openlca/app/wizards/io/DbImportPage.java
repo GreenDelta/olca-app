@@ -64,7 +64,7 @@ class DbImportPage extends WizardPage {
 
 	private void createExistingSection(Composite body) {
 		var check = new Button(body, SWT.RADIO);
-		check.setText("Existing database");
+		check.setText(M.ExistingDatabase);
 		check.setSelection(config.mode == config.EXISTING_MODE);
 		Controls.onSelect(check, e -> setSelection(config.EXISTING_MODE));
 		var comp = UI.composite(body);
@@ -100,7 +100,7 @@ class DbImportPage extends WizardPage {
 
 	private void createFileSection(Composite body) {
 		var check = new Button(body, SWT.RADIO);
-		check.setText("From exported zolca-File");
+		check.setText(M.FromExportedZolca);
 		check.setSelection(config.mode == config.FILE_MODE);
 		Controls.onSelect(check, e -> setSelection(config.FILE_MODE));
 		var comp = UI.composite(body);
@@ -114,7 +114,7 @@ class DbImportPage extends WizardPage {
 		}
 
 		browseButton = new Button(comp, SWT.NONE);
-		browseButton.setText("Browse");
+		browseButton.setText(M.Browse);
 		Controls.onSelect(browseButton, e -> {
 			var zolca = FileChooser.open("*.zolca");
 			if (zolca == null)

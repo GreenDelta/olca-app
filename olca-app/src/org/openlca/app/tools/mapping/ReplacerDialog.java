@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelCheckBoxTree;
 import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
@@ -53,7 +54,7 @@ class ReplacerDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Replace flows in database");
+		shell.setText(M.ReplaceFlowsInDatabase);
 		UI.center(UI.shell(), shell);
 	}
 
@@ -62,14 +63,13 @@ class ReplacerDialog extends FormDialog {
 		var tk = form.getToolkit();
 		var comp = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(comp, 1, 10, 10);
-		UI.label(comp, tk, "This will replace the flows in the database " +
-				"(the source system) with the flows in the target system.");
+		UI.label(comp, tk, M.ThisWillReplaceFlowsInTheDb);
 		tree = new ModelCheckBoxTree(
 				ModelType.PROCESS,
 				ModelType.IMPACT_METHOD);
 		tree.drawOn(comp, tk);
-		Button delete = tk.createButton(comp,
-				"Delete replaced and unused flows", SWT.CHECK);
+		Button delete = tk.createButton(
+				comp, M.DeleteReplacedAndUnusedFlows, SWT.CHECK);
 		Controls.onSelect(delete,
 			_e -> conf.deleteMapped = delete.getSelection());
 	}

@@ -15,6 +15,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -33,17 +34,16 @@ class Validation {
 		if (setup == null
 				|| setup.features == null
 				|| setup.features.isEmpty()) {
-			MsgBox.error("Invalid setup",
-					"Could not find any geometry in the setup.");
+			MsgBox.error(M.InvalidSetup, M.CouldNotFindAnyGeography);
 			return;
 		}
 
 		// schedule a validation job
 		var validation = FeatureValidation.of(setup.features);
-		var job = new UIJob("Validate geometries") {
+		var job = new UIJob(M.ValidateGeometries) {
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
-				monitor.beginTask("Validate geometries", validation.count());
+				monitor.beginTask(M.ValidateGeometries, validation.count());
 				validation.onValidated((count) -> {
 					monitor.worked(count);
 					if (monitor.isCanceled()) {
@@ -77,14 +77,14 @@ class Validation {
 			if (validation.wasCanceled())
 				return;
 			App.runInUI(
-					"Show validation statistics",
+					M.ShowValidationStatistics,
 					() -> new StatsDialog(setup, validation.stats()).open());
 		}
 
 		@Override
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("Validation results");
+			shell.setText(M.ValidationResults);
 		}
 
 		@Override
@@ -97,7 +97,7 @@ class Validation {
 			var tk = form.getToolkit();
 			var body = UI.dialogBody(form.getForm(), tk);
 			var table = Tables.createViewer(body,
-					"Geometry type", "Valid features", "Invalid features");
+					M.GeometryType, M.ValidFeatures, M.InvalidFeatures);
 			table.setLabelProvider(new StatsLabel(stats));
 			table.setInput(Shape.values());
 			Tables.bindColumnWidths(table, 0.4, 0.3, 0.3);
@@ -110,7 +110,7 @@ class Validation {
 						IDialogConstants.OK_LABEL, true);
 			} else {
 				createButton(comp, IDialogConstants.OK_ID,
-						"Try to fix", true);
+						M.TryToFix, true);
 				createButton(comp, IDialogConstants.CANCEL_ID,
 						IDialogConstants.CANCEL_LABEL, true);
 			}
@@ -121,12 +121,7 @@ class Validation {
 			boolean hasInvalid = stats.totalInvalid() > 0;
 			if (!hasInvalid || buttonId != IDialogConstants.OK_ID)
 				return;
-			var b = Question.ask("Repair geometries?",
-					"This will try to fix problems like self-intersecting" +
-							"polygons in the setup. Note that the geometries in" +
-							"the setup will be directly changed. You may want to" +
-							"save this as a new setup then. Do you want to run " +
-							"this repair?");
+			var b = Question.ask(M.RepairGeometriesQ, M.RepairGeometriesQuestion);
 			if (b) {
 				super.okPressed();
 				Repair.run(setup);

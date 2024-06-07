@@ -372,8 +372,8 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	public boolean promptSaveIfNecessary() throws Exception {
 		if (!isDirty())
 			return true;
-		String question = M.SystemSaveProceedQuestion;
-		if (Question.ask(M.Save + "?", question)) {
+		String question = M.SystemSaveProceedQ;
+		if (Question.ask(M.SaveQ, question)) {
 			new ProgressMonitorDialog(UI.shell()).run(false, false,
 					systemEditor::doSave);
 			return true;

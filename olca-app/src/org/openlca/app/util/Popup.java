@@ -45,7 +45,7 @@ public class Popup {
 	private static void show(int state, String title, String text) {
 
 
-		UIJob job = new UIJob("Open popup") {
+		UIJob job = new UIJob(M.OpenPopup) {
 
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -60,11 +60,11 @@ public class Popup {
 				var image = state == INFO
 					? Icon.INFO.get()
 					: null;
-				
+
 				Notifier.notify(
 					image,
 					title != null ? title : M.Information,
-					text != null ? text : "No message",
+					text != null ? text : M.NoMessage,
 					theme);
 				return Status.OK_STATUS;
 			}

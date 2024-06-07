@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.eclipse.gef.RequestConstants.REQ_CREATE;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -36,8 +38,6 @@ import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
-
-import static org.eclipse.gef.RequestConstants.REQ_CREATE;
 
 public class AddProcessAction extends WorkbenchPartAction {
 
@@ -90,7 +90,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 			UI.gridLayout(body, 1);
 
 			// create new text
-			var nameLabel = UI.label(body, tk, "Create with name");
+			var nameLabel = UI.label(body, tk, M.CreateWithName);
 			nameLabel.setFont(UI.boldFont());
 			text = UI.text(body, SWT.NONE);
 			text.addModifyListener(e -> {
@@ -99,7 +99,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 			});
 
 			// tree
-			var selectLabel = UI.label(body, tk, "Or select existing");
+			var selectLabel = UI.label(body, tk, M.OrSelectExisting);
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.PROCESS);
 			UI.gridData(tree.getControl(), true, true);
@@ -142,9 +142,9 @@ public class AddProcessAction extends WorkbenchPartAction {
 
 		@Override
 		protected void createButtonsForButtonBar(Composite comp) {
-			createButton(comp, _CREATE, "Create new", false)
+			createButton(comp, _CREATE, M.CreateNew, false)
 				.setEnabled(false);
-			createButton(comp, _SELECT, "Select existing", false)
+			createButton(comp, _SELECT, M.SelectExisting, false)
 				.setEnabled(false);
 			createButton(comp, _CANCEL, M.Cancel, true);
 		}
@@ -189,9 +189,8 @@ public class AddProcessAction extends WorkbenchPartAction {
 		private void addProcess(RootDescriptor d) {
 			var system = graph.getProductSystem();
 			if (system.processes.contains(d.id)) {
-				MsgBox.info("The product system already"
-					+ " contains process '"
-					+ Labels.name(d) + "'.");
+				MsgBox.info(M.ProductSystemAlreadyContainsProcess
+						+ " - " + Labels.name(d));
 				cancelPressed();
 				return;
 			}
@@ -213,8 +212,8 @@ public class AddProcessAction extends WorkbenchPartAction {
 			if (command.canExecute())
 				execute(command);
 			else {
-				MsgBox.info("This item cannot be added to the product system '"
-					+ Labels.name(d) + "'.");
+				MsgBox.info(M.ProcessCannotBeAddedToTheProductSystem
+						+ " - " + Labels.name(d));
 				cancelPressed();
 			}
 

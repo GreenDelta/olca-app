@@ -3,12 +3,6 @@ package org.openlca.app.editors;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -22,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.M;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -29,10 +24,17 @@ import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.model.RootEntity;
 import org.openlca.util.Strings;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T> {
 
 	public AdditionalPropertiesPage(ModelEditor<T> editor) {
-		super(editor, "AdditionalPropertiesPage", "Additional properties");
+		super(editor, "AdditionalPropertiesPage", M.AdditionalProperties);
 	}
 
 	@Override
@@ -40,7 +42,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 		var form = UI.header(this);
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
-		var tree = Trees.createViewer(body, "Key", "Value");
+		var tree = Trees.createViewer(body, M.Key, M.Value);
 		tree.setLabelProvider(new JsonLabel());
 		tree.setAutoExpandLevel(2);
 		tree.setContentProvider(new JsonContent());
@@ -66,11 +68,10 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 
 		@Override
 		protected Control createDialogArea(Composite root) {
-			getShell().setText("Edit additional properties");
+			getShell().setText(M.EditAdditionalProperties);
 			var comp = (Composite) super.createDialogArea(root);
 			UI.gridLayout(comp, 1);
-			new Label(comp, SWT.NONE).setText(
-					"The content must be a valid JSON object, see json.org");
+			new Label(comp, SWT.NONE).setText(M.ContentMustBeValidJsonInfo);
 			text = new StyledText(comp,
 					SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 			text.setAlwaysShowScrollBars(false);
@@ -113,8 +114,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 				tree.setInput(obj);
 				super.okPressed();
 			} catch (Exception e) {
-				MsgBox.error("Failed to parse JSON",
-						"Please check the format of the given JSON string.");
+				MsgBox.error(M.FailedToParseJson, M.FailedToParseJsonErr);
 			}
 		}
 	}

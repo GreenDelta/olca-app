@@ -1,6 +1,7 @@
 package org.openlca.app.tools.openepd.output;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -8,6 +9,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.openepd.Ec3;
 import org.openlca.app.util.Desktop;
@@ -77,7 +79,7 @@ public record ExportState(State state, String id) {
 			return;
 		switch (state) {
 			case FILE -> Popup.info(
-				"Exported as file", "The EPD was exported as file: " + id);
+				M.ExportedAsFile, M.TheEpdWasExportedAsFile + " - " + id);
 			case UPDATED, CREATED -> Ec3Dialog.show(this);
 			default -> {
 			}
@@ -104,7 +106,7 @@ public record ExportState(State state, String id) {
 		@Override
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
-			newShell.setText("Uploaded to EC3");
+			newShell.setText(M.UploadToEc3);
 		}
 
 		@Override
@@ -124,11 +126,10 @@ public record ExportState(State state, String id) {
 			var text = tk.createFormText(comp, false);
 			UI.fillHorizontal(text).widthHint = 400;
 			var prefix = state.isCreated()
-				? "Uploaded a new EPD draft."
-				: "Updated an existing EPD.";
-			text.setText(prefix + " You can further edit"
-				+ " and publish it on EC3 using the following URL: "
-				+ url, false, true);
+				? M.UploadedNewEpdDraft
+				: M.UploadedAnExistingEpd;
+			text.setText(prefix + " " + NLS.bind(M.YouCanFurtherEditWithUrl, url),
+					false, true);
 			text.addHyperlinkListener(new HyperlinkAdapter() {
 				@Override
 				public void linkActivated(HyperlinkEvent e) {
@@ -139,7 +140,7 @@ public record ExportState(State state, String id) {
 
 		@Override
 		protected void createButtonsForButtonBar(Composite parent) {
-			createButton(parent, IDialogConstants.OK_ID, "Open EPD on EC3", true);
+			createButton(parent, IDialogConstants.OK_ID, M.OpenEpdOnEc3, true);
 			createButton(parent, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CLOSE_LABEL, false);
 		}

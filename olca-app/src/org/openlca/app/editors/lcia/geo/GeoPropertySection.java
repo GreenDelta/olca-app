@@ -8,12 +8,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.components.mapview.MapDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -44,27 +44,27 @@ class GeoPropertySection {
 	void drawOn(Composite body, FormToolkit tk) {
 
 		// create the section
-		Section section = UI.section(body, tk, "GeoJSON Parameters");
+		Section section = UI.section(body, tk, M.GeoJsonParameters);
 		Composite comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 
 		// create the table
 		table = Tables.createViewer(comp,
-				"Parameter",
-				"Identifier",
-				"Default value",
-				"Range",
-				"Aggregation type");
+				M.Parameter,
+				M.Identifier,
+				M.DefaultValue,
+				M.Range,
+				M.AggregationType);
 		table.setLabelProvider(new Label());
 		Tables.bindColumnWidths(
 				table, 0.2, 0.2, 0.2, 0.2, 0.2);
 		bindModifiers();
 
 		// bind the "open map" action
-		var openMap = Actions.create("Open map",
+		var openMap = Actions.create(M.OpenMap,
 				Icon.MAP.descriptor(), this::showMap);
 		var calcIntersections = Actions.create(
-				"Test intersections", this::showIntersections);
+				M.TestIntersections, this::showIntersections);
 		Actions.bind(table, openMap, calcIntersections);
 		Actions.bind(section, openMap);
 
@@ -77,7 +77,7 @@ class GeoPropertySection {
 			return;
 		GeoProperty gp = Viewers.getFirstSelected(table);
 		var param = gp != null ? gp.name : null;
-		var title = param != null ? param : "Features";
+		var title = param != null ? param : M.Features;
 		MapDialog.show(title, map -> {
 			if (param == null) {
 				map.addLayer(setup.features).center();
@@ -99,27 +99,24 @@ class GeoPropertySection {
 		var loc = Database.get().get(Location.class, d.id);
 		var geoData = GeoJSON.unpack(loc.geodata);
 		if (geoData == null || geoData.isEmpty()) {
-			MsgBox.info("No geographic data", "The selected location '"
-					+ Labels.name(loc) + "' has no geographic information attached.");
+			MsgBox.info(M.NoGeographicData, M.NoGeographicDataInfo);
 			return;
 		}
 
-		var shares = App.exec("Calculate intersections",
+		var shares = App.exec(M.CalculateIntersectionsDots,
 				() -> IntersectionCalculator.on(setup.features).shares(loc));
 		var coll = new FeatureCollection();
 		shares.stream()
 				.map(IntersectionShare::intersection)
 				.forEach(coll.features::add);
 		if (coll.isEmpty()) {
-			MsgBox.info("No intersections",
-					"The selected location '" + Labels.name(loc) +
-							"' has no intersections with the provided setup.");
+			MsgBox.info(M.NoIntersections, M.NoIntersectionsInfo);
 			return;
 		}
 
 		GeoProperty gp = Viewers.getFirstSelected(table);
 		var param = gp != null ? gp.name : null;
-		MapDialog.show("Intersections", map -> {
+		MapDialog.show(M.Intersections, map -> {
 			if (param == null) {
 				map.addLayer(coll).center();
 			} else {
@@ -132,8 +129,8 @@ class GeoPropertySection {
 
 	private void bindModifiers() {
 		ModifySupport<GeoProperty> ms = new ModifySupport<>(table);
-		ms.bind("Aggregation type", new AggTypeCell());
-		ms.bind("Default value", new TextCellModifier<>() {
+		ms.bind(M.AggregationType, new AggTypeCell());
+		ms.bind(M.DefaultValue, new TextCellModifier<>() {
 			@Override
 			protected String getText(GeoProperty param) {
 				return param == null ? ""
@@ -148,8 +145,7 @@ class GeoPropertySection {
 					param.defaultValue = Double.parseDouble(s);
 					table.refresh();
 				} catch (Exception e) {
-					MsgBox.error("Not a number",
-							"The string " + s + " is not a valid number");
+					MsgBox.error(M.NotANumber, M.NotValidNumber + " - " + s);
 				}
 			}
 		});
