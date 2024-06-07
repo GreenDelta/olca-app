@@ -20,7 +20,7 @@ import org.openlca.git.util.Constants;
 
 public class FetchAction extends Action implements INavigationAction {
 
-	private static final String NOTHING_TO_FETCH = "Remote does not have " + Constants.LOCAL_REF
+	static final String NOTHING_TO_FETCH = "Remote does not have " + Constants.LOCAL_REF
 			+ " available for fetch.";
 
 	@Override

@@ -70,7 +70,7 @@ public class CloneAction extends Action implements INavigationAction {
 				onError(config);
 				return;
 			}
-			new PullAction().run();
+			PullAction.silent().run();
 			Announcements.check();
 		} catch (Exception e) {
 			onError(config);
