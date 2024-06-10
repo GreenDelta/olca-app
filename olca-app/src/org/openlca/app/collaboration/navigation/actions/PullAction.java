@@ -39,7 +39,7 @@ public class PullAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return M.Pull + "...";
+		return M.PullDots;
 	}
 
 	@Override

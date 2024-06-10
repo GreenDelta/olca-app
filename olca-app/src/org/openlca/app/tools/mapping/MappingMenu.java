@@ -25,7 +25,7 @@ public class MappingMenu extends EditorActionBarContributor {
 	public void contributeToMenu(IMenuManager root) {
 		MenuManager menu = new MenuManager(M.FlowMapping);
 		root.add(menu);
-		menu.add(Actions.create(M.SaveAs, this::onSave));
+		menu.add(Actions.create(M.SaveAsDots, this::onSave));
 		menu.add(Actions.create(M.GenerateMappings, this::onGenerate));
 		menu.add(Actions.create(M.ApplyOnDatabase, this::onApply));
 	}

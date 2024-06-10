@@ -250,7 +250,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		// save as
 		saveAsAction = ActionFactory.SAVE_AS.create(window);
-		saveAsAction.setText(M.SaveAs);
+		saveAsAction.setText(M.SaveAsDots);
 		saveAsAction.setImageDescriptor(Icon.SAVE_AS.descriptor());
 		saveAsAction.setDisabledImageDescriptor(Icon.SAVE_AS_DISABLED.descriptor());
 

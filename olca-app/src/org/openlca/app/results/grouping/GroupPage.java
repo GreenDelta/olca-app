@@ -399,7 +399,7 @@ public class GroupPage extends FormPage {
 
 		private ProcessGroupSet createGroupSet() {
 			Shell shell = page.getEditorSite().getShell();
-			InputDialog dialog = new InputDialog(shell, M.SaveAs,
+			InputDialog dialog = new InputDialog(shell, M.SaveAsDots,
 					M.PleaseEnterAName, "", null);
 			int code = dialog.open();
 			if (code == Window.CANCEL)

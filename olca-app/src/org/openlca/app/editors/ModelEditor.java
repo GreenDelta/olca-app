@@ -144,8 +144,8 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 	public void doSave(IProgressMonitor monitor) {
 		try {
 			if (monitor != null) {
-				monitor.beginTask(M.Save + " " + modelClass.getSimpleName()
-						+ "...", IProgressMonitor.UNKNOWN);
+				monitor.beginTask(M.SaveDots + " " + modelClass.getSimpleName(),
+						IProgressMonitor.UNKNOWN);
 			}
 			model.lastChange = Calendar.getInstance().getTimeInMillis();
 			Version.incUpdate(model);
@@ -211,7 +211,7 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void doSaveAs() {
-		var diag = new InputDialog(UI.shell(), M.SaveAs, M.SaveAs,
+		var diag = new InputDialog(UI.shell(), M.SaveAsDots, M.SaveAsDots,
 				model.name + " - Copy", (name) -> {
 					if (Strings.nullOrEmpty(name))
 						return M.NameCannotBeEmpty;

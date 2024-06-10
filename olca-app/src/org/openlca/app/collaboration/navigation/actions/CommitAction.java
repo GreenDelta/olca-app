@@ -32,7 +32,7 @@ public class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return M.Commit + "...";
+		return M.CommitDots;
 	}
 
 	@Override

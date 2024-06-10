@@ -99,7 +99,7 @@ public class SqlEditor extends ScriptingEditor {
 			// bind actions
 			runAction = new RunAction();
 			var saveAs = Actions.create(
-				M.SaveAs, Icon.SAVE_AS.descriptor(), () -> getEditor().doSaveAs());
+				M.SaveAsDots, Icon.SAVE_AS.descriptor(), () -> getEditor().doSaveAs());
 			Actions.bind(section, runAction, saveAs);
 		}
 

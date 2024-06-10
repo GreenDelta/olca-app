@@ -23,7 +23,7 @@ public class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return M.Merge + "...";
+		return M.MergeDots;
 	}
 
 	@Override

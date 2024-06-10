@@ -228,6 +228,7 @@ public class M extends NLS {
 	public static String Configuration;
 	public static String ConfigureEcospoldMessage;
 	public static String Connect;
+	public static String ConnectDots;
 	public static String ConnectGitRepo;
 	public static String ConnectGraphCanCalculate;
 	public static String ConnectProviders;
@@ -932,6 +933,7 @@ public class M extends NLS {
 	public static String MemoryToHighMessage;
 	public static String MemoryToLowMessage;
 	public static String Merge;
+	public static String MergeDots;
 	public static String MergeEi3MarketProcesses;
 	public static String MergeFactors;
 	public static String MergeMarketProcesses;
@@ -1261,7 +1263,7 @@ public class M extends NLS {
 	public static String ProviderSelection;
 	public static String Providers;
 	public static String Publication;
-	public static String Pull;
+	public static String PullDots;
 	public static String Push;
 	public static String PushedCommits;
 	public static String Python;
@@ -1377,13 +1379,14 @@ public class M extends NLS {
 	public static String SankeyDiagram;
 	public static String Save;
 	public static String SaveAll;
-	public static String SaveAs;
+	public static String SaveAsDots;
 	public static String SaveAsFile;
 	public static String SaveAsImage;
 	public static String SaveAsResultDots;
 	public static String SaveAsSystemProcessDots;
 	public static String SaveChanges;
 	public static String SaveChangesQuestion;
+	public static String SaveDots;
 	public static String SaveFlowMappingDots;
 	public static String SaveMappingInDatabase;
 	public static String SaveMappingInDatabaseInfo;
