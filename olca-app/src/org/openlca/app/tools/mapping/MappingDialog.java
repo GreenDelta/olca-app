@@ -117,7 +117,7 @@ class MappingDialog extends FormDialog {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
-		RefPanel sourcePanel = new RefPanel(entry.sourceFlow(), true);
+		var sourcePanel = new RefPanel(entry.sourceFlow(), true);
 		sourcePanel.render(comp, tk);
 		UI.gridData(tk.createLabel(
 			comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
@@ -127,13 +127,13 @@ class MappingDialog extends FormDialog {
 			label.setFont(UI.boldFont());
 			UI.gridData(label, true, false);
 		});
-		RefPanel targetPanel = new RefPanel(entry.targetFlow(), false);
+		var targetPanel = new RefPanel(entry.targetFlow(), false);
 		targetPanel.render(comp, tk);
 		UI.gridData(tk.createLabel(
 			comp, "", SWT.SEPARATOR | SWT.HORIZONTAL), true, false);
 
 		// text with conversion factor
-		Composite convComp = tk.createComposite(body);
+		var convComp = tk.createComposite(body);
 		UI.gridLayout(convComp, 3);
 		UI.gridData(convComp, true, false);
 		Text convText = UI.labeledText(convComp, tk, M.ConversionFactor);
@@ -145,8 +145,14 @@ class MappingDialog extends FormDialog {
 			}
 		});
 
-		UI.gridData(convText, true, false);
-		Label unitLabel = UI.label(convComp, tk, "");
+		var unitLabel = UI.label(convComp, tk, "");
+		var unitUpdate = unitUpdate(convComp, unitLabel);
+		sourcePanel.onChange = unitUpdate;
+		targetPanel.onChange = unitUpdate;
+		convComp.layout(true);
+	}
+
+	private Runnable unitUpdate(Composite comp, Label unitLabel) {
 		Runnable updateUnit = () -> {
 			String sunit = "?";
 			String tunit = "?";
@@ -160,12 +166,13 @@ class MappingDialog extends FormDialog {
 				&& entry.targetFlow().unit.name != null) {
 				tunit = entry.targetFlow().unit.name;
 			}
-			unitLabel.setText(sunit + "/" + tunit);
+			unitLabel.setText(tunit + "/" + sunit);
 			unitLabel.getParent().pack();
+			comp.layout(true);
+			comp.getParent().layout(true);
 		};
 		updateUnit.run();
-		sourcePanel.onChange = updateUnit;
-		targetPanel.onChange = updateUnit;
+		return updateUnit;
 	}
 
 	private class RefPanel {
@@ -187,7 +194,7 @@ class MappingDialog extends FormDialog {
 		}
 
 		void render(Composite parent, FormToolkit tk) {
-			Composite comp = tk.createComposite(parent);
+			var comp = tk.createComposite(parent);
 			UI.gridLayout(comp, 2, 10, 5);
 			UI.gridData(comp, true, false);
 
@@ -203,7 +210,10 @@ class MappingDialog extends FormDialog {
 					return;
 				}
 
-				FlowRefDialog.open(p, o -> o.ifPresent(this::updateWith));
+				FlowRefDialog.open(p, o -> {
+					o.ifPresent(this::updateWith);
+					comp.layout(true);
+				});
 			});
 
 			UI.label(comp, tk, M.Category);
