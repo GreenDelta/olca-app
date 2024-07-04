@@ -28,6 +28,7 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
+import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.ReferenceAmount;
@@ -115,7 +116,7 @@ class ImpactPage extends ModelPage<Process> {
 				App.open(impact);
 			}
 		});
-		Actions.bind(tree, onOpen);
+		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));
 		Trees.onDoubleClick(tree, e -> onOpen.run());
 
 		if (!methods.isEmpty()) {
