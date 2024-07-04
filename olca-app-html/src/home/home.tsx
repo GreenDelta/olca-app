@@ -16,11 +16,12 @@ enum Item {
   DATABASES,
   TRAININGS,
   MORE_TOOLS,
+  COLLABORATE,
   JOINING,
 }
 
 
-const Page = ({ data }: { data: PageData }) => {
+const Page = ({ data }: { data: PageData; }) => {
 
   const items = [
     Item.GETTING_STARTED,
@@ -30,6 +31,7 @@ const Page = ({ data }: { data: PageData }) => {
     Item.DATABASES,
     Item.TRAININGS,
     Item.MORE_TOOLS,
+    Item.COLLABORATE,
     Item.JOINING,
   ];
 
@@ -60,7 +62,7 @@ const Page = ({ data }: { data: PageData }) => {
 };
 
 
-const LibHint = ({ display }: { display: boolean }) => {
+const LibHint = ({ display }: { display: boolean; }) => {
   if (!display || !window.onLibHintClick) {
     return <></>;
   }
@@ -110,7 +112,7 @@ const Nav = ({ items, selected, onSelect }: {
 };
 
 
-const Content = ({ item }: { item: Item }) => {
+const Content = ({ item }: { item: Item; }) => {
   switch (item) {
 
     case Item.GETTING_STARTED:
@@ -229,6 +231,15 @@ const Content = ({ item }: { item: Item }) => {
         </div>
       );
 
+    case Item.COLLABORATE:
+      return (
+        <div className="olca-content">
+          <p>
+            Contribute code, translate the software, or provide feedback. Your involvement enhances openLCA's accuracy, accessibility, and features. If you're passionate about sustainability, join us on <a onClick={_onClick} href="https://github.com/GreenDelta/olca-app/">GitHub</a> to collaborate on development and feature suggestions. For translations, please send us an email. Every contribution counts!
+          </p>
+        </div>
+      );
+
     default:
       return <></>;
   }
@@ -251,6 +262,8 @@ function headerOf(i: Item): string {
       return "Certified trainings, support";
     case Item.MORE_TOOLS:
       return "Tools to get more out of openLCA";
+    case Item.COLLABORATE:
+      return "Collaborate on an open-source project";
     case Item.JOINING:
       return "Working with the developers of openLCA";
     default:
