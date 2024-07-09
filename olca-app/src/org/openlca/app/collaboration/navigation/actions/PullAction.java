@@ -69,7 +69,7 @@ public class PullAction extends Action implements INavigationAction {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;
-			var conflictResult = ConflictResolutionMap.forRemote();
+			var conflictResult = ConflictResolver.forRemote();
 			if (conflictResult == null)
 				return;
 			var mergeResult = Actions.run(GitMerge

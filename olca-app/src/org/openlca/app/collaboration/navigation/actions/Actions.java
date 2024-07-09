@@ -136,7 +136,7 @@ class Actions {
 		var libraryResolver = WorkspaceLibraryResolver.forStash();
 		if (libraryResolver == null)
 			return false;
-		var conflictResult = ConflictResolutionMap.forStash();
+		var conflictResult = ConflictResolver.forStash();
 		if (conflictResult == null)
 			return false;
 		Actions.run(GitStashApply.on(repo)
