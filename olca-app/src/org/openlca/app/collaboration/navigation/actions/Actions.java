@@ -100,9 +100,19 @@ class Actions {
 
 	static <T> T run(GitProgressAction<T> runnable)
 			throws InvocationTargetException, InterruptedException, GitAPIException, IOException {
+		return run(runnable, false);
+	}
+
+	static <T> T runWithCancel(GitProgressAction<T> runnable)
+			throws InvocationTargetException, InterruptedException, GitAPIException, IOException {
+		return run(runnable, true);
+	}
+
+	static <T> T run(GitProgressAction<T> runnable, boolean cancelable)
+			throws InvocationTargetException, InterruptedException, GitAPIException, IOException {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitProgressRunner<>(runnable);
-		service.run(true, false, runner::run);
+		service.run(true, cancelable, runner::run);
 		if (runner.exception != null)
 			if (runner.exception instanceof GitAPIException e)
 				throw e;
@@ -234,6 +244,11 @@ class Actions {
 				@Override
 				public void worked(int work) {
 					monitor.worked(work);
+				}
+
+				@Override
+				public boolean isCanceled() {
+					return monitor.isCanceled();
 				}
 
 			};
