@@ -10,18 +10,30 @@ import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.util.Labels;
 
 /**
- * A class for filtering model elements from an navigation tree via a text
+ * A class for filtering model elements from a navigation tree via a text
  * filter. The filter directly registers a listener on the text field.
+ * The listener executes a refresh of the tree after a delay.
  */
 public class ModelTextFilter extends ViewerFilter {
+	private static final int DELAY = 300;  // milliseconds
+	private static int runnableId = 0;
 
 	private final Text filterText;
 
 	public ModelTextFilter(Text text, TreeViewer viewer) {
 		this.filterText = text;
 		text.addModifyListener(e -> {
-			viewer.refresh();
-			expand(viewer);
+			var display = viewer.getControl().getShell().getDisplay();
+			var currentRunnableId = ++runnableId;
+
+			display.timerExec(DELAY, () -> {
+				if (currentRunnableId != runnableId)
+					return;
+				if (!viewer.getTree().isDisposed()) {
+					viewer.refresh();
+					expand(viewer);
+				}
+			});
 		});
 	}
 
@@ -47,8 +59,7 @@ public class ModelTextFilter extends ViewerFilter {
 	}
 
 	private boolean select(INavigationElement<?> element, String text) {
-		if (element instanceof ModelElement) {
-			ModelElement modelElement = (ModelElement) element;
+		if (element instanceof ModelElement modelElement) {
 			String feed = Labels.name(modelElement.getContent())
 					.toLowerCase();
 			return feed.contains(text);
