@@ -112,7 +112,7 @@ class Actions {
 	}
 
 	static void askApplyStash() throws InvocationTargetException, GitAPIException, IOException, InterruptedException {
-		var answers = new String[] {M.Yes, M.No};
+		var answers = new String[] { M.No, M.Yes };
 		var result = Question.ask(M.ApplyStashedChanges,
 				M.ApplyStashedChangesQuestion,
 				answers);

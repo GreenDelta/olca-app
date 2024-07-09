@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -25,10 +27,10 @@ import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.actions.GitDiscard;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.actions.GitStashDrop;
+import org.openlca.git.model.Change;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.ModelRef;
-import org.openlca.git.model.Reference;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.jsonld.Json;
@@ -79,38 +81,40 @@ class ConflictResolutionMap implements ConflictResolver {
 		var commit = repo.commits.find().refs(ref).latest();
 		var commonParent = repo.localHistory.commonParentOf(ref);
 		var workspaceConflicts = workspaceDiffs(commit, commonParent);
-		if (workspaceConflicts.remaining.isEmpty()) {
-			var resolved = resolve(commit, localDiffs(commit, commonParent), workspaceConflicts);
-			if (resolved == null)
-				return null;
-			return new ConflictResult(resolved, false);
-		}
-		var answers = new ArrayList<>(Arrays.asList(M.Cancel, M.DiscardChanges, M.CommitChanges));
-		if (!stashCommit) {
-			answers.add(M.StashChanges);
-		}
-		var result = Question.ask(M.HandleConflicts, M.HandleConflictsQuestion,
-				answers.toArray(new String[answers.size()]));
-		switch (result) {
-			case 0:
-				return null;
-			case 1:
-				Actions.run(GitDiscard.on(repo));
-				break;
-			case 2:
-				var resolved = commitChanges(ref, stashCommit);
-				if (resolved == null)
+		var wasStashed = false;
+		if (!workspaceConflicts.remaining.isEmpty()) {
+			var answers = new ArrayList<>(Arrays.asList(M.Cancel, M.DiscardChanges, M.CommitChanges));
+			if (!stashCommit) {
+				answers.add(M.StashChanges);
+			}
+			var result = Question.ask(M.HandleConflicts, M.HandleConflictsQuestion,
+					answers.toArray(new String[answers.size()]));
+			switch (result) {
+				case 0:
 					return null;
-				return new ConflictResult(resolved, false);
-			case 3:
-				if (!stashChanges())
-					return null;
-				break;
+				case 1:
+					Actions.run(GitDiscard.on(repo).changes(toChanges(workspaceConflicts.remaining)));
+					break;
+				case 2:
+					return commitChanges(ref, stashCommit);
+				case 3:
+					if (!stashChanges(toChanges(workspaceConflicts.remaining)))
+						return null;
+					wasStashed = true;
+					break;
+			}
 		}
-		var resolved = resolve(commit, localDiffs(commit, commonParent), Conflicts.none());
+		var resolved = resolve(commit, localDiffs(commit, commonParent), workspaceConflicts.equal);
 		if (resolved == null)
 			return null;
-		return new ConflictResult(resolved, result == 3);
+		return new ConflictResult(resolved, wasStashed);
+	}
+
+	private static List<Change> toChanges(List<TriDiff> remaining) {
+		return Change.of(remaining.stream()
+				.map(diff -> diff.left)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList()));
 	}
 
 	private static Conflicts workspaceDiffs(Commit commit, Commit commonParent) throws IOException {
@@ -163,16 +167,16 @@ class ConflictResolutionMap implements ConflictResolver {
 				.orElse(null);
 	}
 
-	private static ConflictResolutionMap commitChanges(String ref, boolean stashCommit)
+	private static ConflictResult commitChanges(String ref, boolean stashCommit)
 			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
 		var commitAction = new CommitAction();
 		commitAction.accept(Arrays.asList(Navigator.findElement(Database.getActiveConfiguration())));
 		if (!commitAction.doRun(false))
 			return null;
-		return resolve(ref, stashCommit).resolutions;
+		return resolve(ref, stashCommit);
 	}
 
-	private static boolean stashChanges()
+	private static boolean stashChanges(List<Change> changes)
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
 		var repo = Repository.CURRENT;
 		var user = AuthenticationDialog.promptUser(repo);
@@ -186,7 +190,7 @@ class ConflictResolutionMap implements ConflictResolver {
 				return false;
 			GitStashDrop.from(repo).run();
 		}
-		Actions.run(GitStashCreate.on(repo).as(user));
+		Actions.run(GitStashCreate.on(repo).as(user).changes(changes));
 		return true;
 	}
 
@@ -222,11 +226,11 @@ class ConflictResolutionMap implements ConflictResolver {
 		return new Conflicts(equal, remaining);
 	}
 
-	private static ConflictResolutionMap resolve(Commit commit, Conflicts local, Conflicts workspace) {
+	private static ConflictResolutionMap resolve(Commit commit, Conflicts local, List<? extends ModelRef> workspaceEquals) {
 		var solved = solve(local.remaining);
 		if (solved == null)
 			return null;
-		workspace.equal.forEach(c -> solved.put(c, ConflictResolution.isEqual()));
+		workspaceEquals.forEach(c -> solved.put(c, ConflictResolution.isEqual()));
 		local.equal.forEach(c -> solved.put(c, ConflictResolution.isEqual()));
 		local.remaining.stream()
 				.filter(Predicate.not(TriDiff::conflict))
@@ -237,10 +241,9 @@ class ConflictResolutionMap implements ConflictResolver {
 	private static boolean equalsDescriptor(TriDiff diff, RootDescriptor d) {
 		if (d == null)
 			return false;
-		if (ObjectId.zeroId().equals(diff.rightNewObjectId))
+		if (diff.right == null || diff.right.newRef == null || ObjectId.zeroId().equals(diff.right.newRef.objectId))
 			return false;
-		var ref = new Reference(diff.path, diff.commitId, diff.rightNewObjectId);
-		var remoteModel = Repository.CURRENT.datasets.parse(ref, "lastChange", "version");
+		var remoteModel = Repository.CURRENT.datasets.parse(diff.right.newRef, "lastChange", "version");
 		if (remoteModel == null)
 			return false;
 		var version = Version.fromString(string(remoteModel, "version")).getValue();

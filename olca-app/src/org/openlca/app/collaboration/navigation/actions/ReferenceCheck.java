@@ -45,33 +45,33 @@ class ReferenceCheck {
 		this.references = App.exec(M.CollectingReferencesDots, () -> ModelReferences.scan(Database.get()));
 	}
 
-	static Set<DiffNode> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+	static Set<Diff> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences())
-			return input;
+			return convert(input);
 		return new ReferenceCheck(database, all, input).run(false);
 	}
 
-	static Set<DiffNode> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+	static Set<Diff> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences())
-			return input;
+			return convert(input);
 		return new ReferenceCheck(database, all, input).run(true);
 	}
 
-	private Set<DiffNode> run(boolean stashCommit) {
+	private Set<Diff> run(boolean stashCommit) {
 		var references = collect();
 		if (references.isEmpty())
-			return input;
+			return convert(input);
 		var node = new DiffNodeBuilder(database).build(references);
 		var dialog = new CommitReferencesDialog(node, stashCommit);
 		if (dialog.open() != CommitReferencesDialog.OK)
 			return null;
 		var selected = dialog.getSelected();
 		if (selected.isEmpty())
-			return input;
+			return convert(input);
 		var set = new HashSet<DiffNode>();
 		set.addAll(input);
 		set.addAll(selected);
-		return set;
+		return convert(set);
 	}
 
 	private Set<TriDiff> collect() {
@@ -107,6 +107,12 @@ class ReferenceCheck {
 		return references.stream()
 				.filter(Predicate.not(selection::contains))
 				.filter(diffs::contains);
+	}
+
+	private static Set<Diff> convert(Set<DiffNode> nodes) {
+		return nodes.stream()
+				.map(node -> node.contentAsTriDiff().left)
+				.collect(Collectors.toSet());
 	}
 
 }

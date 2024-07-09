@@ -63,7 +63,7 @@ public class CommitAction extends Action implements INavigationAction {
 			var user = doPush && credentials != null ? credentials.ident : AuthenticationDialog.promptUser(repo);
 			if (credentials == null && user == null)
 				return false;
-			Actions.runWithCancel(GitCommit.on(repo)
+			Actions.run(GitCommit.on(repo)
 					.changes(input.datasets())
 					.withMessage(input.message())
 					.as(user));
