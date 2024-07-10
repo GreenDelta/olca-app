@@ -169,6 +169,8 @@ public class M extends NLS {
 	public static String CausalAllocation;
 	public static String Change;
 	public static String CharactFactorsForSub;
+	public static String CheckingForLocalConflicts;
+	public static String CheckingForWorkspaceConflicts;
 	public static String CheckDatabaseLinks;
 	public static String CheckFeatures;
 	public static String CheckIfLibraryIsUsedDots;

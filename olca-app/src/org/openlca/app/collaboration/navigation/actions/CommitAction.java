@@ -63,7 +63,7 @@ public class CommitAction extends Action implements INavigationAction {
 			var user = doPush && credentials != null ? credentials.ident : AuthenticationDialog.promptUser(repo);
 			if (credentials == null && user == null)
 				return false;
-			Actions.run(GitCommit.on(repo)
+			Actions.runWithCancel(GitCommit.on(repo)
 					.changes(input.datasets())
 					.withMessage(input.message())
 					.as(user));
@@ -98,13 +98,14 @@ public class CommitAction extends Action implements INavigationAction {
 		var message = M.CategoriesContainASlash + "\r\n";
 		for (var i = 0; i < Math.min(5, withSlash.size()); i++) {
 			var category = dao.getForId(withSlash.get(i).id);
-			message += "\r\n* " + category.name + " - " + Labels.plural(category.modelType);
+			message += "\r\n* " + category.name + " (" + Labels.plural(category.modelType);
 			if (category.category != null) {
 				message += "/" + category.category.toPath();
 			}
+			message += ")";
 		}
 		if (withSlash.size() > 5) {
-			message += "\r\n* " + M.More + " (" + (withSlash.size() - 5) + ")";
+			message += "\r\n* " + " (" + (withSlash.size() - 5) + ")" + M.More.toLowerCase();
 		}
 		if (!Question.ask(M.InvalidCategoryNames, message))
 			return false;

@@ -20,6 +20,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitMerge.MergeResult;
+import org.openlca.git.util.Constants;
 
 public class PullAction extends Action implements INavigationAction {
 
@@ -65,11 +66,14 @@ public class PullAction extends Action implements INavigationAction {
 				return;
 			if (!newCommits.isEmpty()) {
 				new HistoryDialog(M.FetchedCommits, newCommits).open();
+			} else if (Repository.CURRENT.localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty()) {
+				MsgBox.info(M.NoCommitToFetchInfo);
+				return;
 			}
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;
-			var conflictResult = ConflictResolutionMap.forRemote();
+			var conflictResult = ConflictResolver.forRemote();
 			if (conflictResult == null)
 				return;
 			var mergeResult = Actions.run(GitMerge

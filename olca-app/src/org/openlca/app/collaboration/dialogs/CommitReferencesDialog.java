@@ -47,7 +47,7 @@ public class CommitReferencesDialog extends FormDialog {
 	private ModelRefSet getNewElements(DiffNode node) {
 		var newElements = new ModelRefSet();
 		var diff = node.contentAsTriDiff();
-		if (diff != null && diff.leftDiffType == DiffType.ADDED) {
+		if (diff != null && diff.left != null && diff.left.diffType == DiffType.ADDED) {
 			newElements.add(diff);
 		}
 		if (node.children == null)
