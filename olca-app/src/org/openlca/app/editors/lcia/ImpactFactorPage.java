@@ -153,12 +153,23 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			Flow f2 = o2.flow;
 			if (f1 == null || f2 == null)
 				return 0;
+
+			// by name
 			int c = Strings.compare(f1.name, f2.name);
 			if (c != 0)
 				return c;
-			String cat1 = CategoryPath.getShort(f1.category);
-			String cat2 = CategoryPath.getShort(f2.category);
-			return Strings.compare(cat1, cat2);
+
+			// by category
+			var cat1 = CategoryPath.getShort(f1.category);
+			var cat2 = CategoryPath.getShort(f2.category);
+			c =  Strings.compare(cat1, cat2);
+			if (c != 0)
+				return c;
+
+			// by location
+			var loc1 = o1.location != null ? o1.location.code : null;
+			var loc2 = o2.location != null ? o2.location.code : null;
+			return Strings.compare(loc1, loc2);
 		});
 	}
 
