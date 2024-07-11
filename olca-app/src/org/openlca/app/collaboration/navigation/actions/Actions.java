@@ -16,13 +16,17 @@ import org.openlca.app.collaboration.util.SslCertificates;
 import org.openlca.app.collaboration.util.WebRequests.WebRequestException;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
+import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
+import org.openlca.core.model.ModelType;
 import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.actions.GitStashApply;
+import org.openlca.git.model.ModelRef;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -244,6 +248,19 @@ class Actions {
 				@Override
 				public void worked(int work) {
 					monitor.worked(work);
+				}
+
+				@Override
+				public void subTask(ModelRef ref) {
+					if (ref.isCategory) {
+						subTask(Labels.of(ModelType.CATEGORY) + " " + ref.path.substring(ref.path.indexOf("/") + 1));
+					} else {
+						var d = Repository.CURRENT.descriptors.get(ref);
+						var name = Strings.nullOrEmpty(ref.category)
+								? d.name
+								: ref.category + "/" + d.name;
+						subTask(Labels.of(ref.type) + " " + name);
+					}
 				}
 
 				@Override
