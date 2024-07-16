@@ -1,50 +1,29 @@
 package org.openlca.app.collaboration.search;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
 import org.openlca.app.collaboration.util.WebRequests;
-import org.openlca.app.db.Database;
-import org.openlca.app.navigation.Navigator;
-import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.Desktop;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.collaboration.model.Dataset;
 import org.openlca.collaboration.model.SearchResult;
 import org.openlca.core.model.ModelType;
-import org.openlca.jsonld.ZipStore;
-import org.openlca.jsonld.input.JsonImport;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class SearchPage extends FormPage {
-
-	private static final Logger log = LoggerFactory.getLogger(SearchView.class);
 
 	private final SearchQuery query;
 	private FormToolkit tk;
@@ -54,9 +33,10 @@ class SearchPage extends FormPage {
 	private Composite headerComposite;
 	private Section pageSection;
 	private Composite pageComposite;
+	private SearchResults searchResults;
 	private final List<ServerConfig> servers = ServerConfigurations.get();
 	private ServerConfig selected;
-	
+
 	public SearchPage(SearchView view, SearchQuery query) {
 		super(view, "SearchResultView.Page", M.SearchResults);
 		this.query = query;
@@ -69,6 +49,7 @@ class SearchPage extends FormPage {
 		form = UI.header(mform, M.SearchResults);
 		tk = mform.getToolkit();
 		formBody = UI.body(form, tk);
+		searchResults = new SearchResults(tk, query);
 		renderPage(null);
 	}
 
@@ -90,7 +71,7 @@ class SearchPage extends FormPage {
 		if (result != null) {
 			pageSection = UI.section(formBody, tk, "Search results");
 			pageComposite = UI.sectionClient(pageSection, tk, 1);
-			createItems(result);
+			searchResults.render(pageComposite, result);
 			renderPager(result);
 		}
 		form.reflow(true);
@@ -141,7 +122,7 @@ class SearchPage extends FormPage {
 		viewer.setNullable(true);
 		viewer.setInput(ModelType.values());
 		if (!Strings.nullOrEmpty(query.type))
-		viewer.select(ModelType.valueOf(query.type));
+			viewer.select(ModelType.valueOf(query.type));
 		viewer.addSelectionChangedListener(type -> {
 			query.type = type != null ? type.name() : null;
 			runSearch(1);
@@ -158,38 +139,6 @@ class SearchPage extends FormPage {
 		text.addModifyListener(e -> query.query = text.getText());
 		var button = tk.createButton(comp, M.Search, SWT.FLAT);
 		Controls.onSelect(button, e -> runSearch(1));
-	}
-
-	private void createItems(SearchResult<Dataset> result) {
-		var click = new LinkClick();
-		for (var dataset : result.data()) {
-			var comp = tk.createComposite(pageComposite);
-			UI.gridData(comp, true, false);
-			UI.gridLayout(comp, 1).verticalSpacing = 3;
-			var header = tk.createComposite(comp);
-			UI.gridData(header, true, false);
-			UI.gridLayout(header, 2, 10, 0);
-			var link = tk.createImageHyperlink(header, SWT.TOP);
-			link.setText(dataset.name());
-			link.setImage(Images.get(ModelType.valueOf(dataset.type())));
-			link.setForeground(Colors.linkBlue());
-			link.setData(getDatasetLink(dataset));
-			link.addHyperlinkListener(click);
-			var button = tk.createButton(header, M.Import, SWT.PUSH);
-			button.setData(dataset);
-			Controls.onSelect(button, this::onImport);
-			var category = !Strings.nullOrEmpty(dataset.category()) ? dataset.category() : "Uncategorized";
-			var categoryLabel = tk.createLabel(comp, category);
-			if (Strings.nullOrEmpty(dataset.category())) {
-				categoryLabel.setFont(UI.italicFont());
-			}
-			categoryLabel.setForeground(Colors.get(0, 128, 42));
-			var repositoryLink = tk.createImageHyperlink(header, SWT.TOP);
-			repositoryLink.setText(dataset.repositoryId());
-			repositoryLink.setForeground(Colors.get(119, 0, 119));
-			repositoryLink.setData(getRepositoryLink(dataset));
-			repositoryLink.addHyperlinkListener(click);
-		}
 	}
 
 	private void renderPager(SearchResult<Dataset> result) {
@@ -224,63 +173,6 @@ class SearchPage extends FormPage {
 		query.page = page;
 		var result = Search.run(query);
 		renderPage(result);
-	}
-
-	private void onImport(SelectionEvent e) {
-		if (Database.get() == null) {
-			MsgBox.error(M.NeedOpenDatabase);
-			return;
-		}
-		var b = (Button) e.widget;
-		var data = (Dataset) b.getData();
-		App.runWithProgress(M.DownloadingData, () -> {
-			File tmp = null;
-			ZipStore store = null;
-			try {
-				tmp = Files.createTempFile("cs-json-", ".zip").toFile();
-				if (!query.server.downloadJson(data.repositoryId(), data.type(), data.refId(), tmp))
-					return;
-				store = ZipStore.open(tmp);
-				var jsonImport = new JsonImport(store, Database.get());
-				jsonImport.run();
-			} catch (Exception ex) {
-				log.error("Error during json import", ex);
-			} finally {
-				if (store != null) {
-					try {
-						store.close();
-					} catch (IOException ex) {
-						log.error("Error closing store", ex);
-					}
-				}
-				if (tmp != null) {
-					tmp.delete();
-				}
-			}
-		}, Navigator::refresh);
-	}
-
-	private static class LinkClick extends HyperlinkAdapter {
-		@Override
-		public void linkActivated(HyperlinkEvent e) {
-			var link = (ImageHyperlink) e.widget;
-			var url = (String) link.getData();
-			Desktop.browse(url);
-		}
-	}
-
-	private String getDatasetLink(Dataset dataset) {
-		var url = getRepositoryLink(dataset);
-		url += "/dataset/" + dataset.type();
-		url += "/" + dataset.refId();
-		url += "?commitId=" + dataset.commitId();
-		return url;
-	}
-
-	private String getRepositoryLink(Dataset dataset) {
-		var url = query.server.url;
-		url += "/" + dataset.repositoryId();
-		return url;
 	}
 
 }

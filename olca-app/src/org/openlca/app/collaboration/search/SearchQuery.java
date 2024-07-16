@@ -8,6 +8,6 @@ public class SearchQuery {
 	public String query;
 	public String type;
 	public int page;
-	public int pageSize;
+	public int pageSize = 10;
 
 }
