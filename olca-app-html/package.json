@@ -4,9 +4,7 @@
   "description": "HTML pages of the openLCA application",
   "main": "index.js",
   "scripts": {
-    "prebuild": "node scripts/prepare-fonts.js",
     "build": "webpack --config webpack.config.js --mode=production",
-    "predev": "node scripts/prepare-fonts.js",
     "dev": "webpack --config webpack.config.js --mode=development --watch",
     "server": "py -m http.server --directory ./dist 8080"
   },

@@ -16,7 +16,7 @@ public record EpdProductSection(EpdEditor editor) {
 
 	void render(Composite body, FormToolkit tk) {
 
-		var comp = UI.formSection(body, tk, "Declared product");
+		var comp = UI.formSection(body, tk, M.DeclaredProduct);
 
 		// flow
 		ModelLink.of(Flow.class)

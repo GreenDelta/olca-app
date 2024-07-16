@@ -1,6 +1,10 @@
 package org.openlca.app.editors.graphical.figures;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.GridData;
+import org.eclipse.draw2d.GridLayout;
+import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.editors.graphical.model.StickyNote;

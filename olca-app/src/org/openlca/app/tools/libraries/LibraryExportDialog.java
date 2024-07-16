@@ -1,5 +1,9 @@
 package org.openlca.app.tools.libraries;
 
+import java.io.File;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
@@ -25,10 +29,6 @@ import org.openlca.core.model.Process;
 import org.openlca.util.Databases;
 import org.openlca.util.Strings;
 
-import java.io.File;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-
 public class LibraryExportDialog extends FormDialog {
 
 	private final Props props;
@@ -45,19 +45,15 @@ public class LibraryExportDialog extends FormDialog {
 	public static void show() {
 		var db = Database.get();
 		if (db == null) {
-			MsgBox.error(M.NoDatabaseOpened,
-					"You need to open the database first from which" +
-							" you want to create the library.");
+			MsgBox.error(M.NoDatabaseOpened, M.NoDatabaseOpenedLibraryErr);
 			return;
 		}
 		try {
 			var props = App.exec(
-					"Collect database properties...",
+					M.CollectDatabasePropertiesDots,
 					() -> Props.of(db));
 			if (props.hasLibraryProcesses) {
-				MsgBox.error("Contains library processes",
-						"The database is already connected to a process library. Libraries" +
-								" with dependencies to process libraries are not supported.");
+				MsgBox.error(M.ContainsLibraryProcesses, M.ContainsLibraryProcessesErr);
 				return;
 			}
 			new LibraryExportDialog(props).open();
@@ -69,7 +65,7 @@ public class LibraryExportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Create a library");
+		newShell.setText(M.CreateALibrary);
 	}
 
 	@Override
@@ -118,28 +114,27 @@ public class LibraryExportDialog extends FormDialog {
 
 		// inversion check
 		if (props.hasInventory) {
-			check.apply("Precalculate matrices", b -> config.withInversion = b)
+			check.apply(M.PrecalculateMatrices, b -> config.withInversion = b)
 					.setSelection(config.withInversion);
 		}
 
 		// uncertainty check
 		if (props.hasUncertainty) {
-			check.apply(
-							"With uncertainty distributions",
+			check.apply(M.WithUncertaintyDistributions,
 							b -> config.withUncertainties = b)
 					.setSelection(config.withUncertainties);
 		}
 
 		// regionalization check
 		if (props.hasInventory || props.hasImpacts) {
-			check.apply("Regionalized", b -> config.regionalized = b)
+			check.apply(M.Regionalized, b -> config.regionalized = b)
 					.setSelection(config.regionalized);
 		}
 
 		// data quality check
 		if (props.hasInventory && props.flowDqs != null) {
 			var dqCheck = check.apply(
-					"With data quality values (" + props.flowDqs.name + ")",
+					M.WithDataQualityValues + " - " + props.flowDqs.name,
 					b -> config.dqSystem = b
 							? props.flowDqs
 							: null);
@@ -154,8 +149,7 @@ public class LibraryExportDialog extends FormDialog {
 		var info = config.toInfo();
 		var id = info.name();
 		if (libDir.hasLibrary(id)) {
-			MsgBox.error("Library " + id + " already exists",
-					"A library with this name and version already exists");
+			MsgBox.error(M.LibraryAlreadyPresent, M.LibraryAlreadyPresentErr);
 			return;
 		}
 		var exportDir = new File(libDir.folder(), id);
@@ -166,7 +160,7 @@ public class LibraryExportDialog extends FormDialog {
 				.withInversion(config.withInversion)
 				.withUncertainties(config.withUncertainties);
 		App.runWithProgress(
-				"Creating library " + id,
+				M.CreatingLibraryDots,
 				export,
 				Navigator::refresh);
 	}

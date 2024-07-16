@@ -58,7 +58,7 @@ class SearchResults {
 		link.setForeground(Colors.linkBlue());
 		link.setData(getDatasetLink(dataset, repo));
 		link.addHyperlinkListener(new LinkClick());
-		var button = tk.createButton(header, M.Import, SWT.PUSH);
+		var button = tk.createButton(header, M.ImportDots, SWT.PUSH);
 		button.setData(new Object[] { dataset, repo });
 		Controls.onSelect(button, this::onImport);
 	}

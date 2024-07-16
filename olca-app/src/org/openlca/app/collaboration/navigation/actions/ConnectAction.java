@@ -18,7 +18,7 @@ public class ConnectAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return M.Connect + "...";
+		return M.ConnectDots;
 	}
 
 	@Override

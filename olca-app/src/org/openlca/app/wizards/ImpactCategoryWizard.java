@@ -13,7 +13,7 @@ public class ImpactCategoryWizard extends AbstractWizard<ImpactCategory> {
 
 	@Override
 	protected String getTitle() {
-		return "New environmental indicator";
+		return M.NewEnvironmentalIndicator;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class ImpactCategoryWizard extends AbstractWizard<ImpactCategory> {
 
 		Page() {
 			super("ImpactCategoryPage");
-			setTitle("New environmental indicator");
+			setTitle(M.NewEnvironmentalIndicator);
 			setPageComplete(false);
 		}
 

@@ -100,7 +100,7 @@ public class AuthenticationGroup {
 			}
 		}
 		if (withToken) {
-			tokenText = createText(container, tk, SWT.NONE, "Token", token, text -> this.token = text);
+			tokenText = createText(container, tk, SWT.NONE, M.Token, token, text -> this.token = text);
 			if (autoFocus && !Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password)) {
 				tokenText.setFocus();
 			}

@@ -3,6 +3,7 @@ package org.openlca.app.editors.locations;
 import java.io.StringReader;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
@@ -11,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.components.mapview.LayerConfig;
 import org.openlca.app.components.mapview.MapView;
 import org.openlca.app.util.Actions;
@@ -18,12 +20,11 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Location;
-import org.openlca.geo.geojson.Feature;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
+import org.openlca.util.Strings;
 
 import com.google.gson.GsonBuilder;
-import org.openlca.util.Strings;
 
 class MapSection {
 
@@ -38,7 +39,7 @@ class MapSection {
 	}
 
 	void render(Composite body, FormToolkit tk) {
-		var section = UI.section(body, tk, "Geographic data");
+		var section = UI.section(body, tk, M.GeographicData);
 		UI.gridData(section, true, true).minimumHeight = 250;
 		var comp = UI.sectionClient(section, tk);
 		comp.setLayout(new FillLayout());
@@ -55,9 +56,8 @@ class MapSection {
 		// bind actions
 		if (!editor.isEditable())
 			return;
-		var edit = Actions.onEdit(() -> {
-			new GeoJSONDialog().open();
-		});
+		var edit = Actions.onEdit(
+				() -> new GeoJSONDialog().open());
 		Actions.bind(section, edit);
 	}
 
@@ -93,11 +93,11 @@ class MapSection {
 
 		@Override
 		protected Control createDialogArea(Composite root) {
-			getShell().setText("Enter GeoJSON");
-			Composite area = (Composite) super.createDialogArea(root);
+			getShell().setText(M.EnterGeoJson);
+			var area = (Composite) super.createDialogArea(root);
 			UI.gridLayout(area, 1);
 			new Label(area, SWT.NONE).setText(
-					"See e.g. http://geojson.io for examples");
+					NLS.bind(M.ClickTheLinkForExamples, "http://geojson.io"));
 			text = new StyledText(area, SWT.MULTI | SWT.BORDER
 					| SWT.V_SCROLL | SWT.H_SCROLL);
 			text.setAlwaysShowScrollBars(false);
@@ -111,7 +111,7 @@ class MapSection {
 				return "";
 			if (feature.features.isEmpty())
 				return "";
-			Feature f = feature.features.get(0);
+			var f = feature.features.get(0);
 			if (f.geometry == null)
 				return "";
 			return new GsonBuilder()
@@ -144,8 +144,7 @@ class MapSection {
 					location().geodata = GeoJSON.pack(feature);
 				}
 			} catch (Exception e) {
-				MsgBox.error("Failed to parse GeoJSON",
-						"Please check the format of the given GeoJSON string.");
+				MsgBox.error(M.FailedToParseGeoJson, M.FailedToParseGeoJsonErr);
 			} finally {
 				editor.setDirty(true);
 				updateMap();

@@ -70,12 +70,12 @@ public class SqlEditor extends ScriptingEditor {
 		private RunAction runAction;
 
 		public Page() {
-			super(SqlEditor.this, "SqlEditorPage", "SQL Query Browser");
+			super(SqlEditor.this, "SqlEditorPage", M.SqlQueryBrowser);
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mform) {
-			var form = UI.header(mform, "SQL Query Browser", Icon.SQL.get());
+			var form = UI.header(mform, M.SqlQueryBrowser, Icon.SQL.get());
 			var tk = mform.getToolkit();
 			var body = UI.body(form, tk);
 			createStatementSection(body, tk);
@@ -83,7 +83,7 @@ public class SqlEditor extends ScriptingEditor {
 		}
 
 		private void createStatementSection(Composite body, FormToolkit toolkit) {
-			Section section = UI.section(body, toolkit, "SQL Statement");
+			Section section = UI.section(body, toolkit, M.SqlStatement);
 			Composite composite = UI.sectionClient(section, toolkit, 1);
 			queryText = UI.styledText(composite, toolkit);
 			UI.gridData(queryText, true, false).heightHint = 150;
@@ -99,12 +99,12 @@ public class SqlEditor extends ScriptingEditor {
 			// bind actions
 			runAction = new RunAction();
 			var saveAs = Actions.create(
-				M.SaveAs, Icon.SAVE_AS.descriptor(), () -> getEditor().doSaveAs());
+				M.SaveAsDots, Icon.SAVE_AS.descriptor(), () -> getEditor().doSaveAs());
 			Actions.bind(section, runAction, saveAs);
 		}
 
 		private void createResultSection(Composite body, FormToolkit toolkit) {
-			Section section = UI.section(body, toolkit, "Results");
+			Section section = UI.section(body, toolkit, M.Results);
 			UI.gridData(section, true, true);
 			Composite composite = UI.sectionClient(section, toolkit, 1);
 			composite.setLayout(new FillLayout());
@@ -115,8 +115,8 @@ public class SqlEditor extends ScriptingEditor {
 		private class RunAction extends Action {
 
 			RunAction() {
-				setToolTipText("Run SQL statement");
-				setText("Run SQL statement");
+				setToolTipText(M.RunSqlStatement);
+				setText(M.RunSqlStatement);
 				setImageDescriptor(Icon.RUN.descriptor());
 			}
 

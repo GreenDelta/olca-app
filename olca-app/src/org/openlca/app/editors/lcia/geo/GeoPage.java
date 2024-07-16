@@ -35,7 +35,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 	private Button validationBtn;
 
 	public GeoPage(ImpactCategoryEditor editor) {
-		super(editor, "GeoPage", "Regionalized calculation");
+		super(editor, "GeoPage", M.RegionalizedCalculation);
 		this.editor = editor;
 	}
 
@@ -53,12 +53,12 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 	}
 
 	private void setupSection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Setup");
+		var comp = UI.formSection(body, tk, M.Setup);
 		UI.gridLayout(comp, 2);
 
 		// file text
 		UI.gridData(comp, true, false);
-		UI.label(comp, tk, "GeoJSON or setup file");
+		UI.label(comp, tk, M.GeoJsonOrSetupFile);
 		fileText = UI.emptyText(comp, tk);
 		fileText.setEditable(false);
 		UI.gridData(fileText, true, false);
@@ -68,18 +68,18 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		var btnComp = UI.composite(comp, tk);
 		UI.gridLayout(btnComp, 3, 10, 0);
 
-		var openBtn = UI.button(btnComp, tk, "Open");
+		var openBtn = UI.button(btnComp, tk, M.Open);
 		openBtn.setImage(Icon.FOLDER_OPEN.get());
 		UI.gridData(openBtn, false, false).widthHint = 80;
 		Controls.onSelect(openBtn, _e -> onOpenFile());
 
-		saveBtn = UI.button(btnComp, tk, "Save");
+		saveBtn = UI.button(btnComp, tk, M.Save);
 		saveBtn.setImage(Icon.SAVE.get());
 		UI.gridData(saveBtn, false, false).widthHint = 80;
 		saveBtn.setEnabled(false);
 		Controls.onSelect(saveBtn, _e -> onSaveFile());
 
-		validationBtn = UI.button(btnComp, tk, "Validate");
+		validationBtn = UI.button(btnComp, tk, M.Validate);
 		validationBtn.setImage(Icon.CHECK_TRUE.get());
 		UI.gridData(validationBtn, false, false).widthHint = 80;
 		validationBtn.setEnabled(false);
@@ -94,7 +94,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		if (file == null)
 			return;
 		var nextSetup = App.exec(
-			"Parse setup ...",
+			M.ParseSetupDots,
 			() -> GeoFactorSetup.read(file, Database.get()));
 		if (nextSetup == null) {
 			ErrorReporter.on("Failed to read setup or" +
@@ -111,7 +111,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 
 	private void onSaveFile() {
 		if (setup == null) {
-			MsgBox.error("No setup loaded", "Nothing to save.");
+			MsgBox.error(M.NoSetupLoaded, M.NothingToSave);
 			return;
 		}
 		File file;
@@ -128,7 +128,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		try {
 			setup.writeTo(file);
 			fileText.setText(file.getAbsolutePath());
-			Popup.info("Saved setup to file " + file.getName());
+			Popup.info(M.SaveSetupToFile + " - " + file.getName());
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to save setup for calculation " +
 											 "of regionalized characterization factors " +

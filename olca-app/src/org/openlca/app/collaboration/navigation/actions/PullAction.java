@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Cache;
@@ -18,12 +19,27 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitMerge.MergeResult;
+import org.openlca.git.util.Constants;
 
 public class PullAction extends Action implements INavigationAction {
 
+	private final boolean silent;
+
+	public PullAction() {
+		this(false);
+	}
+
+	private PullAction(boolean silent) {
+		this.silent = silent;
+	}
+
+	static PullAction silent() {
+		return new PullAction(true);
+	}
+
 	@Override
 	public String getText() {
-		return M.Pull + "...";
+		return M.PullDots;
 	}
 
 	@Override
@@ -48,12 +64,15 @@ public class PullAction extends Action implements INavigationAction {
 			if (newCommits == null)
 				return;
 			if (!newCommits.isEmpty()) {
-				new HistoryDialog("Fetched commits", newCommits).open();
+				new HistoryDialog(M.FetchedCommits, newCommits).open();
+			} else if (Repository.CURRENT.localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty()) {
+				MsgBox.info(M.NoCommitToFetchInfo);
+				return;
 			}
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;
-			var conflictResult = ConflictResolutionMap.forRemote();
+			var conflictResult = ConflictResolver.forRemote();
 			if (conflictResult == null)
 				return;
 			var mergeResult = Actions.run(GitMerge
@@ -67,16 +86,22 @@ public class PullAction extends Action implements INavigationAction {
 				Actions.askApplyStash();
 			}
 			if (mergeResult == MergeResult.MOUNT_ERROR) {
-				MsgBox.error("Could not mount library");
-			} else if (mergeResult == MergeResult.NO_CHANGES) {
+				MsgBox.error(M.CouldNotMountLibrary);
+			} else if (mergeResult == MergeResult.NO_CHANGES && !silent) {
 				if (newCommits.isEmpty()) {
-					MsgBox.info("No commits to fetch - Everything up to date");
+					MsgBox.info(M.NoCommitToFetchInfo);
 				} else {
-					MsgBox.info("No changes to merge");
+					MsgBox.info(M.NoChangesToMerge);
 				}
 			}
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
-			Actions.handleException("Error pulling data", e);
+			if (e instanceof TransportException && FetchAction.NOTHING_TO_FETCH.equals(e.getMessage())) {
+				if (!silent) {
+					MsgBox.info("No commits to fetch - Everything up to date");
+				}
+			} else {
+				Actions.handleException("Error pulling from remote", e);
+			}
 		} finally {
 			Cache.evictAll();
 			Actions.refresh();

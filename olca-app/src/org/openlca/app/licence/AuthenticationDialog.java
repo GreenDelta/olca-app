@@ -41,7 +41,7 @@ public class AuthenticationDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
-				String.join(" - ", M.Authentication, library),
+				M.Authentication  + " - " + library,
 				M.PleaseEnterYourCredentialsLibrary);
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body, 1);

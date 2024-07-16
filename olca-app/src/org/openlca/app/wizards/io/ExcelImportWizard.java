@@ -69,7 +69,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 			return false;
 		try {
 			getContainer().run(true, true, monitor -> {
-				monitor.beginTask(M.Import, files.size());
+				monitor.beginTask(M.ImportDots, files.size());
 				var reader = XlsProcessReader.of(Database.get())
 						.withUpdates(page.updateMode());
 				for (var file : files) {
@@ -91,14 +91,13 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 	private static class Page extends WizardPage {
 
-		List<File> files;
 		private final boolean[] _updateMode = {false, true, false};
+		List<File> files;
 
 		Page(File initial) {
 			super("ExcelImportWizard.Page");
-			setTitle("Import processes from Excel files");
-			setDescription(
-					"Note that only files in the openLCA process format are supported");
+			setTitle(M.ImportProcessesFromExcelFiles);
+			setDescription(M.OnlyFileInTheOpenLcaFormatAreSupported);
 			files = initial != null
 					? List.of(initial)
 					: List.of();
@@ -120,7 +119,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 					.render(body);
 
 			var group = UI.group(body);
-			group.setText("When a process with an ID already exists");
+			group.setText(M.WhenProcessWithId);
 			UI.fillHorizontal(group);
 			UI.gridLayout(group, 1);
 			for (int i = 0; i < _updateMode.length; i++) {
@@ -140,9 +139,9 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 		private String updateLabel(int i) {
 			return switch (i) {
-				case 0 -> "Keep the version in the database";
-				case 1 -> "Update it in the database if it is newer";
-				case 2 -> "Always update it in the database";
+				case 0 -> M.KeepVersionDb;
+				case 1 -> M.UpdateIfNewer;
+				case 2 -> M.AlwaysUpdateInDb;
 				default -> "?";
 			};
 		}

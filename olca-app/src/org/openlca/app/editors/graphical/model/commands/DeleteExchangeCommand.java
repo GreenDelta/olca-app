@@ -1,11 +1,19 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import static org.openlca.app.editors.processes.exchanges.Exchanges.checkProviderLinks;
+import static org.openlca.app.editors.processes.exchanges.Exchanges.checkRefFlow;
+
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.gef.commands.Command;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.model.*;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.IOPane;
+import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
@@ -16,11 +24,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptor;
-
-import java.util.List;
-import java.util.Objects;
-
-import static org.openlca.app.editors.processes.exchanges.Exchanges.*;
 
 public class DeleteExchangeCommand extends Command {
 
@@ -54,7 +57,7 @@ public class DeleteExchangeCommand extends Command {
 		if (parent == null || child == null) {
 			throw new IllegalArgumentException();
 		}
-		setLabel(NLS.bind(M.Delete.toLowerCase(), M.Flow));
+		setLabel(M.DeleteFlow);
 		this.parent = parent;
 		this.child = child;
 		node = child.getNode();
@@ -146,9 +149,8 @@ public class DeleteExchangeCommand extends Command {
 		if (!checkProviderLinks(process, exchanges, techFlows))
 			return false;
 
-		return Question.ask("Remove exchange",
-				"Remove flow " + Labels.name(exchange.flow)
-						+ " from process " + Labels.name(process) + "?");
+		return Question.ask(M.RemoveExchangeQ, Labels.name(exchange.flow) + "\r\n"
+				+ M.RemoveExchangeQuestion + "\r\n" + Labels.name(process));
 	}
 
 	private Exchange getExchange() {

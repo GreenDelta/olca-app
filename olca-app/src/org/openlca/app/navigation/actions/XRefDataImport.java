@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -18,7 +19,7 @@ class XRefDataImport extends Action implements INavigationAction {
 
 	public XRefDataImport() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Import reference data");
+		setText(M.ImportReferenceData);
 	}
 
 	@Override
@@ -39,7 +40,7 @@ class XRefDataImport extends Action implements INavigationAction {
 			return;
 		Cache.evictAll();
 		RefDataImport refImport = new RefDataImport(dir, Database.get());
-		App.run("Import reference data", refImport, () -> {
+		App.run(M.ImportReferenceData, refImport, () -> {
 			Cache.evictAll();
 			Navigator.refresh();
 		});

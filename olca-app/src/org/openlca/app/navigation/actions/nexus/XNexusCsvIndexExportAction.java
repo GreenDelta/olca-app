@@ -28,7 +28,7 @@ public class XNexusCsvIndexExportAction extends Action implements INavigationAct
 
 	public XNexusCsvIndexExportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Export Nexus CSV Index");
+		setText(M.ExportNexusCsvIndex);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class XNexusCsvIndexExportAction extends Action implements INavigationAct
 		if (dialog.open() == FormDialog.CANCEL)
 			return;
 		var metaData = dialog.getMetaData();
-		App.run("Export Nexus CSV index", new Runner(file, metaData, db));
+		App.run(M.ExportNexusCsvIndex, new Runner(file, metaData, db));
 	}
 
 	private class Runner implements Runnable {

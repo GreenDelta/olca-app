@@ -22,7 +22,7 @@ public class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return M.Merge + "...";
+		return M.MergeDots;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class MergeAction extends Action implements INavigationAction {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;
-			var conflictResult = ConflictResolutionMap.forRemote();
+			var conflictResult = ConflictResolver.forRemote();
 			if (conflictResult == null)
 				return;
 			var user = !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty()
@@ -56,14 +56,14 @@ public class MergeAction extends Action implements INavigationAction {
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
 			if (mergeResult == MergeResult.ABORTED)
-				return;			
+				return;
 			if (conflictResult.stashedChanges()) {
 				Actions.askApplyStash();
 			}
 			if (mergeResult == MergeResult.MOUNT_ERROR) {
-				MsgBox.error("Could not mount library");
+				MsgBox.error(M.CouldNotMountLibrary);
 			} else if (mergeResult == MergeResult.NO_CHANGES) {
-				MsgBox.info("No changes to merge");
+				MsgBox.info(M.NoChangesToMerge);
 			}
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during Git merge", e);

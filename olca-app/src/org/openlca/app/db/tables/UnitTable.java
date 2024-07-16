@@ -1,5 +1,10 @@
 package org.openlca.app.db.tables;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -26,11 +31,6 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 public class UnitTable extends SimpleFormEditor {
 
@@ -91,12 +91,12 @@ public class UnitTable extends SimpleFormEditor {
 			var filter = UI.labeledText(filterComp, tk, M.Filter);
 
 			var table = Tables.createViewer(body,
-				M.UnitGroup,
-				M.Name,
-				M.Description,
-				M.Synonyms,
-				M.ReferenceUnit,
-				"ID");
+					M.UnitGroup,
+					M.Name,
+					M.Description,
+					M.Synonyms,
+					M.ReferenceUnit,
+					M.Id);
 			Tables.bindColumnWidths(table, 0.2, 0.1, 0.2, 0.2, 0.1, 0.2);
 
 			var label = new Label();

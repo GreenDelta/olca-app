@@ -64,7 +64,7 @@ class DatabaseMenu implements IMenuListener {
 		}
 
 		var contents = new MenuManager();
-		contents.setMenuText("Content");
+		contents.setMenuText(M.Content);
 
 		contents.add(Actions.create(M.Processes,
 			Images.descriptor(ModelType.PROCESS), ProcessTable::show));

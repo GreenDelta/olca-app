@@ -142,8 +142,7 @@ class ResultMap {
 
 	private void export() {
 		if (coll == null) {
-			MsgBox.info("No data",
-					"The map does not contain result data.");
+			MsgBox.info(M.NoData, M.MapDoesNotContainResultData);
 			return;
 		}
 		var file = FileChooser.forSavingFile(M.Export, "result.geojson");
@@ -151,8 +150,8 @@ class ResultMap {
 			return;
 		try {
 			GeoJSON.write(coll, file);
-			Popup.info("Export done",
-					"Result map was written to " + file.getName());
+			Popup.info(M.ExportDone,
+					M.ResultMapWritten + " - " + file.getName());
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to export result map to: " + file, e);
 		}

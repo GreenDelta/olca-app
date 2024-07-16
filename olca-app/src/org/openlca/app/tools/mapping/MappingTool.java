@@ -11,6 +11,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.AppCache;
 import org.openlca.app.db.Cache;
@@ -65,11 +66,10 @@ public class MappingTool extends SimpleFormEditor {
 			} else if (format == Format.MAPPING_CSV) {
 				open(FlowMap.fromCsv(file));
 			} else {
-				MsgBox.info("Unsupported format file format. Supported are "
-						+ "flow mappings from CSV files and JSON-LD packages.");
+				MsgBox.info(M.UnsupportedFileFormatInfo);
 			}
 		} catch (Exception e) {
-			MsgBox.error("Could not open file", e);
+			MsgBox.error(M.CouldNotOpenFile, e);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class MappingTool extends SimpleFormEditor {
 		var cacheID = uid + " /mapping";
 		cache.put(cacheID, mapping);
 		Editors.open(
-				new SimpleEditorInput(cacheID, "Flow mapping"),
+				new SimpleEditorInput(cacheID, M.FlowMapping),
 				"MappingTool");
 	}
 
@@ -183,14 +183,14 @@ public class MappingTool extends SimpleFormEditor {
 		// open a friendly dialog
 		var dialog = new InputDialog(
 				UI.shell(),
-				"Save mapping in database",
-				"Please provide a unique name for the new mapping file",
+				M.SaveMappingInDatabase,
+				M.SaveMappingInDatabaseInfo,
 				proposedName,
 				name -> {
 					if (Strings.nullOrEmpty(name))
-						return "The name cannot be empty";
+						return M.NameCannotBeEmpty;
 					if (existing.contains(name.toLowerCase().trim()))
-						return "A flow mapping with this name already exists";
+						return M.FlowMappingWithThisNameExists;
 					return null;
 				});
 		if (dialog.open() != Window.OK)

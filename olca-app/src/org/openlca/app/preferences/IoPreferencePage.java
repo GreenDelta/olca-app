@@ -1,8 +1,6 @@
 package org.openlca.app.preferences;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +42,7 @@ public class IoPreferencePage extends PreferencePage implements
 		UI.gridData(comp, true, true);
 		createIlcdNetworkContents(comp);
 		UI.gridData(new Label(parent,
-				SWT.SEPARATOR | SWT.HORIZONTAL),
+						SWT.SEPARATOR | SWT.HORIZONTAL),
 				true, false);
 		createIlcdOtherContents(comp);
 		return comp;
@@ -79,27 +77,20 @@ public class IoPreferencePage extends PreferencePage implements
 	}
 
 	private String[][] getLanguages() {
-		Locale displayLang = new Locale(Language.getApplicationLanguage()
-				.getCode());
-		Locale[] all = Locale.getAvailableLocales();
+		var displayLang = new Locale(Language.getApplicationLanguage().getCode());
 		List<String[]> namesAndValues = new ArrayList<>();
 		Set<String> added = new HashSet<>();
-		for (int i = 0; i < all.length; i++) {
-			String lang = all[i].getLanguage();
+		for (var locale : Locale.getAvailableLocales()) {
+			String lang = locale.getLanguage();
 			if (added.contains(lang))
 				continue;
 			String[] nameAndValue = new String[2];
-			nameAndValue[0] = all[i].getDisplayLanguage(displayLang);
+			nameAndValue[0] = locale.getDisplayLanguage(displayLang);
 			nameAndValue[1] = lang;
 			namesAndValues.add(nameAndValue);
 			added.add(lang);
 		}
-		Collections.sort(namesAndValues, new Comparator<String[]>() {
-			@Override
-			public int compare(String[] o1, String[] o2) {
-				return Strings.compare(o1[0], o2[0]);
-			}
-		});
+		namesAndValues.sort((o1, o2) -> Strings.compare(o1[0], o2[0]));
 		return namesAndValues.toArray(new String[namesAndValues.size()][]);
 	}
 
@@ -114,12 +105,13 @@ public class IoPreferencePage extends PreferencePage implements
 	@Override
 	protected void performApply() {
 		super.performApply();
-		SodaConnection con = new SodaConnection();
+		var con = new SodaConnection();
 		con.url = IoPreference.getIlcdUrl();
 		con.user = IoPreference.getIlcdUser();
 		con.password = IoPreference.getIlcdPassword();
-		SodaClient client = new SodaClient(con);
-		testConnection(client);
+		try (var client = SodaClient.of(con)) {
+			testConnection(client);
+		}
 	}
 
 	@Override
@@ -139,24 +131,24 @@ public class IoPreferencePage extends PreferencePage implements
 
 	private void testConnection(SodaClient client) {
 		try {
-			client.connect();
 			AuthInfo info = client.getAuthInfo();
-			if (!info.isAuthenticated) {
+			if (!info.isAuthenticated()) {
 				MsgBox.info(M.ConnectionWithAnonymousAccess);
 				return;
 			}
-			DataStock stock = info.dataStocks.isEmpty() ? null
-					: info.dataStocks.get(0);
-			if (stock == null || !stock.isReadAllowed()
+			DataStock stock = info.getDataStocks().isEmpty()
+					? null
+					: info.getDataStocks().get(0);
+			if (stock == null
+					|| !stock.isReadAllowed()
 					|| !stock.isExportAllowed()) {
-				MsgBox.warning(M.ILCD_NO_READ_OR_WRITE_ACCESS_MSG);
+				MsgBox.warning(M.YouDoNotHaveReadOrWriteAccess);
 				return;
 			}
-			MsgBox.info(M.ILCD_CONNECTION_WORKS_MSG
-					+ " (Data stock = " + stock.shortName + ")");
+			MsgBox.info(M.ConnectionWorks
+					+ " (" + M.DataStock + " = " + stock.getShortName() + ")");
 		} catch (Exception e) {
-			MsgBox.error(M.ILCD_CONNECTION_FAILED_MSG
-					+ " (" + e.getMessage() + ")");
+			MsgBox.error(M.ILCDConnectionFailedErr + " - " + e.getMessage());
 		}
 	}
 
@@ -165,7 +157,7 @@ public class IoPreferencePage extends PreferencePage implements
 		setPreferenceStore(RcpActivator.getDefault().getPreferenceStore());
 	}
 
-	public static final void open(Shell shell) {
+	public static void open(Shell shell) {
 		PreferencesUtil.createPreferenceDialogOn(shell, IoPreferencePage.ID,
 				null, null).open();
 	}

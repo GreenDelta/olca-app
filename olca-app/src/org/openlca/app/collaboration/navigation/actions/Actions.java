@@ -2,7 +2,6 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -10,19 +9,25 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.collaboration.util.SslCertificates;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
+import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.WebRequestException;
+import org.openlca.core.model.ModelType;
 import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.actions.GitStashApply;
+import org.openlca.git.model.ModelRef;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +47,7 @@ class Actions {
 			msg = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
 		} else if (e instanceof WebRequestException we) {
 			if (we.isSslCertificateException()) {
-				if (Question.ask("SSL Certificate unknown",
-						"The site " + we.getHost() + " you are trying to connect to uses an unknown SSL certificate. "
-								+ "Do you want to add the certificate to the list of trusted certificates? "
-								+ "You will need to rerun the current action to continue after adding it")) {
+				if (Question.ask(M.SslCertificateUnknown, M.SslCertificateUnknownQuestion)) {
 					var cert = SslCertificates.downloadCertificate(we.getHost(), we.getPort());
 					SslCertificates.importCertificate(cert, we.getHost());
 				}
@@ -94,9 +96,19 @@ class Actions {
 
 	static <T> T run(GitProgressAction<T> runnable)
 			throws InvocationTargetException, InterruptedException, GitAPIException, IOException {
+		return run(runnable, false);
+	}
+
+	static <T> T runWithCancel(GitProgressAction<T> runnable)
+			throws InvocationTargetException, InterruptedException, GitAPIException, IOException {
+		return run(runnable, true);
+	}
+
+	static <T> T run(GitProgressAction<T> runnable, boolean cancelable)
+			throws InvocationTargetException, InterruptedException, GitAPIException, IOException {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitProgressRunner<>(runnable);
-		service.run(true, false, runner::run);
+		service.run(true, cancelable, runner::run);
 		if (runner.exception != null)
 			if (runner.exception instanceof GitAPIException e)
 				throw e;
@@ -106,10 +118,10 @@ class Actions {
 	}
 
 	static void askApplyStash() throws InvocationTargetException, GitAPIException, IOException, InterruptedException {
-		var answers = Arrays.asList("No", "Yes");
-		var result = Question.ask("Apply stashed changes",
-				"Do you want to apply the changes you stashed before the commit?",
-				answers.toArray(new String[answers.size()]));
+		var answers = new String[] { M.No, M.Yes };
+		var result = Question.ask(M.ApplyStashedChanges,
+				M.ApplyStashedChangesQuestion,
+				answers);
 		if (result == 0)
 			return;
 		applyStash();
@@ -120,7 +132,7 @@ class Actions {
 		var libraryResolver = WorkspaceLibraryResolver.forStash();
 		if (libraryResolver == null)
 			return false;
-		var conflictResult = ConflictResolutionMap.forStash();
+		var conflictResult = ConflictResolver.forStash();
 		if (conflictResult == null)
 			return false;
 		Actions.run(GitStashApply.on(repo)
@@ -228,6 +240,24 @@ class Actions {
 				@Override
 				public void worked(int work) {
 					monitor.worked(work);
+				}
+
+				@Override
+				public void subTask(ModelRef ref) {
+					if (ref.isCategory) {
+						subTask(Labels.of(ModelType.CATEGORY) + " " + ref.path.substring(ref.path.indexOf("/") + 1));
+					} else {
+						var d = Repository.CURRENT.descriptors.get(ref);
+						var name = Strings.nullOrEmpty(ref.category)
+								? d.name
+								: ref.category + "/" + d.name;
+						subTask(Labels.of(ref.type) + " " + name);
+					}
+				}
+
+				@Override
+				public boolean isCanceled() {
+					return monitor.isCanceled();
 				}
 
 			};

@@ -1,5 +1,18 @@
 package org.openlca.app.tools.graphics.figures;
 
+import static org.eclipse.draw2d.ConnectionLocator.SOURCE;
+import static org.eclipse.draw2d.ConnectionLocator.TARGET;
+import static org.eclipse.draw2d.PositionConstants.EAST;
+import static org.eclipse.draw2d.PositionConstants.NORTH;
+import static org.eclipse.draw2d.PositionConstants.SOUTH;
+import static org.eclipse.draw2d.PositionConstants.WEST;
+import static org.eclipse.swt.SWT.HIGH;
+
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.PathIterator;
+import java.util.List;
+import java.util.Objects;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.RotatableDecoration;
@@ -9,24 +22,14 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.widgets.Display;
+import org.openlca.app.M;
 import org.openlca.app.tools.graphics.model.BaseComponent;
-
-import java.awt.geom.CubicCurve2D;
-import java.awt.geom.PathIterator;
-import java.util.List;
-import java.util.Objects;
-
-import static org.eclipse.draw2d.ConnectionLocator.SOURCE;
-import static org.eclipse.draw2d.ConnectionLocator.TARGET;
-import static org.eclipse.draw2d.PositionConstants.*;
-import static org.eclipse.draw2d.PositionConstants.NORTH;
-import static org.eclipse.swt.SWT.HIGH;
 
 public class Connection extends SelectableConnection {
 
-	public static final String ROUTER_NULL = "Straight line";
-	public static final String ROUTER_CURVE = "Curve";
-	public static final String ROUTER_MANHATTAN = "Manhattan";
+	public static final String ROUTER_NULL = M.StraightLine;
+	public static final String ROUTER_CURVE = M.Curve;
+	public static final String ROUTER_MANHATTAN = M.Manhattan;
 	public static final List<String> ROUTERS = List.of(ROUTER_NULL, ROUTER_CURVE,
 			ROUTER_MANHATTAN);
 

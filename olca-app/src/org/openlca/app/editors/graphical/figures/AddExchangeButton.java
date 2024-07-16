@@ -1,10 +1,14 @@
 package org.openlca.app.editors.graphical.figures;
 
+import org.eclipse.draw2d.AbstractBackground;
+import org.eclipse.draw2d.Clickable;
+import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.*;
 import org.eclipse.swt.SWT;
+import org.openlca.app.M;
 import org.openlca.app.util.Colors;
 
 public class AddExchangeButton extends Clickable {
@@ -12,7 +16,7 @@ public class AddExchangeButton extends Clickable {
 	private static final Integer ARC_SIZE = 5;
 
 	public AddExchangeButton() {
-		super(new AddExchangeButtonFigure("+ add flow"));
+		super(new AddExchangeButtonFigure(M.AddFlow + " +"));
 		var layout = new GridLayout(1, true);
 		layout.marginHeight = 2;
 		layout.marginWidth = 2;

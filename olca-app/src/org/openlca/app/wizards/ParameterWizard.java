@@ -126,7 +126,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 				return;
 			}
 			if (!Parameters.isValidName(name)) {
-				setErrorMessage(name + " " + M.IsNotValidParameterName);
+				setErrorMessage(M.NotValidParameterName + " - " + name);
 				setPageComplete(false);
 				return;
 			}
@@ -145,7 +145,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 					Double.parseDouble(formula);
 					return true;
 				} catch (NumberFormatException e) {
-					setErrorMessage(formula + " " + M.IsNotValidNumber);
+					setErrorMessage(M.NotValidNumber + " - " + formula);
 					setPageComplete(false);
 					return false;
 				}

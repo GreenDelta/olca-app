@@ -12,8 +12,8 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.tools.mapping.model.ES1Provider;
-import org.openlca.app.tools.mapping.model.ILCDProvider;
 import org.openlca.app.tools.mapping.model.FlowProvider;
+import org.openlca.app.tools.mapping.model.ILCDProvider;
 import org.openlca.app.tools.mapping.model.JsonProvider;
 import org.openlca.app.tools.mapping.model.SimaProCsvProvider;
 import org.openlca.app.util.Controls;
@@ -35,11 +35,11 @@ class ProviderRow {
 		UI.gridLayout(inner, 3, 5, 0);
 		var dbLink = UI.imageHyperlink(inner, tk);
 		dbLink.setImage(Icon.DATABASE.get());
-		dbLink.setToolTipText("Select database");
+		dbLink.setToolTipText(M.SelectDatabase);
 		var fileLink = UI.imageHyperlink(inner, tk);
 		fileLink.setImage(Icon.FILE.get());
-		fileLink.setToolTipText("Select file");
-		var label = UI.label(inner, tk, "- none -");
+		fileLink.setToolTipText(M.SelectFile);
+		var label = UI.label(inner, tk, M.NoneHyphen);
 
 		// select database as provider
 		Controls.onClick(dbLink, e -> {
@@ -56,7 +56,7 @@ class ProviderRow {
 		Controls.onClick(fileLink, e -> {
 			var file = FileChooser.openFile()
 				.withExtensions("*.zip;*.csv;*.CSV;*.xml;*.XML")
-				.withTitle("Open a flow source")
+				.withTitle(M.OpenFlowSource)
 				.select()
 				.orElse(null);
 			if (file == null)
@@ -64,9 +64,7 @@ class ProviderRow {
 
 			var provider = providerOf(file);
 			if (provider == null) {
-				MsgBox.error(
-						"Unknown supported flow source (supported are ILCD," +
-								" JSON-LD, SimaPro CSV, or EcoSpold 1 files.");
+				MsgBox.error(M.UnknownSupportedFlowSourceErr);
 				return;
 			}
 			fireSelect(label, provider);
@@ -97,7 +95,7 @@ class ProviderRow {
 
 	private String label(FlowProvider provider) {
 		if (provider == null)
-			return "- none -";
+			return M.NoneHyphen;
 		if (provider instanceof DBProvider p)
 			return "db://" + p.db().getName();
 		if (provider instanceof JsonProvider p )

@@ -1,5 +1,12 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
@@ -8,23 +15,14 @@ import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.util.ProviderChainRemoval;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
-
 public class DeleteManager {
 
 	private final Graph graph;
 	private final GraphEditor editor;
-	public static final String QUESTION = """
-			- Keep: keep the supply chain even if it is not connected to the reference process.
-			- Hide: hide the supply chain but keep the processes as part of the product system,
-			- Delete: delete the supply chain (processes) from the product system,
-
-			Please note that clicking delete won't delete the providers that supply the reference process, but only hide them.
-			""";
+	public static final String QUESTION = "* " + M.DeleteLinkKeep
+			+ "* " + M.DeleteLinkHide
+			+ "* " + M.DeleteLinkDelete
+			+ "* " + M.DeleteWontDeleteProviders;
 
 	private DeleteManager(Graph graph) {
 		this.graph = graph;

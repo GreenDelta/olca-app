@@ -38,7 +38,7 @@ public class OpenEditorAction extends SelectionAction {
 		object = objects.get(0);
 		if (object instanceof GraphEditPart)
 			return false;
-		setText(M.OpenInEditor + ": " + getObjectName());
+		setText(M.OpenInEditor + " - " + getObjectName());
 
 		return ((NodeEditPart.class.isAssignableFrom(object.getClass()))
 				|| (object instanceof ExchangeEditPart));

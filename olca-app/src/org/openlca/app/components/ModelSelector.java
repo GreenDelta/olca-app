@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import com.google.common.base.Strings;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -20,8 +19,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -31,13 +30,17 @@ import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.preferences.Preferences;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
+
+import com.google.common.base.Strings;
 
 public class ModelSelector extends FormDialog {
 
@@ -57,7 +60,7 @@ public class ModelSelector extends FormDialog {
 	private List<RootDescriptor> selection = Collections.emptyList();
 
 	private TreeViewer viewer;
-	private Text filterText;
+	private ModelTextFilter textFilter;
 	private ModelFilter modelFilter;
 	private final ModelType modelType;
 
@@ -72,8 +75,8 @@ public class ModelSelector extends FormDialog {
 			return null;
 		var dialog = new ModelSelector(type);
 		return dialog.open() == OK
-			? dialog.first()
-			: null;
+				? dialog.first()
+				: null;
 	}
 
 	public static List<RootDescriptor> multiSelect(ModelType type) {
@@ -82,8 +85,8 @@ public class ModelSelector extends FormDialog {
 		var dialog = new ModelSelector(type);
 		dialog.forMultiple = true;
 		return dialog.open() == OK
-			? dialog.selection
-			: Collections.emptyList();
+				? dialog.selection
+				: Collections.emptyList();
 	}
 
 	/**
@@ -98,15 +101,15 @@ public class ModelSelector extends FormDialog {
 
 	public ModelSelector withFilter(Predicate<RootDescriptor> p) {
 		this.modelFilter = p != null
-			? new ModelFilter(p)
-			: null;
+				? new ModelFilter(p)
+				: null;
 		return this;
 	}
 
 	public <T> Optional<T> onOk(Function<ModelSelector, T> fn) {
 		return open() == OK
-			? Optional.of(fn.apply(this))
-			: Optional.empty();
+				? Optional.of(fn.apply(this))
+				: Optional.empty();
 	}
 
 	@Override
@@ -122,48 +125,74 @@ public class ModelSelector extends FormDialog {
 		UI.header(form, getTitle());
 		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
-		Label filterLabel = UI.label(body, tk, M.Filter);
+
+		// filter label & instant search check
+		var labelComp = UI.composite(body, tk);
+		UI.fillHorizontal(labelComp);
+		UI.gridLayout(labelComp, 2, 10, 0);
+		var filterLabel = UI.label(labelComp, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
-		filterText = UI.text(body, SWT.SEARCH);
-		Section section = UI.section(body, tk, M.Content);
+		var instantCheck = UI.checkbox(labelComp, tk, "Instant search");
+		instantCheck.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+
+		var text = UI.text(body, SWT.SEARCH);
+
+		// tree section
+		var section = UI.section(body, tk, M.Content);
 		addSectionActions(section);
 		UI.gridData(section, true, true);
-		Composite composite = UI.sectionClient(section, tk, 1);
-		createViewer(composite);
-		filterText.setFocus();
+		var composite = UI.sectionClient(section, tk, 1);
+		createViewer(composite, text);
+
+		instantCheck.setSelection(textFilter.isWithInstantSearch());
+		Controls.onSelect(instantCheck, $ -> {
+			boolean b = instantCheck.getSelection();
+			textFilter.withInstantSearch(b);
+			Preferences.set(Preferences.NO_INSTANT_SEARCH, !b);
+		});
+
+		text.setFocus();
 	}
 
 	private String getTitle() {
 		if (modelType == null)
-			return "unknown?";
+			return M.UnknownQ;
 		return switch (modelType) {
 			case ACTOR -> forMultiple ? M.Actors : M.Actor;
 			case FLOW -> forMultiple ? M.Flows : M.Flow;
 			case FLOW_PROPERTY -> forMultiple ? M.FlowProperties : M.FlowProperty;
 			case IMPACT_METHOD -> forMultiple
-				? M.ImpactAssessmentMethods
-				: M.ImpactAssessmentMethod;
+					? M.ImpactAssessmentMethods
+					: M.ImpactAssessmentMethod;
 			case PROCESS -> forMultiple ? M.Processes : M.Process;
 			case PRODUCT_SYSTEM -> forMultiple ? M.ProductSystems : M.ProductSystem;
 			case PROJECT -> forMultiple ? M.Projects : M.Project;
-			case SOCIAL_INDICATOR -> forMultiple ? M.SocialIndicators : M.SocialIndicator;
+			case SOCIAL_INDICATOR ->
+					forMultiple ? M.SocialIndicators : M.SocialIndicator;
 			case SOURCE -> forMultiple ? M.Sources : M.Source;
 			case UNIT_GROUP -> forMultiple ? M.UnitGroups : M.UnitGroup;
-			case CATEGORY -> forMultiple ? "Categories" : M.Category;
+			case CATEGORY -> forMultiple ? M.Categories : M.Category;
 			case CURRENCY -> forMultiple ? M.Currencies : M.Currency;
-			case DQ_SYSTEM -> forMultiple ? M.DataQualitySystems : M.DataQualitySystem;
-			case IMPACT_CATEGORY -> forMultiple ? M.ImpactCategories : M.ImpactCategory;
+			case DQ_SYSTEM ->
+					forMultiple ? M.DataQualitySystems : M.DataQualitySystem;
+			case IMPACT_CATEGORY ->
+					forMultiple ? M.ImpactCategories : M.ImpactCategory;
 			case LOCATION -> forMultiple ? M.Locations : M.Location;
 			case PARAMETER -> forMultiple ? M.Parameters : M.Parameter;
-			default -> "unknown?";
+			default -> M.UnknownQ;
 		};
 	}
 
-	private void createViewer(Composite comp) {
+	private void createViewer(Composite comp, Text filterText) {
 		viewer = forMultiple
-			? NavigationTree.forMultiSelection(comp, modelType)
-			: NavigationTree.forSingleSelection(comp, modelType);
-		var textFilter = new ModelTextFilter(filterText, viewer);
+				? NavigationTree.forMultiSelection(comp, modelType)
+				: NavigationTree.forSingleSelection(comp, modelType);
+
+		textFilter = new ModelTextFilter(filterText, viewer);
+		textFilter.withInstantSearch(false);
+		textFilter.withInstantSearch(
+				!Preferences.getBool(Preferences.NO_INSTANT_SEARCH));
+
 		if (modelFilter != null) {
 			viewer.setFilters(modelFilter, textFilter);
 		} else {
@@ -178,23 +207,23 @@ public class ModelSelector extends FormDialog {
 	protected Point getInitialSize() {
 		var shell = getShell().getDisplay().getBounds();
 		int width = shell.x > 0 && shell.x < 600
-			? shell.x
-			: 600;
+				? shell.x
+				: 600;
 		int height = shell.y > 0 && shell.y < 600
-			? shell.y
-			: 600;
+				? shell.y
+				: 600;
 		return new Point(width, height);
 	}
 
 	private void addSectionActions(Section section) {
 		Action expand = Actions.create(
-			M.ExpandAll,
-			Icon.EXPAND.descriptor(),
-			() -> viewer.expandAll());
+				M.ExpandAll,
+				Icon.EXPAND.descriptor(),
+				() -> viewer.expandAll());
 		Action collapse = Actions.create(
-			M.CollapseAll,
-			Icon.COLLAPSE.descriptor(),
-			() -> viewer.collapseAll());
+				M.CollapseAll,
+				Icon.COLLAPSE.descriptor(),
+				() -> viewer.collapseAll());
 		Actions.bind(section, expand, collapse);
 	}
 
@@ -209,14 +238,14 @@ public class ModelSelector extends FormDialog {
 	}
 
 	private class SelectionChangedListener
-		implements ISelectionChangedListener {
+			implements ISelectionChangedListener {
 
 		@Override
 		public void selectionChanged(SelectionChangedEvent e) {
 
 			List<Object> allSelected = Viewers.getAllSelected(viewer);
 			List<RootDescriptor> descriptors = new ArrayList<>();
-			String filter = filterText.getText().toLowerCase();
+			String filter = textFilter.getText().toLowerCase();
 
 			for (Object obj : allSelected) {
 				if (!(obj instanceof ModelElement))
@@ -230,7 +259,7 @@ public class ModelSelector extends FormDialog {
 				if (!Strings.isNullOrEmpty(filter)) {
 					String label = Labels.name(d);
 					if (label == null ||
-						!label.toLowerCase().contains(filter))
+							!label.toLowerCase().contains(filter))
 						continue;
 				}
 
@@ -239,7 +268,7 @@ public class ModelSelector extends FormDialog {
 			selection = descriptors;
 			if (!isEmptyOk) {
 				getButton(IDialogConstants.OK_ID).setEnabled(
-					selection != null && selection.size() > 0);
+						selection != null && !selection.isEmpty());
 			}
 		}
 	}

@@ -151,12 +151,9 @@ public class Exchanges {
 			if (ok)
 				continue;
 
-			MsgBox.error("Flow used as default provider",
-					"This process is linked as default provider with flow '"
-							+ Strings.cut(Labels.name(provider.flow), 75)
-							+ "' in process '"
-							+ Strings.cut(Labels.name(ref.get()), 75)
-							+ "'.");
+			MsgBox.error(M.FlowUsedAsDefaultProvider, M.FlowUsedAsDefaultProviderErr
+					+ "\r\n " + Strings.cut(Labels.name(provider.flow), 75)
+					+ "\r\n " + Strings.cut(Labels.name(ref.get()), 75));
 			return false;
 		}
 		return true;

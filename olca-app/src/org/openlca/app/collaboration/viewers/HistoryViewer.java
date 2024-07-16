@@ -76,7 +76,7 @@ public class HistoryViewer extends AbstractTableViewer<Commit> {
 
 		@Override
 		public String getText() {
-			return "Compare with workspace";
+			return M.CompareWithWorkspace;
 		}
 
 		@Override

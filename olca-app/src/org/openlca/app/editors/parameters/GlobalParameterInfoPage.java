@@ -53,7 +53,7 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		for (String error : errors)
 			form.getMessageManager()
 					.addMessage("invalidFormula",
-							M.InvalidFormula + ": " + error, null, IMessage.ERROR);
+							M.InvalidFormula + " - " + error, null, IMessage.ERROR);
 	}
 
 	boolean hasErrors() {

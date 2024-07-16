@@ -1,5 +1,14 @@
 package org.openlca.app.results.analysis.sankey.actions;
 
+import static org.eclipse.draw2d.PositionConstants.EAST;
+import static org.eclipse.draw2d.PositionConstants.NORTH;
+import static org.eclipse.draw2d.PositionConstants.SOUTH;
+import static org.eclipse.draw2d.PositionConstants.WEST;
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_NULL;
+
+import java.util.Objects;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -17,11 +26,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ResultItemOrder;
-
-import java.util.Objects;
-
-import static org.eclipse.draw2d.PositionConstants.*;
-import static org.openlca.app.tools.graphics.figures.Connection.*;
 
 class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 
@@ -52,7 +56,7 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 	}
 
 	private void createCutoffSpinner(FormToolkit tk, Composite comp) {
-		UI.label(comp, tk, "Min. contribution share");
+		UI.label(comp, tk, M.MinContributionShare);
 		var inner = UI.composite(comp, tk);
 		UI.gridLayout(inner, 2, 10, 0);
 		var spinner = UI.spinner(inner, tk, SWT.BORDER);
@@ -68,7 +72,7 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 	}
 
 	private void createCountSpinner(FormToolkit tk, Composite comp) {
-		UI.label(comp, tk, "Max. number of processes");
+		UI.label(comp, tk, M.MaxNumberOfProcesses);
 		var inner = UI.composite(comp, tk);
 		UI.gridLayout(inner, 2, 10, 0);
 		var spinner = UI.spinner(inner, tk, SWT.BORDER);
@@ -83,7 +87,7 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 	}
 
 	private void themeCombo(FormToolkit tk, Composite comp) {
-		var combo = UI.labeledCombo(comp, tk, "Theme");
+		var combo = UI.labeledCombo(comp, tk, M.Theme);
 		UI.gridData(combo, true, false);
 		var themes = Themes.loadFromWorkspace(Themes.SANKEY);
 		var current = config.getTheme();
@@ -103,7 +107,7 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 	}
 
 	private void orientationsCombo(FormToolkit tk, Composite comp) {
-		var combo = UI.labeledCombo(comp, tk, "Orientation");
+		var combo = UI.labeledCombo(comp, tk, M.Orientation);
 		UI.gridData(combo, true, false);
 		var orientations = new int[]{
 				NORTH,
@@ -123,7 +127,7 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 	}
 
 	private void connectionRoutersCombo(FormToolkit tk, Composite comp) {
-		var combo = UI.labeledCombo(comp, tk, "Connections");
+		var combo = UI.labeledCombo(comp, tk, M.Connections);
 		UI.gridData(combo, true, false);
 		var connectionRouters = new String[]{
 				ROUTER_NULL,

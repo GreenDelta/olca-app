@@ -65,26 +65,26 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private void generalSection(FormToolkit tk, Composite body) {
-		Composite comp = UI.formSection(body, tk, "General statistics");
+		Composite comp = UI.formSection(body, tk, M.GeneralStatistics);
 		UI.gridLayout(comp, 2, 15, 10);
 
-		UI.label(comp, tk, "Number of processes");
+		UI.label(comp, tk, M.NumberOfProcesses);
 		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.processCount)));
 
-		UI.label(comp, tk, "Number of process links");
+		UI.label(comp, tk, M.NumberOfProcessLinks);
 		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.linkCount)));
 
-		UI.label(comp, tk, "Connected graph / can calculate?");
+		UI.label(comp, tk, M.ConnectGraphCanCalculate);
 		bind(UI.label(comp, tk, ""), label -> {
 			String text = stats.connectedGraph
-				? "yes"
-				: "no";
+				? M.Yes
+				: M.No;
 			label.setText(text);
 		});
 
-		UI.label(comp, tk, "Reference process");
+		UI.label(comp, tk, M.ReferenceProcess);
 		ImageHyperlink link = UI.imageHyperlink(comp, tk, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
 		link.setImage(Images.get(ModelType.PROCESS));
@@ -101,30 +101,30 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private void providerSection(FormToolkit tk, Composite body) {
-		Composite comp = UI.formSection(body, tk, "Provider linking");
+		Composite comp = UI.formSection(body, tk, M.ProviderLinking);
 		UI.gridLayout(comp, 2, 15, 10);
 
-		UI.label(comp, tk, "Links that are linked with default providers");
+		UI.label(comp, tk, M.LinksToTheDefaultProviders);
 		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.defaultProviderLinkCount)));
 
-		UI.label(comp, tk, "Links with exactly one possible provider");
+		UI.label(comp, tk, M.LinksWithOnePossibleProvider);
 		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.singleProviderLinkCount)));
 
-		UI.label(comp, tk, "Links with multiple possible providers");
+		UI.label(comp, tk, M.LinksWithMultiplePossibleProviders);
 		bind(UI.label(comp, tk, ""),
 			label -> label.setText(Integer.toString(stats.multiProviderLinkCount)));
 	}
 
 	private void linkDegreeTable(Composite body, FormToolkit tk, boolean inDegree) {
 		String title = inDegree
-			? "Processes with highest in-degree (linked inputs)"
-			: "Processes with highest out-degree (linked outputs)";
+			? M.ProcessesWithHighestInDegree
+			: M.ProcessesWithHighestOutDegree;
 		Composite comp = UI.formSection(body, tk, title);
 		UI.gridLayout(comp, 1, 0, 10);
 		TableViewer table = Tables.createViewer(
-			comp, "Processes", "Number of linked inputs");
+			comp, M.Processes, M.NumberOfLinkedInputs);
 		Tables.bindColumnWidths(table, 0.5, 0.5);
 		table.setLabelProvider(new LinkDegreeLabel(() -> {
 			if (stats == null)
@@ -151,7 +151,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private void calculate() {
-		App.runWithProgress("Updating statistics ...",
+		App.runWithProgress(M.UpdatingStatisticsDots,
 			() -> stats = Statistics.calculate(getModel(), Cache.getEntityCache()),
 			() -> {
 				if (stats != null) {

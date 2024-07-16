@@ -43,13 +43,13 @@ class ProcessIndexEntry extends IndexEntry {
 			category = process.category.toPath();
 		}
 		technology = process.documentation.technology;
-		copyrightHolder = getName(process.documentation.dataSetOwner);
+		copyrightHolder = getName(process.documentation.dataOwner);
 		if (process.location != null) {
 			location = process.location.name;
 			latitude = process.location.latitude;
 			longitude = process.location.longitude;
 		}
-		contact = getName(process.documentation.dataSetOwner);
+		contact = getName(process.documentation.dataOwner);
 		documentor = getName(process.documentation.dataDocumentor);
 		generator = getName(process.documentation.dataGenerator);
 		creationDate = process.documentation.creationDate;

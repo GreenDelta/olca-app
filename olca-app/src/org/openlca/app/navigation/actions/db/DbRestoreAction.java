@@ -113,7 +113,7 @@ public class DbRestoreAction extends Action implements INavigationAction {
 			}
 		}, () -> {
 			if (err.get()) {
-				MsgBox.error("Failed to create database");
+				MsgBox.error(M.FailedToCreateDatabase);
 				return;
 			}
 

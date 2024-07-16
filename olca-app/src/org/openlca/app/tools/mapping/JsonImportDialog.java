@@ -41,7 +41,7 @@ class JsonImportDialog extends Dialog {
 			return null;
 		try {
 			JsonProvider provider = JsonProvider.of(file);
-			List<FlowMap> maps = App.exec("Search flow mappings ...",
+			List<FlowMap> maps = App.exec(M.SearchFlowMappingsDots,
 					() -> provider.getFlowMaps());
 
 			JsonImportDialog d = new JsonImportDialog(provider, maps);
@@ -49,12 +49,12 @@ class JsonImportDialog extends Dialog {
 				return null;
 			}
 			if (d.selectedMap == null) {
-				MsgBox.info("Not yet implemented.");
+				MsgBox.info(M.NotYetImplemented);
 				return null;
 			}
 			return d.selectedMap;
 		} catch (Exception e) {
-			MsgBox.error("Failed to open file as JSON-LD package");
+			MsgBox.error(M.FailedToOpenFileAsJsonLdPackage);
 			Logger log = LoggerFactory.getLogger(JsonImportDialog.class);
 			log.error("failed to open JSON-LD package " + file, e);
 			return null;
@@ -73,7 +73,7 @@ class JsonImportDialog extends Dialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Open flow mapping");
+		shell.setText(M.OpenFlowMapping);
 		UI.center(UI.shell(), shell);
 	}
 
@@ -92,7 +92,7 @@ class JsonImportDialog extends Dialog {
 		label.setForeground(Colors.linkBlue());
 
 		Button openCheck = UI.radio(root);
-		openCheck.setText("Open mapping definition");
+		openCheck.setText(M.OpenMapDef);
 		Combo combo = new Combo(root, SWT.READ_ONLY);
 		Controls.onSelect(combo, e -> {
 			selectedMap = flowMaps.get(combo.getSelectionIndex());
@@ -104,7 +104,7 @@ class JsonImportDialog extends Dialog {
 		});
 
 		Button genCheck = new Button(root, SWT.RADIO);
-		genCheck.setText("Generate mapping based on flow attributes");
+		genCheck.setText(M.GenerateMapFlow);
 		Controls.onSelect(genCheck, e -> {
 			selectedMap = null;
 			combo.setEnabled(false);

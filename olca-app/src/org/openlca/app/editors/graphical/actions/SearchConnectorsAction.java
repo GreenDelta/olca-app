@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
+import java.util.List;
+
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.openlca.app.M;
@@ -11,8 +13,6 @@ import org.openlca.app.editors.graphical.search.ConnectionDialog;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.RootDescriptor;
-
-import java.util.List;
 
 public class SearchConnectorsAction extends SelectionAction {
 
@@ -60,7 +60,8 @@ public class SearchConnectorsAction extends SelectionAction {
 			return;
 
 		var graph = exchangeItem.getGraph();
-		var dialog = new ConnectionDialog(exchangeItem);
+		var isDirty = graph.getEditor().isDirty(exchangeItem.getNode().getEntity());
+		var dialog = new ConnectionDialog(exchangeItem, isDirty);
 		if (dialog.open() != IDialogConstants.OK_ID)
 			return;
 

@@ -62,14 +62,14 @@ class SearchPage extends FormPage {
 			pageComposite.dispose();
 			pageSection.dispose();
 		}
-		form.setText(M.SearchResults + " " + (result != null ? result.resultInfo().totalCount() : 0) + " " + M.Results);
-		headerSection = UI.section(formBody, tk, "Search settings");
+		form.setText(M.SearchResults + " (" + (result != null ? result.resultInfo().totalCount() : 0) + ")");
+		headerSection = UI.section(formBody, tk, M.SearchSettings);
 		headerComposite = UI.sectionClient(headerSection, tk, 2);
 		createRepositoryViewer();
 		createModelTypeViewer();
 		createQueryText();
 		if (result != null) {
-			pageSection = UI.section(formBody, tk, "Search results");
+			pageSection = UI.section(formBody, tk, M.SearchResults);
 			pageComposite = UI.sectionClient(pageSection, tk, 1);
 			searchResults.render(pageComposite, result);
 			renderPager(result);
@@ -130,7 +130,7 @@ class SearchPage extends FormPage {
 	}
 
 	private void createQueryText() {
-		UI.label(headerComposite, tk, "Query");
+		UI.label(headerComposite, tk, M.Query);
 		var comp = UI.composite(headerComposite, tk);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 2, 10, 0);

@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Repository;
@@ -21,7 +22,7 @@ public class StashCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Create";
+		return M.Create;
 	}
 
 	@Override

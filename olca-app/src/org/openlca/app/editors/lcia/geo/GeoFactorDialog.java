@@ -1,5 +1,8 @@
 package org.openlca.app.editors.lcia.geo;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -28,9 +31,6 @@ import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.geo.lcia.GeoFactorMerge;
 import org.openlca.util.Strings;
 
-import java.util.List;
-import java.util.Map;
-
 class GeoFactorDialog extends FormDialog {
 
 	private final GeoPage page;
@@ -50,7 +50,7 @@ class GeoFactorDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Calculated factors");
+		shell.setText(M.CalculatedFactors);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ class GeoFactorDialog extends FormDialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite comp) {
 		createButton(comp, IDialogConstants.OK_ID,
-				"Add new factors", true);
+				M.AddNewFactors, true);
 		createButton(comp, IDialogConstants.CANCEL_ID,
 				IDialogConstants.CANCEL_LABEL, false);
 	}
@@ -74,11 +74,11 @@ class GeoFactorDialog extends FormDialog {
 		// merge strategy
 		var radioComp = UI.composite(body, tk);
 		UI.gridLayout(radioComp, 3);
-		UI.label(radioComp, tk, "Merge factors: ");
-		var keep = UI.radio(radioComp, tk, "Keep existing");
+		UI.label(radioComp, tk, M.MergeFactors);
+		var keep = UI.radio(radioComp, tk, M.KeepExisting);
 		keep.setSelection(keepExisting);
 		Controls.onSelect(keep, $ -> keepExisting = keep.getSelection());
-		var repl = UI.radio(radioComp, tk, "Replace existing");
+		var repl = UI.radio(radioComp, tk, M.ReplaceExisting);
 		repl.setSelection(!keepExisting);
 		Controls.onSelect(repl, $ -> keepExisting = !repl.getSelection());
 
@@ -90,7 +90,7 @@ class GeoFactorDialog extends FormDialog {
 		table.setInput(factors);
 
 		var mapAction = Actions.create(
-				"Show factors for flow", Icon.MAP.descriptor(), () -> openMap(table));
+				M.ShowFactorsForFlow, Icon.MAP.descriptor(), () -> openMap(table));
 		Actions.bind(table, mapAction);
 	}
 
@@ -111,7 +111,7 @@ class GeoFactorDialog extends FormDialog {
 				coll.features.add(feature);
 			}
 		}
-		var title = "Regionalized characterization factors for "
+		var title = M.RegionalizedCharacterizationFactor + " - "
 				+ Labels.name(flow);
 		MapDialog.show(title, map -> map.addLayer(coll).fillScale("cf"));
 	}

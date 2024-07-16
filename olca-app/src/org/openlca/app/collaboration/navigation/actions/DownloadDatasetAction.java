@@ -18,7 +18,7 @@ public class DownloadDatasetAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return M.ImportData;
+		return M.ImportDataDots;
 	}
 
 	@Override

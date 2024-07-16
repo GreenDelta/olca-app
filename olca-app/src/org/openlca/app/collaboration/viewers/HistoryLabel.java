@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.util.Format;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
@@ -19,7 +20,7 @@ class HistoryLabel extends OwnerDrawLabelProvider {
 
 	private final int column;
 	private final HistoryViewer viewer;
-	
+
 	HistoryLabel(HistoryViewer viewer, int column) {
 		this.column = column;
 		this.viewer = viewer;
@@ -100,10 +101,10 @@ class HistoryLabel extends OwnerDrawLabelProvider {
 			return new ArrayList<>();
 		var badges = new ArrayList<HistoryLabel.Badge>();
 		if (commit.id.equals(viewer.localCommitId)) {
-			badges.add(new HistoryLabel.Badge("Local", Colors.get(188, 220, 188), Colors.get(0, 128, 0), UI.boldFont()));
+			badges.add(new HistoryLabel.Badge(M.Local, Colors.get(188, 220, 188), Colors.get(0, 128, 0), UI.boldFont()));
 		}
 		if (commit.id.equals(viewer.remoteCommitId)) {
-			badges.add(new HistoryLabel.Badge("Remote", Colors.get(225, 225, 225), Colors.get(80, 80, 80), null));
+			badges.add(new HistoryLabel.Badge(M.Remote, Colors.get(225, 225, 225), Colors.get(80, 80, 80), null));
 		}
 		return badges;
 	}

@@ -4,14 +4,14 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.openlca.app.M;
 
 public class FeatureFlagPage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
 
 	public FeatureFlagPage() {
 		super(FieldEditorPreferencePage.GRID);
-		setDescription("Warning: Experimental features are less tested"
-				+ " and may are removed in future versions of openLCA.");
+		setDescription(M.ExperimentalFeaturesWarn);
 	}
 
 	@Override

@@ -1,21 +1,60 @@
 package org.openlca.app.editors.graphical;
 
-import org.eclipse.gef.*;
+import static org.openlca.app.editors.graphical.GraphFile.KEY_NODES;
+import static org.openlca.app.editors.graphical.GraphFile.KEY_STICKY_NOTES;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
+import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.PROVIDER;
+import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.RECIPIENTS;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.eclipse.gef.ContextMenuProvider;
+import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.actions.*;
+import org.openlca.app.editors.graphical.actions.AddExchangeAction;
+import org.openlca.app.editors.graphical.actions.AddProcessAction;
+import org.openlca.app.editors.graphical.actions.AddStickyNoteAction;
+import org.openlca.app.editors.graphical.actions.BuildNextTierAction;
+import org.openlca.app.editors.graphical.actions.BuildSupplyChainAction;
+import org.openlca.app.editors.graphical.actions.BuildSupplyChainMenuAction;
+import org.openlca.app.editors.graphical.actions.EditExchangeAction;
+import org.openlca.app.editors.graphical.actions.EditGraphConfigAction;
+import org.openlca.app.editors.graphical.actions.EditModeAction;
+import org.openlca.app.editors.graphical.actions.EditStickyNoteAction;
+import org.openlca.app.editors.graphical.actions.LayoutAction;
+import org.openlca.app.editors.graphical.actions.LinkUpdateAction;
+import org.openlca.app.editors.graphical.actions.MassExpansionAction;
+import org.openlca.app.editors.graphical.actions.MinMaxAction;
+import org.openlca.app.editors.graphical.actions.MinMaxAllAction;
+import org.openlca.app.editors.graphical.actions.OpenEditorAction;
+import org.openlca.app.editors.graphical.actions.RemoveAllConnectionsAction;
+import org.openlca.app.editors.graphical.actions.RemoveSupplyChainAction;
+import org.openlca.app.editors.graphical.actions.SearchConnectorsAction;
+import org.openlca.app.editors.graphical.actions.SetReferenceAction;
+import org.openlca.app.editors.graphical.actions.ShowElementaryFlowsAction;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
-import org.openlca.app.editors.graphical.model.GraphLink;
-import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
-import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.systems.ProductSystemEditor;
+import org.openlca.app.tools.graphics.actions.SaveImageAction;
+import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -26,20 +65,7 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
 import org.openlca.jsonld.Json;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.openlca.app.editors.graphical.GraphFile.KEY_NODES;
-import static org.openlca.app.editors.graphical.GraphFile.KEY_STICKY_NOTES;
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
-import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.PROVIDER;
-import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.RECIPIENTS;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+import com.google.gson.JsonArray;
 
 /**
  * A {@link GraphEditor} is the starting point of the graphical interface of a
@@ -214,14 +240,18 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	 * The <code>selectionChanged</code> method of <code>GraphicalEditor</code> is
 	 * overridden due to the fact that this <code>GraphicalEditor</code> us part
 	 * of a multipage editor.
+	 *
 	 * @param part      the workbench part containing the selection
 	 * @param selection the current selection. This may be <code>null</code> if
 	 *                  <code>INullSelectionListener</code> is implemented.
 	 */
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection)	{
-		var activePage = getSite().getWorkbenchWindow().getActivePage();
-		if (activePage.getActiveEditor().equals(this.systemEditor))
+		var activeEditor = getActiveEditor();
+		if (activeEditor == null)
+			return;
+
+		if (activeEditor.equals(this.systemEditor))
 			updateActions(getSelectionActions());
 	}
 
@@ -305,7 +335,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		node.getAllLinks().stream()
 				.map(GraphLink.class::cast)
 				.map(graphLink -> graphLink.processLink)
-				.forEach(link ->  GraphFactory.getConsumers(entity, type).stream()
+				.forEach(link -> GraphFactory.getConsumers(entity, type).stream()
 						.filter(exchange -> exchange.internalId == link.exchangeId
 								&& exchange.flow.id == link.flowId)
 						.forEach(exchange -> mapPLinkToExchange.put(link, exchange)));
@@ -342,8 +372,8 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	public boolean promptSaveIfNecessary() throws Exception {
 		if (!isDirty())
 			return true;
-		String question = M.SystemSaveProceedQuestion;
-		if (Question.ask(M.Save + "?", question)) {
+		String question = M.SystemSaveProceedQ;
+		if (Question.ask(M.SaveQ, question)) {
 			new ProgressMonitorDialog(UI.shell()).run(false, false,
 					systemEditor::doSave);
 			return true;
@@ -370,11 +400,29 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	public void onFirstActivation() {
 		var nodeArray = GraphFile.getLayout(this, KEY_NODES);
 		var stickyNoteArray = GraphFile.getLayout(this, KEY_STICKY_NOTES);
-		var graph = getGraphFactory().createGraph(this, nodeArray, stickyNoteArray);
+
+		var graph = nodeArray == null || isLayoutTooLarge(nodeArray)
+				? getGraphFactory().createGraph(this)
+				: getGraphFactory().createGraph(this, nodeArray, stickyNoteArray);
+
 		setModel(graph);
 		getGraphicalViewer().setContents(graph);
 		getZoomManager().setZoom(config.zoom(), false);
 		getZoomManager().getViewport().setViewLocation(config.viewLocation());
+	}
+
+	/**
+	 * Checks if the layout size is too large to be displayed.
+	 * Sometimes, users display too many nodes in the model graph and cannot open
+	 * it again as it takes too much time to load. In this case, the user can
+	 * reset the layout before opening the model graph.
+	 */
+	private boolean isLayoutTooLarge(JsonArray array) {
+		if (array == null)
+			return false;
+		if (array.size() < 100)
+			return false;
+		return !Question.ask(M.RestoreLayout, M.RestoreLayoutQ);
 	}
 
 	public ProductSystemEditor getProductSystemEditor() {

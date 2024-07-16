@@ -28,6 +28,7 @@ import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Entry;
+import org.openlca.git.model.Reference;
 import org.openlca.git.util.ModelRefMap;
 import org.openlca.git.util.TypedRefIdMap;
 
@@ -74,7 +75,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	protected void onDoubleClick(DoubleClickEvent event) {
 		var selected = getSelected(event);
-		if (selected == null)
+		if (selected == null || selected.isCategoryNode())
 			return;
 		var diff = selected.contentAsTriDiff();
 		var node = createNode(diff);
@@ -110,25 +111,25 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	}
 
 	private JsonObject getLeft(TriDiff diff) {
-		if (diff.rightDiffType == null) {
-			if (diff.leftDiffType == DiffType.ADDED)
+		if (diff.right == null) {
+			if (diff.left == null || diff.left.diffType == DiffType.ADDED)
 				return null;
-			return RefJson.get(diff);
+			return RefJson.get(diff.left.oldRef, diff);
 		}
-		if (diff.leftDiffType == DiffType.DELETED)
+		if (diff.left == null || diff.left.diffType == DiffType.DELETED)
 			return null;
-		return RefJson.get(diff.left());
+		return RefJson.get(diff.left.newRef, diff);
 	}
 
 	private JsonObject getRight(TriDiff diff) {
-		if (diff.rightDiffType == null) {
-			if (diff.leftDiffType == DiffType.DELETED)
+		if (diff.right == null) {
+			if (diff.left == null || diff.left.diffType == DiffType.DELETED)
 				return null;
-			return RefJson.get(diff.left());
+			return RefJson.get(diff.left.newRef, diff);
 		}
-		if (diff.rightDiffType == DiffType.DELETED)
+		if (diff.right.diffType == DiffType.DELETED)
 			return null;
-		return RefJson.get(diff.right());
+		return RefJson.get(diff.right.newRef, diff);
 	}
 
 	private DiffNode getSelected(DoubleClickEvent event) {
@@ -205,11 +206,19 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (descriptor != null)
 				return descriptor.name;
 			var repo = Repository.CURRENT;
-			if (!ObjectId.zeroId().equals(diff.rightNewObjectId))
-				return repo.datasets.getName(diff.right());
-			if (!ObjectId.zeroId().equals(diff.leftNewObjectId))
-				return repo.datasets.getName(diff.left());
-			return repo.datasets.getName(diff);
+			if (diff.right != null && hasObjectId(diff.right.newRef))
+				return repo.datasets.getName(diff.right.newRef);
+			if (diff.left != null && hasObjectId(diff.left.newRef))
+				return repo.datasets.getName(diff.left.newRef);
+			if (diff.right != null && hasObjectId(diff.right.oldRef))
+				return repo.datasets.getName(diff.right.oldRef);
+			if (diff.left != null && hasObjectId(diff.left.oldRef))
+				return repo.datasets.getName(diff.left.oldRef);
+			return "";
+		}
+
+		private static boolean hasObjectId(Reference ref) {
+			return ref != null && !ObjectId.zeroId().equals(ref.objectId);
 		}
 
 		@Override
@@ -237,7 +246,9 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 				return null;
 			if (resolvedConflicts.contains(diff))
 				return getOverlayMerged(diff);
-			return getOverlay(diff.leftDiffType, diff.rightDiffType);
+			var leftDiffType = diff.left != null ? diff.left.diffType : null;
+			var rightDiffType = diff.right!= null ? diff.right.diffType : null;
+			return getOverlay(leftDiffType, rightDiffType);
 		}
 
 		private Overlay getOverlay(DiffType prev, DiffType next) {
@@ -270,9 +281,9 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var resolution = resolvedConflicts.get(result);
 			if (resolution != null && resolution.type != ConflictResolutionType.OVERWRITE)
 				return Overlay.MERGED;
-			if (result.rightDiffType == DiffType.DELETED)
+			if (result.right != null && result.right.diffType == DiffType.DELETED)
 				return Overlay.DELETE_FROM_LOCAL;
-			if (result.leftDiffType == null || result.leftDiffType == DiffType.DELETED)
+			if (result.left == null || result.left.diffType == DiffType.DELETED)
 				return Overlay.ADD_TO_LOCAL;
 			return Overlay.MODIFY_IN_LOCAL;
 		}

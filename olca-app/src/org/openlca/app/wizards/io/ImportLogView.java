@@ -30,13 +30,17 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.*;
+import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
+import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.io.ImportLog;
@@ -51,20 +55,20 @@ public class ImportLogView extends SimpleFormEditor {
 
 	public static void open(ImportLog log) {
 		var id = Cache.getAppCache().put(log);
-		var input = new SimpleEditorInput(id, "Import details");
+		var input = new SimpleEditorInput(id, M.ImportDetails);
 		Editors.open(input, "ImportLogView");
 	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput raw)
-		throws PartInitException {
+			throws PartInitException {
 		super.init(site, raw);
 		if (!(raw instanceof SimpleEditorInput input))
 			return;
 		var obj = Cache.getAppCache().remove(input.id);
 		messages = obj instanceof ImportLog log
-			? log.messages()
-			: Collections.emptySet();
+				? log.messages()
+				: Collections.emptySet();
 	}
 
 	@Override
@@ -76,12 +80,12 @@ public class ImportLogView extends SimpleFormEditor {
 	private class Page extends FormPage {
 
 		Page() {
-			super(ImportLogView.this, "ImportLogView.Page", "Import details");
+			super(ImportLogView.this, "ImportLogView.Page", M.ImportDetails);
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
-			var form = UI.header(mForm, "Import details", Icon.IMPORT.get());
+			var form = UI.header(mForm, M.ImportDetails, Icon.IMPORT.get());
 			var tk = mForm.getToolkit();
 			var body = UI.body(form, tk);
 
@@ -91,7 +95,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 			// table
 			var table = Tables.createViewer(
-				body, "Status", "Data set", "Message");
+					body, M.Status, M.DataSet, M.Message);
 			table.setLabelProvider(new MessageLabel());
 			Tables.bindColumnWidths(table, 0.2, 0.4, 0.4);
 			filter.apply(table);
@@ -122,7 +126,7 @@ public class ImportLogView extends SimpleFormEditor {
 	}
 
 	private static class MessageLabel extends BaseLabelProvider implements
-		ITableLabelProvider {
+			ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -194,7 +198,7 @@ public class ImportLogView extends SimpleFormEditor {
 			UI.fillHorizontal(comp);
 
 			var icon = UI.imageHyperlink(comp, tk, SWT.BORDER);
-			icon.setToolTipText("Click to search or press enter");
+			icon.setToolTipText(M.ClickToSearchOrPressEnter);
 			icon.setImage(Icon.SEARCH.get());
 			Controls.onClick(icon, $ -> update());
 
@@ -208,16 +212,17 @@ public class ImportLogView extends SimpleFormEditor {
 			Controls.onReturn(searchText, $ -> update());
 
 			// type button
-			var typeBtn = UI.button(searchComp, tk, "All types");
+			var typeBtn = UI.button(searchComp, tk, M.AllTypes);
 			var typeItems = TypeItem.allOf(messages);
 			typeBtn.setImage(Icon.DOWN.get());
 			var typeMenu = new Menu(typeBtn);
 			for (var item : typeItems) {
 				item.mountTo(typeMenu, selectedType -> {
 					type = selectedType;
-					typeBtn.setText(selectedType == null
-						? "All types"
-						: Labels.of(selectedType));
+					var text = selectedType == null
+							? M.AllTypes
+							: Labels.of(selectedType);
+					typeBtn.setText(text);
 					typeBtn.pack();
 					typeBtn.getParent().layout();
 					update();
@@ -231,9 +236,9 @@ public class ImportLogView extends SimpleFormEditor {
 			UI.filler(comp, tk);
 			var optComp = UI.composite(comp, tk);
 			UI.gridLayout(optComp, 6, 10, 0);
-			var errCheck = UI.button(optComp, tk, "Errors", SWT.CHECK);
-			var warnCheck = UI.button(optComp, tk, "Warnings", SWT.CHECK);
-			var allCheck = UI.button(optComp, tk, "All", SWT.CHECK);
+			var errCheck = UI.button(optComp, tk, M.Errors, SWT.CHECK);
+			var warnCheck = UI.button(optComp, tk, M.Warnings, SWT.CHECK);
+			var allCheck = UI.button(optComp, tk, M.All, SWT.CHECK);
 			allCheck.setSelection(true);
 
 			BiConsumer<Button, State> stateCheck = (button, state) -> {
@@ -263,7 +268,7 @@ public class ImportLogView extends SimpleFormEditor {
 			});
 
 			UI.label(optComp, tk, " | ");
-			UI.label(optComp, tk, "Max. number of messages");
+			UI.label(optComp, tk, M.MaxNumberOfMessages);
 			var spinner = UI.spinner(optComp, tk, SWT.BORDER);
 			spinner.setValues(maxCount, 1000, 1_000_000, 0, 1000, 5000);
 			spinner.addModifyListener($ -> {
@@ -285,25 +290,25 @@ public class ImportLogView extends SimpleFormEditor {
 			var stream = messages.stream();
 			if (!states.isEmpty()) {
 				stream = stream.filter(
-					m -> m.state() != null && states.contains(m.state()));
+						m -> m.state() != null && states.contains(m.state()));
 			}
 			if (type != null) {
 				stream = stream.filter(
-					m -> {
-						var d = m.descriptor();
-						return d != null && d.type == type;
-					});
+						m -> {
+							var d = m.descriptor();
+							return d != null && d.type == type;
+						});
 			}
 
 			// text filter
 			var phrase = text == null
-				? null
-				: text.trim();
+					? null
+					: text.trim();
 			if (Strings.notEmpty(phrase)) {
 				var words = Arrays.stream(phrase.split(" "))
-					.map(s -> s.trim().toLowerCase())
-					.filter(Strings::notEmpty)
-					.toList();
+						.map(s -> s.trim().toLowerCase())
+						.filter(Strings::notEmpty)
+						.toList();
 				stream = stream.filter(m -> matches(m, words));
 			}
 
@@ -312,15 +317,15 @@ public class ImportLogView extends SimpleFormEditor {
 		}
 
 		private boolean matches(Message message, List<String> words) {
-			if(words.isEmpty())
+			if (words.isEmpty())
 				return true;
 			for (var word : words) {
 				var s = message.message();
 				if (s != null && s.toLowerCase().contains(word))
 					continue;
 				s = message.descriptor() != null
-					? Labels.name(message.descriptor())
-					: null;
+						? Labels.name(message.descriptor())
+						: null;
 				if (s != null && s.toLowerCase().contains(word))
 					continue;
 				s = MessageLabel.of(message.state());
@@ -342,24 +347,24 @@ public class ImportLogView extends SimpleFormEditor {
 				if (d == null || d.type == null)
 					continue;
 				map.compute(d.type,
-					(type, count) -> count != null ? count + 1 : 1);
+						(type, count) -> count != null ? count + 1 : 1);
 			}
 
 			var items = new ArrayList<TypeItem>(map.size() + 1);
 			items.add(new TypeItem(null, messages.size()));
 			map.entrySet().stream()
-				.filter(e -> e.getValue() != null)
-				.map(e -> new TypeItem(e.getKey(), e.getValue()))
-				.sorted(Comparator.comparingInt(TypeItem::count).reversed())
-				.forEach(items::add);
+					.filter(e -> e.getValue() != null)
+					.map(e -> new TypeItem(e.getKey(), e.getValue()))
+					.sorted(Comparator.comparingInt(TypeItem::count).reversed())
+					.forEach(items::add);
 			return items;
 		}
 
 		@Override
 		public String toString() {
 			return type == null
-				? "All types (" + count + ")"
-				: Labels.of(type) + " (" + count + ")";
+					? M.AllTypes + " (" + count + ")"
+					: Labels.of(type) + " (" + count + ")";
 		}
 
 		void mountTo(Menu menu, Consumer<ModelType> fn) {

@@ -1,5 +1,5 @@
 package org.openlca.app.collaboration.navigation;
-
+	
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,12 +9,16 @@ import org.openlca.git.util.TypedRefId;
 
 record NavElement(ElementType type, Object content, boolean isFromLibrary, List<NavElement> children) {
 
-	NavElement(ElementType type, Object content, List<NavElement> children) {
-		this(type, content, false, children);
+	NavElement(ElementType type, Object content) {
+		this(type, content, false, new ArrayList<>());
 	}
 
-	NavElement(ElementType type, Object content) {
-		this(type, content, content instanceof Descriptor d && d.isFromLibrary(), new ArrayList<>());
+	NavElement(ElementType type) {
+		this(type, null, false, new ArrayList<>());
+	}
+
+	NavElement(Descriptor d) {
+		this(ElementType.MODEL, d, d.isFromLibrary(), new ArrayList<>());
 	}
 
 	boolean is(ElementType... types) {

@@ -40,7 +40,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 
 	public XNexusEcoinventIndexExportAction() {
 		setImageDescriptor(Icon.EXTENSION.descriptor());
-		setText("Export Ecoinvent Nexus JSON Index");
+		setText(M.ExportEcoinventNexusJsonIndex);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 				M.Export, "ecoinvent_nexus_index.json");
 		if (file == null)
 			return;
-		App.runWithProgress("Creating Ecoinvent Nexus Index", () -> {
+		App.runWithProgress(M.CreatingEcoinventNexusIndex, () -> {
 			try {
 				var index = new HashMap<String, IndexEntry>();
 				for (var e : dialog.entries) {
@@ -125,26 +125,26 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 		@Override
 		protected void createFormContent(IManagedForm form) {
 			var tk = form.getToolkit();
-			UI.header(form, "Select system model databases");
+			UI.header(form, M.SelectSystemDatabases);
 			var body = UI.dialogBody(form.getForm(), tk);
-			viewer = Tables.createViewer(body, "System model", "Database");
+			viewer = Tables.createViewer(body, M.SystemModel, M.Database);
 			viewer.setLabelProvider(new Label());
-			entries.add(new Entry("Cut-off"));
-			entries.add(new Entry("Consequential long-term"));
+			entries.add(new Entry(M.Cutoff));
+			entries.add(new Entry(M.ConsequentialLongTerm));
 			entries.add(new Entry("APOS"));
 			setInput();
 			var ms = new ModifySupport<Entry>(viewer);
-			ms.bind("System model", new SystemModelCell());
-			ms.bind("Database", new DatabaseCell());
+			ms.bind(M.SystemModel, new SystemModelCell());
+			ms.bind(M.Database, new DatabaseCell());
 
 			// actions
 			var onAdd = Actions.create(
-					"Add system model", Icon.ADD.descriptor(), () -> {
-						entries.add(new Entry("model"));
+					M.AddSystemModel, Icon.ADD.descriptor(), () -> {
+						entries.add(new Entry(M.Model));
 						setInput();
 					});
 			var onRemove = Actions.create(
-					"Remove system model", Icon.DELETE.descriptor(), () -> {
+					M.RemoveSystemModel, Icon.DELETE.descriptor(), () -> {
 						if (Viewers.getFirstSelected(viewer) instanceof Entry e) {
 							entries.remove(e);
 							setInput();

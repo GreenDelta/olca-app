@@ -45,7 +45,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 
 	public static void show() {
 		AtomicReference<LinkingProperties> ref = new AtomicReference<>();
-		App.runWithProgress("Check database links", () -> {
+		App.runWithProgress(M.CheckDatabaseLinks, () -> {
 			LinkingProperties props = LinkingProperties.check(Database.get());
 			ref.set(props);
 		});
@@ -98,26 +98,16 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 
 		private void generalPropertiesSection(Composite body) {
 			Composite comp = UI.formSection(body, tk,
-					"Recommended settings when creating product systems");
+					M.RecommendedSettingProductSystems);
 			if (props.processesWithoutProviders.isEmpty()) {
-				check(comp, Icon.ACCEPT, "All product inputs "
-						+ "and waste outputs are linked to a "
-						+ "default provider.");
+				check(comp, Icon.ACCEPT, M.AllProductInputsWasteOutputsAreLinked);
 			} else {
-				check(comp, Icon.WARNING, "There are processes "
-						+ "in the database without default providers"
-						+ " for product inputs and/or waste outputs "
-						+ "(see table below).");
+				check(comp, Icon.WARNING, M.ThereAreProcessesWithoutDefaultProviders);
 			}
 			if (props.multiProviderFlows.isEmpty()) {
-				check(comp, Icon.ACCEPT, "All product and waste"
-						+ " flows in the database have a single "
-						+ "provider.");
+				check(comp, Icon.ACCEPT, M.AllProductAndWasteHaveSingleProvider);
 			} else {
-				check(comp, Icon.WARNING, "There are product "
-						+ "and/or waste flows in the database "
-						+ "that have multiple providers "
-						+ "(see table below).");
+				check(comp, Icon.WARNING, M.ThereAreProductWasteWithMultipleProviders);
 			}
 			new LinkingMatrix(props).render(body, tk);
 		}
@@ -147,7 +137,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			if (props.multiProviderFlows.isEmpty())
 				return;
 			Section section = UI.section(body, tk,
-					"Product or waste flows with multiple providers");
+					M.ProductOrWasteWithMultipleProviders);
 			UI.gridData(section, true, true);
 			Composite comp = UI.sectionClient(section, tk);
 			UI.gridLayout(comp, 1);

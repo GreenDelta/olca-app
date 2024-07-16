@@ -20,11 +20,11 @@ import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
-
-import com.google.gson.Gson;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Popup;
 import org.openlca.io.xls.results.ProjectResultExport;
+
+import com.google.gson.Gson;
 
 public class ReportResultToolbar extends EditorActionBarContributor {
 
@@ -74,15 +74,15 @@ public class ReportResultToolbar extends EditorActionBarContributor {
 			if (editor == null || editor.data == null)
 				return;
 			var data = editor.data;
-			var file = FileChooser.forSavingFile(
-				"Export project result", "project result.xlsx");
+			var file = FileChooser.forSavingFile(M.ExportProjectResult,
+					"project result.xlsx");
 			if (file == null)
 				return;
 			var export = new ProjectResultExport(
 				data.project(), data.result(), data.db());
 			try {
 				export.writeTo(file);
-				Popup.info("Exported results to " + file.getName());
+				Popup.info(M.ExportedResults + " - " + file.getName());
 			} catch (Exception e) {
 				ErrorReporter.on("Export of project result failed", e);
 			}

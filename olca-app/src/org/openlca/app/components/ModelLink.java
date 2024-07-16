@@ -77,7 +77,7 @@ public class ModelLink<T extends RootEntity> {
 
 		// selection button
 		var btn = UI.imageHyperlink(comp, tk, SWT.BORDER);
-		btn.setToolTipText("Select a data set");
+		btn.setToolTipText(M.SelectADataset);
 		btn.setImage(Images.get(modelType));
 		btn.setEnabled(editable);
 		Controls.onClick(btn, $ -> doSelect.run());
@@ -143,7 +143,7 @@ public class ModelLink<T extends RootEntity> {
 		if (link == null)
 			return;
 		var text = model == null
-			? "- none -"
+			? M.NoneHyphen
 			: Labels.name(model);
 		link.setText(Strings.cut(text, 120));
 		link.setToolTipText(text);

@@ -1,11 +1,17 @@
 package org.openlca.app.wizards.io;
 
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
@@ -14,11 +20,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.core.io.maps.FlowMap;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 class MappingSelector {
 
@@ -44,7 +45,7 @@ class MappingSelector {
 	}
 
 	void render(Composite comp) {
-		UI.label(comp, "Flow mapping");
+		UI.label(comp, M.FlowMapping);
 
 		// initialize the combo box
 		var combo = new Combo(comp, SWT.READ_ONLY);
@@ -80,7 +81,7 @@ class MappingSelector {
 
 		// add the file button
 		var fileBtn = new Button(comp, SWT.NONE);
-		fileBtn.setText("From file");
+		fileBtn.setText(M.FromFile);
 		fileBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		Controls.onSelect(fileBtn, e -> {
 			var file = FileChooser.open("*.csv");

@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.ConnectDialog;
 import org.openlca.app.collaboration.navigation.elements.RepositoryElement;
@@ -55,9 +56,9 @@ public class CloneAction extends Action implements INavigationAction {
 	@Override
 	public String getText() {
 		return switch (type) {
-			case ROOT -> "Import from Git...";
-			case IMPORT -> "From Git...";
-			case REPOSITORY -> "Clone";
+			case ROOT -> M.ImportFromGitDots;
+			case IMPORT -> M.FromGitDots;
+			case REPOSITORY -> M.Clone;
 		};
 	}
 
@@ -87,12 +88,14 @@ public class CloneAction extends Action implements INavigationAction {
 	private void clone(String url, String user, String password) {
 		var repoName = url.substring(url.lastIndexOf("/") + 1);
 		var config = initDatabase(repoName);
+		if (config == null)
+			return;
 		try {
 			if (!initRepository(config.name(), url, user, password)) {
 				onError(config);
 				return;
 			}
-			new PullAction().run();
+			PullAction.silent().run();
 			Announcements.check();
 		} catch (Exception e) {
 			onError(config);
@@ -114,7 +117,7 @@ public class CloneAction extends Action implements INavigationAction {
 		if (db == null)
 			return null;
 		Upgrades.on(db);
-		Database.register((DerbyConfig) config);
+		Database.register(config);
 		return config;
 	}
 
@@ -147,8 +150,8 @@ public class CloneAction extends Action implements INavigationAction {
 		var dir = DatabaseDir.getRootFolder(name);
 		if (!dir.exists())
 			return dir;
-		name = Input.prompt("Import a Git repository",
-				"Please enter a name for the database",
+		name = Input.prompt(M.ImportGitRepository,
+				M.PleaseEnterADatabaseName,
 				name,
 				v -> v,
 				Database::validateNewName);

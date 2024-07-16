@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
  */
 public final class Cache {
 
-	private static Logger log = LoggerFactory.getLogger(Cache.class);
-	private static AppCache appCache = new AppCache();
+	private static final Logger log = LoggerFactory.getLogger(Cache.class);
+	private static final AppCache appCache = new AppCache();
 	private static EntityCache entityCache;
 	private static MatrixCache matrixCache;
 
@@ -34,7 +34,6 @@ public final class Cache {
 		evictAll();
 		entityCache = null;
 		matrixCache = null;
-		appCache = null;
 	}
 
 	/**
@@ -46,7 +45,6 @@ public final class Cache {
 		close();
 		entityCache = EntityCache.create(database);
 		matrixCache = MatrixCache.createLazy(database);
-		appCache = new AppCache();
 	}
 
 	public static AppCache getAppCache() {

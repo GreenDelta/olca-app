@@ -1,25 +1,35 @@
 package org.openlca.app.editors.graphical.model;
 
-import java.util.*;
+import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
+import static org.openlca.app.editors.graphical.model.Node.OUTPUT_PROP;
+import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
 
-import com.google.gson.JsonArray;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
-import org.openlca.core.model.*;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Result;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
-import static org.openlca.app.editors.graphical.model.Node.OUTPUT_PROP;
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
-import static org.openlca.app.tools.graphics.model.Side.OUTPUT;
+import com.google.gson.JsonArray;
 
 /**
  * This class provides methods to initialize the model objects before drawing
@@ -128,13 +138,10 @@ public class GraphFactory {
 	public static List<Exchange> getExchanges(RootEntity entity, ModelType type) {
 		return switch (type) {
 			case PROCESS -> {
-				var p = (Process) entity;
-				if (p == null)
-					yield Collections.emptyList();
-				if (p.isFromLibrary()) {
-					Libraries.fillExchangesOf(p);
-				}
-				yield p.exchanges;
+				var process = (Process) entity;
+				yield process == null
+						? Collections.emptyList()
+						: process.exchanges;
 			}
 			case PRODUCT_SYSTEM -> {
 				var system = (ProductSystem) entity;
@@ -247,7 +254,7 @@ public class GraphFactory {
 		return graph;
 	}
 
-	private Graph createGraph(GraphEditor editor) {
+	public Graph createGraph(GraphEditor editor) {
 		// No saved settings applied => try to find a good configuration
 		var graph = new Graph(editor);
 

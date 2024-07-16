@@ -76,7 +76,7 @@ public class NavigationMenu extends CommonActionProvider {
 		};
 
 		var refresh = Actions.create(
-				"Refresh",
+				M.Refresh,
 				Icon.REFRESH.descriptor(),
 				Navigator::refresh);
 		add.accept(refresh);
@@ -193,17 +193,17 @@ public class NavigationMenu extends CommonActionProvider {
 	public static MenuManager createImportMenu() {
 		var icon = Icon.IMPORT.descriptor();
 		var menu = new MenuManager(
-				M.Import, icon, "import.menu");
+				M.ImportDots, icon, "import.menu");
 
 		// try to determine the import from a file
 		menu.add(Actions.create(
-				M.File,
+				M.AmpFile,
 				Icon.FILE.descriptor(),
 				() -> new FileImport().run()));
 		// Git clone
 		menu.add(CloneAction.forImportMenu());
 		// open the generic import dialog
-		menu.add(Actions.create(M.Other + "...", icon, () -> {
+		menu.add(Actions.create(M.OtherDots, icon, () -> {
 			try {
 				PlatformUI.getWorkbench()
 						.getService(IHandlerService.class)

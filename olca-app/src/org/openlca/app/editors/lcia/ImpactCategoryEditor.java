@@ -74,7 +74,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		if (!errors.isEmpty()) {
 			var message = errors.get(0);
 			if (errors.size() > 1)
-				message += " (" + (errors.size() - 1) + " more)";
+				message += " (" + (errors.size() - 1) + " " + M.More + ")";
 			MsgBox.error(M.FormulaEvaluationFailed, message);
 		}
 	}
@@ -88,7 +88,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 				addPage(ParameterPage.create(this));
 				addPage(new GeoPage(this));
 				addPage(new ImpactSimilaritiesPage(this));
-				addCommentPage();
+				addExtensionPages();
 			}
 		} catch (Exception e) {
 			ErrorReporter.on("failed to init pages", e);
@@ -111,12 +111,12 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 
 			// source, code, reference unit
 			modelLink(comp, M.Source, "source");
-			text(comp, "Code", "code");
+			text(comp, M.Code, "code");
 			text(comp, M.ReferenceUnit, "referenceUnit");
 
 			// impact direction
-			var combo = UI.labeledCombo(comp, tk, "Impact direction");
-			combo.setItems("Unspecified", M.Input, M.Output);
+			var combo = UI.labeledCombo(comp, tk, M.ImpactDirection);
+			combo.setItems(M.Unspecified, M.Input, M.Output);
 			UI.gridData(combo, false, false).widthHint = 150;
 			var dir = getModel().direction;
 			combo.select(dir != null
@@ -140,8 +140,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		}
 
 		private void createUsageTable(FormToolkit tk, Composite body) {
-			var section = UI.section(body, tk,
-				"Used in impact assessment methods");
+			var section = UI.section(body, tk, M.UsedInImpactAssessmentMethods);
 			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
 			var table = Tables.createViewer(comp, M.Name, M.Category);
@@ -169,7 +168,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		}
 
 		private static class MethodLabel extends LabelProvider
-			implements ITableLabelProvider {
+				implements ITableLabelProvider {
 
 			@Override
 			public Image getColumnImage(Object obj, int col) {

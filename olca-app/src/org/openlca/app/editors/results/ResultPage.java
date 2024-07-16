@@ -17,7 +17,7 @@ class ResultPage extends ModelPage<Result> {
 	private final ResultEditor editor;
 
 	ResultPage(ResultEditor editor) {
-		super(editor, "ResultPage", "Result");
+		super(editor, "ResultPage", M.Result);
 		this.editor = editor;
 	}
 
@@ -43,7 +43,7 @@ class ResultPage extends ModelPage<Result> {
 
 		// LCIA method
 		ModelLink.of(ImpactMethod.class)
-			.renderOn(comp, tk, "LCIA method")
+			.renderOn(comp, tk, M.LciaMethod)
 			.setModel(getModel().impactMethod)
 			.onChange(method -> {
 				var result = editor.getModel();

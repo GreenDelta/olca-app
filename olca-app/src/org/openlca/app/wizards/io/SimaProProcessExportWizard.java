@@ -30,7 +30,7 @@ public class SimaProProcessExportWizard
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("Export processes to a SimaPro CSV file");
+		setWindowTitle(M.ExportProcessesToASimaproCsvFile);
 		setNeedsProgressMonitor(true);
 	}
 
@@ -70,8 +70,8 @@ public class SimaProProcessExportWizard
 				monitor.done();
 			});
 			Popup.info(
-					"Export done",
-					"Wrote " + models.size() + " data sets to " + file.getName());
+					M.ExportDone,
+					M.DataSetWritten + " - " + file.getName());
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("SimaPro CSV export failed", e);
@@ -89,7 +89,7 @@ public class SimaProProcessExportWizard
 
 		ConfigPage() {
 			super("ConfigPage");
-			setTitle("Export configuration");
+			setTitle(M.ExportConfiguration);
 			setPageComplete(true);
 		}
 
@@ -100,12 +100,12 @@ public class SimaProProcessExportWizard
 			UI.gridLayout(body, 1);
 
 			var generalGroup = new Group(body, SWT.NONE);
-			generalGroup.setText("General export settings");
+			generalGroup.setText(M.GeneralExportSettings);
 			UI.gridLayout(generalGroup, 1);
 			UI.fillHorizontal(generalGroup);
 
 			var categoryCheck = UI.checkbox(
-					generalGroup, "Use matching top categories as process types");
+					generalGroup, M.UseMatchingTopCategoriesAsProcessTypes);
 			categoryCheck.setSelection(withTopCategoryToType);
 			Controls.onSelect(categoryCheck,
 					$ -> withTopCategoryToType = categoryCheck.getSelection());
@@ -118,7 +118,7 @@ public class SimaProProcessExportWizard
 
 			// product names
 			var productGroup = new Group(body, SWT.NONE);
-			productGroup.setText("Exported product names");
+			productGroup.setText(M.ExportedProductNames);
 			UI.fillHorizontal(productGroup);
 			UI.gridLayout(productGroup, 1);
 
@@ -139,22 +139,21 @@ public class SimaProProcessExportWizard
 			};
 			updateExample.run();
 
-			var processCheck = UI.checkbox(productGroup, "Append process names");
+			var processCheck = UI.checkbox(productGroup, M.AppendProcessNames);
 			processCheck.setSelection(withProcessSuffix);
 			Controls.onSelect(processCheck, $ -> {
 				withProcessSuffix = processCheck.getSelection();
 				updateExample.run();
 			});
 
-			var locationCheck = UI.checkbox(productGroup, "Append location codes");
+			var locationCheck = UI.checkbox(productGroup, M.AppendLocationCodes);
 			locationCheck.setSelection(withLocationSuffix);
 			Controls.onSelect(locationCheck, $ -> {
 				withLocationSuffix = locationCheck.getSelection();
 				updateExample.run();
 			});
 
-			var typeCheck = UI.checkbox(productGroup,
-					"Append process types (U: unit process, S: system/LCI result)");
+			var typeCheck = UI.checkbox(productGroup, M.AppendProcessTypes);
 			typeCheck.setSelection(withTypeSuffix);
 			Controls.onSelect(typeCheck, $ -> {
 				withTypeSuffix = typeCheck.getSelection();

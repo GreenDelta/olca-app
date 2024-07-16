@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.model.commands;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
@@ -28,7 +27,7 @@ public class CreateNodeCommand extends Command {
 		this.descriptor = descriptor;
 		this.constraint = constraint;
 		this.editor = graph.editor;
-		setLabel(NLS.bind(M.Add.toLowerCase(), Labels.name(descriptor)));
+		setLabel(M.Add + " " + Labels.name(descriptor));
 	}
 
 	public CreateNodeCommand(Graph graph, RootDescriptor descriptor,

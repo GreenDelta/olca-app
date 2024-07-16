@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
@@ -36,7 +35,7 @@ public class EditConfigCommand extends Command {
 		this.oldConfig = graph.getConfig();
 		this.newConfig = newConfig;
 
-		setLabel(NLS.bind(M.Edit, M.Settings));
+		setLabel(M.EditSettings);
 	}
 
 	@Override

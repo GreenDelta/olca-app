@@ -12,12 +12,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessDocumentation;
 import org.openlca.core.model.Source;
 import org.openlca.util.Strings;
 
@@ -44,7 +44,7 @@ class ImageSection {
 			c.dispose();
 		}
 		controls.clear();
-		ProcessDocumentation doc = editor.getModel().documentation;
+		var doc = editor.getModel().documentation;
 		if (doc == null)
 			return;
 
@@ -63,7 +63,7 @@ class ImageSection {
 			return;
 
 		if (comp == null) {
-			comp = UI.formSection(body, tk, "Attached images");
+			comp = UI.formSection(body, tk, M.AttachedImages);
 		}
 		files.forEach(this::createControls);
 

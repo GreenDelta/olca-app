@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.collaboration.util.PathFilters;
@@ -18,7 +19,7 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
-import org.openlca.git.actions.GitStashCreate;
+import org.openlca.git.actions.GitDiscard;
 import org.openlca.git.model.Change;
 
 public class DiscardAction extends Action implements INavigationAction {
@@ -27,7 +28,7 @@ public class DiscardAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Discard changes";
+		return M.DiscardChanges;
 	}
 
 	@Override
@@ -47,8 +48,7 @@ public class DiscardAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (!Question.ask("Discard changes",
-				"Do you really want to discard the selected changes? This action can not be undone."))
+		if (!Question.ask(M.DiscardChangesQ, M.DiscardChangesQuestion))
 			return;
 		var repo = Repository.CURRENT;
 		try {
@@ -59,9 +59,8 @@ public class DiscardAction extends Action implements INavigationAction {
 							.withDatabase())
 					.map(Change::of)
 					.forEach(selected::addAll);
-			Actions.run(GitStashCreate.on(repo)
-					.changes(selected)
-					.discard());
+			Actions.run(GitDiscard.on(repo)
+					.changes(selected));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error discarding changes", e);
 		} finally {

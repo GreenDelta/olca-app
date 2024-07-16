@@ -114,7 +114,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 		@Override
 		public String isValid(String newText) {
 			if (newText != null && newText.contains("/"))
-				return "The character / can not be used";
+				return M.SlashCharacterCannotBeUsed;
 			return null;
 		}
 

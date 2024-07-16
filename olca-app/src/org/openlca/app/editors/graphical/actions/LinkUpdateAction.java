@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.window.Window;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -38,7 +37,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		editor = part;
 		setId(GraphActionIds.LINK_UPDATE);
 		setImageDescriptor(Icon.UPDATE.descriptor());
-		setText(NLS.bind(M.Update, M.ProcessLinks));
+		setText(M.UpdateProcessLinks);
 	}
 
 	@Override
@@ -53,10 +52,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		var dialog = new Dialog(editor);
 		if (dialog.open() != Window.OK)
 			return;
-		boolean doIt = Question.ask(
-				"Execute update?",
-				"Do you want to execute the update? " +
-						"This will save reload the updated product system.");
+		boolean doIt = Question.ask(M.ExecuteUpdateQ, M.ExecuteUpdateQuestion);
 		if (!doIt)
 			return;
 
@@ -71,7 +67,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 
 		App.close(system);
 		GraphFile.clear(editor);
-		App.runWithProgress("Update links", () -> {
+		App.runWithProgress(M.UpdateLinks, () -> {
 			try {
 				var productSystem = dialog.config.execute();
 				App.open(productSystem);
@@ -102,7 +98,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
 			if (newShell != null) {
-				newShell.setText("Update links");
+				newShell.setText(M.UpdateLinks);
 			}
 		}
 
@@ -128,7 +124,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 					selected = i;
 				}
 			}
-			var combo = UI.labeledCombo(body, tk, "Provider selection");
+			var combo = UI.labeledCombo(body, tk, M.ProviderSelection);
 			combo.setItems(items);
 			combo.select(selected);
 			config.withProviderLinking(options[selected]);
@@ -157,8 +153,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 
 		private void createKeepExistingCheck(FormToolkit tk, Composite body) {
 			UI.filler(body, tk);
-			var check = tk.createButton(
-					body, "Keep all existing links", SWT.CHECK);
+			var check = tk.createButton(body, M.KeepAllExistingLinks, SWT.CHECK);
 			config.keepExistingLinks(true);
 			check.setSelection(true);
 			Controls.onSelect(
@@ -168,7 +163,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		private void createLocationCheck(FormToolkit tk, Composite body) {
 			UI.filler(body, tk);
 			var check = tk.createButton(
-					body, "Prefer links within same locations", SWT.CHECK);
+					body, M.PreferLinksWithSameLocations, SWT.CHECK);
 			config.preferLinksInSameLocation(false);
 			check.setSelection(false);
 			Controls.onSelect(

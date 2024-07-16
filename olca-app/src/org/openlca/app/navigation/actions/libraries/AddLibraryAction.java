@@ -37,16 +37,16 @@ import org.openlca.core.library.PreMountCheck;
 public class AddLibraryAction extends Action implements INavigationAction {
 
 	private Consumer<Set<Library>> callback;
-	
+
 	public AddLibraryAction() {
-		setText("Add a library");
+		setText(M.AddLibrary);
 		setImageDescriptor(Icon.LIBRARY.descriptor());
 	}
 
 	void setCallback(Consumer<Set<Library>> callback) {
 		this.callback = callback;
 	}
-	
+
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
@@ -70,11 +70,11 @@ public class AddLibraryAction extends Action implements INavigationAction {
 
 		var lib = dialog.combo.selected;
 		if (db.getLibraries().contains(lib.name())) {
-			MsgBox.error("Library " + lib.name() + " is already present.");
+			MsgBox.error(M.TheLibraryIsAlreadyPresent + " - " + lib.name());
 			return;
 		}
 		var checkResult = App.exec(
-			"Check library", () -> PreMountCheck.check(db, lib));
+			M.CheckLibraryDots, () -> PreMountCheck.check(db, lib));
 		if (checkResult.isError()) {
 			ErrorReporter.on("Failed to check library", checkResult.error());
 			return;
@@ -95,7 +95,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		@Override
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
-			newShell.setText("Add a library to " + db.getName());
+			newShell.setText(M.AddLibrary + " - " + db.getName());
 		}
 
 		@Override
@@ -113,13 +113,13 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			UI.fillHorizontal(comp);
 			UI.gridLayout(comp, 2);
 
-			combo = new LibCombo(UI.labeledCombo(comp, tk, "Library"));
+			combo = new LibCombo(UI.labeledCombo(comp, tk, M.Library));
 			UI.filler(comp, tk);
 			var importButton = tk.createButton(
-				comp, "Import from file ...", SWT.NONE);
+				comp, M.ImportFromFileDots, SWT.NONE);
 			Controls.onSelect(importButton, $ -> {
 				var file = FileChooser.openFile()
-					.withTitle("Select a library package")
+					.withTitle(M.SelectLibraryPackage)
 					.withExtensions("*.zip")
 					.select()
 					.orElse(null);

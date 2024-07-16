@@ -78,7 +78,7 @@ class EpdModuleDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Edit EPD module");
+		newShell.setText(M.EditEpdModule);
 	}
 
 	@Override
@@ -105,7 +105,7 @@ class EpdModuleDialog extends FormDialog {
 		nameCombo.addModifyListener($ -> module.name = nameCombo.getText());
 
 		// result multiplier
-		var factorText = UI.labeledText(comp, tk, "Result multiplier");
+		var factorText = UI.labeledText(comp, tk, M.ResultMultiplier);
 		Controls.set(factorText, module.multiplier, f -> module.multiplier = f);
 
 		// result tree
@@ -125,8 +125,7 @@ class EpdModuleDialog extends FormDialog {
 	protected void okPressed() {
 		// check that the module name is not empty
 		if (Strings.nullOrEmpty(module.name)) {
-			MsgBox.error("Empty name",
-				"An empty name is not allowed for an EPD module.");
+			MsgBox.error(M.EmptyName, M.EmptyNameEpdErr);
 			return;
 		}
 
@@ -137,8 +136,8 @@ class EpdModuleDialog extends FormDialog {
 				continue;
 			if (Strings.nullOrEqual(other.name, module.name)
 				&& Objects.equals(other.result, module.result)) {
-				MsgBox.error("Duplicate module",
-					"Module " + module.name + " already exists.");
+				MsgBox.error(M.DuplicateModule,
+					M.ThisModuleAlreadyExists + " - " + module.name);
 				return;
 			}
 		}

@@ -1,5 +1,10 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MAX;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MIN;
+
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
@@ -10,11 +15,6 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.rcp.images.Icon;
-
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MAX;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MIN;
 
 public class MinMaxAllAction extends StackAction {
 
@@ -52,10 +52,11 @@ public class MinMaxAllAction extends StackAction {
 
 	private Command getCommand() {
 		var cc = new CompoundCommand();
-		cc.setDebugLabel((type == MINIMIZE ? "Minimize" : "Maximize") + "all node");
+		cc.setDebugLabel((type == MINIMIZE ? "Minimize" : "Maximize")
+				+ " all node");
 		cc.setLabel(type == MINIMIZE
-			? M.MinimizeAll.toLowerCase()
-			: M.MaximizeAll.toLowerCase());
+			? M.MinimizeAll
+			: M.MaximizeAll);
 
 		for (MinMaxComponent component : editor.getModel().getMinMaxComponents()) {
 			var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);

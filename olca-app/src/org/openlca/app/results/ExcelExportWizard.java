@@ -1,5 +1,9 @@
 package org.openlca.app.results;
 
+import java.io.File;
+import java.util.EnumSet;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -26,10 +30,6 @@ import org.openlca.app.util.UI;
 import org.openlca.io.xls.results.system.MatrixPage;
 import org.openlca.io.xls.results.system.ResultExport;
 
-import java.io.File;
-import java.util.EnumSet;
-import java.util.List;
-
 class ExcelExportWizard extends Wizard {
 
 	private final ResultEditor editor;
@@ -38,7 +38,7 @@ class ExcelExportWizard extends Wizard {
 	private ExcelExportWizard(ResultEditor editor) {
 		this.editor = editor;
 		setNeedsProgressMonitor(true);
-		setWindowTitle("Export");
+		setWindowTitle(M.Export);
 	}
 
 	static Action createAction() {
@@ -82,7 +82,7 @@ class ExcelExportWizard extends Wizard {
 		}
 		try {
 			getContainer().run(true, true, monitor -> {
-				monitor.beginTask("Exporting file", 1);
+				monitor.beginTask(M.ExportingFile, 1);
 				export.run();
 				// TODO: forward cancel...
 				monitor.done();
@@ -97,15 +97,15 @@ class ExcelExportWizard extends Wizard {
 	private static class Page extends WizardPage {
 
 		private final ResultEditor editor;
+		private final EnumSet<MatrixPage> matrices = EnumSet.noneOf(MatrixPage.class);
 		private File file;
 		private boolean skipZeros = true;
-		private final EnumSet<MatrixPage> matrices = EnumSet.noneOf(MatrixPage.class);
 
 		Page(ResultEditor editor) {
 			super("ExcelExportPage");
 			this.editor = editor;
-			setTitle("Export results to Excel");
-			setDescription("Specify an export file and optional settings");
+			setTitle(M.ExportResultsToExcel);
+			setDescription(M.SpecifyAnExportFileAndOptionalSettings);
 			setImageDescriptor(Icon.EXPORT_WIZARD.descriptor());
 			setPageComplete(false);
 		}
@@ -119,13 +119,11 @@ class ExcelExportWizard extends Wizard {
 
 			var group = new Group(body, SWT.NONE);
 			UI.fillHorizontal(group);
-			group.setText("Result matrices (optional)");
+			group.setText(M.ResultMatricesOptional);
 			UI.gridLayout(group, 1);
-			new Label(group, SWT.NONE).setText(
-					"Note that some of these matrices " +
-							"can result in very long export times");
+			new Label(group, SWT.NONE).setText(M.MatricesExportTimeInfo);
 
-			var zeroCheck = UI.checkbox(group, "Skip zero values");
+			var zeroCheck = UI.checkbox(group, M.SkipZeroValues);
 			zeroCheck.setSelection(skipZeros);
 			Controls.onSelect(zeroCheck, $ -> skipZeros = zeroCheck.getSelection());
 
@@ -167,11 +165,11 @@ class ExcelExportWizard extends Wizard {
 
 		private String labelOf(MatrixPage matrix) {
 			return switch (matrix) {
-				case DIRECT_INVENTORIES -> "Direct inventory contributions";
-				case TOTAL_INVENTORIES -> "Upstream inventories";
-				case DIRECT_IMPACTS -> "Direct impact contributions";
-				case TOTAL_IMPACTS -> "Upstream impacts";
-				case FLOW_IMPACTS -> "Impacts by flow";
+				case DIRECT_INVENTORIES -> M.DirectInventoryContributions;
+				case TOTAL_INVENTORIES -> M.UpstreamInventories;
+				case DIRECT_IMPACTS -> M.DirectImpactContributions;
+				case TOTAL_IMPACTS -> M.UpstreamImpacts;
+				case FLOW_IMPACTS -> M.ImpactByFlow;
 			};
 		}
 

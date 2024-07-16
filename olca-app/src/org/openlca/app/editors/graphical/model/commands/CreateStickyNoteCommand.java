@@ -3,7 +3,6 @@ package org.openlca.app.editors.graphical.model.commands;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
 import org.openlca.app.editors.graphical.model.Graph;
@@ -19,7 +18,7 @@ public class CreateStickyNoteCommand extends Command {
 	public CreateStickyNoteCommand(Graph graph, Rectangle constraint) {
 		this.graph = graph;
 		this.constraint = constraint;
-		setLabel(NLS.bind(M.Add.toLowerCase(), M.Note));
+		setLabel(M.AddStickyNote);
 	}
 
 	public CreateStickyNoteCommand(Graph graph, Rectangle constraint, int index) {

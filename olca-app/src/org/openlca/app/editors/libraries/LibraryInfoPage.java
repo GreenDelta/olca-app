@@ -28,7 +28,7 @@ public class LibraryInfoPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var title = M.GeneralInformation + ": " + info.name();
+		var title = M.GeneralInformation + " - " + info.name();
 		var form = UI.header(mForm, title, Icon.LIBRARY.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
@@ -46,7 +46,7 @@ public class LibraryInfoPage extends FormPage {
 			description.setText(info.description());
 		}
 
-		var isRegionalized = UI.labeledCheckbox(comp, tk, "Is regionalized");
+		var isRegionalized = UI.labeledCheckbox(comp, tk, M.IsRegionalized);
 		isRegionalized.setSelection(info.isRegionalized());
 		isRegionalized.setEnabled(false);
 
@@ -56,8 +56,8 @@ public class LibraryInfoPage extends FormPage {
 	}
 
 	private void renderDepTable(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Library dependencies", 1);
-		var table = Tables.createViewer(comp, "Library");
+		var comp = UI.formSection(body, tk, M.LibraryDependencies, 1);
+		var table = Tables.createViewer(comp, M.Library);
 		Tables.bindColumnWidths(table, 1.0);
 		table.setInput(info.dependencies());
 		table.setLabelProvider(new DepLabel());

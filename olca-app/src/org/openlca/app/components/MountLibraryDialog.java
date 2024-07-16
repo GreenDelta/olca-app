@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
@@ -36,11 +37,38 @@ public class MountLibraryDialog extends FormDialog {
 	private final Library library;
 	private final List<Section> sections = new ArrayList<>();
 
+	private MountLibraryDialog(Library library,
+			PreMountCheck.Result checkResult) {
+		super(UI.shell());
+		this.library = library;
+
+		// create the dialog sections for the states in the check-result
+		var stateMap = new EnumMap<PreMountState, List<Library>>(PreMountState.class);
+		for (var libState : checkResult.getStates()) {
+			var lib = libState.first;
+			var state = libState.second;
+			stateMap.computeIfAbsent(state, s -> new ArrayList<>()).add(lib);
+		}
+		var stateOrder = new PreMountState[]{
+				PreMountState.NEW,
+				PreMountState.PRESENT,
+				PreMountState.TAG_CONFLICT,
+				PreMountState.CONFLICT,
+		};
+		for (var state : stateOrder) {
+			var libs = stateMap.get(state);
+			if (libs == null || libs.isEmpty())
+				continue;
+			sections.add(Section.of(state, libs));
+		}
+	}
+
 	public static void show(Library library, PreMountCheck.Result checkResult) {
 		show(library, checkResult, null);
 	}
 
-	public static void show(Library library, PreMountCheck.Result checkResult, Consumer<Set<Library>> callback) {
+	public static void show(Library library, PreMountCheck.Result checkResult,
+			Consumer<Set<Library>> callback) {
 		if (checkResult.isError()) {
 			ErrorReporter.on(
 					"Failed to check library: " + library,
@@ -53,16 +81,16 @@ public class MountLibraryDialog extends FormDialog {
 		var state = checkResult.getState(library).orElse(null);
 		if (state == null) {
 			MsgBox.info(
-					"No libraries to add",
-					"Found no libraries that could be added.");
+					M.NoLibrariesToAdd,
+					M.NoLibrariesToAddInfo);
 			if (callback != null) {
 				callback.accept(Collections.emptySet());
 			}
 			return;
 		}
 		if (state == PreMountState.PRESENT) {
-			var b = Question.ask("Library already present",
-					"The library was already added to the database. Continue anyhow?");
+			var b = Question.ask(M.LibraryAlreadyPresent,
+					M.LibraryAlreadyPresentQuestion);
 			if (!b) {
 				if (callback != null) {
 					callback.accept(Collections.emptySet());
@@ -79,7 +107,7 @@ public class MountLibraryDialog extends FormDialog {
 			return;
 		}
 		var actions = dialog.collectActions();
-		App.runWithProgress("Add library " + library.name() + " ...",
+		App.runWithProgress(M.AddLibraryDots,
 				() -> Mounter.of(Database.get(), library)
 						.apply(actions)
 						.run(),
@@ -89,31 +117,6 @@ public class MountLibraryDialog extends FormDialog {
 						callback.accept(actions.keySet());
 					}
 				});
-	}
-
-	private MountLibraryDialog(Library library, PreMountCheck.Result checkResult) {
-		super(UI.shell());
-		this.library = library;
-
-		// create the dialog sections for the states in the check-result
-		var stateMap = new EnumMap<PreMountState, List<Library>>(PreMountState.class);
-		for (var libState : checkResult.getStates()) {
-			var lib = libState.first;
-			var state = libState.second;
-			stateMap.computeIfAbsent(state, s -> new ArrayList<>()).add(lib);
-		}
-		var stateOrder = new PreMountState[] {
-				PreMountState.NEW,
-				PreMountState.PRESENT,
-				PreMountState.TAG_CONFLICT,
-				PreMountState.CONFLICT,
-		};
-		for (var state : stateOrder) {
-			var libs = stateMap.get(state);
-			if (libs == null || libs.isEmpty())
-				continue;
-			sections.add(Section.of(state, libs));
-		}
 	}
 
 	private Map<Library, MountAction> collectActions() {
@@ -130,7 +133,7 @@ public class MountLibraryDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Add library " + library.name());
+		newShell.setText(M.AddLibrary + " - " + library.name());
 	}
 
 	@Override
@@ -177,7 +180,7 @@ public class MountLibraryDialog extends FormDialog {
 			var comp = tk.createComposite(group);
 			UI.gridData(comp, true, false);
 			UI.gridLayout(comp, 2);
-			var combo = UI.labeledCombo(comp, tk, "Action");
+			var combo = UI.labeledCombo(comp, tk, M.Action);
 			var items = new String[actions.size()];
 			var selectedIdx = -1;
 			for (int i = 0; i < actions.size(); i++) {
@@ -199,22 +202,19 @@ public class MountLibraryDialog extends FormDialog {
 
 		private String title() {
 			return switch (state) {
-				case NEW -> "New libraries";
-				case PRESENT -> "Already existing libraries";
-				case TAG_CONFLICT -> "Tag conflicts";
-				case CONFLICT -> "Data conflicts";
+				case NEW -> M.NewLibraries;
+				case PRESENT -> M.AlreadyExistingLibraries;
+				case TAG_CONFLICT -> M.TagConflicts;
+				case CONFLICT -> M.DataConflicts;
 			};
 		}
 
 		private String info() {
 			return switch (state) {
-				case NEW -> "The following libraries will be added to the database:";
-				case PRESENT -> "The following libraries are already present:";
-				case TAG_CONFLICT -> "The data sets of these libraries are already"
-						+ " present in the database but under a different or no library tag:";
-				case CONFLICT -> "The data sets of these libraries are partly present,"
-						+ " have different library tags, or have other data conflicts. The"
-						+ " data sets in the database will be updated.";
+				case NEW -> M.LibrariesWillBeAddedInfo;
+				case PRESENT -> M.LibrariesAlreadyPresentInfo;
+				case TAG_CONFLICT -> M.LibrariesWithTagConflictInfo;
+				case CONFLICT -> M.LibrariesWithConflictInfo;
 			};
 		}
 
@@ -230,13 +230,13 @@ public class MountLibraryDialog extends FormDialog {
 
 		private String labelOf(MountAction action) {
 			var label = switch (action) {
-				case ADD -> "Add library";
-				case SKIP -> "Keep existing";
-				case RETAG -> "Update library tags only";
-				case UPDATE -> "Update data sets";
+				case ADD -> M.AddLibrary;
+				case SKIP -> M.KeepExisting;
+				case RETAG -> M.UpdateLibraryTagsOnly;
+				case UPDATE -> M.UpdateDataSets;
 			};
 			if (action == state.defaultAction()) {
-				label += " (recommended)";
+				label += " (" + M.Recommended + ")";
 			}
 			return label;
 		}

@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.elements.EntryElement;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Libraries;
@@ -20,7 +21,7 @@ public class DownloadLibraryAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return "Download library";
+		return M.DownloadLibrary;
 	}
 
 	@Override

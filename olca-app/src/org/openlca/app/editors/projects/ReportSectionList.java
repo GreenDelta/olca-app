@@ -154,8 +154,7 @@ class ReportSectionList {
 		}
 
 		private void delete() {
-			boolean b = Question.ask(M.DeleteSection,
-				M.DeleteReportSectionQuestion);
+			boolean b = Question.ask(M.DeleteSection, M.DeleteReportSectionQuestion);
 			if (!b)
 				return;
 			report.sections.remove(model);

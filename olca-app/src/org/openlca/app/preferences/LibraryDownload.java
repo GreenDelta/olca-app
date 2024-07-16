@@ -3,6 +3,7 @@ package org.openlca.app.preferences;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.preferences.LibDownload.Repo;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
@@ -14,22 +15,15 @@ import org.slf4j.LoggerFactory;
 public class LibraryDownload {
 
 	public static void open() {
-		boolean b = Question.ask("Download calculation libraries",
-				"You can download additional libraries to make"
-						+ " the calculation faster. However, this currently"
-						+ " only improves the calculation speed of product"
-						+ " systems with sparse matrices in the quick"
-						+ " calculation. Also, some of these libraries are"
-						+ " licensed under the GNU General Public License v2"
-						+ " (see https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)."
-						+ " By downloading these libraries you accept the terms and"
-						+ " conditions of this license. Do you want to download"
-						+ " these additional calculation libraries?");
+		boolean b = Question.ask(M.DownloadCalculationLibraries,
+				M.DownloadCalculationLibrariesQuestion
+						+ "\r\n[1] "
+						+ "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html");
 		if (!b)
 			return;
 
 		var success = new AtomicBoolean(false);
-		App.runWithProgress("Download native libraries", () -> {
+		App.runWithProgress(M.DownloadNativeLibraryDots, () -> {
 			try {
 				LibDownload.fetch(Repo.GITHUB, Module.UMFPACK, Workspace.root());
 				NativeLib.reloadFrom(Workspace.root());
@@ -40,13 +34,9 @@ public class LibraryDownload {
 			}
 		}, () -> {
 			if (!success.get()) {
-				MsgBox.error("The download of the libraries or "
-						+ "loading them failed. Please check the "
-						+ "log file for details.");
+				MsgBox.error(M.LibraryDownloadErr);
 			} else {
-				MsgBox.info("Download finished", "Note that you need to "
-						+ "restart openLCA in order to use "
-						+ "the downloaded libraries.");
+				MsgBox.info(M.DownloadFinished, M.DownloadFinishedInfo);
 			}
 		});
 	}

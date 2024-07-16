@@ -1,5 +1,10 @@
 package org.openlca.app.results;
 
+import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
+
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.ui.IEditorInput;
@@ -30,11 +35,6 @@ import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.util.Strings;
 
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
-
 /**
  * View for the analysis results of a product system.
  */
@@ -54,7 +54,7 @@ public class ResultEditor extends FormEditor {
 	}
 
 	private static String nameOf(CalculationSetup setup) {
-		var name = M.Result + ": " + Labels.name(setup.target())
+		var name = M.Result + " - " + Labels.name(setup.target())
 				+ "; " + Numbers.decimalFormat(setup.amount(), 2)
 				+ " " + Labels.name(setup.unit());
 		if (setup.impactMethod() != null) {

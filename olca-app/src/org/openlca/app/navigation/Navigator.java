@@ -25,6 +25,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.collaboration.navigation.elements.EntryElement;
 import org.openlca.app.db.Database;
@@ -434,7 +435,7 @@ public class Navigator extends CommonNavigator {
 		public void keyPressed(KeyEvent e) {
 			if (e.keyCode == SWT.F5) {
 				if (Repository.isConnected()) {
-					App.runWithProgress("Updating local index", Repository.CURRENT.index::reload);
+					App.runWithProgress(M.UpdatingLocalIndex, Repository.CURRENT.index::reload);
 				}
 				Navigator.refresh();
 			}

@@ -30,11 +30,10 @@ public class LogFileEditor extends FormEditor {
 	public static void open() {
 		var files = logFiles();
 		if (files.isEmpty()) {
-			MsgBox.info("No log-files available",
-				"Could not find any log file in the openLCA workspace.");
+			MsgBox.info(M.NoLogFileAvailable, M.NoLogFileAvailableInfo);
 			return;
 		}
-		var input = new SimpleEditorInput("Log files", "Log file");
+		var input = new SimpleEditorInput(M.LogFiles, M.LogFile);
 		Editors.open(input, "editors.LogFileEditor");
 	}
 

@@ -23,11 +23,11 @@ public class MappingMenu extends EditorActionBarContributor {
 
 	@Override
 	public void contributeToMenu(IMenuManager root) {
-		MenuManager menu = new MenuManager("Flow mapping");
+		MenuManager menu = new MenuManager(M.FlowMapping);
 		root.add(menu);
-		menu.add(Actions.create(M.SaveAs, this::onSave));
-		menu.add(Actions.create("Generate mappings", this::onGenerate));
-		menu.add(Actions.create("Apply on database", this::onApply));
+		menu.add(Actions.create(M.SaveAsDots, this::onSave));
+		menu.add(Actions.create(M.GenerateMappings, this::onGenerate));
+		menu.add(Actions.create(M.ApplyOnDatabase, this::onApply));
 	}
 
 	private void onSave() {
@@ -46,7 +46,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		var file = FileChooser.forSavingFile(M.Export, name);
 		if (file == null)
 			return;
-		App.runWithProgress("Save flow mapping ...", () -> {
+		App.runWithProgress(M.SaveFlowMappingDots, () -> {
 			try {
 				FlowMap.toCsv(map, file);
 			} catch (Exception e) {
@@ -64,21 +64,15 @@ public class MappingMenu extends EditorActionBarContributor {
 		FlowProvider source = tool.sourceSystem;
 		FlowProvider target = tool.targetSystem;
 		if (source == null || target == null) {
-			MsgBox.error("No source or target system selected",
-					"In order to generate a mapping you need to "
-							+ "assign a data provider (database, "
-							+ "JSON-LD, or ILCD package) for the "
-							+ "source and target system.");
+			MsgBox.error(M.NoSystemSelected, M.NoSystemSelectedErr);
 			return;
 		}
 
-		boolean b = Question.ask("Generate mappings?",
-				"Do you want to (try to) generate mappings for all "
-						+ "unmapped flows of the source system?");
+		boolean b = Question.ask(M.GenerateMappingsQ, M.GenerateMappingsQuestion);
 		if (!b)
 			return;
 		Generator gen = new Generator(source, target, tool.mapping);
-		App.runWithProgress("Generate mappings ...", gen, () -> {
+		App.runWithProgress(M.GenerateMappingsDots, gen, () -> {
 			tool.refresh();
 		});
 	}
@@ -91,22 +85,17 @@ public class MappingMenu extends EditorActionBarContributor {
 		// check if we can apply the mapping
 		FlowProvider source = tool.sourceSystem;
 		if (!(source instanceof DBProvider)) {
-			MsgBox.error("Source system should be a database",
-					"This only works when the source system "
-							+ "is a database where the flows should "
-							+ "be replaced with flows from the target "
-							+ "system (which could be the same database).");
+			MsgBox.error(M.SourceSystemShouldBeADatabase,
+					M.SourceSystemShouldBeADatabaseErr);
 			return;
 		}
 		FlowProvider target = tool.targetSystem;
 		if (target == null) {
-			MsgBox.error("No target system selected",
-					"No target system was selected.");
+			MsgBox.error(M.NoTargetSystemSelected, M.NoTargetSystemSelectedErr);
 			return;
 		}
 		if (!tool.checked.get()) {
-			MsgBox.error("Unchecked mappings",
-					"You should first run a check before applying the mapping.");
+			MsgBox.error(M.UncheckedMappings, M.UncheckedMappingsErr);
 			return;
 		}
 
@@ -114,7 +103,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		if (opt.isEmpty())
 			return;
 		var replacer = new Replacer(opt.get());
-		App.runWithProgress("Replace flows ...", replacer, () -> {
+		App.runWithProgress(M.ReplaceFlowDots, replacer, () -> {
 			tool.refresh();
 			Navigator.refresh();
 		});

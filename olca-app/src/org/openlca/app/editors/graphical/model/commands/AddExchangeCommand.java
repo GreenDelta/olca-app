@@ -80,10 +80,10 @@ public class AddExchangeCommand extends Command {
 		var flow = dialog.flow;
 
 		if (!pane.accepts(flow)) {
-			MsgBox.info("This flow cannot be added twice to the "
-					+ (pane.isForInputs() ? "inputs" : "outputs")
-					+ " of " + Labels.name(node.descriptor)
-					+ ".");
+			MsgBox.info((pane.isForInputs()
+					? M.FlowCannotBeAddedTwiceToInputs
+					: M.FlowCannotBeAddedTwiceToOutputs)
+					+ "\r\n " + Labels.name(node.descriptor));
 			return;
 		}
 
@@ -139,7 +139,7 @@ public class AddExchangeCommand extends Command {
 			UI.gridLayout(body, 1);
 
 			// create new text
-			var nameLabel = UI.label(body, tk, "Create a new flow");
+			var nameLabel = UI.label(body, tk, M.CreateANewFlow);
 			nameLabel.setFont(UI.boldFont());
 			text = UI.text(body, SWT.NONE);
 			text.addModifyListener(e -> {
@@ -188,7 +188,7 @@ public class AddExchangeCommand extends Command {
 				prop -> this.quantity = prop);
 
 			// tree
-			var selectLabel = UI.label(body, tk, "Or select an existing");
+			var selectLabel = UI.label(body, tk, M.OrSelectExisting);
 			selectLabel.setFont(UI.boldFont());
 			tree = NavigationTree.forSingleSelection(body, ModelType.FLOW);
 			tree.addFilter(productFilter);
@@ -236,7 +236,7 @@ public class AddExchangeCommand extends Command {
 		protected void createButtonsForButtonBar(Composite comp) {
 			createButton(comp, _CREATE, M.CreateNew, false)
 				.setEnabled(false);
-			createButton(comp, _SELECT, "Select existing", false)
+			createButton(comp, _SELECT, M.SelectExisting, false)
 				.setEnabled(false);
 			createButton(comp, _CANCEL, M.Cancel, true);
 		}
@@ -278,12 +278,12 @@ public class AddExchangeCommand extends Command {
 				? db.get(FlowProperty.class, quantity.id)
 				: null;
 			if (prop == null) {
-				MsgBox.error("Cannot create a flow without a quantity");
+				MsgBox.error(M.CannotCreateAFlowWithoutQuantity);
 				return null;
 			}
 			var name = this.text.getText().trim();
 			if (Strings.nullOrEmpty(name)) {
-				MsgBox.error("A name is required.");
+				MsgBox.error(M.ANameIsRequired);
 				return null;
 			}
 			var type = this.type == null

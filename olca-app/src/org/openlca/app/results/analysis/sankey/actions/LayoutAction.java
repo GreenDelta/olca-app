@@ -1,17 +1,16 @@
 package org.openlca.app.results.analysis.sankey.actions;
 
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
+
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.analysis.sankey.edit.DiagramEditPart;
 import org.openlca.app.tools.graphics.actions.ActionIds;
-
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
 
 public class LayoutAction extends WorkbenchPartAction {
 
@@ -21,7 +20,7 @@ public class LayoutAction extends WorkbenchPartAction {
 	public LayoutAction(SankeyEditor part) {
 		super(part);
 		editor = part;
-		setText(NLS.bind(M.LayoutAs, M.Tree));
+		setText(M.LayoutAsTree);
 		setId(ActionIds.LAYOUT_TREE);
 		setImageDescriptor(Icon.LAYOUT.descriptor());
 	}

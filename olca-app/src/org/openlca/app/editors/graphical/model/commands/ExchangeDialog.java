@@ -1,5 +1,11 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Shell;
@@ -15,12 +21,6 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Unit;
 import org.openlca.util.Pair;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
 
 class ExchangeDialog extends FormDialog {
 
@@ -84,11 +84,7 @@ class ExchangeDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		var infix = exchange.isInput ^ exchange.isAvoided
-				? "input "
-				: "output ";
-		var title = "Parameters of the " + infix + Labels.name(exchange.flow);
-		newShell.setText(title);
+		newShell.setText(Labels.name(exchange.flow));
 	}
 
 	@Override
@@ -148,7 +144,7 @@ class ExchangeDialog extends FormDialog {
 	protected void okPressed() {
 		int i = combo.getSelectionIndex();
 		if (units.isEmpty() || i < 0) {
-			MsgBox.error("No unit selected");
+			MsgBox.error(M.NoUnitSelected);
 			return;
 		}
 		var unit = units.get(i);
@@ -156,7 +152,7 @@ class ExchangeDialog extends FormDialog {
 		try {
 			exchange.amount = Double.parseDouble(text.getText());
 		} catch (Exception e) {
-			MsgBox.error(text.getText() + " is not a number.");
+			MsgBox.error(M.NotANumber + " - " + text.getText());
 			return;
 		}
 

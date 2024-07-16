@@ -38,11 +38,11 @@ public class IoPreference extends AbstractPreferenceInitializer {
 	}
 
 	public static SodaClient createClient() {
-		SodaConnection con = new SodaConnection();
+		var con = new SodaConnection();
 		con.url = getIlcdUrl();
 		con.user = getIlcdUser();
 		con.password = getIlcdPassword();
-		return new SodaClient(con);
+		return SodaClient.of(con);
 	}
 
 	private static String valueOf(String name) {

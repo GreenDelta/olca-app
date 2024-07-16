@@ -95,8 +95,8 @@ record ImpactSection(ResultEditor editor) {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			return col == 0
-				? Images.get(ModelType.IMPACT_CATEGORY)
+			return col == 0 && obj instanceof ImpactResult r
+				? Images.get(r.indicator)
 				: null;
 		}
 

@@ -58,7 +58,7 @@ class TreeExportDialog extends FormDialog {
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, false);
 		UI.gridLayout(comp, 3, 10, 5);
-		var fileText = UI.labeledText(comp, tk, "Export to file");
+		var fileText = UI.labeledText(comp, tk, M.ExportToFile);
 		fileText.setEditable(false);
 		fileText.setBackground(Colors.white());
 		var fileBtn = UI.button(comp, tk, M.Browse);
@@ -78,23 +78,23 @@ class TreeExportDialog extends FormDialog {
 
 		// number of levels
 		UI.gridLayout(comp, 3, 10, 5);
-		maxDepthText = UI.labeledText(comp, tk, "Max. number of levels");
+		maxDepthText = UI.labeledText(comp, tk, M.MaxNumberLevels);
 		maxDepthText.setText("5");
-		var maxDepthBtn = tk.createButton(comp, "Unlimited", SWT.CHECK);
+		var maxDepthBtn = tk.createButton(comp, M.Unlimited, SWT.CHECK);
 
 		// minimum contribution
-		minContrText = UI.labeledText(comp, tk, "Min. contribution %");
+		minContrText = UI.labeledText(comp, tk, M.MinContribPerc);
 		minContrText.setText("1e-5");
-		var contrBtn = tk.createButton(comp, "Unlimited", SWT.CHECK);
+		var contrBtn = tk.createButton(comp, M.Unlimited, SWT.CHECK);
 		Controls.onSelect(contrBtn, _e -> {
 			minContrText.setEnabled(!minContrText.isEnabled());
 		});
 
 		// recursion limit
-		maxRecurText = UI.labeledText(comp, tk, "Max. recursion depth");
+		maxRecurText = UI.labeledText(comp, tk, M.MaxRecursionDepth);
 		maxRecurText.setText("1");
 		maxRecurText.setEnabled(false);
-		UI.label(comp, tk, "Repetitions");
+		UI.label(comp, tk, M.Repetitions);
 
 		Controls.onSelect(maxDepthBtn, _e -> {
 			boolean b = !maxDepthText.isEnabled();
@@ -117,9 +117,7 @@ class TreeExportDialog extends FormDialog {
 	@Override
 	protected void okPressed() {
 		if (file == null) {
-			MsgBox.error(
-					"No file selected",
-					"No file was selected");
+			MsgBox.error(M.NoFileSelected, M.NoFileSelectedErr);
 			return;
 		}
 
@@ -133,15 +131,13 @@ class TreeExportDialog extends FormDialog {
 			try {
 				export.maxDepth = Integer.parseInt(maxDepth);
 				if (export.maxDepth <= 0) {
-					MsgBox.error("Invalid value",
-							maxDepth + " is an invalid value for the"
-							+ " maximum number of levels.");
+					MsgBox.error(M.InvalidValue,
+							M.InvalidValueForMaxDepth + " - " + maxDepth);
 					return;
 				}
 			} catch (Exception e) {
-				MsgBox.error("Invalid value",
-						maxDepth + " is an invalid value for the"
-						+ " maximum number of levels.");
+				MsgBox.error(M.InvalidValue,
+						M.InvalidValueForMaxDepth + " - " + maxDepth);
 				return;
 			}
 
@@ -153,15 +149,13 @@ class TreeExportDialog extends FormDialog {
 			try {
 				export.maxRecursionDepth = Integer.parseInt(maxRecur);
 				if (export.maxRecursionDepth < 0) {
-					MsgBox.error("Invalid value", maxRecur
-							+ " is an invalid value for the"
-							+ " maximum recursion depth.");
+					MsgBox.error(M.InvalidValue,
+							M.InvalidValueForRecursionDepth + " - " + maxRecur);
 					return;
 				}
 			} catch (Exception e) {
-				MsgBox.error("Invalid value",
-						maxRecur + " is an invalid value for the"
-								+ " maximum recursion depth.");
+				MsgBox.error(M.InvalidValue,
+						M.InvalidValueForRecursionDepth + " - " + maxRecur);
 				return;
 			}
 
@@ -175,22 +169,20 @@ class TreeExportDialog extends FormDialog {
 			try {
 				export.minContribution = Double.parseDouble(minContr) / 100;
 				if (export.minContribution <= 0) {
-					MsgBox.error("Invalid value", minContr
-							+ " is an invalid value for the"
-							+ " minimum contribution.");
+					MsgBox.error(M.InvalidValue,
+							M.InvalidValueForMinimumContribution + " - " + minContr);
 					return;
 				}
 			} catch (Exception e) {
-				MsgBox.error("Invalid value", minContr
-						+ " is an invalid value for the"
-						+ " minimum contribution.");
+				MsgBox.error(M.InvalidValue,
+						M.InvalidValueForMinimumContribution + " - " + minContr);
 				return;
 			}
 		}
 
 		// close the dialog and start the export
 		super.okPressed();
-		App.runWithProgress("Exporting contribution tree ...", export);
+		App.runWithProgress(M.ExportingContributionTreeDots, export);
 	}
 
 }

@@ -11,6 +11,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.editors.comments.CommentControl;
@@ -35,7 +36,7 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 	}
 
 	public String getFormTitle() {
-		return getTitle() + ": " + Labels.name(getModel());
+		return getTitle()  + " - " + Labels.name(getModel());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -70,7 +71,7 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 		try {
 			var value = Bean.getValue(getModel(), property);
 			if (value == null) {
-				link.setText("- none -");
+				link.setText(M.NoneHyphen);
 				return link;
 			}
 			if (!(value instanceof RootEntity entity)) {

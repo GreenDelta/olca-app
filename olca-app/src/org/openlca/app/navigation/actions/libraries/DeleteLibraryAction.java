@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -44,8 +45,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 	@Override
 	public String getText() {
 		if (element != null && element.getDatabase().isEmpty())
-			return "Remove library";
-		return "Remove library (experimental)";
+			return M.RemoveLibrary;
+		return M.RemoveLibraryExperimental;
 	}
 
 	@Override
@@ -64,13 +65,11 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		// check if this is a mounted library
 		var db = element.getDatabase();
 		if (db.isPresent()) {
-			if (Question.ask("Removing library warning",
-					"This action might break your database, if the database uses any dataset of present in the library. "
-							+ "It is recommended to run a database validation after removing a library, to ensure database integrity.\r\n\r\n"
-							+ "Do you want to continue")) {
-				App.runWithProgress("Removing library " + lib.name() + " ...",
+			if (Question.ask(M.RemovingLibraryWarning,
+					M.RemovingLibraryExplanations + "\r\n" + M.DoYouWantToContinue)) {
+				App.runWithProgress(M.RemovingLibraryDots,
 						() -> new Unmounter(db.get()).unmountUnsafe(lib.name()),
-						() -> Navigator.refresh());
+						Navigator::refresh);
 			}
 		} else {
 			delete(lib);
@@ -79,15 +78,13 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 
 	private void delete(Library lib) {
 		// ask and delete the library
-		boolean b = Question.ask("Delete library?",
-				"Do you really want to delete the library? " +
-						"Make sure that you have a backup of it.");
+		boolean b = Question.ask(M.DeleteLibraryQ, M.DeleteLibraryQuestion);
 		if (!b)
 			return;
 
 		// check that it is not used
 		var usage = App.exec(
-				"Check if library is used ...",
+				M.CheckIfLibraryIsUsedDots,
 				() -> Usage.find(lib));
 		if (usage.isPresent()) {
 			var u = usage.get();
@@ -98,9 +95,8 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 						u.error);
 				return;
 			}
-			MsgBox.info("Cannot delete library",
-					"We cannot delete library " + lib.name() +
-							" as it is used in " + u.label());
+			MsgBox.info(M.CannotDeleteLibrary, M.CannotDeleteLibraryInfo
+					+ "\r\n " + u.label());
 			return;
 		}
 

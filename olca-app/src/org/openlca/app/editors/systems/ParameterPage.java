@@ -1,5 +1,8 @@
 package org.openlca.app.editors.systems;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -17,9 +20,6 @@ import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.util.Strings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 class ParameterPage extends ModelPage<ProductSystem> {
 
 	private final ProductSystemEditor editor;
@@ -30,7 +30,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 	private final List<ParameterSection> sections = new ArrayList<>();
 
 	public ParameterPage(ProductSystemEditor editor) {
-		super(editor, "ParameterPage2", "Parameters");
+		super(editor, "ParameterPage2", M.Parameters);
 		this.editor = editor;
 		editor.onSaved(() -> sections.forEach(ParameterSection::update));
 	}
@@ -145,7 +145,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 
 			// only non-baseline scenarios can be removed
 			Action onCopy = Actions.create(
-					"Copy parameter set",
+					M.CopyParameterSet,
 					Icon.COPY.descriptor(),
 					this::onCopy);
 			if (paramSet.isBaseline) {
@@ -211,7 +211,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			grid.marginLeft = 0;
 			grid.marginTop = 0;
 			grid.marginBottom = 10;
-			var btn = UI.button(comp, tk, "Add parameter set");
+			var btn = UI.button(comp, tk, M.AddParameterSet);
 			btn.setImage(Icon.ADD.get());
 			Controls.onSelect(btn, e -> {
 				var s = new ParameterRedefSet();

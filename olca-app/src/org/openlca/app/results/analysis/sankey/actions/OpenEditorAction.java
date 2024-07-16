@@ -27,7 +27,7 @@ public class OpenEditorAction extends SelectionAction {
 		if (objects.size() != 1)
 			return false;
 		object = objects.get(0);
-		setText(M.OpenInEditor + ": " + getObjectName());
+		setText(M.OpenInEditor + " - " + getObjectName());
 
 		return object instanceof SankeyNodeEditPart;
 	}

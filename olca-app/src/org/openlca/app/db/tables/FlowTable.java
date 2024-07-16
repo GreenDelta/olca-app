@@ -85,8 +85,8 @@ public class FlowTable extends SimpleFormEditor {
 				M.ReferenceUnit,
 				M.ReferenceFlowProperty,
 				M.CASNumber,
-				"Chemical formula",
-				"ID");
+				M.ChemicalFormula,
+				M.Id);
 			Tables.bindColumnWidths(table, 0.1, 0.2, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1);
 
 			var label = new FlowLabel();

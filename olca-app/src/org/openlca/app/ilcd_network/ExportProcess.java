@@ -9,7 +9,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.ilcd.io.SodaClient;
 import org.openlca.io.ilcd.output.Export;
 import org.openlca.io.ilcd.output.ProcessExport;
 import org.openlca.io.ilcd.output.SystemExport;
@@ -38,30 +37,20 @@ public class ExportProcess implements IRunnableWithProgress {
 		this.monitor = monitor;
 		String taskName = M.ILCDNetworkExport;
 		monitor.beginTask(taskName, descriptors.size() + 1);
-
-		var client = tryCreateClient();
-		var export = new Export(db, client)
-				.withLang(IoPreference.getIlcdLanguage());
-		for (var d : descriptors) {
-			if (monitor.isCanceled())
-				break;
-			monitor.subTask(d.name);
-			if (d.type == ModelType.PROCESS) {
-				tryExportProcess(export, d);
-			} else if (d.type == ModelType.PRODUCT_SYSTEM) {
-				tryExportSystem(export, d);
+		try (var client = IoPreference.createClient()) {
+			var export = new Export(db, client)
+					.withLang(IoPreference.getIlcdLanguage());
+			for (var d : descriptors) {
+				if (monitor.isCanceled())
+					break;
+				monitor.subTask(d.name);
+				if (d.type == ModelType.PROCESS) {
+					tryExportProcess(export, d);
+				} else if (d.type == ModelType.PRODUCT_SYSTEM) {
+					tryExportSystem(export, d);
+				}
 			}
-		}
-		monitor.done();
-	}
-
-	private SodaClient tryCreateClient() throws InvocationTargetException {
-		try {
-			var client = IoPreference.createClient();
-			client.connect();
-			return client;
-		} catch (Exception e) {
-			throw new InvocationTargetException(e, "Could not connect.");
+			monitor.done();
 		}
 	}
 

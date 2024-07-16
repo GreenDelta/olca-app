@@ -66,7 +66,7 @@ public class NavCache {
 		if (type == null) {
 			Repository.CURRENT.descriptors.reload();
 		} else {
-			Repository.CURRENT.descriptors.reload(type);			
+			Repository.CURRENT.descriptors.reload(type);
 		}
 		INSTANCE.build();
 	}
@@ -96,7 +96,7 @@ public class NavCache {
 			root.children().add(parent);
 		}
 		for (var type : types) {
-			parent.children().add(new NavElement(ElementType.MODEL_TYPE, type, buildChildren(type, null)));
+			parent.children().add(new NavElement(ElementType.MODEL_TYPE, type, false, buildChildren(type, null)));
 		}
 	}
 
@@ -111,7 +111,7 @@ public class NavCache {
 		var libs = Database.get().getLibraries();
 		if (libs.isEmpty())
 			return;
-		var libDir = new NavElement(ElementType.LIBRARY_DIR, null);
+		var libDir = new NavElement(ElementType.LIBRARY_DIR);
 		for (var lib : libs) {
 			libDir.children().add(new NavElement(ElementType.LIBRARY, lib));
 		}
@@ -123,8 +123,20 @@ public class NavCache {
 				? category.childCategories
 				: Repository.CURRENT.descriptors.getCategories(type);
 		return categories.stream()
-				.map(c -> new NavElement(ElementType.CATEGORY, c, buildChildren(type, c)))
+				.map(c -> {
+					var children = buildChildren(type, c);
+					return new NavElement(ElementType.CATEGORY, c, isOnlyLibrary(children), children);
+				})
 				.collect(Collectors.toList());
+	}
+
+	private boolean isOnlyLibrary(List<NavElement> elements) {
+		if (elements.isEmpty())
+			return false;
+		for (var element : elements)
+			if (!element.isFromLibrary())
+				return false;
+		return true;
 	}
 
 	private List<NavElement> buildDatasets(ModelType type, Category category) {
@@ -132,7 +144,7 @@ public class NavCache {
 				? Repository.CURRENT.descriptors.get(category)
 				: Repository.CURRENT.descriptors.get(type);
 		return datasets.stream()
-				.map(d -> new NavElement(ElementType.MODEL, d))
+				.map(NavElement::new)
 				.collect(Collectors.toList());
 	}
 

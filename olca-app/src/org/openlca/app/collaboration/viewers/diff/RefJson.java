@@ -11,6 +11,7 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
+import org.openlca.git.model.ModelRef;
 import org.openlca.git.model.Reference;
 import org.openlca.jsonld.output.JsonExport;
 
@@ -22,15 +23,15 @@ class RefJson {
 
 	private static Gson gson = new Gson();
 
-	static JsonObject get(Reference ref) {
-		if (ref == null)
+	static JsonObject get(Reference remote, ModelRef local) {
+		if (local.isCategory)
 			return null;
-		if (ref.objectId == null || ref.objectId.equals(ObjectId.zeroId()))
-			return getLocalJson(ref.type, ref.refId);
-		var json = gson.fromJson(Repository.CURRENT.datasets.get(ref), JsonObject.class);
+		if (remote == null || remote.objectId.equals(ObjectId.zeroId()))
+			return getLocalJson(local.type, local.refId);
+		var json = gson.fromJson(Repository.CURRENT.datasets.get(remote), JsonObject.class);
 		if (json == null)
 			return null;
-		split(json, ref.type);
+		split(json, remote.type);
 		return json;
 	}
 

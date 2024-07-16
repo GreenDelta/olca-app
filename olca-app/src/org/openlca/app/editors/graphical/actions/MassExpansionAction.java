@@ -1,5 +1,9 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_COLLAPSE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EXPAND;
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
+
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
@@ -11,9 +15,6 @@ import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.graphics.model.Side;
 import org.openlca.app.util.Question;
-
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
-import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 
 /**
  * <p>
@@ -96,8 +97,9 @@ public class MassExpansionAction extends StackAction {
 		var graph = editor.getModel();
 		// Ask if the model is very large.
 		int count = graph.getChildren().size();
-		var doIt = type == COLLAPSE || count < NODE_LIMITATION || Question.ask(
-			M.ExpandAll, M.ExpandAll + ": " + count + " " + M.Processes);
+		var doIt = type == COLLAPSE
+				|| count < NODE_LIMITATION
+				|| Question.ask(M.ExpandAll, M.ExpandAllQ);
 
 		if (doIt)	{
 			execute(getCommand());

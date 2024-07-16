@@ -21,7 +21,6 @@ import org.openlca.app.util.UI;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.ilcd.io.ZipStore;
 import org.openlca.io.ilcd.input.Import;
-import org.openlca.io.ilcd.input.ImportConfig;
 
 public class ILCDImportWizard extends Wizard implements IImportWizard {
 
@@ -79,17 +78,13 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 	private void doRun(File zip) throws Exception {
 		try (var store = new ZipStore(zip)) {
 			getContainer().run(true, true, monitor -> {
-				var lang = IoPreference.getIlcdLanguage();
-				var langOrder = !"en".equals(lang)
-						? new String[]{lang, "en"}
-						: new String[]{"en"};
 				var flowMap = page.flowMap != null
 						? page.flowMap
 						: FlowMap.empty();
-				var config = new ImportConfig(store, Database.get(), flowMap)
-						.withAllFlows(true)
-						.withLanguageOrder(langOrder);
-				ImportMonitor.on(monitor).run(new Import(config));
+				var imp = Import.of(store, Database.get(), flowMap)
+						.withPreferredLanguage(IoPreference.getIlcdLanguage())
+						.withAllFlows(true);
+				ImportMonitor.on(monitor).run(imp);
 			});
 		}
 	}
@@ -102,7 +97,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 		Page(File initial) {
 			super("ILCDImportWizard.Page");
 			setTitle(M.ImportILCD);
-			setDescription("Import a zip file with ILCD data sets");
+			setDescription(M.ImportZipFileWithTheIlcdDataSets);
 			zip = initial;
 			setPageComplete(zip != null);
 		}
@@ -120,7 +115,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 						zip = file;
 						setPageComplete(true);
 					})
-					.withTitle("Select a zip file with ILCD data...")
+					.withTitle(M.SelectAZipFileWithIlcdDataDots)
 					.withExtensions("*.zip")
 					.withSelection(zip)
 					.render(comp);

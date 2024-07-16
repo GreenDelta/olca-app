@@ -121,6 +121,17 @@ class NwFactorViewer extends AbstractTableViewer<Item> {
 		@Override
 		protected void setText(Item item, String text) {
 			try {
+				if (text == null || text.isEmpty()) {
+					if (item.factor.weightingFactor == null) {
+						set.factors.remove(item.factor);
+						item.factor = null;
+					} else {
+						item.factor.normalisationFactor = null;
+					}
+					editor.setDirty(true);
+					return;
+				}
+
 				double factor = Double.parseDouble(text);
 				if (item.factor == null) {
 					item.factor = new NwFactor();
@@ -152,6 +163,17 @@ class NwFactorViewer extends AbstractTableViewer<Item> {
 		@Override
 		protected void setText(Item w, String text) {
 			try {
+				if (text == null || text.isEmpty()) {
+					if (w.factor.normalisationFactor == null) {
+						set.factors.remove(w.factor);
+						w.factor = null;
+					} else {
+						w.factor.weightingFactor = null;
+					}
+					editor.setDirty(true);
+					return;
+				}
+
 				double factor = Double.parseDouble(text);
 				if (w.factor == null) {
 					w.factor = new NwFactor();

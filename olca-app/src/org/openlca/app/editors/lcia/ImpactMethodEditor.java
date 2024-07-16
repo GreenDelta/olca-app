@@ -22,7 +22,7 @@ public class ImpactMethodEditor extends ModelEditor<ImpactMethod> {
 		try {
 			addPage(new ImpactMethodInfoPage(this));
 			addPage(new ImpactNwPage(this));
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add editor pages", e);
 		}

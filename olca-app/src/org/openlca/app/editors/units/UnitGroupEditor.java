@@ -16,7 +16,7 @@ public class UnitGroupEditor extends ModelEditor<UnitGroup> {
 	protected void addPages() {
 		try {
 			addPage(new UnitGroupInfoPage(this));
-			addCommentPage();
+			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add editor pages", e);
 		}

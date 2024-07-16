@@ -35,15 +35,11 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 		if (db == null || project == null)
 			return;
 		if (project.variants.isEmpty()) {
-			MsgBox.error(
-				"Nothing to calculate",
-				"The project does not contain any product system.");
+			MsgBox.error(M.NothingToCalculate, M.ProjectWithoutProductSystem);
 			return;
 		}
 		if (project.impactMethod == null) {
-			MsgBox.error(
-				"Nothing to calculate",
-				"No impact assessment method is selected.");
+			MsgBox.error(M.NothingToCalculate, M.NoImpactAssessmentMethodSelected);
 			return;
 		}
 
@@ -56,13 +52,13 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 			} catch (OutOfMemoryError e) {
 				MsgBox.error(M.OutOfMemory, M.CouldNotAllocateMemoryError);
 			} catch (MathIllegalArgumentException e) {
-				MsgBox.error("Matrix error", e);
+				MsgBox.error(M.MatrixError, e);
 			} catch (Exception e) {
 				ErrorReporter.on("Calculation failed", e);
 			}
 		};
 
-		App.runWithProgress(M.Calculate, calculation, () -> {
+		App.runWithProgress(M.CalculateDots, calculation, () -> {
 			if (ref.result == null)
 				return;
 			var data = ProjectResultData.of(db, project, ref.result, editor.report);

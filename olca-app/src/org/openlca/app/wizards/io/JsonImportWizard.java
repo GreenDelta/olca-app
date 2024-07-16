@@ -31,6 +31,13 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	private Page page;
 	private File initialFile;
 
+	public JsonImportWizard() {
+		setNeedsProgressMonitor(true);
+		setWindowTitle(M.OpenLcaJsonLdImport);
+		setDefaultPageImageDescriptor(
+				Icon.IMPORT_ZIP_WIZARD.descriptor());
+	}
+
 	public static void of(File file) {
 		if (Database.isNoneActive()) {
 			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
@@ -39,13 +46,6 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 		Wizards.forImport(
 				"wizard.import.json",
 				(JsonImportWizard w) -> w.initialFile = file);
-	}
-
-	public JsonImportWizard() {
-		setNeedsProgressMonitor(true);
-		setWindowTitle("openLCA JSON-LD Import");
-		setDefaultPageImageDescriptor(
-				Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 					return;
 				try {
 					getContainer().run(true, true, (monitor) -> {
-						monitor.beginTask(M.Import, IProgressMonitor.UNKNOWN);
+						monitor.beginTask(M.ImportDots, IProgressMonitor.UNKNOWN);
 						try {
 							var importer = new JsonImport(store, Database.get());
 							importer.setUpdateMode(mode);
@@ -120,7 +120,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 		Page(File zip) {
 			super("JsonImportPage");
-			setTitle("Import an openLCA data package");
+			setTitle(M.ImportOpenLcaDataPackage);
 			this.zip = zip;
 			setPageComplete(zip != null);
 		}
@@ -134,10 +134,10 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			UI.fillHorizontal(fileComp);
 			UI.gridLayout(fileComp, 3).marginBottom = 0;
 			FileSelector.on(file -> {
-				zip = file;
-				setPageComplete(true);
-			})
-					.withTitle("Select a zip file with openLCA data...")
+						zip = file;
+						setPageComplete(true);
+					})
+					.withTitle(M.SelectAZipFileWithOpenLcaDataDots)
 					.withExtensions("*.zip")
 					.withSelection(zip)
 					.render(fileComp);
@@ -147,7 +147,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			UI.gridLayout(groupComp, 1).marginTop = 0;
 			UI.fillHorizontal(groupComp);
 			var group = UI.group(groupComp);
-			group.setText("Updating existing data sets in the database");
+			group.setText(M.UpdatingExistingData);
 			UI.gridData(group, true, false);
 			UI.gridLayout(group, 1);
 			for (UpdateMode mode : mods) {
@@ -161,9 +161,9 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 
 		private String getText(UpdateMode mode) {
 			return switch (mode) {
-				case NEVER -> "Never update a data set that already exists";
-				case IF_NEWER -> "Update data sets with newer versions";
-				case ALWAYS -> "Overwrite all existing data sets";
+				case NEVER -> M.NeverUpdateExists;
+				case IF_NEWER -> M.UpdateNewerVersion;
+				case ALWAYS -> M.OverwriteAllData;
 			};
 		}
 	}

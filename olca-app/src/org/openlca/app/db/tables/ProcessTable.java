@@ -1,5 +1,8 @@
 package org.openlca.app.db.tables;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -20,11 +23,8 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.model.Process;
 import org.openlca.core.model.ModelType;
-
-import java.util.Collections;
-import java.util.List;
+import org.openlca.core.model.Process;
 
 public class ProcessTable extends SimpleFormEditor {
 
@@ -82,8 +82,8 @@ public class ProcessTable extends SimpleFormEditor {
 				M.Name,
 				M.Category,
 				M.ProcessType,
-				"Reference Flow",
-				"ID");
+				M.ReferenceFlow,
+				M.Id);
 			Tables.bindColumnWidths(table, 0.4, 0.1, 0.1, 0.2, 0.2);
 
 			var label = new Label();

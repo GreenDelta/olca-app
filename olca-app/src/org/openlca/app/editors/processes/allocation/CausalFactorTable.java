@@ -356,7 +356,7 @@ class CausalFactorTable {
 			var table = viewer.getTable();
 			var col = new TableColumn(table, SWT.VIRTUAL);
 			col.setText("\u03a3");
-			col.setToolTipText("Sum of allocation factors");
+			col.setToolTipText(M.SumOfAllocationFactors);
 			col.setWidth(80);
 			col.setAlignment(SWT.CENTER);
 			return new SumColumn(table, col);

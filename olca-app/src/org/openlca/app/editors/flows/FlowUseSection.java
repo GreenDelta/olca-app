@@ -58,7 +58,7 @@ class FlowUseSection {
 		section.setExpanded(false);
 		parent = UI.sectionClient(section, tk);
 		this.tk = tk;
-		App.runInUI("Render usage links", () -> {
+		App.runInUI(M.RenderUsageLinks, () -> {
 			renderLinks(M.ConsumedBy, recipients, Icon.INPUT.get());
 			renderLinks(M.ProducedBy, providers, Icon.OUTPUT.get());
 		});
@@ -115,7 +115,7 @@ class FlowUseSection {
 		if (rest < 1)
 			return;
 		var link = UI.imageHyperlink(composite, tk, SWT.TOP);
-		link.setText(rest + " more");
+		link.setText(M.More + " (" + rest + ")");
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link,

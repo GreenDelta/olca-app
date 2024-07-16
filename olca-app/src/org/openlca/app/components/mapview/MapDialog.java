@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.openlca.app.M;
 import org.openlca.app.util.UI;
 
 public class MapDialog {
@@ -26,7 +27,7 @@ public class MapDialog {
 
 		private _MapDialog(String title, Consumer<MapView> fn) {
 			super(UI.shell());
-			this.title = title == null ? "Map" : title;
+			this.title = title == null ? M.Map : title;
 			this.fn = fn;
 		}
 

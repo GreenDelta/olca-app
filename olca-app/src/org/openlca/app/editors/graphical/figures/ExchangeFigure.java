@@ -1,24 +1,32 @@
 package org.openlca.app.editors.graphical.figures;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.LineBorder;
+import org.eclipse.draw2d.MouseEvent;
+import org.eclipse.draw2d.MouseMotionListener;
+import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.graphics.figures.RoundBorder;
-import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.graphics.figures.ComponentFigure;
 import org.openlca.app.tools.graphics.figures.GridPos;
+import org.openlca.app.tools.graphics.figures.RoundBorder;
+import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
-import org.openlca.app.util.Colors;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.descriptors.Descriptor;
 
@@ -119,19 +127,19 @@ public class ExchangeFigure extends ComponentFigure {
 				? "?"
 				: Labels.of(type);
 		if (exchange.isAvoided) {
-			prefix += " - avoided";
+			prefix += " - " + M.Avoided;
 		}
-		var text = prefix + ": " + Labels.name(exchange.flow) + "\n";
+		var text = prefix + " - " + Labels.name(exchange.flow) + "\n";
 		if (exchange.flow.category != null) {
-			text += M.Category + ": " + Labels.category(
+			text += M.Category + " - " + Labels.category(
 					Descriptor.of(exchange.flow)) + "\n";
 		}
-		text += M.Amount + ": "
+		text += M.Amount + " - "
 				+ Numbers.format(exchange.amount)
 				+ " " + Labels.name(exchange.unit);
 
 		if (exchange.formula != null)
-			text += "\n" + M.Formula + ": " + exchange.formula;
+			text += "\n" + M.Formula + " - " + exchange.formula;
 
 		return text;
 	}

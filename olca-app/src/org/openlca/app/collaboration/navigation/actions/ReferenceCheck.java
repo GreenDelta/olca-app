@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.openlca.app.App;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitReferencesDialog;
 import org.openlca.app.collaboration.navigation.actions.ModelReferences.ModelReference;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
@@ -41,36 +42,36 @@ class ReferenceCheck {
 		this.selection = new TypedRefIdMap<>();
 		input.forEach(node -> selection.put(node.contentAsTriDiff(), node));
 		this.visited = new TypedRefIdSet();
-		this.references = App.exec("Collecting references", () -> ModelReferences.scan(Database.get()));
+		this.references = App.exec(M.CollectingReferencesDots, () -> ModelReferences.scan(Database.get()));
 	}
 
-	static Set<DiffNode> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+	static Set<Diff> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences())
-			return input;
+			return convert(input);
 		return new ReferenceCheck(database, all, input).run(false);
 	}
 
-	static Set<DiffNode> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+	static Set<Diff> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences())
-			return input;
+			return convert(input);
 		return new ReferenceCheck(database, all, input).run(true);
 	}
 
-	private Set<DiffNode> run(boolean stashCommit) {
+	private Set<Diff> run(boolean stashCommit) {
 		var references = collect();
 		if (references.isEmpty())
-			return input;
+			return convert(input);
 		var node = new DiffNodeBuilder(database).build(references);
 		var dialog = new CommitReferencesDialog(node, stashCommit);
 		if (dialog.open() != CommitReferencesDialog.OK)
 			return null;
 		var selected = dialog.getSelected();
 		if (selected.isEmpty())
-			return input;
+			return convert(input);
 		var set = new HashSet<DiffNode>();
 		set.addAll(input);
 		set.addAll(selected);
-		return set;
+		return convert(set);
 	}
 
 	private Set<TriDiff> collect() {
@@ -106,6 +107,12 @@ class ReferenceCheck {
 		return references.stream()
 				.filter(Predicate.not(selection::contains))
 				.filter(diffs::contains);
+	}
+
+	private static Set<Diff> convert(Set<DiffNode> nodes) {
+		return nodes.stream()
+				.map(node -> node.contentAsTriDiff().left)
+				.collect(Collectors.toSet());
 	}
 
 }

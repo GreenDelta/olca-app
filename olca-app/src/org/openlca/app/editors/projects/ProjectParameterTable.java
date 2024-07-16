@@ -376,7 +376,7 @@ class ProjectParameterTable {
 				variantRedef.value = Double.parseDouble(text);
 				editor.setDirty(true);
 			} catch (Exception e) {
-				MsgBox.error(M.InvalidNumber, text + " " + M.IsNotValidNumber);
+				MsgBox.error(M.InvalidNumber, M.NotValidNumber + " - " + text);
 			}
 		}
 	}

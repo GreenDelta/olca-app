@@ -115,7 +115,7 @@ public class CommitDialog extends FormDialog {
 			commitAndPush.setImage(Icon.PUSH.get());
 			setButtonLayoutData(commitAndPush);
 		}
-		var commit = createButton(parent, IDialogConstants.OK_ID, isStashCommit ? "Stash" : M.Commit, true);
+		var commit = createButton(parent, IDialogConstants.OK_ID, isStashCommit ? M.Stash : M.Commit, true);
 		commit.setEnabled(false);
 		commit.setImage(Icon.COMMIT.get());
 		setButtonLayoutData(commit);

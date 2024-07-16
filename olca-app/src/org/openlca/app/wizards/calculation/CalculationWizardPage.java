@@ -101,7 +101,7 @@ class CalculationWizardPage extends WizardPage {
 			return Strings.compare(s1.name, s2.name);
 		});
 
-		UI.label(comp, "Parameter set");
+		UI.label(comp, M.ParameterSet);
 		var combo = UI.tableCombo(comp, null, SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
 
@@ -197,9 +197,9 @@ class CalculationWizardPage extends WizardPage {
 
 	private String getLabel(CalculationType type) {
 		return switch (type) {
-			case EAGER -> "Eager/All";
+			case EAGER -> M.EagerAll;
 			case SIMULATION -> M.MonteCarloSimulation;
-			case LAZY -> "Lazy/On-demand";
+			case LAZY -> M.LazyOnDemand;
 		};
 	}
 
@@ -238,13 +238,13 @@ class CalculationWizardPage extends WizardPage {
 			try {
 				setup.simulationRuns = Integer.parseInt(count);
 			} catch (Exception e) {
-				MsgBox.error(M.InvalidNumber, count + " " + M.IsNotValidNumber);
+				MsgBox.error(M.InvalidNumber, M.NotValidNumber + " - " + count);
 			}
 		});
 	}
 
 	private void addRegioAndCostChecks(Composite comp) {
-		var regioCheck = UI.checkbox(comp, "Regionalized calculation");
+		var regioCheck = UI.checkbox(comp, M.RegionalizedCalculation);
 		regioCheck.setSelection(setup.calcSetup.hasRegionalization());
 		Controls.onSelect(regioCheck,
 				_e -> setup.calcSetup.withRegionalization(regioCheck.getSelection()));

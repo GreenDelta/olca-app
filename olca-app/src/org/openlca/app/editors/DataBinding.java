@@ -10,6 +10,7 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Bean;
@@ -274,7 +275,7 @@ public class DataBinding {
 			text.setToolTipText(null);
 			text.setBackground(Colors.white());
 		} catch (NumberFormatException e) {
-			text.setToolTipText("" + stringVal + " is not a valid number");
+			text.setToolTipText(M.NotValidNumber + " - " + stringVal);
 			text.setBackground(Colors.errorColor());
 		} catch (Exception e) {
 			ErrorReporter.on("Cannot set bean value", e);
@@ -290,7 +291,7 @@ public class DataBinding {
 			text.setToolTipText(null);
 			text.setBackground(Colors.white());
 		} catch (NumberFormatException e) {
-			text.setToolTipText("" + stringVal + " is not a valid number");
+			text.setToolTipText(M.NotValidNumber + " - " + stringVal);
 			text.setBackground(Colors.errorColor());
 		} catch (Exception e) {
 			ErrorReporter.on("Cannot set bean value", e);
@@ -306,7 +307,7 @@ public class DataBinding {
 			text.setToolTipText(null);
 			text.setBackground(Colors.white());
 		} catch (NumberFormatException e) {
-			text.setToolTipText("" + stringVal + " is not a valid number");
+			text.setToolTipText(M.NotValidNumber + " - " + stringVal);
 			text.setBackground(Colors.errorColor());
 		} catch (Exception e) {
 			ErrorReporter.on("Cannot set bean value", e);

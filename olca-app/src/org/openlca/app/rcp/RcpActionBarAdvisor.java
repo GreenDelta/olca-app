@@ -41,6 +41,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.tools.openepd.EpdPanel;
+import org.openlca.app.tools.soda.SodaClientTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.MsgBox;
@@ -119,7 +120,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 	private void fillFileMenu(IMenuManager menuBar) {
 		MenuManager menu = new MenuManager(
-			M.File, IWorkbenchActionConstants.M_FILE);
+			M.AmpFile, IWorkbenchActionConstants.M_FILE);
 		menu.add(saveAction);
 		menu.add(saveAsAction);
 		menu.add(saveAllAction);
@@ -140,8 +141,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	private void fillToolsMenu(IMenuManager menuBar) {
-		var menu = new MenuManager("Tools");
-		var viewMenu = new MenuManager(M.Showviews);
+		var menu = new MenuManager(M.Tools);
+		var viewMenu = new MenuManager(M.ShowViews);
 		viewMenu.add(showViews);
 		menu.add(viewMenu);
 		menu.add(new Separator());
@@ -159,18 +160,20 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			ReplaceProvidersDialog::openDialog));
 
 		// flow mapping
-		var mappings = new MenuManager("Flow mapping (experimental)");
+		var mappings = new MenuManager(M.FlowMappingExperimental);
 		menu.add(mappings);
-		mappings.add(Actions.create("New", MappingTool::createNew));
-		mappings.add(Actions.create("Open file", MappingTool::openFile));
+		mappings.add(Actions.create(M.New, MappingTool::createNew));
+		mappings.add(Actions.create(M.OpenFile, MappingTool::openFile));
 
 		// library export
 		menu.add(Actions.create(
-			"Library export (experimental)", LibraryExportDialog::show));
+				M.LibraryExportExperimental, LibraryExportDialog::show));
 
 		// openEPD
-		menu.add(Actions.create("Get EPDs from EC3",
+		menu.add(Actions.create(M.GetEpdsFromEc3,
 			Icon.BUILDING.descriptor(), EpdPanel::open));
+		menu.add(Actions.create("soda4LCA",
+				Icon.SODA.descriptor(), SodaClientTool::open));
 
 		// console
 		menu.add(new Separator());
@@ -182,9 +185,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			menu.add(new Separator());
 			MenuManager eiMenu = new MenuManager("ecoinvent 3.x");
 			menu.add(eiMenu);
-			eiMenu.add(Actions.create("Import processes",
+			eiMenu.add(Actions.create(M.ImportProcesses,
 				() -> runSpold2Import(ModelType.PROCESS)));
-			eiMenu.add(Actions.create("Import LCIA methods",
+			eiMenu.add(Actions.create(M.ImportLciaMethods,
 				() -> runSpold2Import(ModelType.IMPACT_METHOD)));
 		}
 		menuBar.add(menu);
@@ -193,8 +196,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 	private void runSpold2Import(ModelType type) {
 		var db = Database.get();
 		if (db == null) {
-			MsgBox.error("No database opened",
-				"You need to open a database for the import");
+			MsgBox.error(M.NoDatabaseOpened, M.NoDatabaseOpenedErr);
 			return;
 		}
 		File file = FileChooser.open("*.zip");
@@ -219,7 +221,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			return;
 
 		try {
-			App.runWithProgress("Run import", imp);
+			App.runWithProgress(M.RunImport, imp);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("EcoSpold 2 import failed", e);
@@ -233,9 +235,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		var devMenu = new MenuManager(M.DeveloperTools);
 		menu.add(devMenu);
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
-		devMenu.add(Actions.create("Console", Icon.CONSOLE.descriptor(), Console::show));
-		devMenu.add(Actions.create("Python", Icon.PYTHON.descriptor(), PythonEditor::open));
-		devMenu.add(Actions.create("IPC Server", Icon.IPC.descriptor(), IpcDialog::show));
+		devMenu.add(Actions.create(M.Console, Icon.CONSOLE.descriptor(), Console::show));
+		devMenu.add(Actions.create(M.Python, Icon.PYTHON.descriptor(), PythonEditor::open));
+		devMenu.add(Actions.create(M.IpcServer, Icon.IPC.descriptor(), IpcDialog::show));
 	}
 
 	@Override
@@ -248,7 +250,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		// save as
 		saveAsAction = ActionFactory.SAVE_AS.create(window);
-		saveAsAction.setText(M.SaveAs);
+		saveAsAction.setText(M.SaveAsDots);
 		saveAsAction.setImageDescriptor(Icon.SAVE_AS.descriptor());
 		saveAsAction.setDisabledImageDescriptor(Icon.SAVE_AS_DISABLED.descriptor());
 
