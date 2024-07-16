@@ -17,6 +17,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.RepositoryMenu;
 import org.openlca.app.collaboration.navigation.actions.CloneAction;
+import org.openlca.app.collaboration.navigation.actions.DownloadDatasetAction;
 import org.openlca.app.collaboration.navigation.actions.RegisterServerAction;
 import org.openlca.app.collaboration.navigation.actions.UnregisterServerAction;
 import org.openlca.app.db.Database;
@@ -103,7 +104,8 @@ public class NavigationMenu extends CommonActionProvider {
 		// server actions
 		addActions(selection, menu,
 				new RegisterServerAction(),
-				new UnregisterServerAction());
+				new UnregisterServerAction(),
+				new DownloadDatasetAction());
 		
 		// dev. extensions
 		if (App.runsInDevMode()) {
@@ -182,7 +184,8 @@ public class NavigationMenu extends CommonActionProvider {
 				new ExportScriptAction(),
 				new ExportFlowMapAction(),
 				new ExportLibraryAction(),
-				CloneAction.standalone());
+				CloneAction.forRootMenu(),
+				CloneAction.forRepositoryMenu());
 	}
 
 	public static MenuManager createImportMenu() {

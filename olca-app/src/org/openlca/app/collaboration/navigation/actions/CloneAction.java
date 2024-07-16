@@ -7,7 +7,9 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.ConnectDialog;
+import org.openlca.app.collaboration.navigation.elements.RepositoryElement;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.db.Cache;
@@ -31,23 +33,32 @@ import org.slf4j.LoggerFactory;
 public class CloneAction extends Action implements INavigationAction {
 
 	private static final Logger log = LoggerFactory.getLogger(CloneAction.class);
-	private final boolean standalone;
+	private final CloneActionType type;
+	private RepositoryElement elem;
 
-	private CloneAction(boolean standalone) {
-		this.standalone = standalone;
+	private CloneAction(CloneActionType type) {
+		this.type = type;
 	}
 
 	public static CloneAction forImportMenu() {
-		return new CloneAction(false);
+		return new CloneAction(CloneActionType.IMPORT);
 	}
 
-	public static CloneAction standalone() {
-		return new CloneAction(true);
+	public static CloneAction forRootMenu() {
+		return new CloneAction(CloneActionType.ROOT);
+	}
+
+	public static CloneAction forRepositoryMenu() {
+		return new CloneAction(CloneActionType.REPOSITORY);
 	}
 
 	@Override
 	public String getText() {
-		return standalone ? "Import from Git..." : "From Git...";
+		return switch (type) {
+			case ROOT -> "Import from Git...";
+			case IMPORT -> "From Git...";
+			case REPOSITORY -> "Clone";
+		};
 	}
 
 	@Override
@@ -57,14 +68,27 @@ public class CloneAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var dialog = new ConnectDialog().withPassword();
-		if (dialog.open() == ConnectDialog.CANCEL)
-			return;
-		var url = dialog.url();
+		if (elem == null) {
+			var dialog = new ConnectDialog().withPassword();
+			if (dialog.open() == ConnectDialog.CANCEL)
+				return;
+			var url = dialog.url();
+			clone(url, dialog.user(), dialog.password());
+		} else {
+			var serverUrl = elem.getServer().url;
+			var url = serverUrl + "/" + elem.getRepositoryId();
+			var credentials = AuthenticationDialog.promptCredentials(serverUrl);
+			if (credentials == null)
+				return;
+			clone(url, credentials.user, credentials.password);
+		}
+	}
+
+	private void clone(String url, String user, String password) {
 		var repoName = url.substring(url.lastIndexOf("/") + 1);
 		var config = initDatabase(repoName);
 		try {
-			if (!initRepository(config.name(), dialog)) {
+			if (!initRepository(config.name(), url, user, password)) {
 				onError(config);
 				return;
 			}
@@ -94,15 +118,15 @@ public class CloneAction extends Action implements INavigationAction {
 		return config;
 	}
 
-	private boolean initRepository(String dbName, ConnectDialog dialog)
+	private boolean initRepository(String dbName, String url, String user, String password)
 			throws GitAPIException, URISyntaxException {
 		var gitDir = Repository.gitDir(dbName);
-		GitInit.in(gitDir).remoteUrl(dialog.url()).run();
+		GitInit.in(gitDir).remoteUrl(url).run();
 		var repo = Repository.initialize(gitDir, Database.get());
 		if (repo == null)
 			return false;
-		repo.user(dialog.user());
-		CredentialStore.put(dialog.url(), dialog.user(), dialog.password());
+		repo.user(user);
+		CredentialStore.put(url, user, password);
 		return true;
 	}
 
@@ -135,17 +159,25 @@ public class CloneAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
+		this.elem = null;
 		if (selection.size() > 1)
 			return false;
 		if (selection.size() == 0)
-			return standalone;
+			return type == CloneActionType.ROOT;
 		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
-			return false;
-		var elem = (DatabaseElement) first;
-		if (!Database.isActive(elem.getContent()))
-			return standalone;
+		if (first instanceof DatabaseElement dbElem)
+			return !Database.isActive(dbElem.getContent()) && type == CloneActionType.ROOT;
+		if (first instanceof RepositoryElement repoElem && type == CloneActionType.REPOSITORY) {
+			this.elem = repoElem;
+			return true;
+		}
 		return false;
+	}
+
+	private enum CloneActionType {
+
+		ROOT, IMPORT, REPOSITORY;
+
 	}
 
 }

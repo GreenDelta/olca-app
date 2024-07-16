@@ -37,7 +37,7 @@ public class Repository extends ClientRepository {
 				: url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
 		var serverUrl = url.substring(0, splitIndex);
 		var isCollaborationServer = WebRequests.execute(
-				() -> CSClient.isCollaborationServer(url), false);
+				() -> CSClient.isCollaborationServer(serverUrl), false);
 		this.client = isCollaborationServer
 				? new CSClient(serverUrl, () -> AuthenticationDialog.promptCredentials(serverUrl, user()))
 				: null;

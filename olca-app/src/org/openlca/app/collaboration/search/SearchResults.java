@@ -1,9 +1,5 @@
 package org.openlca.app.collaboration.search;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
@@ -12,10 +8,9 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.util.Datasets;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -27,15 +22,10 @@ import org.openlca.collaboration.model.Dataset.Repo;
 import org.openlca.collaboration.model.Dataset.Version;
 import org.openlca.collaboration.model.SearchResult;
 import org.openlca.core.model.ModelType;
-import org.openlca.jsonld.ZipStore;
-import org.openlca.jsonld.input.JsonImport;
 import org.openlca.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class SearchResults {
 
-	private static final Logger log = LoggerFactory.getLogger(SearchView.class);
 	private final FormToolkit tk;
 	private final SearchQuery query;
 
@@ -154,31 +144,7 @@ class SearchResults {
 		var data = (Object[]) b.getData();
 		var dataset = (Dataset) data[0];
 		var repo = (Repo) data[1];
-		App.runWithProgress(M.DownloadingData, () -> {
-			File tmp = null;
-			ZipStore store = null;
-			try {
-				tmp = Files.createTempFile("cs-json-", ".zip").toFile();
-				if (!query.server.downloadJson(repo.path(), dataset.type(), dataset.refId(), tmp))
-					return;
-				store = ZipStore.open(tmp);
-				var jsonImport = new JsonImport(store, Database.get());
-				jsonImport.run();
-			} catch (Exception ex) {
-				log.error("Error during json import", ex);
-			} finally {
-				if (store != null) {
-					try {
-						store.close();
-					} catch (IOException ex) {
-						log.error("Error closing store", ex);
-					}
-				}
-				if (tmp != null) {
-					tmp.delete();
-				}
-			}
-		}, Navigator::refresh);
+		Datasets.download(query.server, repo.path(), dataset.type(), dataset.refId());
 	}
 
 	private static class LinkClick extends HyperlinkAdapter {
