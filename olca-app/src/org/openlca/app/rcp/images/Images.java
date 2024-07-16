@@ -82,6 +82,8 @@ public class Images {
 	}
 
 	public static Image get(ModelType type) {
+		if (type == ModelType.CATEGORY)
+			return ImageManager.get(Icon.FOLDER);
 		return imageOf(icon(type));
 	}
 
@@ -142,6 +144,11 @@ public class Images {
 	}
 
 	public static Image get(ModelType type, Overlay overlay) {
+		if (type == ModelType.CATEGORY) {
+			return overlay == null
+					? ImageManager.get(Icon.FOLDER)
+					: ImageManager.get(Icon.FOLDER, overlay);
+		}
 		var icon = icon(type);
 		if (icon == null)
 			return null;
@@ -232,6 +239,8 @@ public class Images {
 	}
 
 	public static ImageDescriptor descriptor(ModelType type) {
+		if (type == ModelType.CATEGORY)
+			return ImageManager.descriptor(Icon.FOLDER);
 		return descriptorOf(icon(type));
 	}
 

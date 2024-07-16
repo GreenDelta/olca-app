@@ -288,6 +288,7 @@ public class Labels {
 			case LOCATION -> M.Location;
 			case PARAMETER -> M.GlobalParameter;
 			case CATEGORY -> M.Category;
+			case DQ_SYSTEM -> M.DataQualitySystem;
 			case RESULT -> M.Result;
 			case EPD -> "EPD";
 			default -> M.Unknown;
