@@ -1,5 +1,8 @@
 package org.openlca.app.editors.graphical.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -18,10 +21,9 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ConnectionDialog extends Dialog {
+
+	private final boolean isDirty;
 
 	interface LABELS {
 		String NAME = M.Name;
@@ -39,10 +41,16 @@ public class ConnectionDialog extends Dialog {
 	private final List<Candidate> candidates;
 	TableViewer viewer;
 
-	public ConnectionDialog(ExchangeItem exchangeItem) {
+	/**
+	 * Creates a new dialog with candidate providers/recipients.
+	 * @param exchangeItem the target exchange item
+	 * @param isDirty true if the exchange's entity is not saved
+	 */
+	public ConnectionDialog(ExchangeItem exchangeItem, boolean isDirty) {
 		super(UI.shell());
 		setBlockOnOpen(true);
 		exchange = new ModelExchange(exchangeItem);
+		this.isDirty = isDirty;
 		candidates = exchange.searchCandidates(Database.get());
 		setShellStyle(SWT.RESIZE);
 	}
@@ -111,9 +119,11 @@ public class ConnectionDialog extends Dialog {
 			} else {
 				link.providerId = c.process.id;
 				link.setProviderType(c.process.type);
-				link.exchangeId = exchange.exchange.id;
+				// setting the exchange ID to the internal ID if the entity is dirty.
+				link.exchangeId = isDirty
+						? exchange.exchange.internalId
+						: exchange.exchange.id;
 				link.processId = exchange.process.id;
-
 			}
 			newLinks.add(link);
 		}
