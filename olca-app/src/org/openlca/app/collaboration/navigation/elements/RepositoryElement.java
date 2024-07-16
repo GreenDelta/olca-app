@@ -14,6 +14,7 @@ import org.openlca.app.navigation.elements.NavigationElement;
 import org.openlca.collaboration.model.Entry;
 import org.openlca.collaboration.model.Repository;
 import org.openlca.core.model.ModelType;
+import org.openlca.git.RepositoryInfo;
 
 public class RepositoryElement extends NavigationElement<Repository>
 		implements IRepositoryNavigationElement<Repository> {
@@ -58,7 +59,9 @@ public class RepositoryElement extends NavigationElement<Repository>
 				ModelType.ACTOR,
 				ModelType.SOURCE,
 				ModelType.LOCATION)));
-		// addLibraryElements(list);
+		if (counts.getOrDefault(RepositoryInfo.FILE_NAME, 0) > 0) {
+			children.add(new LibrariesElement(this));
+		}
 		return children;
 	}
 

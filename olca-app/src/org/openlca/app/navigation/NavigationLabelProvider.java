@@ -13,6 +13,7 @@ import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.collaboration.navigation.elements.EntryElement;
+import org.openlca.app.collaboration.navigation.elements.LibrariesElement;
 import org.openlca.app.collaboration.navigation.elements.RepositoryElement;
 import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.db.Cache;
@@ -151,13 +152,18 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (elem instanceof DatabaseDirElement)
 			return Icon.FOLDER.get();
 
-		if (elem instanceof ServerElement serverElem)
+		if (elem instanceof ServerElement)
 			return Icon.COLLABORATION_SERVER_LOGO.get();
 
-		if (elem instanceof RepositoryElement repositoryElem)
+		if (elem instanceof RepositoryElement)
 			return Icon.REPOSITORY.get();
 
+		if (elem instanceof LibrariesElement)
+			return Icon.FOLDER.get();
+
 		if (elem instanceof EntryElement entryElem) {
+			if (entryElem.isLibrary())
+				return Icon.LIBRARY.get();
 			if (entryElem.isModelType() || entryElem.isCategory())
 				return Images.getForCategory(entryElem.getModelType());
 			if (entryElem.getModelType() == ModelType.FLOW)
@@ -245,6 +251,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return serverElem.getContent().url();
 		if (elem instanceof RepositoryElement repoElem)
 			return repoElem.getRepositoryId();
+		if (elem instanceof LibrariesElement librariesElem)
+			return "Libraries";
 		if (elem instanceof EntryElement entryElem)
 			return entryElem.getContent().name();
 

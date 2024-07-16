@@ -18,6 +18,7 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.RepositoryMenu;
 import org.openlca.app.collaboration.navigation.actions.CloneAction;
 import org.openlca.app.collaboration.navigation.actions.DownloadDatasetAction;
+import org.openlca.app.collaboration.navigation.actions.DownloadLibraryAction;
 import org.openlca.app.collaboration.navigation.actions.RegisterServerAction;
 import org.openlca.app.collaboration.navigation.actions.UnregisterServerAction;
 import org.openlca.app.db.Database;
@@ -105,7 +106,8 @@ public class NavigationMenu extends CommonActionProvider {
 		addActions(selection, menu,
 				new RegisterServerAction(),
 				new UnregisterServerAction(),
-				new DownloadDatasetAction());
+				new DownloadDatasetAction(),
+				new DownloadLibraryAction());
 		
 		// dev. extensions
 		if (App.runsInDevMode()) {

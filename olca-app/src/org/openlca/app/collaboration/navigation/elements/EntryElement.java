@@ -75,6 +75,10 @@ public class EntryElement extends NavigationElement<Entry> implements IRepositor
 		return getContent().typeOfEntry() == TypeOfEntry.MODEL_TYPE;
 	}
 
+	public boolean isLibrary() {
+		return getContent().typeOfEntry() == TypeOfEntry.LIBRARY;
+	}
+
 	public String getUrl() {
 		if (!isDataset())
 			return null;
