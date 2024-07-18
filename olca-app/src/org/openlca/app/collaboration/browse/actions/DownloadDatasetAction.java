@@ -1,18 +1,17 @@
-package org.openlca.app.collaboration.navigation.actions;
+package org.openlca.app.collaboration.browse.actions;
 
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.navigation.elements.EntryElement;
+import org.openlca.app.collaboration.browse.elements.EntryElement;
+import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 import org.openlca.app.collaboration.util.Datasets;
 import org.openlca.app.db.Database;
-import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 
-public class DownloadDatasetAction extends Action implements INavigationAction {
+public class DownloadDatasetAction extends Action implements IServerNavigationAction {
 
 	private EntryElement elem;
 
@@ -33,11 +32,11 @@ public class DownloadDatasetAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		Datasets.download(elem.getServer(), elem.getRepositoryId(), elem.getModelType().name(), elem.getRefId());
+		Datasets.download(elem.getClient(), elem.getRepositoryId(), elem.getModelType().name(), elem.getRefId());
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> selection) {
+	public boolean accept(List<IServerNavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);

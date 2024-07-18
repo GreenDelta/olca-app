@@ -7,9 +7,6 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
-import org.openlca.app.collaboration.navigation.elements.EntryElement;
-import org.openlca.app.collaboration.navigation.elements.RepositoryElement;
-import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -39,9 +36,6 @@ public class NavigationComparator extends ViewerComparator {
 		if (e1 instanceof ModelTypeElement m1 && e2 instanceof ModelTypeElement m2)
 			return ModelTypeOrder.compare(m1.getContent(), m2.getContent());
 
-		if (e1 instanceof EntryElement ee1 && e2 instanceof EntryElement ee2)
-			return compareEntries(viewer, ee1, ee2);
-
 		// for script elements folders come before files
 		if (e1 instanceof ScriptElement s1 && e2 instanceof ScriptElement s2) {
 			var f1 = s1.getContent();
@@ -56,28 +50,18 @@ public class NavigationComparator extends ViewerComparator {
 		return compareLabels(viewer, e1, e2);
 	}
 
-	private int compareEntries(Viewer viewer, EntryElement e1, EntryElement e2) {
-		if (e1.isModelType() && e2.isModelType())
-			return ModelTypeOrder.compare(e1.getModelType(), e2.getModelType());
-		if (e1.isCategory() && e2.isDataset())
-			return -1;
-		if (e1.isDataset() && e2.isCategory())
-			return 1;
-		return compareLabels(viewer, e1, e2);
-	}
-
 	private int typeOrderOf(Object o) {
 		if (o instanceof DatabaseDirElement)
 			return 0;
 		if (o instanceof DatabaseElement)
 			return 1;
-		if (o instanceof ModelTypeElement || (o instanceof EntryElement e && e.isModelType()))
+		if (o instanceof ModelTypeElement)
 			return 2;
 		if (o instanceof GroupElement)
 			return 3;
-		if (o instanceof CategoryElement || (o instanceof EntryElement e && e.isCategory()))
+		if (o instanceof CategoryElement)
 			return 4;
-		if (o instanceof ModelElement || (o instanceof EntryElement e && e.isDataset()))
+		if (o instanceof ModelElement)
 			return 5;
 		if (o instanceof LibraryDirElement)
 			return 6;
@@ -85,11 +69,7 @@ public class NavigationComparator extends ViewerComparator {
 			return 7;
 		if (o instanceof ScriptElement)
 			return 8;
-		if (o instanceof ServerElement)
-			return 9;
-		if (o instanceof RepositoryElement)
-			return 10;
-		return 11;
+		return 9;
 	}
 
 	private int compareLabels(Viewer viewer, Object e1, Object e2) {

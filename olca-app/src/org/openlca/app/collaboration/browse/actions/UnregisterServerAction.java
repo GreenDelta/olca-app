@@ -1,17 +1,16 @@
-package org.openlca.app.collaboration.navigation.actions;
+package org.openlca.app.collaboration.browse.actions;
 
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
+import org.openlca.app.collaboration.browse.elements.ServerElement;
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
-import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.navigation.actions.INavigationAction;
-import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 
-public class UnregisterServerAction extends Action implements INavigationAction {
+public class UnregisterServerAction extends Action implements IServerNavigationAction {
 
 	private ServerConfig selected;
 
@@ -21,7 +20,7 @@ public class UnregisterServerAction extends Action implements INavigationAction 
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> selection) {
+	public boolean accept(List<IServerNavigationElement<?>> selection) {
 		if (selection.isEmpty())
 			return false;
 		var first = selection.get(0);

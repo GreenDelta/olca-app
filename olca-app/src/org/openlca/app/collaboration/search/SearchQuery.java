@@ -4,7 +4,7 @@ import org.openlca.collaboration.client.CSClient;
 
 public class SearchQuery {
 
-	public CSClient server;
+	public CSClient client;
 	public String query;
 	public String type;
 	public int page;

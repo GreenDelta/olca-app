@@ -18,13 +18,13 @@ public class Datasets {
 
 	private static final Logger log = LoggerFactory.getLogger(Datasets.class);
 
-	public static void download(CSClient server, String repositoryId, String type, String refId) {
+	public static void download(CSClient client, String repositoryId, String type, String refId) {
 		App.runWithProgress(M.DownloadingData, () -> {
 			File tmp = null;
 			ZipStore store = null;
 			try {
 				tmp = Files.createTempFile("cs-json-", ".zip").toFile();
-				if (!server.downloadJson(repositoryId, type, refId, tmp))
+				if (!client.downloadJson(repositoryId, type, refId, tmp))
 					return;
 				store = ZipStore.open(tmp);
 				var jsonImport = new JsonImport(store, Database.get());

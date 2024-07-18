@@ -13,10 +13,6 @@ import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
-import org.openlca.app.collaboration.navigation.elements.EntryElement;
-import org.openlca.app.collaboration.navigation.elements.LibrariesElement;
-import org.openlca.app.collaboration.navigation.elements.RepositoryElement;
-import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
@@ -153,27 +149,6 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (elem instanceof DatabaseDirElement)
 			return Icon.FOLDER.get();
 
-		if (elem instanceof ServerElement)
-			return Icon.COLLABORATION_SERVER_LOGO.get();
-
-		if (elem instanceof RepositoryElement)
-			return Icon.REPOSITORY.get();
-
-		if (elem instanceof LibrariesElement)
-			return Icon.FOLDER.get();
-
-		if (elem instanceof EntryElement entryElem) {
-			if (entryElem.isLibrary())
-				return Icon.LIBRARY.get();
-			if (entryElem.isModelType() || entryElem.isCategory())
-				return Images.getForCategory(entryElem.getModelType());
-			if (entryElem.getModelType() == ModelType.FLOW)
-				return Images.get(entryElem.getFlowType());
-			if (entryElem.getModelType() == ModelType.PROCESS)
-				return Images.get(entryElem.getProcessType());
-			return Images.get(entryElem.getModelType());
-		}
-
 		var content = (elem).getContent();
 		if (content instanceof DatabaseConfig config) {
 			return Database.isActive(config)
@@ -247,15 +222,6 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return dirElem.getContent();
 		if (elem instanceof GroupElement groupElem)
 			return groupElem.getContent().label;
-
-		if (elem instanceof ServerElement serverElem)
-			return serverElem.getContent().url();
-		if (elem instanceof RepositoryElement repoElem)
-			return repoElem.getRepositoryId();
-		if (elem instanceof LibrariesElement librariesElem)
-			return M.Libraries;
-		if (elem instanceof EntryElement entryElem)
-			return entryElem.getContent().name();
 
 		var content = elem.getContent();
 		if (content instanceof DatabaseConfig config)

@@ -1,11 +1,10 @@
-package org.openlca.app.collaboration.navigation.elements;
+package org.openlca.app.collaboration.browse.elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openlca.app.collaboration.util.WebRequests;
-import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.NavigationElement;
 import org.openlca.app.util.Labels;
 import org.openlca.collaboration.model.Entry;
 import org.openlca.collaboration.model.TypeOfEntry;
@@ -14,22 +13,20 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProcessType;
 import org.openlca.git.model.ModelRef;
 
-public class EntryElement extends NavigationElement<Entry> implements IRepositoryNavigationElement<Entry> {
+public class EntryElement extends ServerNavigationElement<Entry> {
 
-	public EntryElement(INavigationElement<?> parent, Entry content) {
+	public EntryElement(IServerNavigationElement<?> parent, Entry content) {
 		super(parent, content);
 	}
 
 	@Override
-	protected List<INavigationElement<?>> queryChilds() {
+	protected List<IServerNavigationElement<?>> queryChildren() {
 		if (getContent().typeOfEntry() == TypeOfEntry.DATASET)
 			return new ArrayList<>();
-		var children = new ArrayList<INavigationElement<?>>();
-		WebRequests.execute(
-				() -> getServer().browse(getRepositoryId(), getContent().path()), new ArrayList<Entry>()).stream()
+		return WebRequests.execute(
+				() -> getClient().browse(getRepositoryId(), getContent().path()), new ArrayList<Entry>()).stream()
 				.map(e -> new EntryElement(this, e))
-				.forEach(children::add);
-		return children;
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -82,10 +79,10 @@ public class EntryElement extends NavigationElement<Entry> implements IRepositor
 	public String getUrl() {
 		if (!isDataset())
 			return null;
-		return getServer().url + "/" + getRepositoryId() + "/dataset/" + getModelType().name() + "/" + getRefId();
+		return getClient().url + "/" + getRepositoryId() + "/dataset/" + getModelType().name() + "/" + getRefId();
 	}
 
-	static EntryElement of(INavigationElement<?> parent, ModelType type, int count) {
+	static EntryElement of(IServerNavigationElement<?> parent, ModelType type, int count) {
 		return new EntryElement(parent, new Entry(TypeOfEntry.MODEL_TYPE, type.name(), Labels.of(type), count));
 	}
 

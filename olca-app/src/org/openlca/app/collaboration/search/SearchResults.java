@@ -130,7 +130,7 @@ class SearchResults {
 	}
 
 	private String getRepositoryLink(Repo repo) {
-		var url = query.server.url;
+		var url = query.client.url;
 		url += "/" + repo.path();
 		return url;
 	}
@@ -144,7 +144,7 @@ class SearchResults {
 		var data = (Object[]) b.getData();
 		var dataset = (Dataset) data[0];
 		var repo = (Repo) data[1];
-		Datasets.download(query.server, repo.path(), dataset.type(), dataset.refId());
+		Datasets.download(query.client, repo.path(), dataset.type(), dataset.refId());
 	}
 
 	private static class LinkClick extends HyperlinkAdapter {

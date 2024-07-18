@@ -41,7 +41,7 @@ class SearchPage extends FormPage {
 		super(view, "SearchResultView.Page", M.SearchResults);
 		this.query = query;
 		this.selected = !servers.isEmpty() ? servers.get(0) : null;
-		this.query.server = !servers.isEmpty() ? servers.get(0).open() : null;
+		this.query.client = !servers.isEmpty() ? servers.get(0).createClient() : null;
 	}
 
 	@Override
@@ -102,11 +102,11 @@ class SearchPage extends FormPage {
 		viewer.setInput(servers);
 		viewer.select(selected);
 		viewer.addSelectionChangedListener(c -> {
-			if (query.server != null) {
-				WebRequests.execute(query.server::close);
+			if (query.client != null) {
+				WebRequests.execute(query.client::close);
 			}
 			selected = c;
-			query.server = selected.open();
+			query.client = selected.createClient();
 			runSearch(1);
 		});
 	}

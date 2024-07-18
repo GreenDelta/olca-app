@@ -26,10 +26,8 @@ import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.navigation.NavCache;
-import org.openlca.app.collaboration.navigation.ServerConfigurations;
-import org.openlca.app.collaboration.navigation.elements.EntryElement;
-import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.libraries.LibraryEditor;
@@ -110,12 +108,6 @@ public class Navigator extends CommonNavigator {
 			} else if (elem instanceof EntryElement e && e.isDataset()) {
 				var url = e.getUrl();
 				Desktop.browse(url);
-			} else if (elem instanceof ServerElement e) {
-				if (!ServerConfigurations.isActive(e.getContent())) {
-					ServerConfigurations.activate(e.getContent());
-					e.update();
-					Navigator.revealFirstChild(e);
-				}
 			}
 		});
 

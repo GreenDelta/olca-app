@@ -412,6 +412,13 @@
 				name="Compare with repository"
 				restorable="true">
 		</view>
+		<view
+				class="org.openlca.app.collaboration.browse.ServerNavigator"
+				icon="icons/immutable/server.png"
+				id="views.server.navigation"
+				name="%Servers"
+				restorable="true">
+		</view>
 	</extension>
 
 	<extension
@@ -556,6 +563,36 @@
 				class="org.openlca.app.navigation.NavigationDragAssistant"
 				viewerId="views.navigation">
 		</dragAssistant>
+		<viewer
+				viewerId="views.server.navigation">
+			<options>
+				<property
+						name="org.eclipse.ui.navigator.hideCollapseAllAction"
+						value="true">
+				</property>
+				<property
+						name="org.eclipse.ui.navigator.hideAvailableCustomizationsDialog"
+						value="true">
+				</property>
+			</options>
+		</viewer>
+		<viewerContentBinding
+				viewerId="views.server.navigation">
+			<includes>
+				<contentExtension
+						isRoot="true"
+						pattern="servernavigatorcontent.context">
+				</contentExtension>
+			</includes>
+		</viewerContentBinding>
+		<viewerActionBinding
+				viewerId="views.server.navigation">
+			<includes>
+				<actionExtension
+						pattern="actionprovider.servernavigation">
+				</actionExtension>
+			</includes>
+		</viewerActionBinding>
 	</extension>
 
 	<extension
@@ -620,6 +657,33 @@
 				id="viewer.filter.wasteflow"
 				name="%WasteFlows">
 		</commonFilter>
+		<navigatorContent
+				activeByDefault="true"
+				contentProvider="org.openlca.app.collaboration.browse.ServerNavigationContentProvider"
+				id="servernavigatorcontent.context"
+				labelProvider="org.openlca.app.collaboration.browse.ServerNavigationLabelProvider"
+				name="%ServerProvider"
+				priority="normal">
+			<triggerPoints>
+				<instanceof
+						value="org.openlca.app.collaboration.browse.elements.IServerNavigationElement">
+				</instanceof>
+			</triggerPoints>
+			<commonSorter
+					class="org.openlca.app.collaboration.browse.ServerNavigationComparator">
+			</commonSorter>
+			<possibleChildren>
+				<instanceof
+						value="org.openlca.app.collaboration.browse.elements.IServerNavigationElement">
+				</instanceof>
+			</possibleChildren>
+		</navigatorContent>
+		<actionProvider
+				class="org.openlca.app.collaboration.browse.actions.ServerNavigationMenu"
+				id="actionprovider.servernavigation"
+				priority="normal">
+				<enablement/>
+		</actionProvider>
 	</extension>
 
 	<extension

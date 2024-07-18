@@ -16,11 +16,7 @@ import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.RepositoryMenu;
-import org.openlca.app.collaboration.navigation.actions.CloneAction;
-import org.openlca.app.collaboration.navigation.actions.DownloadDatasetAction;
-import org.openlca.app.collaboration.navigation.actions.DownloadLibraryAction;
-import org.openlca.app.collaboration.navigation.actions.RegisterServerAction;
-import org.openlca.app.collaboration.navigation.actions.UnregisterServerAction;
+import org.openlca.app.collaboration.navigation.actions.ImportFromGitAction;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
@@ -102,13 +98,6 @@ public class NavigationMenu extends CommonActionProvider {
 				new DbCloseAction(),
 				new AddLibraryAction());
 
-		// server actions
-		addActions(selection, menu,
-				new RegisterServerAction(),
-				new UnregisterServerAction(),
-				new DownloadDatasetAction(),
-				new DownloadLibraryAction());
-		
 		// dev. extensions
 		if (App.runsInDevMode()) {
 			addActions(selection, menu,
@@ -186,8 +175,7 @@ public class NavigationMenu extends CommonActionProvider {
 				new ExportScriptAction(),
 				new ExportFlowMapAction(),
 				new ExportLibraryAction(),
-				CloneAction.forRootMenu(),
-				CloneAction.forRepositoryMenu());
+				ImportFromGitAction.forRootMenu());
 	}
 
 	public static MenuManager createImportMenu() {
@@ -201,7 +189,7 @@ public class NavigationMenu extends CommonActionProvider {
 				Icon.FILE.descriptor(),
 				() -> new FileImport().run()));
 		// Git clone
-		menu.add(CloneAction.forImportMenu());
+		menu.add(ImportFromGitAction.forImportMenu());
 		// open the generic import dialog
 		menu.add(Actions.create(M.OtherDots, icon, () -> {
 			try {

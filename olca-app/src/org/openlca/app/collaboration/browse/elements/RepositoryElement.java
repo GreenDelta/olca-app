@@ -1,4 +1,4 @@
-package org.openlca.app.collaboration.navigation.elements;
+package org.openlca.app.collaboration.browse.elements;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,17 +9,14 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.navigation.elements.Group;
 import org.openlca.app.navigation.elements.GroupType;
-import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.NavigationElement;
 import org.openlca.collaboration.model.Entry;
 import org.openlca.collaboration.model.Repository;
 import org.openlca.core.model.ModelType;
 import org.openlca.git.RepositoryInfo;
 
-public class RepositoryElement extends NavigationElement<Repository>
-		implements IRepositoryNavigationElement<Repository> {
+public class RepositoryElement extends ServerNavigationElement<Repository> {
 
-	public RepositoryElement(INavigationElement<?> parent, Repository content) {
+	public RepositoryElement(IServerNavigationElement<?> parent, Repository content) {
 		super(parent, content);
 	}
 
@@ -29,10 +26,10 @@ public class RepositoryElement extends NavigationElement<Repository>
 	}
 
 	@Override
-	protected List<INavigationElement<?>> queryChilds() {
-		var children = new ArrayList<INavigationElement<?>>();
+	protected List<IServerNavigationElement<?>> queryChildren() {
+		var children = new ArrayList<IServerNavigationElement<?>>();
 		var counts = WebRequests.execute(
-				() -> getServer().browse(getRepositoryId(), ""), new ArrayList<Entry>())
+				() -> getClient().browse(getRepositoryId(), ""), new ArrayList<Entry>())
 				.stream()
 				.collect(Collectors.toMap(Entry::path, Entry::count));
 		Arrays.asList(
@@ -44,14 +41,14 @@ public class RepositoryElement extends NavigationElement<Repository>
 				ModelType.RESULT).stream()
 				.map(type -> EntryElement.of(this, type, counts.getOrDefault(type.name(), 0)))
 				.forEach(children::add);
-		children.add(new RepositoryGroupElement(this, counts, Group.of(M.IndicatorsAndParameters,
+		children.add(new GroupElement(this, counts, Group.of(M.IndicatorsAndParameters,
 				GroupType.INDICATORS,
 				ModelType.IMPACT_METHOD,
 				ModelType.IMPACT_CATEGORY,
 				ModelType.DQ_SYSTEM,
 				ModelType.SOCIAL_INDICATOR,
 				ModelType.PARAMETER)));
-		children.add(new RepositoryGroupElement(this, counts, Group.of(M.BackgroundData,
+		children.add(new GroupElement(this, counts, Group.of(M.BackgroundData,
 				GroupType.BACKGROUND_DATA,
 				ModelType.FLOW_PROPERTY,
 				ModelType.UNIT_GROUP,

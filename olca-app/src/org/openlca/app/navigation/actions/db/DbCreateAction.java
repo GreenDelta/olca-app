@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.navigation.elements.ServerElement;
+import org.openlca.app.collaboration.browse.elements.ServerElement;
 import org.openlca.app.db.DatabaseWizard;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseDirElement;

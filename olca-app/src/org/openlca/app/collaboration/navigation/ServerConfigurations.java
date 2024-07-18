@@ -5,9 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.rcp.Workspace;
@@ -23,20 +21,7 @@ public class ServerConfigurations {
 	private final static Logger log = LoggerFactory.getLogger(ServerConfigurations.class);
 	private final static String FILE_NAME = "servers.json";
 	private final static File FILE = new File(Workspace.root(), FILE_NAME);
-	private final static Set<ServerConfig> ACTIVE = new HashSet<>();
 	private static List<ServerConfig> CONFIGS = read();
-
-	public static void activate(ServerConfig config) {
-		ACTIVE.add(config);
-	}
-
-	public static boolean isActive(ServerConfig config) {
-		return ACTIVE.contains(config);
-	}
-
-	public static void deactivate(ServerConfig config) {
-		ACTIVE.remove(config);
-	}
 
 	public static List<ServerConfig> get() {
 		return CONFIGS;
@@ -87,7 +72,7 @@ public class ServerConfigurations {
 			this(url, null);
 		}
 
-		public CSClient open() {
+		public CSClient createClient() {
 			return new CSClient(url,
 					() -> AuthenticationDialog.promptCredentials(url, user));
 		}
