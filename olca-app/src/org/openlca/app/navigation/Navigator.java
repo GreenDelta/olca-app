@@ -27,7 +27,9 @@ import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.NavCache;
+import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.elements.EntryElement;
+import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.editors.libraries.LibraryEditor;
@@ -108,6 +110,12 @@ public class Navigator extends CommonNavigator {
 			} else if (elem instanceof EntryElement e && e.isDataset()) {
 				var url = e.getUrl();
 				Desktop.browse(url);
+			} else if (elem instanceof ServerElement e) {
+				if (!ServerConfigurations.isActive(e.getContent())) {
+					ServerConfigurations.activate(e.getContent());
+					e.update();
+					Navigator.revealFirstChild(e);
+				}
 			}
 		});
 
@@ -347,6 +355,19 @@ public class Navigator extends CommonNavigator {
 			queue.addAll(next.getChildren());
 		}
 		return null;
+	}
+
+	public static void revealFirstChild(INavigationElement<?> navElem) {
+		if (navElem == null || navElem.getChildren().isEmpty())
+			return;
+		var first = navElem.getChildren().get(0);
+		var navigator = Navigator.getInstance();
+		if (navigator == null)
+			return;
+		var viewer = navigator.getCommonViewer();
+		if (viewer == null)
+			return;
+		viewer.reveal(first);
 	}
 
 	public INavigationElement<?> getFirstSelected() {

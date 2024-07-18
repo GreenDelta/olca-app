@@ -206,16 +206,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 			// update the UI
 			Navigator.refresh();
 			var navElem = Navigator.findElement(config);
-			if (navElem != null && !navElem.getChildren().isEmpty()) {
-				var first = navElem.getChildren().get(0);
-				var navigator = Navigator.getInstance();
-				if (navigator != null) {
-					var viewer = navigator.getCommonViewer();
-					if (viewer != null) {
-						viewer.reveal(first);
-					}
-				}
-			}
+			Navigator.revealFirstChild(navElem);
 			Announcements.check();
 			HistoryView.refresh();
 			CompareView.clear();

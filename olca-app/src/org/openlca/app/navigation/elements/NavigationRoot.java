@@ -7,12 +7,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.core.runtime.PlatformObject;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.elements.ServerElement;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.collaboration.client.CSClient;
 import org.openlca.util.Dirs;
 
 /**
