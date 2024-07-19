@@ -3,24 +3,6 @@
 <target name="platform" sequenceNumber="6">
 <locations>
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/gef/classic/releases/3.15.0/"/>
-		<unit id="org.eclipse.gef.feature.group" version="3.15.0.202211301913"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/nebula/releases/2.7.2/"/>
-		<unit id="org.eclipse.nebula.feature.feature.group" version="2.7.2.202208171809"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.26/"/>
-		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.23.600.v20221116-1440"/>
-		<unit id="org.eclipse.platform.sdk" version="4.26.0.I20221123-1800"/>
-		<unit id="org.eclipse.rcp.feature.group" version="4.26.0.v20221123-2302"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.32"/>
-		<unit id="org.eclipse.emf.sdk.feature.group" version="2.32.0.v20221121-1400"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20221123021534/repository"/>
 		<unit id="org.apache.commons.io" version="2.8.0.v20210415-0900"/>
 		<unit id="org.apache.commons.logging" version="1.2.0.v20180409-1502"/>
@@ -28,6 +10,24 @@
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/swtchart/releases/0.14.0/repository/"/>
 		<unit id="org.eclipse.swtchart.feature.feature.group" version="0.14.0.202301260747"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/tools/gef/classic/release/3.20.0"/>
+		<unit id="org.eclipse.gef.feature.group" version="3.20.0.202405290843"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.38.0"/>
+		<unit id="org.eclipse.emf.sdk.feature.group" version="2.38.0.v20240314-1003"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/nebula/archive/releases/3.1.1/"/>
+		<unit id="org.eclipse.nebula.feature.feature.group" version="3.1.1.202402011804"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/eclipse/updates/4.32/"/>
+		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.23.1200.v20240524-2033"/>
+		<unit id="org.eclipse.platform.ide" version="4.32.0.I20240601-0610"/>
+		<unit id="org.eclipse.rcp.feature.group" version="4.32.0.v20240601-0610"/>
 	</location>
 </locations>
 </target>
