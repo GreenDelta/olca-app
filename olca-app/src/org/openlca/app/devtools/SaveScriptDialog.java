@@ -19,8 +19,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-
-import com.ibm.icu.text.CharsetDetector;
+import org.python.icu.text.CharsetDetector;
 
 public class SaveScriptDialog extends FormDialog {
 

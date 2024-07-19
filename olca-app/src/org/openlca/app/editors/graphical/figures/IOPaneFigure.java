@@ -79,7 +79,7 @@ public class IOPaneFigure extends ComponentFigure {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ExchangeFigure> getChildren() {
-		return super.getChildren();
+		return (List<ExchangeFigure>) super.getChildren();
 	}
 
 	public Dimension getAmountLabelSize() {
