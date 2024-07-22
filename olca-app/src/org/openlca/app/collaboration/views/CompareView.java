@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.collaboration.viewers.diff.CompareViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
@@ -19,34 +17,24 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Commit;
 import org.openlca.git.util.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CompareView extends ViewPart {
 
 	public final static String ID = "views.collaboration.compare";
-	private final static Logger log = LoggerFactory.getLogger(CompareView.class);
+	private static CompareView instance;
 	private CompareViewer viewer;
 	private DiffNode input;
 
 	public CompareView() {
-		super();
+		instance = this;
 		setTitleImage(Icon.COMPARE_VIEW.get());
 	}
 
 	public static void clear() {
-		var page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		if (page == null)
+		if (instance == null)
 			return;
-		for (var viewRef : page.getViewReferences()) {
-			if (!ID.equals(viewRef.getId()))
-				continue;
-			var view = (CompareView) viewRef.getView(false);
-			if (view == null)
-				return;
-			view.input = null;
-			view.viewer.setInput(new ArrayList<>());
-		}
+		instance.input = null;
+		instance.viewer.setInput(new ArrayList<>());
 	}
 
 	@Override
@@ -61,15 +49,9 @@ public class CompareView extends ViewPart {
 	}
 
 	public static void update(Commit commit, List<INavigationElement<?>> elements) {
-		try {
-			var page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			if (page == null)
-				return;
-			var view = (CompareView) page.showView(ID);
-			view.doUpdate(commit, elements);
-		} catch (PartInitException e) {
-			log.error("Error compare view", e);
-		}
+		if (instance == null)
+			return;
+		instance.doUpdate(commit, elements);
 	}
 
 	private void doUpdate(Commit commit, List<INavigationElement<?>> elements) {
@@ -127,6 +109,12 @@ public class CompareView extends ViewPart {
 	@Override
 	public void setFocus() {
 
+	}
+
+	@Override
+	public void dispose() {
+		instance = null;
+		super.dispose();
 	}
 
 }
