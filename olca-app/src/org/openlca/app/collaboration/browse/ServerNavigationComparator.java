@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.browse.elements.GroupElement;
+import org.openlca.app.collaboration.browse.elements.LibrariesElement;
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.util.Strings;
 
@@ -51,6 +52,8 @@ public class ServerNavigationComparator extends ViewerComparator {
 			return 3;
 		if (o instanceof EntryElement e && e.isDataset())
 			return 4;
+		if (o instanceof LibrariesElement)
+			return 5;
 		return 0;
 	}
 
