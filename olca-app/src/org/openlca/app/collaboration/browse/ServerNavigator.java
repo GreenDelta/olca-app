@@ -1,5 +1,7 @@
 package org.openlca.app.collaboration.browse;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -21,6 +23,8 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
+
+import com.google.common.base.Objects;
 
 public class ServerNavigator extends CommonNavigator {
 
@@ -102,6 +106,48 @@ public class ServerNavigator extends CommonNavigator {
 		if (!(part instanceof ServerNavigator navigator))
 			return null;
 		return navigator;
+	}
+
+	public void refresh() {
+		var viewer = getNavigationViewer();
+		if (viewer == null || root == null)
+			return;
+		if (viewer.getTree().isDisposed())
+			return;
+		var oldExpansion = viewer.getExpandedElements();
+		root.update();
+		viewer.refresh();
+		setRefreshedExpansion(viewer, oldExpansion);
+	}
+
+	private void setRefreshedExpansion(
+			CommonViewer viewer, Object[] oldExpansion) {
+		if (viewer == null || oldExpansion == null)
+			return;
+		var newExpanded = new ArrayList<IServerNavigationElement<?>>();
+		for (var e : oldExpansion) {
+			if (!(e instanceof IServerNavigationElement<?> oldElem))
+				continue;
+			var newElem = findElement(oldElem.getContent());
+			if (newElem != null) {
+				newExpanded.add(newElem);
+			}
+		}
+		viewer.setExpandedElements(newExpanded.toArray());
+	}
+
+	public IServerNavigationElement<?> findElement(Object content) {
+		if (content == null || root == null)
+			return null;
+		var queue = new ArrayDeque<IServerNavigationElement<?>>();
+		queue.add(root);
+		while (!queue.isEmpty()) {
+			var next = queue.poll();
+			if (Objects.equal(next.getContent(), content))
+				return next;
+			queue.addAll(next.getChildren());
+		}
+		return null;
 	}
 
 	private class RefreshListener implements KeyListener {

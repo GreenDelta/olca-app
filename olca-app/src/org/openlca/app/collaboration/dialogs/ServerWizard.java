@@ -4,9 +4,9 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
@@ -35,7 +35,7 @@ public class ServerWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		ServerConfigurations.put(new ServerConfig(page.location.url()));
-		Navigator.refresh();
+		ServerNavigator.getInstance().refresh();
 		return true;
 	}
 

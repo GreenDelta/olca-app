@@ -80,6 +80,9 @@ public class LocationGroup {
 				var url = new URL(u);
 				protocol = url.getProtocol();
 				host = url.getHost();
+				if (host != null && host.endsWith("/")) {
+					host = host.substring(host.length() - 1);
+				}
 				if (url.getPort() != -1) {
 					port = Integer.toString(url.getPort());
 				} else if (protocol.equals("http")) {
@@ -88,16 +91,16 @@ public class LocationGroup {
 					port = "443";
 				}
 				path = url.getPath();
-				if (path.startsWith("/")) {
+				if (path != null && path.startsWith("/")) {
 					path = path.substring(1);
 				}
-				if (path.endsWith("/")) {
+				if (path != null && path.endsWith("/")) {
 					path = path.substring(0, path.length() - 1);
 				}
 			} catch (MalformedURLException e) {
 			}
 			this.protocol = protocol;
-			this.host = withRepository
+			this.host = withRepository || Strings.nullOrEmpty(path)
 					? host
 					: host + "/" + path;
 			this.port = port;
@@ -124,7 +127,9 @@ public class LocationGroup {
 			if (!port.equals("80") && !port.equals("443")) {
 				url += ":" + port;
 			}
-			url += "/" + path;
+			if (!Strings.nullOrEmpty(path)) {
+				url += "/" + path;
+			}
 			return url;
 		}
 

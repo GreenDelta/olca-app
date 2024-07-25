@@ -3,11 +3,11 @@ package org.openlca.app.collaboration.browse.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 import org.openlca.app.collaboration.browse.elements.ServerElement;
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 
 public class UnregisterServerAction extends Action implements IServerNavigationAction {
@@ -33,7 +33,7 @@ public class UnregisterServerAction extends Action implements IServerNavigationA
 	@Override
 	public void run() {
 		ServerConfigurations.remove(selected);
-		Navigator.refresh();
+		ServerNavigator.getInstance().refresh();
 	}
 
 }
