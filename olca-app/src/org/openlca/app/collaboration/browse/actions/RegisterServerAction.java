@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.browse.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 import org.openlca.app.collaboration.browse.elements.ServerElement;
 import org.openlca.app.collaboration.dialogs.ServerWizard;
@@ -13,7 +14,7 @@ import org.openlca.app.rcp.images.Images;
 public class RegisterServerAction extends Action implements IServerNavigationAction {
 
 	public RegisterServerAction() {
-		setText("New Collaboration Server");
+		setText(M.NewCollaborationServer);
 		setImageDescriptor(Images.newServer());
 	}
 

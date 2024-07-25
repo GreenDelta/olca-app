@@ -986,6 +986,7 @@ public class M extends NLS {
 	public static String NewActor;
 	public static String NewCategory;
 	public static String NewCurrency;
+	public static String NewCollaborationServer;
 	public static String NewDataQualitySystem;
 	public static String NewDatabase;
 	public static String NewDatabase_AlreadyExists;
@@ -1307,6 +1308,7 @@ public class M extends NLS {
 	public static String Remote;
 	public static String RemoteDatabase;
 	public static String Remove;
+	public static String RemoveCollaborationServer;
 	public static String RemoveConnections;
 	public static String RemoveExchangeQ;
 	public static String RemoveExchangeQuestion;

@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.browse.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 import org.openlca.app.collaboration.browse.elements.ServerElement;
@@ -15,7 +16,7 @@ public class UnregisterServerAction extends Action implements IServerNavigationA
 	private ServerConfig selected;
 
 	public UnregisterServerAction() {
-		setText("Remove Collaboration Server");
+		setText(M.RemoveCollaborationServer);
 		setImageDescriptor(Icon.DELETE.descriptor());
 	}
 
