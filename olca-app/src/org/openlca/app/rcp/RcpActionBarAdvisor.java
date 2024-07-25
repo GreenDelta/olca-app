@@ -22,6 +22,7 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.openlca.app.App;
 import org.openlca.app.Config;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.components.replace.ReplaceFlowsDialog;
 import org.openlca.app.components.replace.ReplaceProvidersDialog;
@@ -175,6 +176,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(Actions.create("soda4LCA",
 				Icon.SODA.descriptor(), SodaClientTool::open));
 
+		menu.add(Actions.create("CS Servers",
+				Icon.COLLABORATION_SERVER_LOGO.descriptor(), ServerNavigator::open));
+
 		// console
 		menu.add(new Separator());
 		menu.add(new FormulaConsoleAction());
@@ -192,6 +196,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 		menuBar.add(menu);
 	}
+	
+
 
 	private void runSpold2Import(ModelType type) {
 		var db = Database.get();

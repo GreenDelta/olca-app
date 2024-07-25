@@ -11,6 +11,8 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -23,13 +25,29 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
 public class ServerNavigator extends CommonNavigator {
 
+	private static final Logger log = LoggerFactory.getLogger(ServerNavigator.class);
 	public static String ID = "views.server.navigation";
 	private ServerNavigationRoot root;
+
+	public static void open() {
+		IWorkbenchPage page = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow()
+				.getActivePage();
+		if (page == null)
+			return;
+		try {
+			page.showView(ID);
+		} catch (PartInitException e) {
+			log.error("Error opening server navigator view", e);
+		}
+	}
 
 	@Override
 	protected Object getInitialInput() {
