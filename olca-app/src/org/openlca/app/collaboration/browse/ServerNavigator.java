@@ -41,7 +41,7 @@ public class ServerNavigator extends CommonNavigator {
 	protected CommonViewer createCommonViewer(Composite aParent) {
 		var viewer = super.createCommonViewer(aParent);
 		viewer.getTree().setBackground(Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		viewer.getTree().addKeyListener(new RefreshListener());
+		viewer.getTree().addKeyListener(new RefreshListener(viewer));
 		return viewer;
 	}
 
@@ -81,18 +81,7 @@ public class ServerNavigator extends CommonNavigator {
 		});
 	}
 
-	public ServerNavigationRoot getRoot() {
-		return root;
-	}
-
-	private static CommonViewer getNavigationViewer() {
-		var instance = getInstance();
-		if (instance == null)
-			return null;
-		return instance.getCommonViewer();
-	}
-
-	public static ServerNavigator getInstance() {
+	private static ServerNavigator getInstance() {
 		var workbench = PlatformUI.getWorkbench();
 		if (workbench == null)
 			return null;
@@ -108,8 +97,15 @@ public class ServerNavigator extends CommonNavigator {
 		return navigator;
 	}
 
-	public void refresh() {
-		var viewer = getNavigationViewer();
+	public static void refresh() {
+		var instance = getInstance();
+		if (instance == null)
+			return;
+		instance.doRefresh();
+	}
+
+	private void doRefresh() {
+		var viewer = getCommonViewer();
 		if (viewer == null || root == null)
 			return;
 		if (viewer.getTree().isDisposed())
@@ -136,7 +132,7 @@ public class ServerNavigator extends CommonNavigator {
 		viewer.setExpandedElements(newExpanded.toArray());
 	}
 
-	public IServerNavigationElement<?> findElement(Object content) {
+	private IServerNavigationElement<?> findElement(Object content) {
 		if (content == null || root == null)
 			return null;
 		var queue = new ArrayDeque<IServerNavigationElement<?>>();
@@ -152,6 +148,12 @@ public class ServerNavigator extends CommonNavigator {
 
 	private class RefreshListener implements KeyListener {
 
+		private final CommonViewer viewer;
+
+		private RefreshListener(CommonViewer viewer) {
+			this.viewer = viewer;
+		}
+
 		@Override
 		public void keyReleased(KeyEvent e) {
 
@@ -160,7 +162,6 @@ public class ServerNavigator extends CommonNavigator {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (e.keyCode == SWT.F5) {
-				var viewer = getNavigationViewer();
 				List<IServerNavigationElement<?>> selection = Viewers.getAllSelected(viewer);
 				for (var selected : selection) {
 					selected.update();

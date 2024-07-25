@@ -35,7 +35,7 @@ public class ServerWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		ServerConfigurations.put(new ServerConfig(page.location.url()));
-		ServerNavigator.getInstance().refresh();
+		ServerNavigator.refresh();
 		return true;
 	}
 

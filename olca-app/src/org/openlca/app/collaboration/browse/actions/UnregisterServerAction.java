@@ -33,7 +33,7 @@ public class UnregisterServerAction extends Action implements IServerNavigationA
 	@Override
 	public void run() {
 		ServerConfigurations.remove(selected);
-		ServerNavigator.getInstance().refresh();
+		ServerNavigator.refresh();
 	}
 
 }
