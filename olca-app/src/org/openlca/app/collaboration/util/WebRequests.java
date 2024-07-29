@@ -1,5 +1,8 @@
 package org.openlca.app.collaboration.util;
 
+import org.openlca.app.M;
+import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.WebRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,11 +11,14 @@ public class WebRequests {
 
 	private static final Logger log = LoggerFactory.getLogger(WebRequests.class);
 
-	public static void execute(RequestWithoutResponse request) {
+	public static boolean execute(RequestWithoutResponse request) {
 		try {
 			request.execute();
+			return true;
 		} catch (WebRequestException e) {
-			log.error("Error during Collaboration Server request", e);
+			if (handleException("Error during collaboration server request", e))
+				return execute(request);
+			return false;
 		}
 	}
 
@@ -27,9 +33,23 @@ public class WebRequests {
 				return defaultValue;
 			return value;
 		} catch (WebRequestException e) {
-			log.error("Error during Collaboration Server request", e);
+			if (handleException("Error during collaboration server request", e))
+				return execute(request, defaultValue);
 			return defaultValue;
 		}
+	}
+
+	public static boolean handleException(String message, WebRequestException e) {
+		if (e.isSslCertificateException()) {
+			if (Question.ask(M.SslCertificateUnknown, M.SslCertificateUnknownQuestion)) {
+				var cert = SslCertificates.downloadCertificate(e.getHost(), e.getPort());
+				SslCertificates.importCertificate(cert, e.getHost());
+				return true;
+			}
+		}
+		log.error(message, e);
+		MsgBox.error(e.getMessage());
+		return false;
 	}
 
 	public interface RequestWithoutResponse {

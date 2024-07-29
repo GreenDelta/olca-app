@@ -311,6 +311,7 @@ public class M extends NLS {
 	public static String CreateProcesslink;
 	public static String CreateProductSystem;
 	public static String CreateReport;
+	public static String CreateRepository;
 	public static String CreateWithName;
 	public static String CreatesANewActor;
 	public static String CreatesANewDataQualitySystem;
@@ -1103,6 +1104,7 @@ public class M extends NLS {
 	public static String NotAllMethodsAreMapped;
 	public static String NotAnExistingFile;
 	public static String NotAnIntegerNumber;
+	public static String NotAllowedToCreateRepositories;
 	public static String NotApplicable;
 	public static String NotRelevant;
 	public static String NotValidNumber;
@@ -1461,6 +1463,7 @@ public class M extends NLS {
 	public static String SelectExisting;
 	public static String SelectFile;
 	public static String SelectFlowPropertiesForCalculation;
+	public static String SelectGroupAndEnterRepositoryName;
 	public static String SelectLanguageNoteMessage;
 	public static String SelectLibraryPackage;
 	public static String SelectNext;

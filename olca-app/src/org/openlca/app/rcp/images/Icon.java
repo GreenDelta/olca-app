@@ -188,4 +188,12 @@ public enum Icon {
 		return ImageManager.descriptor(this);
 	}
 
+	public Image get(Overlay overlay) {
+		return ImageManager.get(this, overlay);
+	}
+
+	public ImageDescriptor descriptor(Overlay overlay) {
+		return ImageManager.descriptor(this, overlay);
+	}
+
 }

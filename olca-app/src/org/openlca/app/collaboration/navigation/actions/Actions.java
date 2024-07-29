@@ -12,7 +12,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.CredentialStore;
-import org.openlca.app.collaboration.util.SslCertificates;
+import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.navigation.Navigator;
@@ -37,16 +37,13 @@ class Actions {
 	}
 
 	static void handleException(String message, Exception e) {
+		if (e instanceof WebRequestException we) {
+			WebRequests.handleException(message, we);
+			return;
+		}
 		var msg = e.getMessage();
 		if (e instanceof UnsupportedClientVersionException ue) {
 			msg = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
-		} else if (e instanceof WebRequestException we) {
-			if (we.isSslCertificateException()) {
-				if (Question.ask(M.SslCertificateUnknown, M.SslCertificateUnknownQuestion)) {
-					var cert = SslCertificates.downloadCertificate(we.getHost(), we.getPort());
-					SslCertificates.importCertificate(cert, we.getHost());
-				}
-			}
 		}
 		log.error(message, e);
 		MsgBox.error(msg);

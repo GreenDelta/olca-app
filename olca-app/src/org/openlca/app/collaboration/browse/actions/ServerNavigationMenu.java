@@ -20,9 +20,11 @@ public class ServerNavigationMenu extends CommonActionProvider {
 		addActions(selection, menu,
 				new RegisterServerAction(),
 				new UnregisterServerAction(),
+				new CreateRepositoryAction(),
 				new DownloadDatasetAction(),
 				new DownloadLibraryAction(),
-				new CloneAction());
+				new CloneAction(),
+				new DeleteRepositoryAction());
 	}
 
 	public static int addActions(

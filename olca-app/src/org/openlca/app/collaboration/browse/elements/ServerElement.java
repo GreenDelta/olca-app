@@ -2,7 +2,9 @@ package org.openlca.app.collaboration.browse.elements;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
@@ -12,8 +14,8 @@ import org.openlca.collaboration.model.Repository;
 
 public class ServerElement extends ServerNavigationElement<ServerConfig> {
 
+	private static final Set<ServerConfig> ACTIVE = new HashSet<>();
 	protected final CSClient client;
-	private boolean active;
 
 	public ServerElement(IServerNavigationElement<?> parent, ServerConfig content) {
 		super(parent, content);
@@ -21,23 +23,23 @@ public class ServerElement extends ServerNavigationElement<ServerConfig> {
 	}
 
 	public void activate() {
-		this.active = true;
+		ACTIVE.add(getContent());
 	}
 
 	public boolean isActive() {
-		return active;
+		return ACTIVE.contains(getContent());
 	}
 
 	@Override
 	public boolean hasChildren() {
-		if (!active)
+		if (!isActive())
 			return false;
 		return super.hasChildren();
 	}
 
 	@Override
 	public List<IServerNavigationElement<?>> getChildren() {
-		if (!active)
+		if (!isActive())
 			return Collections.emptyList();
 		return super.getChildren();
 	}

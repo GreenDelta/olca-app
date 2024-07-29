@@ -2,6 +2,8 @@ package org.openlca.app.util;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
+import org.openlca.app.M;
 
 public class Question {
 
@@ -51,9 +53,19 @@ public class Question {
 			return IDialogConstants.NO_TO_ALL_ID;
 		return IDialogConstants.CANCEL_ID;
 	}
-	
+
 	public static int ask(String title, String message, String[] answers) {
 		return new MessageDialog(UI.shell(), title, null, message, MessageDialog.QUESTION, answers, 0).open();
 	}
-	
+
+	public static boolean askDelete(String name) {
+		var dialog = new MessageDialog(UI.shell(), M.Delete, null, NLS.bind(
+				M.DoYouReallyWantToDelete, name),
+				MessageDialog.QUESTION, new String[] {
+						M.Yes,
+						M.No, },
+				MessageDialog.CANCEL);
+		return dialog.open() == MessageDialog.OK;
+	}
+
 }

@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.browse.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
@@ -11,18 +10,13 @@ import org.openlca.app.collaboration.util.Datasets;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 
-public class DownloadDatasetAction extends Action implements IServerNavigationAction {
+class DownloadDatasetAction extends Action implements IServerNavigationAction {
 
 	private EntryElement elem;
 
-	@Override
-	public String getText() {
-		return M.ImportDataDots;
-	}
-
-	@Override
-	public ImageDescriptor getImageDescriptor() {
-		return Icon.IMPORT.descriptor();
+	DownloadDatasetAction() {
+		setText(M.ImportDataDots);
+		setImageDescriptor(Icon.IMPORT.descriptor());
 	}
 
 	@Override

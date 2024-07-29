@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.views.CompareView;
@@ -21,7 +19,7 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.UI;
+import org.openlca.app.util.Question;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
@@ -66,7 +64,10 @@ public class DbDeleteAction extends Action implements INavigationAction {
 	public void run() {
 		if (configs.isEmpty())
 			return;
-		if (createMessageDialog().open() != MessageDialog.OK)
+		var name = configs.size() == 1
+				? configs.get(0).name()
+				: M.TheSelectedDatabases;
+		if (!Question.askDelete(name))
 			return;
 		if (!checkCloseEditors())
 			return;
@@ -107,17 +108,6 @@ public class DbDeleteAction extends Action implements INavigationAction {
 			Database.remove((DerbyConfig) config);
 		else if (config instanceof MySqlConfig)
 			Database.remove((MySqlConfig) config);
-	}
-
-	private MessageDialog createMessageDialog() {
-		String name = configs.size() == 1 ? configs.get(0).name()
-				: M.TheSelectedDatabases;
-		return new MessageDialog(UI.shell(), M.Delete, null, NLS.bind(
-				M.DoYouReallyWantToDelete, name),
-				MessageDialog.QUESTION, new String[]{
-				M.Yes,
-				M.No,},
-				MessageDialog.CANCEL);
 	}
 
 }

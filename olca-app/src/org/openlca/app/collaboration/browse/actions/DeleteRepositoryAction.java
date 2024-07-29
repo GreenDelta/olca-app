@@ -4,29 +4,29 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 import org.openlca.app.collaboration.browse.elements.RepositoryElement;
-import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
-import org.openlca.app.collaboration.navigation.actions.Clone;
+import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Question;
 
-class CloneAction extends Action implements IServerNavigationAction {
+class DeleteRepositoryAction extends Action implements IServerNavigationAction {
 
 	private RepositoryElement elem;
 
-	CloneAction() {
-		setText(M.Clone);
-		setImageDescriptor(Icon.CLONE.descriptor());
+	DeleteRepositoryAction() {
+		setText(M.Delete);
+		setImageDescriptor(Icon.DELETE.descriptor());
 	}
 
 	@Override
 	public void run() {
-		var serverUrl = elem.getClient().url;
-		var url = serverUrl + "/" + elem.getRepositoryId();
-		var credentials = AuthenticationDialog.promptCredentials(serverUrl);
-		if (credentials == null)
+		if (!Question.askDelete(elem.getRepositoryId()))
 			return;
-		Clone.of(url, credentials.user, credentials.password);
+		if (!WebRequests.execute(() -> elem.getClient().deleteRepository(elem.getRepositoryId())))
+			return;
+		ServerNavigator.refresh();
 	}
 
 	@Override

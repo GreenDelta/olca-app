@@ -24,12 +24,13 @@ public class Datasets {
 			ZipStore store = null;
 			try {
 				tmp = Files.createTempFile("cs-json-", ".zip").toFile();
-				if (!client.downloadJson(repositoryId, type, refId, tmp))
+				var temp = tmp;
+				if (!WebRequests.execute(() -> client.downloadJson(repositoryId, type, refId, temp)))
 					return;
 				store = ZipStore.open(tmp);
 				var jsonImport = new JsonImport(store, Database.get());
 				jsonImport.run();
-			} catch (Exception ex) {
+			} catch (IOException ex) {
 				log.error("Error during json import", ex);
 			} finally {
 				if (store != null) {

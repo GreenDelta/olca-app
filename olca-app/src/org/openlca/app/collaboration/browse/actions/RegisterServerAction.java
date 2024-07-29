@@ -11,9 +11,9 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 
-public class RegisterServerAction extends Action implements IServerNavigationAction {
+class RegisterServerAction extends Action implements IServerNavigationAction {
 
-	public RegisterServerAction() {
+	RegisterServerAction() {
 		setText(M.NewCollaborationServer);
 		setImageDescriptor(Images.newServer());
 	}
