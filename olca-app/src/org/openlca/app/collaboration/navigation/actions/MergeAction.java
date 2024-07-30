@@ -18,7 +18,7 @@ import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitMerge.MergeResult;
 import org.openlca.git.util.Constants;
 
-public class MergeAction extends Action implements INavigationAction {
+class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {

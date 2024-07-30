@@ -4,6 +4,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
@@ -17,7 +18,7 @@ public class ServerWizard extends Wizard {
 
 	private ServerWizard() {
 		setNeedsProgressMonitor(true);
-		setWindowTitle("New Collaboration Server");
+		setWindowTitle(M.NewCollaborationServer);
 	}
 
 	public static void open() {
@@ -41,12 +42,12 @@ public class ServerWizard extends Wizard {
 
 	private class ServerWizardPage extends WizardPage {
 
-		private final LocationGroup location = new LocationGroup().onChange(this::updateButtons);
+		private LocationGroup location;
 
 		protected ServerWizardPage() {
-			super("server-wizard-page", "New Collaboration Server",
+			super("server-wizard-page", M.NewCollaborationServer,
 					Icon.COLLABORATION_SERVER_LOGO.descriptor());
-			setDescription("Register a new Collaboration Server");
+			setDescription(M.RegisterANewCollaborationServer);
 			setPageComplete(false);
 		}
 
@@ -56,23 +57,25 @@ public class ServerWizard extends Wizard {
 			setControl(body);
 			UI.gridLayout(body, 1);
 			UI.gridData(body, true, true).widthHint = 500;
-			location.render(body, null);
+			location = new LocationGroup(body)
+					.onChange(this::updateButtons);
+			location.render();
 		}
 
 		private void updateButtons() {
-			if (Strings.nullOrEmpty(location.url())) {
+			var url = location.url();
+			if (Strings.nullOrEmpty(url)) {
 				setErrorMessage(null);
 				setPageComplete(false);
 				return;
 			}
-			if (ServerConfigurations.get().contains(new ServerConfig(location.url()))) {
+			if (ServerConfigurations.get().contains(new ServerConfig(url))) {
 				setErrorMessage("Server url is already registered");
 				setPageComplete(false);
 				return;
 			}
 			setErrorMessage(null);
 			setPageComplete(true);
-			
 		}
 
 	}

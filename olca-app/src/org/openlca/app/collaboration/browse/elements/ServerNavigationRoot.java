@@ -11,6 +11,8 @@ import org.openlca.app.collaboration.navigation.ServerConfigurations;
  */
 public class ServerNavigationRoot extends PlatformObject implements IServerNavigationElement<ServerNavigationRoot> {
 
+	private List<IServerNavigationElement<?>> children;
+
 	@Override
 	public ServerNavigationRoot getContent() {
 		return this;
@@ -23,13 +25,17 @@ public class ServerNavigationRoot extends PlatformObject implements IServerNavig
 
 	@Override
 	public void update() {
+		children = null;
 	}
 
 	@Override
 	public List<IServerNavigationElement<?>> getChildren() {
-		return ServerConfigurations.get().stream()
-				.map(config -> new ServerElement(this, config))
-				.collect(Collectors.toList());
+		if (children == null) {
+			children = ServerConfigurations.get().stream()
+					.map(config -> new ServerElement(this, config))
+					.collect(Collectors.toList());
+		}
+		return children;
 	}
 
 }

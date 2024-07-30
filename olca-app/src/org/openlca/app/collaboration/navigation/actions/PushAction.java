@@ -18,7 +18,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitPush;
 import org.openlca.git.util.Constants;
 
-public class PushAction extends Action implements INavigationAction {
+class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {

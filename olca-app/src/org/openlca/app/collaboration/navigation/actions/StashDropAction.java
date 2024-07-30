@@ -14,7 +14,7 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.git.actions.GitStashDrop;
 
-public class StashDropAction extends Action implements INavigationAction {
+class StashDropAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {

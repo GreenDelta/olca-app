@@ -16,7 +16,7 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.git.actions.GitStashCreate;
 
-public class StashCreateAction extends Action implements INavigationAction {
+class StashCreateAction extends Action implements INavigationAction {
 
 	private List<INavigationElement<?>> selection;
 

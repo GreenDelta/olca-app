@@ -22,7 +22,7 @@ import org.openlca.app.util.Question;
 import org.openlca.git.actions.GitDiscard;
 import org.openlca.git.model.Change;
 
-public class DiscardAction extends Action implements INavigationAction {
+class DiscardAction extends Action implements INavigationAction {
 
 	private List<INavigationElement<?>> selection;
 

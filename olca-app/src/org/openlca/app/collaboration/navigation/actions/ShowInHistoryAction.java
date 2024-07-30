@@ -14,9 +14,9 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 
-public class ShowInHistoryAction extends Action implements INavigationAction {
+class ShowInHistoryAction extends Action implements INavigationAction {
 
-	public ShowInHistoryAction() {
+	ShowInHistoryAction() {
 		setText(M.ShowInHistory);
 	}
 	

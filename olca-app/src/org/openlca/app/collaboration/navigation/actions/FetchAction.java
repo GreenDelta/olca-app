@@ -17,7 +17,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitFetch;
 import org.openlca.git.util.Constants;
 
-public class FetchAction extends Action implements INavigationAction {
+class FetchAction extends Action implements INavigationAction {
 
 	static final String NOTHING_TO_FETCH = "Remote does not have " + Constants.LOCAL_REF
 			+ " available for fetch.";

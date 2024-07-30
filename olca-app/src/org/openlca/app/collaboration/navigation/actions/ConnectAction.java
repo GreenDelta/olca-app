@@ -14,7 +14,7 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.git.actions.GitInit;
 import org.openlca.util.Dirs;
 
-public class ConnectAction extends Action implements INavigationAction {
+class ConnectAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
@@ -26,10 +26,9 @@ public class ConnectAction extends Action implements INavigationAction {
 		var dialog = new ConnectDialog();
 		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
-		var url = dialog.url();
 		var gitDir = Repository.gitDir(Database.get().getName());
 		try {
-			GitInit.in(gitDir).remoteUrl(url).run();
+			GitInit.in(gitDir).remoteUrl(dialog.url()).run();
 			var repo = Repository.initialize(gitDir, Database.get());
 			if (repo == null) {
 				Dirs.delete(gitDir);

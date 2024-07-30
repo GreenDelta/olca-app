@@ -21,11 +21,11 @@ import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitMerge.MergeResult;
 import org.openlca.git.util.Constants;
 
-public class PullAction extends Action implements INavigationAction {
+class PullAction extends Action implements INavigationAction {
 
 	private final boolean silent;
 
-	public PullAction() {
+	PullAction() {
 		this(false);
 	}
 

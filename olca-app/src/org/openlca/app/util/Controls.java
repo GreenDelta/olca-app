@@ -140,13 +140,13 @@ public class Controls {
 	}
 
 	/**
-	 * Checks and, if required, sets the given color as background color on every
-	 * paint event. On some systems and especially in dark-mode this is necessary
-	 * in some cases because otherwise the widget is drawn with the default
-	 * background color even when it was set explicitly. It also does not always
-	 * work to do this in the first paint event only, thus we need to check the
-	 * background color after each re-paint. So, only use this function if
-	 * required.
+	 * Checks and, if required, sets the given color as background color on
+	 * every paint event. On some systems and especially in dark-mode this is
+	 * necessary in some cases because otherwise the widget is drawn with the
+	 * default background color even when it was set explicitly. It also does
+	 * not always work to do this in the first paint event only, thus we need to
+	 * check the background color after each re-paint. So, only use this
+	 * function if required.
 	 */
 	public static void paintBackground(Control widget, Color color) {
 		if (widget == null || color == null)
@@ -158,4 +158,5 @@ public class Controls {
 			widget.setBackground(color);
 		});
 	}
+
 }

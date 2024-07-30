@@ -17,9 +17,7 @@ public class AuthenticationDialog extends FormDialog {
 
 	static Logger log = LoggerFactory.getLogger(AuthenticationDialog.class);
 	private final String library;
-	private final AuthenticationGroup auth = new AuthenticationGroup()
-			.withUser().withPassword()
-			.onChange(this::updateButtons);
+	private AuthenticationGroup auth;
 
 	public AuthenticationDialog(String library) {
 		super(UI.shell());
@@ -29,29 +27,35 @@ public class AuthenticationDialog extends FormDialog {
 
 	public static Credentials promptCredentials(String library) {
 		var dialog = new AuthenticationDialog(library);
-		var auth = dialog.auth;
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
-		if (Strings.nullOrEmpty(auth.user())
-				|| Strings.nullOrEmpty(auth.password()))
+		if (Strings.nullOrEmpty(dialog.auth.user())
+				|| Strings.nullOrEmpty(dialog.auth.password()))
 			return null;
-		return new Credentials(auth.user(), auth.password().toCharArray());
+		return new Credentials(dialog.auth.user(), dialog.auth.password().toCharArray());
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
-				M.Authentication  + " - " + library,
+				M.Authentication + " - " + library,
 				M.PleaseEnterYourCredentialsLibrary);
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
-		auth.render(body, form.getToolkit(), SWT.FOCUSED, M.EmailOrUsername);
+		auth = new AuthenticationGroup(body, form.getToolkit(), SWT.FOCUSED)
+				.withUser().withPassword()
+				.withUserLabel(M.EmailOrUsername)
+				.onChange(this::updateButtons);
+		auth.render();
 		form.getForm().reflow(true);
 	}
 
 	private void updateButtons() {
-		getButton(IDialogConstants.OK_ID).setEnabled(auth.isComplete());
+		var button = getButton(IDialogConstants.OK_ID);
+		if (button == null || auth == null)
+			return;
+		button.setEnabled(auth.isComplete());
 	}
 
 	@Override
@@ -60,7 +64,7 @@ public class AuthenticationDialog extends FormDialog {
 				IDialogConstants.CANCEL_LABEL, false);
 		var ok = createButton(parent, IDialogConstants.OK_ID,
 				IDialogConstants.OK_LABEL, true);
-		ok.setEnabled(auth.isComplete());
+		ok.setEnabled(false);
 		setButtonLayoutData(ok);
 	}
 

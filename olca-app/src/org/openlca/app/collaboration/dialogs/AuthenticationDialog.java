@@ -10,25 +10,45 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.tools.authentification.AuthenticationGroup;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.collaboration.model.Credentials;
 import org.openlca.util.Strings;
 
 public class AuthenticationDialog extends FormDialog {
 
-	public final AuthenticationGroup auth = new AuthenticationGroup();
 	private final String url;
 	private final String user;
+	private final String password;
+	private boolean userPrompt;
+	private boolean passwordPrompt;
+	private boolean tokenPrompt;
+	public AuthenticationGroup auth;
 
-	public AuthenticationDialog(String url) {
+	private AuthenticationDialog(String url) {
 		this(url, null);
 	}
 
-	public AuthenticationDialog(String url, String user) {
+	private AuthenticationDialog(String url, String user) {
+		this(url, user, null);
+	}
+
+	private AuthenticationDialog(String url, String user, String password) {
 		super(UI.shell());
 		this.url = url;
 		this.user = user;
+		this.password = password;
 		setBlockOnOpen(true);
+	}
+
+	public static PersonIdent promptUser(String url, String user) {
+		if (!Strings.nullOrEmpty(user))
+			return new PersonIdent(user, "");
+		var dialog = new AuthenticationDialog(url);
+		dialog.userPrompt = true;
+		if (dialog.open() == AuthenticationDialog.CANCEL)
+			return null;
+		return new PersonIdent(dialog.auth.user(), "");
 	}
 
 	public static GitCredentialsProvider promptCredentials(String url) {
@@ -42,46 +62,30 @@ public class AuthenticationDialog extends FormDialog {
 		var password = CredentialStore.getPassword(url, user);
 		if (!Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password))
 			return new GitCredentialsProvider(url, user, password, null);
-		var dialog = new AuthenticationDialog(url);
-		var auth = dialog.auth;
-		auth.withUser(user).withPassword(password);
+		var dialog = new AuthenticationDialog(url, user, password);
+		dialog.passwordPrompt = true;
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
-		user = auth.user();
-		password = auth.password();
-		if (auth == null || Strings.nullOrEmpty(user) || Strings.nullOrEmpty(password))
-			return null;
-		var token = auth.token();
+		user = dialog.auth.user();
+		password = dialog.auth.password();
 		CredentialStore.put(url, user, password);
-		return new GitCredentialsProvider(url, user, password, token);
-	}
-
-	public static PersonIdent promptUser(String url, String user) {
-		if (!Strings.nullOrEmpty(user))
-			return new PersonIdent(user, "");
-		var dialog = new AuthenticationDialog(url);
-		var auth = dialog.auth;
-		auth.withUser(user);
-		if (dialog.open() == AuthenticationDialog.CANCEL)
-			return null;
-		user = auth.user();
-		return new PersonIdent(user, "");
+		return new GitCredentialsProvider(url, user, password, dialog.auth.token());
 	}
 
 	public static GitCredentialsProvider promptToken(String url, String user) {
-		var dialog = new AuthenticationDialog(url, user);
-		var auth = dialog.auth;
-		if (Strings.nullOrEmpty(user)) {
-			auth.withUser();
-		}
 		var password = CredentialStore.getPassword(url, user);
-		if (Strings.nullOrEmpty(password)) {
-			auth.withPassword();
-		}
-		auth.withToken();
+		var dialog = new AuthenticationDialog(url, user);
+		dialog.tokenPrompt = true;
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
-		return new GitCredentialsProvider(url, user, password, auth.token());
+		if (Strings.nullOrEmpty(user)) {
+			user = dialog.auth.user();
+		}
+		if (Strings.nullOrEmpty(password)) {
+			password = dialog.auth.password();
+		}
+		CredentialStore.put(url, user, password);
+		return new GitCredentialsProvider(url, user, password, dialog.auth.token());
 	}
 
 	@Override
@@ -95,20 +99,34 @@ public class AuthenticationDialog extends FormDialog {
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
-		auth.onChange(this::updateButtons)
-				.render(body, form.getToolkit(), SWT.FOCUSED);
+		auth = new AuthenticationGroup(body, form.getToolkit(), SWT.FOCUSED)
+				.onChange(this::updateButtons);
+		if (userPrompt) {
+			auth.withUser();
+		} else if (passwordPrompt) {
+			auth.withUser(user).withPassword();
+		} else if (tokenPrompt) {
+			if (Strings.nullOrEmpty(user) || Strings.nullOrEmpty(password)) {
+				auth.withUser(user).withPassword();
+			}
+			auth.withToken();
+		}
+		auth.render();
 		form.getForm().reflow(true);
 	}
 
 	private void updateButtons() {
-		getButton(IDialogConstants.OK_ID).setEnabled(auth.isComplete());
+		var button = getButton(IDialogConstants.OK_ID);
+		if (button == null || auth == null)
+			return;
+		button.setEnabled(auth.isComplete());
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 		var ok = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-		ok.setEnabled(auth.isComplete());
+		ok.setEnabled(false);
 		setButtonLayoutData(ok);
 	}
 
@@ -158,12 +176,14 @@ public class AuthenticationDialog extends FormDialog {
 
 		@Override
 		public boolean onUnauthenticated() {
+			CredentialStore.clearPassword(url, user);
 			return promptCredentials(url, user) != null;
 		}
 
 		@Override
 		public boolean onUnauthorized() {
-			return promptCredentials(url, user) != null;
+			MsgBox.warning(M.NoSufficientRights);
+			return false;
 		}
 
 	}

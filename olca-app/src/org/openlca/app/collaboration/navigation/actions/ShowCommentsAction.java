@@ -13,7 +13,7 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 
-public class ShowCommentsAction extends Action implements INavigationAction {
+class ShowCommentsAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {

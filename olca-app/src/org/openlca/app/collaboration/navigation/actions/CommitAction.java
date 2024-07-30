@@ -25,7 +25,7 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.git.actions.GitCommit;
 import org.openlca.git.actions.GitPush;
 
-public class CommitAction extends Action implements INavigationAction {
+class CommitAction extends Action implements INavigationAction {
 
 	private List<INavigationElement<?>> selection;
 

@@ -43,11 +43,10 @@ public class ImportFromGitAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var dialog = new ConnectDialog().withPassword();
+		var dialog = new ConnectDialog();
 		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
-		var url = dialog.url();
-		Clone.of(url, dialog.user(), dialog.password());
+		Clone.of(dialog.url(), dialog.user(), dialog.password());
 	}
 
 	@Override

@@ -3,6 +3,8 @@ package org.openlca.app.collaboration.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openlca.app.collaboration.navigation.ServerConfigurations;
+import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
 import org.openlca.util.Strings;
 
 public class CredentialStore {
@@ -14,7 +16,6 @@ public class CredentialStore {
 		return usernames.get(url);
 	}
 
-
 	public static String getPassword(String url, String username) {
 		return passwords.getOrDefault(url, new HashMap<>()).get(username);
 	}
@@ -24,6 +25,14 @@ public class CredentialStore {
 			return;
 		usernames.put(url, username);
 		passwords.computeIfAbsent(url, u -> new HashMap<>()).put(username, password);
+		ServerConfigurations.update(new ServerConfig(url, username));
+	}
+
+	public static void clearUsername(String url) {
+		if (Strings.nullOrEmpty(url))
+			return;
+		usernames.remove(url);
+		passwords.remove(url);
 	}
 
 	public static void clearPassword(String url, String username) {
@@ -36,11 +45,6 @@ public class CredentialStore {
 		if (list.isEmpty()) {
 			passwords.remove(url);
 		}
-	}
-
-	public static void clear(String url) {
-		passwords.remove(url);
-		usernames.remove(url);
 	}
 
 }

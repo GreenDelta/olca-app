@@ -67,7 +67,7 @@ class Actions {
 		var notPermitted = m.contains("not permitted on");
 		if (notPermitted) {
 			CredentialStore.clearPassword(repo.url, repo.user());
-			throw new TransportException("You do not have sufficient access to this repository");
+			throw new TransportException(M.NoSufficientRights);
 		}
 		if (passwordMissing) {
 			throw new TransportException(

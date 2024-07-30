@@ -446,12 +446,11 @@ public class UI {
 		var buttons = new Button[labels.length];
 		var i = 0;
 		for (var label : labels) {
-			var radio = UI.radio(group);
+			var radio = UI.radio(group, tk, label);
 			radio.setSelection(i == 0);
 			var answer = i;
 			Controls.onSelect(radio, (e -> onChange.accept(answer)));
 			buttons[i++] = radio;
-			UI.label(group, label);
 		}
 		return buttons;
 	}

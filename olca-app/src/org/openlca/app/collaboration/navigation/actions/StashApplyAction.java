@@ -14,7 +14,7 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 
-public class StashApplyAction extends Action implements INavigationAction {
+class StashApplyAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {

@@ -13,12 +13,12 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.git.model.Commit;
 
-public class OpenCompareViewAction extends Action implements INavigationAction {
+class OpenCompareViewAction extends Action implements INavigationAction {
 
 	private final boolean compareWithHead;
 	private List<INavigationElement<?>> selection;
 
-	public OpenCompareViewAction(boolean compareWithHead) {
+	OpenCompareViewAction(boolean compareWithHead) {
 		if (compareWithHead) {
 			setText(M.HEADRevision);
 		} else {

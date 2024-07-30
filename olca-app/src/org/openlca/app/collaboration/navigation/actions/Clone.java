@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.util.Announcements;
-import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -69,7 +68,6 @@ public class Clone {
 		if (repo == null)
 			return false;
 		repo.user(user);
-		CredentialStore.put(url, user, password);
 		return true;
 	}
 

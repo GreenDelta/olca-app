@@ -1,4 +1,4 @@
-package org.openlca.app.collaboration.navigation;
+package org.openlca.app.collaboration.navigation.actions;
 
 import java.util.List;
 
@@ -7,20 +7,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.navigation.actions.CommitAction;
-import org.openlca.app.collaboration.navigation.actions.ConnectAction;
-import org.openlca.app.collaboration.navigation.actions.DiscardAction;
-import org.openlca.app.collaboration.navigation.actions.DisconnectAction;
-import org.openlca.app.collaboration.navigation.actions.FetchAction;
-import org.openlca.app.collaboration.navigation.actions.MergeAction;
-import org.openlca.app.collaboration.navigation.actions.OpenCompareViewAction;
-import org.openlca.app.collaboration.navigation.actions.PullAction;
-import org.openlca.app.collaboration.navigation.actions.PushAction;
-import org.openlca.app.collaboration.navigation.actions.ShowCommentsAction;
-import org.openlca.app.collaboration.navigation.actions.ShowInHistoryAction;
-import org.openlca.app.collaboration.navigation.actions.StashApplyAction;
-import org.openlca.app.collaboration.navigation.actions.StashCreateAction;
-import org.openlca.app.collaboration.navigation.actions.StashDropAction;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.actions.NavigationMenu;
@@ -47,7 +33,8 @@ public class RepositoryMenu {
 				new StashApplyAction(),
 				new StashDropAction());
 		added += NavigationMenu.addActions(selection, repoMenu,
-				new DiscardAction());
+				new DiscardAction(),
+				new ChangeUserAction());
 		repoMenu.add(new Separator());
 		added += NavigationMenu.addActions(selection, repoMenu,
 				new ShowCommentsAction(),

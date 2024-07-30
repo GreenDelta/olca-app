@@ -24,6 +24,7 @@ public class Repository extends ClientRepository {
 	public static Repository CURRENT;
 	public static final String GIT_DIR = "repositories";
 	public final String url;
+	public final String serverUrl;
 	public final String id;
 	public final CSClient client;
 
@@ -35,7 +36,7 @@ public class Repository extends ClientRepository {
 		var splitIndex = url.startsWith("git@")
 				? url.lastIndexOf(":")
 				: url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
-		var serverUrl = url.substring(0, splitIndex);
+		this.serverUrl = url.substring(0, splitIndex);
 		var isCollaborationServer = WebRequests.execute(
 				() -> CSClient.isCollaborationServer(serverUrl), false);
 		this.client = isCollaborationServer
@@ -97,7 +98,7 @@ public class Repository extends ClientRepository {
 	}
 
 	public PersonIdent promptUser() {
-		var ident = AuthenticationDialog.promptUser(url, user());
+		var ident = AuthenticationDialog.promptUser(serverUrl, user());
 		if (ident == null)
 			return null;
 		user(ident.getName());
@@ -105,7 +106,7 @@ public class Repository extends ClientRepository {
 	}
 
 	public GitCredentialsProvider promptCredentials() {
-		var credentials = AuthenticationDialog.promptCredentials(url, user());
+		var credentials = AuthenticationDialog.promptCredentials(serverUrl, user());
 		if (credentials == null)
 			return null;
 		user(credentials.user);
@@ -113,7 +114,7 @@ public class Repository extends ClientRepository {
 	}
 
 	public GitCredentialsProvider promptToken() {
-		var credentials = AuthenticationDialog.promptToken(url, user());
+		var credentials = AuthenticationDialog.promptToken(serverUrl, user());
 		if (credentials == null)
 			return null;
 		user(credentials.user);

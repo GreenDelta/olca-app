@@ -3,56 +3,90 @@ package org.openlca.app.collaboration.dialogs;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 
-public class LocationGroup {
+class LocationGroup extends Composite {
 
+	private final FormToolkit toolkit;
 	private boolean withRepository;
+	private boolean withStoreOption;
 	private Runnable onChange;
-	private String url;
+	private UrlParts url;
+	private boolean storeConnection = true;
 
-	public LocationGroup withRepository() {
+	LocationGroup(Composite parent) {
+		this(parent, null);
+	}
+
+	LocationGroup(Composite parent, FormToolkit toolkit) {
+		super(parent, SWT.NONE);
+		this.toolkit = toolkit;
+		UI.gridLayout(this, 1, 0, 0);
+		UI.gridData(this, true, false);
+		if (toolkit != null) {
+			toolkit.adapt(this);
+		}
+	}
+
+	LocationGroup withRepository() {
 		this.withRepository = true;
 		return this;
 	}
 
-	public LocationGroup onChange(Runnable onChange) {
+	LocationGroup withStoreOption() {
+		this.withStoreOption = true;
+		return this;
+	}
+
+	LocationGroup onChange(Runnable onChange) {
 		this.onChange = onChange;
 		return this;
 	}
 
-	public void render(Composite parent, FormToolkit tk) {
-		var group = UI.group(parent, tk);
-		group.setText("Location");
+	void render() {
+		var group = UI.group(this, toolkit);
+		group.setText(M.Location);
 		UI.gridLayout(group, 2);
 		UI.gridData(group, true, false);
-		var urlText = UI.labeledText(group, tk, M.URL);
-		var protocolText = UI.labeledText(group, tk, "Protocol");
+		var urlText = UI.labeledText(group, toolkit, M.URL);
+		if (withStoreOption) {
+			UI.label(group);
+			var storeCheck = UI.checkbox(group, toolkit, "Store connection");
+			storeCheck.setSelection(true);
+			Controls.onSelect(storeCheck, e -> {
+				storeConnection = storeCheck.getSelection();
+			});
+		}
+		var protocolText = UI.labeledText(group, toolkit, M.Protocol);
 		protocolText.setEnabled(false);
-		var hostText = UI.labeledText(group, tk, M.Host);
+		var hostText = UI.labeledText(group, toolkit, M.Host);
 		hostText.setEnabled(false);
-		var portText = UI.labeledText(group, tk, M.Port);
+		var contextText = UI.labeledText(group, toolkit, M.ContextPath);
+		contextText.setEnabled(false);
+		var portText = UI.labeledText(group, toolkit, M.Port);
 		portText.setEnabled(false);
 		Text pText = null;
 		if (withRepository) {
-			pText = UI.labeledText(group, tk, M.RepositoryPath);
+			pText = UI.labeledText(group, toolkit, M.RepositoryId);
 			pText.setEnabled(false);
 		}
 		var pathText = pText;
 		urlText.addModifyListener(e -> {
 			var text = urlText.getText();
-			var url = new UrlParts(text);
-			this.url = url.isValid() ? text : null;
+			url = new UrlParts(text);
 			protocolText.setText(url.protocol);
 			hostText.setText(url.host);
 			portText.setText(url.port);
+			contextText.setText(url.context);
 			if (withRepository) {
-				pathText.setText(url.path);
+				pathText.setText(url.repositoryId);
 			}
 			if (onChange != null) {
 				onChange.run();
@@ -60,8 +94,16 @@ public class LocationGroup {
 		});
 	}
 
-	public String url() {
-		return new UrlParts(url).toString();
+	String url() {
+		return url.getUrl(true);
+	}
+
+	String serverUrl() {
+		return url.getUrl(false);
+	}
+
+	boolean storeConnection() {
+		return storeConnection;
 	}
 
 	private class UrlParts {
@@ -69,13 +111,15 @@ public class LocationGroup {
 		private final String protocol;
 		private final String host;
 		private final String port;
-		private final String path;
+		private final String context;
+		private final String repositoryId;
 
 		private UrlParts(String u) {
 			var protocol = "";
 			var host = "";
 			var port = "";
-			var path = "";
+			var context = "";
+			var repositoryId = "";
 			try {
 				var url = new URL(u);
 				protocol = url.getProtocol();
@@ -90,23 +134,40 @@ public class LocationGroup {
 				} else if (protocol.equals("https")) {
 					port = "443";
 				}
-				path = url.getPath();
-				if (path != null && path.startsWith("/")) {
+				var path = url.getPath();
+				while (!Strings.nullOrEmpty(path) && path.startsWith("/")) {
 					path = path.substring(1);
 				}
-				if (path != null && path.endsWith("/")) {
+				while (!Strings.nullOrEmpty(path) && path.endsWith("/")) {
 					path = path.substring(0, path.length() - 1);
+				}
+				if (!Strings.nullOrEmpty(path)) {
+					if (!withRepository) {
+						context = path;
+					} else {
+						var split = path.split("/");
+						if (split.length == 1) {
+							repositoryId = split[0];
+						} else {
+							repositoryId = split[split.length - 2] + "/" + split[split.length - 1];
+							if (split.length > 2) {
+								for (var i = 0; i < split.length - 2; i++) {
+									if (i > 0) {
+										context += "/";
+									}
+									context += split[i];
+								}
+							}
+						}
+					}
 				}
 			} catch (MalformedURLException e) {
 			}
 			this.protocol = protocol;
-			this.host = withRepository || Strings.nullOrEmpty(path)
-					? host
-					: host + "/" + path;
+			this.host = host;
 			this.port = port;
-			this.path = withRepository
-					? path
-					: "";
+			this.context = context;
+			this.repositoryId = repositoryId;
 		}
 
 		private boolean isValid() {
@@ -116,19 +177,26 @@ public class LocationGroup {
 				return false;
 			if (Strings.nullOrEmpty(port))
 				return false;
-			if (withRepository && Strings.nullOrEmpty(path))
-				return false;
-			return true;
+			if (!withRepository)
+				return true;
+			return !Strings.nullOrEmpty(repositoryId)
+					&& repositoryId.contains("/")
+					&& !repositoryId.startsWith("/")
+					&& !repositoryId.endsWith("/");
 		}
 
-		@Override
-		public String toString() {
+		public String getUrl(boolean withRepository) {
+			if (!isValid())
+				return null;
 			var url = protocol + "://" + host;
 			if (!port.equals("80") && !port.equals("443")) {
 				url += ":" + port;
 			}
-			if (!Strings.nullOrEmpty(path)) {
-				url += "/" + path;
+			if (!Strings.nullOrEmpty(context)) {
+				url += "/" + context;
+			}
+			if (withRepository && !Strings.nullOrEmpty(repositoryId)) {
+				url += "/" + repositoryId;
 			}
 			return url;
 		}

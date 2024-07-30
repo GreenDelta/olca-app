@@ -7,12 +7,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
+import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.MsgBox;
 import org.openlca.collaboration.client.CSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -28,6 +32,8 @@ public class ServerConfigurations {
 	}
 
 	public static void put(ServerConfig config) {
+		if (!checkCS(config))
+			return;
 		var index = CONFIGS.indexOf(config);
 		if (index == -1) {
 			CONFIGS.add(config);
@@ -43,7 +49,18 @@ public class ServerConfigurations {
 	}
 
 	public static void update(ServerConfig config) {
+		var index = CONFIGS.indexOf(config);
+		if (index == -1)
+			return;
+		CONFIGS.set(index, config);
+		write();
+	}
 
+	private static boolean checkCS(ServerConfig config) {
+		if (WebRequests.execute(() -> CSClient.isCollaborationServer(config.url), false))
+			return true;
+		MsgBox.warning(M.NotACollaborationServer);
+		return false;
 	}
 
 	private static List<ServerConfig> read() {
@@ -75,6 +92,20 @@ public class ServerConfigurations {
 		public CSClient createClient() {
 			return new CSClient(url,
 					() -> AuthenticationDialog.promptCredentials(url, user));
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			if (!(object instanceof ServerConfig config))
+				return false;
+			return Objects.equal(config.url(), url());
+		}
+
+		@Override
+		public int hashCode() {
+			if (url == null)
+				return "".hashCode();
+			return url.hashCode();
 		}
 
 	}

@@ -98,6 +98,7 @@ public class M extends NLS {
 	public static String AssignUnits;
 	public static String AttachedImages;
 	public static String Authenticate;
+	public static String Authenticated;
 	public static String Authentication;
 	public static String AutoLinkProcesses;
 	public static String Avoided;
@@ -168,6 +169,7 @@ public class M extends NLS {
 	public static String Causal;
 	public static String CausalAllocation;
 	public static String Change;
+	public static String ChangeUser;
 	public static String CharactFactorsForSub;
 	public static String CheckingForLocalConflicts;
 	public static String CheckingForWorkspaceConflicts;
@@ -252,6 +254,7 @@ public class M extends NLS {
 	public static String Content;
 	public static String ContentMustBeValidJsonInfo;
 	public static String Context;
+	public static String ContextPath;
 	public static String Continue;
 	public static String ContinueAutoSelect;
 	public static String ContinueMultiProviders;
@@ -1069,6 +1072,7 @@ public class M extends NLS {
 	public static String NoSourceFlow;
 	public static String NoSourceOrTargetSystem;
 	public static String NoSourceOrTargetSystemMappingInfo;
+	public static String NoSufficientRights;
 	public static String NoStatement;
 	public static String NoSystemSelected;
 	public static String NoSystemSelectedErr;
@@ -1095,6 +1099,7 @@ public class M extends NLS {
 	public static String NormalizationWeightingSets;
 	public static String NormalizedResults;
 	public static String North;
+	public static String NotACollaborationServer;
 	public static String NotAFile;
 	public static String NotALibraryPackage;
 	public static String NotAMultiFunctionalProcess;
@@ -1303,6 +1308,7 @@ public class M extends NLS {
 	public static String RegionalizedCalculation;
 	public static String RegionalizedCharacterizationFactor;
 	public static String RegionalizedLCIA;
+	public static String RegisterANewCollaborationServer;
 	public static String RejectedNotUpToDateErr;
 	public static String RelativeLciaResultsBarChart;
 	public static String RelativeLciaResultsRadarChart;
@@ -1347,7 +1353,7 @@ public class M extends NLS {
 	public static String Report;
 	public static String Repository;
 	public static String RepositoryNameHint;
-	public static String RepositoryPath;
+	public static String RepositoryId;
 	public static String RepresentativenessType;
 	public static String RequiredAmount;
 	public static String ResetAll;
@@ -1476,6 +1482,7 @@ public class M extends NLS {
 	public static String SelectRecipients;
 	public static String SelectSystemDatabases;
 	public static String SelectedProcessesForContributionAnalyses;
+	public static String Server;
 	public static String SessionCredentialNotValidErr;
 	public static String SetAsQuantitativeReference;
 	public static String SetAsReferenceCurrency;
