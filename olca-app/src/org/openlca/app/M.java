@@ -1346,6 +1346,7 @@ public class M extends NLS {
 	public static String ReplacementError;
 	public static String Report;
 	public static String Repository;
+	public static String RepositoryNameHint;
 	public static String RepositoryPath;
 	public static String RepresentativenessType;
 	public static String RequiredAmount;

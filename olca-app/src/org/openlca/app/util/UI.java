@@ -232,7 +232,7 @@ public class UI {
 
 	public static Composite header(IManagedForm mform, FormToolkit tk,
 			String title, String description) {
-		var form = UI.header(mform, title);
+		var form = header(mform, title);
 		var body = form.getBody();
 		gridLayout(body, 1, 0, 0);
 		tk.paintBordersFor(body);

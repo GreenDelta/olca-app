@@ -1,6 +1,5 @@
 package org.openlca.app.collaboration.browse.actions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -31,7 +30,9 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 
 	@Override
 	public void run() {
-		var groups = WebRequests.execute(elem.getClient()::listWritableGroups, new ArrayList<String>());
+		var groups = WebRequests.execute(elem.getClient()::listWritableGroups);
+		if (groups == null)
+			return;
 		if (groups.isEmpty()) {
 			MsgBox.info(M.NotAllowedToCreateRepositories);
 			return;
@@ -69,25 +70,26 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 
 		@Override
 		protected void createFormContent(IManagedForm form) {
-			var formBody = UI.header(form, form.getToolkit(), M.CreateRepository, M.SelectGroupAndEnterRepositoryName);
-			var body = UI.composite(formBody, form.getToolkit());
-			UI.gridLayout(body, 1);
-			UI.gridData(body, true, true).widthHint = 500;
-			var container = UI.composite(body, form.getToolkit());
+			var toolkit = form.getToolkit();
+			var formBody = UI.header(form, toolkit,
+					M.CreateRepository, M.SelectGroupAndEnterRepositoryName);
+			var container = UI.composite(formBody, toolkit);
 			UI.gridLayout(container, 2);
 			UI.gridData(container, true, false);
-			var groupCombo = UI.labeledCombo(container, form.getToolkit(), M.Group);
+			var groupCombo = UI.labeledCombo(container, toolkit, M.Group);
 			groupCombo.setItems(groups.toArray(new String[groups.size()]));
 			groupCombo.addModifyListener(e -> {
 				group = groups.get(groupCombo.getSelectionIndex());
 				updateButtons();
 			});
 			groupCombo.select(0);
-			var nameText = UI.labeledText(container, form.getToolkit(), M.Name, SWT.NONE);
+			var nameText = UI.labeledText(container, toolkit, M.Name, SWT.NONE);
 			nameText.addModifyListener(e -> {
 				name = nameText.getText();
 				updateButtons();
 			});
+			UI.label(container);
+			UI.label(container, toolkit, M.RepositoryNameHint);
 			form.getForm().reflow(true);
 		}
 
@@ -100,7 +102,10 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 		}
 
 		private void updateButtons() {
-			getButton(IDialogConstants.OK_ID).setEnabled(isComplete());
+			var button = getButton(IDialogConstants.OK_ID);
+			if (button == null)
+				return;
+			button.setEnabled(isComplete());
 		}
 
 		private boolean isComplete() {

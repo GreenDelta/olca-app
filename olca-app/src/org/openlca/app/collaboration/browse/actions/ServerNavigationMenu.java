@@ -19,12 +19,12 @@ public class ServerNavigationMenu extends CommonActionProvider {
 		List<IServerNavigationElement<?>> selection = Selections.allOf(con.getSelection());
 		addActions(selection, menu,
 				new RegisterServerAction(),
-				new UnregisterServerAction(),
 				new CreateRepositoryAction(),
 				new DownloadDatasetAction(),
 				new DownloadLibraryAction(),
 				new CloneAction(),
-				new DeleteRepositoryAction());
+				new DeleteRepositoryAction(),
+				new UnregisterServerAction());
 	}
 
 	public static int addActions(
