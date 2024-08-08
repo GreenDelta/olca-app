@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -54,9 +55,14 @@ class CostDialog extends FormDialog {
 	}
 
 	@Override
+	protected void configureShell(Shell shell) {
+		super.configureShell(shell);
+		shell.setText(M.Price);
+	}
+
+	@Override
 	protected void createFormContent(IManagedForm form) {
 		var tk = form.getToolkit();
-		UI.header(form, M.Price);
 		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 3);
 		createCurrencyRow(body, tk);
@@ -140,7 +146,7 @@ class CostDialog extends FormDialog {
 	private void clearFormulaError() {
 		if (priceText == null)
 			return;
-		priceText.setBackground(Colors.white());
+		priceText.setBackground(Colors.background());
 		priceText.setToolTipText("");
 	}
 
@@ -173,8 +179,8 @@ class CostDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		int width = 500;
-		int height = 300;
+		int width = 600;
+		int height = 250;
 		Rectangle shellBounds = getShell().getDisplay().getBounds();
 		int shellWidth = shellBounds.x;
 		int shellHeight = shellBounds.y;
