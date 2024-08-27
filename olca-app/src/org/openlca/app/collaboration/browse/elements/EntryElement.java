@@ -72,10 +72,6 @@ public class EntryElement extends ServerNavigationElement<Entry> {
 		return getContent().typeOfEntry() == TypeOfEntry.MODEL_TYPE;
 	}
 
-	public boolean isLibrary() {
-		return getContent().typeOfEntry() == TypeOfEntry.LIBRARY;
-	}
-
 	public String getUrl() {
 		if (!isDataset())
 			return null;

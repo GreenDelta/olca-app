@@ -8,7 +8,7 @@ import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 interface IServerNavigationAction extends IAction {
 
 	/**
-	 * Returns true, if this action accepts the given selection from the
+	 * Returns true, if this action accepts the given selection from the server
 	 * navigation tree. The given selection can be empty or contain one or
 	 * multiple elements.
 	 */

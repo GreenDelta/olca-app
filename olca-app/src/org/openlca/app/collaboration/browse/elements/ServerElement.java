@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.collaboration.client.CSClient;
+import org.openlca.collaboration.model.LibraryInfo;
 import org.openlca.collaboration.model.Repository;
 
 public class ServerElement extends ServerNavigationElement<ServerConfig> {
@@ -43,12 +43,18 @@ public class ServerElement extends ServerNavigationElement<ServerConfig> {
 			return Collections.emptyList();
 		return super.getChildren();
 	}
-	
+
 	@Override
 	protected List<IServerNavigationElement<?>> queryChildren() {
-		return WebRequests.execute(client::listRepositories, new ArrayList<Repository>()).stream()
+		var children = new ArrayList<IServerNavigationElement<?>>();
+		WebRequests.execute(client::listRepositories, new ArrayList<Repository>()).stream()
 				.map(repo -> new RepositoryElement(this, repo))
-				.collect(Collectors.toList());
+				.forEach(children::add);
+		var libs = WebRequests.execute(client::listLibraries, new ArrayList<LibraryInfo>());
+		if (!libs.isEmpty()) {
+			children.add(new LibrariesElement(this, libs));
+		}
+		return children;
 	}
 
 }

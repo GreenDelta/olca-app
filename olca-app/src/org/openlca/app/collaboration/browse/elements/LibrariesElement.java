@@ -1,16 +1,14 @@
 package org.openlca.app.collaboration.browse.elements;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.openlca.app.collaboration.util.WebRequests;
-import org.openlca.collaboration.model.Entry;
+import org.openlca.collaboration.model.LibraryInfo;
 
-public class LibrariesElement extends ServerNavigationElement<Void> {
+public class LibrariesElement extends ServerNavigationElement<List<LibraryInfo>> {
 
-	public LibrariesElement(IServerNavigationElement<?> parent) {
-		super(parent, null);
+	public LibrariesElement(IServerNavigationElement<?> parent, List<LibraryInfo> libraries) {
+		super(parent, libraries);
 	}
 
 	@Override
@@ -20,9 +18,8 @@ public class LibrariesElement extends ServerNavigationElement<Void> {
 
 	@Override
 	protected List<IServerNavigationElement<?>> queryChildren() {
-		return WebRequests.execute(
-				() -> getClient().browse(getRepositoryId(), "LIBRARY"), new ArrayList<Entry>()).stream()
-				.map(e -> new EntryElement(this, e))
+		return getContent().stream()
+				.map(lib -> new LibraryElement(this, lib))
 				.collect(Collectors.toList());
 	}
 

@@ -10,6 +10,7 @@ import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.browse.elements.GroupElement;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 import org.openlca.app.collaboration.browse.elements.LibrariesElement;
+import org.openlca.app.collaboration.browse.elements.LibraryElement;
 import org.openlca.app.collaboration.browse.elements.RepositoryElement;
 import org.openlca.app.collaboration.browse.elements.ServerElement;
 import org.openlca.app.rcp.images.Icon;
@@ -27,13 +28,13 @@ public class ServerNavigationLabelProvider extends ColumnLabelProvider implement
 			return Icon.COLLABORATION_SERVER_LOGO.get();
 		if (elem instanceof RepositoryElement)
 			return Icon.REPOSITORY.get();
-		if (elem instanceof LibrariesElement)
-			return Icon.FOLDER.get();
 		if (elem instanceof GroupElement groupElem)
 			return Images.get(groupElem.getContent());
+		if (elem instanceof LibrariesElement)
+			return Icon.FOLDER.get();
+		if (elem instanceof LibraryElement libElem)
+			return Icon.LIBRARY.get();
 		if (elem instanceof EntryElement entryElem) {
-			if (entryElem.isLibrary())
-				return Icon.LIBRARY.get();
 			if (entryElem.isModelType() || entryElem.isCategory())
 				return Images.getForCategory(entryElem.getModelType());
 			if (entryElem.getModelType() == ModelType.FLOW)
@@ -53,10 +54,12 @@ public class ServerNavigationLabelProvider extends ColumnLabelProvider implement
 			return serverElem.getContent().url();
 		if (elem instanceof RepositoryElement repoElem)
 			return repoElem.getRepositoryId();
-		if (elem instanceof LibrariesElement)
-			return M.Libraries;
 		if (elem instanceof GroupElement groupElem)
 			return groupElem.getContent().label;
+		if (elem instanceof LibrariesElement)
+			return M.Libraries;
+		if (elem instanceof LibraryElement libElem)
+			return libElem.getContent().name();
 		if (elem instanceof EntryElement entryElem) {
 			if (entryElem.isModelType())
 				return Labels.plural(entryElem.getModelType());
@@ -67,6 +70,8 @@ public class ServerNavigationLabelProvider extends ColumnLabelProvider implement
 
 	@Override
 	public String getDescription(Object obj) {
+		if (obj instanceof LibraryElement libElem)
+			return libElem.getContent().description();
 		return null;
 	}
 

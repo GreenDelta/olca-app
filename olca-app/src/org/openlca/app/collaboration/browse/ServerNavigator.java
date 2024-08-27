@@ -2,7 +2,10 @@ package org.openlca.app.collaboration.browse;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
+import java.util.function.Predicate;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -11,6 +14,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -112,6 +116,9 @@ public class ServerNavigator extends CommonNavigator {
 		var part = page.findView(ID);
 		if (!(part instanceof ServerNavigator navigator))
 			return null;
+		var viewer = navigator.getCommonViewer();
+		if (viewer == null || viewer.getTree().isDisposed() || navigator.root == null)
+			return null;
 		return navigator;
 	}
 
@@ -124,25 +131,74 @@ public class ServerNavigator extends CommonNavigator {
 
 	private void doRefresh() {
 		var viewer = getCommonViewer();
-		if (viewer == null || root == null)
-			return;
-		if (viewer.getTree().isDisposed())
-			return;
 		var oldExpansion = viewer.getExpandedElements();
 		root.update();
 		viewer.refresh();
-		setRefreshedExpansion(viewer, oldExpansion);
+		setRefreshedExpansion(oldExpansion);
 	}
 
-	private void setRefreshedExpansion(
-			CommonViewer viewer, Object[] oldExpansion) {
-		if (viewer == null || oldExpansion == null)
+	public static <T> void refresh(Class<? extends IServerNavigationElement<T>> clazz,
+			Predicate<T> fits) {
+		var instance = getInstance();
+		if (instance == null)
 			return;
+		var element = instance.findElement(clazz, fits);
+		if (element == null)
+			return;
+		instance.doRefresh(element);
+	}
+
+	private void doRefresh(IServerNavigationElement<?> element) {
+		var viewer = getCommonViewer();
+		element.update();
+		var oldExpansion = viewer.getExpandedElements();
+		viewer.refresh(element);
+		updateLabels(element);
+		setRefreshedExpansion(oldExpansion);
+	}
+
+	private void updateLabels(IServerNavigationElement<?> element) {
+		var viewer = getCommonViewer();
+		var item = findItem(element);
+		if (item == null)
+			return;
+		do {
+			viewer.doUpdateItem(item);
+			item = item.getParentItem();
+		} while (item != null);
+	}
+
+	private TreeItem findItem(IServerNavigationElement<?> element) {
+		var viewer = getCommonViewer();
+		var items = new Stack<TreeItem>();
+		items.addAll(Arrays.asList(viewer.getTree().getItems()));
+		while (!items.empty()) {
+			var next = items.pop();
+			if (itemEqualsElement(next, element))
+				return next;
+			items.addAll(Arrays.asList(next.getItems()));
+		}
+		return null;
+	}
+
+	private boolean itemEqualsElement(TreeItem item, IServerNavigationElement<?> element) {
+		var data = (IServerNavigationElement<?>) item.getData();
+		if (data == null)
+			return false;
+		return Objects.equal(data.getContent(), element.getContent());
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setRefreshedExpansion(Object[] oldExpansion) {
+		if (oldExpansion == null || oldExpansion.length == 0)
+			return;
+		var viewer = getCommonViewer();
 		var newExpanded = new ArrayList<IServerNavigationElement<?>>();
 		for (var e : oldExpansion) {
 			if (!(e instanceof IServerNavigationElement<?> oldElem))
 				continue;
-			var newElem = findElement(oldElem.getContent());
+			var clazz = (Class<IServerNavigationElement<?>>) oldElem.getClass();
+			var newElem = findElement(clazz, other -> Objects.equal(other, oldElem.getContent()));
 			if (newElem != null) {
 				newExpanded.add(newElem);
 			}
@@ -150,16 +206,19 @@ public class ServerNavigator extends CommonNavigator {
 		viewer.setExpandedElements(newExpanded.toArray());
 	}
 
-	private IServerNavigationElement<?> findElement(Object content) {
-		if (content == null || root == null)
-			return null;
+	@SuppressWarnings("unchecked")
+	private <T> IServerNavigationElement<?> findElement(Class<? extends IServerNavigationElement<T>> clazz,
+			Predicate<T> fits) {
 		var queue = new ArrayDeque<IServerNavigationElement<?>>();
 		queue.add(root);
 		while (!queue.isEmpty()) {
 			var next = queue.poll();
-			if (Objects.equal(next.getContent(), content))
-				return next;
-			queue.addAll(next.getChildren());
+			if (next.getClass().equals(clazz)) {
+				if (fits.test((T) next.getContent()))
+					return next;
+			} else {
+				queue.addAll(next.getChildren());
+			}
 		}
 		return null;
 	}

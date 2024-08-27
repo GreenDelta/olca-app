@@ -10,6 +10,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.browse.ServerNavigator;
+import org.openlca.app.collaboration.browse.elements.RepositoryElement;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.collaboration.navigation.NavCache;
@@ -78,6 +80,7 @@ class CommitAction extends Action implements INavigationAction {
 			}
 			Collections.reverse(result.newCommits());
 			new HistoryDialog(M.PushedCommits, result.newCommits()).open();
+			ServerNavigator.refresh(RepositoryElement.class, r -> r.id().equals(repo.id));
 			return true;
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during commit", e);

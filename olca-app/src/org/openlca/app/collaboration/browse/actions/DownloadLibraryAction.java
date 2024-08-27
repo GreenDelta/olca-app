@@ -5,8 +5,8 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
+import org.openlca.app.collaboration.browse.elements.LibraryElement;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.Navigator;
@@ -15,7 +15,7 @@ import org.openlca.app.rcp.images.Icon;
 
 class DownloadLibraryAction extends Action implements IServerNavigationAction {
 
-	private EntryElement elem;
+	private LibraryElement elem;
 
 	DownloadLibraryAction() {
 		setText(M.DownloadLibrary);
@@ -34,7 +34,7 @@ class DownloadLibraryAction extends Action implements IServerNavigationAction {
 				() -> elem.getClient().downloadLibrary(lib));
 		if (stream == null)
 			return;
-		App.runWithProgress("Downloading and extracting library " + lib,
+		App.runWithProgress(M.DownloadingAndExtractingLibrary + " - " + lib,
 				() -> Libraries.importFromStream(stream),
 				Navigator::refresh);
 	}
@@ -44,7 +44,7 @@ class DownloadLibraryAction extends Action implements IServerNavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof EntryElement elem) || !elem.isLibrary())
+		if (!(first instanceof LibraryElement elem))
 			return false;
 		this.elem = elem;
 		return true;

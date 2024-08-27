@@ -9,6 +9,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.browse.ServerNavigator;
+import org.openlca.app.collaboration.browse.elements.RepositoryElement;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -53,6 +55,7 @@ class PushAction extends Action implements INavigationAction {
 			} else {
 				Collections.reverse(result.newCommits());
 				new HistoryDialog(M.PushedCommits, result.newCommits()).open();
+				ServerNavigator.refresh(RepositoryElement.class, r -> r.id().equals(repo.id));
 			}
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error pushing to remote", e);
