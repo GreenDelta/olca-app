@@ -76,6 +76,7 @@ project and other open source software.
       <plugin id="org.eclipse.core.databinding.property"/>
       <plugin id="org.eclipse.core.expressions"/>
       <plugin id="org.eclipse.core.filesystem"/>
+      <plugin id="org.eclipse.core.filesystem.macosx"/>
       <plugin id="org.eclipse.core.filesystem.win32.x86_64"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.resources"/>
@@ -106,6 +107,7 @@ project and other open source software.
       <plugin id="org.eclipse.e4.ui.workbench"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt"/>
+      <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa"/>
       <plugin id="org.eclipse.e4.ui.workbench.swt"/>
       <plugin id="org.eclipse.e4.ui.workbench3"/>
       <plugin id="org.eclipse.emf.common"/>
@@ -139,6 +141,7 @@ project and other open source software.
       <plugin id="org.eclipse.swtchart.extensions"/>
       <plugin id="org.eclipse.text"/>
       <plugin id="org.eclipse.ui"/>
+      <plugin id="org.eclipse.ui.cocoa"/>
       <plugin id="org.eclipse.ui.console"/>
       <plugin id="org.eclipse.ui.forms"/>
       <plugin id="org.eclipse.ui.navigator"/>
