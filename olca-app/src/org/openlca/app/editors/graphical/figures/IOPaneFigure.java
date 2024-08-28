@@ -145,7 +145,7 @@ public class IOPaneFigure extends ComponentFigure {
 
 			var theme = pane.getGraph().getConfig().getTheme();
 			Label label = new Label(
-				pane.isForInputs() ? "⇨ " + M.InputFlows : M.OutputFlows + " ⇨");
+				pane.isForInputs() ? "\u21e8 " + M.InputFlows : M.OutputFlows + " \u21e8");
 			label.setForegroundColor(theme.infoLabelColor());
 			var alignment = pane.isForInputs() ? SWT.LEAD : SWT.TRAIL;
 			add(label, new GridData(alignment, SWT.TOP, true, false));
