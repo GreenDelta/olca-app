@@ -14,6 +14,7 @@ public class EpdEditor extends ModelEditor<Epd> {
 	protected void addPages() {
 		try {
 			addPage(new InfoPage(this));
+			addPage(new DocPage(this));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to open EPD", e);
 		}
