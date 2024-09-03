@@ -1,8 +1,6 @@
 package org.openlca.app.editors.epds;
 
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
@@ -29,21 +27,8 @@ class InfoPage extends ModelPage<Epd> {
 		new UploadButton(editor).render(info.composite(), tk);
 
 		new EpdProductSection(editor).render(body, tk);
-
-		referenceSection(body, tk);
 		new EpdModulesSection(editor).render(body, tk);
 		body.setFocus();
 		form.reflow(true);
-	}
-
-	private void referenceSection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, M.References, 3);
-		modelLink(comp, M.Manufacturer, "manufacturer");
-		modelLink(comp, M.ProgramOperator, "programOperator");
-		modelLink(comp, "PCR", "pcr");
-		modelLink(comp, M.Verifier, "verifier");
-
-		UI.label(comp, tk, "URN");
-		new UrnLink(editor).render(comp, tk);
 	}
 }
