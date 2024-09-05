@@ -173,11 +173,11 @@ public class AuthenticationDialog extends FormDialog {
 					? auth.token
 					: null;
 		}
-
+		
 		@Override
 		public boolean onUnauthenticated() {
 			CredentialStore.clearPassword(url, user);
-			return promptCredentials(url, user) != null;
+			return true;
 		}
 
 		@Override
