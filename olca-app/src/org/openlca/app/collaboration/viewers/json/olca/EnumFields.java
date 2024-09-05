@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.EpdType;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -28,6 +29,7 @@ class EnumFields {
 		enums.put("allocationType", AllocationMethod.class);
 		enums.put("allocationMethod", AllocationMethod.class);
 		enums.put("modelType", ModelType.class);
+		enums.put("epdType", EpdType.class);
 	}
 
 	static boolean isEnum(String property) {

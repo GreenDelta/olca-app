@@ -164,6 +164,8 @@ public class Labels {
 			return Labels.of((RiskLevel) enumValue);
 		if (enumValue instanceof ModelType)
 			return Labels.of((ModelType) enumValue);
+		if (enumValue instanceof EpdType)
+			return Labels.of((EpdType) enumValue);
 		if (enumValue != null)
 			return enumValue.toString();
 		return null;
@@ -244,6 +246,18 @@ public class Labels {
 		};
 	}
 
+	public static String of(EpdType t) {
+		if (t == null)
+			return null;
+		return switch (t) {
+			case AVERAGE_DATASET -> M.AverageDataset;
+			case GENERIC_DATASET -> M.GenericDataset;
+			case REPRESENTATIVE_DATASET -> M.RepresentativeDataset;
+			case SPECIFIC_DATASET -> M.SpecificDataset;
+			case TEMPLATE_DATASET -> M.TemplateDataset;
+		};
+	}
+
 	public static String plural(ModelType o) {
 		if (o == null)
 			return null;
@@ -321,7 +335,8 @@ public class Labels {
 		return switch (mode) {
 			case HALF_UP -> M.HalfUp;
 			case CEILING -> M.Up;
-			// TODO: we may should add labels for the other modes too, but these are
+			// TODO: we may should add labels for the other modes too, but these
+			// are
 			// currently the only modes that we use in the DQI aggregation
 			default -> "?";
 		};
