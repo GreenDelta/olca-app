@@ -82,7 +82,8 @@ class ModelUtil {
 				"variants.productSystem", "inputs.isInput", "outputs.isInput", "inputs.flow", "outputs.flow",
 				"inputResults.isInput", "outputResults.isInput", "inputResults.flow.flowType",
 				"outputResults.flow.flowType", "inputResults.flow.refUnit", "outputResults.flow.refUnit",
-				"allocationFactors.product", "allocationFactors.exchange", "variants.name", "indicators.name");
+				"allocationFactors.product", "allocationFactors.exchange", "variants.name", "indicators.name",
+				"originalEpd.name", "dataGenerator.name", "location.category", "location.name");
 		var hiddenRefs = Arrays.asList("processLinks", "category", "refProcess", "refExchange",
 				"activityQuantity", "targetFlowProperty", "impactCategories", "targetUnit");
 		if (hiddenProps.contains(property) || hiddenPaths.contains(path) || hiddenRefs.contains(parentPath))
