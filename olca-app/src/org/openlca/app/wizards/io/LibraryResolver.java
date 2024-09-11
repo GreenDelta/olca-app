@@ -49,7 +49,7 @@ class LibraryResolver {
 		var lib = libDir.getLibrary(link.id()).orElse(null);
 		if (lib == null) {
 			askFor(link);
-		} else if (!handled.contains(lib.name())) {
+		} else if (!handled.contains(lib.name()) && !database.getLibraries().contains(lib.name())) {
 			mount(lib);
 		} else if (links.isEmpty()) {
 			callback.accept(true);
@@ -64,7 +64,7 @@ class LibraryResolver {
 			callback.accept(false);
 			return;
 		}
-		Library resolved = dialog.isFileSelected()
+		var resolved = dialog.isFileSelected()
 				? App.exec(M.ExtractingLibrary + " - " + link.id(),
 						() -> Libraries.importFromFile(new File(dialog.getLocation())))
 				: App.exec(M.DownloadingAndExtractingLibrary + " - " + link.id(),
