@@ -47,6 +47,7 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 		ResultItemSelector.on(items)
 				.withSelectionHandler(this)
 				.withSelection(config.selection())
+				.withCostSelector(false)
 				.create(body, tk);
 		createCutoffSpinner(tk, body);
 		createCountSpinner(tk, body);

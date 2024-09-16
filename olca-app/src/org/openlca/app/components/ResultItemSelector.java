@@ -57,7 +57,7 @@ public class ResultItemSelector {
 			: null;
 
 		// cost results
-		if (!resultItems.hasCosts()) {
+		if (!builder.withCostSelector || !resultItems.hasCosts()) {
 			this.costs = null;
 		} else {
 			var costs = new CostResultDescriptor();
@@ -260,6 +260,7 @@ public class ResultItemSelector {
 		private final ResultItemOrder items;
 		private Object initialSelection;
 		private SelectionHandler eventHandler;
+		private Boolean withCostSelector = true;
 
 		private Builder(ResultItemOrder indexView) {
 			this.items = indexView;
@@ -272,6 +273,11 @@ public class ResultItemSelector {
 
 		public Builder withSelectionHandler(SelectionHandler handler) {
 			this.eventHandler = handler;
+			return this;
+		}
+
+		public Builder withCostSelector(Boolean withCostSelector) {
+			this.withCostSelector = withCostSelector;
 			return this;
 		}
 
