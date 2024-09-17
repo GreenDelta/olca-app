@@ -1170,6 +1170,7 @@ public class M extends NLS {
 	public static String Other;
 	public static String OtherCurrencies;
 	public static String OtherDots;
+	public static String OtherInvalidCategoryNames;
 	public static String Others;
 	public static String OutOfMemory;
 	public static String Output;

@@ -1,15 +1,11 @@
 package org.openlca.app.collaboration.util;
 
 import org.openlca.app.M;
-import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.WebRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class WebRequests {
-
-	private static final Logger log = LoggerFactory.getLogger(WebRequests.class);
 
 	public static boolean execute(RequestWithoutResponse request) {
 		try {
@@ -47,8 +43,7 @@ public class WebRequests {
 				return true;
 			}
 		}
-		log.error(message, e);
-		MsgBox.error(e.getMessage());
+		ErrorReporter.on(message, e);
 		return false;
 	}
 

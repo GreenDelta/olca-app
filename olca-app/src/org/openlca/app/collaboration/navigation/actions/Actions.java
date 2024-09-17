@@ -16,6 +16,7 @@ import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.WebRequestException;
@@ -23,12 +24,8 @@ import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.actions.GitStashApply;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class Actions {
-
-	private static final Logger log = LoggerFactory.getLogger(Actions.class);
 
 	static void refresh() {
 		Navigator.refresh();
@@ -41,12 +38,12 @@ class Actions {
 			WebRequests.handleException(message, we);
 			return;
 		}
-		var msg = e.getMessage();
 		if (e instanceof UnsupportedClientVersionException ue) {
-			msg = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
+			message = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
+			MsgBox.error(message);
+		} else {
+			ErrorReporter.on(message, e);
 		}
-		log.error(message, e);
-		MsgBox.error(msg);
 	}
 
 	static <T> T run(GitCredentialsProvider credentials, GitRemoteAction<T> runnable)
