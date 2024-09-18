@@ -49,7 +49,7 @@ class FileSelector {
 	}
 
 	void render(Composite comp) {
-		var text = UI.labeledText(comp, title(), SWT.READ_ONLY);
+		var text = UI.labeledText(comp, M.File, SWT.READ_ONLY);
 		text.setBackground(Colors.systemColor(SWT.COLOR_LIST_BACKGROUND));
 		if (selection != null) {
 			text.setText(selection.getName());
@@ -75,11 +75,4 @@ class FileSelector {
 			}
 		});
 	}
-
-	private String title() {
-		return title == null
-				? M.File
-				: title;
-	}
-
 }

@@ -21,6 +21,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.io.maps.FlowMap;
+import org.openlca.io.simapro.csv.input.EIProviderResolver;
 import org.openlca.io.simapro.csv.input.SimaProCsvImport;
 
 public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
@@ -81,7 +82,13 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 				.expandImpactFactors(page.expandImpactFactors.get());
 
 		try {
-			getContainer().run(true, true, monitor -> ImportMonitor.on(monitor).run(imp));
+			getContainer().run(true, true, monitor -> {
+				if (page.linkEcoinvent.get()) {
+					var providers = EIProviderResolver.forProcessesOf(db);
+					imp.withProviderResolver(providers);
+				}
+				ImportMonitor.on(monitor).run(imp);
+			});
 			Navigator.refresh();
 			return true;
 		} catch (Exception e) {
@@ -94,7 +101,9 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 
 		final AtomicBoolean createProductSystems = new AtomicBoolean(true);
 		final AtomicBoolean createScenarioParameters = new AtomicBoolean(true);
-		final AtomicBoolean expandImpactFactors = new AtomicBoolean(false);
+		final AtomicBoolean expandImpactFactors = new AtomicBoolean(true);
+		final AtomicBoolean linkEcoinvent = new AtomicBoolean(false);
+
 		List<File> files;
 		FlowMap flowMap;
 
@@ -144,6 +153,8 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 					createScenarioParameters);
 			option(group, M.CharactFactorsForSub,
 					expandImpactFactors);
+			option(group, "Link ecoinvent processes (experimental)",
+					linkEcoinvent);
 
 			setControl(body);
 		}

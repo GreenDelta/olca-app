@@ -26,6 +26,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.app.licence.LibrarySession;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.Library;
@@ -47,7 +48,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-
 
 public final class Libraries {
 
@@ -223,7 +223,7 @@ public final class Libraries {
 		try (var stream = new URL(url).openStream()) {
 			return importFromStream(stream);
 		} catch (IOException e) {
-			MsgBox.error(M.ErrorTryingToResolveLibraryUrl, e);
+			ErrorReporter.on(M.ErrorTryingToResolveLibraryUrl, e);
 			return null;
 		}
 	}
@@ -250,14 +250,14 @@ public final class Libraries {
 		}
 	}
 
-
 	public static Optional<CertificateInfo> getLicense(File folder) {
 		var file = new File(folder, JSON);
 		if (!file.exists())
 			return Optional.empty();
 		try (var reader = new JsonReader(new FileReader(file))) {
 			var gson = new Gson();
-			var mapType = new TypeToken<License>() {}.getType();
+			var mapType = new TypeToken<License>() {
+			}.getType();
 			License license = gson.fromJson(reader, mapType);
 
 			var certBytes = license.certificate().getBytes();
