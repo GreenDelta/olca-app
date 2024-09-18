@@ -57,7 +57,7 @@ public class ResultItemSelector {
 			: null;
 
 		// cost results
-		if (!builder.withCostSelector || !resultItems.hasCosts()) {
+		if (builder.noCosts || !resultItems.hasCosts()) {
 			this.costs = null;
 		} else {
 			var costs = new CostResultDescriptor();
@@ -260,7 +260,7 @@ public class ResultItemSelector {
 		private final ResultItemOrder items;
 		private Object initialSelection;
 		private SelectionHandler eventHandler;
-		private Boolean withCostSelector = true;
+		private boolean noCosts = false;
 
 		private Builder(ResultItemOrder indexView) {
 			this.items = indexView;
@@ -276,8 +276,13 @@ public class ResultItemSelector {
 			return this;
 		}
 
-		public Builder withCostSelector(Boolean withCostSelector) {
-			this.withCostSelector = withCostSelector;
+		/**
+		 * This is currently only used for disabling the cost selector in the
+		 * Sankey diagram where we cannot show costs yet. This can be removed
+		 * once we can show costs results there.
+		 */
+		public Builder withoutCostSelector() {
+			this.noCosts = true;
 			return this;
 		}
 
