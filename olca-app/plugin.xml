@@ -499,7 +499,7 @@
 					value="openLCA"/>
 			<property
 					name="startupProgressRect"
-					value="0,442,602,5">
+					value="0,478,642,5">
 			</property>
 			<property
 					name="startupForegroundColor"
