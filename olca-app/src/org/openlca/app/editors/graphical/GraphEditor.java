@@ -8,6 +8,7 @@ import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.P
 import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.RECIPIENTS;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+import static org.openlca.app.tools.graphics.themes.Themes.MODEL;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
@@ -55,6 +57,7 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
+import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -230,10 +233,19 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 
 	@Override
 	protected void loadConfig() {
-		// read GraphConfig object from file
+		// read GraphConfig object from the config file
 		var config = GraphFile.getGraphConfig(this);
-		if (config != null)
-			config.copyTo(this.config);
+
+		if (config == null)
+			return;
+
+		// adapt the theme to the system theme
+		var theme = config.getTheme();
+		if (theme != null && theme.isDark() != Display.isSystemDarkTheme()) {
+			config.setTheme(Themes.getDefault(MODEL));
+		}
+
+		config.copyTo(this.config);
 	}
 
 	/**
