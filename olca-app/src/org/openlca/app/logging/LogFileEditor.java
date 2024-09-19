@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -18,7 +19,6 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
-import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
@@ -100,7 +100,7 @@ public class LogFileEditor extends FormEditor {
 			UI.gridData(browser, true, true);
 			try {
 				browser.setUrl(file.toURI().toURL().toString());
-				if (Theme.isDark())
+				if (Display.isSystemDarkTheme())
 					browser.execute("document.querySelector(\"body\").style.background=\"#2b2b2b\"");
 			} catch (IOException e) {
 				ErrorReporter.on("Error loading log file: " + file, e);

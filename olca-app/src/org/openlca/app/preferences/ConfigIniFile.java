@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.util.MsgBox;
-import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +23,6 @@ class ConfigIniFile {
 	private static final String EDGE_PROP = "-Dorg.eclipse.swt.browser.DefaultType=edge";
 
 	private Language language = Language.ENGLISH;
-	private Theme theme = Theme.DEFAULT;
 	private int maxMemory = 3584;
 	private boolean useEdgeBrowser = false;
 
@@ -50,16 +48,6 @@ class ConfigIniFile {
 
 	void language(Language language) {
 		this.language = language;
-	}
-
-	void theme(Theme theme) {
-		this.theme = theme;
-	}
-
-	public Theme theme() {
-		return theme == null
-				? Theme.DEFAULT
-				: theme;
 	}
 
 	int maxMemory() {
@@ -91,20 +79,14 @@ class ConfigIniFile {
 
 			var oldLines = Files.readAllLines(iniFile.toPath());
 			var newLines = new ArrayList<>(List.of(
-					"-nl", language.getCode(),
-					"-theme", theme().getCode()
+					"-nl", language.getCode()
 			));
-			if (theme() == Theme.DARK) {
-				newLines.add("-applicationCSS");
-				newLines.add("platform:/plugin/olca-app/css/" + osDarkCss());
-			}
 
 			for (int i = 0; i < oldLines.size(); i++) {
 
 				var line = oldLines.get(i).strip();
 
 				if (line.equals("-nl")
-						|| line.equals("-theme")
 						|| line.equals("-applicationCSS")) {
 					i++;
 					continue;
@@ -136,17 +118,6 @@ class ConfigIniFile {
 		}
 	}
 
-	private String osDarkCss() {
-		var os = OS.get();
-		if (os == null)
-			return "win-dark.css";
-		return switch (os) {
-			case LINUX -> "linux-dark.css";
-			case MAC -> "macos-dark.css";
-			default -> "win-dark.css";
-		};
-	}
-
 	private static File getIniFile() {
 		var dir = App.getInstallLocation();
 		return new File(dir, "openLCA.ini");
@@ -157,7 +128,6 @@ class ConfigIniFile {
 
 		var ini = new ConfigIniFile();
 		boolean nextIsLanguage = false;
-		boolean nextIsTheme = false;
 
 		for (var l : lines) {
 			var line = l.trim();
@@ -170,17 +140,6 @@ class ConfigIniFile {
 			if (nextIsLanguage) {
 				ini.language = Language.getForCode(line);
 				nextIsLanguage = false;
-				continue;
-			}
-
-			// read theme code
-			if (line.equals("-theme")) {
-				nextIsTheme = true;
-				continue;
-			}
-			if (nextIsTheme) {
-				ini.theme = Theme.getForCode(line);
-				nextIsTheme = false;
 				continue;
 			}
 

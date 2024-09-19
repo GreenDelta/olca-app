@@ -8,7 +8,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
-import org.openlca.app.preferences.Theme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,7 +184,9 @@ public class Colors {
 	}
 
 	public static Color background() {
-		return Theme.isDark() ? Colors.darkBackground() : Colors.white();
+		return Display.isSystemDarkTheme()
+				? Colors.darkBackground()
+				: Colors.white();
 	}
 
 	/**

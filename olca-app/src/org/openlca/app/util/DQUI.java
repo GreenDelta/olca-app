@@ -1,7 +1,7 @@
 package org.openlca.app.util;
 
 import org.eclipse.swt.graphics.Color;
-import org.openlca.app.preferences.Theme;
+import org.eclipse.swt.widgets.Display;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQSystem;
@@ -67,31 +67,31 @@ public class DQUI {
 	}
 
 	private static Color green() {
-		return Theme.isDark()
+		return Display.isSystemDarkTheme()
 				? Colors.get(83, 167, 83)
 				: Colors.get(125, 250, 125);
 	}
 
 	private static Color red() {
-		return Theme.isDark()
+		return Display.isSystemDarkTheme()
 				? Colors.get(167, 83, 83)
 				: Colors.get(250, 125, 125);
 	}
 
 	private static Color yellow() {
-		return Theme.isDark()
+		return Display.isSystemDarkTheme()
 				? Colors.get(167, 167, 83)
 				: Colors.get(250, 250, 125);
 	}
 
 	private static Color moreGreen(double factor) {
-		return Theme.isDark()
+		return Display.isSystemDarkTheme()
 				? Colors.get((int) (83 + (83 * factor)), 167, 83)
 				: Colors.get((int) (125 + (125 * factor)), 250, 125);
 	}
 
 	private static Color moreRed(double factor) {
-		return Theme.isDark()
+		return Display.isSystemDarkTheme()
 				? Colors.get(167, (int) (167 - (83 * factor)), 83)
 				: Colors.get(250, (int) (250 - (125 * factor)), 125);
 	}

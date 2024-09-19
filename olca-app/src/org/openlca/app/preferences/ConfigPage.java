@@ -30,7 +30,6 @@ public class ConfigPage extends PreferencePage implements
 
 	private boolean isDirty = false;
 	private Combo languageCombo;
-	private Combo themeCombo;
 	private Text memoryText;
 	private ConfigIniFile iniFile;
 
@@ -176,36 +175,6 @@ public class ConfigPage extends PreferencePage implements
 		});
 	}
 
-	// TODO: we may do not need that; and all the theming related hacks?
-	//  (see org.openlca.app.preferences.Theme).
-	private void createThemeCombo(Composite composite) {
-		var label = new Label(composite, SWT.NONE);
-		var gd = UI.gridData(label, false, false);
-		gd.verticalAlignment = SWT.TOP;
-		gd.verticalIndent = 2;
-		label.setText(M.Theme + " ( experimental)");
-
-		themeCombo = new Combo(composite, SWT.READ_ONLY);
-		UI.gridData(themeCombo, true, false);
-		Theme[] themes = Theme.values();
-		String[] items = new String[themes.length];
-		for (int i = 0; i < themes.length; i++) {
-			items[i] = themes[i].getName();
-		}
-		themeCombo.setItems(items);
-		selectTheme(iniFile.theme());
-		Controls.onSelect(themeCombo, (e) -> {
-			int idx = themeCombo.getSelectionIndex();
-			if (idx < 0)
-				return;
-			Theme theme = Theme.values()[idx];
-			if (!Objects.equals(theme, iniFile.theme())) {
-				iniFile.theme(theme);
-				setDirty();
-			}
-		});
-	}
-
 	private void setDirty() {
 		getApplyButton().setEnabled(true);
 		isDirty = true;
@@ -250,21 +219,6 @@ public class ConfigPage extends PreferencePage implements
 		if (item != -1) {
 			languageCombo.select(item);
 		}
-	}
-
-	private void selectTheme(Theme theme) {
-		if (theme == null)
-			return;
-		String[] items = themeCombo.getItems();
-		int item = -1;
-		for (int i = 0; i < items.length; i++) {
-			if (Objects.equals(theme.getName(), items[i])) {
-				item = i;
-				break;
-			}
-		}
-		if (item != -1)
-			themeCombo.select(item);
 	}
 
 	@Override

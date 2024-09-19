@@ -1,11 +1,5 @@
 package org.openlca.app.tools.graphics.themes;
 
-import org.openlca.app.App;
-import org.openlca.app.rcp.Workspace;
-import org.openlca.app.util.ErrorReporter;
-import org.openlca.util.Dirs;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +11,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.eclipse.swt.widgets.Display;
+import org.openlca.app.App;
+import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.ErrorReporter;
+import org.openlca.util.Dirs;
+import org.slf4j.LoggerFactory;
+
 public final class Themes {
 
 	public static String MODEL = "model";
@@ -26,7 +27,7 @@ public final class Themes {
 	}
 
 	public static Theme getDefault(String context) {
-		var name = org.openlca.app.preferences.Theme.isDark() ? "Dark" : "Light";
+		var name = Display.isSystemDarkTheme() ? "Dark" : "Light";
 		return loadFromWorkspace(context)
 				.stream()
 				.filter(theme -> name.equalsIgnoreCase(theme.name()))
