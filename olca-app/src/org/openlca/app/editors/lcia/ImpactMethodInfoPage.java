@@ -167,7 +167,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			if (!(obj instanceof ImpactCategory impact))
 				return null;
 			return switch (col) {
-				case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
+				case 0 -> Images.get(impact);
 				case 3 -> Images.get(editor.getComments(), CommentPaths.get(impact));
 				default -> null;
 			};

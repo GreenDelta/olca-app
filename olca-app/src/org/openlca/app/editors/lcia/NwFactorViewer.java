@@ -14,7 +14,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.NwSet;
 
@@ -84,7 +83,7 @@ class NwFactorViewer extends AbstractTableViewer<Item> {
 			if (!(element instanceof Item item))
 				return null;
 			if (column == 0)
-				return Images.get(ModelType.IMPACT_CATEGORY);
+				return Images.get(item.category);
 			if (column == 3 && item.factor != null)
 				return Images.get(editor.getComments(), CommentPaths.get(set, item.factor));
 			return null;

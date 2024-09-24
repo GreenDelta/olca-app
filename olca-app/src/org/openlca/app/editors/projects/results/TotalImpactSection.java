@@ -88,21 +88,19 @@ class TotalImpactSection extends LabelProvider implements TableSection {
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		if (!(obj instanceof Row))
+		if (!(obj instanceof Row row))
 			return null;
-		var row = (Row) obj;
 		return switch (col) {
 			case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
-			// case 1 -> Images.get(ModelType.UNIT); TODO unit icon
+			case 1 -> Images.get(ModelType.UNIT_GROUP);
 			default -> image.get(row.shareOf(col));
 		};
 	}
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (!(obj instanceof Row))
+		if (!(obj instanceof Row row))
 			return null;
-		var row = (Row) obj;
 		return switch (col) {
 			case 0 -> row.impact;
 			case 1 -> row.unit;

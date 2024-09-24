@@ -45,7 +45,6 @@ import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -293,13 +292,13 @@ class ImpactPage extends ModelPage<Process> {
 			if (!(obj instanceof Contribution<?> c))
 				return null;
 			if (col == 0) {
-				return c.item instanceof ImpactDescriptor
-						? Images.get(ModelType.IMPACT_CATEGORY)
+				return c.item instanceof ImpactDescriptor d
+						? Images.get(d)
 						: Images.get(FlowType.ELEMENTARY_FLOW);
 			}
-			if (col == 3 && c.item instanceof EnviFlow)
-				return img.get(c.share);
-			return null;
+			return col == 3 && c.item instanceof EnviFlow
+					? img.get(c.share)
+					: null;
 		}
 
 		@Override
