@@ -29,7 +29,7 @@ public class StickyNoteFigure extends ComponentFigure {
 	class StickyNoteHeader extends Figure {
 
 		StickyNoteHeader() {
-			var theme = note.getGraph().getConfig().getTheme();
+			var theme = note.getGraph().getEditor().getTheme();
 			var box = Theme.Box.STICKY_NOTE;
 
 			GridLayout layout = new GridLayout(3, false);

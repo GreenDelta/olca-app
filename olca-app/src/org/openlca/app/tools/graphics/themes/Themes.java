@@ -14,19 +14,24 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+
+import org.openlca.app.preferences.Preferences;
 import java.util.Set;
 
 public final class Themes {
 
-	public static String MODEL = "model";
-	public static String SANKEY = "sankey";
+	public static final String CONTEXT_MODEL = "model";
+	public static final String CONTEXT_SANKEY = "sankey";
+
+	public static final String LIGHT = "Light";
+	public static final String DARK = "Dark";
+	private static final String[] DEFAULTS = new String[]{LIGHT + ".css", DARK + ".css"};
 
 	private Themes() {
 	}
 
-	public static Theme getDefault(String context) {
-		var name = org.openlca.app.preferences.Theme.isDark() ? "Dark" : "Light";
+	public static Theme get(String context) {
+		var name = Preferences.get(Preferences.GRAPHICAL_EDITOR_THEME);
 		return loadFromWorkspace(context)
 				.stream()
 				.filter(theme -> name.equalsIgnoreCase(theme.name()))
@@ -34,18 +39,25 @@ public final class Themes {
 				.orElse(noCss().get(0));
 	}
 
-	public static Theme get(String file, String context) {
-		return loadFromWorkspace(context)
-				.stream()
-				.filter(theme -> Objects.equals(file, theme.file()))
-				.findAny()
-				.orElse(noCss().get(0));
+	public static List<String> getValidThemeNames() {
+		var files = getFiles();
+		if (files == null)
+			return Collections.emptyList();
+		var themes = new ArrayList<String>();
+		for (var file : files) {
+			if (!file.isFile() || !file.getName().endsWith(".css"))
+				continue;
+			var model = Theme.loadFrom(file, CONTEXT_MODEL);
+			var sankey = Theme.loadFrom(file, CONTEXT_SANKEY);
+			if (model.isPresent() && sankey.isPresent()) {
+				themes.add(model.get().name());
+			}
+		}
+		return themes;
 	}
 
 	public static List<Theme> loadFromWorkspace(String context) {
-		var dir = new File(Workspace.root(), "graph-themes");
-		unpackDefaultThemes(dir);
-		var files = dir.listFiles();
+		var files = getFiles();
 		if (files == null)
 			return noCss();
 		var themes = new ArrayList<Theme>();
@@ -58,6 +70,12 @@ public final class Themes {
 		return themes.isEmpty() ? noCss() : themes;
 	}
 
+	public static File[] getFiles() {
+		var dir = new File(Workspace.root(), "graph-themes");
+		unpackDefaultThemes(dir);
+		return dir.listFiles();
+	}
+
 	private static List<Theme> noCss() {
 		return Collections.singletonList(Theme.of("no.css", "Default; no CSS"));
 	}
@@ -68,8 +86,7 @@ public final class Themes {
 		try {
 			Dirs.createIfAbsent(dir);
 			var version = VersionState.readFrom(dir);
-			var defaults = new String[]{"Dark.css", "Light.css"};
-			for (var name : defaults) {
+			for (var name : DEFAULTS) {
 				var file = new File(dir, name);
 				if (version.isCurrent() && file.exists())
 					continue;

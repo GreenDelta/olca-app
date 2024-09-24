@@ -691,6 +691,7 @@ public class M extends NLS {
 	public static String GlobalParameterAlreadyExistsErr;
 	public static String GlobalParameters;
 	public static String GraphNotFullyConnectedQuestion;
+	public static String GraphicalEditorTheme;
 	public static String Group;
 	public static String GroupByCategory;
 	public static String Grouping;

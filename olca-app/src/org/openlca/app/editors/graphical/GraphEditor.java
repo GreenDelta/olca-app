@@ -8,6 +8,7 @@ import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.P
 import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.RECIPIENTS;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+import static org.openlca.app.tools.graphics.themes.Themes.CONTEXT_MODEL;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -55,6 +56,8 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.systems.ProductSystemEditor;
 import org.openlca.app.tools.graphics.actions.SaveImageAction;
 import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
+import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -99,6 +102,14 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 			}
 		}
 		super.init(site, input);
+	}
+
+	@Override
+	public Theme getTheme() {
+			if (theme == null) {
+				theme = Themes.get(CONTEXT_MODEL);
+			}
+			return theme;
 	}
 
 	@Override

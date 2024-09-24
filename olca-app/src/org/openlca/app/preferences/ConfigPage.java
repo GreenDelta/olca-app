@@ -15,6 +15,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
 import org.openlca.app.rcp.WindowLayout;
+import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.nativelib.Module;
@@ -30,6 +31,7 @@ public class ConfigPage extends PreferencePage implements
 
 	private boolean isDirty = false;
 	private Combo languageCombo;
+	private Combo graphicsThemeCombo;
 	private Combo themeCombo;
 	private Text memoryText;
 	private ConfigIniFile iniFile;
@@ -65,6 +67,7 @@ public class ConfigPage extends PreferencePage implements
 		}
 		createMemoryText(comp);
 		createShowHidePage(comp);
+		createGraphicsTheme(comp);
 
 		UI.filler(comp);
 		var bComp = UI.composite(comp);
@@ -115,6 +118,31 @@ public class ConfigPage extends PreferencePage implements
 				Preferences.getBool("hide.welcome.page"));
 		Controls.onSelect(hideStart, e -> Preferences.set(
 				"hide.welcome.page", hideStart.getSelection()));
+	}
+
+	private void createGraphicsTheme(Composite composite) {
+		var label = new Label(composite, SWT.NONE);
+		var gd = UI.gridData(label, false, false);
+		gd.verticalAlignment = SWT.TOP;
+		gd.verticalIndent = 2;
+		label.setText(M.GraphicalEditorTheme);
+
+		graphicsThemeCombo = new Combo(composite, SWT.READ_ONLY);
+		UI.gridData(graphicsThemeCombo, true, false);
+		var themes = Themes.getValidThemeNames();
+		graphicsThemeCombo.setItems(themes.toArray(new String[0]));
+		var theme = Preferences.get(Preferences.GRAPHICAL_EDITOR_THEME);
+		selectGraphicsTheme(theme);
+		Controls.onSelect(graphicsThemeCombo, (e) -> {
+			int idx = graphicsThemeCombo.getSelectionIndex();
+			if (idx < 0)
+				return;
+			var selected = themes.get(idx);
+			if (!selected.equals(theme)) {
+				Preferences.set(Preferences.GRAPHICAL_EDITOR_THEME, selected);
+				setDirty();
+			}
+		});
 	}
 
 	private void createEdgeCheck(Composite comp) {
@@ -231,9 +259,13 @@ public class ConfigPage extends PreferencePage implements
 		memoryText.setText(Integer.toString(maxMem));
 		iniFile.language(defaultLang);
 		iniFile.maxMemory(maxMem);
+		var graphicsTheme = Preferences.getStore().getDefaultString(
+				Preferences.GRAPHICAL_EDITOR_THEME);
+		Preferences.getStore().setValue(
+				Preferences.GRAPHICAL_EDITOR_THEME, graphicsTheme);
+		selectGraphicsTheme(graphicsTheme);
 		super.performDefaults();
 		performApply();
-
 	}
 
 	private void selectLanguage(Language language) {
@@ -265,6 +297,23 @@ public class ConfigPage extends PreferencePage implements
 		}
 		if (item != -1)
 			themeCombo.select(item);
+	}
+
+
+	private void selectGraphicsTheme(String theme) {
+		if (theme == null)
+			return;
+		String[] items = graphicsThemeCombo.getItems();
+		int item = -1;
+		for (int i = 0; i < items.length; i++) {
+			if (Objects.equals(theme, items[i])) {
+				item = i;
+				break;
+			}
+		}
+		if (item != -1) {
+			graphicsThemeCombo.select(item);
+		}
 	}
 
 	@Override
