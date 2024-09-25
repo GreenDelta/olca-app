@@ -60,6 +60,18 @@ public class SankeyNode extends Component {
 		return Theme.Box.of(product.provider(), isReference());
 	}
 
+	public SankeyLinkType linkType() {
+		if (node == null)
+			return SankeyLinkType.NEUTRAL;
+
+		if (node.total < 0)
+			return SankeyLinkType.NEGATIVE;
+		else if (node.total > 0)
+			return SankeyLinkType.POSITIVE;
+		else
+			return SankeyLinkType.NEUTRAL;
+	}
+
 	@Override
 	public int compareTo(Component other) {
 		if (other instanceof SankeyNode n)

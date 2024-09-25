@@ -179,6 +179,21 @@ same folder and modify the copy instead.
 
 /* -- links -- */
 
+/* positive impact value */
+#sankey link .positive {
+  color: #ff0000;
+}
+
+/* negative impact value */
+#sankey link .negative {
+  color: #00ff00;
+}
+
+/* zero impact value */
+#sankey link .neutral {
+  color: #0000ff;
+}
+
 /* selected flows */
 #sankey link ::selection {
   color: #fcba03;

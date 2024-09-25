@@ -178,6 +178,21 @@ same folder and modify the copy instead.
 
 /* -- links -- */
 
+/* positive impact value */
+#sankey link .positive {
+  color: #ff0000;
+}
+
+/* negative impact value */
+#sankey link .negative {
+  color: #00ff00;
+}
+
+/* neutral impact value */
+#sankey link .neutral {
+  color: #0000ff;
+}
+
 /* selected node link */
 #sankey link ::selection {
   color: #fcba03;
