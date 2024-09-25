@@ -26,7 +26,7 @@ public class CloseButton extends Clickable {
 		public static int LINE_WIDTH = 1;
 
 		CrossFigure(StickyNote note) {
-			var theme = note.getGraph().getConfig().getTheme();
+			var theme = note.getGraph().getEditor().getTheme();
 			var box = Theme.Box.STICKY_NOTE;
 			setBackgroundColor(theme.boxBackgroundColor(box));
 		}

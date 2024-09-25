@@ -47,7 +47,7 @@ public class ExchangeFigure extends ComponentFigure {
 		super(exchangeItem);
 		this.exchangeItem = exchangeItem;
 		this.exchange = exchangeItem.exchange;
-		this.theme = exchangeItem.getGraph().getConfig().getTheme();
+		this.theme = exchangeItem.getGraph().getEditor().getTheme();
 
 		var layout = new GridLayout(4, false);
 		layout.marginWidth = 0;

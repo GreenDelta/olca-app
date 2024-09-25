@@ -25,6 +25,7 @@ import org.openlca.app.tools.graphics.actions.ZoomInAction;
 import org.openlca.app.tools.graphics.actions.ZoomOutAction;
 import org.openlca.app.tools.graphics.edit.RootEditPart;
 import org.openlca.app.tools.graphics.model.BaseComponent;
+import org.openlca.app.tools.graphics.themes.Theme;
 import org.openlca.app.tools.graphics.tools.PanningSelectionTool;
 import org.openlca.app.tools.graphics.zoom.MouseWheelZoomHandler;
 import org.openlca.app.tools.graphics.zoom.ZoomManager;
@@ -32,6 +33,7 @@ import org.openlca.app.tools.graphics.zoom.ZoomManager;
 abstract public class BasicGraphicalEditor extends GraphicalEditor {
 
 	private org.eclipse.gef.KeyHandler sharedKeyHandler;
+	protected Theme theme;
 
 	// Set zoom levels from 0.1 to 3.0 with an incrementing factor of 5%.
 	private static final int ZOOM_LEVELS_LENGTH =
@@ -46,6 +48,8 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 
 	public boolean wasFocused = false;
 	private BaseComponent model;
+
+	public abstract Theme getTheme();
 
 	@Override
 	protected void initializeGraphicalViewer() {

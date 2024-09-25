@@ -1,20 +1,23 @@
 package org.openlca.app.editors.graphical.edit;
 
+import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEditPolicy;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
-import org.openlca.app.tools.graphics.figures.Connection;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.DeleteLinkCommand;
-
-import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
+import org.openlca.app.tools.graphics.figures.Connection;
 
 public class LinkEditPart extends AbstractConnectionEditPart
 	implements PropertyChangeListener {
@@ -49,7 +52,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 	protected IFigure createFigure() {
 		var graph = getModel().getSourceNode().getGraph();
 		var config = graph.getConfig();
-		var theme = config.getTheme();
+		var theme = graph.getEditor().getTheme();
 
 		var router = config.connectionRouter();
 		var type = graph.flows.type(getModel().processLink.flowId);

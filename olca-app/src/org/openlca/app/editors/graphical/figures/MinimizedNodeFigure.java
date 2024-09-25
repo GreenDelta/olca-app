@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.figures;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.GridLayout;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.tools.graphics.figures.GridPos;
 import org.openlca.app.tools.graphics.figures.RoundBorder;
@@ -9,7 +9,7 @@ public class MinimizedNodeFigure extends NodeFigure {
 
 	public MinimizedNodeFigure(Node node) {
 		super(node);
-		var theme = node.getGraph().getConfig().getTheme();
+		var theme = node.getGraph().getEditor().getTheme();
 		var box = node.getThemeBox();
 
 		var layout = new GridLayout(1, false);

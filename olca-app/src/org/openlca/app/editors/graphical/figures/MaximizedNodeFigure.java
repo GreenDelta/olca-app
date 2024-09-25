@@ -1,6 +1,9 @@
 package org.openlca.app.editors.graphical.figures;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.GridData;
+import org.eclipse.draw2d.GridLayout;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
@@ -13,7 +16,7 @@ public class MaximizedNodeFigure extends NodeFigure {
 
 	public MaximizedNodeFigure(Node node) {
 		super(node);
-		var theme = node.getGraph().getConfig().getTheme();
+		var theme = node.getGraph().getEditor().getTheme();
 		var box = node.getThemeBox();
 
 		var layout = new GridLayout(1, false);

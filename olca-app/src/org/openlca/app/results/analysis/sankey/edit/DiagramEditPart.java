@@ -1,16 +1,19 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
-import org.eclipse.draw2d.*;
-import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
-import org.openlca.app.results.analysis.sankey.layouts.SankeyLayout;
-import org.openlca.app.results.analysis.sankey.model.Diagram;
+import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
-import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ConnectionRouter;
+import org.eclipse.draw2d.FreeformLayer;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
+import org.openlca.app.results.analysis.sankey.layouts.SankeyLayout;
+import org.openlca.app.results.analysis.sankey.model.Diagram;
 
 public class DiagramEditPart extends AbstractComponentEditPart<Diagram> {
 
@@ -50,7 +53,7 @@ public class DiagramEditPart extends AbstractComponentEditPart<Diagram> {
 
 	@Override
 	protected IFigure createFigure() {
-		var theme = getModel().getConfig().getTheme();
+		var theme = getModel().getEditor().getTheme();
 		getViewer().getControl().setBackground(theme.backgroundColor());
 
 		var f = new FreeformLayer();

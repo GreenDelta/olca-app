@@ -1,18 +1,20 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.results.analysis.sankey.model.SankeyLink;
 import org.openlca.app.tools.graphics.figures.Connection;
-
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
 
 public class LinkEditPart extends AbstractConnectionEditPart
 		implements PropertyChangeListener {
@@ -47,7 +49,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 	protected IFigure createFigure() {
 		var diagram = getModel().getSourceNode().getDiagram();
 		var config = diagram.getConfig();
-		var theme = config.getTheme();
+		var theme = diagram.editor.getTheme();
 
 		Color color;
 		if (getModel().getSourceNode().node.total < 0)

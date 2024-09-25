@@ -1,20 +1,23 @@
 package org.openlca.app.editors.graphical.edit;
 
-import org.eclipse.draw2d.*;
-import org.eclipse.gef.EditPolicy;
-import org.openlca.app.editors.graphical.GraphConfig;
-import org.openlca.app.editors.graphical.layouts.Layout;
-import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
-import org.openlca.app.editors.graphical.model.Graph;
+import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
+import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
+import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_MANHATTAN;
+import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Objects;
 
-import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
-import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_MANHATTAN;
-import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ConnectionRouter;
+import org.eclipse.draw2d.FreeformLayer;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.EditPolicy;
+import org.openlca.app.editors.graphical.layouts.Layout;
+import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
+import org.openlca.app.editors.graphical.model.Graph;
 
 /**
  * EditPart for the GraphModel instance.
@@ -66,7 +69,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 
 	@Override
 	protected IFigure createFigure() {
-		var theme = getModel().getConfig().getTheme();
+		var theme = getModel().getEditor().getTheme();
 		getViewer().getControl().setBackground(theme.backgroundColor());
 
 		var f = new FreeformLayer();
@@ -80,7 +83,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 		if (CHILDREN_PROP.equals(prop))
 			for (var node : getModel().getNodes())
 				node.setButtonStatus();
-		if (GraphConfig.CONFIG_PROP.equals(prop)) {
+		if (CONFIG_PROP.equals(prop)) {
 			refresh();
 		}
 		else super.propertyChange(evt);

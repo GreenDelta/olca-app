@@ -18,7 +18,7 @@ public class MaximizedStickyNoteFigure extends StickyNoteFigure {
 
 	public MaximizedStickyNoteFigure(StickyNote note) {
 		super(note);
-		var theme = note.getGraph().getConfig().getTheme();
+		var theme = note.getGraph().getEditor().getTheme();
 		var box = Theme.Box.STICKY_NOTE;
 
 		var layout = new GridLayout(1, false);
