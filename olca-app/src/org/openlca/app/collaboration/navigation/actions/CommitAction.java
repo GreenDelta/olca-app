@@ -27,6 +27,7 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.git.actions.GitCommit;
 import org.openlca.git.actions.GitPush;
 import org.openlca.git.util.GitUtil;
+import org.openlca.util.Strings;
 
 class CommitAction extends Action implements INavigationAction {
 
@@ -65,10 +66,12 @@ class CommitAction extends Action implements INavigationAction {
 			var user = doPush && credentials != null ? credentials.ident : repo.promptUser();
 			if (credentials == null && user == null)
 				return false;
-			Actions.runWithCancel(GitCommit.on(repo)
+			var commitId = Actions.runWithCancel(GitCommit.on(repo)
 					.changes(input.datasets())
 					.withMessage(input.message())
 					.as(user));
+			if (Strings.nullOrEmpty(commitId))
+				return false;
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
 				return true;
 			var result = Actions.run(credentials,
