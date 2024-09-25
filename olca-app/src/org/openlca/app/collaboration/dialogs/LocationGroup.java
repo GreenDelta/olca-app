@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
@@ -19,7 +20,7 @@ class LocationGroup extends Composite {
 	private boolean withStoreOption;
 	private Runnable onChange;
 	private UrlParts url;
-	private boolean storeConnection = true;
+	private boolean storeConnection = CollaborationPreference.storeConnection();
 
 	LocationGroup(Composite parent) {
 		this(parent, null);
@@ -59,7 +60,7 @@ class LocationGroup extends Composite {
 		if (withStoreOption) {
 			UI.label(group);
 			var storeCheck = UI.checkbox(group, toolkit, "Store connection");
-			storeCheck.setSelection(true);
+			storeCheck.setSelection(storeConnection);
 			Controls.onSelect(storeCheck, e -> {
 				storeConnection = storeCheck.getSelection();
 			});

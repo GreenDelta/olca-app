@@ -8,12 +8,14 @@ public class CollaborationPreference extends AbstractPreferenceInitializer {
 
 	public static final String CHECK_REFERENCES = "olca-collaboration-check-references";
 	public static final String DISPLAY_COMMENTS = "olca-collaboration-display-comments";
+	public static final String STORE_CONNECTION = "olca-collaboration-store-connection";
 
 	@Override
 	public void initializeDefaultPreferences() {
 		var store = getStore();
 		store.setDefault(CHECK_REFERENCES, false);
 		store.setDefault(DISPLAY_COMMENTS, false);
+		store.setDefault(STORE_CONNECTION, true);
 	}
 
 	public static boolean checkReferences() {
@@ -22,6 +24,14 @@ public class CollaborationPreference extends AbstractPreferenceInitializer {
 
 	public static boolean commentsEnabled() {
 		return is(DISPLAY_COMMENTS);
+	}
+	
+	public static boolean storeConnection() {
+		return is(STORE_CONNECTION);
+	}
+	
+	public static void storeConnection(boolean value) {
+		getStore().setValue(STORE_CONNECTION, value);
 	}
 
 	public static boolean didReadAnnouncement(String serverUrl, String announcementId) {
