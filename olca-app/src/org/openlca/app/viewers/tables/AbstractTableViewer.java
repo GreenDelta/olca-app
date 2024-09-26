@@ -192,7 +192,7 @@ public class AbstractTableViewer<T> extends AbstractViewer<T, TableViewer> {
 				method.setAccessible(true);
 				method.invoke(this);
 			} catch (Exception e) {
-				log.error("Cannot call method for " + clazz.getSimpleName(), e);
+				log.error("Cannot call method for {}", clazz.getSimpleName(), e);
 			}
 	}
 

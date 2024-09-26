@@ -35,15 +35,16 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm managedForm) {
+	protected void createFormContent(IManagedForm mForm) {
 		var form = UI.header(this);
-		var toolkit = managedForm.getToolkit();
-		var body = UI.body(form, toolkit);
-		var section = UI.section(body, toolkit, M.NormalizationWeightingSets);
+		var tk = mForm.getToolkit();
+		var body = UI.body(form, tk);
+		var section = UI.section(body, tk, M.NormalizationWeightingSets);
 		UI.gridData(section, true, true);
-		var client = UI.composite(section, toolkit);
+		var client = UI.composite(section, tk);
 		section.setClient(client);
 		UI.gridLayout(client, 1);
+
 		var sashForm = createSash(client);
 		setViewer = createNwSetViewer(section, sashForm);
 		factorViewer = new NwFactorViewer(sashForm, editor);
@@ -55,16 +56,16 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 	}
 
 	private SashForm createSash(Composite client) {
-		SashForm sash = new SashForm(client, SWT.NONE);
-		GridData sashGD = new GridData(SWT.FILL, SWT.FILL, true, true);
-		sashGD.widthHint = 400;
-		sash.setLayoutData(sashGD);
+		var sash = new SashForm(client, SWT.NONE);
+		var gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.widthHint = 400;
+		sash.setLayoutData(gd);
 		sash.setLayout(new GridLayout(2, false));
 		return sash;
 	}
 
 	private NwSetViewer createNwSetViewer(Section section, SashForm sashForm) {
-		NwSetViewer viewer = new NwSetViewer(sashForm, editor);
+		var viewer = new NwSetViewer(sashForm, editor);
 		CommentAction.bindTo(section, viewer, "nwSets", editor.getComments());
 		viewer.addSelectionChangedListener((selection) -> factorViewer.setInput(selection));
 		viewer.setInput(getModel());
@@ -72,7 +73,7 @@ class ImpactNwPage extends ModelPage<ImpactMethod> {
 	}
 
 	private void updateInput() {
-		NwSet newNwSet = findNewNwSet();
+		var newNwSet = findNewNwSet();
 		setViewer.setInput(getModel());
 		setViewer.select(newNwSet);
 	}

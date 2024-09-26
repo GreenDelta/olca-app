@@ -30,10 +30,16 @@ class NwFactorViewer extends AbstractTableViewer<Item> {
 	public NwFactorViewer(Composite parent, ImpactMethodEditor editor) {
 		super(parent);
 		this.editor = editor;
-		getModifySupport().bind(NORMALIZATION, new NormalizationModifier());
-		getModifySupport().bind(WEIGHTING, new WeightingModifier());
-		getModifySupport().bind("", new CommentDialogModifier<>(editor.getComments(),
-				w -> CommentPaths.get(set, w.factor)));
+
+		if (editor.isEditable()) {
+			getModifySupport()
+					.bind(NORMALIZATION, new NormalizationModifier())
+					.bind(WEIGHTING, new WeightingModifier())
+					.bind("", new CommentDialogModifier<>(
+							editor.getComments(),
+							w -> CommentPaths.get(set, w.factor)));
+		}
+
 		getViewer().getTable().getColumns()[1].setAlignment(SWT.RIGHT);
 		getViewer().getTable().getColumns()[2].setAlignment(SWT.RIGHT);
 	}
@@ -44,13 +50,13 @@ class NwFactorViewer extends AbstractTableViewer<Item> {
 			setInput(new Item[0]);
 		else {
 			var categories = editor.getModel().impactCategories;
-			var wrappers = new Item[categories.size()];
-			for (int i = 0; i < wrappers.length; i++) {
+			var items = new Item[categories.size()];
+			for (int i = 0; i < items.length; i++) {
 				var category = categories.get(i);
-				wrappers[i] = new Item(category);
-				wrappers[i].factor = set.getFactor(category);
+				items[i] = new Item(category);
+				items[i].factor = set.getFactor(category);
 			}
-			setInput(wrappers);
+			setInput(items);
 		}
 	}
 
