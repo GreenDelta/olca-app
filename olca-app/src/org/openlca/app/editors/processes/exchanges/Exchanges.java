@@ -9,7 +9,6 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.usage.ExchangeUseSearch;
@@ -41,14 +40,14 @@ public class Exchanges {
 		String sql = null;
 		if (d.type == ModelType.PROCESS) {
 			sql = "select e.f_flow from tbl_processes p "
-				+ "inner join tbl_exchanges e on "
-				+ "p.f_quantitative_reference = e.id "
-				+ "where p.id = " + d.id;
+					+ "inner join tbl_exchanges e on "
+					+ "p.f_quantitative_reference = e.id "
+					+ "where p.id = " + d.id;
 		} else if (d.type == ModelType.PRODUCT_SYSTEM) {
 			sql = "select e.f_flow from tbl_product_systems s "
-				+ "inner join tbl_exchanges e on "
-				+ "s.f_reference_exchange = e.id "
-				+ "where s.id = " + d.id;
+					+ "inner join tbl_exchanges e on "
+					+ "s.f_reference_exchange = e.id "
+					+ "where s.id = " + d.id;
 		}
 		if (sql == null)
 			return -1L;
@@ -62,7 +61,7 @@ public class Exchanges {
 			return id.get();
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(Exchanges.class);
-			log.error("Failed to query ref. flow: " + sql, e);
+			log.error("Failed to query ref. flow: {}", sql, e);
 			return -1L;
 		}
 	}
@@ -91,12 +90,10 @@ public class Exchanges {
 		if (!checkRefFlow(p, exchanges))
 			return false;
 
-
 		// collect product and waste flows
 		List<Exchange> techFlows = exchanges.stream()
-			.filter(e -> e.flow != null
-				&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
-			.collect(Collectors.toList());
+				.filter(e -> e.flow != null && e.flow.flowType != FlowType.ELEMENTARY_FLOW)
+				.collect(Collectors.toList());
 		if (techFlows.isEmpty())
 			return true;
 
@@ -106,8 +103,9 @@ public class Exchanges {
 		return checkProviderLinks(p, exchanges, techFlows);
 	}
 
-	public static boolean checkProviderLinks(Process p, List<Exchange> exchanges,
-																					 List<Exchange> techFlows) {
+	public static boolean checkProviderLinks(
+			Process p, List<Exchange> exchanges, List<Exchange> techFlows
+	) {
 		List<Exchange> providers = techFlows.stream()
 				.filter(e -> (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW)
 						|| (!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW))
@@ -115,15 +113,15 @@ public class Exchanges {
 		if (providers.isEmpty())
 			return true;
 		for (Exchange provider : providers) {
-			String query = "select f_owner from tbl_exchanges where "
+			var query = "select f_owner from tbl_exchanges where "
 					+ "f_default_provider = " + p.id + " and "
-					+ "f_flow = " + provider.flow.id + "";
-			IDatabase db = Database.get();
-			AtomicReference<ProcessDescriptor> ref = new AtomicReference<>();
+					+ "f_flow = " + provider.flow.id;
+			var db = Database.get();
+			var ref = new AtomicReference<ProcessDescriptor>();
 			try {
 				NativeSql.on(db).query(query, r -> {
 					long owner = r.getLong(1);
-					ProcessDescriptor d = new ProcessDao(db).getDescriptor(owner);
+					var d = new ProcessDao(db).getDescriptor(owner);
 					if (d != null) {
 						ref.set(d);
 						return false;
@@ -132,7 +130,7 @@ public class Exchanges {
 				});
 			} catch (Exception e) {
 				Logger log = LoggerFactory.getLogger(Exchanges.class);
-				log.error("Failed to query default providers " + query, e);
+				log.error("Failed to query default providers: {}", query, e);
 				return false;
 			}
 			if (ref.get() == null)

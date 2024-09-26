@@ -1,7 +1,5 @@
 package org.openlca.app.editors.parameters;
 
-import java.util.List;
-
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -34,7 +32,6 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Parameter page for LCIA methods or processes. */
 public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 
 	public static final String ID = "ParameterPage";
@@ -84,10 +81,10 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 		var section = UI.section(body, tk, M.GlobalParameters);
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
-		String[] columns = { M.Name, M.Value,
-				M.Uncertainty, M.Description };
+		String[] columns = {
+				M.Name, M.Value, M.Uncertainty, M.Description };
 		globalTable = Tables.createViewer(comp, columns);
-		ParameterLabel label = new ParameterLabel();
+		var label = new ParameterLabel();
 		globalTable.setLabelProvider(label);
 		Viewers.sortByLabels(globalTable, label, 0, 2, 3);
 		Viewers.sortByDouble(globalTable, (Parameter p) -> p.value, 1);
@@ -116,8 +113,8 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 	}
 
 	void setGlobalTableInput() {
-		ParameterDao dao = new ParameterDao(Database.get());
-		List<Parameter> params = dao.getGlobalParameters();
+		var dao = new ParameterDao(Database.get());
+		var params = dao.getGlobalParameters();
 		params.sort((p1, p2) -> Strings.compare(p1.name, p2.name));
 		globalTable.setInput(params);
 	}
@@ -132,21 +129,15 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Parameter))
+			if (!(obj instanceof Parameter p))
 				return null;
-			Parameter p = (Parameter) obj;
-			switch (col) {
-			case 0:
-				return p.name;
-			case 1:
-				return Double.toString(p.value);
-			case 2:
-				return Uncertainty.string(p.uncertainty);
-			case 3:
-				return p.description;
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> p.name;
+				case 1 -> Double.toString(p.value);
+				case 2 -> Uncertainty.string(p.uncertainty);
+				case 3 -> p.description;
+				default -> null;
+			};
 		}
 	}
 

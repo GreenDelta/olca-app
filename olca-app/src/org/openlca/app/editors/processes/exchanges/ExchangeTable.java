@@ -69,15 +69,18 @@ class ExchangeTable {
 
 	private ExchangeLabel label;
 
-	public static ExchangeTable forInputs(Section section, ProcessExchangePage page) {
-		ExchangeTable table = new ExchangeTable(true, page);
+	public static ExchangeTable forInputs(
+			Section section, ProcessExchangePage page
+	) {
+		var table = new ExchangeTable(true, page);
 		table.render(section);
 		return table;
 	}
 
-	public static ExchangeTable forOutputs(Section section,
-			ProcessExchangePage page) {
-		ExchangeTable table = new ExchangeTable(false, page);
+	public static ExchangeTable forOutputs(
+			Section section, ProcessExchangePage page
+	) {
+		var table = new ExchangeTable(false, page);
 		table.render(section);
 		return table;
 	}
@@ -95,8 +98,10 @@ class ExchangeTable {
 		viewer = Tables.createViewer(comp, getColumns());
 		label = new ExchangeLabel(editor);
 		viewer.setLabelProvider(label);
-		bindModifiers();
-		ModelTransfer.onDrop(viewer.getTable(), this::add);
+		if (editor.isEditable()) {
+			bindModifiers();
+			ModelTransfer.onDrop(viewer.getTable(), this::add);
+		}
 		viewer.addFilter(new Filter());
 		bindActions(section);
 		bindDoubleClick(viewer);
@@ -116,8 +121,6 @@ class ExchangeTable {
 	}
 
 	private void bindModifiers() {
-		if (!editor.isEditable())
-			return;
 		var ms = new ModifySupport<Exchange>(viewer);
 		ms.bind(UNIT, new UnitCell(editor));
 		ms.bind(COSTS, new CostCellEditor(viewer, editor));
@@ -136,7 +139,7 @@ class ExchangeTable {
 
 	private void bindAmountModifier(ModifySupport<Exchange> ms) {
 		// amount editor with auto-completion support for parameter names
-		FormulaCellEditor amountEditor = new FormulaCellEditor(viewer,
+		var amountEditor = new FormulaCellEditor(viewer,
 				() -> editor.getModel().parameters);
 		ms.bind(AMOUNT, amountEditor);
 		amountEditor.onEdited((obj, amount) -> {
@@ -208,7 +211,7 @@ class ExchangeTable {
 	private void bindDoubleClick(TableViewer table) {
 		Tables.onDoubleClick(table, e -> {
 			TableItem item = Tables.getItem(table, e);
-			if (item == null) {
+			if (item == null && editor.isEditable()) {
 				add(ModelSelector.multiSelect(ModelType.FLOW));
 				return;
 			}
