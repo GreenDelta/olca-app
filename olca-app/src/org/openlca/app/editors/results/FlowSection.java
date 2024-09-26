@@ -61,7 +61,9 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 				Labels.name(f1.flow), Labels.name(f2.flow)))
 			.collect(Collectors.toList());
 		table.setInput(flows);
-		bindActions(section, table);
+		if (editor.isEditable()) {
+			bindActions(section, table);
+		}
 	}
 
 	private void bindActions(Section section, TableViewer table) {
@@ -124,7 +126,6 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		Actions.bind(section, onAdd, onRemove);
 		Actions.bind(table, onAdd, onRemove, onOpen,
 			TableClipboard.onCopySelected(table), refFlowAction);
-
 	}
 
 	private boolean isProviderFlow(FlowResult flow) {

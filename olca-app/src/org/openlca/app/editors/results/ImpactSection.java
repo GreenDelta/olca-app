@@ -41,9 +41,12 @@ record ImpactSection(ResultEditor editor) {
 			comp, M.ImpactCategory, M.Amount, M.Unit);
 		table.setLabelProvider(new ImpactLabel());
 		Tables.bindColumnWidths(table, 0.35, 0.35, 0.3);
-		new ModifySupport<ImpactResult>(table)
-			.bind(M.Amount, new AmountModifier(editor));
-		bindActions(section, table);
+
+		if (editor.isEditable()) {
+			new ModifySupport<ImpactResult>(table)
+					.bind(M.Amount, new AmountModifier(editor));
+			bindActions(section, table);
+		}
 
 		var impacts = result().impactResults.stream()
 			.sorted((i1, i2) -> Strings.compare(
@@ -141,5 +144,4 @@ record ImpactSection(ResultEditor editor) {
 			editor.setDirty();
 		}
 	}
-
 }
