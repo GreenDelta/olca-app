@@ -8,8 +8,10 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.Result;
+import org.openlca.util.Strings;
 
 public class ResultEditor extends ModelEditor<Result> {
 
@@ -52,6 +54,11 @@ public class ResultEditor extends ModelEditor<Result> {
 			tk.adapt(sash);
 
 			new ImpactSection(editor).render(sash, tk);
+			editor.getModel().flowResults.sort((ri, rj) -> {
+				var ni = Labels.name(ri.flow);
+				var nj = Labels.name(rj.flow);
+				return Strings.compare(ni, nj);
+			});
 			FlowSection.forInputs(editor).render(sash, tk);
 			FlowSection.forOutputs(editor).render(sash, tk);
 

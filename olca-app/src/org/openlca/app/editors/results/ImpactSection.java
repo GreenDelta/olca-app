@@ -1,7 +1,5 @@
 package org.openlca.app.editors.results;
 
-import java.util.stream.Collectors;
-
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -38,7 +36,7 @@ record ImpactSection(ResultEditor editor) {
 		UI.gridData(section, true, false);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(
-			comp, M.ImpactCategory, M.Amount, M.Unit);
+				comp, M.ImpactCategory, M.Amount, M.Unit);
 		table.setLabelProvider(new ImpactLabel());
 		Tables.bindColumnWidths(table, 0.35, 0.35, 0.3);
 
@@ -48,11 +46,13 @@ record ImpactSection(ResultEditor editor) {
 			bindActions(section, table);
 		}
 
-		var impacts = result().impactResults.stream()
-			.sorted((i1, i2) -> Strings.compare(
-				Labels.name(i1.indicator), Labels.name(i2.indicator)))
-			.collect(Collectors.toList());
-		table.setInput(impacts);
+		result().impactResults.sort((i, j) -> {
+			var ni = Labels.name(i.indicator);
+			var nj = Labels.name(j.indicator);
+			return Strings.compare(ni, nj);
+		});
+		table.setInput(result().impactResults);
+		editor.onSaved(() -> table.setInput(result().impactResults));
 	}
 
 	private void bindActions(Section section, TableViewer table) {
@@ -60,14 +60,14 @@ record ImpactSection(ResultEditor editor) {
 		var onAdd = Actions.onAdd(() -> {
 			var result = result();
 			new ModelSelector(ModelType.IMPACT_CATEGORY)
-				.withFilter(d -> Util.canAddImpact(result, d))
-				.onOk(ModelSelector::first)
-				.ifPresent(d -> {
-					if (Util.addImpact(result, d)) {
-						table.setInput(result.impactResults);
-						editor.setDirty();
-					}
-				});
+					.withFilter(d -> Util.canAddImpact(result, d))
+					.onOk(ModelSelector::first)
+					.ifPresent(d -> {
+						if (Util.addImpact(result, d)) {
+							table.setInput(result.impactResults);
+							editor.setDirty();
+						}
+					});
 		});
 
 		var onRemove = Actions.onRemove(() -> {
@@ -90,17 +90,17 @@ record ImpactSection(ResultEditor editor) {
 
 		Actions.bind(section, onAdd, onRemove);
 		Actions.bind(table,
-			onAdd, onRemove, onOpen, TableClipboard.onCopySelected(table));
+				onAdd, onRemove, onOpen, TableClipboard.onCopySelected(table));
 	}
 
 	private static class ImpactLabel extends LabelProvider
-		implements ITableLabelProvider {
+			implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
 			return col == 0 && obj instanceof ImpactResult r
-				? Images.get(r.indicator)
-				: null;
+					? Images.get(r.indicator)
+					: null;
 		}
 
 		@Override
@@ -111,8 +111,8 @@ record ImpactSection(ResultEditor editor) {
 				case 0 -> Labels.name(impact.indicator);
 				case 1 -> Numbers.format(impact.amount);
 				case 2 -> impact.indicator == null
-					? null
-					: impact.indicator.referenceUnit;
+						? null
+						: impact.indicator.referenceUnit;
 				default -> null;
 			};
 		}
@@ -129,8 +129,8 @@ record ImpactSection(ResultEditor editor) {
 		@Override
 		public Double getDouble(ImpactResult impact) {
 			return impact == null
-				? null
-				: impact.amount;
+					? null
+					: impact.amount;
 		}
 
 		@Override
