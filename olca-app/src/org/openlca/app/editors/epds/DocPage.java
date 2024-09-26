@@ -62,6 +62,7 @@ class DocPage extends ModelPage<Epd> {
 					cal.get(Calendar.MONTH),
 					cal.get(Calendar.DAY_OF_MONTH));
 		}
+		box.setEnabled(isEditable());
 		box.addSelectionListener(Controls.onSelect($ -> {
 			var next = new GregorianCalendar(
 					box.getYear(), box.getMonth(), box.getDay()).getTime();
@@ -94,6 +95,7 @@ class DocPage extends ModelPage<Epd> {
 		}
 		typeCombo.setItems(items);
 		typeCombo.select(selected);
+		typeCombo.setEnabled(isEditable());
 
 		Controls.onSelect(typeCombo, $ -> {
 			int i = typeCombo.getSelectionIndex();
