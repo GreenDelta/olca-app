@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -43,7 +44,12 @@ class ComplianceTable {
 		table.setInput(items);
 		table.setLabelProvider(new TableLabel());
 		Tables.bindColumnWidths(table, 0.25, 0.25, 0.25, 0.25);
+		if (editor.isEditable()) {
+			bindModifiers(table);
+		}
+	}
 
+	private void bindModifiers(TableViewer table) {
 		var modifier = new ModifySupport<Item>(table);
 		for (var v : Compliance.values()) {
 			modifier.bind(v.value(), new CheckBoxCellModifier<>() {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -45,7 +46,12 @@ class CompletenessTable {
 		table.setInput(items);
 		table.setLabelProvider(new TableLabel());
 		Tables.bindColumnWidths(table, 0.4, 0.15, 0.15, 0.15, 0.15);
+		if (editor.isEditable()) {
+			bindModifiers(table);
+		}
+	}
 
+	private void bindModifiers(TableViewer table) {
 		var modifier = new ModifySupport<Item>(table);
 		for (var v : FlowCompleteness.values()) {
 			modifier.bind(labelOf(v), new CheckBoxCellModifier<>() {
