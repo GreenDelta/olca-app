@@ -87,14 +87,16 @@ class ParameterRedefTable {
 		Tables.bindColumnWidths(table, 0.25, 0.25, 0.15, 0.2, 0.15);
 
 		// bind modifiers
-		new ModifySupport<ParameterRedef>(table)
-				.bind(M.Amount, new DoubleModifier<>(editor, "value"))
-				.bind(M.Description, new StringModifier<>(editor, "description"))
-				.bind(M.Uncertainty, new UncertaintyCellEditor(
-						table.getTable(), editor))
-				.bind("", new CommentDialogModifier<>(
-						editor.getComments(),
-						p -> CommentPaths.get(p, getContext(p))));
+		if (editor.isEditable()) {
+			new ModifySupport<ParameterRedef>(table)
+					.bind(M.Amount, new DoubleModifier<>(editor, "value"))
+					.bind(M.Description, new StringModifier<>(editor, "description"))
+					.bind(M.Uncertainty, new UncertaintyCellEditor(
+							table.getTable(), editor))
+					.bind("", new CommentDialogModifier<>(
+							editor.getComments(),
+							p -> CommentPaths.get(p, getContext(p))));
+		}
 
 		// set the input
 		var redefs = supplier.get();

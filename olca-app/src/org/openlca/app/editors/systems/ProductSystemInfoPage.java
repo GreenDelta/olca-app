@@ -55,8 +55,10 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 	private void createReferenceSection(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, M.Reference, 3);
 		link(comp, M.Process, "referenceProcess");
+
 		UI.label(comp, tk, M.Product);
 		flowCombo = new ExchangeViewer(comp);
+		flowCombo.setEnabled(isEditable());
 		flowCombo.addSelectionChangedListener(e -> {
 			if (e == null || e.flow == null)
 				return;
@@ -65,14 +67,20 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 		});
 		flowCombo.setInput(getRefCandidates(getModel().referenceProcess));
 		new CommentControl(comp, getToolkit(), "referenceExchange", getComments());
+
 		UI.label(comp, tk, M.FlowProperty);
 		propertyCombo = new FlowPropertyFactorViewer(comp);
+		propertyCombo.setEnabled(isEditable());
 		propertyCombo.addSelectionChangedListener(this::propertyChanged);
 		new CommentControl(comp, getToolkit(), "targetFlowPropertyFactor", getComments());
+
 		UI.label(comp, tk, M.Unit);
 		unitCombo = new UnitCombo(comp);
+		unitCombo.setEnabled(isEditable());
 		new CommentControl(comp, getToolkit(), "targetUnit", getComments());
+
 		targetAmountText = UI.labeledText(comp, getManagedForm().getToolkit(), M.TargetAmount);
+		targetAmountText.setEditable(isEditable());
 		new CommentControl(comp, getToolkit(), "targetAmount", getComments());
 		createBindings();
 	}
