@@ -1,14 +1,21 @@
 package org.openlca.app.tools.graphics.themes;
 
-import com.helger.css.decl.CSSStyleRule;
-import com.helger.css.decl.CascadingStyleSheet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.function.ToIntFunction;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.openlca.app.results.analysis.sankey.model.SankeyLinkType;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.FlowType;
 
-import java.util.*;
-import java.util.function.ToIntFunction;
+import com.helger.css.decl.CSSStyleRule;
+import com.helger.css.decl.CascadingStyleSheet;
 
 class Css {
 
@@ -100,6 +107,18 @@ class Css {
       return Optional.of(FlowType.ELEMENTARY_FLOW);
     return Optional.empty();
   }
+
+	static Optional<SankeyLinkType> sankeyLinkTypeOf(CSSStyleRule rule) {
+		if (rule == null)
+			return Optional.empty();
+		if (hasSelector(".positive", rule))
+			return Optional.of(SankeyLinkType.POSITIVE);
+		if (hasSelector(".negative", rule))
+			return Optional.of(SankeyLinkType.NEGATIVE);
+		if (hasSelector(".neutral", rule))
+			return Optional.of(SankeyLinkType.NEUTRAL);
+		return Optional.empty();
+	}
 
 	static boolean isSelection(CSSStyleRule rule) {
 		if (rule == null)

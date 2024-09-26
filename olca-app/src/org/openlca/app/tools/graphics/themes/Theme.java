@@ -1,9 +1,11 @@
 package org.openlca.app.tools.graphics.themes;
 
-import com.helger.css.decl.CSSStyleRule;
-import com.helger.css.reader.CSSReader;
-import com.helger.css.reader.CSSReaderSettings;
+import java.io.File;
+import java.util.EnumMap;
+import java.util.Optional;
+
 import org.eclipse.swt.graphics.Color;
+import org.openlca.app.results.analysis.sankey.model.SankeyLinkType;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessType;
@@ -13,9 +15,9 @@ import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.EnumMap;
-import java.util.Optional;
+import com.helger.css.decl.CSSStyleRule;
+import com.helger.css.reader.CSSReader;
+import com.helger.css.reader.CSSReaderSettings;
 
 public class Theme {
 
@@ -30,6 +32,7 @@ public class Theme {
 
 	private final EnumMap<FlowType, Color> flowLabelColors;
 	private final EnumMap<FlowType, Color> linkColors;
+	private final EnumMap<SankeyLinkType, Color> sankeyLinkColor;
 	private final EnumMap<Box, BoxConfig> boxConfigs;
 
 	private Theme(String file, String name) {
@@ -37,6 +40,7 @@ public class Theme {
 		this.name = name;
 		this.flowLabelColors = new EnumMap<>(FlowType.class);
 		this.linkColors = new EnumMap<>(FlowType.class);
+		this.sankeyLinkColor = new EnumMap<>(SankeyLinkType.class);
 		this.boxConfigs = new EnumMap<>(Box.class);
 	}
 
@@ -102,17 +106,24 @@ public class Theme {
 				: defaultLinkColor;
 	}
 
-	public Color linkColorSelected() {
-		return defaultLinkColorSelection == null
-				? Colors.darkGray()
-				: defaultLinkColorSelection;
-	}
-
 	public Color linkColor(FlowType flowType) {
 		var color = linkColors.get(flowType);
 		return color != null
 				? color
 				: linkColor();
+	}
+
+	public Color linkColor(SankeyLinkType type) {
+		var color = sankeyLinkColor.get(type);
+		return color != null
+				? color
+				: linkColor();
+	}
+
+	public Color linkColorSelected() {
+		return defaultLinkColorSelection == null
+				? Colors.darkGray()
+				: defaultLinkColorSelection;
 	}
 
 	public Color infoLabelColor() {
@@ -173,11 +184,14 @@ public class Theme {
 				// links
 				if (Css.isLink(rule)) {
 					var flowType = Css.flowTypeOf(rule);
+					var sankeyLinkType = Css.sankeyLinkTypeOf(rule);
 					var selection = Css.isSelection(rule);
 					Css.getColor(rule).ifPresent(color -> {
-						if (selection)
+						if (selection) {
 							theme.defaultLinkColorSelection = color;
-						else if (flowType.isPresent()) {
+						} else if (sankeyLinkType.isPresent()) {
+							theme.sankeyLinkColor.put(sankeyLinkType.get(), color);
+						} else if (flowType.isPresent()) {
 							theme.linkColors.put(flowType.get(), color);
 						} else {
 							theme.defaultLinkColor = color;

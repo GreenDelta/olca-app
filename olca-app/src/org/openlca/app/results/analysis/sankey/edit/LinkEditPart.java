@@ -12,7 +12,6 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
-import org.eclipse.swt.graphics.Color;
 import org.openlca.app.results.analysis.sankey.model.SankeyLink;
 import org.openlca.app.tools.graphics.figures.Connection;
 
@@ -51,12 +50,9 @@ public class LinkEditPart extends AbstractConnectionEditPart
 		var config = diagram.getConfig();
 		var theme = diagram.editor.getTheme();
 
-		Color color;
-		if (getModel().getSourceNode().node.total < 0)
-			color = ColorConstants.green;
-		else if (getModel().getSourceNode().node.total > 0)
-			color = ColorConstants.red;
-		else color = ColorConstants.blue;
+		var color = theme == null
+				? ColorConstants.black
+				: theme.linkColor(getModel().getSourceNode().linkType());
 		var colorSelected = theme != null
 				? theme.linkColorSelected()
 				: ColorConstants.black;
