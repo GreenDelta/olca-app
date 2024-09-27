@@ -1,10 +1,10 @@
 package org.openlca.app.navigation;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Queue;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
@@ -21,6 +21,8 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.util.Categories;
+import org.openlca.util.Strings;
 
 public class CopyPaste {
 
@@ -174,15 +176,15 @@ public class CopyPaste {
 
 	private static void paste(INavigationElement<?> element, INavigationElement<?> category) {
 		if (currentAction == Action.CUT) {
-			if (element instanceof CategoryElement)
-				move((CategoryElement) element, category);
-			else if (element instanceof ModelElement)
-				move((ModelElement) element, category);
+			if (element instanceof CategoryElement ce)
+				move(ce, category);
+			else if (element instanceof ModelElement me)
+				move(me, category);
 		} else if (currentAction == Action.COPY) {
-			if (element instanceof CategoryElement) {
-				copy((CategoryElement) element, category);
-			} else if (element instanceof ModelElement modElem) {
-				copyTo(modElem, getCategory(category));
+			if (element instanceof CategoryElement ce) {
+				copy(ce, category);
+			} else if (element instanceof ModelElement me) {
+				copyTo(me, getCategory(category));
 			}
 		}
 	}
@@ -235,35 +237,50 @@ public class CopyPaste {
 		Daos.root(Database.get(), entity.type).updateCategory(entity, parent);
 	}
 
-	private static void copy(CategoryElement element, INavigationElement<?> category) {
-		Category parent = getCategory(category);
-		Queue<CategoryElement> elements = new LinkedList<>();
-		elements.add(element);
-		while (!elements.isEmpty()) {
-			CategoryElement current = elements.poll();
-			Category catCopy = current.getContent().copy();
-			catCopy.name = catCopy.name + " (copy)";
-			catCopy.childCategories.clear();
-			catCopy.category = parent;
-			if (parent == null)
-				catCopy = Database.get().insert(catCopy);
-			else {
-				parent.childCategories.add(catCopy);
-				parent = Database.get().update(parent);
-				for (var child : parent.childCategories) {
-					if (child.name.equals(catCopy.name)) {
-						catCopy = child;
-						break;
-					}
+	/**
+	 * Copy the category `copyRoot` with its content under the `copyTarget`.
+	 */
+	private static void copy(
+			CategoryElement copyRoot, INavigationElement<?> copyTarget
+	) {
+
+		// CopyNode describes to which path a category should be copied to
+		record CopyNode(CategoryElement elem, String[] path) {
+			ModelType type() {
+				return elem.getContent() != null
+						? elem.getContent().modelType
+						: null;
+			}
+
+			String[] nextPath() {
+				var category = elem.getContent();
+				if (category == null || Strings.nullOrEmpty(category.name))
+					return path;
+				if (path == null || path.length == 0)
+					return new String[]{category.name};
+				var nextPath = Arrays.copyOf(path, path.length + 1);
+				nextPath[path.length] = category.name;
+				return nextPath;
+			}
+		}
+
+		var targetPath = Categories.path(
+				getCategory(copyTarget)).toArray(String[]::new);
+		var queue = new ArrayDeque<CopyNode>();
+		queue.add(new CopyNode(copyRoot, targetPath));
+		var dao = new CategoryDao(Database.get());
+
+		while (!queue.isEmpty()) {
+			var copyNode = queue.poll();
+			var nextPath = copyNode.nextPath();
+			var category = dao.sync(copyNode.type(), nextPath);
+			for (var child : copyNode.elem.getChildren()) {
+				if (child instanceof CategoryElement ce) {
+					queue.add(new CopyNode(ce, nextPath));
+				} else if (child instanceof ModelElement me) {
+					copyTo(me, category);
 				}
 			}
-			for (INavigationElement<?> child : current.getChildren())
-				if (child instanceof CategoryElement catElem)
-					elements.add(catElem);
-				else if (child instanceof ModelElement modElem) {
-					copyTo(modElem, catCopy);
-				}
-			parent = catCopy;
 		}
 	}
 
