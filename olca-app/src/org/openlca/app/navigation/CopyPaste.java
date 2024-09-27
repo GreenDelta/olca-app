@@ -2,7 +2,7 @@ package org.openlca.app.navigation;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,24 +30,16 @@ public class CopyPaste {
 		NONE, COPY, CUT
 	}
 
-	private static INavigationElement<?>[] cache = null;
+	private static List<INavigationElement<?>> cache = null;
 	private static Action currentAction = Action.NONE;
 
-	public static void copy(Collection<INavigationElement<?>> elements) {
-		copy(elements.toArray(new INavigationElement<?>[0]));
-	}
-
-	public static void copy(INavigationElement<?>[] elements) {
+	public static void copy(List<INavigationElement<?>> elements) {
 		if (!isSupported(elements))
 			return;
 		initialize(Action.COPY, elements);
 	}
 
-	public static void cut(Collection<INavigationElement<?>> elements) {
-		cut(elements.toArray(new INavigationElement<?>[0]));
-	}
-
-	private static void cut(INavigationElement<?>[] elements) {
+	public static void cut(List<INavigationElement<?>> elements) {
 		if (!isSupported(elements))
 			return;
 		initialize(Action.CUT, elements);
@@ -60,24 +52,11 @@ public class CopyPaste {
 		}
 	}
 
-	public static boolean isSupported(INavigationElement<?> elem) {
-		if (!(elem instanceof ModelElement)
-				&& !(elem instanceof CategoryElement))
-			return false;
-		return elem.getLibrary().isEmpty();
-	}
-
-	public static boolean isSupported(Collection<INavigationElement<?>> elements) {
-		if (elements == null)
-			return false;
-		return isSupported(elements.toArray(new INavigationElement[0]));
-	}
-
-	public static boolean isSupported(INavigationElement<?>[] elements) {
-		if (elements == null || elements.length == 0)
+	public static boolean isSupported(List<INavigationElement<?>> elems) {
+		if (elems == null || elems.isEmpty())
 			return false;
 		ModelType modelType = null;
-		for (INavigationElement<?> element : elements) {
+		for (INavigationElement<?> element : elems) {
 			if (!isSupported(element))
 				return false;
 			ModelType currentModelType = getModelType(element);
@@ -87,6 +66,12 @@ public class CopyPaste {
 				return false;
 		}
 		return true;
+	}
+
+	private static boolean isSupported(INavigationElement<?> elem) {
+		if (!(elem instanceof ModelElement) && !(elem instanceof CategoryElement))
+			return false;
+		return elem.getLibrary().isEmpty();
 	}
 
 	private static ModelType getModelType(INavigationElement<?> e) {
@@ -99,28 +84,26 @@ public class CopyPaste {
 		return null;
 	}
 
-	private static void initialize(Action action, INavigationElement<?>[] elements) {
+	private static void initialize(Action action,List<INavigationElement<?>> elements) {
 		if (action == Action.CUT && currentAction == Action.CUT) {
 			extendCache(elements);
 			return;
 		}
-		if (currentAction == Action.CUT)
+		if (currentAction == Action.CUT) {
 			restore();
+		}
 		cache = elements;
 		currentAction = action;
 	}
 
-	private static void extendCache(INavigationElement<?>[] elements) {
-		if (elements == null || elements.length == 0)
+	private static void extendCache(List<INavigationElement<?>> elements) {
+		if (elements == null || elements.isEmpty())
 			return;
 		if (cacheIsEmpty()) {
 			cache = elements;
 			return;
 		}
-		INavigationElement<?>[] newCache = new INavigationElement<?>[cache.length + elements.length];
-		System.arraycopy(cache, 0, newCache, 0, cache.length);
-		System.arraycopy(elements, 0, newCache, cache.length, elements.length);
-		cache = newCache;
+		cache.addAll(elements);
 	}
 
 	private static void restore() {
@@ -154,24 +137,22 @@ public class CopyPaste {
 		currentAction = Action.NONE;
 	}
 
-	public static boolean canMove(Collection<INavigationElement<?>> elements, INavigationElement<?> target) {
-		return canMove(elements.toArray(new INavigationElement[0]), target);
-	}
-
-	private static boolean canMove(INavigationElement<?>[] elements, INavigationElement<?> target) {
-		if (!isSupported(elements))
+	public static boolean canMove(
+			List<INavigationElement<?>> elems, INavigationElement<?> target
+	) {
+		if (!isSupported(elems))
 			return false;
 		if (!(target instanceof CategoryElement || target instanceof ModelTypeElement))
 			return false;
-		return getModelType(target) == getModelType(elements[0]);
+		return getModelType(target) == getModelType(elems.get(0));
 	}
 
-	public static boolean canPasteTo(INavigationElement<?> element) {
+	public static boolean canPasteTo(INavigationElement<?> elem) {
 		if (cacheIsEmpty())
 			return false;
-		if (!(element instanceof CategoryElement || element instanceof ModelTypeElement))
+		if (!(elem instanceof CategoryElement || elem instanceof ModelTypeElement))
 			return false;
-		return getModelType(element) == getModelType(cache[0]);
+		return getModelType(elem) == getModelType(cache.get(0));
 	}
 
 	private static void paste(INavigationElement<?> element, INavigationElement<?> category) {
@@ -310,6 +291,6 @@ public class CopyPaste {
 	}
 
 	public static boolean cacheIsEmpty() {
-		return cache == null || cache.length == 0;
+		return cache == null || cache.isEmpty();
 	}
 }
