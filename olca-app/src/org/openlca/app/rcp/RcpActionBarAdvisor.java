@@ -42,6 +42,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.tools.openepd.EpdPanel;
+import org.openlca.app.tools.params.ParameterAnalysisDialog;
 import org.openlca.app.tools.soda.SodaClientTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
@@ -170,6 +171,9 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(Actions.create(
 				M.LibraryExportExperimental, LibraryExportDialog::show));
 
+		menu.add(Actions.create(
+				"Parameter analysis (experimental)", ParameterAnalysisDialog::show));
+
 		// openEPD
 		menu.add(Actions.create(M.GetEpdsFromEc3,
 			Icon.BUILDING.descriptor(), EpdPanel::open));
@@ -196,7 +200,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 		menuBar.add(menu);
 	}
-	
+
 
 
 	private void runSpold2Import(ModelType type) {
