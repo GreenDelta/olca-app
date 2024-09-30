@@ -600,6 +600,7 @@ public class M extends NLS {
 	public static String FailedToUpdateEpd;
 	public static String FailedToUpdateEpdToEc3;
 	public static String FeatureRepairDone;
+	public static String FeatureNotAvailable;
 	public static String Features;
 	public static String Fetch;
 	public static String FetchEpdsDots;

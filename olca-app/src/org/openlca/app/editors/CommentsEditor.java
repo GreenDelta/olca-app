@@ -45,7 +45,7 @@ public class CommentsEditor extends SimpleFormEditor {
 		setTitleImage(Icon.COMMENTS_VIEW.get());
 		List<Comment> comments = new ArrayList<>();
 		if (Repository.CURRENT.isCollaborationServer()) {
-			comments = WebRequests.execute(
+			comments = WebRequests.execute(M.Comments,
 					() -> Repository.CURRENT.client.getComments(Repository.CURRENT.id),
 					new ArrayList<>());
 		}
