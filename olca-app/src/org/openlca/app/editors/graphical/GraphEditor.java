@@ -8,7 +8,7 @@ import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.P
 import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.RECIPIENTS;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
-import static org.openlca.app.tools.graphics.themes.Themes.CONTEXT_MODEL;
+import static org.openlca.app.components.graphics.themes.Themes.CONTEXT_MODEL;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -54,10 +54,10 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.systems.ProductSystemEditor;
-import org.openlca.app.tools.graphics.actions.SaveImageAction;
-import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
-import org.openlca.app.tools.graphics.themes.Theme;
-import org.openlca.app.tools.graphics.themes.Themes;
+import org.openlca.app.components.graphics.actions.SaveImageAction;
+import org.openlca.app.components.graphics.frame.GraphicalEditorWithFrame;
+import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;

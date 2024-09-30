@@ -1,11 +1,11 @@
 package org.openlca.app.results.analysis.sankey;
 
 import static org.eclipse.draw2d.PositionConstants.NORTH;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
 
 import java.util.Objects;
 
-import org.openlca.app.tools.graphics.model.Element;
+import org.openlca.app.components.graphics.model.Element;
 import org.openlca.core.model.Copyable;
 import org.openlca.util.Strings;
 

@@ -1,6 +1,6 @@
 package org.openlca.app.results;
 
-import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
+import static org.openlca.app.components.graphics.EditorActionBarContributor.refreshActionBar;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;

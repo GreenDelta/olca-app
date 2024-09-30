@@ -14,7 +14,7 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.StickyNote;
-import org.openlca.app.tools.graphics.model.Side;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
 import org.slf4j.Logger;

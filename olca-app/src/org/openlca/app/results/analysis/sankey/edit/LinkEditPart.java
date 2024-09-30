@@ -1,6 +1,6 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -13,7 +13,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.openlca.app.results.analysis.sankey.model.SankeyLink;
-import org.openlca.app.tools.graphics.figures.Connection;
+import org.openlca.app.components.graphics.figures.Connection;
 
 public class LinkEditPart extends AbstractConnectionEditPart
 		implements PropertyChangeListener {

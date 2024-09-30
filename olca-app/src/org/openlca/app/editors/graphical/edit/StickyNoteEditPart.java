@@ -12,7 +12,7 @@ import org.openlca.app.editors.graphical.figures.MaximizedStickyNoteFigure;
 import org.openlca.app.editors.graphical.figures.MinimizedStickyNoteFigure;
 import org.openlca.app.editors.graphical.figures.StickyNoteFigure;
 import org.openlca.app.editors.graphical.model.StickyNote;
-import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Component;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;

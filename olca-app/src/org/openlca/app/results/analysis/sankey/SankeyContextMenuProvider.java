@@ -4,8 +4,8 @@ import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.IMenuManager;
-import org.openlca.app.tools.graphics.BasicContextMenuProvider;
-import org.openlca.app.tools.graphics.actions.ActionIds;
+import org.openlca.app.components.graphics.BasicContextMenuProvider;
+import org.openlca.app.components.graphics.actions.ActionIds;
 
 public class SankeyContextMenuProvider extends BasicContextMenuProvider {
 

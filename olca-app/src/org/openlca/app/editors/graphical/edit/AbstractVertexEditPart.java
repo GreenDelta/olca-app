@@ -12,11 +12,11 @@ import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
 import org.openlca.app.editors.graphical.model.*;
 import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
-import org.openlca.app.tools.graphics.model.Component;
-import org.openlca.app.tools.graphics.model.Link;
+import org.openlca.app.components.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Link;
 
-import static org.openlca.app.tools.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
-import static org.openlca.app.tools.graphics.model.Component.TARGET_CONNECTIONS_PROP;
+import static org.openlca.app.components.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
+import static org.openlca.app.components.graphics.model.Component.TARGET_CONNECTIONS_PROP;
 
 /**
  * This class abstract the creation of a graph component that can be linked with

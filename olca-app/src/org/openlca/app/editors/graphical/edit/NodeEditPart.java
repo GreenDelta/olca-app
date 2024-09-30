@@ -10,14 +10,14 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.*;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.tools.TargetingTool;
-import org.openlca.app.tools.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.figures.GridPos;
 import org.openlca.app.editors.graphical.figures.MaximizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.MinimizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.NodeFigure;
-import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
-import org.openlca.app.tools.graphics.model.Side;
+import org.openlca.app.components.graphics.model.Side;
 
 
 public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
