@@ -7,8 +7,8 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.tools.graphics.figures.GridPos;
-import org.openlca.app.tools.graphics.figures.RoundBorder;
+import org.openlca.app.components.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.figures.RoundBorder;
 
 public class MaximizedNodeFigure extends NodeFigure {
 

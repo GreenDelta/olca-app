@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.edit;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.editpolicies.SelectionEditPolicy;
-import org.openlca.app.tools.graphics.figures.SelectableConnection;
+import org.openlca.app.components.graphics.figures.SelectableConnection;
 
 import java.util.stream.Stream;
 

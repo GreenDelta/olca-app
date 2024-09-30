@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.figures;
 
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
+import static org.openlca.app.components.graphics.model.Side.INPUT;
 
 import org.eclipse.draw2d.Clickable;
 import org.eclipse.draw2d.Figure;
@@ -9,7 +9,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.tools.graphics.model.Side;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.util.Colors;
 
 public class PlusMinusButton extends Clickable {

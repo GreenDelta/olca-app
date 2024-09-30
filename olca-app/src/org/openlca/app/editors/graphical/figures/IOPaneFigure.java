@@ -17,8 +17,8 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
-import org.openlca.app.tools.graphics.figures.ComponentFigure;
-import org.openlca.app.tools.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.figures.ComponentFigure;
+import org.openlca.app.components.graphics.figures.GridPos;
 
 public class IOPaneFigure extends ComponentFigure {
 

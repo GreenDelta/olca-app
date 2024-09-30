@@ -7,15 +7,15 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
-import org.openlca.app.tools.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.figures.GridPos;
 import org.openlca.app.editors.graphical.figures.IOPaneFigure;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
-import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Component;
 
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
-import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
 

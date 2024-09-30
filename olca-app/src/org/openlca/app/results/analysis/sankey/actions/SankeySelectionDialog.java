@@ -4,8 +4,8 @@ import static org.eclipse.draw2d.PositionConstants.EAST;
 import static org.eclipse.draw2d.PositionConstants.NORTH;
 import static org.eclipse.draw2d.PositionConstants.SOUTH;
 import static org.eclipse.draw2d.PositionConstants.WEST;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_NULL;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_NULL;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.swt.SWT;

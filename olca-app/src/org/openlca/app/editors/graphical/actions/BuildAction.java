@@ -7,7 +7,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
-import org.openlca.app.tools.graphics.model.Side;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.linking.ProviderLinking;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 
 public abstract class BuildAction extends WorkbenchPartAction {
 

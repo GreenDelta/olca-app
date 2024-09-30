@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
 import org.eclipse.draw2d.geometry.Dimension;
-import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Component;
 
 public abstract class MinMaxComponent extends Component {
 

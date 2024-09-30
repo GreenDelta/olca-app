@@ -2,9 +2,9 @@ package org.openlca.app.editors.graphical.actions;
 
 import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_MANHATTAN;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_NULL;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_MANHATTAN;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_NULL;
 
 import java.util.HashMap;
 
@@ -24,7 +24,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.graphics.actions.ActionIds;
+import org.openlca.app.components.graphics.actions.ActionIds;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;

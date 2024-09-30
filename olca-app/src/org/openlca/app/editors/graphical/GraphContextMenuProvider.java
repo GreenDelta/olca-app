@@ -7,8 +7,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.editors.graphical.actions.GraphActionIds;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.graphics.BasicContextMenuProvider;
-import org.openlca.app.tools.graphics.actions.ActionIds;
+import org.openlca.app.components.graphics.BasicContextMenuProvider;
+import org.openlca.app.components.graphics.actions.ActionIds;
 
 public class GraphContextMenuProvider extends BasicContextMenuProvider {
 

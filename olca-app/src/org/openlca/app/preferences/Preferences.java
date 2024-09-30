@@ -8,8 +8,8 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openlca.app.tools.graphics.themes.Themes.DARK;
-import static org.openlca.app.tools.graphics.themes.Themes.LIGHT;
+import static org.openlca.app.components.graphics.themes.Themes.DARK;
+import static org.openlca.app.components.graphics.themes.Themes.LIGHT;
 
 public final class Preferences extends AbstractPreferenceInitializer {
 

@@ -15,7 +15,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
 import org.openlca.app.rcp.WindowLayout;
-import org.openlca.app.tools.graphics.themes.Themes;
+import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.nativelib.Module;

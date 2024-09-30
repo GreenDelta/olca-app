@@ -9,8 +9,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.editors.graphical.model.StickyNote;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.graphics.figures.ComponentFigure;
-import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.components.graphics.figures.ComponentFigure;
+import org.openlca.app.components.graphics.themes.Theme;
 
 
 public class StickyNoteFigure extends ComponentFigure {

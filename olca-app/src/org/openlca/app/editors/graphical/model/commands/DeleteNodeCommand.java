@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import static org.openlca.app.tools.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -9,8 +9,8 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.tools.graphics.figures.ComponentFigure;
-import org.openlca.app.tools.graphics.model.Side;
+import org.openlca.app.components.graphics.figures.ComponentFigure;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.util.Labels;
 
 

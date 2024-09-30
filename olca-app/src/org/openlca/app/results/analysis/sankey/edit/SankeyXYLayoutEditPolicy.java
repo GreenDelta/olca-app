@@ -14,8 +14,8 @@ import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
 import org.openlca.app.results.analysis.sankey.model.SankeyNode;
 import org.openlca.app.results.analysis.sankey.model.commands.EditConfigCommand;
-import org.openlca.app.tools.graphics.model.commands.ComponentSetConstraintCommand;
-import org.openlca.app.tools.graphics.model.commands.LayoutCommand;
+import org.openlca.app.components.graphics.model.commands.ComponentSetConstraintCommand;
+import org.openlca.app.components.graphics.model.commands.LayoutCommand;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
 import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;

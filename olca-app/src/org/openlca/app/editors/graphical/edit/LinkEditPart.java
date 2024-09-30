@@ -17,7 +17,7 @@ import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.DeleteLinkCommand;
-import org.openlca.app.tools.graphics.figures.Connection;
+import org.openlca.app.components.graphics.figures.Connection;
 
 public class LinkEditPart extends AbstractConnectionEditPart
 	implements PropertyChangeListener {

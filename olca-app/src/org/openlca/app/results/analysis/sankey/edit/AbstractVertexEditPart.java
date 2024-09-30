@@ -8,11 +8,11 @@ import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.openlca.app.results.analysis.sankey.model.SankeyLink;
-import org.openlca.app.tools.graphics.model.Component;
-import org.openlca.app.tools.graphics.model.Link;
+import org.openlca.app.components.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Link;
 
-import static org.openlca.app.tools.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
-import static org.openlca.app.tools.graphics.model.Component.TARGET_CONNECTIONS_PROP;
+import static org.openlca.app.components.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
+import static org.openlca.app.components.graphics.model.Component.TARGET_CONNECTIONS_PROP;
 
 
 /**
