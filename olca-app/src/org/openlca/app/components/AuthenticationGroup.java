@@ -1,4 +1,4 @@
-package org.openlca.app.tools.authentification;
+package org.openlca.app.components;
 
 import java.util.Objects;
 import java.util.function.Consumer;

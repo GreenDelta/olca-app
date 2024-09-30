@@ -13,7 +13,7 @@ import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.CredentialStore;
-import org.openlca.app.tools.authentification.AuthenticationGroup;
+import org.openlca.app.components.AuthenticationGroup;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 

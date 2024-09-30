@@ -9,7 +9,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.util.CredentialStore;
-import org.openlca.app.tools.authentification.AuthenticationGroup;
+import org.openlca.app.components.AuthenticationGroup;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.collaboration.model.Credentials;
