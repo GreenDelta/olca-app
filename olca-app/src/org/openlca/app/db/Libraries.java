@@ -91,8 +91,8 @@ public final class Libraries {
 		if (license.isPresent()) {
 			var credentials = retrieveSession(lib.name()).orElse(null);
 			if (credentials == null) {
-				log.error("Error while retrieving the library credentials of "
-						+ lib.name());
+				log.error("Error while retrieving the library credentials of {}"
+						, lib.name());
 				return Optional.empty();
 			}
 			builder.withDecryption(() -> license.get().getDecryptCipher(credentials));

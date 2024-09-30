@@ -13,8 +13,8 @@ import org.zeroturnaround.zip.ZipUtil;
 
 public class MySQLDatabaseExport implements Runnable {
 
-	private MySqlConfig config;
-	private File zolcaFile;
+	private final MySqlConfig config;
+	private final File zolcaFile;
 	private boolean success = false;
 
 	public MySQLDatabaseExport(MySqlConfig config, File zolcaFile) {

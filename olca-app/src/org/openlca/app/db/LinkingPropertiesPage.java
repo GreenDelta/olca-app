@@ -164,7 +164,8 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			Actions.bind(table, copy);
 		}
 
-		private class TableLabel extends LabelProvider implements ITableLabelProvider {
+		private static class TableLabel extends LabelProvider
+				implements ITableLabelProvider {
 
 			@Override
 			public Image getColumnImage(Object o, int col) {

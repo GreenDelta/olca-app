@@ -24,7 +24,7 @@ class CategoryCopy {
 
 	private final CategoryElement source;
 	private final INavigationElement<?> target;
-	private BiConsumer<ModelElement, Category> modelFn;
+	private final BiConsumer<ModelElement, Category> modelFn;
 
 	private final ModelType type;
 	private final IDatabase db;
