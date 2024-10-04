@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.preferences.Preferences;
+
 import java.util.Set;
 
 public final class Themes {
@@ -25,7 +26,8 @@ public final class Themes {
 
 	public static final String LIGHT = "Light";
 	public static final String DARK = "Dark";
-	private static final String[] DEFAULTS = new String[]{LIGHT + ".css", DARK + ".css"};
+	private static final String[] DEFAULTS = new String[]{LIGHT + ".css",
+			DARK + ".css", "Nord_Dark.css", "Nord_Light.css", "Poimandres.css"};
 
 	private Themes() {
 	}
