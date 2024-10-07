@@ -42,6 +42,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.io.ImportLog;
 import org.openlca.core.io.ImportLog.Message;
@@ -107,9 +108,13 @@ public class ImportLogView extends SimpleFormEditor {
 					return;
 				App.open(message.descriptor());
 			});
-			Actions.bind(table, onOpen);
-			var menuManager = table.getTable().getMenu();
-			menuManager.addMenuListener(new MenuListener() {
+
+			var copy = TableClipboard.onCopySelected(table);
+			Actions.bind(table, onOpen, copy);
+			Tables.onDoubleClick(table, $ -> onOpen.run());
+
+			var menu = table.getTable().getMenu();
+			menu.addMenuListener(new MenuListener() {
 				@Override
 				public void menuShown(MenuEvent e) {
 					Message message = Viewers.getFirstSelected(table);
@@ -120,9 +125,7 @@ public class ImportLogView extends SimpleFormEditor {
 				public void menuHidden(MenuEvent e) {
 				}
 			});
-			Tables.onDoubleClick(table, $ -> onOpen.run());
 		}
-
 	}
 
 	private static class MessageLabel extends BaseLabelProvider implements
