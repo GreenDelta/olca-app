@@ -9,6 +9,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
@@ -62,18 +63,31 @@ public class AnalysisGroupsPage extends FormPage {
 			implements ITableLabelProvider {
 
 		private final List<AnalysisGroup> groups;
+		private final ContributionImage bar;
 
 		private LabelProvider(List<AnalysisGroup> groups) {
 			this.groups = groups;
+			this.bar = new ContributionImage();
+		}
+
+		@Override
+		public void dispose() {
+			bar.dispose();
+			super.dispose();
 		}
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
 			if (!(obj instanceof AnalysisGroupResult r))
 				return null;
-			return col == 0
-					? Images.get(r.impact())
-					: null;
+			if (col == 0)
+				return Images.get(r.impact());
+			if (col == 1)
+				return null;
+			double v = getValue(col, r);
+			double max = r.max();
+			double share = max != 0 ? v / max : 0;
+			return bar.get(share);
 		}
 
 		@Override

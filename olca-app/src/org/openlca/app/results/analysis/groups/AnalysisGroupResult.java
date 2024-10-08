@@ -13,8 +13,21 @@ import org.openlca.core.results.UpstreamTree;
 
 record AnalysisGroupResult(
 		ImpactDescriptor impact,
-		Map<String, Double> values
+		Map<String, Double> values,
+		double max
 ) {
+
+	private static AnalysisGroupResult of (
+			ImpactDescriptor impact, Map<String, Double> values
+	) {
+		double max = 0;
+		for (var val : values.values()) {
+			if (val == null)
+				continue;
+			max = Math.max(max, Math.abs(val));
+		}
+		return new AnalysisGroupResult(impact, values, max);
+	}
 
 	static List<AnalysisGroupResult> calculate(
 			ResultEditor editor, List<AnalysisGroup> groups
@@ -39,7 +52,7 @@ record AnalysisGroupResult(
 				var map = new HashMap<String, Double>();
 				var tree = UpstreamTree.of(provider, impact);
 				traverse(tree, tree.root, map, 0);
-				results.add(new AnalysisGroupResult(impact, map));
+				results.add(AnalysisGroupResult.of(impact, map));
 			}
 			return results;
 		}
