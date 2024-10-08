@@ -1,6 +1,6 @@
 package org.openlca.app.results;
 
-import static org.openlca.app.components.graphics.EditorActionBarContributor.refreshActionBar;
+import static org.openlca.app.components.graphics.EditorActionBarContributor.*;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -17,6 +17,8 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.results.analysis.groups.AnalysisGroup;
+import org.openlca.app.results.analysis.groups.AnalysisGroupsPage;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ProcessResultPage;
@@ -134,6 +136,10 @@ public class ResultEditor extends FormEditor {
 			setSankeyPageListener(sankey);
 
 			if (result().hasImpacts()) {
+				var groups = AnalysisGroup.getAllOf(setup());
+				if (!groups.isEmpty()) {
+					addPage(new AnalysisGroupsPage(this, groups));
+				}
 				addPage(new ImpactChecksPage(this));
 			}
 			if (FeatureFlag.TAG_RESULTS.isEnabled()) {
