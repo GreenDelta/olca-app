@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -15,7 +16,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.model.descriptors.ImpactDescriptor;
 
 public class AnalysisGroupsPage extends FormPage {
 
@@ -49,42 +49,51 @@ public class AnalysisGroupsPage extends FormPage {
 
 		var table = Tables.createViewer(body, headers);
 		Tables.bindColumnWidths(table, widths);
-		table.setLabelProvider(new LabelProvider());
-		table.setInput(Item.allOf(editor));
+		table.setLabelProvider(new LabelProvider(groups));
+
+		var results = App.exec(
+				"Calculate group results...",
+				() -> AnalysisGroupResult.calculate(editor, groups));
+		table.setInput(results);
 	}
 
-	private record Item(ImpactDescriptor impact) {
-
-		static List<Item> allOf(ResultEditor editor) {
-			return editor.items()
-					.impacts()
-					.stream()
-					.map(Item::new)
-					.toList();
-		}
-	}
 
 	private static final class LabelProvider extends ColumnLabelProvider
 			implements ITableLabelProvider {
 
+		private final List<AnalysisGroup> groups;
+
+		private LabelProvider(List<AnalysisGroup> groups) {
+			this.groups = groups;
+		}
+
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof Item item))
+			if (!(obj instanceof AnalysisGroupResult r))
 				return null;
 			return col == 0
-					? Images.get(item.impact)
+					? Images.get(r.impact())
 					: null;
 		}
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Item item))
+			if (!(obj instanceof AnalysisGroupResult r))
 				return null;
 			return switch (col) {
-				case 0 -> Labels.name(item.impact);
-				case 1 -> item.impact.referenceUnit;
-				default -> Numbers.format(0);
+				case 0 -> Labels.name(r.impact());
+				case 1 -> r.impact().referenceUnit;
+				default -> Numbers.format(getValue(col, r));
 			};
+		}
+
+		private double getValue(int col, AnalysisGroupResult r) {
+			int i = col - 2;
+			if (i < 0 || i >= groups.size())
+				return 0;
+			var group = groups.get(i);
+			var val = r.values().get(group.name());
+			return val != null ? val : 0;
 		}
 	}
 }

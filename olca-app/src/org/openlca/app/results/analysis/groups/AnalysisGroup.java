@@ -29,6 +29,7 @@ public record AnalysisGroup(String name, Set<Long> processes) {
 				groups.add(group);
 			}
 		}
+		groups.sort((g1, g2) -> Strings.compare(g1.name, g2.name));
 		return groups;
 	}
 
