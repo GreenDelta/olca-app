@@ -13,8 +13,11 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
+import org.openlca.git.RepositoryInfo;
 import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
+import org.openlca.git.model.DiffType;
+import org.openlca.git.model.Reference;
 import org.openlca.git.util.ModelRefSet;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.util.Strings;
@@ -24,7 +27,8 @@ class Datasets {
 	static DialogResult select(List<INavigationElement<?>> selection, boolean canPush, boolean isStashCommit) {
 		var repo = Repository.CURRENT;
 		var diffs = repo.diffs.find().withDatabase();
-		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
+		var librariesChanged = Repository.CURRENT.librariesChanged();
+		var dialog = createCommitDialog(selection, diffs, librariesChanged, canPush, isStashCommit);
 		if (dialog == null)
 			return null;
 		var dialogResult = dialog.open();
@@ -35,6 +39,9 @@ class Datasets {
 				: ReferenceCheck.forRemote(Database.get(), diffs, dialog.getSelected());
 		if (withReferences == null)
 			return null;
+		if (librariesChanged) {
+			withReferences.add(getLibraryDiff(repo));
+		}
 		var result = withReferences.stream()
 				.map(Change::of)
 				.flatMap(List::stream)
@@ -43,12 +50,12 @@ class Datasets {
 	}
 
 	private static CommitDialog createCommitDialog(List<INavigationElement<?>> selection, List<Diff> diffs,
-			boolean canPush, boolean isStashCommit) {
+			boolean librariesChanged, boolean canPush, boolean isStashCommit) {
 		var differences = diffs.stream()
 				.map(d -> new TriDiff(d, null))
 				.toList();
 		var node = new DiffNodeBuilder(Database.get()).build(differences);
-		if (node == null) {
+		if (node == null && !librariesChanged) {
 			MsgBox.info(M.NoChangesToCommit);
 			return null;
 		}
@@ -62,6 +69,16 @@ class Datasets {
 		dialog.setInitialSelection(initialSelection);
 		dialog.setNewLibraryDatasets(newLibraryDatasets);
 		return dialog;
+	}
+
+	private static Diff getLibraryDiff(Repository repo) {
+		if (repo.commits.head() == null)
+			return new Diff(DiffType.ADDED, null,
+					new Reference(RepositoryInfo.FILE_NAME, null, null));
+		return new Diff(DiffType.MODIFIED,
+				new Reference(RepositoryInfo.FILE_NAME, repo.commits.head().id,
+						repo.entries.get(RepositoryInfo.FILE_NAME, repo.commits.head().id).objectId),
+				new Reference(RepositoryInfo.FILE_NAME, null, null));
 	}
 
 	private static ModelRefSet determineLibraryDatasets(List<Diff> diffs) {

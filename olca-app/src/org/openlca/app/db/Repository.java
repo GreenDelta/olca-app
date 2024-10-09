@@ -2,6 +2,7 @@ package org.openlca.app.db;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -15,6 +16,7 @@ import org.openlca.collaboration.client.CSClient;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
+import org.openlca.jsonld.LibraryLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,6 +123,21 @@ public class Repository extends ClientRepository {
 		return credentials;
 	}
 
+	public boolean librariesChanged() {
+		var info = getInfo();
+		var libsBefore = info == null ? new ArrayList<LibraryLink>() : info.libraries();
+		var libsNow = LibraryLink.of(Database.get().getLibraries());
+		if (libsBefore.size() != libsNow.size())
+			return true;
+		for (var lib : libsBefore)
+			if (!libsNow.contains(lib))
+				return true;
+		for (var lib : libsNow)
+			if (!libsBefore.contains(lib))
+				return true;
+		return false;
+	}
+	
 	public boolean isCollaborationServer() {
 		return client != null;
 	}
