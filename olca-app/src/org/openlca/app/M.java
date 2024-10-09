@@ -174,6 +174,7 @@ public class M extends NLS {
 	public static String CharactFactorsForSub;
 	public static String CheckingForLocalConflicts;
 	public static String CheckingForWorkspaceConflicts;
+	public static String CheckingLibraries;
 	public static String CheckDatabaseLinks;
 	public static String CheckFeatures;
 	public static String CheckIfLibraryIsUsedDots;
@@ -1711,6 +1712,7 @@ public class M extends NLS {
 	public static String UploadToEc3;
 	public static String UploadedAnExistingEpd;
 	public static String UploadedNewEpdDraft;
+	public static String UploadingLibraries;
 	public static String UpstreamImpacts;
 	public static String UpstreamInclDirect;
 	public static String UpstreamInventories;

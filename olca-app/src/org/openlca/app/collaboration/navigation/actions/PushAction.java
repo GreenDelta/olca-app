@@ -11,6 +11,7 @@ import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.collaboration.browse.elements.RepositoryElement;
+import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -39,26 +40,35 @@ class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var repo = Repository.CURRENT;
+		var credentials = Repository.CURRENT.promptCredentials();
+		run(credentials);
+	}
+
+	boolean run(GitCredentialsProvider credentials) {
+		if (credentials == null)
+			return false;
 		try {
-			var credentials = repo.promptCredentials();
-			if (credentials == null)
-				return;
+			var repo = Repository.CURRENT;
 			var result = Actions.run(credentials,
 					GitPush.from(repo));
 			if (result == null)
-				return;
+				return false;
+			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
+				MsgBox.error(M.RejectedNotUpToDateErr);
+				return false;
+			}
 			if (result.newCommits().isEmpty()) {
 				MsgBox.info(M.NoCommitToPushInfo);
-			} else if (result.status() == Status.REJECTED_NONFASTFORWARD) {
-				MsgBox.error(M.RejectedNotUpToDateErr);
-			} else {
-				Collections.reverse(result.newCommits());
-				new HistoryDialog(M.PushedCommits, result.newCommits()).open();
-				ServerNavigator.refresh(RepositoryElement.class, r -> r.id().equals(repo.id));
+				return false;
 			}
+			Libraries.uploadTo(repo);
+			Collections.reverse(result.newCommits());
+			new HistoryDialog(M.PushedCommits, result.newCommits()).open();
+			ServerNavigator.refresh(RepositoryElement.class, r -> r.id().equals(repo.id));
+			return true;
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error pushing to remote", e);
+			return false;
 		} finally {
 			Actions.refresh();
 		}
