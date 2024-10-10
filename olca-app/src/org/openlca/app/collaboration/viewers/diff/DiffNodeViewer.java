@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.JsonCompareDialog;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
@@ -195,6 +196,12 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var node = (DiffNode) element;
 			if (node.isDatabaseNode())
 				return node.contentAsDatabase().getName();
+			if (node.isLibrariesNode())
+				return M.Libraries;
+			if (node.isLibraryNode()) {
+				var path = node.contentAsDiff().path;
+				return path.substring(path.indexOf("/") + 1);
+			}
 			if (node.isModelTypeNode())
 				return Labels.plural(node.getModelType());
 			if (node.isCategoryNode() && node.content instanceof String)
@@ -226,6 +233,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (element == null)
 				return null;
 			var node = (DiffNode) element;
+			if (node.isLibraryNode())
+				return Images.library(getOverlayRemote(node.contentAsDiff().diffType));
 			if (node.isModelTypeNode())
 				return Images.getForCategory(node.getModelType());
 			if (node.isCategoryNode()) {
@@ -238,6 +247,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			}
 			var diff = node.contentAsTriDiff();
 			var overlay = getOverlay(diff);
+			if (node.isLibrariesNode())
+				return Images.libraries(overlay);
 			return Images.get(diff.type, overlay);
 		}
 
@@ -247,7 +258,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (resolvedConflicts.contains(diff))
 				return getOverlayMerged(diff);
 			var leftDiffType = diff.left != null ? diff.left.diffType : null;
-			var rightDiffType = diff.right!= null ? diff.right.diffType : null;
+			var rightDiffType = diff.right != null ? diff.right.diffType : null;
 			return getOverlay(leftDiffType, rightDiffType);
 		}
 
@@ -300,6 +311,10 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		}
 
 		private int compare(Viewer viewer, DiffNode node1, DiffNode node2) {
+			if (node1.isLibrariesNode())
+				return 1;
+			if (node2.isLibrariesNode())
+				return -1;
 			if (node1.isModelTypeNode() && node2.isModelTypeNode())
 				return compareModelTypes(node1, node2);
 			return super.compare(viewer, node1, node2);

@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
+import org.openlca.git.model.Diff;
 
 public class DiffNode {
 
@@ -35,6 +36,14 @@ public class DiffNode {
 		return content instanceof TriDiff d && !d.isCategory;
 	}
 
+	boolean isLibrariesNode() {
+		return content instanceof TriDiff d && d.isRepositoryInfo;
+	}
+
+	boolean isLibraryNode() {
+		return content instanceof Diff d && parent.isLibrariesNode();
+	}
+
 	ModelType getModelType() {
 		if (isModelTypeNode())
 			return (ModelType) content;
@@ -47,6 +56,10 @@ public class DiffNode {
 
 	IDatabase contentAsDatabase() {
 		return content instanceof IDatabase db ? db : null;
+	}
+
+	Diff contentAsDiff() {
+		return content instanceof Diff d ? d : null;
 	}
 
 	ModelType contentAsModelType() {

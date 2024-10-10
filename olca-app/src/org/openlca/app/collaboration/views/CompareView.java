@@ -59,7 +59,7 @@ public class CompareView extends ViewPart {
 			viewer.setInput(new ArrayList<>());
 			return;
 		}
-		input = new DiffNodeBuilder(Database.get()).build(getDiffs(commit, elements));
+		input = new DiffNodeBuilder(Repository.CURRENT, Database.get()).build(getDiffs(commit, elements));
 		viewer.setInput(input != null ? Collections.singleton(input) : new ArrayList<>());
 	}
 

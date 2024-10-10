@@ -135,6 +135,13 @@ public class Images {
 		};
 	}
 
+	public static Image libraries(Overlay overlay) {
+		var icon = Icon.FOLDER;
+		return overlay == null
+				? icon.get()
+				: ImageManager.get(icon, overlay);
+	}
+	
 	public static Image library(Overlay overlay) {
 		var icon = Icon.LIBRARY;
 		return overlay == null

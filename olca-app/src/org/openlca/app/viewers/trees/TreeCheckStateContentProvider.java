@@ -57,7 +57,7 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 		return isLeaf(element);
 	}
 
-	private boolean isSelected(T element) {
+	protected boolean isSelected(T element) {
 		return selection.contains(element);
 	}
 
