@@ -2,18 +2,13 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.transport.RemoteRefUpdate.Status;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.browse.ServerNavigator;
-import org.openlca.app.collaboration.browse.elements.RepositoryElement;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
-import org.openlca.app.collaboration.dialogs.HistoryDialog;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
@@ -21,11 +16,9 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.git.actions.GitCommit;
-import org.openlca.git.actions.GitPush;
 import org.openlca.git.util.GitUtil;
 import org.openlca.util.Strings;
 
@@ -74,18 +67,7 @@ class CommitAction extends Action implements INavigationAction {
 				return false;
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
 				return true;
-			var result = Actions.run(credentials,
-					GitPush.from(Repository.CURRENT));
-			if (result == null)
-				return false;
-			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
-				MsgBox.error(M.RejectedNotUpToDateErr);
-				return false;
-			}
-			Collections.reverse(result.newCommits());
-			new HistoryDialog(M.PushedCommits, result.newCommits()).open();
-			ServerNavigator.refresh(RepositoryElement.class, r -> r.id().equals(repo.id));
-			return true;
+			return new PushAction().run(credentials);
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during commit", e);
 			return false;

@@ -96,7 +96,7 @@ public class CommitDialog extends FormDialog {
 	}
 
 	private void updateButtons() {
-		var enabled = viewer.hasChecked();
+		var enabled = true; // viewer.hasChecked();
 		if (!isStashCommit && (message == null || message.isEmpty())) {
 			enabled = false;
 		}

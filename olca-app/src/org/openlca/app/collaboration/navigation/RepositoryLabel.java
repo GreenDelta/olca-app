@@ -97,10 +97,10 @@ public class RepositoryLabel {
 			var d = (RootDescriptor) elem.content();
 			return !Repository.CURRENT.index.isSameVersion(getPath(d), d);
 		}
-		if (elem.is(ElementType.DATABASE) && librariesChanged())
+		if (elem.is(ElementType.DATABASE) && Repository.CURRENT.librariesChanged())
 			return true;
 		if (elem.is(ElementType.LIBRARY_DIR))
-			return librariesChanged();
+			return Repository.CURRENT.librariesChanged();
 		for (var child : elem.children())
 			if (hasChanged(child) || (child.is(ElementType.MODEL, ElementType.CATEGORY) && isNew(child)))
 				return true;
@@ -134,21 +134,6 @@ public class RepositoryLabel {
 				.collect(Collectors.toSet());
 		for (var entry : fromIndex)
 			if (!fromNavigation.contains(entry))
-				return true;
-		return false;
-	}
-
-	private static boolean librariesChanged() {
-		var info = Repository.CURRENT.getInfo();
-		var libsBefore = info == null ? new ArrayList<LibraryLink>() : info.libraries();
-		var libsNow = LibraryLink.of(Database.get().getLibraries());
-		if (libsBefore.size() != libsNow.size())
-			return true;
-		for (var lib : libsBefore)
-			if (!libsNow.contains(lib))
-				return true;
-		for (var lib : libsNow)
-			if (!libsBefore.contains(lib))
 				return true;
 		return false;
 	}

@@ -150,7 +150,7 @@ class ConflictResolver {
 		localConflicts.remaining.stream()
 				.filter(Predicate.not(TriDiff::conflict))
 				.forEach(conflict -> solved.put(conflict, ConflictResolution.keep()));
-		var node = new DiffNodeBuilder(Database.get()).build(localConflicts.remaining);
+		var node = new DiffNodeBuilder(Repository.CURRENT, Database.get()).build(localConflicts.remaining);
 		if (node == null || node.children.isEmpty())
 			return solved;
 		var dialog = new MergeDialog(node);

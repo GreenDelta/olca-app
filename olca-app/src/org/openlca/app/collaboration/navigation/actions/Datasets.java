@@ -13,8 +13,11 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
+import org.openlca.git.RepositoryInfo;
 import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
+import org.openlca.git.model.DiffType;
+import org.openlca.git.model.Reference;
 import org.openlca.git.util.ModelRefSet;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.util.Strings;
@@ -24,6 +27,9 @@ class Datasets {
 	static DialogResult select(List<INavigationElement<?>> selection, boolean canPush, boolean isStashCommit) {
 		var repo = Repository.CURRENT;
 		var diffs = repo.diffs.find().withDatabase();
+		if (Repository.CURRENT.librariesChanged()) {
+			diffs.add(createLibraryDiff());
+		}
 		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
 		if (dialog == null)
 			return null;
@@ -42,12 +48,23 @@ class Datasets {
 		return new DialogResult(dialogResult, dialog.getMessage(), result);
 	}
 
+	private static Diff createLibraryDiff() {
+		var repo = Repository.CURRENT;
+		if (repo.commits.head() == null)
+			return new Diff(DiffType.ADDED, null,
+					new Reference(RepositoryInfo.FILE_NAME, null, null));
+		return new Diff(DiffType.MODIFIED,
+				new Reference(RepositoryInfo.FILE_NAME, repo.commits.head().id,
+						repo.entries.get(RepositoryInfo.FILE_NAME, repo.commits.head().id).objectId),
+				new Reference(RepositoryInfo.FILE_NAME, null, null));
+	}
+
 	private static CommitDialog createCommitDialog(List<INavigationElement<?>> selection, List<Diff> diffs,
 			boolean canPush, boolean isStashCommit) {
 		var differences = diffs.stream()
 				.map(d -> new TriDiff(d, null))
 				.toList();
-		var node = new DiffNodeBuilder(Database.get()).build(differences);
+		var node = new DiffNodeBuilder(Repository.CURRENT, Database.get()).build(differences);
 		if (node == null) {
 			MsgBox.info(M.NoChangesToCommit);
 			return null;
@@ -57,6 +74,7 @@ class Datasets {
 		var newLibraryDatasets = determineLibraryDatasets(diffs);
 		var initialSelection = new ModelRefSet();
 		diffs.stream()
+				.filter(ref -> ref.type != null)
 				.filter(ref -> selectionContainsPath(paths, ref.path) || newLibraryDatasets.contains(ref))
 				.forEach(initialSelection::add);
 		dialog.setInitialSelection(initialSelection);
@@ -66,7 +84,9 @@ class Datasets {
 
 	private static ModelRefSet determineLibraryDatasets(List<Diff> diffs) {
 		var all = new ModelRefSet();
-		diffs.forEach(all::add);
+		diffs.stream()
+				.filter(diff -> diff.type != null)
+				.forEach(all::add);
 		var fromLibrary = new ModelRefSet();
 		all.types().forEach(type -> {
 			fromLibrary.addAll(Daos.root(Database.get(), type).getDescriptors().stream()

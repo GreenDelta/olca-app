@@ -19,7 +19,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/commons-lang3-3.12.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-logging-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-math3-3.6.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/cs-client-2.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/cs-client-2.3.1-SNAPSHOT.jar" sourcepath="/cs-client"/>
 	<classpathentry exported="true" kind="lib" path="libs/curvesapi-1.06.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derby-10.16.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/derbyshared-10.16.1.1.jar"/>
@@ -74,7 +74,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-git-2.3.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-git-2.3.1-SNAPSHOT.jar" sourcepath="/olca-modules/olca-git"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-grpc-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.3.1-SNAPSHOT.jar"/>
