@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.collaboration.viewers.diff.CompareViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
@@ -14,6 +17,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Commit;
 import org.openlca.git.util.Constants;
@@ -49,8 +53,19 @@ public class CompareView extends ViewPart {
 	}
 
 	public static void update(Commit commit, List<INavigationElement<?>> elements) {
-		if (instance == null)
-			return;
+		if (instance == null) {
+			IWorkbenchPage page = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow()
+					.getActivePage();
+			if (page == null)
+				return;
+			try {
+				page.showView(CompareView.ID);
+			} catch (PartInitException e) {
+				ErrorReporter.on("Error opening compare view", e);
+				return;
+			}
+		}
 		instance.doUpdate(commit, elements);
 	}
 
@@ -59,7 +74,7 @@ public class CompareView extends ViewPart {
 			viewer.setInput(new ArrayList<>());
 			return;
 		}
-		input = new DiffNodeBuilder(Repository.CURRENT, Database.get()).build(getDiffs(commit, elements));
+		input = new DiffNodeBuilder(Database.get()).build(getDiffs(commit, elements));
 		viewer.setInput(input != null ? Collections.singleton(input) : new ArrayList<>());
 	}
 

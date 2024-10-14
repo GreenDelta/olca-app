@@ -19,6 +19,7 @@ import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.ModelTypeOrder;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Labels;
@@ -28,7 +29,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.model.Entry;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.ModelRefMap;
 import org.openlca.git.util.TypedRefIdMap;
@@ -39,18 +39,20 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
 	private final boolean canMerge;
-	private final Map<String, Entry> entryMap;
+	private Map<String, Reference> entryMap;
 	private Runnable onMerge;
 	private ModelRefMap<ConflictResolution> resolvedConflicts = new ModelRefMap<>();
 
 	DiffNodeViewer(Composite parent, boolean canMerge) {
 		super(parent);
 		this.canMerge = canMerge;
-		this.entryMap = Repository.CURRENT.entries.find().recursive().asMap();
 	}
 
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
+		this.entryMap = Repository.CURRENT != null
+				? Repository.CURRENT.entries.find().recursive().asMap()
+				: null;
 		if (collection.isEmpty()) {
 			root = null;
 			super.setInput((Collection<DiffNode>) null);
@@ -199,7 +201,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (node.isLibrariesNode())
 				return M.Libraries;
 			if (node.isLibraryNode()) {
-				var path = node.contentAsDiff().path;
+				var path = node.contentAsTriDiff().path;
 				return path.substring(path.indexOf("/") + 1);
 			}
 			if (node.isModelTypeNode())
@@ -233,10 +235,10 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (element == null)
 				return null;
 			var node = (DiffNode) element;
-			if (node.isLibraryNode())
-				return Images.library(getOverlayRemote(node.contentAsDiff().diffType));
 			if (node.isModelTypeNode())
 				return Images.getForCategory(node.getModelType());
+			if (node.isLibrariesNode())
+				return Icon.FOLDER.get();
 			if (node.isCategoryNode()) {
 				if (node.content instanceof String s)
 					if (!entryMap.containsKey(s))
@@ -247,8 +249,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			}
 			var diff = node.contentAsTriDiff();
 			var overlay = getOverlay(diff);
-			if (node.isLibrariesNode())
-				return Images.libraries(overlay);
+			if (node.isLibraryNode())
+				return Images.library(overlay);
 			return Images.get(diff.type, overlay);
 		}
 

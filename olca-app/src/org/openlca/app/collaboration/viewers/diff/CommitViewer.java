@@ -70,12 +70,12 @@ public class CommitViewer extends DiffNodeViewer {
 		if (node == null)
 			return nodes;
 		for (var child : node.children) {
-			if (child.content instanceof TriDiff d) {
+			if (child.isLibrariesNode() || child.isLibraryNode()) {
+				nodes.add(child);
+			} else if (child.content instanceof TriDiff d) {
 				if (models == null || models.contains(d)) {
 					nodes.add(child);
 				}
-			} else if (child.isLibrariesNode() || child.isLibraryNode()) {
-				nodes.add(child);
 			}
 			nodes.addAll(collectChildren(models, child));
 		}
@@ -84,7 +84,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 	public Set<DiffNode> getChecked() {
 		return selectionProvider.getSelection().stream()
-				.filter(Predicate.not(DiffNode::isLibraryNode))
+				.filter(Predicate.not(DiffNode::isLibrariesNode))
 				.collect(Collectors.toSet());
 	}
 
@@ -111,7 +111,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected boolean isSelectable(DiffNode element) {
-			return element.content instanceof TriDiff || element.isLibraryNode();
+			return element.content instanceof TriDiff || element.isLibrariesNode();
 		}
 
 		@Override

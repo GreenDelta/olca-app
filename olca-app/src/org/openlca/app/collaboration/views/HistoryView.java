@@ -8,6 +8,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
 import org.openlca.app.collaboration.viewers.diff.RefJson;
 import org.openlca.app.collaboration.viewers.json.JsonCompareViewer;
@@ -112,6 +113,8 @@ public class HistoryView extends ViewPart {
 		public String getText(Object element) {
 			if (!(element instanceof Diff diff))
 				return null;
+			if (diff.isLibrary)
+				return M.Libraries + "/" + diff.name;
 			if (diff.isCategory)
 				return diff.getCategoryPath();
 			var text = diff.category;
@@ -135,6 +138,8 @@ public class HistoryView extends ViewPart {
 			} else if (diff.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
+			if (diff.isLibrary)
+				return Images.library(overlay);
 			if (diff.isCategory)
 				return Images.getForCategory(diff.type, overlay);
 			return Images.get(diff.type, overlay);

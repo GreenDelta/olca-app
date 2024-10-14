@@ -17,7 +17,6 @@ import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
@@ -64,7 +63,7 @@ class ReferenceCheck {
 		var references = collect();
 		if (references.isEmpty())
 			return convert(input);
-		var node = new DiffNodeBuilder(Repository.CURRENT, database).build(references);
+		var node = new DiffNodeBuilder(database).build(references);
 		var dialog = new CommitReferencesDialog(node, stashCommit);
 		if (dialog.open() != CommitReferencesDialog.OK)
 			return null;

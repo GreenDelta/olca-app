@@ -59,7 +59,9 @@ public class RepositoryElement extends ServerNavigationElement<Repository> {
 				ModelType.LOCATION)));
 		if (counts.getOrDefault(RepositoryInfo.FILE_NAME, 0) > 0) {
 			children.add(new LibrariesElement(this, WebRequests
-					.execute(() -> getClient().browse(getRepositoryId(), "LIBRARY"), new ArrayList<Entry>()).stream()
+					.execute(() -> getClient().browse(getRepositoryId(), RepositoryInfo.FILE_NAME),
+							new ArrayList<Entry>())
+					.stream()
 					.map(e -> new LibraryInfo(e.name()))
 					.collect(Collectors.toList())));
 		}

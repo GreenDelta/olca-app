@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -98,16 +99,16 @@ class ConflictResolver {
 	private void initWorkspaceConflicts() {
 		App.runWithProgress(M.CheckingForWorkspaceConflicts, () -> {
 			var repo = Repository.CURRENT;
-			var workspaceChanges = repo.diffs.find().withDatabase();
+			var workspaceChanges = repo.diffs.find().excludeLibraries().withDatabase();
 			if (workspaceChanges.isEmpty())
 				return;
-			remoteChanges = repo.diffs.find().commit(commonParent).with(remoteCommit);
+			remoteChanges = repo.diffs.find().excludeLibraries().commit(commonParent).with(remoteCommit);
 			var diffs = between(workspaceChanges, remoteChanges);
 			workspaceConflicts = splitEqualAndRemaining(diffs);
 		});
 	}
 
-	private List<Change> toChanges(List<TriDiff> remaining) {
+	private Set<Change> toChanges(List<TriDiff> remaining) {
 		return Change.of(remaining.stream()
 				.map(diff -> diff.left)
 				.filter(Objects::nonNull)
@@ -123,7 +124,7 @@ class ConflictResolver {
 		return resolve();
 	}
 
-	private boolean stashChanges(List<Change> changes)
+	private boolean stashChanges(Set<Change> changes)
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
 		var repo = Repository.CURRENT;
 		var user = repo.promptUser();
@@ -150,7 +151,7 @@ class ConflictResolver {
 		localConflicts.remaining.stream()
 				.filter(Predicate.not(TriDiff::conflict))
 				.forEach(conflict -> solved.put(conflict, ConflictResolution.keep()));
-		var node = new DiffNodeBuilder(Repository.CURRENT, Database.get()).build(localConflicts.remaining);
+		var node = new DiffNodeBuilder(Database.get()).build(localConflicts.remaining);
 		if (node == null || node.children.isEmpty())
 			return solved;
 		var dialog = new MergeDialog(node);
@@ -168,7 +169,7 @@ class ConflictResolver {
 		if (localCommit.id.equals(commonParent.id))
 			return;
 		App.runWithProgress(M.CheckingForLocalConflicts, () -> {
-			var localChanges = repo.diffs.find().commit(commonParent).with(localCommit);
+			var localChanges = repo.diffs.find().excludeLibraries().commit(commonParent).with(localCommit);
 			if (localChanges.isEmpty() || remoteChanges.isEmpty())
 				return;
 			var diffs = between(localChanges, remoteChanges);

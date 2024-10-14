@@ -1,6 +1,7 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.openlca.app.M;
@@ -13,11 +14,8 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
-import org.openlca.git.RepositoryInfo;
 import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
-import org.openlca.git.model.DiffType;
-import org.openlca.git.model.Reference;
 import org.openlca.git.util.ModelRefSet;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.util.Strings;
@@ -27,9 +25,6 @@ class Datasets {
 	static DialogResult select(List<INavigationElement<?>> selection, boolean canPush, boolean isStashCommit) {
 		var repo = Repository.CURRENT;
 		var diffs = repo.diffs.find().withDatabase();
-		if (Repository.CURRENT.librariesChanged()) {
-			diffs.add(createLibraryDiff());
-		}
 		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
 		if (dialog == null)
 			return null;
@@ -43,20 +38,9 @@ class Datasets {
 			return null;
 		var result = withReferences.stream()
 				.map(Change::of)
-				.flatMap(List::stream)
-				.collect(Collectors.toList());
+				.flatMap(Set::stream)
+				.collect(Collectors.toSet());
 		return new DialogResult(dialogResult, dialog.getMessage(), result);
-	}
-
-	private static Diff createLibraryDiff() {
-		var repo = Repository.CURRENT;
-		if (repo.commits.head() == null)
-			return new Diff(DiffType.ADDED, null,
-					new Reference(RepositoryInfo.FILE_NAME, null, null));
-		return new Diff(DiffType.MODIFIED,
-				new Reference(RepositoryInfo.FILE_NAME, repo.commits.head().id,
-						repo.entries.get(RepositoryInfo.FILE_NAME, repo.commits.head().id).objectId),
-				new Reference(RepositoryInfo.FILE_NAME, null, null));
 	}
 
 	private static CommitDialog createCommitDialog(List<INavigationElement<?>> selection, List<Diff> diffs,
@@ -64,7 +48,7 @@ class Datasets {
 		var differences = diffs.stream()
 				.map(d -> new TriDiff(d, null))
 				.toList();
-		var node = new DiffNodeBuilder(Repository.CURRENT, Database.get()).build(differences);
+		var node = new DiffNodeBuilder(Database.get()).build(differences);
 		if (node == null) {
 			MsgBox.info(M.NoChangesToCommit);
 			return null;
@@ -106,7 +90,7 @@ class Datasets {
 		return false;
 	}
 
-	static record DialogResult(int action, String message, List<Change> datasets) {
+	static record DialogResult(int action, String message, Set<Change> datasets) {
 	}
 
 }
