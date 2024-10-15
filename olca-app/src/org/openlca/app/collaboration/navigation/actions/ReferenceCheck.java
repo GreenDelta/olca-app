@@ -48,13 +48,13 @@ class ReferenceCheck {
 	}
 
 	static Set<Diff> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
-		if (!CollaborationPreference.checkReferences())
+		if (!CollaborationPreference.checkReferences() || CollaborationPreference.onlyFullCommits())
 			return convert(input);
 		return new ReferenceCheck(database, all, input).run(false);
 	}
 
 	static Set<Diff> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
-		if (!CollaborationPreference.checkReferences())
+		if (!CollaborationPreference.checkReferences() || CollaborationPreference.onlyFullCommits())
 			return convert(input);
 		return new ReferenceCheck(database, all, input).run(true);
 	}

@@ -9,6 +9,7 @@ public class CollaborationPreference extends AbstractPreferenceInitializer {
 	public static final String CHECK_REFERENCES = "olca-collaboration-check-references";
 	public static final String DISPLAY_COMMENTS = "olca-collaboration-display-comments";
 	public static final String STORE_CONNECTION = "olca-collaboration-store-connection";
+	public static final String ONLY_FULL_COMMIT = "olca-collaboration-only-full-commit";
 
 	@Override
 	public void initializeDefaultPreferences() {
@@ -16,6 +17,7 @@ public class CollaborationPreference extends AbstractPreferenceInitializer {
 		store.setDefault(CHECK_REFERENCES, false);
 		store.setDefault(DISPLAY_COMMENTS, false);
 		store.setDefault(STORE_CONNECTION, true);
+		store.setDefault(ONLY_FULL_COMMIT, true);
 	}
 
 	public static boolean checkReferences() {
@@ -25,7 +27,11 @@ public class CollaborationPreference extends AbstractPreferenceInitializer {
 	public static boolean commentsEnabled() {
 		return is(DISPLAY_COMMENTS);
 	}
-	
+
+	public static boolean onlyFullCommits() {
+		return is(ONLY_FULL_COMMIT);
+	}
+
 	public static boolean storeConnection() {
 		return is(STORE_CONNECTION);
 	}

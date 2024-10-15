@@ -66,6 +66,7 @@ public class M extends NLS {
 	public static String AlreadyConnected;
 	public static String AlreadyExistingLibraries;
 	public static String AlreadyPresent;
+	public static String AlwaysCommitAllChanges;
 	public static String AlwaysUpdateInDb;
 	public static String AlwaysUseProvider;
 	public static String Ambiguous;

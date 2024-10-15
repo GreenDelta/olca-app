@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
+import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.PathFilters;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
@@ -55,22 +56,24 @@ class Datasets {
 		}
 		var dialog = new CommitDialog(node, canPush, isStashCommit);
 		var paths = PathFilters.of(selection);
-		var newLibraryDatasets = determineLibraryDatasets(diffs);
+		var lockedDatasets = determineLockedDatasets(diffs);
 		var initialSelection = new ModelRefSet();
 		diffs.stream()
 				.filter(ref -> ref.type != null)
-				.filter(ref -> selectionContainsPath(paths, ref.path) || newLibraryDatasets.contains(ref))
+				.filter(ref -> selectionContainsPath(paths, ref.path) || lockedDatasets.contains(ref))
 				.forEach(initialSelection::add);
 		dialog.setInitialSelection(initialSelection);
-		dialog.setNewLibraryDatasets(newLibraryDatasets);
+		dialog.setLockedDatasets(lockedDatasets);
 		return dialog;
 	}
 
-	private static ModelRefSet determineLibraryDatasets(List<Diff> diffs) {
+	private static ModelRefSet determineLockedDatasets(List<Diff> diffs) {
 		var all = new ModelRefSet();
 		diffs.stream()
 				.filter(diff -> diff.type != null)
 				.forEach(all::add);
+		if (CollaborationPreference.onlyFullCommits())
+			return all;
 		var fromLibrary = new ModelRefSet();
 		all.types().forEach(type -> {
 			fromLibrary.addAll(Daos.root(Database.get(), type).getDescriptors().stream()
