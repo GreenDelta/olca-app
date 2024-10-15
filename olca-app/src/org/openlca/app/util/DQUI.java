@@ -66,6 +66,10 @@ public class DQUI {
 		return moreRed((double) num / divisor);
 	}
 
+	public static Color getForegroundColor() {
+		return Theme.isDark() ? Colors.white() : Colors.black();
+	}
+
 	private static Color green() {
 		return Theme.isDark()
 				? Colors.get(83, 167, 83)

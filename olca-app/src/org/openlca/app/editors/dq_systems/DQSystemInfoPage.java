@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -96,11 +98,12 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			for (var score : indicator.scores) {
 				var description = createTextCell(composite, 8, 8);
 				getBinding().onString(() -> score, "description", description);
-				var color = DQUI.getColor(score.position, getModel().getScoreCount());
-				Controls.paintBackground(description, color);
+				var background = DQUI.getColor(score.position,
+						getModel().getScoreCount());
+				paintDescription(description, background, DQUI.getForegroundColor());
 				commentControl(composite,
 						"indicators[" + indicator.position + "].scores[" + score.position
-						+ "].description");
+								+ "].description");
 			}
 			createRemoveIndicatorButton(composite, indicator.position);
 		}
@@ -109,6 +112,31 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			UI.filler(composite);
 			createRemoveScoreButton(composite, i);
 		}
+	}
+
+	/**
+	 * Checks and, if required, sets the given color as the background or
+	 * foreground color on every paint event. On some systems and especially in
+	 * dark-mode, this is necessary in some cases because otherwise, the widget is
+	 * drawn with the default background and foreground color even when it was set
+	 * explicitly. It also does not always work to do this in the first paint
+	 * event only, thus we need to check the background color after each re-paint.
+	 * So, only use this function if required.
+	 */
+	private static void paintDescription(Control widget, Color background,
+			Color foreground) {
+		if (widget == null || background == null || foreground == null)
+			return;
+		widget.setBackground(background);
+		widget.setForeground(foreground);
+		widget.addPaintListener(e -> {
+			if (!Objects.equals(widget.getBackground(), background)) {
+				widget.setBackground(background);
+			}
+			if (!Objects.equals(widget.getForeground(), foreground)) {
+				widget.setForeground(foreground);
+			}
+		});
 	}
 
 	private void createUncertaintyMatrix(Composite composite) {
@@ -129,7 +157,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 				getBinding().onDouble(() -> score, "uncertainty", uncertaintyText);
 				commentControl(composite,
 						"indicators[" + indicator.position + "].scores["
-								+ score.position+ "].uncertainty");
+								+ score.position + "].uncertainty");
 			}
 		}
 	}
