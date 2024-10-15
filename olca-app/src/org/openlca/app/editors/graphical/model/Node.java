@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
+import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -12,21 +14,26 @@ import java.util.Objects;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.components.graphics.model.Link;
 import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.model.*;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.Result;
+import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.ResultDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-
-import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
 
 /**
  * A {@link Node} represents a unit process, a library process, a result
@@ -57,7 +64,7 @@ public class Node extends MinMaxComponent {
 	 * Helper variable when exploring graph in CollapseCommand
 	 */
 	public boolean isCollapsing;
-	private final String comparisonLabel = Labels.name(getRefFlow());
+	private String comparisonLabel;
 	private final Map<Side, Boolean> buttonStatus = new EnumMap<>(Side.class);
 
 	public Node(RootDescriptor descriptor) {
@@ -505,10 +512,13 @@ public class Node extends MinMaxComponent {
 
 	@Override
 	public String getComparisonLabel() {
+		if (comparisonLabel == null) {
+			comparisonLabel = Labels.name(getRefFlow());
+		}
 		return comparisonLabel;
 	}
 
-	Flow getRefFlow() {
+	protected Flow getRefFlow() {
 		if (descriptor instanceof ProcessDescriptor) {
 			var process = (Process) getEntity();
 			if (process.quantitativeReference != null)
