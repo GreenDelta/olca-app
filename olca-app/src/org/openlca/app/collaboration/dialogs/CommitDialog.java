@@ -98,7 +98,7 @@ public class CommitDialog extends FormDialog {
 			this.updateButtons();
 		});
 		if (CollaborationPreference.onlyFullCommits()) {
-			viewer.getViewer().getTree().addMouseListener(new MouseAdapter() {				
+			viewer.getViewer().getTree().addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseUp(MouseEvent e) {
 					MsgBox.info(M.AlwaysCommitAllChangesInfoText);
@@ -108,7 +108,7 @@ public class CommitDialog extends FormDialog {
 	}
 
 	private void updateButtons() {
-		var enabled = true; // viewer.hasChecked();
+		var enabled = viewer.hasChecked();
 		if (!isStashCommit && (message == null || message.isEmpty())) {
 			enabled = false;
 		}
