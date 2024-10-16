@@ -17,7 +17,6 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.results.analysis.groups.AnalysisGroup;
 import org.openlca.app.results.analysis.groups.AnalysisGroupsPage;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.contributions.ContributionTreePage;
@@ -33,6 +32,7 @@ import org.openlca.app.util.MemoryError;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.util.Strings;
@@ -136,9 +136,9 @@ public class ResultEditor extends FormEditor {
 			setSankeyPageListener(sankey);
 
 			if (result().hasImpacts()) {
-				var groups = AnalysisGroup.getAllOf(setup());
-				if (!groups.isEmpty()) {
-					addPage(new AnalysisGroupsPage(this, groups));
+				if (setup().target() instanceof ProductSystem sys
+						&& !sys.analysisGroups.isEmpty()) {
+					addPage(new AnalysisGroupsPage(this, sys));
 				}
 				addPage(new ImpactChecksPage(this));
 			}
