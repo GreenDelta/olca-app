@@ -8,6 +8,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -121,11 +122,28 @@ public class SetProcessGroupCommand extends Command {
 		protected void createFormContent(IManagedForm form) {
 			var tk = form.getToolkit();
 			var body = UI.dialogBody(form.getForm(), tk);
-			UI.gridLayout(body, 2);
-			new GroupPanel(this, null).render(body, tk);
+			UI.gridLayout(body, 1);
+
+			var groupComp = tk.createComposite(body);
+			UI.fillHorizontal(groupComp);
+			UI.gridLayout(groupComp, 2, 10, 0);
+
+			new GroupPanel(this, null).render(groupComp, tk);
 			for (var group : groups) {
-				new GroupPanel(this, group).render(body, tk);
+				new GroupPanel(this, group).render(groupComp, tk);
 			}
+
+			var addBtn = tk.createButton(body, "Add analysis group", SWT.NONE);
+			addBtn.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+			Controls.onSelect(addBtn, $ -> {
+				var group = new AnalysisGroup();
+				group.name = "New analysis group";
+				groups.add(group);
+				new GroupPanel(this, group).render(groupComp, tk);
+				body.layout();
+				form.reflow(true);
+				groupsChanged = true;
+			});
 		}
 
 		private Color colorOf(AnalysisGroup group) {
@@ -147,19 +165,17 @@ public class SetProcessGroupCommand extends Command {
 				this.group = group;
 			}
 
-			void render(Composite body, FormToolkit tk) {
+			void render(Composite parent, FormToolkit tk) {
 
-				var radio = tk.createButton(body, "", SWT.RADIO);
+				var radio = tk.createButton(parent, "", SWT.RADIO);
 				radio.setSelection(Objects.equals(group, dialog.selected));
 				Controls.onSelect(radio, $ -> {
 					if (radio.getSelection()) {
-						var str = group != null ? group.name : "None";
-						System.out.println("selected: " + str);
 						dialog.selected = group;
 					}
 				});
 
-				var comp = tk.createComposite(body);
+				var comp = tk.createComposite(parent);
 				UI.fillHorizontal(comp);
 				UI.gridLayout(comp, group == null ? 1 : 3, 10, 1);
 
@@ -201,13 +217,15 @@ public class SetProcessGroupCommand extends Command {
 				var delete = UI.imageHyperlink(comp, tk);
 				delete.setImage(Icon.DELETE_DISABLED.get());
 				delete.setHoverImage(Icon.DELETE.get());
+				delete.setToolTipText("Delete analysis group");
 
 				Controls.onClick(delete, $ -> {
 					dialog.groups.remove(group);
 					dialog.groupsChanged = true;
 					radio.dispose();
 					comp.dispose();
-					body.layout();
+					parent.layout();
+					parent.getParent().layout();
 				});
 			}
 		}
