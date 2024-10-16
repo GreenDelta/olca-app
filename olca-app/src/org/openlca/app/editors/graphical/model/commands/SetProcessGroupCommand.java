@@ -6,13 +6,16 @@ import java.util.Objects;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.rcp.images.Icon;
@@ -21,6 +24,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.descriptors.RootDescriptor;
+import org.openlca.util.Strings;
 
 public class SetProcessGroupCommand extends Command {
 
@@ -57,8 +61,9 @@ public class SetProcessGroupCommand extends Command {
 		if (editor == null)
 			return;
 		var groups = editor.getProductSystem().analysisGroups;
+		groups.sort((g1, g2) -> Strings.compare(g1.name, g2.name));
 		var current = findCurrent(groups);
-		var dialog = new Dialog(groups, current);
+		var dialog = new Dialog(editor, groups, current);
 
 		if (dialog.open() == Window.OK
 				&& !Objects.equals(current, dialog.selected)) {
@@ -86,12 +91,17 @@ public class SetProcessGroupCommand extends Command {
 
 	private static class Dialog extends FormDialog {
 
+		private final GraphEditor editor;
 		private final List<AnalysisGroup> groups;
 		private AnalysisGroup selected;
 		private boolean groupsChanged;
 
-		Dialog(List<AnalysisGroup> groups, AnalysisGroup selected) {
+		Dialog(
+				GraphEditor editor,
+				List<AnalysisGroup> groups,
+				AnalysisGroup selected) {
 			super(UI.shell());
+			this.editor = editor;
 			this.groups = groups;
 			this.selected = selected;
 		}
@@ -111,11 +121,20 @@ public class SetProcessGroupCommand extends Command {
 		protected void createFormContent(IManagedForm form) {
 			var tk = form.getToolkit();
 			var body = UI.dialogBody(form.getForm(), tk);
-			UI.gridLayout(body, 1);
+			UI.gridLayout(body, 2);
 			new GroupPanel(this, null).render(body, tk);
 			for (var group : groups) {
 				new GroupPanel(this, group).render(body, tk);
 			}
+		}
+
+		private Color colorOf(AnalysisGroup group) {
+			var c = group != null ? group.color : null;
+			if (Strings.notEmpty(c))
+				return Colors.fromHex(c);
+			return editor.getTheme() != null && editor.getTheme().isDark()
+					? Colors.fromHex("#FFFDE7")
+					: Colors.fromHex("#212121");
 		}
 
 		private static class GroupPanel {
@@ -129,11 +148,8 @@ public class SetProcessGroupCommand extends Command {
 			}
 
 			void render(Composite body, FormToolkit tk) {
-				var comp = tk.createComposite(body);
-				UI.fillHorizontal(comp);
-				UI.gridLayout(comp, group == null ? 2 : 4);
 
-				var radio = tk.createButton(comp, "", SWT.RADIO);
+				var radio = tk.createButton(body, "", SWT.RADIO);
 				radio.setSelection(Objects.equals(group, dialog.selected));
 				Controls.onSelect(radio, $ -> {
 					if (radio.getSelection()) {
@@ -142,6 +158,10 @@ public class SetProcessGroupCommand extends Command {
 						dialog.selected = group;
 					}
 				});
+
+				var comp = tk.createComposite(body);
+				UI.fillHorizontal(comp);
+				UI.gridLayout(comp, group == null ? 1 : 3, 10, 1);
 
 				if (group == null) {
 					UI.label(comp, tk, M.None);
@@ -158,16 +178,36 @@ public class SetProcessGroupCommand extends Command {
 					dialog.groupsChanged = true;
 				});
 
-				var color = tk.createButton(comp, "O", SWT.NONE);
-				color.setForeground(Colors.black());
-				color.setBackground(Colors.black());
+				// color selector
+				var colorBtn = tk.createButton(comp, "□□", SWT.NONE);
+				var color = dialog.colorOf(group);
+				colorBtn.setForeground(color);
+				colorBtn.setBackground(color);
+				colorBtn.setToolTipText("Select a group color");
+				Controls.onSelect(colorBtn, $ -> {
+					var cd = new ColorDialog(dialog.getShell());
+					cd.setRGB(color.getRGB());
+					var next = cd.open();
+					if (next != null) {
+						var nextColor = Colors.get(next);
+						colorBtn.setForeground(nextColor);
+						colorBtn.setBackground(nextColor);
+						group.color = String.format(
+								"#%02x%02x%02x", next.red, next.green, next.blue);
+						dialog.groupsChanged = true;
+					}
+				});
 
-				var delete = tk.createButton(comp, "", SWT.NONE);
-				delete.setImage(Icon.DELETE.get());
-				Controls.onSelect(delete, $ -> {
+				var delete = UI.imageHyperlink(comp, tk);
+				delete.setImage(Icon.DELETE_DISABLED.get());
+				delete.setHoverImage(Icon.DELETE.get());
+
+				Controls.onClick(delete, $ -> {
 					dialog.groups.remove(group);
 					dialog.groupsChanged = true;
+					radio.dispose();
 					comp.dispose();
+					body.layout();
 				});
 			}
 		}

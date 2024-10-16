@@ -142,7 +142,7 @@ public class Colors {
 			return get(r, g, b, a);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(Colors.class);
-			log.error("failed to parse hex color " + hex, e);
+			log.error("failed to parse hex color {}", hex, e);
 			return black();
 		}
 	}
