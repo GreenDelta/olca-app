@@ -1,6 +1,7 @@
 package org.openlca.app.results.analysis.groups;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -14,19 +15,28 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.AnalysisGroup;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.results.agroups.AnalysisGroupResult;
+import org.openlca.util.Strings;
 
 public class AnalysisGroupsPage extends FormPage {
 
 	private final ResultEditor editor;
+	private final ProductSystem system;
 	private final List<AnalysisGroup> groups;
+	private volatile AnalysisGroupResult result;
 
-	public AnalysisGroupsPage(ResultEditor editor, List<AnalysisGroup> groups) {
+	public AnalysisGroupsPage(ResultEditor editor, ProductSystem system) {
 		super(editor, "AnalysisGroupsPage", "Analysis groups");
 		this.editor = editor;
-		this.groups = groups;
+		this.system = system;
+		this.groups = system.analysisGroups;
+		this.groups.sort((g1, g2) -> Strings.compare(g1.name, g2.name));
 	}
 
 	@Override
@@ -44,7 +54,7 @@ public class AnalysisGroupsPage extends FormPage {
 		widths[0] = 0.4;
 		widths[1] = 0.1;
 		for (int i = 0; i < groups.size(); i++) {
-			headers[2 + i] = groups.get(i).name();
+			headers[2 + i] = groups.get(i).name;
 			widths[2 + i] = 0.5 / groups.size();
 		}
 
@@ -52,12 +62,22 @@ public class AnalysisGroupsPage extends FormPage {
 		Tables.bindColumnWidths(table, widths);
 		table.setLabelProvider(new LabelProvider(groups));
 
-		var results = App.exec(
-				"Calculate group results...",
-				() -> AnalysisGroupResult.calculate(editor, groups));
-		table.setInput(results);
+		var ref = new AtomicReference<List<ImpactGroupResult>>();
+		App.run("Calculate group results...",
+				() -> {
+					result = AnalysisGroupResult.of(system, editor.result());
+					var indicators = editor.items().impacts();
+					ref.set(ImpactGroupResult.allOf(indicators, result));
+				},
+				() -> {
+					var impacts = ref.get();
+					if (result == null || impacts == null) {
+						MsgBox.error("Calculation failed", "No result was calculated.");
+						return;
+					}
+					table.setInput(impacts);
+				});
 	}
-
 
 	private static final class LabelProvider extends ColumnLabelProvider
 			implements ITableLabelProvider {
@@ -78,7 +98,7 @@ public class AnalysisGroupsPage extends FormPage {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof AnalysisGroupResult r))
+			if (!(obj instanceof ImpactGroupResult r))
 				return null;
 			if (col == 0)
 				return Images.get(r.impact());
@@ -92,7 +112,7 @@ public class AnalysisGroupsPage extends FormPage {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof AnalysisGroupResult r))
+			if (!(obj instanceof ImpactGroupResult r))
 				return null;
 			return switch (col) {
 				case 0 -> Labels.name(r.impact());
@@ -101,12 +121,12 @@ public class AnalysisGroupsPage extends FormPage {
 			};
 		}
 
-		private double getValue(int col, AnalysisGroupResult r) {
+		private double getValue(int col, ImpactGroupResult r) {
 			int i = col - 2;
 			if (i < 0 || i >= groups.size())
 				return 0;
 			var group = groups.get(i);
-			var val = r.values().get(group.name());
+			var val = r.values().get(group.name);
 			return val != null ? val : 0;
 		}
 	}
