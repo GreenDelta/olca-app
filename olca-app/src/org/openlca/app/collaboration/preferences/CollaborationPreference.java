@@ -30,6 +30,10 @@ public class CollaborationPreference extends AbstractPreferenceInitializer {
 		return is(ONLY_FULL_COMMITS);
 	}
 
+	public static void allowDatasetSelection() {
+		getStore().setValue(ONLY_FULL_COMMITS, false);
+	}
+
 	public static boolean checkReferences() {
 		return is(CHECK_REFERENCES);
 	}

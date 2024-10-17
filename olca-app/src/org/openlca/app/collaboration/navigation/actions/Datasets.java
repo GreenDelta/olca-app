@@ -85,7 +85,7 @@ class Datasets {
 					.map(d -> new TypedRefId(d.type, d.refId))
 					.filter(all::contains).toList());
 		});
-		return fromLibrary;
+		return fromLibrary;		
 	}
 
 	private static boolean selectionContainsPath(List<String> paths, String path) {
