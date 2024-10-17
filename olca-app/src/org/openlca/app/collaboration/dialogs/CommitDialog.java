@@ -4,8 +4,6 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -14,11 +12,9 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.git.util.ModelRefSet;
@@ -97,14 +93,6 @@ public class CommitDialog extends FormDialog {
 			CheckboxTreeViewers.expandGrayed(viewer.getViewer());
 			this.updateButtons();
 		});
-		if (CollaborationPreference.onlyFullCommits()) {
-			viewer.getViewer().getTree().addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseUp(MouseEvent e) {
-					MsgBox.info(M.AlwaysCommitAllChangesInfoText);
-				}
-			});
-		}
 	}
 
 	private void updateButtons() {

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
+import org.openlca.app.collaboration.preferences.CollaborationPreferenceDialog;
 import org.openlca.app.collaboration.util.PathFilters;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
@@ -29,6 +30,9 @@ class Datasets {
 		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
 		if (dialog == null)
 			return null;
+		if (CollaborationPreference.firstConfiguration()) {
+			new CollaborationPreferenceDialog().open();
+		}
 		var dialogResult = dialog.open();
 		if (dialogResult == CommitDialog.CANCEL)
 			return null;

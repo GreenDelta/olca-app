@@ -6,18 +6,28 @@ import org.openlca.app.rcp.RcpActivator;
 
 public class CollaborationPreference extends AbstractPreferenceInitializer {
 
+	public static final String FIRST_CONFIGURATION = "olca-collaboration-first-configuration";
+	public static final String ONLY_FULL_COMMITS = "olca-collaboration-only-full-commits";
 	public static final String CHECK_REFERENCES = "olca-collaboration-check-references";
 	public static final String DISPLAY_COMMENTS = "olca-collaboration-display-comments";
 	public static final String STORE_CONNECTION = "olca-collaboration-store-connection";
-	public static final String ONLY_FULL_COMMIT = "olca-collaboration-only-full-commit";
 
 	@Override
 	public void initializeDefaultPreferences() {
 		var store = getStore();
-		store.setDefault(CHECK_REFERENCES, false);
+		store.setDefault(FIRST_CONFIGURATION, true);
+		store.setDefault(ONLY_FULL_COMMITS, true);
+		store.setDefault(CHECK_REFERENCES, true);
 		store.setDefault(DISPLAY_COMMENTS, false);
 		store.setDefault(STORE_CONNECTION, true);
-		store.setDefault(ONLY_FULL_COMMIT, true);
+	}
+
+	public static boolean firstConfiguration() {
+		return is(FIRST_CONFIGURATION);
+	}
+
+	public static boolean onlyFullCommits() {
+		return is(ONLY_FULL_COMMITS);
 	}
 
 	public static boolean checkReferences() {
@@ -28,14 +38,14 @@ public class CollaborationPreference extends AbstractPreferenceInitializer {
 		return is(DISPLAY_COMMENTS);
 	}
 
-	public static boolean onlyFullCommits() {
-		return is(ONLY_FULL_COMMIT);
+	static void isConfigured() {
+		getStore().setValue(FIRST_CONFIGURATION, false);
 	}
 
 	public static boolean storeConnection() {
 		return is(STORE_CONNECTION);
 	}
-	
+
 	public static void storeConnection(boolean value) {
 		getStore().setValue(STORE_CONNECTION, value);
 	}
