@@ -63,7 +63,7 @@ public class AnalysisGroupsPage extends FormPage {
 		table.setLabelProvider(new LabelProvider(groups));
 
 		var ref = new AtomicReference<List<ImpactGroupResult>>();
-		App.run("Calculate group results...",
+		App.runWithProgress("Calculate group results...",
 				() -> {
 					result = AnalysisGroupResult.of(system, editor.result());
 					var indicators = editor.items().impacts();
