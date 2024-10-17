@@ -114,7 +114,7 @@ public class SetProcessGroupCommand extends Command {
 		}
 
 		for (var c : parent.getChildren()) {
-			if (!(c instanceof NodeEditPart n) || n.equals(node))
+			if (!(c instanceof NodeEditPart n))
 				continue;
 			var model = n.getModel();
 			if (model == null || model.descriptor == null)

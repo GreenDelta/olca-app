@@ -10,12 +10,15 @@ import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.openlca.app.components.graphics.figures.ComponentFigure;
 import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.AnalysisGroup;
+import org.openlca.util.Strings;
 
 
 public class NodeFigure extends ComponentFigure {
@@ -52,6 +55,14 @@ public class NodeFigure extends ComponentFigure {
 		return analysisGroup != null
 				? analysisGroup.name + " :: " + Labels.name(node.descriptor)
 				: Labels.name(node.descriptor);
+	}
+
+	protected Color borderColor() {
+		if (analysisGroup != null && Strings.notEmpty(analysisGroup.color))
+			return Colors.fromHex(analysisGroup.color);
+		var theme = node.getGraph().getEditor().getTheme();
+		var box = node.getThemeBox();
+		return theme.boxBorderColor(box);
 	}
 
 	protected void onAnalysisGroupChange(Runnable fn) {

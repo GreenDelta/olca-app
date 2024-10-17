@@ -23,10 +23,14 @@ public class MinimizedNodeFigure extends NodeFigure {
 		var roundedCorners = RoundBorder.Corners
 			.fullRoundedCorners(HEADER_ARC_SIZE);
 		var headerBorder = new RoundBorder(theme.boxBorderWidth(box), roundedCorners);
-		headerBorder.setColor(theme.boxBorderColor(box));
+		headerBorder.setColor(borderColor());
 		header.setBorder(headerBorder);
 		add(header, GridPos.fill());
-		onAnalysisGroupChange(() -> header.getLabel().setText(name()));
+		onAnalysisGroupChange(() -> {
+			header.getLabel().setText(name());
+			headerBorder.setColor(borderColor());
+			header.setBorder(headerBorder);
+		});
 
 		setOpaque(true);
 	}

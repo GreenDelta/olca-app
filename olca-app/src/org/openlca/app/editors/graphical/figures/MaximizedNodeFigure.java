@@ -37,17 +37,23 @@ public class MaximizedNodeFigure extends NodeFigure {
 		var roundedCorners = RoundBorder.Corners
 			.fullRoundedCorners(HEADER_ARC_SIZE.getExpanded(arcDifference));
 		var border = new RoundBorder(borderWidth, roundedCorners);
-		border.setColor(theme.boxBorderColor(box));
+		border.setColor(borderColor());
 		setBorder(border);
 
 		var header = new NodeHeader();
 		var topRoundedCorners = RoundBorder.Corners
 			.topRoundedCorners(HEADER_ARC_SIZE);
 		var headerBorder = new RoundBorder(borderWidth, topRoundedCorners);
-		headerBorder.setColor(theme.boxBorderColor(box));
+		headerBorder.setColor(borderColor());
 		header.setBorder(headerBorder);
 		add(header, new GridData(SWT.FILL, SWT.FILL, true, false));
-		onAnalysisGroupChange(() -> header.getLabel().setText(name()));
+		onAnalysisGroupChange(() -> {
+			header.getLabel().setText(name());
+			border.setColor(borderColor());
+			setBorder(border);
+			headerBorder.setColor(borderColor());
+			header.setBorder(headerBorder);
+		});
 
 		var contentPaneLayout = new GridLayout(1, false);
 		contentPaneLayout.marginHeight = 0;
