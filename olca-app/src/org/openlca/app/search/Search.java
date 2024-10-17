@@ -62,7 +62,7 @@ class Search implements Runnable {
 		log.trace("run search with term {}", rawTerm);
 		var types = typeFilter == null
 				? ModelTypeOrder.getOrderedTypes()
-				: new ModelType[]{typeFilter};
+				: new ModelType[] { typeFilter };
 		var matches = new ArrayList<Match>();
 		for (var type : types) {
 			var all = type == ModelType.PARAMETER
@@ -78,12 +78,17 @@ class Search implements Runnable {
 
 		matches.stream()
 				.sorted((m1, m2) -> {
-					int c = Double.compare(m2.factor, m1.factor);
-					return c == 0
-							? Strings.compare(
+					var c = Boolean.compare(
+							m1.descriptor.isFromLibrary(),
+							m2.descriptor.isFromLibrary());
+					if (c != 0)
+						return c;
+					c = Double.compare(m2.factor, m1.factor);
+					if (c != 0)
+						return c;
+					return Strings.compare(
 							Labels.name(m1.descriptor),
-							Labels.name(m2.descriptor))
-							: c;
+							Labels.name(m2.descriptor));
 				})
 				.map(Match::descriptor)
 				.forEach(result::add);
@@ -130,7 +135,7 @@ class Search implements Runnable {
 				var tagMatch = wordMatch(d.tags, word);
 				if (nameMatch == 0 && tagMatch == 0)
 					return _empty;
-				factor += nameMatch + tagMatch ;
+				factor += nameMatch + tagMatch;
 			}
 
 			return new Match(d, factor);
