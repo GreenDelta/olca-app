@@ -1,9 +1,9 @@
 package org.openlca.app.editors.graphical.figures;
 
 import org.eclipse.draw2d.GridLayout;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.components.graphics.figures.GridPos;
 import org.openlca.app.components.graphics.figures.RoundBorder;
+import org.openlca.app.editors.graphical.model.Node;
 
 public class MinimizedNodeFigure extends NodeFigure {
 
@@ -26,6 +26,7 @@ public class MinimizedNodeFigure extends NodeFigure {
 		headerBorder.setColor(theme.boxBorderColor(box));
 		header.setBorder(headerBorder);
 		add(header, GridPos.fill());
+		onAnalysisGroupChange(() -> header.getLabel().setText(name()));
 
 		setOpaque(true);
 	}

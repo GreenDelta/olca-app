@@ -62,8 +62,7 @@ public class AddExchangeAction extends SelectionAction {
 				: null;
 			if (pane == null || pane.isForInputs() != forInput)
 				return null;
-			var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
-				GraphicalViewer.class);
+			var viewer = getWorkbenchPart().getAdapter(GraphicalViewer.class);
 			var registry = viewer.getEditPartRegistry();
 			var editPart = registry.get(pane);
 

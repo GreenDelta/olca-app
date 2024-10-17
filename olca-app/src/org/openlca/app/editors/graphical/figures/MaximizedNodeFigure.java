@@ -6,10 +6,9 @@ import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.components.graphics.figures.GridPos;
 import org.openlca.app.components.graphics.figures.RoundBorder;
+import org.openlca.app.editors.graphical.model.Node;
 
 public class MaximizedNodeFigure extends NodeFigure {
 
@@ -48,6 +47,7 @@ public class MaximizedNodeFigure extends NodeFigure {
 		headerBorder.setColor(theme.boxBorderColor(box));
 		header.setBorder(headerBorder);
 		add(header, new GridData(SWT.FILL, SWT.FILL, true, false));
+		onAnalysisGroupChange(() -> header.getLabel().setText(name()));
 
 		var contentPaneLayout = new GridLayout(1, false);
 		contentPaneLayout.marginHeight = 0;

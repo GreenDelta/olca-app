@@ -1,5 +1,6 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,6 +20,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
+import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
@@ -74,10 +76,13 @@ public class SetProcessGroupCommand extends Command {
 			if (dialog.selected != null) {
 				dialog.selected.processes.add(process.id);
 			}
+			node.propertyChange(new PropertyChangeEvent(
+					this, Node.GROUP_PROP, current, dialog.selected));
 			editor.setDirty();
 		}
 
 		if (dialog.groupsChanged) {
+			// TODO: notify affected nodes
 			editor.setDirty();
 		}
 	}
