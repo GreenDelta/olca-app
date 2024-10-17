@@ -56,6 +56,10 @@ public class WebRequests {
 			MsgBox.warning(M.FeatureNotAvailable + ": " + feature);
 			return false;
 		}
+		if (e.isConnectException()) {
+			MsgBox.error(e.getMessage());
+			return false;
+		}
 		ErrorReporter.on(message, e);
 		return false;
 	}
