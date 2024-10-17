@@ -67,7 +67,8 @@ public class M extends NLS {
 	public static String AlreadyExistingLibraries;
 	public static String AlreadyPresent;
 	public static String AlwaysCommitAllChanges;
-	public static String AlwaysCommitAllChangesInfoText;
+	public static String AlwaysCommitAllChangesDescription;
+	public static String AlwaysCommitAllChangesQuestion;
 	public static String AlwaysUpdateInDb;
 	public static String AlwaysUseProvider;
 	public static String Ambiguous;
@@ -188,6 +189,7 @@ public class M extends NLS {
 	public static String CheckMultiProviderLinksExperimental;
 	public static String CheckProductSystemDots;
 	public static String CheckReferencedChanges;
+	public static String CheckReferencedChangesDescription;
 	public static String CheckUsageOfExchangesDots;
 	public static String ChemicalFormula;
 	public static String ChineseSimplified;
@@ -495,6 +497,7 @@ public class M extends NLS {
 	public static String EmptyValueMessage;
 	public static String EmptyValueNotAllowed;
 	public static String EnableComments;
+	public static String EnableCommentsDescription;
 	public static String EnableProcessEditing;
 	public static String EndDate;
 	public static String EndOfLifeModeling;
@@ -615,6 +618,7 @@ public class M extends NLS {
 	public static String FileName;
 	public static String Files;
 	public static String Filter;
+	public static String FirstConfigurationDescription;
 	public static String FindEpds;
 	public static String FindUsages;
 	public static String Flow;
