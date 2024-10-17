@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.model.commands;
 
 import java.beans.PropertyChangeEvent;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,7 +83,7 @@ public class SetProcessGroupCommand extends Command {
 		}
 
 		if (dialog.groupsChanged) {
-			// TODO: notify affected nodes
+			handleGroupChange(groups);
 			editor.setDirty();
 		}
 	}
@@ -93,6 +94,37 @@ public class SetProcessGroupCommand extends Command {
 				return g;
 		}
 		return null;
+	}
+
+	/**
+	 * Handle changes, like name or color, of groups. This needs only be
+	 * called for other nodes that are already tagged with a group to update
+	 * their visuals.
+	 */
+	private void handleGroupChange(List<AnalysisGroup> groups) {
+		var parent = node.getParent();
+		if (parent == null)
+			return;
+
+		var map = new HashMap<Long, AnalysisGroup>();
+		for (var g : groups) {
+			for (var pid : g.processes) {
+				map.put(pid, g);
+			}
+		}
+
+		for (var c : parent.getChildren()) {
+			if (!(c instanceof NodeEditPart n) || n.equals(node))
+				continue;
+			var model = n.getModel();
+			if (model == null || model.descriptor == null)
+				continue;
+			var group = map.get(model.descriptor.id);
+			if (group == null)
+				continue;
+			var evt = new PropertyChangeEvent(this, Node.GROUP_PROP, null, group);
+			n.propertyChange(evt);
+		}
 	}
 
 	private static class Dialog extends FormDialog {
@@ -160,15 +192,7 @@ public class SetProcessGroupCommand extends Command {
 					: Colors.fromHex("#212121");
 		}
 
-		private static class GroupPanel {
-
-			final Dialog dialog;
-			final AnalysisGroup group;
-
-			GroupPanel(Dialog dialog, AnalysisGroup group) {
-				this.dialog = dialog;
-				this.group = group;
-			}
+		private record GroupPanel(Dialog dialog, AnalysisGroup group) {
 
 			void render(Composite parent, FormToolkit tk) {
 

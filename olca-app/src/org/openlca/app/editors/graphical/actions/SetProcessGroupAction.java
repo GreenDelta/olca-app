@@ -5,6 +5,7 @@ import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.requests.GraphRequestConstants;
+import org.openlca.app.rcp.images.Icon;
 
 public class SetProcessGroupAction extends SelectionAction {
 
@@ -12,6 +13,7 @@ public class SetProcessGroupAction extends SelectionAction {
 		super(editor);
 		setId(GraphActionIds.SET_PROCESS_GROUP);
 		setText("Set analysis group");
+		setImageDescriptor(Icon.ANALYSIS_RESULT.descriptor());
 	}
 
 	@Override
