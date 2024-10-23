@@ -577,6 +577,7 @@ public class M extends NLS {
 	public static String ExportingDataSetsDots;
 	public static String ExportingFile;
 	public static String ExportingProcesses;
+	public static String ExportingSocialAssessmentTreeDots;
 	public static String ExternalFile;
 	public static String ExtractingLibrary;
 

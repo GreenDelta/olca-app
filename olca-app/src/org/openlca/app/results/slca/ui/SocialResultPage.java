@@ -14,7 +14,9 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.slca.SocialResult;
 import org.openlca.app.results.slca.ui.TreeModel.IndicatorNode;
@@ -22,6 +24,7 @@ import org.openlca.app.results.slca.ui.TreeModel.Node;
 import org.openlca.app.results.slca.ui.TreeModel.TechFlowNode;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -102,7 +105,20 @@ public class SocialResultPage extends FormPage {
 				App.open(i.descriptor());
 			}
 		});
-		Actions.bind(tree, onOpen);
+
+		var onExport = Actions.create(M.ExportToExcel,
+				Images.descriptor(FileType.EXCEL), () -> {
+					if (tree.getInput() instanceof TreeModel mTree) {
+						var fileName = "social_assessment.xlsx";
+						var file = FileChooser.forSavingFile(M.Export, fileName);
+						if (file == null)
+							return;
+						var export = new SocialTreeExport(file, mTree);
+						App.runWithProgress(M.ExportingSocialAssessmentTreeDots, export);
+					}
+				});
+
+		Actions.bind(tree, onOpen, onExport);
 
 		tree.setInput(model);
 	}
