@@ -8,6 +8,7 @@ import { Chart, ChartConfiguration } from "chart.js";
  * @returns the wrapped chart canvas element
  */
 export function staticChartOf(config: ChartConfiguration): JSX.Element {
+  config.options.devicePixelRatio = 3 // increases resolution
 
   const canvas = useRef<HTMLCanvasElement>(null);
   let chart: Chart | null = null;

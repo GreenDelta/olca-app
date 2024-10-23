@@ -49,13 +49,13 @@ export const ComparisonChart = (props: CompProps) => {
             : `${value}%`
         }
       }
-    }
+    };
   } else if (type === "radar") {
     config.options.scales = {
       r: {
         ticks: { display: false }
       }
-    }
+    };
   }
 
   return staticChartOf(config);
@@ -82,11 +82,12 @@ function comparisonData(p: CompProps): ChartData {
         }
         const result = totalResultOf(p.report, indicator, variant);
         const max = maxvals[indicator.impact.refId];
-        return !max
-          ? 0
-          : 100 * result / max;
+        const value = max ? 100 * result / max : 0;
+        // round to nearest 0.01 to avoid precision errors that can
+        // result in misleading Y axis labels (e.g. 120% instead of 100%)
+        return Math.round(value * 100) / 100;
       }),
-    }
+    };
   });
 
   return { labels, datasets };
