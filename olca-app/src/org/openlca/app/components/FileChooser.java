@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -50,11 +51,12 @@ public class FileChooser {
 		dialog.setText(title == null ? M.Save : title);
 
 		if (defaultName != null) {
-			dialog.setFileName(defaultName);
-			var parts = defaultName.split("\\.");
-			if (parts.length > 1) {
-				var ext = parts[parts.length - 1];
+			var ext = FilenameUtils.getExtension(defaultName);
+			if (!Strings.nullOrEmpty(ext)) {
+				dialog.setFileName(FilenameUtils.getBaseName(defaultName));
 				dialog.setFilterExtensions(new String[]{"*." + ext});
+			} else {
+				dialog.setFileName(defaultName);
 			}
 		}
 
