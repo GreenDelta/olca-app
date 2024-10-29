@@ -51,7 +51,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
 		this.entryMap = Repository.CURRENT != null
-				? Repository.CURRENT.entries.find().recursive().asMap()
+				? Repository.CURRENT.references.find().includeCategories().asMap()
 				: null;
 		if (collection.isEmpty()) {
 			root = null;

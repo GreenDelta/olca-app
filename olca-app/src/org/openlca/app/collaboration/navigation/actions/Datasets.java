@@ -1,8 +1,6 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
@@ -16,7 +14,6 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
-import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.ModelRefSet;
 import org.openlca.git.util.TypedRefId;
@@ -41,11 +38,7 @@ class Datasets {
 				: ReferenceCheck.forRemote(Database.get(), diffs, dialog.getSelected());
 		if (withReferences == null)
 			return null;
-		var result = withReferences.stream()
-				.map(Change::of)
-				.flatMap(Set::stream)
-				.collect(Collectors.toSet());
-		return new DialogResult(dialogResult, dialog.getMessage(), result);
+		return new DialogResult(dialogResult, dialog.getMessage(), withReferences);
 	}
 
 	private static CommitDialog createCommitDialog(List<INavigationElement<?>> selection, List<Diff> diffs,
@@ -97,7 +90,7 @@ class Datasets {
 		return false;
 	}
 
-	static record DialogResult(int action, String message, Set<Change> datasets) {
+	static record DialogResult(int action, String message, List<Diff> datasets) {
 	}
 
 }

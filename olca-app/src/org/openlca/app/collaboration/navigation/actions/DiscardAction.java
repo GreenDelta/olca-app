@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -21,7 +20,6 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 import org.openlca.git.actions.GitDiscard;
-import org.openlca.git.model.Change;
 
 class DiscardAction extends Action implements INavigationAction {
 
@@ -57,9 +55,8 @@ class DiscardAction extends Action implements INavigationAction {
 					.map(filter -> repo.diffs.find()
 							.filter(filter)
 							.withDatabase())
-					.map(Change::of)
-					.flatMap(Set::stream)
-					.collect(Collectors.toSet());
+					.flatMap(List::stream)
+					.collect(Collectors.toList());
 			Actions.run(GitDiscard.on(repo)
 					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(repo.commits.head()))
 					.changes(selected));
