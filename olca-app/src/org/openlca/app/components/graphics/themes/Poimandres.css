@@ -93,7 +93,7 @@
 
   /* selected flows */
   #model link ::selection {
-    color: ##fffac2;
+    color: #fffac2;
   }
 
   /* -- labels -- */
@@ -194,5 +194,5 @@
 
 /* selected flows */
 #sankey link ::selection {
-  color: ##fffac2;
+  color: #fffac2;
 }
