@@ -1,7 +1,6 @@
 package org.openlca.app.editors.results;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -25,11 +24,12 @@ import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
 import org.openlca.util.Categories;
-import org.openlca.util.Strings;
 
 record FlowSection(ResultEditor editor, boolean forInputs) {
 
@@ -55,13 +55,21 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		table.setLabelProvider(new FlowLabel(editor));
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 
+		setInput(table);
+		editor.onSaved(() -> setInput(table));
+
+		if (editor.isEditable()) {
+			bindActions(section, table);
+			new ModifySupport<FlowResult>(table)
+					.bind(M.Amount, new AmountModifier(editor));
+		}
+	}
+
+	private void setInput(TableViewer table) {
 		var flows = editor.getModel().flowResults.stream()
-			.filter(flow -> flow.isInput == forInputs)
-			.sorted((f1, f2) -> Strings.compare(
-				Labels.name(f1.flow), Labels.name(f2.flow)))
-			.collect(Collectors.toList());
+				.filter(flow -> flow.isInput == forInputs)
+				.toList();
 		table.setInput(flows);
-		bindActions(section, table);
 	}
 
 	private void bindActions(Section section, TableViewer table) {
@@ -71,7 +79,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 				.onOk(ModelSelector::first)
 				.ifPresent(d -> {
 					if (Util.addFlow(result(), d, forInputs)) {
-						table.setInput(result().flowResults);
+						setInput(table);
 						editor.setDirty();
 					}
 				}));
@@ -86,7 +94,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 			if (Objects.equals(result().referenceFlow, flow)) {
 				result().referenceFlow = null;
 			}
-			table.setInput(flows);
+			setInput(table);
 			editor.setDirty();
 		});
 
@@ -124,7 +132,6 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		Actions.bind(section, onAdd, onRemove);
 		Actions.bind(table, onAdd, onRemove, onOpen,
 			TableClipboard.onCopySelected(table), refFlowAction);
-
 	}
 
 	private boolean isProviderFlow(FlowResult flow) {
@@ -192,4 +199,28 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		}
 	}
 
+	private static class AmountModifier extends DoubleCellModifier<FlowResult> {
+
+		private final ResultEditor editor;
+
+		AmountModifier(ResultEditor editor) {
+			this.editor = editor;
+		}
+
+		@Override
+		public Double getDouble(FlowResult r) {
+			return r != null ? r.amount : null;
+		}
+
+		@Override
+		public void setDouble(FlowResult r, Double val) {
+			if (r == null)
+				return;
+			double v = val != null ? val : 0;
+			if (r.amount == v)
+				return;
+			r.amount = v;
+			editor.setDirty();
+		}
+	}
 }

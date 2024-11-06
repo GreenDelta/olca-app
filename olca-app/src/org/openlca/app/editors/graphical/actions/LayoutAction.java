@@ -10,7 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.graphics.actions.ActionIds;
+import org.openlca.app.components.graphics.actions.ActionIds;
 
 public class LayoutAction extends WorkbenchPartAction {
 

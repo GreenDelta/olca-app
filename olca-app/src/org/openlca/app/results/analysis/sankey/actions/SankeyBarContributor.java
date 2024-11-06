@@ -1,11 +1,11 @@
 package org.openlca.app.results.analysis.sankey.actions;
 
 import org.eclipse.jface.action.IMenuManager;
-import org.openlca.app.tools.graphics.actions.ActionIds;
-import org.openlca.app.tools.graphics.actions.retarget.EditConfigRetargetAction;
-import org.openlca.app.tools.graphics.BasicActionBarContributor;
-import org.openlca.app.tools.graphics.actions.retarget.OpenEditorRetargetAction;
-import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
+import org.openlca.app.components.graphics.actions.ActionIds;
+import org.openlca.app.components.graphics.actions.retarget.EditConfigRetargetAction;
+import org.openlca.app.components.graphics.BasicActionBarContributor;
+import org.openlca.app.components.graphics.actions.retarget.OpenEditorRetargetAction;
+import org.openlca.app.components.graphics.frame.GraphicalEditorWithFrame;
 
 public class SankeyBarContributor extends BasicActionBarContributor {
 

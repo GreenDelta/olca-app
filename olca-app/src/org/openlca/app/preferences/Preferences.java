@@ -8,18 +8,23 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openlca.app.components.graphics.themes.Themes.DARK;
+import static org.openlca.app.components.graphics.themes.Themes.LIGHT;
+
 public final class Preferences extends AbstractPreferenceInitializer {
 
 	public static final String NUMBER_ACCURACY = "NUMBER_ACCURACY";
 	public static final String FORMAT_INPUT_VALUES = "FORMAT_INPUT_VALUES";
 	public static final String LAST_EXPORT_FOLDER = "LAST_EXPORT_FOLDER";
 	public static final String NO_INSTANT_SEARCH = "NO_INSTANT_SEARCH";
+	public static final String GRAPHICAL_EDITOR_THEME = "GRAPHICAL_EDITOR_THEME";
 
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = getStore();
 		store.setDefault(NUMBER_ACCURACY, 5);
 		store.setDefault(FORMAT_INPUT_VALUES, true);
+		store.setDefault(GRAPHICAL_EDITOR_THEME, Theme.isDark() ? DARK : LIGHT);
 	}
 
 	public static void init() {

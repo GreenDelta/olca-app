@@ -112,12 +112,12 @@ sign_jar() {
           mkdir tmp
           cd tmp || exit 0
           jar xf "../${p}" "$file"
-          cd ..
           # Sign the library
-          codesign -f -v --timestamp --options runtime  -i "$APP_ID" \
-           -s "$APP_CERT" "tmp/${file}"
+          codesign -f -v --timestamp --options runtime -i "$APP_ID" \
+           -s "$APP_CERT" "${file}"
           # Update the JAR with the signed library
-          jar uf "$p" "tmp/${file}"
+          jar uf "../$p" "${file}"
+          cd ..
           rm -r tmp
         done < libraries.list
 

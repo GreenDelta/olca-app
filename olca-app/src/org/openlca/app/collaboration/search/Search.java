@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.search;
 
+import org.openlca.app.M;
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.collaboration.model.Dataset;
@@ -14,7 +15,7 @@ public class Search {
 				return new SearchResult<Dataset>();
 			query.client = clients.get(0).createClient();
 		}
-		return WebRequests.execute(
+		return WebRequests.execute(M.Search,
 				() -> query.client.search(query.query, query.type, query.page, query.pageSize),
 				new SearchResult<Dataset>());
 	}

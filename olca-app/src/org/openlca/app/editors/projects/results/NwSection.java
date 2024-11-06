@@ -15,7 +15,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 
@@ -57,10 +56,10 @@ class NwSection extends LabelProvider implements TableSection {
 	@Override
 	public void renderOn(Composite body, FormToolkit tk) {
 		var title = type == Type.NORMALIZATION
-			? M.NormalizedResults
-			: M.WeightedResults;
+				? M.NormalizedResults
+				: M.WeightedResults;
 		var section = UI.section(body, tk,
-			title + (unit != null ? " [" + unit + "]" : ""));
+				title + (unit != null ? " [" + unit + "]" : ""));
 		var comp = UI.sectionClient(section, tk, 1);
 
 		var variants = data.variants();
@@ -96,8 +95,8 @@ class NwSection extends LabelProvider implements TableSection {
 		} else if (factors.hasNormalization()) {
 			var nf = factors.getNormalizationFactor(impact);
 			factor = nf != 0
-				? factors.getWeightingFactor(impact) / nf
-				: 0;
+					? factors.getWeightingFactor(impact) / nf
+					: 0;
 		} else {
 			factor = factors.getWeightingFactor(impact);
 		}
@@ -106,31 +105,29 @@ class NwSection extends LabelProvider implements TableSection {
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		if (col == 0)
-			return Images.get(ModelType.IMPACT_CATEGORY);
-		if (!(obj instanceof ImpactDescriptor)
-				|| col > data.variants().length
-				|| col < 0)
+		if (!(obj instanceof ImpactDescriptor d))
 			return null;
-		var impact = (ImpactDescriptor) obj;
+		if (col == 0)
+			return Images.get(d);
+		if (col > data.variants().length || col < 0)
+			return null;
 		var variant = data.variants()[col - 1];
-		double result = resultOf(impact, variant);
+		double result = resultOf(d, variant);
 		return absMax == 0
-			? image.get(0)
-			: image.get(result / absMax);
+				? image.get(0)
+				: image.get(result / absMax);
 	}
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (!(obj instanceof ImpactDescriptor))
+		if (!(obj instanceof ImpactDescriptor d))
 			return null;
-		var impact = (ImpactDescriptor) obj;
 		if (col == 0)
-			return Labels.name(impact);
+			return Labels.name(d);
 		if (col > data.variants().length || col < 0)
 			return null;
 		var variant = data.variants()[col - 1];
-		double result = resultOf(impact, variant);
+		double result = resultOf(d, variant);
 		return Numbers.format(result);
 	}
 }

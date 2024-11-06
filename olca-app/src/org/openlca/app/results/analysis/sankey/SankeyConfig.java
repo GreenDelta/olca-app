@@ -1,15 +1,13 @@
 package org.openlca.app.results.analysis.sankey;
 
+import static org.eclipse.draw2d.PositionConstants.NORTH;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
+
 import java.util.Objects;
 
-import org.openlca.app.tools.graphics.model.Element;
-import org.openlca.app.tools.graphics.themes.Theme;
-import org.openlca.app.tools.graphics.themes.Themes;
+import org.openlca.app.components.graphics.model.Element;
 import org.openlca.core.model.Copyable;
 import org.openlca.util.Strings;
-
-import static org.eclipse.draw2d.PositionConstants.NORTH;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
 
 public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 
@@ -22,7 +20,6 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 	private int maxCount = 25;
 	private int orientation = NORTH;
 	private String connectionRouter = ROUTER_CURVE;
-	private Theme theme = Themes.getDefault(Themes.SANKEY);
 
 	public SankeyConfig(SankeyEditor editor) {
 		this.editor = editor;
@@ -69,7 +66,6 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 		clone.selection = selection;
 		clone.cutoff = cutoff;
 		clone.maxCount = maxCount;
-		clone.theme = theme;
 		clone.orientation = orientation;
 		clone.connectionRouter = connectionRouter;
 		return clone;
@@ -86,7 +82,6 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 		other.cutoff = cutoff;
 		other.maxCount = maxCount;
 		other.orientation = orientation;
-		other.theme = theme;
 		other.connectionRouter = connectionRouter;
 		other.firePropertyChange(CONFIG_PROP, null, this);
 	}
@@ -109,17 +104,6 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 
 	public int orientation() {
 		return orientation;
-	}
-
-	public Theme getTheme() {
-		return theme;
-	}
-
-	public void setTheme(Theme theme) {
-		if (theme != null) {
-			this.theme = theme;
-			firePropertyChange(CONFIG_PROP, null, this);
-		}
 	}
 
 	public void setSelection(Object selection) {

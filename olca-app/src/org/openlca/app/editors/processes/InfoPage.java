@@ -130,13 +130,15 @@ class InfoPage extends ModelPage<Process> {
 		// start date
 		UI.label(comp, tk, M.StartDate);
 		var startBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
+		startBox.setEnabled(isEditable());
 		UI.gridData(startBox, false, false).minimumWidth = 150;
 		new CommentControl(comp, tk, "documentation.validFrom", getComments());
 		setTime.accept(startBox, true);
 
 		// end date
 		UI.label(comp, tk, M.EndDate);
-		var endBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);		endBox.setEnabled(isEditable());
+		var endBox = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
+		endBox.setEnabled(isEditable());
 		UI.gridData(endBox, false, false).minimumWidth = 150;
 		new CommentControl(comp, tk, "documentation.validUntil", getComments());
 		setTime.accept(endBox, false);

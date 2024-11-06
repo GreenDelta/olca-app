@@ -61,7 +61,7 @@ public class FlowWizard extends AbstractWizard<Flow> {
 		protected void modelWidgets(final Composite container) {
 			UI.label(container, M.FlowType);
 			typeCombo = new FlowTypeViewer(container);
-			typeCombo.select(FlowType.ELEMENTARY_FLOW);
+			typeCombo.select(FlowType.PRODUCT_FLOW);
 			UI.label(container, M.ReferenceFlowProperty);
 			propertyCombo = new FlowPropertyCombo(container);
 			propertyCombo.setInput(Database.get());

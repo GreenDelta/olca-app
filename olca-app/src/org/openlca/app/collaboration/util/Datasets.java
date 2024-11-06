@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.util;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -24,9 +25,10 @@ public class Datasets {
 			ZipStore store = null;
 			try {
 				tmp = Files.createTempFile("cs-json-", ".zip").toFile();
-				var temp = tmp;
-				if (!WebRequests.execute(() -> client.downloadJson(repositoryId, type, refId, temp)))
+				var jsonStream = WebRequests.execute(() -> client.downloadJson(repositoryId, type, refId));
+				if (jsonStream == null)
 					return;
+				Files.copy(jsonStream, tmp.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				store = ZipStore.open(tmp);
 				var jsonImport = new JsonImport(store, Database.get());
 				jsonImport.run();

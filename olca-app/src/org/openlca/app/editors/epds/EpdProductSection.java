@@ -20,20 +20,21 @@ public record EpdProductSection(EpdEditor editor) {
 
 		// flow
 		ModelLink.of(Flow.class)
-			.renderOn(comp, tk, M.Flow)
-			.setModel(product().flow)
-			.onChange(flow -> {
-				var product = product();
-				product.flow = flow;
-				product.property = flow != null
-					? flow.referenceFlowProperty
-					: null;
-				product.unit = flow != null
-					? flow.getReferenceUnit()
-					: null;
-				editor.emitEvent("product.changed");
-				editor.setDirty();
-			});
+				.setEditable(editor().isEditable())
+				.renderOn(comp, tk, M.Flow)
+				.setModel(product().flow)
+				.onChange(flow -> {
+					var product = product();
+					product.flow = flow;
+					product.property = flow != null
+							? flow.referenceFlowProperty
+							: null;
+					product.unit = flow != null
+							? flow.getReferenceUnit()
+							: null;
+					editor.emitEvent("product.changed");
+					editor.setDirty();
+				});
 
 		// amount
 		UI.label(comp, tk, M.Amount);
@@ -41,6 +42,7 @@ public record EpdProductSection(EpdEditor editor) {
 		UI.gridLayout(amountComp, 3, 5, 0);
 		var amountText = UI.text(amountComp, tk);
 		UI.gridData(amountText, false, false).widthHint = 100;
+		amountText.setEditable(editor.isEditable());
 		Controls.set(amountText, product().amount, amount -> {
 			product().amount = amount;
 			editor.emitEvent("amount.changed");
@@ -69,6 +71,7 @@ public record EpdProductSection(EpdEditor editor) {
 			tk.adapt(combo);
 			var units = UnitCombo.of(combo);
 			update(units);
+			combo.setEnabled(section.editor.isEditable());
 
 			units.listen(item -> {
 				var product = section.product();
@@ -104,7 +107,7 @@ public record EpdProductSection(EpdEditor editor) {
 				if (mass.isEmpty()) {
 					label.setText("");
 				} else {
-					label.setText("\u2259 " + mass.getAsDouble() + " kg");
+					label.setText("≙ " + mass.getAsDouble() + " kg");
 				}
 				label.pack();
 				comp.pack();

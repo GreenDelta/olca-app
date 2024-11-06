@@ -11,14 +11,14 @@ import org.eclipse.draw2d.text.ParagraphTextLayout;
 import org.eclipse.draw2d.text.TextFlow;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.StickyNote;
-import org.openlca.app.tools.graphics.figures.GridPos;
-import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.components.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.themes.Theme;
 
 public class MaximizedStickyNoteFigure extends StickyNoteFigure {
 
 	public MaximizedStickyNoteFigure(StickyNote note) {
 		super(note);
-		var theme = note.getGraph().getConfig().getTheme();
+		var theme = note.getGraph().getEditor().getTheme();
 		var box = Theme.Box.STICKY_NOTE;
 
 		var layout = new GridLayout(1, false);

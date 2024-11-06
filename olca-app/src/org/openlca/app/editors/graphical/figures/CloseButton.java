@@ -7,7 +7,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.StickyNote;
-import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.util.Colors;
 
 public class CloseButton extends Clickable {
@@ -26,7 +26,7 @@ public class CloseButton extends Clickable {
 		public static int LINE_WIDTH = 1;
 
 		CrossFigure(StickyNote note) {
-			var theme = note.getGraph().getConfig().getTheme();
+			var theme = note.getGraph().getEditor().getTheme();
 			var box = Theme.Box.STICKY_NOTE;
 			setBackgroundColor(theme.boxBackgroundColor(box));
 		}

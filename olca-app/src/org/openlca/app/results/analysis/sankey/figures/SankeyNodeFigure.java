@@ -10,10 +10,10 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.analysis.sankey.model.SankeyNode;
-import org.openlca.app.tools.graphics.figures.ComponentFigure;
-import org.openlca.app.tools.graphics.figures.GridPos;
-import org.openlca.app.tools.graphics.figures.RoundBorder;
-import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.components.graphics.figures.ComponentFigure;
+import org.openlca.app.components.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.figures.RoundBorder;
+import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
@@ -32,7 +32,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 	public SankeyNodeFigure(SankeyNode node) {
 		super(node);
 		this.node = node;
-		theme = node.getDiagram().getConfig().getTheme();
+		theme = node.getDiagram().getEditor().getTheme();
 		box = node.getThemeBox();
 
 		GridLayout layout = new GridLayout(1, false);
@@ -117,7 +117,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 	class SankeyNodeHeader extends Figure {
 
 		SankeyNodeHeader() {
-			var theme = node.getDiagram().getConfig().getTheme();
+			var theme = node.getDiagram().getEditor().getTheme();
 			var box = node.getThemeBox();
 
 			GridLayout layout = new GridLayout(2, false);

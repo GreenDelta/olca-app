@@ -6,22 +6,23 @@ import java.util.Map;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
+import org.openlca.git.RepositoryInfo;
 import org.openlca.util.Strings;
 
 public class DiffNodeBuilder {
 
 	private final Map<String, DiffNode> nodes = new LinkedHashMap<>();
 	private final Map<String, TriDiff> diffs = new LinkedHashMap<>();
-	private final String database;
+	private final IDatabase database;
 
 	public DiffNodeBuilder(IDatabase database) {
-		this.database = database.getName();
+		this.database = database;
 	}
 
 	public DiffNode build(Collection<TriDiff> diffs) {
 		if (!init(diffs))
 			return null;
-		var root = new DiffNode(null, database);
+		var root = new DiffNode(null, database.getName());
 		nodes.put(null, root);
 		for (var diff : this.diffs.values()) {
 			build(diff);
@@ -46,9 +47,11 @@ public class DiffNodeBuilder {
 	}
 
 	private void createNode(TriDiff diff) {
-		var parent = !Strings.nullOrEmpty(diff.category) 
+		var parent = !Strings.nullOrEmpty(diff.category)
 				? getOrCreateCategoryNode(diff.type, diff.category)
-				: getOrCreateModelTypeNode(diff.type);
+				: diff.isLibrary
+						? getOrCreateLibrariesNode()
+						: getOrCreateModelTypeNode(diff.type);
 		var node = new DiffNode(parent, diff);
 		parent.children.add(node);
 		nodes.put(getKey(diff), node);
@@ -78,6 +81,15 @@ public class DiffNodeBuilder {
 		root.children.add(typeNode);
 		nodes.put(type.name(), typeNode);
 		return typeNode;
+	}
+
+	private DiffNode getOrCreateLibrariesNode() {
+		var librariesNode = nodes.get(RepositoryInfo.FILE_NAME);
+		var root = nodes.get(null);
+		librariesNode = new DiffNode(root, null);
+		root.children.add(librariesNode);
+		nodes.put(RepositoryInfo.FILE_NAME, librariesNode);
+		return librariesNode;
 	}
 
 	private String getKey(TriDiff diff) {

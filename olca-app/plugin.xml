@@ -33,12 +33,20 @@
 				id="SqlEditor"
 				name="SQL">
 		</editor>
+
 		<editor
 				class="org.openlca.app.devtools.python.PythonEditor"
 				default="false"
 				id="PythonEditor"
 				name="Python"
 				contributorClass="org.openlca.app.devtools.Toolbar">
+		</editor>
+
+		<editor
+				class="org.openlca.app.tools.params.ParameterAnalysisResultPage"
+				default="false"
+				id="ParameterAnalysisResultPage"
+				name="Parameter analysis results">
 		</editor>
 
 		<!-- model editors -->
@@ -481,7 +489,7 @@
 			</property>
 			<property
          name="aboutText"
-         value="openLCA 2.2.1&#x0A;&#x0A;Copyright (c) 2007 - 2024 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA&#x0A;project and other open source software.">
+         value="openLCA 2.3&#x0A;&#x0A;Copyright (c) 2007 - 2024 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA&#x0A;project and other open source software.">
 			</property>
 			<property
 					name="aboutImage"
@@ -499,7 +507,7 @@
 					value="openLCA"/>
 			<property
 					name="startupProgressRect"
-					value="0,442,602,5">
+					value="0,478,642,5">
 			</property>
 			<property
 					name="startupForegroundColor"
@@ -509,10 +517,6 @@
 					name="startupMessageRect"
 					value="7,525,445,20">
 			</property>
-   <property
-         name="preferenceCustomization"
-         value="plugin_customization.ini">
-   </property>
 		</product>
 	</extension>
 

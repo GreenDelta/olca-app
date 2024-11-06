@@ -1,17 +1,17 @@
 package org.openlca.app.editors.graphical.actions;
 
-import org.eclipse.gef.Request;
-import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.ui.actions.WorkbenchPartAction;
-import org.openlca.app.editors.graphical.GraphConfig;
-import org.openlca.app.editors.graphical.GraphEditor;
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 
-import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.gef.ui.actions.WorkbenchPartAction;
+import org.openlca.app.editors.graphical.GraphConfig;
+import org.openlca.app.editors.graphical.GraphEditor;
 
 abstract class GraphConfigAction extends WorkbenchPartAction implements
 		PropertyChangeListener {
@@ -63,7 +63,6 @@ abstract class GraphConfigAction extends WorkbenchPartAction implements
 		String prop = evt.getPropertyName();
 		if (CONFIG_PROP.equals(prop))
 			refreshCheck();
-
 	}
 
 	protected abstract void refreshCheck();

@@ -2,8 +2,6 @@ package org.openlca.app.editors.flow_properties;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
@@ -15,20 +13,17 @@ import org.openlca.core.model.FlowProperty;
  */
 class FlowPropertyInfoPage extends ModelPage<FlowProperty> {
 
-	private FormToolkit toolkit;
-	private ScrolledForm form;
-
 	FlowPropertyInfoPage(FlowPropertyEditor editor) {
 		super(editor, "FlowPropertyInfoPage", M.GeneralInformation);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		form = UI.header(this);
-		toolkit = managedForm.getToolkit();
-		Composite body = UI.body(form, toolkit);
+		var form = UI.header(this);
+		var tk = managedForm.getToolkit();
+		Composite body = UI.body(form, tk);
 		InfoSection infoSection = new InfoSection(getEditor());
-		infoSection.render(body, toolkit);
+		infoSection.render(body, tk);
 		createAdditionalInfo(infoSection);
 		body.setFocus();
 		form.reflow(true);

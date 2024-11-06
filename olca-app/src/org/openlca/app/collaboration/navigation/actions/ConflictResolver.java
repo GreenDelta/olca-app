@@ -27,7 +27,6 @@ import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.GitDiscard;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.actions.GitStashDrop;
-import org.openlca.git.model.Change;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.Constants;
@@ -98,20 +97,20 @@ class ConflictResolver {
 	private void initWorkspaceConflicts() {
 		App.runWithProgress(M.CheckingForWorkspaceConflicts, () -> {
 			var repo = Repository.CURRENT;
-			var workspaceChanges = repo.diffs.find().withDatabase();
+			var workspaceChanges = repo.diffs.find().excludeLibraries().withDatabase();
 			if (workspaceChanges.isEmpty())
 				return;
-			remoteChanges = repo.diffs.find().commit(commonParent).with(remoteCommit);
+			remoteChanges = repo.diffs.find().excludeLibraries().commit(commonParent).with(remoteCommit);
 			var diffs = between(workspaceChanges, remoteChanges);
 			workspaceConflicts = splitEqualAndRemaining(diffs);
 		});
 	}
 
-	private List<Change> toChanges(List<TriDiff> remaining) {
-		return Change.of(remaining.stream()
+	private List<Diff> toChanges(List<TriDiff> remaining) {
+		return remaining.stream()
 				.map(diff -> diff.left)
 				.filter(Objects::nonNull)
-				.collect(Collectors.toList()));
+				.collect(Collectors.toList());
 	}
 
 	private ConflictResult commitChanges()
@@ -123,7 +122,7 @@ class ConflictResolver {
 		return resolve();
 	}
 
-	private boolean stashChanges(List<Change> changes)
+	private boolean stashChanges(List<Diff> changes)
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
 		var repo = Repository.CURRENT;
 		var user = repo.promptUser();
@@ -168,11 +167,11 @@ class ConflictResolver {
 		if (localCommit.id.equals(commonParent.id))
 			return;
 		App.runWithProgress(M.CheckingForLocalConflicts, () -> {
-			var localChanges = repo.diffs.find().commit(commonParent).with(localCommit);
+			var localChanges = repo.diffs.find().excludeLibraries().commit(commonParent).with(localCommit);
 			if (localChanges.isEmpty() || remoteChanges.isEmpty())
 				return;
 			var diffs = between(localChanges, remoteChanges);
-			localConflicts = splitEqualAndRemaining(diffs);			
+			localConflicts = splitEqualAndRemaining(diffs);
 		});
 	}
 

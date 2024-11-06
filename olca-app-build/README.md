@@ -1,4 +1,7 @@
 ## Building the distribution packages
+
+### PDE Export
+
 To build the distribution packages, we currently use the standard PDE Export
 wizard. Click on the `olca-app` project and then on `Export...` from the context
 menu. Select `Plug-in Development > Eclipse Product` from the export wizard and
@@ -37,11 +40,14 @@ and native libraries if these are missing.
 1. Check that the `olca-app` and `olca-modules` repositories are on the master
    branch and are in sync with our GitHub repository.
 
-2. Copy the welcome page background image into
+2. Update the property files with the latest translations (cf. [Update the translations](#update-the-translations)). Make sure to check
+   the relevance (case, punctuation, ...) and that no translations has been removed.
+
+3. Copy the welcome page background image into
    `olca-app/olca-app-html/images/background_start_page.jpg`.
    This image is not stored on GitHub as it is often modified and quite large.
 
-3. Run the `prepare-release.py` script that updates the olca-modules libraries
+4. Run the `prepare-release.py` script that updates the olca-modules libraries
    in the olca-app, creates fresh database templates, updates the html-pages,
    creates the Jython bindings from the current modules, etc.:
 
@@ -50,9 +56,9 @@ and native libraries if these are missing.
    python prepare-release.py
    ```
 
-4. Run the PDE export as described above.
+5. Run the PDE export as described above ([PDE Export](#pde-export)).
 
-5. Run the packaging module `package`.
+6. Run the packaging module `package`.
 
    ```bash
    cd olca-app-build
@@ -180,3 +186,23 @@ Multiple steps are necessary to combine the different icons into a `.ico` file:
 ```bash
 convert 16_8bit.bmp 16_32bit.bmp 32_8bit.bmp 32_32bit.bmp 48_8bit.bmp 48_32bit.bmp 256_32bit.bmp logo.ico
 ```
+
+### Update the translations
+
+openLCA users can update the translation of the application by using the 
+[translate.openlca.org](https://translate.openlca.org/) website. For each 
+release, the translations are updated with the following steps:
+
+1. Download the latest translations from the `translate.openlca.org` website.
+   One can check wether the result of the _Edited_ filter is populated and 
+   download the file accordingly.
+
+2. Copy the translations into the `olca-app/OSGI-INF/l10n` and `olca-app/src/
+   org/openlca/app` folders and check if no translations has disapeared and
+   that the case and punctuations are correct.
+
+3. Commit the new translations into the `master` branch.
+
+4. Update `translate.openlca.org` server by replacing the property files in
+   `/opt/translator/data/original/` with the new ones and removing the change
+   files in `/opt/translator/data/olca-app` and `/opt/translator/data/olca-app-osgi`. Before doing it, best practice is to make a backup of the `/opt/translator/data` named `/opt/translator/data.backup`.

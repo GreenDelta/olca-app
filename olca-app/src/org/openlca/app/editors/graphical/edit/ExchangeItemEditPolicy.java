@@ -1,5 +1,8 @@
 package org.openlca.app.editors.graphical.edit;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.PolygonDecoration;
@@ -17,16 +20,13 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
 import org.openlca.app.editors.graphical.model.commands.ReconnectLinkCommand;
 
-import java.util.Collection;
-import java.util.Collections;
-
 public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Connection createDummyConnection(Request req) {
 		var con = (PolylineConnection) super.createDummyConnection(req);
 		var editor = ((ExchangeItem) getHost().getModel()).getGraph().getEditor();
-		con.setForegroundColor(editor.config.getTheme().linkColor());
+		con.setForegroundColor(editor.getTheme().linkColor());
 		if (!(req instanceof CreateConnectionRequest)) {
 			con.setTargetDecoration(new PolygonDecoration());
 			return con;

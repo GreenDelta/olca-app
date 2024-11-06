@@ -85,7 +85,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 			}
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to open process dialog from flow " + flow, e);
+			log.error("failed to open process dialog from flow {}", flow, e);
 		}
 	}
 }

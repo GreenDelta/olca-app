@@ -156,7 +156,6 @@ class ModelReferences {
 	private void scanImpactCategories() {
 		scanTable("tbl_impact_categories", true,
 				new ModelField(ModelType.IMPACT_CATEGORY, "id"),
-				new ModelField(ModelType.IMPACT_METHOD, "id"),
 				new ModelField(ModelType.SOURCE, "f_source"));
 		scanTable("tbl_impact_factors", false,
 				new ModelField(ModelType.IMPACT_CATEGORY, "f_impact_category"),
@@ -168,9 +167,6 @@ class ModelReferences {
 		scanTable("tbl_impact_methods", true,
 				new ModelField(ModelType.IMPACT_METHOD, "id"),
 				new ModelField(ModelType.SOURCE, "f_source"));
-		scanTable("tbl_source_links", false,
-				new ModelField(ModelType.IMPACT_METHOD, "f_owner"),
-				new ModelField(ModelType.SOURCE, "f_source"));
 		scanTable("tbl_impact_links", false,
 				new ModelField(ModelType.IMPACT_METHOD, "f_impact_method"),
 				new ModelField(ModelType.IMPACT_CATEGORY, "f_impact_category"));
@@ -178,7 +174,9 @@ class ModelReferences {
 
 	private void scanFlows() {
 		scanTable("tbl_flows", true,
-				new ModelField(ModelType.FLOW, "id"));
+				new ModelField(ModelType.FLOW, "id"),
+				new ModelField(ModelType.FLOW_PROPERTY, "f_reference_flow_property"),
+				new ModelField(ModelType.LOCATION, "f_location"));
 		scanTable("tbl_flow_property_factors", false,
 				new ModelField(ModelType.FLOW, "f_flow"),
 				new ModelField(ModelType.FLOW_PROPERTY, "f_flow_property"));
@@ -193,10 +191,9 @@ class ModelReferences {
 				new ModelField(ModelType.DQ_SYSTEM, "f_social_dq_system"));
 		scanTable("tbl_process_docs", false,
 				new ModelField(ModelType.PROCESS, "id", docsToProcess::get),
-				new ModelField(ModelType.ACTOR, "f_reviewer"),
 				new ModelField(ModelType.ACTOR, "f_data_documentor"),
 				new ModelField(ModelType.ACTOR, "f_data_generator"),
-				new ModelField(ModelType.ACTOR, "f_dataset_owner"),
+				new ModelField(ModelType.ACTOR, "f_data_owner"),
 				new ModelField(ModelType.SOURCE, "f_publication"));
 		scanTable("tbl_source_links", false,
 				new ModelField(ModelType.PROCESS, "f_owner", docsToProcess::get),
@@ -207,6 +204,16 @@ class ModelReferences {
 				new ModelField(ModelType.FLOW, "f_flow"),
 				new ModelField(ModelType.FLOW, "f_location"),
 				new ModelField(ModelType.FLOW, "f_currency"));
+		scanTable("tbl_social_aspects", false,
+				new ModelField(ModelType.PROCESS, "f_process"),
+				new ModelField(ModelType.SOCIAL_INDICATOR, "f_indicator"),
+				new ModelField(ModelType.SOURCE, "f_source"));
+		scanTable("tbl_compliance_declarations", false,
+				new ModelField(ModelType.PROCESS, "f_owner", docsToProcess::get),
+				new ModelField(ModelType.SOURCE, "f_system"));
+		scanTable("tbl_reviews", false,
+				new ModelField(ModelType.PROCESS, "f_owner", docsToProcess::get),
+				new ModelField(ModelType.SOURCE, "f_report"));
 	}
 
 	private void scanProductSystems() {
@@ -216,7 +223,8 @@ class ModelReferences {
 		scanTable("tbl_process_links", false,
 				new ModelField(ModelType.PRODUCT_SYSTEM, "f_product_system"),
 				new ModelField(ModelType.PROCESS, "f_process"),
-				new ModelField(ModelType.PROCESS, "f_provider"));
+				new ModelField(ModelType.PROCESS, "f_provider"),
+				new ModelField(ModelType.FLOW, "f_flow"));
 		var setToSystem = scanTable("tbl_parameter_redef_sets", false, "id",
 				new ModelField(ModelType.PRODUCT_SYSTEM, "f_product_system"));
 		scanParameterRedefs(ModelType.PRODUCT_SYSTEM, setToSystem::get);
@@ -238,7 +246,11 @@ class ModelReferences {
 				new ModelField(ModelType.ACTOR, "f_manufacturer"),
 				new ModelField(ModelType.ACTOR, "f_verifier"),
 				new ModelField(ModelType.ACTOR, "f_program_operator"),
+				new ModelField(ModelType.ACTOR, "f_data_generator"),
 				new ModelField(ModelType.SOURCE, "f_pcr"),
+				new ModelField(ModelType.SOURCE, "f_original_epd"),
+				new ModelField(ModelType.LOCATION, "f_location"),
+				new ModelField(ModelType.FLOW_PROPERTY, "f_flow_property"),
 				new ModelField(ModelType.FLOW, "f_flow"));
 		scanTable("tbl_epd_modules", false,
 				new ModelField(ModelType.EPD, "f_epd"),
@@ -260,7 +272,7 @@ class ModelReferences {
 	}
 
 	private void scanParameterRedefs(ModelType ownerType, Function<Long, Long> mediator) {
-		var query = "SELECT f_owner,name FROM tbl_parameter_redefs WHERE context_type IS NULL";
+		var query = "SELECT f_owner, name FROM tbl_parameter_redefs WHERE context_type IS NULL";
 		NativeSql.on(database).query(query, rs -> {
 			var ownerId = rs.getLong(1);
 			var actualOwnerId = mediator.apply(ownerId);

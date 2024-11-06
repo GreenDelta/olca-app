@@ -4,6 +4,8 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -12,12 +14,18 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
+import org.openlca.core.database.Daos;
 import org.openlca.git.util.ModelRefSet;
+import org.openlca.git.util.TypedRefId;
+import org.openlca.util.Strings;
 
 public class CommitDialog extends FormDialog {
 
@@ -28,7 +36,7 @@ public class CommitDialog extends FormDialog {
 	private String message;
 	private CommitViewer viewer;
 	private ModelRefSet initialSelection;
-	private ModelRefSet newLibraryDatasets;
+	private ModelRefSet lockedDatasets;
 
 	public CommitDialog(DiffNode node, boolean canPush, boolean isStashCommit) {
 		super(UI.shell());
@@ -42,8 +50,8 @@ public class CommitDialog extends FormDialog {
 		this.initialSelection = initialSelection;
 	}
 
-	public void setNewLibraryDatasets(ModelRefSet newLibraryDatasets) {
-		this.newLibraryDatasets = newLibraryDatasets;
+	public void setLockedDatasets(ModelRefSet lockedDatasets) {
+		this.lockedDatasets = lockedDatasets;
 	}
 
 	@Override
@@ -88,11 +96,35 @@ public class CommitDialog extends FormDialog {
 		section.setClient(comp);
 		viewer = new CommitViewer(comp, this::updateButtons);
 		viewer.setSelection(initialSelection, node);
-		viewer.setLockedElements(newLibraryDatasets);
+		viewer.setLockedElements(lockedDatasets);
 		CheckboxTreeViewers.registerInputHandler(comp, viewer.getViewer(), node, () -> {
 			CheckboxTreeViewers.expandGrayed(viewer.getViewer());
 			this.updateButtons();
 		});
+		if (CollaborationPreference.onlyFullCommits()) {
+			viewer.getViewer().getTree().addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseUp(MouseEvent e) {
+					if (Question.ask(M.Configuration, M.AlwaysCommitAllChangesQuestion)) {
+						CollaborationPreference.allowDatasetSelection();
+						lockedDatasets = retainOnlyLibraryDatasets(lockedDatasets);
+						viewer.setLockedElements(lockedDatasets);
+						viewer.getViewer().getTree().removeMouseListener(this);
+					}
+				}
+			});
+		}
+	}
+
+	private ModelRefSet retainOnlyLibraryDatasets(ModelRefSet datasets) {
+		var fromLibrary = new ModelRefSet();
+		datasets.types().forEach(type -> {
+			fromLibrary.addAll(Daos.root(Database.get(), type).getDescriptors().stream()
+					.filter(d -> !Strings.nullOrEmpty(d.library))
+					.map(d -> new TypedRefId(d.type, d.refId))
+					.filter(datasets::contains).toList());
+		});
+		return fromLibrary;
 	}
 
 	private void updateButtons() {

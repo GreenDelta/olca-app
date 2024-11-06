@@ -11,8 +11,9 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
+import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.CredentialStore;
-import org.openlca.app.tools.authentification.AuthenticationGroup;
+import org.openlca.app.components.AuthenticationGroup;
 import org.openlca.app.util.UI;
 import org.openlca.util.Strings;
 
@@ -35,6 +36,7 @@ public class ConnectDialog extends FormDialog {
 			return result;
 		if (!fromServer) {
 			CredentialStore.put(location.serverUrl(), auth.user(), auth.password());
+			CollaborationPreference.storeConnection(location.storeConnection());
 			if (location.storeConnection()) {
 				ServerConfigurations.put(new ServerConfig(location.serverUrl(), auth.user()));
 				ServerNavigator.refresh();

@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -10,16 +12,13 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.IOPaneEditPart;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.core.model.*;
-
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
+import org.openlca.core.model.ModelType;
 
 
 public class AddExchangeAction extends SelectionAction {
 
 	private final boolean forInput;
-	Request request;
+	private final Request request;
 
 	public AddExchangeAction(GraphEditor part, boolean forInput) {
 		super(part);
@@ -63,8 +62,7 @@ public class AddExchangeAction extends SelectionAction {
 				: null;
 			if (pane == null || pane.isForInputs() != forInput)
 				return null;
-			var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
-				GraphicalViewer.class);
+			var viewer = getWorkbenchPart().getAdapter(GraphicalViewer.class);
 			var registry = viewer.getEditPartRegistry();
 			var editPart = registry.get(pane);
 

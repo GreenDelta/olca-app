@@ -3,13 +3,14 @@ package org.openlca.app.collaboration.views;
 import java.util.ArrayList;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
+import org.openlca.app.collaboration.viewers.diff.RefJson;
 import org.openlca.app.collaboration.viewers.json.JsonCompareViewer;
 import org.openlca.app.collaboration.viewers.json.olca.ModelDependencyResolver;
 import org.openlca.app.collaboration.viewers.json.olca.ModelLabelProvider;
@@ -23,15 +24,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.model.ModelType;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.model.Reference;
-import org.openlca.util.Strings;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 public class HistoryView extends ViewPart {
 
@@ -40,7 +34,6 @@ public class HistoryView extends ViewPart {
 	private HistoryViewer historyViewer;
 	private AbstractTableViewer<Diff> referenceViewer;
 	private JsonCompareViewer diffViewer;
-	private final Gson gson = new Gson();
 
 	public HistoryView() {
 		instance = this;
@@ -85,8 +78,8 @@ public class HistoryView extends ViewPart {
 				diffViewer.setInput(null);
 				return;
 			}
-			var previousElement = getJson(diff.oldRef);
-			var currentElement = getJson(diff.newRef);
+			var previousElement = RefJson.get(diff.oldRef);
+			var currentElement = RefJson.get(diff.newRef);
 			var node = new ModelNodeBuilder().build(previousElement, currentElement);
 			diffViewer.setInput(node);
 		});
@@ -95,43 +88,6 @@ public class HistoryView extends ViewPart {
 	private void createDiffViewer(Composite parent) {
 		diffViewer = JsonCompareViewer.forComparison(parent, null, null);
 		diffViewer.initialize(new ModelLabelProvider(), ModelDependencyResolver.INSTANCE);
-	}
-
-	private JsonObject getJson(Reference ref) {
-		if (ref == null || ObjectId.zeroId().equals(ref.objectId))
-			return null;
-		var datasets = Repository.CURRENT.datasets;
-		var json = datasets.get(ref);
-		if (Strings.nullOrEmpty(json))
-			return null;
-		var obj = gson.fromJson(json, JsonObject.class);
-		if (ref.type != ModelType.PROCESS)
-			return obj;
-		var exchanges = obj.get("exchanges");
-		if (exchanges == null || !exchanges.isJsonArray())
-			return obj;
-		var inputs = new JsonArray();
-		var outputs = new JsonArray();
-		for (var elem : exchanges.getAsJsonArray()) {
-			if (!elem.isJsonObject())
-				continue;
-			var e = elem.getAsJsonObject();
-			var f = e.get("isInput");
-			var isInput = f.isJsonPrimitive() && f.getAsBoolean();
-			if (isInput) {
-				inputs.add(elem);
-			} else {
-				outputs.add(elem);
-			}
-		}
-		if (!inputs.isEmpty()) {
-			obj.add("inputs", inputs);
-		}
-		if (!outputs.isEmpty()) {
-			obj.add("outputs", outputs);
-		}
-		obj.remove("exchanges");
-		return obj;
 	}
 
 	public static void refresh() {
@@ -157,6 +113,8 @@ public class HistoryView extends ViewPart {
 		public String getText(Object element) {
 			if (!(element instanceof Diff diff))
 				return null;
+			if (diff.isLibrary)
+				return M.Libraries + "/" + diff.name;
 			if (diff.isCategory)
 				return diff.getCategoryPath();
 			var text = diff.category;
@@ -180,6 +138,8 @@ public class HistoryView extends ViewPart {
 			} else if (diff.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
+			if (diff.isLibrary)
+				return Images.library(overlay);
 			if (diff.isCategory)
 				return Images.getForCategory(diff.type, overlay);
 			return Images.get(diff.type, overlay);

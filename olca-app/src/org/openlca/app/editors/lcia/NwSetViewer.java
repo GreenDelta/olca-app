@@ -53,10 +53,12 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 
 	@OnAdd
 	protected void onCreate() {
+		if (!editor.isEditable())
+			return;
 		NwSet set = new NwSet();
 		set.name = M.EnterAName;
 		set.refId = UUID.randomUUID().toString();
-		ImpactMethod method = editor.getModel();
+		var method = editor.getModel();
 		method.nwSets.add(set);
 		setInput(method.nwSets);
 		select(set);
@@ -65,7 +67,9 @@ class NwSetViewer extends AbstractTableViewer<NwSet> {
 
 	@OnRemove
 	protected void onRemove() {
-		ImpactMethod method = editor.getModel();
+		if (!editor.isEditable())
+			return;
+		var method = editor.getModel();
 		for (NwSet set : getAllSelected())
 			method.nwSets.remove(set);
 		setInput(method.nwSets);

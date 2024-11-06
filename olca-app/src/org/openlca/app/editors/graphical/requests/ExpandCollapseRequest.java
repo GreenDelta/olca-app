@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.requests;
 
 import org.eclipse.gef.Request;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.tools.graphics.model.Side;
+import org.openlca.app.components.graphics.model.Side;
 
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 

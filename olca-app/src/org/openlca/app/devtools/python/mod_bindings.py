@@ -16,6 +16,8 @@ import org.openlca.core.matrix.AllocationIndex as AllocationIndex
 import org.openlca.core.model.AllocationMethod as AllocationMethod
 import org.openlca.util.AllocationRef as AllocationRef
 import org.openlca.util.AllocationUtils as AllocationUtils
+import org.openlca.core.model.AnalysisGroup as AnalysisGroup
+import org.openlca.core.results.agroups.AnalysisGroupResult as AnalysisGroupResult
 import org.openlca.io.openepd.Api as Api
 import org.openlca.core.model.doc.AspectMap as AspectMap
 import org.openlca.core.model.doc.AspectMapConverter as AspectMapConverter
@@ -105,6 +107,7 @@ import org.openlca.core.model.Direction as Direction
 import org.openlca.util.Dirs as Dirs
 import org.openlca.io.DisplayValues as DisplayValues
 import org.openlca.util.Doubles as Doubles
+import org.openlca.io.simapro.csv.input.EIProviderResolver as EIProviderResolver
 import org.openlca.io.ecospold1.input.ES1KeyGen as ES1KeyGen
 import org.openlca.io.ecospold1.input.ES1UnitFetch as ES1UnitFetch
 import org.openlca.core.results.EachOneResult as EachOneResult
@@ -146,6 +149,7 @@ import org.openlca.core.model.EpdProduct as EpdProduct
 import org.openlca.io.openepd.EpdQuantity as EpdQuantity
 import org.openlca.jsonld.input.EpdReader as EpdReader
 import org.openlca.io.openepd.EpdScopeValue as EpdScopeValue
+import org.openlca.core.model.EpdType as EpdType
 import org.openlca.jsonld.output.EpdWriter as EpdWriter
 import org.openlca.io.xls.Excel as Excel
 import org.openlca.util.Exceptions as Exceptions
@@ -291,6 +295,7 @@ import org.openlca.core.library.reader.LibReaderRegistry as LibReaderRegistry
 import org.openlca.util.LibStrip as LibStrip
 import org.openlca.core.library.Libraries as Libraries
 import org.openlca.core.library.Library as Library
+import org.openlca.core.library.LibraryDatabase as LibraryDatabase
 import org.openlca.core.library.LibraryDir as LibraryDir
 import org.openlca.core.library.LibraryExport as LibraryExport
 import org.openlca.core.library.LibraryInfo as LibraryInfo
@@ -452,6 +457,7 @@ import org.openlca.core.results.ResultItemOrder as ResultItemOrder
 import org.openlca.core.results.providers.ResultModelProvider as ResultModelProvider
 import org.openlca.core.results.providers.ResultProviders as ResultProviders
 import org.openlca.jsonld.input.ResultReader as ResultReader
+import org.openlca.core.services.ResultState as ResultState
 import org.openlca.core.database.usage.ResultUsageSearch as ResultUsageSearch
 import org.openlca.jsonld.output.ResultWriter as ResultWriter
 import org.openlca.util.Results as Results
@@ -551,8 +557,6 @@ import org.openlca.core.database.usage.UnitUsageSearch as UnitUsageSearch
 import org.openlca.jsonld.output.UnitWriter as UnitWriter
 import org.openlca.core.library.Unmounter as Unmounter
 import org.openlca.jsonld.input.UpdateMode as UpdateMode
-import org.openlca.core.database.upgrades.Upgrade11 as Upgrade11
-import org.openlca.core.database.upgrades.Upgrade12 as Upgrade12
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree

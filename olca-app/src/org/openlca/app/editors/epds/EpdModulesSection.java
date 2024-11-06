@@ -49,7 +49,9 @@ class EpdModulesSection {
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);
 
 		// bind actions
-		bindActions(section, table);
+		if (editor.isEditable()) {
+			bindActions(section, table);
+		}
 		lastRefAmount = currentRefAmount();
 		editor.onEvent("amount.changed", () -> updateMultipliers(table));
 		editor.onEvent("unit.changed", () -> updateMultipliers(table));

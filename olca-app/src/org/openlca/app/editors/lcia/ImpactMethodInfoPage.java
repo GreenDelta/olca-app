@@ -13,7 +13,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.ModelLink;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.db.Database;
@@ -23,7 +22,6 @@ import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -33,7 +31,6 @@ import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.Source;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
@@ -53,26 +50,10 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 
-		// info section with source link
 		var info = new InfoSection(getEditor()).render(body, tk);
 		var comp = info.composite();
-		ModelLink.of(Source.class)
-			.renderOn(comp, tk, M.Source)
-			.setModel(editor.getModel().source)
-			.onChange(source -> {
-				var method = editor.getModel();
-				method.source = source;
-				editor.setDirty();
-			});
-		UI.filler(comp, tk);
-
-		// code
-		var codeText = UI.labeledText(comp, tk, M.Code);
-		Controls.set(codeText, getModel().code, code -> {
-			getModel().code = code;
-			getEditor().setDirty();
-		});
-		UI.filler(comp, tk);
+		modelLink(comp, M.Source, "source");
+		text(comp, M.Code, "code");
 
 		createIndicatorTable(tk, body);
 		body.setFocus();
@@ -91,28 +72,35 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		impacts.sort((c1, c2) -> Strings.compare(c1.name, c2.name));
 		indicatorTable.setInput(impacts);
 		Tables.bindColumnWidths(indicatorTable, 0.5, 0.25, 0.22);
-		bindActions(indicatorTable, section);
+
+		if (isEditable()) {
+			bindActions(indicatorTable, section);
+		} else {
+			Tables.onDoubleClick(indicatorTable, $ -> {
+				if (Viewers.getFirstSelected(indicatorTable) instanceof ImpactCategory i) {
+					App.open(i);
+				}
+			});
+		}
 	}
 
-	private void bindActions(TableViewer indicatorTable, Section section) {
-		ModelTransfer.onDrop(indicatorTable.getTable(), this::onAdd);
+	private void bindActions(TableViewer table, Section section) {
+		ModelTransfer.onDrop(table.getTable(), this::onAdd);
 		var add = Actions.onAdd(
 			() -> onAdd(ModelSelector.multiSelect(ModelType.IMPACT_CATEGORY)));
 		var remove = Actions.onRemove(this::onRemove);
-		var copy = TableClipboard.onCopySelected(indicatorTable);
+		var copy = TableClipboard.onCopySelected(table);
 		var open = Actions.onOpen(() -> {
-			ImpactCategory i = Viewers.getFirstSelected(indicatorTable);
-			if (i != null) {
+			if (Viewers.getFirstSelected(table) instanceof ImpactCategory i) {
 				App.open(i);
 			}
 		});
-		Actions.bind(indicatorTable, add, remove, open, copy);
+		Actions.bind(table, add, remove, open, copy);
 		CommentAction.bindTo(section, "impactCategories",
 			editor.getComments(), add, remove);
-		Tables.onDeletePressed(indicatorTable, $ -> onRemove());
-		Tables.onDoubleClick(indicatorTable, $ -> {
-			var obj = Viewers.getFirstSelected(indicatorTable);
-			if (obj instanceof ImpactCategory i) {
+		Tables.onDeletePressed(table, $ -> onRemove());
+		Tables.onDoubleClick(table, $ -> {
+			if (Viewers.getFirstSelected(table) instanceof ImpactCategory i) {
 				App.open(i);
 			} else {
 				add.run();
@@ -167,7 +155,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 			if (!(obj instanceof ImpactCategory impact))
 				return null;
 			return switch (col) {
-				case 0 -> Images.get(ModelType.IMPACT_CATEGORY);
+				case 0 -> Images.get(impact);
 				case 3 -> Images.get(editor.getComments(), CommentPaths.get(impact));
 				default -> null;
 			};

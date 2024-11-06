@@ -12,12 +12,14 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.JsonCompareDialog;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.ModelTypeOrder;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Labels;
@@ -27,7 +29,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.DiffType;
-import org.openlca.git.model.Entry;
 import org.openlca.git.model.Reference;
 import org.openlca.git.util.ModelRefMap;
 import org.openlca.git.util.TypedRefIdMap;
@@ -38,18 +39,20 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
 	private final boolean canMerge;
-	private final Map<String, Entry> entryMap;
+	private Map<String, Reference> entryMap;
 	private Runnable onMerge;
 	private ModelRefMap<ConflictResolution> resolvedConflicts = new ModelRefMap<>();
 
 	DiffNodeViewer(Composite parent, boolean canMerge) {
 		super(parent);
 		this.canMerge = canMerge;
-		this.entryMap = Repository.CURRENT.entries.find().recursive().asMap();
 	}
 
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
+		this.entryMap = Repository.CURRENT != null
+				? Repository.CURRENT.references.find().includeCategories().asMap()
+				: null;
 		if (collection.isEmpty()) {
 			root = null;
 			super.setInput((Collection<DiffNode>) null);
@@ -195,6 +198,12 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var node = (DiffNode) element;
 			if (node.isDatabaseNode())
 				return node.contentAsDatabase().getName();
+			if (node.isLibrariesNode())
+				return M.Libraries;
+			if (node.isLibraryNode()) {
+				var path = node.contentAsTriDiff().path;
+				return path.substring(path.indexOf("/") + 1);
+			}
 			if (node.isModelTypeNode())
 				return Labels.plural(node.getModelType());
 			if (node.isCategoryNode() && node.content instanceof String)
@@ -228,6 +237,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var node = (DiffNode) element;
 			if (node.isModelTypeNode())
 				return Images.getForCategory(node.getModelType());
+			if (node.isLibrariesNode())
+				return Icon.FOLDER.get();
 			if (node.isCategoryNode()) {
 				if (node.content instanceof String s)
 					if (!entryMap.containsKey(s))
@@ -238,6 +249,8 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			}
 			var diff = node.contentAsTriDiff();
 			var overlay = getOverlay(diff);
+			if (node.isLibraryNode())
+				return Images.library(overlay);
 			return Images.get(diff.type, overlay);
 		}
 
@@ -247,7 +260,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (resolvedConflicts.contains(diff))
 				return getOverlayMerged(diff);
 			var leftDiffType = diff.left != null ? diff.left.diffType : null;
-			var rightDiffType = diff.right!= null ? diff.right.diffType : null;
+			var rightDiffType = diff.right != null ? diff.right.diffType : null;
 			return getOverlay(leftDiffType, rightDiffType);
 		}
 
@@ -300,6 +313,10 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		}
 
 		private int compare(Viewer viewer, DiffNode node1, DiffNode node2) {
+			if (node1.isLibrariesNode())
+				return 1;
+			if (node2.isLibrariesNode())
+				return -1;
 			if (node1.isModelTypeNode() && node2.isModelTypeNode())
 				return compareModelTypes(node1, node2);
 			return super.compare(viewer, node1, node2);

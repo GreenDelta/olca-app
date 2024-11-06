@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -51,7 +52,12 @@ class ReviewQualityTable {
 		widths[0] = 0.25;
 		Arrays.fill(widths, 1, widths.length, 0.75 / (qs.length));
 		Tables.bindColumnWidths(table, widths);
+		if (editor.isEditable()) {
+			bindModifiers(table, qs);
+		}
+	}
 
+	private void bindModifiers(TableViewer table, Quality[] qs) {
 		var modifier = new ModifySupport<Item>(table);
 		for (var v : qs) {
 			modifier.bind(v.value(), new CheckBoxCellModifier<>() {

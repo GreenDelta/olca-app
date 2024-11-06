@@ -4,10 +4,8 @@ import static org.eclipse.draw2d.PositionConstants.EAST;
 import static org.eclipse.draw2d.PositionConstants.NORTH;
 import static org.eclipse.draw2d.PositionConstants.SOUTH;
 import static org.eclipse.draw2d.PositionConstants.WEST;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_NULL;
-
-import java.util.Objects;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_NULL;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.swt.SWT;
@@ -19,7 +17,6 @@ import org.openlca.app.M;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.components.ResultItemSelector.SelectionHandler;
 import org.openlca.app.results.analysis.sankey.SankeyConfig;
-import org.openlca.app.tools.graphics.themes.Themes;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.UI;
@@ -47,10 +44,10 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 		ResultItemSelector.on(items)
 				.withSelectionHandler(this)
 				.withSelection(config.selection())
+				.withoutCostSelector()  // no support for costs currently
 				.create(body, tk);
 		createCutoffSpinner(tk, body);
 		createCountSpinner(tk, body);
-		themeCombo(tk, body);
 		orientationsCombo(tk, body);
 		connectionRoutersCombo(tk, body);
 	}
@@ -84,26 +81,6 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 		spinner.addModifyListener(e -> config.setMaxCount(spinner.getSelection()));
 		tk.adapt(spinner);
 		tk.createLabel(inner, "");
-	}
-
-	private void themeCombo(FormToolkit tk, Composite comp) {
-		var combo = UI.labeledCombo(comp, tk, M.Theme);
-		UI.gridData(combo, true, false);
-		var themes = Themes.loadFromWorkspace(Themes.SANKEY);
-		var current = config.getTheme();
-		int currentIdx = 0;
-		for (int i = 0; i < themes.size(); i++) {
-			var theme = themes.get(i);
-			combo.add(theme.name());
-			if (Objects.equals(theme.file(), current.file())) {
-				currentIdx = i;
-			}
-		}
-		combo.select(currentIdx);
-		Controls.onSelect(combo, _e -> {
-			var next = themes.get(combo.getSelectionIndex());
-			config.setTheme(next);
-		});
 	}
 
 	private void orientationsCombo(FormToolkit tk, Composite comp) {

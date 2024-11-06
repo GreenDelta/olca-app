@@ -22,8 +22,8 @@ import org.openlca.app.editors.graphical.model.commands.CreateStickyNoteCommand;
 import org.openlca.app.editors.graphical.model.commands.EditConfigCommand;
 import org.openlca.app.editors.graphical.model.commands.GraphLayoutCommand;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
-import org.openlca.app.tools.graphics.model.Component;
-import org.openlca.app.tools.graphics.model.commands.ComponentSetConstraintCommand;
+import org.openlca.app.components.graphics.model.Component;
+import org.openlca.app.components.graphics.model.commands.ComponentSetConstraintCommand;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;

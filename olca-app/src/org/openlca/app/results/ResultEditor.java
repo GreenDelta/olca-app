@@ -1,6 +1,6 @@
 package org.openlca.app.results;
 
-import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
+import static org.openlca.app.components.graphics.EditorActionBarContributor.*;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -17,6 +17,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.results.analysis.groups.AnalysisGroupsPage;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.contributions.ContributionTreePage;
 import org.openlca.app.results.contributions.ProcessResultPage;
@@ -31,6 +32,7 @@ import org.openlca.app.util.MemoryError;
 import org.openlca.app.util.Numbers;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.util.Strings;
@@ -134,6 +136,10 @@ public class ResultEditor extends FormEditor {
 			setSankeyPageListener(sankey);
 
 			if (result().hasImpacts()) {
+				if (setup().target() instanceof ProductSystem sys
+						&& !sys.analysisGroups.isEmpty()) {
+					addPage(new AnalysisGroupsPage(this, sys));
+				}
 				addPage(new ImpactChecksPage(this));
 			}
 			if (FeatureFlag.TAG_RESULTS.isEnabled()) {

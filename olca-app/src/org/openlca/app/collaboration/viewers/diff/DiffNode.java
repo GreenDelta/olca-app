@@ -35,6 +35,14 @@ public class DiffNode {
 		return content instanceof TriDiff d && !d.isCategory;
 	}
 
+	boolean isLibrariesNode() {
+		return content == null;
+	}
+
+	boolean isLibraryNode() {
+		return content instanceof TriDiff d && d.isLibrary;
+	}
+
 	ModelType getModelType() {
 		if (isModelTypeNode())
 			return (ModelType) content;

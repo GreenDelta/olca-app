@@ -48,7 +48,7 @@ import org.openlca.util.Parameters;
 import org.openlca.util.Strings;
 
 /**
- * A section with a table for parameters in processes, LCIA methods, and global
+ * A section with a table for parameters in processes, impact categories, and global
  * parameters. It is possible to create two kinds of tables with this class: for
  * input parameters with the columns name, value, and description, or for
  * dependent parameters with the columns name, formula, value, and description.
@@ -86,14 +86,17 @@ public class ParameterSection {
 		return editor.getModel();
 	}
 
-	private void createComponents(Composite body, FormToolkit toolkit) {
-		String title = forInputParameters ? M.InputParameters : M.DependentParameters;
-		Section section = UI.section(body, toolkit, title);
+	private void createComponents(Composite body, FormToolkit tk) {
+		var title = forInputParameters
+				? M.InputParameters
+				: M.DependentParameters;
+		Section section = UI.section(body, tk, title);
 		UI.gridData(section, true, true);
-		Composite parent = UI.sectionClient(section, toolkit, 1);
+		var parent = UI.sectionClient(section, tk, 1);
 		table = Tables.createViewer(parent, columns());
-		ParameterLabelProvider label = new ParameterLabelProvider();
+		var label = new ParameterLabelProvider();
 		table.setLabelProvider(label);
+
 		addSorters(table, label);
 		bindActions(section);
 		Tables.bindColumnWidths(table, 0.3, 0.3, 0.2, 0.17, 0.03);
@@ -101,7 +104,7 @@ public class ParameterSection {
 		table.getTable().getColumns()[col].setAlignment(SWT.RIGHT);
 		Tables.onDoubleClick(table, e -> {
 			var item = Tables.getItem(table, e);
-			if (item == null) {
+			if (item == null && editor.isEditable()) {
 				onAdd();
 			}
 		});
@@ -152,18 +155,17 @@ public class ParameterSection {
 		var editor = page.editor;
 		if (!editor.isEditable())
 			return;
-		var ms = new ModifySupport<Parameter>(table);
-		ms.bind(M.Name, new NameModifier());
-		ms.bind(M.Description, new StringModifier<>(editor, "description"));
-		ms.bind(M.Value, new DoubleModifier<>(editor, "value", (elem) -> support.evaluate()));
-		ms.bind(M.Uncertainty, new UncertaintyCellEditor(table.getTable(), editor));
-		ms.bind("", new CommentDialogModifier<>(editor.getComments(), CommentPaths::get));
+		var ms = new ModifySupport<Parameter>(table)
+				.bind(M.Name, new NameModifier())
+				.bind(M.Description, new StringModifier<>(editor, "description"))
+				.bind(M.Value, new DoubleModifier<>(editor, "value", $ -> support.evaluate()))
+				.bind(M.Uncertainty, new UncertaintyCellEditor(table.getTable(), editor))
+				.bind("", new CommentDialogModifier<>(editor.getComments(), CommentPaths::get));
 		var formulaEditor = new FormulaCellEditor(table, () -> entity().parameters);
 		ms.bind(M.Formula, formulaEditor);
 		formulaEditor.onEdited((obj, formula) -> {
-			if (!(obj instanceof Parameter))
+			if (!(obj instanceof Parameter param))
 				return;
-			Parameter param = (Parameter) obj;
 			param.formula = formula;
 			support.evaluate();
 			table.refresh();
@@ -253,9 +255,8 @@ public class ParameterSection {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof Parameter))
+			if (!(obj instanceof Parameter param))
 				return null;
-			Parameter param = (Parameter) obj;
 			int n = table.getTable().getColumnCount();
 			if (col == n && editor.hasAnyComment("parameters"))
 				return Images.get(editor.getComments(), CommentPaths.get(param));
@@ -264,27 +265,19 @@ public class ParameterSection {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Parameter))
+			if (!(obj instanceof Parameter p))
 				return null;
-			Parameter p = (Parameter) obj;
-			switch (col) {
-			case 0:
-				return p.name;
-			case 1:
-				if (forInputParameters)
-					return Double.toString(p.value);
-				else
-					return p.formula;
-			case 2:
-				if (forInputParameters)
-					return Uncertainty.string(p.uncertainty);
-				else
-					return Double.toString(p.value);
-			case 3:
-				return p.description;
-			default:
-				return null;
-			}
+			return switch (col) {
+				case 0 -> p.name;
+				case 1 -> forInputParameters
+						? Double.toString(p.value)
+						: p.formula;
+				case 2 -> forInputParameters
+						? Uncertainty.string(p.uncertainty)
+						: Double.toString(p.value);
+				case 3 -> p.description;
+				default -> null;
+			};
 		}
 	}
 

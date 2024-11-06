@@ -1,14 +1,16 @@
 package org.openlca.app.editors.graphical.figures;
 
-import org.eclipse.draw2d.*;
+import static org.openlca.app.components.graphics.model.Side.INPUT;
+
+import org.eclipse.draw2d.Clickable;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.tools.graphics.model.Side;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.util.Colors;
-
-import static org.openlca.app.tools.graphics.model.Side.INPUT;
 
 public class PlusMinusButton extends Clickable {
 
@@ -36,7 +38,7 @@ public class PlusMinusButton extends Clickable {
 		PlusMinusFigure(Node node, Side side) {
 			this.node = node;
 			this.side = side;
-			var theme = node.getGraph().getConfig().getTheme();
+			var theme = node.getGraph().getEditor().getTheme();
 			var box = node.getThemeBox();
 			setBackgroundColor(theme.boxBackgroundColor(box));
 		}
@@ -49,7 +51,7 @@ public class PlusMinusButton extends Clickable {
 		public void paintFigure(Graphics g) {
 			g.setAntialias(SWT.ON);
 
-			var theme = node.getGraph().getConfig().getTheme();
+			var theme = node.getGraph().getEditor().getTheme();
 			var box = node.getThemeBox();
 
 			setEnabled(node.isButtonEnabled(side));

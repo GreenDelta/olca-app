@@ -19,10 +19,10 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.app.tools.graphics.figures.ComponentFigure;
-import org.openlca.app.tools.graphics.figures.GridPos;
-import org.openlca.app.tools.graphics.figures.RoundBorder;
-import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.components.graphics.figures.ComponentFigure;
+import org.openlca.app.components.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.figures.RoundBorder;
+import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -47,7 +47,7 @@ public class ExchangeFigure extends ComponentFigure {
 		super(exchangeItem);
 		this.exchangeItem = exchangeItem;
 		this.exchange = exchangeItem.exchange;
-		this.theme = exchangeItem.getGraph().getConfig().getTheme();
+		this.theme = exchangeItem.getGraph().getEditor().getTheme();
 
 		var layout = new GridLayout(4, false);
 		layout.marginWidth = 0;

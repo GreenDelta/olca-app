@@ -42,6 +42,7 @@ record UrnLink(EpdEditor editor) {
 		deleteBtn.setToolTipText(M.Remove);
 		deleteBtn.setHoverImage(Icon.DELETE.get());
 		deleteBtn.setImage(Icon.DELETE_DISABLED.get());
+		deleteBtn.setEnabled(editor().isEditable());
 		Controls.onClick(deleteBtn, $ -> {
 			epd().urn = "";
 			editor.emitEvent("urn.change");

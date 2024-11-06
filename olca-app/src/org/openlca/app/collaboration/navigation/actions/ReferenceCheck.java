@@ -36,28 +36,30 @@ class ReferenceCheck {
 	private ReferenceCheck(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		this.database = database;
 		this.diffs = new TypedRefIdMap<>();
-		all.stream().filter(diff -> !diff.isCategory)
+		all.stream().filter(diff -> !diff.isCategory && diff.type != null)
 				.forEach(diff -> this.diffs.put(diff, diff));
 		this.input = input;
 		this.selection = new TypedRefIdMap<>();
-		input.forEach(node -> selection.put(node.contentAsTriDiff(), node));
+		input.stream()
+				.filter(node -> node.contentAsTriDiff().type != null)
+				.forEach(node -> selection.put(node.contentAsTriDiff(), node));
 		this.visited = new TypedRefIdSet();
 		this.references = App.exec(M.CollectingReferencesDots, () -> ModelReferences.scan(Database.get()));
 	}
 
-	static Set<Diff> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
-		if (!CollaborationPreference.checkReferences())
+	static List<Diff> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+		if (!CollaborationPreference.checkReferences() || CollaborationPreference.onlyFullCommits())
 			return convert(input);
 		return new ReferenceCheck(database, all, input).run(false);
 	}
 
-	static Set<Diff> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
-		if (!CollaborationPreference.checkReferences())
+	static List<Diff> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+		if (!CollaborationPreference.checkReferences() || CollaborationPreference.onlyFullCommits())
 			return convert(input);
 		return new ReferenceCheck(database, all, input).run(true);
 	}
 
-	private Set<Diff> run(boolean stashCommit) {
+	private List<Diff> run(boolean stashCommit) {
 		var references = collect();
 		if (references.isEmpty())
 			return convert(input);
@@ -109,10 +111,10 @@ class ReferenceCheck {
 				.filter(diffs::contains);
 	}
 
-	private static Set<Diff> convert(Set<DiffNode> nodes) {
+	private static List<Diff> convert(Set<DiffNode> nodes) {
 		return nodes.stream()
 				.map(node -> node.contentAsTriDiff().left)
-				.collect(Collectors.toSet());
+				.collect(Collectors.toList());
 	}
 
 }

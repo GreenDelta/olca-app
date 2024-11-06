@@ -2,12 +2,11 @@ package org.openlca.app.editors.graphical.actions;
 
 import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_CURVE;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_MANHATTAN;
-import static org.openlca.app.tools.graphics.figures.Connection.ROUTER_NULL;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_MANHATTAN;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_NULL;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.gef.Request;
@@ -25,8 +24,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.graphics.actions.ActionIds;
-import org.openlca.app.tools.graphics.themes.Themes;
+import org.openlca.app.components.graphics.actions.ActionIds;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
@@ -88,9 +86,6 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			var body = UI.dialogBody(form.getForm(), tk);
 			UI.gridLayout(body, 2);
 
-			// Theme
-			themeCombo(tk, body);
-
 			// routed check
 			connectionRoutersCombo(tk, body);
 
@@ -131,35 +126,15 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			});
 		}
 
-		private void themeCombo(FormToolkit tk, Composite comp) {
-			var combo = UI.labeledCombo(comp, tk, M.Theme);
-			UI.gridData(combo, true, false);
-			var themes = Themes.loadFromWorkspace(Themes.MODEL);
-			var current = config.getTheme();
-			int currentIdx = 0;
-			for (int i = 0; i < themes.size(); i++) {
-				var theme = themes.get(i);
-				combo.add(theme.name());
-				if (Objects.equals(theme.file(), current.file())) {
-					currentIdx = i;
-				}
-			}
-			combo.select(currentIdx);
-			Controls.onSelect(combo, _e -> {
-				var next = themes.get(combo.getSelectionIndex());
-				config.setTheme(next);
-			});
-		}
-
 		@Override
 		protected Point getInitialSize() {
 			var shell = getShell().getDisplay().getBounds();
 			int width = shell.x > 0 && shell.x < 700
 					? shell.x
 					: 700;
-			int height = shell.y > 0 && shell.y < 350
+			int height = shell.y > 0 && shell.y < 300
 					? shell.y
-					: 350;
+					: 300;
 			return new Point(width, height);
 		}
 

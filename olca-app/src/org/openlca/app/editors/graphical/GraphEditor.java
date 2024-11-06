@@ -1,13 +1,10 @@
 package org.openlca.app.editors.graphical;
 
-import static org.openlca.app.editors.graphical.GraphFile.KEY_NODES;
-import static org.openlca.app.editors.graphical.GraphFile.KEY_STICKY_NOTES;
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
-import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.PROVIDER;
-import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.RECIPIENTS;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+import static org.openlca.app.components.graphics.themes.Themes.CONTEXT_MODEL;
+import static org.openlca.app.editors.graphical.GraphFile.*;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.*;
+import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.*;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.*;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -26,6 +23,10 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
+import org.openlca.app.components.graphics.actions.SaveImageAction;
+import org.openlca.app.components.graphics.frame.GraphicalEditorWithFrame;
+import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.actions.AddExchangeAction;
 import org.openlca.app.editors.graphical.actions.AddProcessAction;
@@ -46,6 +47,7 @@ import org.openlca.app.editors.graphical.actions.OpenEditorAction;
 import org.openlca.app.editors.graphical.actions.RemoveAllConnectionsAction;
 import org.openlca.app.editors.graphical.actions.RemoveSupplyChainAction;
 import org.openlca.app.editors.graphical.actions.SearchConnectorsAction;
+import org.openlca.app.editors.graphical.actions.SetProcessGroupAction;
 import org.openlca.app.editors.graphical.actions.SetReferenceAction;
 import org.openlca.app.editors.graphical.actions.ShowElementaryFlowsAction;
 import org.openlca.app.editors.graphical.edit.GraphEditPartFactory;
@@ -53,8 +55,6 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.systems.ProductSystemEditor;
-import org.openlca.app.tools.graphics.actions.SaveImageAction;
-import org.openlca.app.tools.graphics.frame.GraphicalEditorWithFrame;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
@@ -99,6 +99,14 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 			}
 		}
 		super.init(site, input);
+	}
+
+	@Override
+	public Theme getTheme() {
+			if (theme == null) {
+				theme = Themes.get(CONTEXT_MODEL);
+			}
+			return theme;
 	}
 
 	@Override
@@ -224,6 +232,10 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		selectionActions.add(action.getId());
 
 		action = new SetReferenceAction(this);
+		registry.registerAction(action);
+		selectionActions.add(action.getId());
+
+		action = new SetProcessGroupAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 	}

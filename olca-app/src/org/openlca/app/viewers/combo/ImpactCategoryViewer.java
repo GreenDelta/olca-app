@@ -12,15 +12,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.util.Strings;
 
 public class ImpactCategoryViewer extends AbstractComboViewer<ImpactDescriptor> {
 
-	private static final String[] COLUMN_HEADERS = new String[] {
-			M.Name, M.Unit };
-	private static final int[] COLUMN_BOUNDS_PERCENTAGES = new int[] { 80, 20 };
+	private static final String[] COLUMN_HEADERS = new String[]{
+			M.Name, M.Unit};
+	private static final int[] COLUMN_BOUNDS_PERCENTAGES = new int[]{80, 20};
 
 	public ImpactCategoryViewer(Composite parent) {
 		super(parent);
@@ -60,18 +59,18 @@ public class ImpactCategoryViewer extends AbstractComboViewer<ImpactDescriptor> 
 			implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int column) {
-			return column == 0
-					? Images.get(ModelType.IMPACT_CATEGORY)
+		public Image getColumnImage(Object obj, int col) {
+			return col == 0
+					? Images.get((ImpactDescriptor) obj)
 					: null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int column) {
-			var category = (ImpactDescriptor) element;
-			return switch (column) {
-				case 0 -> Labels.name(category);
-				case 1 -> category.referenceUnit;
+		public String getColumnText(Object obj, int col) {
+			var i = (ImpactDescriptor) obj;
+			return switch (col) {
+				case 0 -> Labels.name(i);
+				case 1 -> i.referenceUnit;
 				default -> "";
 			};
 		}

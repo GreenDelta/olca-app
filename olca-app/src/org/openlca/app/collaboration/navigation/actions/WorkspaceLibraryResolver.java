@@ -31,12 +31,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	static WorkspaceLibraryResolver forRemote() {
 		var repo = org.openlca.app.db.Repository.CURRENT;
 		var commit = repo.commits.get(repo.commits.resolve(Constants.REMOTE_BRANCH));
-		if (commit == null)
-			return null;
-		var resolver = new WorkspaceLibraryResolver();
-		if (!resolver.init(repo, commit))
-			return null;
-		return resolver;
+		return forCommit(commit);
 	}
 
 	static WorkspaceLibraryResolver forStash() throws GitAPIException {
@@ -45,12 +40,19 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		if (commits == null || commits.isEmpty())
 			return null;
 		var commit = new Commit(commits.iterator().next());
+		return forCommit(commit);
+	}
+
+	static WorkspaceLibraryResolver forCommit(Commit commit) {
+		if (commit == null)
+			return null;
+		var repo = org.openlca.app.db.Repository.CURRENT;
 		var resolver = new WorkspaceLibraryResolver();
 		if (!resolver.init(repo, commit))
 			return null;
 		return resolver;
 	}
-
+	
 	// init before resolve is called in GitMerge, to avoid invalid thread access
 	private boolean init(ClientRepository repo, Commit commit) {
 		var info = repo.getInfo(commit);

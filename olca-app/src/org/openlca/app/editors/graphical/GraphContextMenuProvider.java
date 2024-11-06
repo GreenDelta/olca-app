@@ -5,10 +5,10 @@ import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.ui.actions.ActionFactory;
+import org.openlca.app.components.graphics.BasicContextMenuProvider;
+import org.openlca.app.components.graphics.actions.ActionIds;
 import org.openlca.app.editors.graphical.actions.GraphActionIds;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.graphics.BasicContextMenuProvider;
-import org.openlca.app.tools.graphics.actions.ActionIds;
 
 public class GraphContextMenuProvider extends BasicContextMenuProvider {
 
@@ -24,6 +24,12 @@ public class GraphContextMenuProvider extends BasicContextMenuProvider {
 		var addProcess = getActionRegistry().getAction(GraphActionIds.ADD_PROCESS);
 		if (addProcess.isEnabled())
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, addProcess);
+
+		var setGroup = getActionRegistry().getAction(
+				GraphActionIds.SET_PROCESS_GROUP);
+		if (setGroup != null && setGroup.isEnabled()) {
+			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, setGroup);
+		}
 
 		var addInputExchange = getActionRegistry().getAction(
 			GraphActionIds.ADD_INPUT_EXCHANGE);

@@ -16,7 +16,7 @@ import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.ProductSystem;
 
-import static org.openlca.app.tools.graphics.EditorActionBarContributor.refreshActionBar;
+import static org.openlca.app.components.graphics.EditorActionBarContributor.refreshActionBar;
 
 public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 

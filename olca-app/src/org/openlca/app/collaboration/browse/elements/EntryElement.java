@@ -41,7 +41,7 @@ public class EntryElement extends ServerNavigationElement<Entry> {
 	}
 
 	public String getRefId() {
-		if (getContent().typeOfEntry() != TypeOfEntry.DATASET)
+		if (getContent().typeOfEntry() != TypeOfEntry.DATASET && getContent().typeOfEntry() != TypeOfEntry.LIBRARY)
 			return null;
 		return new ModelRef(getContent().path()).refId;
 	}

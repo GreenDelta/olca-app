@@ -73,7 +73,9 @@ class ParameterPage extends ModelPage<ProductSystem> {
 		}
 
 		// render the add button at the end of the list
-		addButton = new AddButton();
+		if (isEditable()) {
+			addButton = new AddButton();
+		}
 		form.reflow(true);
 	}
 
@@ -117,6 +119,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			if (paramSet.name != null) {
 				nameText.setText(paramSet.name);
 			}
+			nameText.setEditable(isEditable());
 			nameText.addModifyListener(e -> {
 				paramSet.name = nameText.getText();
 				section.setText(paramSet.name);
@@ -129,29 +132,31 @@ class ParameterPage extends ModelPage<ProductSystem> {
 			if (paramSet.description != null) {
 				descrText.setText(paramSet.description);
 			}
+			descrText.setEditable(isEditable());
 			descrText.addModifyListener(e -> {
 				paramSet.description = descrText.getText();
 				editor.setDirty(true);
 			});
 
 			// parameters
-			Section paramSection = UI.section(
-					comp, tk, M.Parameters);
+			var paramSection = UI.section(comp, tk, M.Parameters);
 			UI.gridData(paramSection, true, false);
 			paramTable = new ParameterRedefTable(
 					editor, () -> paramSet.parameters);
 			paramTable.create(UI.sectionClient(paramSection, tk));
-			paramTable.bindActions(paramSection);
+			if (isEditable()) {
+				paramTable.bindActions(paramSection);
+			}
 
 			// only non-baseline scenarios can be removed
 			Action onCopy = Actions.create(
 					M.CopyParameterSet,
 					Icon.COPY.descriptor(),
 					this::onCopy);
-			if (paramSet.isBaseline) {
+			if (paramSet.isBaseline && isEditable()) {
 				Actions.bind(section, onCopy);
 			}
-			if (!paramSet.isBaseline) {
+			if (!paramSet.isBaseline && isEditable()) {
 				Actions.bind(section, onCopy,
 						Actions.onRemove(this::onRemove));
 			}

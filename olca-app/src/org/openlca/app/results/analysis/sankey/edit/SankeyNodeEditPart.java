@@ -9,7 +9,7 @@ import org.eclipse.gef.RequestConstants;
 import org.openlca.app.App;
 import org.openlca.app.results.analysis.sankey.figures.SankeyNodeFigure;
 import org.openlca.app.results.analysis.sankey.model.SankeyNode;
-import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Component;
 
 import java.beans.PropertyChangeEvent;
 

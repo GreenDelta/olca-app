@@ -8,7 +8,7 @@ import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.tools.graphics.actions.ActionIds;
+import org.openlca.app.components.graphics.actions.ActionIds;
 import org.openlca.app.util.Labels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

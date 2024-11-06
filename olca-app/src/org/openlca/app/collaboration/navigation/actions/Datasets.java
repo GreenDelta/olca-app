@@ -1,10 +1,11 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
+import org.openlca.app.collaboration.preferences.CollaborationPreference;
+import org.openlca.app.collaboration.preferences.CollaborationPreferenceDialog;
 import org.openlca.app.collaboration.util.PathFilters;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.collaboration.viewers.diff.TriDiff;
@@ -13,7 +14,6 @@ import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
-import org.openlca.git.model.Change;
 import org.openlca.git.model.Diff;
 import org.openlca.git.util.ModelRefSet;
 import org.openlca.git.util.TypedRefId;
@@ -27,6 +27,9 @@ class Datasets {
 		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
 		if (dialog == null)
 			return null;
+		if (CollaborationPreference.firstConfiguration()) {
+			new CollaborationPreferenceDialog().open();
+		}
 		var dialogResult = dialog.open();
 		if (dialogResult == CommitDialog.CANCEL)
 			return null;
@@ -35,11 +38,7 @@ class Datasets {
 				: ReferenceCheck.forRemote(Database.get(), diffs, dialog.getSelected());
 		if (withReferences == null)
 			return null;
-		var result = withReferences.stream()
-				.map(Change::of)
-				.flatMap(List::stream)
-				.collect(Collectors.toList());
-		return new DialogResult(dialogResult, dialog.getMessage(), result);
+		return new DialogResult(dialogResult, dialog.getMessage(), withReferences);
 	}
 
 	private static CommitDialog createCommitDialog(List<INavigationElement<?>> selection, List<Diff> diffs,
@@ -54,19 +53,24 @@ class Datasets {
 		}
 		var dialog = new CommitDialog(node, canPush, isStashCommit);
 		var paths = PathFilters.of(selection);
-		var newLibraryDatasets = determineLibraryDatasets(diffs);
+		var lockedDatasets = determineLockedDatasets(diffs);
 		var initialSelection = new ModelRefSet();
 		diffs.stream()
-				.filter(ref -> selectionContainsPath(paths, ref.path) || newLibraryDatasets.contains(ref))
+				.filter(ref -> ref.type != null)
+				.filter(ref -> selectionContainsPath(paths, ref.path) || lockedDatasets.contains(ref))
 				.forEach(initialSelection::add);
 		dialog.setInitialSelection(initialSelection);
-		dialog.setNewLibraryDatasets(newLibraryDatasets);
+		dialog.setLockedDatasets(lockedDatasets);
 		return dialog;
 	}
 
-	private static ModelRefSet determineLibraryDatasets(List<Diff> diffs) {
+	private static ModelRefSet determineLockedDatasets(List<Diff> diffs) {
 		var all = new ModelRefSet();
-		diffs.forEach(all::add);
+		diffs.stream()
+				.filter(diff -> diff.type != null)
+				.forEach(all::add);
+		if (CollaborationPreference.onlyFullCommits())
+			return all;
 		var fromLibrary = new ModelRefSet();
 		all.types().forEach(type -> {
 			fromLibrary.addAll(Daos.root(Database.get(), type).getDescriptors().stream()
@@ -74,7 +78,7 @@ class Datasets {
 					.map(d -> new TypedRefId(d.type, d.refId))
 					.filter(all::contains).toList());
 		});
-		return fromLibrary;
+		return fromLibrary;		
 	}
 
 	private static boolean selectionContainsPath(List<String> paths, String path) {
@@ -86,7 +90,7 @@ class Datasets {
 		return false;
 	}
 
-	static record DialogResult(int action, String message, List<Change> datasets) {
+	static record DialogResult(int action, String message, List<Diff> datasets) {
 	}
 
 }

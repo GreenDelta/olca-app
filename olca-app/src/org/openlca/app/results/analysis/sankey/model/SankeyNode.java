@@ -5,8 +5,8 @@ import static org.openlca.app.results.analysis.sankey.layouts.SankeyLayout.DEFAU
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.db.Database;
-import org.openlca.app.tools.graphics.model.Component;
-import org.openlca.app.tools.graphics.themes.Theme;
+import org.openlca.app.components.graphics.model.Component;
+import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.core.matrix.index.EnviFlow;
@@ -58,6 +58,18 @@ public class SankeyNode extends Component {
 
 	public Theme.Box getThemeBox() {
 		return Theme.Box.of(product.provider(), isReference());
+	}
+
+	public SankeyLinkType linkType() {
+		if (node == null)
+			return SankeyLinkType.NEUTRAL;
+
+		if (node.total < 0)
+			return SankeyLinkType.NEGATIVE;
+		else if (node.total > 0)
+			return SankeyLinkType.POSITIVE;
+		else
+			return SankeyLinkType.NEUTRAL;
 	}
 
 	@Override

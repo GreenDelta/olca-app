@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
-import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;

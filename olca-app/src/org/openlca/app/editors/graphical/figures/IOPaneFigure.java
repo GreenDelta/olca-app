@@ -17,8 +17,8 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
-import org.openlca.app.tools.graphics.figures.ComponentFigure;
-import org.openlca.app.tools.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.figures.ComponentFigure;
+import org.openlca.app.components.graphics.figures.GridPos;
 
 public class IOPaneFigure extends ComponentFigure {
 
@@ -31,7 +31,7 @@ public class IOPaneFigure extends ComponentFigure {
 	public IOPaneFigure(IOPane pane) {
 		super(pane);
 		this.pane = pane;
-		var theme = pane.getGraph().getConfig().getTheme();
+		var theme = pane.getGraph().getEditor().getTheme();
 		var node = pane.getNode();
 		var box = node.getThemeBox();
 
@@ -143,7 +143,7 @@ public class IOPaneFigure extends ComponentFigure {
 			layout.marginWidth = 2;
 			setLayoutManager(layout);
 
-			var theme = pane.getGraph().getConfig().getTheme();
+			var theme = pane.getGraph().getEditor().getTheme();
 			Label label = new Label(
 				pane.isForInputs() ? "⇨ " + M.InputFlows : M.OutputFlows + " ⇨");
 			label.setForegroundColor(theme.infoLabelColor());
@@ -156,7 +156,7 @@ public class IOPaneFigure extends ComponentFigure {
 			if (!pane.isForInputs()) {
 				var inputIOPane = pane.getNode().getIOPanes().get(INPUT_PROP);
 				if (!inputIOPane.getExchangeItems().isEmpty()) {
-					var theme = pane.getGraph().getConfig().getTheme();
+					var theme = pane.getGraph().getEditor().getTheme();
 					var node = pane.getNode();
 					var box = node.getThemeBox();
 					var location = getLocation();

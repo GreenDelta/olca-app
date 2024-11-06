@@ -19,15 +19,22 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-class RefJson {
+public class RefJson {
 
 	private static Gson gson = new Gson();
 
+	public static JsonObject get(Reference remote) {
+		return get(remote, null);
+	}
+
 	static JsonObject get(Reference remote, ModelRef local) {
-		if (local.isCategory)
+		if ((remote != null && remote.isCategory) || (local != null && local.isCategory))
 			return null;
-		if (remote == null || remote.objectId.equals(ObjectId.zeroId()))
+		if (remote == null || remote.objectId.equals(ObjectId.zeroId())) {
+			if (local == null)
+				return null;
 			return getLocalJson(local.type, local.refId);
+		}
 		var json = gson.fromJson(Repository.CURRENT.datasets.get(remote), JsonObject.class);
 		if (json == null)
 			return null;
@@ -60,23 +67,23 @@ class RefJson {
 
 	private static void split(JsonObject json, String arrayProperty, String splitProperty,
 			String property1, String property2) {
-		var exchanges = json.getAsJsonArray(arrayProperty);
-		var inputs = new JsonArray();
-		var outputs = new JsonArray();
-		if (exchanges != null) {
-			for (var elem : exchanges) {
+		var array = json.getAsJsonArray(arrayProperty);
+		var values1 = new JsonArray();
+		var values2 = new JsonArray();
+		if (array != null) {
+			for (var elem : array) {
 				var e = elem.getAsJsonObject();
 				var isInput = e.get(splitProperty);
 				if (isInput.isJsonPrimitive() && isInput.getAsBoolean()) {
-					inputs.add(e);
+					values1.add(e);
 				} else {
-					outputs.add(e);
+					values2.add(e);
 				}
 			}
 		}
 		json.remove(arrayProperty);
-		json.add(property1, inputs);
-		json.add(property2, outputs);
+		json.add(property1, values1);
+		json.add(property2, values2);
 	}
 
 	static JsonObject getMergedData(JsonNode node) {

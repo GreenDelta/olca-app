@@ -15,7 +15,6 @@ public class LibraryElement extends NavigationElement<Library> {
 
 	LibraryElement(INavigationElement<?> parent, Library library) {
 		super(parent, library);
-		setLibrary(library.name());
 	}
 
 	@Override

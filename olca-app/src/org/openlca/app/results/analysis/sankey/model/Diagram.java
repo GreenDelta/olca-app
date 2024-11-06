@@ -2,8 +2,8 @@ package org.openlca.app.results.analysis.sankey.model;
 
 import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
-import org.openlca.app.tools.graphics.model.BaseComponent;
-import org.openlca.app.tools.graphics.model.Component;
+import org.openlca.app.components.graphics.model.BaseComponent;
+import org.openlca.app.components.graphics.model.Component;
 import org.openlca.core.results.Sankey;
 
 public class Diagram extends BaseComponent {

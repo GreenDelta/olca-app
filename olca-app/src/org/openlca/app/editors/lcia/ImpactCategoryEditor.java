@@ -122,6 +122,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			combo.select(dir != null
 				? dir == Direction.INPUT ? 1 : 2
 				: 0);
+			combo.setEnabled(isEditable());
 			Controls.onSelect(combo, $ -> {
 				var idx = combo.getSelectionIndex();
 				getModel().direction = switch (idx) {

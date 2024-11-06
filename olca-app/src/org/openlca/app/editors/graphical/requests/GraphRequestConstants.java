@@ -57,6 +57,11 @@ public class GraphRequestConstants implements RequestConstants {
 	public static String REQ_MIN = "min_all";
 
 	/**
+	 * Indicates that an analysis group should be set or removed for a process.
+	 */
+	public static String REQ_SET_PROCESS_GROUP = "set_process_group";
+
+	/**
 	 * Indicates that the exchange should be set as quantitative reference.
 	 */
 	public static String REQ_SET_REFERENCE = "set_reference";
