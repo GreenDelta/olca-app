@@ -1,6 +1,6 @@
 package org.openlca.app.components.graphics.zoom;
 
-import static org.openlca.app.tools.graphics.edit.RootEditPart.MARGIN_PADDING;
+import static org.openlca.app.components.graphics.edit.RootEditPart.MARGIN_PADDING;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Display;
 import org.python.icu.text.DecimalFormat;
 import org.python.icu.text.NumberFormat;
 
-import static org.openlca.app.components.graphics.edit.RootEditPart.MARGIN_PADDING;
 
 /**
  * <i>This class is a copy of {@link org.eclipse.gef.editparts.ZoomManager}
