@@ -35,7 +35,7 @@ public class M extends NLS {
 	public static String AddInputFlow;
 	public static String AddLibrary;
 	public static String AddLibraryDots;
-	public static String AddNewChildCategory;
+	public static String AddNewCategory;
 	public static String AddNewFactors;
 	public static String AddNewTag;
 	public static String AddOutputFlow;
