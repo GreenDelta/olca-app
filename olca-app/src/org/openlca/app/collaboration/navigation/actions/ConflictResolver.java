@@ -24,7 +24,7 @@ import org.openlca.app.util.Question;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
-import org.openlca.git.actions.GitDiscard;
+import org.openlca.git.actions.GitReset;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.actions.GitStashDrop;
 import org.openlca.git.model.Commit;
@@ -78,7 +78,9 @@ class ConflictResolver {
 				case 0:
 					return null;
 				case 1:
-					Actions.run(GitDiscard.on(repo).changes(toChanges(workspaceConflicts.remaining)));
+					Actions.run(GitReset.on(repo)
+							.to(repo.commits.head())
+							.changes(toChanges(workspaceConflicts.remaining)));
 					break;
 				case 2:
 					return commitChanges();

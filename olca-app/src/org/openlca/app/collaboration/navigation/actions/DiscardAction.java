@@ -19,7 +19,7 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
-import org.openlca.git.actions.GitDiscard;
+import org.openlca.git.actions.GitReset;
 
 class DiscardAction extends Action implements INavigationAction {
 
@@ -57,9 +57,11 @@ class DiscardAction extends Action implements INavigationAction {
 							.withDatabase())
 					.flatMap(List::stream)
 					.collect(Collectors.toList());
-			Actions.run(GitDiscard.on(repo)
-					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(repo.commits.head()))
-					.changes(selected));
+			var head = repo.commits.head();
+			Actions.run(GitReset.on(repo)
+					.to(head)
+					.changes(selected)
+					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(head)));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error discarding changes", e);
 		} finally {

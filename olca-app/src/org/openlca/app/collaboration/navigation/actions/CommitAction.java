@@ -77,12 +77,27 @@ class CommitAction extends Action implements INavigationAction {
 	}
 
 	private boolean checkDatabase() {
+		var updatedSlashes = checkSlashes();
+		if (updatedSlashes != null && !updatedSlashes)
+			return false;
+		var updatedOthers = checkOthers();
+		if (updatedOthers != null && !updatedOthers) {
+			if (updatedSlashes != null) {
+				Repository.CURRENT.descriptors.reload();
+			}
+			return false;
+		}
+		Repository.CURRENT.descriptors.reload();
+		return true;
+	}
+
+	private Boolean checkSlashes() {
 		var dao = new CategoryDao(Database.get());
 		var withSlashes = dao.getDescriptors().stream()
 				.filter(c -> c.name.contains("/"))
 				.toList();
 		if (withSlashes.isEmpty())
-			return true;
+			return null;
 		var message = M.CategoriesContainASlash + "\r\n";
 		for (var i = 0; i < Math.min(5, withSlashes.size()); i++) {
 			var category = dao.getForId(withSlashes.get(i).id);
@@ -102,10 +117,17 @@ class CommitAction extends Action implements INavigationAction {
 			category.name = category.name.replace("/", "\\");
 			dao.update(category);
 		}
+		return true;
+	}
+
+	private Boolean checkOthers() {
+		var dao = new CategoryDao(Database.get());
 		var others = dao.getDescriptors().stream()
 				.filter(c -> !GitUtil.isValidCategory(c.name))
 				.toList();
-		message = M.OtherInvalidCategoryNames + "\r\n";
+		if (others.isEmpty())
+			return null;
+		var message = M.OtherInvalidCategoryNames + "\r\n";
 		for (var i = 0; i < Math.min(5, others.size()); i++) {
 			var category = dao.getForId(others.get(i).id);
 			message += "\r\n* " + category.name + " (" + Labels.plural(category.modelType);
@@ -133,7 +155,6 @@ class CommitAction extends Action implements INavigationAction {
 			}
 			dao.update(category);
 		}
-		Repository.CURRENT.descriptors.reload();
 		return true;
 	}
 
