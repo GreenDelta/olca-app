@@ -30,7 +30,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 	private ModelType modelType;
 
 	public CreateCategoryAction() {
-		setText(M.AddNewChildCategory);
+		setText(M.AddNewCategory);
 		setImageDescriptor(Icon.ADD.descriptor());
 	}
 
