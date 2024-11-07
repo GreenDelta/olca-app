@@ -32,7 +32,7 @@ public class ServerNavigationLabelProvider extends ColumnLabelProvider implement
 			return Images.get(groupElem.getContent());
 		if (elem instanceof LibrariesElement)
 			return Icon.FOLDER.get();
-		if (elem instanceof LibraryElement libElem)
+		if (elem instanceof LibraryElement)
 			return Icon.LIBRARY.get();
 		if (elem instanceof EntryElement entryElem) {
 			if (entryElem.isModelType() || entryElem.isCategory())

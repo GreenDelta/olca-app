@@ -96,7 +96,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected boolean isLeaf(DiffNode element) {
-			return (element.content instanceof TriDiff d || element.isLibraryNode()) && element.children.isEmpty();
+			return (element.content instanceof TriDiff || element.isLibraryNode()) && element.children.isEmpty();
 		}
 
 		@Override

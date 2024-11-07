@@ -38,7 +38,7 @@ class Actions {
 			WebRequests.handleException(message, we);
 			return;
 		}
-		if (e instanceof UnsupportedClientVersionException ue) {
+		if (e instanceof UnsupportedClientVersionException) {
 			message = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
 			MsgBox.error(message);
 		} else {
