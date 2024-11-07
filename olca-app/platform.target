@@ -12,22 +12,22 @@
 		<unit id="org.eclipse.swtchart.feature.feature.group" version="0.14.0.202301260747"/>
 	</location>
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/tools/gef/classic/release/3.20.0"/>
-		<unit id="org.eclipse.gef.feature.group" version="3.20.0.202405290843"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.38.0"/>
-		<unit id="org.eclipse.emf.sdk.feature.group" version="2.38.0.v20240314-1003"/>
-	</location>
-	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/archive/releases/3.1.1/"/>
 		<unit id="org.eclipse.nebula.feature.feature.group" version="3.1.1.202402011804"/>
 	</location>
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.32/"/>
-		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.23.1200.v20240524-2033"/>
-		<unit id="org.eclipse.platform.ide" version="4.32.0.I20240601-0610"/>
-		<unit id="org.eclipse.rcp.feature.group" version="4.32.0.v20240601-0610"/>
+		<repository location="https://download.eclipse.org/tools/gef/classic/release/3.21.0"/>
+		<unit id="org.eclipse.gef.feature.group" version="3.21.0.202409021815"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.39.0"/>
+		<unit id="org.eclipse.emf.sdk.feature.group" version="2.39.0.v20240731-0952"/>
+	</location>
+	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/eclipse/updates/4.33"/>
+		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.23.1400.v20240820-0604"/>
+		<unit id="org.eclipse.platform.ide" version="4.33.0.I20240903-0240"/>
+		<unit id="org.eclipse.rcp.feature.group" version="4.33.0.v20240903-0618"/>
 	</location>
 </locations>
 </target>
