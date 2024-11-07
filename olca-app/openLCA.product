@@ -126,6 +126,7 @@ project and other open source software.
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
+      <plugin id="org.eclipse.jface.notifications"/>
       <plugin id="org.eclipse.jface.text"/>
       <plugin id="org.eclipse.nebula.widgets.opal.commons"/>
       <plugin id="org.eclipse.nebula.widgets.opal.notifier"/>
