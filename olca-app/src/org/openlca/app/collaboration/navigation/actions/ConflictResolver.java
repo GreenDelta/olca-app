@@ -42,7 +42,7 @@ class ConflictResolver {
 	private final boolean stashing;
 	private final Commit remoteCommit;
 	private final Commit commonParent;
-	private List<Diff> remoteChanges = new ArrayList<>();
+	private List<Diff> remoteChanges = null;
 	private Conflicts workspaceConflicts = Conflicts.none();
 	private Conflicts localConflicts = Conflicts.none();
 
@@ -170,6 +170,9 @@ class ConflictResolver {
 			return;
 		App.runWithProgress(M.CheckingForLocalConflicts, () -> {
 			var localChanges = repo.diffs.find().excludeLibraries().commit(commonParent).with(localCommit);
+			if (remoteChanges == null) {
+				remoteChanges = repo.diffs.find().excludeLibraries().commit(commonParent).with(remoteCommit);
+			}
 			if (localChanges.isEmpty() || remoteChanges.isEmpty())
 				return;
 			var diffs = between(localChanges, remoteChanges);
