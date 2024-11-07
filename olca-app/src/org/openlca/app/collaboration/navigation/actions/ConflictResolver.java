@@ -43,7 +43,7 @@ class ConflictResolver {
 	private final boolean stashing;
 	private final Commit remoteCommit;
 	private final Commit commonParent;
-	private List<Diff> remoteChanges = new ArrayList<>();
+	private List<Diff> remoteChanges = null;
 	private Conflicts workspaceConflicts = Conflicts.none();
 	private Conflicts localConflicts = Conflicts.none();
 
@@ -96,6 +96,7 @@ class ConflictResolver {
 	}
 
 	private void initWorkspaceConflicts() {
+		workspaceConflicts = Conflicts.none();
 		App.runWithProgress(M.CheckingForWorkspaceConflicts, () -> {
 			var repo = Repository.CURRENT;
 			var workspaceChanges = repo.diffs.find().withDatabase();
@@ -162,6 +163,7 @@ class ConflictResolver {
 	}
 
 	private void initLocalConflicts() throws IOException {
+		localConflicts = Conflicts.none();
 		var localCommit = repo.commits.get(repo.commits.resolve(Constants.LOCAL_BRANCH));
 		if (localCommit == null || commonParent == null)
 			return;
@@ -169,6 +171,9 @@ class ConflictResolver {
 			return;
 		App.runWithProgress(M.CheckingForLocalConflicts, () -> {
 			var localChanges = repo.diffs.find().commit(commonParent).with(localCommit);
+			if (remoteChanges == null) {
+				remoteChanges = repo.diffs.find().commit(commonParent).with(remoteCommit);
+			}
 			if (localChanges.isEmpty() || remoteChanges.isEmpty())
 				return;
 			var diffs = between(localChanges, remoteChanges);
