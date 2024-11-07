@@ -97,6 +97,7 @@ class ConflictResolver {
 	}
 
 	private void initWorkspaceConflicts() {
+		workspaceConflicts = Conflicts.none();
 		App.runWithProgress(M.CheckingForWorkspaceConflicts, () -> {
 			var repo = Repository.CURRENT;
 			var workspaceChanges = repo.diffs.find().excludeLibraries().withDatabase();
@@ -163,6 +164,7 @@ class ConflictResolver {
 	}
 
 	private void initLocalConflicts() throws IOException {
+		localConflicts = Conflicts.none();
 		var localCommit = repo.commits.get(repo.commits.resolve(Constants.LOCAL_BRANCH));
 		if (localCommit == null || commonParent == null)
 			return;
