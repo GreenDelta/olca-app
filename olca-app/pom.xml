@@ -13,19 +13,19 @@
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-core</artifactId>
-			<version>${project.version}</version>
+			<version>2.3.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-io</artifactId>
-			<version>${project.version}</version>
+			<version>2.3.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-ipc</artifactId>
-			<version>${project.version}</version>
+			<version>2.3.0</version>
 		</dependency>
 
 		<dependency>
@@ -37,13 +37,13 @@
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-proto-io</artifactId>
-			<version>${project.version}</version>
+			<version>2.3.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-git</artifactId>
-			<version>${project.version}</version>
+			<version>2.3.0</version>
 		</dependency>
 
 		<dependency>
