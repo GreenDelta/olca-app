@@ -24,6 +24,7 @@ import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.actions.GitStashApply;
+import org.openlca.git.util.Constants;
 
 class Actions {
 
@@ -121,7 +122,7 @@ class Actions {
 		var libraryResolver = WorkspaceLibraryResolver.forStash();
 		if (libraryResolver == null)
 			return false;
-		var conflictResult = ConflictResolver.forStash();
+		var conflictResult = ConflictResolver.resolve(Constants.STASH_REF);
 		if (conflictResult == null)
 			return false;
 		Actions.run(GitStashApply.on(repo)

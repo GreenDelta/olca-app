@@ -46,7 +46,8 @@ class StashCreateAction extends Action implements INavigationAction {
 	public void run() {
 		var repo = Repository.CURRENT;
 		try {
-			var input = Datasets.select(selection, false, true);
+			var diffs = repo.diffs.find().withDatabase();
+			var input = Datasets.select(selection, diffs, false, true);
 			if (input == null)
 				return;
 			var user = repo.promptUser();

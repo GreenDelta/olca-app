@@ -15,11 +15,11 @@ import org.openlca.app.collaboration.navigation.actions.ModelReferences.ModelRef
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
-import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
+import org.openlca.git.model.TriDiff;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.git.util.TypedRefIdSet;

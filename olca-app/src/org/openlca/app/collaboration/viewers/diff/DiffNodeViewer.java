@@ -30,6 +30,7 @@ import org.openlca.git.actions.ConflictResolver.ConflictResolution;
 import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
+import org.openlca.git.model.TriDiff;
 import org.openlca.git.util.ModelRefMap;
 import org.openlca.git.util.TypedRefIdMap;
 
@@ -46,13 +47,13 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	DiffNodeViewer(Composite parent, boolean canMerge) {
 		super(parent);
 		this.canMerge = canMerge;
+		this.entryMap = Repository.CURRENT != null
+				? Repository.CURRENT.references.find().includeCategories().asMap()
+				: null;
 	}
 
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
-		this.entryMap = Repository.CURRENT != null
-				? Repository.CURRENT.references.find().includeCategories().asMap()
-				: null;
 		if (collection.isEmpty()) {
 			root = null;
 			super.setInput((Collection<DiffNode>) null);

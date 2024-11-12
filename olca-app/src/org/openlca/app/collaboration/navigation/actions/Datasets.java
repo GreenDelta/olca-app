@@ -8,22 +8,20 @@ import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.preferences.CollaborationPreferenceDialog;
 import org.openlca.app.collaboration.util.PathFilters;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
-import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.Daos;
 import org.openlca.git.model.Diff;
+import org.openlca.git.model.TriDiff;
 import org.openlca.git.util.ModelRefSet;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.util.Strings;
 
 class Datasets {
 
-	static DialogResult select(List<INavigationElement<?>> selection, boolean canPush, boolean isStashCommit) {
-		var repo = Repository.CURRENT;
-		var diffs = repo.diffs.find().withDatabase();
+	static DialogResult select(List<INavigationElement<?>> selection, List<Diff> diffs, boolean canPush,
+			boolean isStashCommit) {
 		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
 		if (dialog == null)
 			return null;
@@ -78,7 +76,7 @@ class Datasets {
 					.map(d -> new TypedRefId(d.type, d.refId))
 					.filter(all::contains).toList());
 		});
-		return fromLibrary;		
+		return fromLibrary;
 	}
 
 	private static boolean selectionContainsPath(List<String> paths, String path) {

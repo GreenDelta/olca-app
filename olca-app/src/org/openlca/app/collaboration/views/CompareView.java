@@ -12,7 +12,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.collaboration.viewers.diff.CompareViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
-import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -20,6 +19,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.git.model.Commit;
+import org.openlca.git.model.TriDiff;
 import org.openlca.git.util.Constants;
 
 public class CompareView extends ViewPart {

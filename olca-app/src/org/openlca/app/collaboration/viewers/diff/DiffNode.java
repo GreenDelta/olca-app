@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
+import org.openlca.git.model.TriDiff;
 
 public class DiffNode {
 

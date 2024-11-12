@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
+import org.openlca.git.model.TriDiff;
 import org.openlca.git.util.ModelRefSet;
 
 public class CommitViewer extends DiffNodeViewer {

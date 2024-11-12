@@ -8,6 +8,7 @@ import java.util.Stack;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.trees.Trees;
+import org.openlca.git.model.TriDiff;
 
 public class MergeViewer extends DiffNodeViewer {
 

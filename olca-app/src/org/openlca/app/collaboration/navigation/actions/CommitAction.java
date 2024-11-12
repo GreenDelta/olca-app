@@ -43,34 +43,29 @@ class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		doRun(true);
-	}
-
-	boolean doRun(boolean canPush) {
 		try {
 			if (!checkDatabase())
-				return false;
+				return;
 			var repo = Repository.CURRENT;
-			var input = Datasets.select(selection, canPush, false);
+			var diffs = repo.diffs.find().withDatabase();
+			var input = Datasets.select(selection, diffs, true, false);
 			if (input == null || input.action() == CommitDialog.CANCEL)
-				return false;
-			var doPush = input.action() == CommitDialog.COMMIT_AND_PUSH;
-			var credentials = doPush ? repo.promptCredentials() : null;
-			var user = doPush && credentials != null ? credentials.ident : repo.promptUser();
+				return;
+			var credentials = repo.promptCredentials();
+			var user = credentials != null ? credentials.ident : repo.promptUser();
 			if (credentials == null && user == null)
-				return false;
+				return;
 			var commitId = Actions.runWithCancel(GitCommit.on(repo)
 					.changes(input.datasets())
 					.withMessage(input.message())
 					.as(user));
 			if (Strings.nullOrEmpty(commitId))
-				return false;
+				return;
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
-				return true;
-			return new PushAction().run(credentials);
+				return;
+			new PushAction().run(credentials);
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during commit", e);
-			return false;
 		} finally {
 			Actions.refresh();
 		}
