@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.M;
 import org.openlca.app.results.simulation.StatisticsCanvas;
-import org.openlca.core.math.NumberGenerator;
+import org.openlca.core.math.rand.NumberGenerator;
 
 public class UncertaintyShell {
 
