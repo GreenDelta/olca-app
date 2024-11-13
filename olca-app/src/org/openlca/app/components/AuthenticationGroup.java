@@ -21,7 +21,6 @@ public class AuthenticationGroup extends Composite {
 	private boolean withPassword;
 	private boolean withToken;
 	private boolean anonymous;
-	private String userLabel = M.User;
 	private String user = "";
 	private String password = "";
 	private String token = "";
@@ -67,11 +66,6 @@ public class AuthenticationGroup extends Composite {
 		return this;
 	}
 
-	public AuthenticationGroup withUserLabel(String userLabel) {
-		this.userLabel = userLabel;
-		return this;
-	}
-
 	public AuthenticationGroup onChange(Runnable onChange) {
 		this.onChange = onChange;
 		return this;
@@ -97,7 +91,7 @@ public class AuthenticationGroup extends Composite {
 		UI.gridLayout(container, 2);
 		UI.gridData(container, true, false);
 		if (withUser) {
-			userText = createText(container, toolkit, SWT.NONE, userLabel, user, text -> this.user = text);
+			userText = createText(container, toolkit, SWT.NONE, M.EmailOrUsername, user, text -> this.user = text);
 			if (autoFocus && Strings.nullOrEmpty(user)) {
 				userText.setFocus();
 			}
@@ -157,7 +151,7 @@ public class AuthenticationGroup extends Composite {
 	public String password() {
 		return password;
 	}
-	
+
 	public void password(String password) {
 		if (passwordText == null)
 			return;
@@ -165,7 +159,6 @@ public class AuthenticationGroup extends Composite {
 			return;
 		passwordText.setText(password);
 	}
-
 
 	public String token() {
 		return token;
