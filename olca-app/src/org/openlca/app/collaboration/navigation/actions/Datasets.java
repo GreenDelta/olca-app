@@ -22,12 +22,12 @@ class Datasets {
 
 	static DialogResult select(List<INavigationElement<?>> selection, List<Diff> diffs, boolean canPush,
 			boolean isStashCommit) {
-		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
-		if (dialog == null)
-			return null;
 		if (CollaborationPreference.firstConfiguration()) {
 			new CollaborationPreferenceDialog().open();
 		}
+		var dialog = createCommitDialog(selection, diffs, canPush, isStashCommit);
+		if (dialog == null)
+			return null;
 		var dialogResult = dialog.open();
 		if (dialogResult == CommitDialog.CANCEL)
 			return null;
