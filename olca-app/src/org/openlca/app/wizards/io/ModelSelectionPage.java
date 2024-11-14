@@ -41,7 +41,7 @@ import org.openlca.core.model.descriptors.RootDescriptor;
 class ModelSelectionPage extends WizardPage {
 
 	private final ModelType[] types;
-	private ModelContentProvider selectionProvider;
+	private ModelContentProvider content;
 	private File exportDestination;
 	private boolean targetIsDir;
 	private String fileExtension;
@@ -81,7 +81,7 @@ class ModelSelectionPage extends WizardPage {
 	}
 
 	public List<RootDescriptor> getSelectedModels() {
-		return selectionProvider.getSelection()
+		return content.getSelection()
 				.stream()
 				.filter(elem -> elem instanceof ModelElement e && !e.isFromLibrary())
 				.map(elem -> ((ModelElement) elem).getContent())
@@ -96,8 +96,8 @@ class ModelSelectionPage extends WizardPage {
 	void checkCompletion() {
 		setPageComplete(
 				exportDestination != null
-						&& selectionProvider != null
-						&& !selectionProvider.getSelection().isEmpty());
+						&& content != null
+						&& !content.getSelection().isEmpty());
 	}
 
 	@Override
@@ -177,14 +177,14 @@ class ModelSelectionPage extends WizardPage {
 
 	private void createViewer(Composite body) {
 		var comp = createViewerComposite(body);
-		selectionProvider = new ModelContentProvider();
-		selectionProvider.setSelection(getInitialSelection());
-		var viewer = CheckboxTreeViewers.create(comp, selectionProvider);
+		content = new ModelContentProvider();
+		content.setSelection(getInitialSelection());
+		var viewer = CheckboxTreeViewers.create(comp, content);
 		viewer.addFilter(new LibraryFilter());
 		viewer.addFilter(new ModelTypeFilter(types));
 		viewer.setLabelProvider(NavigationLabelProvider.withoutRepositoryState());
 		viewer.setComparator(new NavigationComparator());
-		CheckboxTreeViewers.registerInputHandler(comp, viewer, getInput(), () -> {
+		CheckboxTreeViewers.setInput(comp, viewer, getInput(), () -> {
 			CheckboxTreeViewers.expandGrayed(viewer);
 			checkCompletion();
 		});
@@ -233,6 +233,20 @@ class ModelSelectionPage extends WizardPage {
 		@Override
 		protected boolean isLeaf(INavigationElement<?> element) {
 			return element instanceof ModelElement;
+		}
+
+		@Override
+		protected void setSelection(INavigationElement<?> elem, boolean checked) {
+			if (isSelectable(elem)) {
+				if (checked) {
+					getSelection().add(elem);
+				} else {
+					getSelection().remove(elem);
+				}
+			}
+			for (var child : elem.getChildren()) {
+				setSelection(child, checked);
+			}
 		}
 
 		@Override

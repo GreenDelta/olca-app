@@ -7,7 +7,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
@@ -40,7 +39,7 @@ public class CommitReferencesDialog extends FormDialog {
 		var form = UI.header(mform, M.CommitReferenceNotice);
 		var toolkit = mform.getToolkit();
 		var body = UI.body(form, toolkit);
-		createModelViewer(body, toolkit);
+		createModelViewer(body);
 		form.reflow(true);
 	}
 
@@ -57,14 +56,13 @@ public class CommitReferencesDialog extends FormDialog {
 		return newElements;
 	}
 
-	private void createModelViewer(Composite parent, FormToolkit toolkit) {
+	private void createModelViewer(Composite parent) {
 		viewer = new CommitViewer(parent);
 		var newElements = getNewElements(node);
 		viewer.setLockedElements(newElements);
 		viewer.setSelection(newElements, node);
-		CheckboxTreeViewers.registerInputHandler(parent, viewer.getViewer(), node, () -> {
-			CheckboxTreeViewers.expandGrayed(viewer.getViewer());
-		});
+		CheckboxTreeViewers.setInput(
+				parent, viewer.getViewer(), node, () -> CheckboxTreeViewers.expandGrayed(viewer.getViewer()));
 	}
 
 	@Override

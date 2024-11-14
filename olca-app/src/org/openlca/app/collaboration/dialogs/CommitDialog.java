@@ -97,7 +97,7 @@ public class CommitDialog extends FormDialog {
 		viewer = new CommitViewer(comp, this::updateButtons);
 		viewer.setSelection(initialSelection, node);
 		viewer.setLockedElements(lockedDatasets);
-		CheckboxTreeViewers.registerInputHandler(comp, viewer.getViewer(), node, () -> {
+		CheckboxTreeViewers.setInput(comp, viewer.getViewer(), node, () -> {
 			CheckboxTreeViewers.expandGrayed(viewer.getViewer());
 			this.updateButtons();
 		});

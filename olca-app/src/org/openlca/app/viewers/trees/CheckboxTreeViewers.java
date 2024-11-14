@@ -27,11 +27,12 @@ public abstract class CheckboxTreeViewers {
 		return viewer;
 	}
 
-	// We want to avoid a resizing of the import dialog when the user flips to
-	// this page. Thus, we set the input of the tree viewer after receiving the
-	// first paint event.
-	public static <T> void registerInputHandler(Composite composite, CheckboxTreeViewer viewer, Object input,
-			Runnable callback) {
+	/// We want to avoid a resizing of dialogs when the user flips to a page
+	/// with a tree viewer. Thus, we set the input of the tree viewer after
+	/// receiving the first paint event.
+	public static void setInput(
+			Composite composite, CheckboxTreeViewer viewer, Object input, Runnable callback
+	) {
 		composite.addPaintListener(new PaintListener() {
 			private boolean init = false;
 
