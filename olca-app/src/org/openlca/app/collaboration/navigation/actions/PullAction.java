@@ -101,7 +101,7 @@ class PullAction extends Action implements INavigationAction {
 					MsgBox.info("No commits to fetch - Everything up to date");
 				}
 			} else {
-				Actions.handleException("Error pulling from remote", e);
+				Actions.handleException("Error pulling from remote", repo.serverUrl, e);
 			}
 		} finally {
 			Cache.evictAll();

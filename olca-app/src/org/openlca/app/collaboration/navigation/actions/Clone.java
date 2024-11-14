@@ -39,7 +39,7 @@ public class Clone {
 			Announcements.check();
 		} catch (Exception e) {
 			onError(config);
-			Actions.handleException("Error importing repository", e);
+			Actions.handleException("Error importing repository", url, e);
 		} finally {
 			Cache.evictAll();
 			Actions.refresh();

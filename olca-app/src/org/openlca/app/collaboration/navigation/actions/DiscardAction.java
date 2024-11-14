@@ -49,8 +49,8 @@ class DiscardAction extends Action implements INavigationAction {
 	public void run() {
 		if (!Question.ask(M.DiscardChangesQ, M.DiscardChangesQuestion))
 			return;
-		var repo = Repository.CURRENT;
 		try {
+			var repo = Repository.CURRENT;
 			var selected = PathFilters.of(selection).stream()
 					.map(filter -> repo.diffs.find()
 							.filter(filter)

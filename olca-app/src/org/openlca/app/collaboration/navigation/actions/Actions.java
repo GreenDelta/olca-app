@@ -16,7 +16,6 @@ import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.WebRequestException;
@@ -35,15 +34,19 @@ class Actions {
 	}
 
 	static void handleException(String message, Exception e) {
-		if (e instanceof WebRequestException we) {
-			WebRequests.handleException(message, we);
-			return;
-		}
+		handleException(message, null, e);
+	}
+
+	static void handleException(String message, String url, Exception e) {
 		if (e instanceof UnsupportedClientVersionException) {
 			message = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
 			MsgBox.error(message);
+			return;
+		}
+		if (e instanceof WebRequestException we) {
+			WebRequests.handleException(message, we);
 		} else {
-			ErrorReporter.on(message, e);
+			WebRequests.handleException(message, new WebRequestException(url, e));
 		}
 	}
 

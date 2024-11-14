@@ -43,10 +43,10 @@ class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
+		var repo = Repository.CURRENT;
 		try {
 			if (!checkDatabase())
 				return;
-			var repo = Repository.CURRENT;
 			var diffs = repo.diffs.find().withDatabase();
 			var input = Datasets.select(selection, diffs, true, false);
 			if (input == null || input.action() == CommitDialog.CANCEL)
@@ -65,7 +65,7 @@ class CommitAction extends Action implements INavigationAction {
 				return;
 			new PushAction().run(credentials);
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
-			Actions.handleException("Error during commit", e);
+			Actions.handleException("Error during commit", repo.serverUrl, e);
 		} finally {
 			Actions.refresh();
 		}

@@ -47,8 +47,8 @@ class PushAction extends Action implements INavigationAction {
 	void run(GitCredentialsProvider credentials) {
 		if (credentials == null)
 			return;
+		var repo = Repository.CURRENT;
 		try {
-			var repo = Repository.CURRENT;
 			var result = Actions.run(credentials,
 					GitPush.from(repo));
 			if (result == null)
@@ -67,7 +67,7 @@ class PushAction extends Action implements INavigationAction {
 			ServerNavigator.refresh(RepositoryElement.class, r -> r.id().equals(repo.id));
 			return;
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
-			Actions.handleException("Error pushing to remote", e);
+			Actions.handleException("Error pushing to remote", repo.serverUrl, e);
 		} finally {
 			Actions.refresh();
 		}
