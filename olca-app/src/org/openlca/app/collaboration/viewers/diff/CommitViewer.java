@@ -116,19 +116,38 @@ public class CommitViewer extends DiffNodeViewer {
 		}
 
 		@Override
-		protected void setSelection(DiffNode element, boolean checked) {
-			if (!isSelectable(element)) {
-				super.setSelection(element, checked);
+		protected void setSelection(DiffNode elem, boolean checked) {
+			if (!isSelectable(elem)) {
+				for (var child : elem.children) {
+					setSelection(child, checked);
+				}
 				return;
 			}
-			var diff = element.contentAsTriDiff();
+
+			var diff = elem.contentAsTriDiff();
 			if (diff == null || diff.noAction()) {
-				getViewer().setChecked(element, false);
-			} else if (!checked
-					&& (lockedElements.contains(diff) || element.isLibrariesNode() || element.isLibraryNode())) {
-				getViewer().setChecked(element, true);
+				getViewer().setChecked(elem, false);
+				return;
+			}
+
+			if (!checked &&
+					(lockedElements.contains(diff)
+							|| elem.isLibrariesNode()
+							|| elem.isLibraryNode())) {
+				getViewer().setChecked(elem, true);
+				return;
+			}
+
+			if (!checked) {
+				getSelection().remove(elem);
 			} else {
-				super.setSelection(element, checked);
+				var added = getSelection().add(elem);
+				if (added) {
+					setSelection(elem.parent, true);
+				}
+			}
+			for (var child : elem.children) {
+				setSelection(child, checked);
 			}
 		}
 
