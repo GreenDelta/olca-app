@@ -117,7 +117,11 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected void setSelection(DiffNode elem, boolean checked) {
-			if (!isSelectable(elem)) {
+			setSelection(elem, checked, false);
+		}
+
+		private void setSelection(DiffNode elem, boolean checked, boolean onlyUp) {
+			if (!isSelectable(elem) && !onlyUp) {
 				for (var child : elem.children) {
 					setSelection(child, checked);
 				}
@@ -143,9 +147,11 @@ public class CommitViewer extends DiffNodeViewer {
 			} else {
 				var added = getSelection().add(elem);
 				if (added) {
-					setSelection(elem.parent, true);
+					setSelection(elem.parent, true, true);
 				}
 			}
+			if (onlyUp)
+				return;
 			for (var child : elem.children) {
 				setSelection(child, checked);
 			}
