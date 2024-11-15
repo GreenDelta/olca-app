@@ -1,7 +1,7 @@
 package org.openlca.app.components;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -46,28 +46,16 @@ public class ResultItemSelector {
 	private ResultItemSelector(Builder builder) {
 		initialSelection = builder.initialSelection;
 		eventHandler = builder.eventHandler;
-		var resultItems = builder.items;
-
-		var result = builder.items;
-		this.flows = resultItems.hasEnviFlows()
-			? result.enviFlows()
-			: null;
-		this.impacts = resultItems.hasImpacts()
-			? result.impacts()
-			: null;
-
-		// cost results
-		if (builder.noCosts || !resultItems.hasCosts()) {
-			this.costs = null;
-		} else {
-			var costs = new CostResultDescriptor();
-			costs.forAddedValue = false;
-			costs.name = M.NetCosts;
-			var addedValue = new CostResultDescriptor();
-			addedValue.forAddedValue = true;
-			addedValue.name = M.AddedValue;
-			this.costs = Arrays.asList(costs, addedValue);
-		}
+		var items = builder.items;
+		this.flows = items.hasEnviFlows()
+				? items.enviFlows()
+				: null;
+		this.impacts = items.hasImpacts()
+				? items.impacts()
+				: null;
+		this.costs = items.hasCosts() && !builder.noCosts
+				? List.of(CostResultDescriptor.netCosts(), CostResultDescriptor.addedValue())
+				: null;
 	}
 
 	public static Builder on(ResultItemOrder items) {
@@ -77,28 +65,32 @@ public class ResultItemSelector {
 	public void selectWithEvent(Object o) {
 		if (o == null)
 			return;
-		boolean[] selection = null;
-		if (o instanceof EnviFlow) {
-			selectedType = ModelType.FLOW;
-			flowCombo.select((EnviFlow) o);
-			selection = new boolean[]{true, false, false};
-		} else if (o instanceof ImpactDescriptor) {
-			selectedType = ModelType.IMPACT_CATEGORY;
-			impactCombo.select((ImpactDescriptor) o);
-			selection = new boolean[]{false, true, false};
-		} else if (o instanceof CostResultDescriptor) {
-			selectedType = ModelType.CURRENCY;
-			costCombo.select((CostResultDescriptor) o);
-			selection = new boolean[]{false, false, true};
-		}
+		boolean[] selection = switch (o) {
+			case EnviFlow enviFlow -> {
+				selectedType = ModelType.FLOW;
+				flowCombo.select(enviFlow);
+				yield new boolean[]{true, false, false};
+			}
+			case ImpactDescriptor impactDescriptor -> {
+				selectedType = ModelType.IMPACT_CATEGORY;
+				impactCombo.select(impactDescriptor);
+				yield new boolean[]{false, true, false};
+			}
+			case CostResultDescriptor costResultDescriptor -> {
+				selectedType = ModelType.CURRENCY;
+				costCombo.select(costResultDescriptor);
+				yield new boolean[]{false, false, true};
+			}
+			default -> null;
+		};
 
 		if (selection == null)
 			return;
 		AbstractComboViewer<?>[] combos = {
-			flowCombo, impactCombo, costCombo,
+				flowCombo, impactCombo, costCombo,
 		};
 		Button[] checks = {
-			flowCheck, impactCheck, costCheck,
+				flowCheck, impactCheck, costCheck,
 		};
 		for (int i = 0; i < selection.length; i++) {
 			if (combos[i] != null) {
@@ -117,15 +109,15 @@ public class ResultItemSelector {
 	 */
 	public void initWithEvent() {
 		Collection<?> initial = impacts != null
-			? impacts
-			: flows != null
-			? flows
-			: costs;
+				? impacts
+				: flows != null
+				? flows
+				: costs;
 		if (initial == null)
 			return;
 		initial.stream()
-			.findFirst()
-			.ifPresent(this::selectWithEvent);
+				.findFirst()
+				.ifPresent(this::selectWithEvent);
 	}
 
 	public Object getSelection() {
@@ -227,7 +219,7 @@ public class ResultItemSelector {
 		switch (selectedType) {
 			case FLOW -> eventHandler.onFlowSelected(flowCombo.getSelected());
 			case IMPACT_CATEGORY ->
-				eventHandler.onImpactSelected(impactCombo.getSelected());
+					eventHandler.onImpactSelected(impactCombo.getSelected());
 			case CURRENCY -> eventHandler.onCostsSelected(costCombo.getSelected());
 			default -> {
 			}

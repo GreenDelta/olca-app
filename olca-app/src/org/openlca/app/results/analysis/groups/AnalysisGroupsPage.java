@@ -38,6 +38,9 @@ public class AnalysisGroupsPage extends FormPage {
 				Icon.ANALYSIS_RESULT.get());
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
+
+		var chartSection = new ChartSection(editor, groups);
+		chartSection.render(body, tk);
 		var impactSection = new ImpactTableSection(groups);
 		impactSection.render(body, tk);
 
@@ -54,6 +57,7 @@ public class AnalysisGroupsPage extends FormPage {
 						MsgBox.error("Calculation failed", "No result was calculated.");
 						return;
 					}
+					chartSection.setResult(result);
 					impactSection.setInput(impacts);
 				});
 	}
