@@ -18,7 +18,7 @@ record ImpactGroupResult(
 	) {
 		var list = new ArrayList<ImpactGroupResult>(indicators.size());
 		for (var i : indicators) {
-			var values = result.groupResultsOf(i);
+			var values = result.getResultsOf(i);
 			if (values.isEmpty())
 				continue;
 			double max = 0;

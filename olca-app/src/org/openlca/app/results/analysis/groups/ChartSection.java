@@ -11,9 +11,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.components.ResultItemSelector.SelectionHandler;
 import org.openlca.app.results.ResultEditor;
+import org.openlca.app.util.Colors;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -24,6 +26,7 @@ import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.agroups.AnalysisGroupResult;
+import org.openlca.util.Strings;
 
 class ChartSection {
 
@@ -43,10 +46,12 @@ class ChartSection {
 	void render(Composite body, FormToolkit tk) {
 
 		var comp = UI.formSection(body, tk, M.ResultContributions, 1);
+		var top = tk.createComposite(comp);
+		UI.gridLayout(top, 2);
 		selector = ResultItemSelector
 				.on(items)
 				.withSelectionHandler(new Handler())
-				.create(comp, tk);
+				.create(top, tk);
 
 		table = Tables.createViewer(comp, "Group", "Result", "Unit");
 		Tables.bindColumnWidths(table, 0.4, 0.4, 0.2);
@@ -71,6 +76,8 @@ class ChartSection {
 			if (flow == null || result == null)
 				return;
 			unit = Labels.refUnit(flow);
+			var map = result.getResultsOf(flow);
+			table.setInput(Item.allOf(groups, map));
 		}
 
 		@Override
@@ -78,9 +85,8 @@ class ChartSection {
 			if (impact == null || result == null || table == null)
 				return;
 			unit = impact.referenceUnit;
-			var map = result.groupResultsOf(impact);
-			var items = Item.allOf(groups, map);
-			table.setInput(items);
+			var map = result.getResultsOf(impact);
+			table.setInput(Item.allOf(groups, map));
 		}
 
 		@Override
@@ -88,15 +94,29 @@ class ChartSection {
 			if (cost == null || result == null)
 				return;
 			unit = Labels.getReferenceCurrencyCode();
+			var map = cost.forAddedValue
+					? result.getAddedValueResults()
+					: result.getCostResults();
+			table.setInput(Item.allOf(groups, map));
 		}
 	}
 
 	private class TableLabel extends LabelProvider
 			implements ITableLabelProvider {
 
+		private final ContributionImage image = new ContributionImage()
+				.withFullWidth(20);
+
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			return null;
+			if (col != 0 || !(obj instanceof Item item))
+				return null;
+			if (Strings.nullOrEmpty(item.group.color))
+				return null;
+			var color = Colors.fromHex(item.group.color);
+			return color != null
+					? image.get(1.0, color)
+					: null;
 		}
 
 		@Override
