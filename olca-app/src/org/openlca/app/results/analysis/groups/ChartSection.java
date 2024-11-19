@@ -1,6 +1,5 @@
 package org.openlca.app.results.analysis.groups;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +36,7 @@ class ChartSection {
 	private String unit;
 	private ResultItemSelector selector;
 	private TableViewer table;
+	private GroupChart chart;
 
 	ChartSection(ResultEditor editor, List<AnalysisGroup> groups) {
 		this.items = editor.items();
@@ -45,17 +45,21 @@ class ChartSection {
 
 	void render(Composite body, FormToolkit tk) {
 
-		var comp = UI.formSection(body, tk, M.ResultContributions, 1);
-		var top = tk.createComposite(comp);
+		var parent = UI.formSection(body, tk, M.ResultContributions, 1);
+		var top = tk.createComposite(parent);
 		UI.gridLayout(top, 2);
 		selector = ResultItemSelector
 				.on(items)
 				.withSelectionHandler(new Handler())
 				.create(top, tk);
 
-		table = Tables.createViewer(comp, "Group", "Result", "Unit");
+		var sub = tk.createComposite(parent);
+		UI.fillHorizontal(sub);
+		UI.gridLayout(sub, 2);
+		table = Tables.createViewer(sub, "Group", "Result", "Unit");
 		Tables.bindColumnWidths(table, 0.4, 0.4, 0.2);
 		table.setLabelProvider(new TableLabel());
+		chart = GroupChart.create(sub, tk);
 	}
 
 	void setResult(AnalysisGroupResult result) {
@@ -69,35 +73,43 @@ class ChartSection {
 		}
 	}
 
+	private void setResult(Map<String, Double> map, String unit) {
+		this.unit = unit;
+		if (table == null || chart == null)
+			return;
+		var values = GroupValue.allOf(groups, map);
+		table.setInput(values);
+		chart.setInput(values);
+	}
+
 	private class Handler implements SelectionHandler {
 
 		@Override
 		public void onFlowSelected(EnviFlow flow) {
 			if (flow == null || result == null)
 				return;
-			unit = Labels.refUnit(flow);
-			var map = result.getResultsOf(flow);
-			table.setInput(Item.allOf(groups, map));
+			setResult(
+					result.getResultsOf(flow),
+					Labels.refUnit(flow));
 		}
 
 		@Override
 		public void onImpactSelected(ImpactDescriptor impact) {
-			if (impact == null || result == null || table == null)
+			if (impact == null || result == null)
 				return;
-			unit = impact.referenceUnit;
-			var map = result.getResultsOf(impact);
-			table.setInput(Item.allOf(groups, map));
+			setResult(
+					result.getResultsOf(impact),
+					impact.referenceUnit);
 		}
 
 		@Override
 		public void onCostsSelected(CostResultDescriptor cost) {
 			if (cost == null || result == null)
 				return;
-			unit = Labels.getReferenceCurrencyCode();
 			var map = cost.forAddedValue
 					? result.getAddedValueResults()
 					: result.getCostResults();
-			table.setInput(Item.allOf(groups, map));
+			setResult(map, Labels.getReferenceCurrencyCode());
 		}
 	}
 
@@ -109,11 +121,11 @@ class ChartSection {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (col != 0 || !(obj instanceof Item item))
+			if (col != 0 || !(obj instanceof GroupValue item))
 				return null;
-			if (Strings.nullOrEmpty(item.group.color))
+			if (Strings.nullOrEmpty(item.group().color))
 				return null;
-			var color = Colors.fromHex(item.group.color);
+			var color = Colors.fromHex(item.group().color);
 			return color != null
 					? image.get(1.0, color)
 					: null;
@@ -121,32 +133,15 @@ class ChartSection {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Item item))
+			if (!(obj instanceof GroupValue item))
 				return null;
 			return switch (col) {
 				case 0 -> item.name();
-				case 1 -> Numbers.format(item.value);
+				case 1 -> Numbers.format(item.value());
 				case 2 -> unit;
 				default -> null;
 			};
 		}
 	}
 
-	private record Item(AnalysisGroup group, double value) {
-
-		String name() {
-			return group.name;
-		}
-
-		static List<Item> allOf(
-				List<AnalysisGroup> groups, Map<String, Double> map
-		) {
-			var items = new ArrayList<Item>(groups.size());
-			for (var g : groups) {
-				var value = map.get(g.name);
-				items.add(new Item(g, value != null ? value : 0d));
-			}
-			return items;
-		}
-	}
 }
