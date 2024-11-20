@@ -21,7 +21,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.math.NumberGenerator;
+import org.openlca.core.math.rand.NumberGenerator;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
 import org.slf4j.Logger;

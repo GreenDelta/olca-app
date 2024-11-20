@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -20,8 +19,7 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
-import org.openlca.git.actions.GitDiscard;
-import org.openlca.git.model.Change;
+import org.openlca.git.actions.GitReset;
 
 class DiscardAction extends Action implements INavigationAction {
 
@@ -51,18 +49,19 @@ class DiscardAction extends Action implements INavigationAction {
 	public void run() {
 		if (!Question.ask(M.DiscardChangesQ, M.DiscardChangesQuestion))
 			return;
-		var repo = Repository.CURRENT;
 		try {
+			var repo = Repository.CURRENT;
 			var selected = PathFilters.of(selection).stream()
 					.map(filter -> repo.diffs.find()
 							.filter(filter)
 							.withDatabase())
-					.map(Change::of)
-					.flatMap(Set::stream)
-					.collect(Collectors.toSet());
-			Actions.run(GitDiscard.on(repo)
-					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(repo.commits.head()))
-					.changes(selected));
+					.flatMap(List::stream)
+					.collect(Collectors.toList());
+			var head = repo.commits.head();
+			Actions.run(GitReset.on(repo)
+					.to(head)
+					.changes(selected)
+					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(head)));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error discarding changes", e);
 		} finally {

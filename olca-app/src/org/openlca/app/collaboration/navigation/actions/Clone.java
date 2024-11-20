@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Cache;
@@ -38,7 +39,7 @@ public class Clone {
 			Announcements.check();
 		} catch (Exception e) {
 			onError(config);
-			Actions.handleException("Error importing repository", e);
+			Actions.handleException("Error importing repository", url, e);
 		} finally {
 			Cache.evictAll();
 			Actions.refresh();
@@ -49,15 +50,17 @@ public class Clone {
 		var dbDir = getDbDir(name);
 		if (dbDir == null)
 			return null;
-		var config = new DerbyConfig();
-		config.name(dbDir.getName());
-		DbTemplate.EMPTY.extract(dbDir);
-		var db = Database.activate(config);
-		if (db == null)
-			return null;
-		Upgrades.on(db);
-		Database.register(config);
-		return config;
+		return App.exec(M.OpenDatabase, () -> {
+			var config = new DerbyConfig();
+			config.name(dbDir.getName());
+			DbTemplate.EMPTY.extract(dbDir);
+			var db = Database.activate(config);
+			if (db == null)
+				return null;
+			Upgrades.on(db);
+			Database.register(config);
+			return config;
+		});
 	}
 
 	private static boolean initRepository(String dbName, String url, String user, String password)

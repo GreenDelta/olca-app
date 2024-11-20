@@ -44,31 +44,30 @@ class PushAction extends Action implements INavigationAction {
 		run(credentials);
 	}
 
-	boolean run(GitCredentialsProvider credentials) {
+	void run(GitCredentialsProvider credentials) {
 		if (credentials == null)
-			return false;
+			return;
+		var repo = Repository.CURRENT;
 		try {
-			var repo = Repository.CURRENT;
 			var result = Actions.run(credentials,
 					GitPush.from(repo));
 			if (result == null)
-				return false;
+				return;
 			if (result.status() == Status.REJECTED_NONFASTFORWARD) {
 				MsgBox.error(M.RejectedNotUpToDateErr);
-				return false;
+				return;
 			}
 			if (result.newCommits().isEmpty()) {
 				MsgBox.info(M.NoCommitToPushInfo);
-				return false;
+				return;
 			}
 			Libraries.uploadTo(repo);
 			Collections.reverse(result.newCommits());
 			new HistoryDialog(M.PushedCommits, result.newCommits()).open();
 			ServerNavigator.refresh(RepositoryElement.class, r -> r.id().equals(repo.id));
-			return true;
+			return;
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
-			Actions.handleException("Error pushing to remote", e);
-			return false;
+			Actions.handleException("Error pushing to remote", repo.serverUrl, e);
 		} finally {
 			Actions.refresh();
 		}

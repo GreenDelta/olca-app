@@ -57,7 +57,7 @@ class FetchAction extends Action implements INavigationAction {
 			if (e instanceof TransportException && NOTHING_TO_FETCH.equals(e.getMessage())) {
 				MsgBox.info(M.NoCommitToFetchInfo);
 			} else {
-				Actions.handleException("Error fetching from remote", e);
+				Actions.handleException("Error fetching from remote", repo.serverUrl, e);
 			}
 		} finally {
 			Actions.refresh();

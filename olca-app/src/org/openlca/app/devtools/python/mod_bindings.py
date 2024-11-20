@@ -16,6 +16,8 @@ import org.openlca.core.matrix.AllocationIndex as AllocationIndex
 import org.openlca.core.model.AllocationMethod as AllocationMethod
 import org.openlca.util.AllocationRef as AllocationRef
 import org.openlca.util.AllocationUtils as AllocationUtils
+import org.openlca.core.model.AnalysisGroup as AnalysisGroup
+import org.openlca.core.results.agroups.AnalysisGroupResult as AnalysisGroupResult
 import org.openlca.io.openepd.Api as Api
 import org.openlca.core.model.doc.AspectMap as AspectMap
 import org.openlca.core.model.doc.AspectMapConverter as AspectMapConverter
@@ -293,6 +295,7 @@ import org.openlca.core.library.reader.LibReaderRegistry as LibReaderRegistry
 import org.openlca.util.LibStrip as LibStrip
 import org.openlca.core.library.Libraries as Libraries
 import org.openlca.core.library.Library as Library
+import org.openlca.core.library.LibraryDatabase as LibraryDatabase
 import org.openlca.core.library.LibraryDir as LibraryDir
 import org.openlca.core.library.LibraryExport as LibraryExport
 import org.openlca.core.library.LibraryInfo as LibraryInfo
@@ -554,9 +557,6 @@ import org.openlca.core.database.usage.UnitUsageSearch as UnitUsageSearch
 import org.openlca.jsonld.output.UnitWriter as UnitWriter
 import org.openlca.core.library.Unmounter as Unmounter
 import org.openlca.jsonld.input.UpdateMode as UpdateMode
-import org.openlca.core.database.upgrades.Upgrade11 as Upgrade11
-import org.openlca.core.database.upgrades.Upgrade12 as Upgrade12
-import org.openlca.core.database.upgrades.Upgrade13 as Upgrade13
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree

@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
-import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
+import static org.openlca.app.components.graphics.layouts.GraphLayout.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -45,7 +45,8 @@ public class Node extends MinMaxComponent {
 	public static final String
 			EXPANDED_PROP = "expanded",
 			INPUT_PROP = "input",
-			OUTPUT_PROP = "output";
+			OUTPUT_PROP = "output",
+			GROUP_PROP = "group";
 
 	public static final Dimension DEFAULT_SIZE =
 			new Dimension(250, SWT.DEFAULT);

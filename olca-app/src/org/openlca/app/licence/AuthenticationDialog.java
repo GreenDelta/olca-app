@@ -45,7 +45,6 @@ public class AuthenticationDialog extends FormDialog {
 		UI.gridData(body, true, true).widthHint = 500;
 		auth = new AuthenticationGroup(body, form.getToolkit(), SWT.FOCUSED)
 				.withUser().withPassword()
-				.withUserLabel(M.EmailOrUsername)
 				.onChange(this::updateButtons);
 		auth.render();
 		form.getForm().reflow(true);

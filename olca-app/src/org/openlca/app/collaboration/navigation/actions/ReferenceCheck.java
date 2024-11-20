@@ -15,11 +15,11 @@ import org.openlca.app.collaboration.navigation.actions.ModelReferences.ModelRef
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
-import org.openlca.app.collaboration.viewers.diff.TriDiff;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
+import org.openlca.git.model.TriDiff;
 import org.openlca.git.util.TypedRefId;
 import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.git.util.TypedRefIdSet;
@@ -47,19 +47,19 @@ class ReferenceCheck {
 		this.references = App.exec(M.CollectingReferencesDots, () -> ModelReferences.scan(Database.get()));
 	}
 
-	static Set<Diff> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+	static List<Diff> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences() || CollaborationPreference.onlyFullCommits())
 			return convert(input);
 		return new ReferenceCheck(database, all, input).run(false);
 	}
 
-	static Set<Diff> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+	static List<Diff> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences() || CollaborationPreference.onlyFullCommits())
 			return convert(input);
 		return new ReferenceCheck(database, all, input).run(true);
 	}
 
-	private Set<Diff> run(boolean stashCommit) {
+	private List<Diff> run(boolean stashCommit) {
 		var references = collect();
 		if (references.isEmpty())
 			return convert(input);
@@ -111,10 +111,10 @@ class ReferenceCheck {
 				.filter(diffs::contains);
 	}
 
-	private static Set<Diff> convert(Set<DiffNode> nodes) {
+	private static List<Diff> convert(Set<DiffNode> nodes) {
 		return nodes.stream()
 				.map(node -> node.contentAsTriDiff().left)
-				.collect(Collectors.toSet());
+				.collect(Collectors.toList());
 	}
 
 }

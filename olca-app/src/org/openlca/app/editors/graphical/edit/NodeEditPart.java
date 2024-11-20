@@ -7,17 +7,23 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.*;
+import org.eclipse.gef.DragTracker;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.tools.TargetingTool;
 import org.openlca.app.components.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.editors.graphical.figures.MaximizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.MinimizedNodeFigure;
 import org.openlca.app.editors.graphical.figures.NodeFigure;
-import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
-import org.openlca.app.components.graphics.model.Side;
+import org.openlca.core.model.AnalysisGroup;
 
 
 public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
@@ -26,12 +32,11 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 	public DragTracker getDragTracker(Request request) {
 		return new org.eclipse.gef.tools.DragEditPartsTracker(this) {
 			/**
-			 * This method is overriden to remove the use of
+			 * This method is overridden to remove the use of
 			 * <code>getCurrentViewer().reveal(getSourceEditPart());</code> in
 			 * SelectEditPartTracker that moves the Canvas when clicking on a Node.
 			 * @param button
 			 *            the button being released
-			 * @return
 			 */
 			@Override
 			protected boolean handleButtonUp(int button) {
@@ -62,12 +67,26 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		String prop = evt.getPropertyName();
+		var prop = evt.getPropertyName();
+
+		if (Node.GROUP_PROP.equals(prop)) {
+			var newGroup = evt.getNewValue() instanceof AnalysisGroup group
+					? group
+					: null;
+			var figure = getFigure();
+			if (figure != null) {
+				figure.updateAnalysisGroup(newGroup);
+			}
+		}
+
 		if (Component.SIZE_PROP.equals(prop)
 				|| Component.LOCATION_PROP.equals(prop)
-				|| Node.EXPANDED_PROP.equals(prop))
+				|| Node.EXPANDED_PROP.equals(prop)
+				|| Node.GROUP_PROP.equals(prop)) {
 			refreshVisuals();
-		else super.propertyChange(evt);
+			return;
+		}
+		super.propertyChange(evt);
 	}
 
 	@Override
@@ -83,9 +102,11 @@ public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
 
 	@Override
 	protected void refreshVisuals() {
-		var bounds = new Rectangle(getModel().getLocation(), getModel().getSize());
-		((GraphicalEditPart) getParent()).setLayoutConstraint(this,
-				getFigure(), bounds);
+		var model = getModel();
+		var bounds = new Rectangle(model.getLocation(), model.getSize());
+		var parent = (GraphicalEditPart) getParent();
+		var figure = getFigure();
+		parent.setLayoutConstraint(this, figure, bounds);
 		super.refreshVisuals();
 	}
 

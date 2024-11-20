@@ -11,10 +11,10 @@ from package.zipio import Zip
 
 
 class MathLib(NamedTuple):
-        name: str
-        win_url: str
-        mac_url: str
-        linux_url: str
+    name: str
+    win_url: str
+    mac_url: str
+    linux_url: str
 
 
 class MKLFramework(Enum):
@@ -36,7 +36,7 @@ class MKLFramework(Enum):
         name="tbb-2021.9.0",
         win_url="https://files.pythonhosted.org/packages/64/6a/20f2e84e31bd82b7ddecf616be0338b7fa5dc37285a73e810101f9c2b195/tbb-2021.9.0-py3-none-win_amd64.whl",  # noqa
         mac_url="https://files.pythonhosted.org/packages/b4/44/de6ad155a9b4c916cf72d3ad34de3c7802c51425b93e4727d1a372f9fb77/tbb-2021.9.0-py2.py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.whl",  # noqa
-        linux_url="https://files.pythonhosted.org/packages/96/5f/aaae879605e95e147b7269e54a5b49654a44d6fee7fed54ece8f77d77ded/tbb-2021.9.0-py2.py3-none-manylinux1_i686.whl"  # noqa
+        linux_url="https://files.pythonhosted.org/packages/96/5f/aaae879605e95e147b7269e54a5b49654a44d6fee7fed54ece8f77d77ded/tbb-2021.9.0-py2.py3-none-manylinux1_i686.whl",  # noqa
     )
 
     def file_name(self, osa: OsArch):
@@ -74,7 +74,7 @@ class MKLFramework(Enum):
             wheel = lib.fetch(osa)
             folder = Lib.MKL.cache_dir() / wheel.name[0:-3]
             if not folder.exists():
-                Zip.unzip(wheel, folder)
+                Zip.unzip(wheel, folder, "zip")
 
             print(f"  Copying {lib.name} from {folder.name}")
             MKLFramework.copy_binaries(folder, dir)
@@ -85,10 +85,12 @@ class MKLFramework(Enum):
         for root, _, files in os.walk(folder):
             for filename in files:
                 file = Path(root) / filename
-                path_patterns = [Path("/data/Library/bin/"), Path("/data/lib/")]
+                path_patterns = [
+                    Path("/data/Library/bin/"),
+                    Path("/data/lib/"),
+                ]
                 if any(str(pattern) in str(file) for pattern in path_patterns):
                     shutil.copy2(file, lib_dir / filename)
-
 
     def fetch(self, osa: OsArch) -> Path:
         file = Lib.MKL.cache_dir() / self.file_name(osa)

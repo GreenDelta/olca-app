@@ -89,7 +89,7 @@ public class ContributionChart {
 		// select the top 6 items; if there are more than 6 items
 		// in the list, select 5 items and calculate a rest.
 		// note that we first rank the items by absolute values to
-		// get the top contributers but then sort them by their
+		// get the top contributors but then sort them by their
 		// real values to have a nice order in the chart.
 		items.sort((i1, i2) -> -Double.compare(
 				Math.abs(i1.amount), Math.abs(i2.amount)));

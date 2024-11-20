@@ -73,7 +73,7 @@ public class RepositoryLabel {
 			return null;
 		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
 			return null;
-		if (elem instanceof LibraryDirElement e && elem.getParent() instanceof NavigationRoot)
+		if (elem instanceof LibraryDirElement && elem.getParent() instanceof NavigationRoot)
 			return null;
 		if (elem instanceof LibraryElement e && e.getDatabase() == null)
 			return null;

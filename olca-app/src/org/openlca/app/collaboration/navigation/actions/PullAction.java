@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.HistoryDialog;
+import org.openlca.app.collaboration.navigation.actions.ConflictResolver.ConflictSolution;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -72,7 +73,7 @@ class PullAction extends Action implements INavigationAction {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;
-			var conflictResult = ConflictResolver.forRemote();
+			var conflictResult = ConflictResolver.resolve(Constants.REMOTE_REF);
 			if (conflictResult == null)
 				return;
 			var mergeResult = Actions.run(GitMerge
@@ -82,7 +83,7 @@ class PullAction extends Action implements INavigationAction {
 					.resolveLibrariesWith(libraryResolver));
 			if (mergeResult == MergeResult.ABORTED)
 				return;
-			if (conflictResult.stashedChanges()) {
+			if (conflictResult.solution() == ConflictSolution.STASHED) {
 				Actions.askApplyStash();
 			}
 			if (mergeResult == MergeResult.MOUNT_ERROR) {
@@ -100,7 +101,7 @@ class PullAction extends Action implements INavigationAction {
 					MsgBox.info("No commits to fetch - Everything up to date");
 				}
 			} else {
-				Actions.handleException("Error pulling from remote", e);
+				Actions.handleException("Error pulling from remote", repo.serverUrl, e);
 			}
 		} finally {
 			Cache.evictAll();

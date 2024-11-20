@@ -1,11 +1,11 @@
 package org.openlca.app.components.graphics.zoom;
 
+import static org.openlca.app.components.graphics.edit.RootEditPart.MARGIN_PADDING;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.ibm.icu.text.DecimalFormat;
-import com.ibm.icu.text.NumberFormat;
 import org.eclipse.draw2d.FreeformFigure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MarginBorder;
@@ -16,12 +16,13 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.draw2d.zoom.ZoomListener;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.SharedMessages;
-import org.eclipse.draw2d.zoom.ZoomListener;
 import org.eclipse.swt.widgets.Display;
+import org.python.icu.text.DecimalFormat;
+import org.python.icu.text.NumberFormat;
 
-import static org.openlca.app.components.graphics.edit.RootEditPart.MARGIN_PADDING;
 
 /**
  * <i>This class is a copy of {@link org.eclipse.gef.editparts.ZoomManager}

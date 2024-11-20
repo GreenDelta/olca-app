@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
+import org.openlca.git.model.TriDiff;
 import org.openlca.git.util.ModelRefSet;
 
 public class CommitViewer extends DiffNodeViewer {
@@ -96,7 +97,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected boolean isLeaf(DiffNode element) {
-			return (element.content instanceof TriDiff d || element.isLibraryNode()) && element.children.isEmpty();
+			return (element.content instanceof TriDiff || element.isLibraryNode()) && element.children.isEmpty();
 		}
 
 		@Override
@@ -115,19 +116,44 @@ public class CommitViewer extends DiffNodeViewer {
 		}
 
 		@Override
-		protected void setSelection(DiffNode element, boolean checked) {
-			if (!isSelectable(element)) {
-				super.setSelection(element, checked);
+		protected void setSelection(DiffNode elem, boolean checked) {
+			setSelection(elem, checked, false);
+		}
+
+		private void setSelection(DiffNode elem, boolean checked, boolean onlyUp) {
+			if (!isSelectable(elem) && !onlyUp) {
+				for (var child : elem.children) {
+					setSelection(child, checked);
+				}
 				return;
 			}
-			var diff = element.contentAsTriDiff();
+
+			var diff = elem.contentAsTriDiff();
 			if (diff == null || diff.noAction()) {
-				getViewer().setChecked(element, false);
-			} else if (!checked
-					&& (lockedElements.contains(diff) || element.isLibrariesNode() || element.isLibraryNode())) {
-				getViewer().setChecked(element, true);
+				getViewer().setChecked(elem, false);
+				return;
+			}
+
+			if (!checked &&
+					(lockedElements.contains(diff)
+							|| elem.isLibrariesNode()
+							|| elem.isLibraryNode())) {
+				getViewer().setChecked(elem, true);
+				return;
+			}
+
+			if (!checked) {
+				getSelection().remove(elem);
 			} else {
-				super.setSelection(element, checked);
+				var added = getSelection().add(elem);
+				if (added) {
+					setSelection(elem.parent, true, true);
+				}
+			}
+			if (onlyUp)
+				return;
+			for (var child : elem.children) {
+				setSelection(child, checked);
 			}
 		}
 

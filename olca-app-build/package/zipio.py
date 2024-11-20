@@ -49,14 +49,14 @@ class Zip:
         return Zip.__zip
 
     @staticmethod
-    def unzip(zip_file: Path, target_folder: Path):
+    def unzip(zip_file: Path, target_folder: Path, format: str | None = None):
         """Extracts the content of the given zip file under the given path."""
         if not target_folder.exists():
             target_folder.mkdir(parents=True, exist_ok=True)
         if Zip.get().is_z7:
             Zip.run_quietly([Zip.z7(), "x", zip_file, f"-o{target_folder}"])
         else:
-            shutil.unpack_archive(zip_file, target_folder)
+            shutil.unpack_archive(zip_file, target_folder, format)
 
     @staticmethod
     def targz(folder: Path, target: Path):
@@ -82,12 +82,12 @@ class Zip:
             os.remove(tar)
         else:
             shutil.make_archive(str(base), "gztar", str(folder))
-    
+
     @staticmethod
     def run_quietly(args: list[str | Path]):
-        process = subprocess.Popen(args=args,
-                                   stdout=subprocess.PIPE,
-                                   universal_newlines=True)
+        process = subprocess.Popen(
+            args=args, stdout=subprocess.PIPE, universal_newlines=True
+        )
         if process.stdout is None:
             return
         # quietly printing the logs (remove the "Extracting  <file>" lines)

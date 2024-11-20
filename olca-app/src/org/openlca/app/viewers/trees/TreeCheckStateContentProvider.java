@@ -65,22 +65,7 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 		this.selection = selection;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected void setSelection(T element, boolean checked) {
-		if (isSelectable(element)) {
-			if (checked) {
-				var added = selection.add(element);
-				if (added) {
-					setSelection((T) getParent(element), true);
-				}
-			} else {
-				selection.remove(element);
-			}
-		}
-		for (var child : getChildren(element)) {
-			setSelection((T) child, checked);
-		}
-	}
+	protected abstract void setSelection(T element, boolean checked);
 
 	@Override
 	public final Object[] getElements(Object inputElement) {
@@ -137,7 +122,7 @@ public abstract class TreeCheckStateContentProvider<T> implements ICheckStatePro
 
 		GRAYED,
 
-		UNCHECKED;
+		UNCHECKED
 
 	}
 

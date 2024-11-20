@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.navigation.actions.ConflictResolver.ConflictSolution;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -42,7 +43,7 @@ class MergeAction extends Action implements INavigationAction {
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;
-			var conflictResult = ConflictResolver.forRemote();
+			var conflictResult = ConflictResolver.resolve(Constants.REMOTE_REF);
 			if (conflictResult == null)
 				return;
 			var user = !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty()
@@ -57,7 +58,7 @@ class MergeAction extends Action implements INavigationAction {
 					.resolveLibrariesWith(libraryResolver));
 			if (mergeResult == MergeResult.ABORTED)
 				return;
-			if (conflictResult.stashedChanges()) {
+			if (conflictResult.solution() == ConflictSolution.STASHED) {
 				Actions.askApplyStash();
 			}
 			if (mergeResult == MergeResult.MOUNT_ERROR) {

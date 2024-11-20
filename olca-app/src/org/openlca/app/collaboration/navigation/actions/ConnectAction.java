@@ -27,8 +27,9 @@ class ConnectAction extends Action implements INavigationAction {
 		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
 		var gitDir = Repository.gitDir(Database.get().getName());
+		var url = dialog.url();
 		try {
-			GitInit.in(gitDir).remoteUrl(dialog.url()).run();
+			GitInit.in(gitDir).remoteUrl(url).run();
 			var repo = Repository.initialize(gitDir, Database.get());
 			if (repo == null) {
 				Dirs.delete(gitDir);
@@ -37,7 +38,7 @@ class ConnectAction extends Action implements INavigationAction {
 				Announcements.check();
 			}
 		} catch (Exception e) {
-			Actions.handleException("Error connecting to repository", e);
+			Actions.handleException("Error connecting to repository", url, e);
 		} finally {
 			Actions.refresh();
 		}

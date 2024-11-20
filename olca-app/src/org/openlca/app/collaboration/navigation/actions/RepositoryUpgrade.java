@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -29,7 +30,6 @@ import org.openlca.git.actions.GitFetch;
 import org.openlca.git.actions.GitInit;
 import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitStashCreate;
-import org.openlca.git.model.Change;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.ModelRef;
@@ -186,10 +186,9 @@ public class RepositoryUpgrade {
 	private boolean stashDifferences(Repository repo, Commit commit, PersonIdent user,
 			ModelRefMap<RootDescriptor> descriptors)
 			throws IOException, InvocationTargetException, InterruptedException, GitAPIException {
-		var differences = Change.of(
-				repo.diffs.find().commit(commit).withDatabase().stream()
-						.filter(diff -> !equalsDescriptor(diff, descriptors.get(diff)))
-						.toList());
+		var differences = repo.diffs.find().commit(commit).withDatabase().stream()
+				.filter(diff -> !equalsDescriptor(diff, descriptors.get(diff)))
+				.collect(Collectors.toList());
 		if (differences.isEmpty())
 			return false;
 		Actions.run(GitStashCreate.on(repo)

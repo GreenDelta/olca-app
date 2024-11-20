@@ -43,46 +43,56 @@ class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		doRun(true);
-	}
-
-	boolean doRun(boolean canPush) {
+		var repo = Repository.CURRENT;
 		try {
 			if (!checkDatabase())
-				return false;
-			var repo = Repository.CURRENT;
-			var input = Datasets.select(selection, canPush, false);
+				return;
+			var diffs = repo.diffs.find().withDatabase();
+			var input = Datasets.select(selection, diffs, true, false);
 			if (input == null || input.action() == CommitDialog.CANCEL)
-				return false;
-			var doPush = input.action() == CommitDialog.COMMIT_AND_PUSH;
-			var credentials = doPush ? repo.promptCredentials() : null;
-			var user = doPush && credentials != null ? credentials.ident : repo.promptUser();
+				return;
+			var credentials = repo.promptCredentials();
+			var user = credentials != null ? credentials.ident : repo.promptUser();
 			if (credentials == null && user == null)
-				return false;
+				return;
 			var commitId = Actions.runWithCancel(GitCommit.on(repo)
 					.changes(input.datasets())
 					.withMessage(input.message())
 					.as(user));
 			if (Strings.nullOrEmpty(commitId))
-				return false;
+				return;
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
-				return true;
-			return new PushAction().run(credentials);
+				return;
+			new PushAction().run(credentials);
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
-			Actions.handleException("Error during commit", e);
-			return false;
+			Actions.handleException("Error during commit", repo.serverUrl, e);
 		} finally {
 			Actions.refresh();
 		}
 	}
 
 	private boolean checkDatabase() {
+		var updatedSlashes = checkSlashes();
+		if (updatedSlashes != null && !updatedSlashes)
+			return false;
+		var updatedOthers = checkOthers();
+		if (updatedOthers != null && !updatedOthers) {
+			if (updatedSlashes != null) {
+				Repository.CURRENT.descriptors.reload();
+			}
+			return false;
+		}
+		Repository.CURRENT.descriptors.reload();
+		return true;
+	}
+
+	private Boolean checkSlashes() {
 		var dao = new CategoryDao(Database.get());
 		var withSlashes = dao.getDescriptors().stream()
 				.filter(c -> c.name.contains("/"))
 				.toList();
 		if (withSlashes.isEmpty())
-			return true;
+			return null;
 		var message = M.CategoriesContainASlash + "\r\n";
 		for (var i = 0; i < Math.min(5, withSlashes.size()); i++) {
 			var category = dao.getForId(withSlashes.get(i).id);
@@ -102,10 +112,17 @@ class CommitAction extends Action implements INavigationAction {
 			category.name = category.name.replace("/", "\\");
 			dao.update(category);
 		}
+		return true;
+	}
+
+	private Boolean checkOthers() {
+		var dao = new CategoryDao(Database.get());
 		var others = dao.getDescriptors().stream()
 				.filter(c -> !GitUtil.isValidCategory(c.name))
 				.toList();
-		message = M.OtherInvalidCategoryNames + "\r\n";
+		if (others.isEmpty())
+			return null;
+		var message = M.OtherInvalidCategoryNames + "\r\n";
 		for (var i = 0; i < Math.min(5, others.size()); i++) {
 			var category = dao.getForId(others.get(i).id);
 			message += "\r\n* " + category.name + " (" + Labels.plural(category.modelType);
@@ -133,7 +150,6 @@ class CommitAction extends Action implements INavigationAction {
 			}
 			dao.update(category);
 		}
-		Repository.CURRENT.descriptors.reload();
 		return true;
 	}
 

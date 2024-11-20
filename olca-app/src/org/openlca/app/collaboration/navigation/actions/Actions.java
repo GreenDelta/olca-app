@@ -16,7 +16,6 @@ import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.navigation.Navigator;
-import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.WebRequestException;
@@ -24,6 +23,7 @@ import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.actions.GitStashApply;
+import org.openlca.git.util.Constants;
 
 class Actions {
 
@@ -34,15 +34,19 @@ class Actions {
 	}
 
 	static void handleException(String message, Exception e) {
-		if (e instanceof WebRequestException we) {
-			WebRequests.handleException(message, we);
-			return;
-		}
-		if (e instanceof UnsupportedClientVersionException ue) {
+		handleException(message, null, e);
+	}
+
+	static void handleException(String message, String url, Exception e) {
+		if (e instanceof UnsupportedClientVersionException) {
 			message = "The repository was created by a newer openLCA client, please download the latest openLCA version to proceed.";
 			MsgBox.error(message);
+			return;
+		}
+		if (e instanceof WebRequestException we) {
+			WebRequests.handleException(message, we);
 		} else {
-			ErrorReporter.on(message, e);
+			WebRequests.handleException(message, new WebRequestException(url, e));
 		}
 	}
 
@@ -62,8 +66,10 @@ class Actions {
 		var tokenRequired = m.endsWith("400 null");
 		var passwordMissing = m.endsWith("424 null");
 		var notPermitted = m.contains("not permitted on");
+		if (!tokenRequired) {
+			CredentialStore.clearPassword(repo.serverUrl, repo.user());
+		}
 		if (notPermitted) {
-			CredentialStore.clearPassword(repo.url, repo.user());
 			throw new TransportException(M.NoSufficientRights);
 		}
 		if (passwordMissing) {
@@ -73,7 +79,6 @@ class Actions {
 		if (!notAuthorized && !tokenRequired)
 			throw runner.exception;
 		if (notAuthorized) {
-			CredentialStore.clearPassword(repo.url, repo.user());
 			credentials = repo.promptCredentials();
 		} else if (tokenRequired) {
 			credentials = repo.promptToken();
@@ -121,7 +126,7 @@ class Actions {
 		var libraryResolver = WorkspaceLibraryResolver.forStash();
 		if (libraryResolver == null)
 			return false;
-		var conflictResult = ConflictResolver.forStash();
+		var conflictResult = ConflictResolver.resolve(Constants.STASH_REF);
 		if (conflictResult == null)
 			return false;
 		Actions.run(GitStashApply.on(repo)

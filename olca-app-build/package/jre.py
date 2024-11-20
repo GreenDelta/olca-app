@@ -27,7 +27,7 @@ class JRE:
             name = "x64_windows"
         else:
             raise ValueError(f"Warning: Unsupported OS + arch: {osa}.")
-        return f"OpenJDK17U-jre_{name}_hotspot_17.0.5_8.{suffix}"
+        return f"OpenJDK21U-jre_{name}_hotspot_21.0.4_7.{suffix}"
 
     @staticmethod
     def cache_dir() -> Path:
@@ -44,10 +44,10 @@ class JRE:
         if os.path.exists(zf):
             return zf
         url = (
-            "https://github.com/adoptium/temurin17-binaries/releases/"
-            f"download/jdk-17.0.5%2B8/{zip_name}"
+            "https://github.com/adoptium/temurin21-binaries/releases/"
+            f"download/jdk-21.0.4%2B7/{zip_name}"
         )
-        print(f"  Fetching JRE from {url}...")
+        print(f"  Fetching JRE from {url} ...")
         urllib.request.urlretrieve(url, zf)
         if not os.path.exists(zf):
             raise AssertionError(f"Warning: JRE download failed; url={url}")

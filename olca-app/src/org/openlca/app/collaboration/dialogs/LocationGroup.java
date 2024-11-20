@@ -1,7 +1,7 @@
 package org.openlca.app.collaboration.dialogs;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -122,7 +122,7 @@ class LocationGroup extends Composite {
 			var context = "";
 			var repositoryId = "";
 			try {
-				var url = new URL(u);
+				var url = URI.create(u).toURL();
 				protocol = url.getProtocol();
 				host = url.getHost();
 				if (host != null && host.endsWith("/")) {

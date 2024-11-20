@@ -28,6 +28,7 @@ public interface GraphActionIds {
 	String REMOVE_SUPPLY_CHAIN = "graph.actions.RemoveSupplyChainAction";
 	String SEARCH_PROVIDERS = "graph.actions.SearchConnectorsAction.PROVIDERS";
 	String SEARCH_RECIPIENTS = "graph.actions.SearchConnectorsAction.RECIPIENTS";
+	String SET_PROCESS_GROUP = "graph.actions.SetProcessGroupAction";
 	String SET_REFERENCE = "graph.actions.SetReferenceAction";
 	String SHOW_ELEMENTARY_FLOWS = "graph.actions.ShowElementaryFlowsAction";
 
