@@ -59,9 +59,9 @@ class TreeModel implements ITreeContentProvider {
 	@Override
 	public Object[] getChildren(Object obj) {
 		if (obj instanceof CategoryNode cn)
-			return cn.children().toArray(new Node[0]);
+			return cn.subs().toArray(new Node[0]);
 		if (obj instanceof IndicatorNode n)
-			return n.children().toArray(new Node[0]);
+			return n.subs().toArray(new Node[0]);
 		return new Object[0];
 	}
 
@@ -110,7 +110,7 @@ class TreeModel implements ITreeContentProvider {
 
 		private final TreeModel tree;
 		private final Category category;
-		private List<Node> _children;
+		private List<Node> _subs;
 		private SocialRiskValue _value;
 
 		CategoryNode(TreeModel tree, Category category) {
@@ -128,23 +128,23 @@ class TreeModel implements ITreeContentProvider {
 			return Images.get(category);
 		}
 
-		List<Node> children() {
-			if (_children != null)
-				return _children;
-			_children = new ArrayList<>();
+		List<Node> subs() {
+			if (_subs != null)
+				return _subs;
+			_subs = new ArrayList<>();
 			for (var c : category.childCategories) {
 				if (!tree.hasChildren(c))
 					continue;
 				var n = new CategoryNode(tree, c);
-				_children.add(n);
+				_subs.add(n);
 			}
 			var indicators = tree.categoryIndex.get(category.id);
 			if (indicators == null)
-				return _children;
+				return _subs;
 			for (var i : indicators) {
-				_children.add(new IndicatorNode(tree, i));
+				_subs.add(new IndicatorNode(tree, i));
 			}
-			return _children;
+			return _subs;
 		}
 
 		@Override
@@ -152,7 +152,7 @@ class TreeModel implements ITreeContentProvider {
 			if (_value != null)
 				return _value;
 			_value = new SocialRiskValue();
-			for (var c : children()) {
+			for (var c : subs()) {
 				var cv = c.riskValue();
 				for (int i = 0; i < cv.size(); i++) {
 					_value.add(i, cv.getShare(i));
@@ -169,7 +169,7 @@ class TreeModel implements ITreeContentProvider {
 		private final SocialIndicator indicator;
 		private final SocialRiskValue riskValue;
 
-		private List<TechFlowNode> _children;
+		private List<TechFlowNode> _subs;
 
 		IndicatorNode(TreeModel tree, SocialIndicatorDescriptor d) {
 			this.tree = tree;
@@ -192,11 +192,11 @@ class TreeModel implements ITreeContentProvider {
 			return Images.get(indicator);
 		}
 
-		List<TechFlowNode> children() {
-			if (_children == null) {
-				_children = TechFlowNode.allOf(this);
+		List<TechFlowNode> subs() {
+			if (_subs == null) {
+				_subs = TechFlowNode.allOf(this);
 			}
-			return _children;
+			return _subs;
 		}
 
 		@Override
