@@ -39,10 +39,10 @@ public class AnalysisGroupsPage extends FormPage {
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
 
-		var chartSection = new ChartSection(editor, groups);
-		chartSection.render(body, tk);
 		var impactSection = new ImpactTableSection(groups);
 		impactSection.render(body, tk);
+		var chartSection = new ContributionSection(editor, groups);
+		chartSection.render(body, tk);
 
 		var ref = new AtomicReference<List<ImpactGroupResult>>();
 		App.runWithProgress("Calculate group results...",

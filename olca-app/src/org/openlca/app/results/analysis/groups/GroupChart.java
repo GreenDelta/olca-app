@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swtchart.Chart;
@@ -81,20 +82,27 @@ class GroupChart {
 		// create the new bars
 		for (int i = 0; i < values.size(); i++) {
 			var v = values.get(i);
-			var bars = (IBarSeries<?>) chart.getSeriesSet()
-					.createSeries(SeriesType.BAR, "BS" + i);
-			bars.setYSeries(new double[]{v.value()});
 			var color = Strings.notEmpty(v.group().color)
 					? Colors.fromHex(v.group().color)
 					: Colors.getForChart(i);
-			bars.setBarColor(color);
-			bars.setBarPadding(15);
-			bars.setBarWidth(barWidth);
-			bars.setBarWidthStyle(BarWidthStyle.FIXED);
+			createBar("BS" + i, v.value(), color, barWidth);
+			if (i < (values.size() - 1)) {
+				createBar("BS" + i, 0.0, Colors.white(), barWidth);
+			}
 		}
 
 		setYRange(values);
 		chart.redraw();
+	}
+
+	private void createBar(String id, double val, Color color, int width) {
+		var bars = (IBarSeries<?>) chart.getSeriesSet()
+				.createSeries(SeriesType.BAR, id);
+		bars.setYSeries(new double[] { val });
+		bars.setBarColor(color);
+		bars.setBarPadding(15);
+		bars.setBarWidth(width);
+		bars.setBarWidthStyle(BarWidthStyle.FIXED);
 	}
 
 	private void setYRange(List<GroupValue> values) {

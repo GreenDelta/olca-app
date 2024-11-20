@@ -27,7 +27,7 @@ import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.agroups.AnalysisGroupResult;
 import org.openlca.util.Strings;
 
-class ChartSection {
+class ContributionSection {
 
 	private final ResultItemOrder items;
 	private final List<AnalysisGroup> groups;
@@ -38,7 +38,7 @@ class ChartSection {
 	private TableViewer table;
 	private GroupChart chart;
 
-	ChartSection(ResultEditor editor, List<AnalysisGroup> groups) {
+	ContributionSection(ResultEditor editor, List<AnalysisGroup> groups) {
 		this.items = editor.items();
 		this.groups = groups;
 	}
