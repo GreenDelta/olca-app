@@ -11,19 +11,26 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.AnalysisGroup;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ProductSystem;
 
 class ImpactTableSection {
 
+	private final ProductSystem system;
 	private final List<AnalysisGroup> groups;
-	private TableViewer table;
 
-	ImpactTableSection(List<AnalysisGroup> groups) {
-		this.groups = groups;
+	private TableViewer table;
+	private List<ImpactGroupResult> results;
+
+	ImpactTableSection(ProductSystem system) {
+		this.system = system;
+		this.groups = system.analysisGroups;
 	}
 
 	void render(Composite body, FormToolkit tk) {
@@ -45,10 +52,21 @@ class ImpactTableSection {
 		table = Tables.createViewer(comp, headers);
 		Tables.bindColumnWidths(table, widths);
 		table.setLabelProvider(new LabelProvider(groups));
+
+		var epdExp = Actions.create(
+				"Save as EPD",
+				Images.descriptor(ModelType.EPD),
+				() -> {
+					if (results == null)
+						return;
+					EpdDialog.open(system, results);
+				});
+		Actions.bind(section, epdExp);
 	}
 
-	void setInput(List<ImpactGroupResult> input) {
-		table.setInput(input);
+	void setInput(List<ImpactGroupResult> results) {
+		this.results = results;
+		table.setInput(results);
 	}
 
 	private static final class LabelProvider extends ColumnLabelProvider

@@ -55,11 +55,11 @@ class ContributionSection {
 
 		var sub = tk.createComposite(parent);
 		UI.fillHorizontal(sub);
-		UI.gridLayout(sub, 2);
+		UI.gridLayout(sub, 1);
 		table = Tables.createViewer(sub, "Group", "Result", "Unit");
 		Tables.bindColumnWidths(table, 0.4, 0.4, 0.2);
 		table.setLabelProvider(new TableLabel());
-		chart = GroupChart.create(sub, tk);
+		// chart = GroupChart.create(sub, tk);
 	}
 
 	void setResult(AnalysisGroupResult result) {

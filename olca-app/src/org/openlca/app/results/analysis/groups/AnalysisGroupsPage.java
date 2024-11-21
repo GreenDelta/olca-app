@@ -39,7 +39,7 @@ public class AnalysisGroupsPage extends FormPage {
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
 
-		var impactSection = new ImpactTableSection(groups);
+		var impactSection = new ImpactTableSection(system);
 		impactSection.render(body, tk);
 		var chartSection = new ContributionSection(editor, groups);
 		chartSection.render(body, tk);

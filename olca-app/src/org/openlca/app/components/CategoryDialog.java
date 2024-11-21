@@ -1,7 +1,6 @@
 package org.openlca.app.components;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
@@ -11,10 +10,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.elements.CategoryElement;
-import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
@@ -27,10 +24,19 @@ public class CategoryDialog extends Dialog {
 	private final ModelType modelType;
 	private final String title;
 
-	public CategoryDialog(Shell parentShell, String title, ModelType modelType) {
-		super(parentShell);
+	private CategoryDialog(String title, ModelType modelType) {
+		super(UI.shell());
 		this.title = title;
 		this.modelType = modelType;
+	}
+
+	public static State selectFor(ModelType type) {
+		if (type == null)
+			return State.cancelled();
+		var dialog = new CategoryDialog("Select category", type);
+		return dialog.open() == OK
+				? State.selected(dialog.category)
+				: State.cancelled();
 	}
 
 	@Override
@@ -44,14 +50,12 @@ public class CategoryDialog extends Dialog {
 	}
 
 	private void createTreeViewer(Composite composite) {
-		TreeViewer viewer = NavigationTree.forSingleSelection(composite,
-				modelType);
-		viewer.setFilters(new ViewerFilter[] { new Filter() });
+		var viewer = NavigationTree.forSingleSelection(composite, modelType);
+		viewer.setFilters(new Filter());
 		UI.gridData(viewer.getTree(), true, true);
 		viewer.addSelectionChangedListener(e -> {
-			INavigationElement<?> element = Selections.firstOf(e);
-			if (element instanceof CategoryElement) {
-				category = (Category) element.getContent();
+			if (Selections.firstOf(e) instanceof CategoryElement elem) {
+				category = elem.getContent();
 			} else {
 				category = null;
 			}
@@ -63,16 +67,27 @@ public class CategoryDialog extends Dialog {
 		return new Point(400, 400);
 	}
 
-	public Category getSelectedCategory() {
-		return category;
-	}
-
-	private class Filter extends ViewerFilter {
+	private static class Filter extends ViewerFilter {
 		@Override
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
 			return element instanceof CategoryElement
 					|| element instanceof ModelTypeElement;
+		}
+	}
+
+	public record State(Category category, boolean isCancelled) {
+
+		private static State cancelled() {
+			return new State(null, true);
+		}
+
+		private static State selected(Category category) {
+			return new State(category, false);
+		}
+
+		public boolean isEmpty() {
+			return category == null;
 		}
 	}
 }
