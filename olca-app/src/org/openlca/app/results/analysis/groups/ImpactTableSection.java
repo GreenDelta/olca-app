@@ -19,9 +19,12 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ImpactTableSection {
 
+	private static final Logger log = LoggerFactory.getLogger(ImpactTableSection.class);
 	private final ProductSystem system;
 	private final List<AnalysisGroup> groups;
 
@@ -50,7 +53,7 @@ class ImpactTableSection {
 		}
 
 		table = Tables.createViewer(comp, headers);
-		Tables.bindColumnWidths(table, widths);
+		Tables.bindColumnWidths2(table, widths);
 		table.setLabelProvider(new LabelProvider(groups));
 
 		var epdExp = Actions.create(
@@ -67,6 +70,7 @@ class ImpactTableSection {
 	void setInput(List<ImpactGroupResult> results) {
 		this.results = results;
 		table.setInput(results);
+		table.getTable().getParent().layout();
 	}
 
 	private static final class LabelProvider extends ColumnLabelProvider

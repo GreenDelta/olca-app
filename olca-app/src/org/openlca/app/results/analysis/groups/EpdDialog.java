@@ -4,14 +4,12 @@ package org.openlca.app.results.analysis.groups;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.components.CategoryDialog;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
@@ -76,7 +74,7 @@ class EpdDialog extends FormDialog {
 
 		var top = UI.composite(body, tk);
 		UI.gridLayout(top, 3, 10, 0);
-		UI.fillHorizontal(top);
+		UI.gridData(top, true, true);
 
 		// name
 		var nameText = UI.labeledText(top, tk, M.Name);
@@ -105,14 +103,9 @@ class EpdDialog extends FormDialog {
 		});
 
 		// list with results
-		var sub =  UI.composite(body, tk);
-		UI.gridLayout(sub, 1, 10, 0);
-		UI.gridData(sub, true, true);
-		var resultLabel = new CLabel(sub, SWT.NONE);
-		resultLabel.setText(M.Results);
-		resultLabel.setImage(Images.get(ModelType.RESULT));
-		tk.adapt(resultLabel);
-		var resultList = new org.eclipse.swt.widgets.List(sub, SWT.BORDER);
+		var resultLabel = UI.label(top, tk, M.Results);
+		UI.gridData(resultLabel, false, false).verticalAlignment = SWT.TOP;
+		var resultList = new org.eclipse.swt.widgets.List(top, SWT.BORDER);
 		UI.gridData(resultList, true, true);
 
 		nameText.addModifyListener($ -> {

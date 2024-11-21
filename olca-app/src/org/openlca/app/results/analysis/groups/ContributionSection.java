@@ -57,7 +57,7 @@ class ContributionSection {
 		UI.fillHorizontal(sub);
 		UI.gridLayout(sub, 1);
 		table = Tables.createViewer(sub, "Group", "Result", "Unit");
-		Tables.bindColumnWidths(table, 0.4, 0.4, 0.2);
+		Tables.bindColumnWidths2(table, 0.4, 0.4, 0.2);
 		table.setLabelProvider(new TableLabel());
 		// chart = GroupChart.create(sub, tk);
 	}
@@ -75,7 +75,7 @@ class ContributionSection {
 
 	private void setResult(Map<String, Double> map, String unit) {
 		this.unit = unit;
-		if (table == null || chart == null)
+		if (table == null)
 			return;
 		var values = GroupValue.allOf(groups, map);
 		table.setInput(values);

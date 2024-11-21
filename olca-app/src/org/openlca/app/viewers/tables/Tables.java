@@ -20,7 +20,11 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
 import org.openlca.util.Strings;
@@ -99,6 +103,35 @@ public class Tables {
 		}
 		for (TableColumn c : viewer.getTable().getColumns())
 			c.pack();
+	}
+
+	public static void bindColumnWidths2(TableViewer viewer, double... percents) {
+		if (viewer == null || percents == null)
+			return;
+		var table = viewer.getTable();
+		table.addControlListener(new ControlAdapter() {
+
+			int width = table.getClientArea().width;
+
+			@Override
+			public void controlResized(ControlEvent e) {
+				var nextWidth = table.getClientArea().width;
+				if (nextWidth == width || nextWidth == 0)
+					return;
+
+				width = nextWidth;
+				var n = table.getColumnCount();
+				var total = width
+						- 2 * table.getBorderWidth()
+						- (n - 1) * table.getGridLineWidth();
+				for (int i = 0; i < n; i++) {
+					if (i >= percents.length)
+						break;
+					int w = (int) (percents[i] * total);
+					table.getColumn(i).setWidth(w);
+				}
+			}
+		});
 	}
 
 	public static void bindColumnWidths(TableViewer viewer, double... percents) {
@@ -185,7 +218,7 @@ public class Tables {
 	// automatically.
 	private static class ColumnResizeListener extends ControlAdapter {
 		private final TableResizeListener depending;
-		private boolean enabled = true;
+		private volatile boolean enabled = true;
 		private boolean initialized;
 
 		private ColumnResizeListener(TableResizeListener depending) {
@@ -216,7 +249,7 @@ public class Tables {
 	private static class TableResizeListener extends ControlAdapter {
 		private final Table table;
 		private final double[] percents;
-		private boolean enabled = true;
+		private volatile boolean enabled = true;
 
 		private TableResizeListener(Table table, double[] percents) {
 			this.table = table;

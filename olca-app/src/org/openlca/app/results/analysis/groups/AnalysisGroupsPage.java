@@ -39,10 +39,10 @@ public class AnalysisGroupsPage extends FormPage {
 		var tk = mform.getToolkit();
 		var body = UI.body(form, tk);
 
-		var impactSection = new ImpactTableSection(system);
-		impactSection.render(body, tk);
-		var chartSection = new ContributionSection(editor, groups);
-		chartSection.render(body, tk);
+		var impacts = new ImpactTableSection(system);
+		impacts.render(body, tk);
+		var contibutions = new ContributionSection(editor, groups);
+		contibutions.render(body, tk);
 
 		var ref = new AtomicReference<List<ImpactGroupResult>>();
 		App.runWithProgress("Calculate group results...",
@@ -52,13 +52,13 @@ public class AnalysisGroupsPage extends FormPage {
 					ref.set(ImpactGroupResult.allOf(indicators, result));
 				},
 				() -> {
-					var impacts = ref.get();
-					if (result == null || impacts == null) {
+					var results = ref.get();
+					if (result == null || results == null) {
 						MsgBox.error("Calculation failed", "No result was calculated.");
 						return;
 					}
-					chartSection.setResult(result);
-					impactSection.setInput(impacts);
+					impacts.setInput(results);
+					contibutions.setResult(result);
 				});
 	}
 }
