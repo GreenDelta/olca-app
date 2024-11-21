@@ -1,5 +1,11 @@
 package org.openlca.app.results.slca.ui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.db.Database;
@@ -16,12 +22,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 class TreeModel implements ITreeContentProvider {
 
@@ -59,9 +59,9 @@ class TreeModel implements ITreeContentProvider {
 	@Override
 	public Object[] getChildren(Object obj) {
 		if (obj instanceof CategoryNode cn)
-			return cn.childs().toArray(new Node[0]);
+			return cn.subs().toArray(new Node[0]);
 		if (obj instanceof IndicatorNode n)
-			return n.childs().toArray(new Node[0]);
+			return n.subs().toArray(new Node[0]);
 		return new Object[0];
 	}
 
@@ -110,7 +110,7 @@ class TreeModel implements ITreeContentProvider {
 
 		private final TreeModel tree;
 		private final Category category;
-		private List<Node> _childs;
+		private List<Node> _subs;
 		private SocialRiskValue _value;
 
 		CategoryNode(TreeModel tree, Category category) {
@@ -128,23 +128,23 @@ class TreeModel implements ITreeContentProvider {
 			return Images.get(category);
 		}
 
-		List<Node> childs() {
-			if (_childs != null)
-				return _childs;
-			_childs = new ArrayList<>();
+		List<Node> subs() {
+			if (_subs != null)
+				return _subs;
+			_subs = new ArrayList<>();
 			for (var c : category.childCategories) {
 				if (!tree.hasChildren(c))
 					continue;
 				var n = new CategoryNode(tree, c);
-				_childs.add(n);
+				_subs.add(n);
 			}
 			var indicators = tree.categoryIndex.get(category.id);
 			if (indicators == null)
-				return _childs;
+				return _subs;
 			for (var i : indicators) {
-				_childs.add(new IndicatorNode(tree, i));
+				_subs.add(new IndicatorNode(tree, i));
 			}
-			return _childs;
+			return _subs;
 		}
 
 		@Override
@@ -152,7 +152,7 @@ class TreeModel implements ITreeContentProvider {
 			if (_value != null)
 				return _value;
 			_value = new SocialRiskValue();
-			for (var c : childs()) {
+			for (var c : subs()) {
 				var cv = c.riskValue();
 				for (int i = 0; i < cv.size(); i++) {
 					_value.add(i, cv.getShare(i));
@@ -169,7 +169,7 @@ class TreeModel implements ITreeContentProvider {
 		private final SocialIndicator indicator;
 		private final SocialRiskValue riskValue;
 
-		private List<TechFlowNode> _childs;
+		private List<TechFlowNode> _subs;
 
 		IndicatorNode(TreeModel tree, SocialIndicatorDescriptor d) {
 			this.tree = tree;
@@ -192,11 +192,11 @@ class TreeModel implements ITreeContentProvider {
 			return Images.get(indicator);
 		}
 
-		List<TechFlowNode> childs() {
-			if (_childs == null) {
-				_childs = TechFlowNode.allOf(this);
+		List<TechFlowNode> subs() {
+			if (_subs == null) {
+				_subs = TechFlowNode.allOf(this);
 			}
-			return _childs;
+			return _subs;
 		}
 
 		@Override
