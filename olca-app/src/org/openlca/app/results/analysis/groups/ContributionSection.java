@@ -14,18 +14,18 @@ import org.openlca.app.components.ContributionImage;
 import org.openlca.app.components.ResultItemSelector;
 import org.openlca.app.components.ResultItemSelector.SelectionHandler;
 import org.openlca.app.results.ResultEditor;
-import org.openlca.app.util.Colors;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.agroups.AnalysisGroupResult;
-import org.openlca.util.Strings;
 
 class ContributionSection {
 
@@ -36,7 +36,6 @@ class ContributionSection {
 	private String unit;
 	private ResultItemSelector selector;
 	private TableViewer table;
-	private GroupChart chart;
 
 	ContributionSection(ResultEditor editor, List<AnalysisGroup> groups) {
 		this.items = editor.items();
@@ -59,7 +58,7 @@ class ContributionSection {
 		table = Tables.createViewer(sub, "Group", "Result", "Unit");
 		Tables.bindColumnWidths2(table, 0.4, 0.4, 0.2);
 		table.setLabelProvider(new TableLabel());
-		// chart = GroupChart.create(sub, tk);
+		Actions.bind(table, TableClipboard.onCopySelected(table));
 	}
 
 	void setResult(AnalysisGroupResult result) {
@@ -79,7 +78,6 @@ class ContributionSection {
 			return;
 		var values = GroupValue.allOf(groups, map);
 		table.setInput(values);
-		chart.setInput(values);
 	}
 
 	private class Handler implements SelectionHandler {
@@ -116,18 +114,18 @@ class ContributionSection {
 	private class TableLabel extends LabelProvider
 			implements ITableLabelProvider {
 
-		private final ContributionImage image = new ContributionImage()
-				.withFullWidth(20);
+		private final ContributionImage image = new ContributionImage();
+
+		@Override
+		public void dispose() {
+			image.dispose();
+			super.dispose();
+		}
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (col != 0 || !(obj instanceof GroupValue item))
-				return null;
-			if (Strings.nullOrEmpty(item.group().color))
-				return null;
-			var color = Colors.fromHex(item.group().color);
-			return color != null
-					? image.get(1.0, color)
+			return col == 0 && obj instanceof GroupValue item
+					? image.get(item.share())
 					: null;
 		}
 

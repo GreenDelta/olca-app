@@ -15,16 +15,14 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ImpactTableSection {
 
-	private static final Logger log = LoggerFactory.getLogger(ImpactTableSection.class);
 	private final ProductSystem system;
 	private final List<AnalysisGroup> groups;
 
@@ -65,6 +63,7 @@ class ImpactTableSection {
 					EpdDialog.open(system, results);
 				});
 		Actions.bind(section, epdExp);
+		Actions.bind(table, TableClipboard.onCopySelected(table));
 	}
 
 	void setInput(List<ImpactGroupResult> results) {
