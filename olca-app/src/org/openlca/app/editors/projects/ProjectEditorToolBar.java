@@ -6,6 +6,7 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.util.Actions;
@@ -48,7 +49,11 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 		};
 		Runnable calculation = () -> {
 			try {
-				ref.result = ProjectResult.calculate(project, db);
+				var result = ProjectResult.of(project, db)
+						.withSolver(App.getSolver());
+				Libraries.readersForCalculation()
+						.ifPresent(result::withLibraries);
+				ref.result = result.calculate();
 			} catch (OutOfMemoryError e) {
 				MsgBox.error(M.OutOfMemory, M.CouldNotAllocateMemoryError);
 			} catch (MathIllegalArgumentException e) {
