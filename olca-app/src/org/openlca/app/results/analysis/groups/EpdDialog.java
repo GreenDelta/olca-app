@@ -1,45 +1,59 @@
 package org.openlca.app.results.analysis.groups;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.CategoryDialog;
+import org.openlca.app.navigation.Navigator;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.core.model.Category;
+import org.openlca.core.model.Epd;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.util.Strings;
 
 class EpdDialog extends FormDialog {
 
+	private final ResultEditor editor;
 	private final ProductSystem system;
 	private final List<ImpactGroupResult> results;
 
 	private String name;
-	private Category category;
+	private String category;
 
 	static void open(
-		ProductSystem system, List<ImpactGroupResult> results
+			ResultEditor editor,
+			ProductSystem system,
+			List<ImpactGroupResult> results
 	) {
-		if (system == null || results == null || results.isEmpty()) {
+		if (editor == null
+				|| system == null
+				|| results == null
+				|| results.isEmpty()) {
 			MsgBox.error("Result is empty");
 			return;
 		}
-		new EpdDialog(system, results).open();
+		new EpdDialog(editor, system, results).open();
 	}
 
 	private EpdDialog(
-		ProductSystem system, List<ImpactGroupResult> results
+			ResultEditor editor,
+			ProductSystem system,
+			List<ImpactGroupResult> results
 	) {
 		super(UI.shell());
+		this.editor = editor;
 		this.system = system;
 		this.results = results;
 
@@ -87,20 +101,20 @@ class EpdDialog extends FormDialog {
 
 		// category
 		var categoryText = UI.labeledText(top, tk, M.Category);
-		categoryText.setEditable(false);
 		var categoryBtn = tk.createButton(top, M.Browse, SWT.NONE);
 		Controls.onSelect(categoryBtn, $ -> {
 			var selection = CategoryDialog.selectFor(ModelType.EPD);
 			if (selection.isCancelled())
 				return;
-			category = selection.isEmpty()
+			var category = selection.isEmpty()
 					? null
 					: selection.category();
-			var path = category != null
+			this.category = category != null
 					? category.toPath()
 					: "";
-			categoryText.setText(path);
+			categoryText.setText(this.category);
 		});
+		categoryText.addModifyListener($ -> category = categoryText.getText());
 
 		// list with results
 		var resultLabel = UI.label(top, tk, M.Results);
@@ -119,8 +133,8 @@ class EpdDialog extends FormDialog {
 
 	private void updateResultNames(org.eclipse.swt.widgets.List resultList) {
 		var names = system.analysisGroups.stream()
-			.map(g -> name + " - " + g.name)
-			.toArray(String[]::new);
+				.map(g -> name + " - " + g.name)
+				.toArray(String[]::new);
 		resultList.setItems(names);
 	}
 
@@ -128,11 +142,38 @@ class EpdDialog extends FormDialog {
 	protected void okPressed() {
 		if (Strings.nullOrEmpty(name)) {
 			MsgBox.error(
-				"Name is empty",
-				"The name of the EPD cannot be empty.");
+					"Name is empty",
+					"The name of the EPD cannot be empty.");
 			return;
 		}
+
+		List<String> path;
+		if (Strings.nullOrEmpty(category)) {
+			path = List.of();
+		} else {
+			var parts = category.split("/");
+			path = new ArrayList<>(parts.length);
+			for (var p : parts) {
+				var part = p.strip();
+				if (Strings.notEmpty(part)) {
+					path.add(part);
+				}
+			}
+		}
+
+		var ref = new AtomicReference<Epd>();
+		App.runWithProgress(
+				"Create EPD...",
+				() -> EpdBuilder.build(editor.setup(), results, name, path)
+						.ifPresent(ref::set),
+				() -> {
+					var epd = ref.get();
+					if (epd != null) {
+						Navigator.refresh();
+						App.open(epd);
+					}
+				});
+
 		super.okPressed();
-		// TODO: Build the EPD
 	}
 }

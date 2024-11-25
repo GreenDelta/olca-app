@@ -11,6 +11,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -23,13 +24,15 @@ import org.openlca.core.model.ProductSystem;
 
 class ImpactTableSection {
 
+	private final ResultEditor editor;
 	private final ProductSystem system;
 	private final List<AnalysisGroup> groups;
 
 	private TableViewer table;
 	private List<ImpactGroupResult> results;
 
-	ImpactTableSection(ProductSystem system) {
+	ImpactTableSection(ResultEditor editor, ProductSystem system) {
+		this.editor = editor;
 		this.system = system;
 		this.groups = system.analysisGroups;
 	}
@@ -60,7 +63,7 @@ class ImpactTableSection {
 				() -> {
 					if (results == null)
 						return;
-					EpdDialog.open(system, results);
+					EpdDialog.open(editor, system, results);
 				});
 		Actions.bind(section, epdExp);
 		Actions.bind(table, TableClipboard.onCopySelected(table));
