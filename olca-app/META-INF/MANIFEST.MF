@@ -23,7 +23,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.equinox.event,
  org.eclipse.nebula.widgets.opal.notifier,
  org.eclipse.e4.ui.css.swt,
- org.eclipse.ui.themes
+ org.eclipse.ui.themes,
+ org.eclipse.nebula.widgets.splitbutton;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  libs/angus-activation-2.0.1.jar,

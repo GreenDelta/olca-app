@@ -5,20 +5,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.window.Window;
+import org.eclipse.nebula.widgets.splitbutton.SplitButton;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.components.ModelSelector;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.GraphEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
@@ -28,6 +33,8 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.AnalysisGroup;
+import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
@@ -186,8 +193,39 @@ public class SetProcessGroupCommand extends Command {
 				new GroupPanel(this, group).render(groupComp, tk);
 			}
 
-			var addBtn = tk.createButton(body, "Add analysis group", SWT.NONE);
+			var addBtn = new SplitButton(body, SWT.NONE);
+			addBtn.setText("Add analysis group");
 			addBtn.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
+			Consumer<GroupSync> onSync = sync -> {
+				for (var g : sync.newGroups) {
+					new GroupPanel(this, g).render(groupComp, tk);
+				}
+				body.layout();
+				form.reflow(true);
+				groupsChanged = true;
+			};
+
+			// sync groups from other system
+			var menu = addBtn.getMenu();
+			var systemItem = new MenuItem(menu, SWT.NONE);
+			systemItem.setText("Copy groups from product system");
+			Controls.onSelect(systemItem, $ -> {
+				var d = ModelSelector.select(ModelType.PRODUCT_SYSTEM);
+				if (d == null)
+					return;
+				var system = Database.get().get(ProductSystem.class, d.id);
+				if (system != null) {
+					onSync.accept(GroupSync.sync(this, system));
+				}
+			});
+
+			// add EN 15804 modules
+			var enItem = new MenuItem(menu, SWT.NONE);
+			enItem.setText("Add EN 15804 modules");
+			Controls.onSelect(enItem,
+					$ -> onSync.accept(GroupSync.syncEn15804(this)));
+
+			// add a new group
 			Controls.onSelect(addBtn, $ -> {
 				var group = new AnalysisGroup();
 				group.name = "New analysis group";
@@ -272,6 +310,104 @@ public class SetProcessGroupCommand extends Command {
 					parent.layout();
 					parent.getParent().layout();
 				});
+			}
+		}
+	}
+
+	static class GroupSync {
+
+		private final ProductSystem owner;
+		private final List<AnalysisGroup> groups;
+		private final List<AnalysisGroup> newGroups;
+
+		GroupSync(Dialog dialog) {
+			this.owner = dialog.editor.getProductSystem();
+			this.groups = dialog.groups;
+			this.newGroups = new ArrayList<>();
+		}
+
+		static GroupSync sync(Dialog dialog, ProductSystem system) {
+			var sync = new GroupSync(dialog);
+			sync.sync(system);
+			return sync;
+		}
+
+		static GroupSync syncEn15804(Dialog dialog) {
+			var groups = List.of(
+
+					groupOf("A1-A3", "#311B92"),
+					groupOf("A1", "#673AB7"),
+					groupOf("A2", "#5E35B1"),
+					groupOf("A3", "#512DA8"),
+
+					groupOf("A4-A5", "#1A237E"),
+					groupOf("A4", "#3F51B5"),
+					groupOf("A5", "#3949AB"),
+
+					groupOf("B1-B7", "#004D40"),
+					groupOf("B1", "#80CBC4"),
+					groupOf("B2", "#4DB6AC"),
+					groupOf("B3", "#26C6DA"),
+					groupOf("B4", "#009688"),
+					groupOf("B5", "#00897B"),
+					groupOf("B6", "#00796B"),
+					groupOf("B7", "#00695C"),
+
+					groupOf("C1-C4", "#3E2723"),
+					groupOf("C1", "#795548"),
+					groupOf("C2", "#6D4C41"),
+					groupOf("C3", "#5D4037"),
+					groupOf("C4", "#4E342E"),
+
+					groupOf("D", "#455A64"));
+
+			var sync = new GroupSync(dialog);
+			for (var g : groups) {
+				sync.sync(g);
+			}
+			return sync;
+		}
+
+		private static AnalysisGroup groupOf(String name, String color) {
+			var g = new AnalysisGroup();
+			g.name = name;
+			g.color = color;
+			return g;
+		}
+
+		private void sync(ProductSystem system) {
+			if (system == null || system.analysisGroups.isEmpty())
+				return;
+			for (var g : system.analysisGroups) {
+				sync(g);
+			}
+		}
+
+		private void sync(AnalysisGroup next) {
+			if (next == null || Strings.nullOrEmpty(next.name))
+				return;
+			for (var g : groups) {
+				if (Strings.nullOrEqual(g.name, next.name)) {
+					copyAttributes(next, g);
+					return;
+				}
+			}
+			var g = new AnalysisGroup();
+			g.name = next.name;
+			copyAttributes(next, g);
+			groups.add(g);
+			newGroups.add(g);
+		}
+
+		private void copyAttributes(AnalysisGroup source, AnalysisGroup target) {
+			if (Strings.nullOrEmpty(target.color)) {
+				target.color = source.color;
+			}
+			for (var p : source.processes) {
+				if (target.processes.contains(p)
+						|| !owner.processes.contains(p))
+					continue;
+				target.processes.add(p);
 			}
 		}
 	}

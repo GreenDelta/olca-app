@@ -356,7 +356,6 @@ import org.openlca.core.math.data_quality.NAHandling as NAHandling
 import org.openlca.core.matrix.solvers.NativeSolver as NativeSolver
 import org.openlca.core.database.NativeSql as NativeSql
 import org.openlca.core.matrix.io.NpyMatrix as NpyMatrix
-import org.openlca.core.math.NumberGenerator as NumberGenerator
 import org.openlca.core.model.NwFactor as NwFactor
 import org.openlca.core.model.NwSet as NwSet
 import org.openlca.core.database.NwSetDao as NwSetDao
@@ -571,4 +570,5 @@ import org.openlca.text.WordBuffer as WordBuffer
 import org.openlca.proto.io.output.WriterConfig as WriterConfig
 import org.openlca.io.Xml as Xml
 import org.openlca.util.ZipFiles as ZipFiles
+import org.openlca.jsonld.ZipReader as ZipReader
 import org.openlca.jsonld.ZipStore as ZipStore
