@@ -42,15 +42,17 @@ class ImpactTableSection {
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
 
-		var headers = new String[2 + groups.size()];
-		var widths = new double[2 + groups.size()];
+		var headers = new String[3 + groups.size()];
+		var widths = new double[3 + groups.size()];
 		headers[0] = M.ImpactCategory;
 		headers[1] = M.Unit;
 		widths[0] = 0.4;
 		widths[1] = 0.1;
+		headers[2 + groups.size()] = "Rest";
+		widths[2 + groups.size()] =  0.5 / (groups.size() + 1);
 		for (int i = 0; i < groups.size(); i++) {
 			headers[2 + i] = groups.get(i).name;
-			widths[2 + i] = 0.5 / groups.size();
+			widths[2 + i] = 0.5 / (groups.size() + 1);
 		}
 
 		table = Tables.createViewer(comp, headers);
@@ -119,8 +121,10 @@ class ImpactTableSection {
 
 		private double getValue(int col, ImpactGroupResult r) {
 			int i = col - 2;
-			if (i < 0 || i >= groups.size())
+			if (i < 0 || i > groups.size())
 				return 0;
+			if (i == groups.size())
+				return r.restOf(groups);
 			var group = groups.get(i);
 			var val = r.values().get(group.name);
 			return val != null ? val : 0;
