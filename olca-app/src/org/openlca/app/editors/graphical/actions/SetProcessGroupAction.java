@@ -37,8 +37,7 @@ public class SetProcessGroupAction extends SelectionAction {
 		var objects = getSelectedObjects();
 		if (objects == null || objects.size() != 1)
 			return null;
-		var obj = objects.get(0);
-		return obj instanceof NodeEditPart node
+		return objects.getFirst() instanceof NodeEditPart node
 				? node
 				: null;
 	}

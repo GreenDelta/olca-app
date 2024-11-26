@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.model.commands;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -64,13 +65,30 @@ public class SetProcessGroupCommand extends Command {
 				: null;
 		if (editor == null)
 			return;
-		var groups = editor.getProductSystem().analysisGroups;
-		groups.sort((g1, g2) -> Strings.compare(g1.name, g2.name));
-		var current = findCurrent(groups);
-		var dialog = new Dialog(editor, groups, current);
 
-		if (dialog.open() == Window.OK
-				&& !Objects.equals(current, dialog.selected)) {
+		// create a copy of the current groups
+		var origin = editor.getProductSystem().analysisGroups;
+		var copy = new ArrayList<AnalysisGroup>(origin.size());
+		for (var g : origin) {
+			var c = g.copy();
+			c.id = g.id;
+			copy.add(c);
+		}
+		copy.sort((g1, g2) -> Strings.compare(g1.name, g2.name));
+		var current = findCurrent(copy);
+
+		// edit the copy
+		var dialog = new Dialog(editor, copy, current);
+		if (dialog.open() != Window.OK
+				|| (Objects.equals(current, dialog.selected)
+				&& !dialog.groupsChanged))
+			return;
+
+		// sync changes
+		origin.clear();
+		origin.addAll(copy);
+
+		if (!Objects.equals(current, dialog.selected)) {
 			if (current != null) {
 				current.processes.remove(process.id);
 			}
@@ -83,7 +101,7 @@ public class SetProcessGroupCommand extends Command {
 		}
 
 		if (dialog.groupsChanged) {
-			handleGroupChange(groups);
+			handleGroupChange(origin);
 			editor.setDirty();
 		}
 	}
@@ -120,8 +138,6 @@ public class SetProcessGroupCommand extends Command {
 			if (model == null || model.descriptor == null)
 				continue;
 			var group = map.get(model.descriptor.id);
-			if (group == null)
-				continue;
 			var evt = new PropertyChangeEvent(this, Node.GROUP_PROP, null, group);
 			n.propertyChange(evt);
 		}
@@ -137,11 +153,11 @@ public class SetProcessGroupCommand extends Command {
 		Dialog(
 				GraphEditor editor,
 				List<AnalysisGroup> groups,
-				AnalysisGroup selected) {
+				AnalysisGroup current) {
 			super(UI.shell());
 			this.editor = editor;
 			this.groups = groups;
-			this.selected = selected;
+			this.selected = current;
 		}
 
 		@Override
