@@ -86,6 +86,8 @@ public class DiffNodeBuilder {
 
 	private DiffNode getOrCreateLibrariesNode() {
 		var librariesNode = nodes.get(RepositoryInfo.FILE_NAME);
+		if (librariesNode != null)
+			return librariesNode;
 		var root = nodes.get(null);
 		librariesNode = new DiffNode(root, null);
 		root.children.add(librariesNode);
