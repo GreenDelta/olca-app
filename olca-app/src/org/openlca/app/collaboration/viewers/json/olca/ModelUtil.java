@@ -116,6 +116,8 @@ class ModelUtil {
 				return true;
 			if (path.equals("parameterSets"))
 				return true;
+			if (path.equals("analysisGroups"))
+				return true;
 		}
 		if (type == ModelType.DQ_SYSTEM && path.equals("hasUncertainties"))
 			return true;

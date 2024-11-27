@@ -347,6 +347,7 @@ class PropertyLabels {
 		put(type, "processes", M.Processes, ModelType.PROCESS);
 		put(type, "processLinks", M.ProcessLinks);
 		put(type, "parameterSets", M.ParameterSets, ModelType.PARAMETER);
+		put(type, "analysisGroups", M.AnalysisGroups);
 		putParameterRedefSetLabels(type, "parameterSets");
 	}
 
