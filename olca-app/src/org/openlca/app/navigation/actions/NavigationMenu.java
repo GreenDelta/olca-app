@@ -86,9 +86,9 @@ public class NavigationMenu extends CommonActionProvider {
 
 		// database actions
 		addActions(selection, menu,
-				new DbCreateAction(),
 				new DbRestoreAction(),
 				new DbExportAction(),
+				new DbCreateAction(),
 				new DbActivateAction(),
 				new DbValidationAction(),
 				new DbCopyAction(),
