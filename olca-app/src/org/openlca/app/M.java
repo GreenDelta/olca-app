@@ -30,6 +30,7 @@ public class M extends NLS {
 	public static String Actors;
 	public static String Add;
 	public static String AddATag;
+	public static String AddDatabase;
 	public static String AddFlow;
 	public static String AddIndicator;
 	public static String AddInputFlow;
@@ -1384,7 +1385,6 @@ public class M extends NLS {
 	public static String ResetLayout;
 	public static String ResetSelection;
 	public static String Resize;
-	public static String RestoreDatabase;
 	public static String RestoreLayout;
 	public static String RestoreLayoutQ;
 	public static String Result;

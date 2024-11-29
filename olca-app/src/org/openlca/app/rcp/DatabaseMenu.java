@@ -42,8 +42,8 @@ class DatabaseMenu implements IMenuListener {
 
 	@Override
 	public void menuAboutToShow(IMenuManager menu) {
-		menu.add(new DbCreateAction());
 		menu.add(new DbRestoreAction());
+		menu.add(new DbCreateAction());
 		if (Database.getActiveConfiguration() == null)
 			return;
 		var checkLinksAction = Actions.create(
