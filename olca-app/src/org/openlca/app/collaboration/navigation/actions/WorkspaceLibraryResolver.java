@@ -18,7 +18,6 @@ import org.openlca.git.actions.LibraryResolver;
 import org.openlca.git.model.Commit;
 import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
-import org.openlca.jsonld.LibraryLink;
 
 class WorkspaceLibraryResolver implements LibraryResolver {
 
@@ -55,13 +54,10 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	
 	// init before resolve is called in GitMerge, to avoid invalid thread access
 	private boolean init(ClientRepository repo, Commit commit) {
-		var info = repo.getInfo(commit);
-		if (info == null)
-			return false;
-		var remoteLibs = info.libraries();
+		var remoteLibs = repo.getLibraries(commit);
 		var localLibs = Database.get().getLibraries();
 		for (var newLib : remoteLibs) {
-			if (localLibs.contains(newLib.id()))
+			if (localLibs.contains(newLib))
 				continue;
 			if (preresolve(newLib) == null)
 				return false;
@@ -74,9 +70,9 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		return libDir.getLibrary(newLib).orElse(null);
 	}
 
-	private Library preresolve(LibraryLink newLib) {
+	private Library preresolve(String newLib) {
 		try {
-			var lib = resolve(newLib.id());
+			var lib = resolve(newLib);
 			if (lib != null)
 				return lib;
 			lib = importFromCollaborationServer(newLib);
@@ -86,24 +82,24 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 			if (dialog.open() != LibraryDialog.OK)
 				return null;
 			if (dialog.isFileSelected())
-				return App.exec(M.ExtractingLibrary + " - " + newLib.id(),
+				return App.exec(M.ExtractingLibrary + " - " + newLib,
 						() -> Libraries.importFromFile(new File(dialog.getLocation())));
-			return App.exec(M.DownloadingAndExtractingLibrary + " - " + newLib.id(),
+			return App.exec(M.DownloadingAndExtractingLibrary + " - " + newLib,
 					() -> Libraries.importFromUrl(dialog.getLocation()));
 		} catch (IOException e) {
 			return null;
 		}
 	}
 
-	private Library importFromCollaborationServer(LibraryLink newLib) throws IOException {
+	private Library importFromCollaborationServer(String newLib) throws IOException {
 		var repo = org.openlca.app.db.Repository.CURRENT;
 		if (!repo.isCollaborationServer())
 			return null;
 		var stream = WebRequests.execute(
-				() -> repo.client.downloadLibrary(newLib.id()));
+				() -> repo.client.downloadLibrary(newLib));
 		if (stream == null)
 			return null;
-		return App.exec(M.DownloadingAndExtractingLibrary + " - " + newLib.id(),
+		return App.exec(M.DownloadingAndExtractingLibrary + " - " + newLib,
 				() -> Libraries.importFromStream(stream));
 	}
 

@@ -24,6 +24,10 @@ public class LibraryDialog extends FormDialog {
 	private Mode selectedMode = Mode.URL;
 	private String location;
 
+	public LibraryDialog(String lib) {
+		this(new LibraryLink(lib, null));
+	}
+
 	public LibraryDialog(LibraryLink link) {
 		super(UI.shell());
 		setBlockOnOpen(true);
