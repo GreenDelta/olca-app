@@ -130,6 +130,7 @@ project and other open source software.
       <plugin id="org.eclipse.jface.text"/>
       <plugin id="org.eclipse.nebula.widgets.opal.commons"/>
       <plugin id="org.eclipse.nebula.widgets.opal.notifier"/>
+      <plugin id="org.eclipse.nebula.widgets.splitbutton"/>
       <plugin id="org.eclipse.nebula.widgets.tablecombo"/>
       <plugin id="org.eclipse.orbit.xml-apis-ext"/>
       <plugin id="org.eclipse.osgi"/>
