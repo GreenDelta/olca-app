@@ -1,46 +1,73 @@
 package org.openlca.app.components.replace;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ProcessCombo;
-import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.util.ProviderReplacer;
+import org.openlca.util.Strings;
 
 public class ReplaceProvidersDialog extends FormDialog {
 
-	private ProcessCombo processViewer;
-	private FlowViewer productViewer;
-	private ProcessCombo replacementViewer;
+	private final ProviderReplacer replacer;
+	private final List<ProcessDescriptor> usedProviders;
+
+	private ProcessCombo sourceCombo;
+	private FlowViewer flowCombo;
+	private ProcessCombo targetCombo;
 
 	public static void openDialog() {
-		if (Database.get() == null) {
+		var db = Database.get();
+		if (db == null) {
 			MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
-		new ReplaceProvidersDialog().open();
+
+		record Cons(
+				ProviderReplacer replacer,
+				List<ProcessDescriptor> providers) {
+		}
+		var cons = App.exec("Collect used providers...", () -> {
+			var replacer = ProviderReplacer.of(db);
+			var providers = replacer.getUsedProviders();
+			if (!providers.isEmpty()) {
+				providers.sort((p1, p2) -> Strings.compare(
+						Labels.name(p1), Labels.name(p2)));
+			}
+			return new Cons(replacer, providers);
+		});
+
+		if (cons.providers.isEmpty()) {
+			MsgBox.info("No replaceable providers found",
+					"There are no default providers in the database that" +
+							"could be replaced with another provider.");
+			return;
+		}
+
+		new ReplaceProvidersDialog(cons.replacer, cons.providers).open();
 	}
 
-	public ReplaceProvidersDialog() {
+	private ReplaceProvidersDialog(
+			ProviderReplacer replacer, List<ProcessDescriptor> usedProviders
+	) {
 		super(UI.shell());
 		setBlockOnOpen(true);
+		this.replacer = replacer;
+		this.usedProviders = usedProviders;
 	}
 
 	@Override
@@ -56,87 +83,56 @@ public class ReplaceProvidersDialog extends FormDialog {
 		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 2, 20, 20);
 		UI.gridData(body, true, false);
-		processViewer = createProcessViewer(body, tk, M.ReplaceProvider, this::updateProducts);
-		productViewer = createFlowViewer(body, tk, M.OfProduct, this::updateReplacementCandidates);
-		productViewer.setEnabled(false);
-		replacementViewer = createProcessViewer(body, tk, M.With, selected -> updateButtons());
-		replacementViewer.setEnabled(false);
-		processViewer.setInput(getUsedInExchanges());
+
+		UI.label(body, tk, M.ReplaceProvider);
+		sourceCombo = new ProcessCombo(body);
+		sourceCombo.addSelectionChangedListener(this::updateProducts);
+
+		UI.label(body, tk, M.OfProduct);
+		flowCombo = new FlowViewer(body);
+		flowCombo.addSelectionChangedListener(this::updateCandidates);
+		flowCombo.setEnabled(false);
+
+		UI.label(body, tk, M.With);
+		targetCombo = new ProcessCombo(body);
+		targetCombo.addSelectionChangedListener($ -> updateButtons());
+		targetCombo.setEnabled(false);
+
+		App.runInUI("Render providers", () -> sourceCombo.setInput(usedProviders));
 	}
 
-	private ProcessCombo createProcessViewer(Composite parent, FormToolkit toolkit, String label,
-			Consumer<ProcessDescriptor> onChange) {
-		UI.label(parent, toolkit, label);
-		ProcessCombo viewer = new ProcessCombo(parent);
-		viewer.addSelectionChangedListener(onChange);
-		return viewer;
-	}
-
-	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label,
-			Consumer<FlowDescriptor> onChange) {
-		UI.label(parent, toolkit, label);
-		FlowViewer viewer = new FlowViewer(parent);
-		viewer.addSelectionChangedListener(onChange);
-		return viewer;
-	}
-
-	private void updateProducts(ProcessDescriptor selected) {
-		List<FlowDescriptor> outputs = getProductOutputs(selected);
-		productViewer.setInput(outputs);
-		replacementViewer.setInput(Collections.emptyList());
-		productViewer.setEnabled(outputs.size() > 1);
-		if (outputs.size() == 1) {
-			productViewer.select(outputs.get(0));
+	private void updateProducts(ProcessDescriptor source) {
+		var flows = replacer.getProviderFlowsOf(source);
+		flowCombo.setInput(flows);
+		targetCombo.setInput(Collections.emptyList());
+		flowCombo.setEnabled(flows.size() > 1);
+		if (flows.size() == 1) {
+			flowCombo.select(flows.getFirst());
 		}
 		updateButtons();
 	}
 
-	private void updateReplacementCandidates(FlowDescriptor product) {
-		List<ProcessDescriptor> providers = getProviders(product);
-		replacementViewer.setInput(providers);
-		replacementViewer.setEnabled(providers.size() > 1);
+	private void updateCandidates(FlowDescriptor flow) {
+		var source = sourceCombo.getSelected();
+		var providers = replacer.getProvidersOf(flow);
+		providers.remove(source);
+
+		targetCombo.setInput(providers);
+		targetCombo.setEnabled(providers.size() > 1);
 		if (providers.size() == 1) {
-			replacementViewer.select(providers.get(0));
+			targetCombo.select(providers.getFirst());
 		}
 		updateButtons();
 	}
 
 	private void updateButtons() {
-		ProcessDescriptor first = processViewer.getSelected();
-		FlowDescriptor second = productViewer.getSelected();
-		boolean enabled = first != null
-				&& first.id != 0L
-				&& second != null
-				&& second.id != 0L;
+		var source = sourceCombo.getSelected();
+		var flow = flowCombo.getSelected();
+		boolean enabled = source != null
+				&& source.id != 0L
+				&& flow != null
+				&& flow.id != 0L;
 		getButton(IDialogConstants.OK_ID).setEnabled(enabled);
-	}
-
-	private List<ProcessDescriptor> getUsedInExchanges() {
-		ProcessDao dao = new ProcessDao(Database.get());
-		Set<Long> ids = dao.getUsed();
-		List<ProcessDescriptor> result = new ArrayList<>();
-		result.add(new ProcessDescriptor());
-		result.addAll(dao.getDescriptors(ids));
-		return result;
-	}
-
-	private List<FlowDescriptor> getProductOutputs(ProcessDescriptor process) {
-		if (process == null || process.id == 0L)
-			return Collections.emptyList();
-		ProcessDao dao = new ProcessDao(Database.get());
-		List<FlowDescriptor> products = dao.getTechnologyOutputs(process);
-		products.removeIf(flow -> flow.flowType != FlowType.PRODUCT_FLOW);
-		return products;
-	}
-
-	private List<ProcessDescriptor> getProviders(FlowDescriptor product) {
-		// TODO: search for processes and waste flows
-		FlowDao flowDao = new FlowDao(Database.get());
-		Set<Long> ids = flowDao.getWhereOutput(product.id);
-		ProcessDao processDao = new ProcessDao(Database.get());
-		var result = new ArrayList<>(processDao.getDescriptors(ids));
-		result.remove(processViewer.getSelected());
-		return result;
 	}
 
 	@Override
@@ -147,13 +143,14 @@ public class ReplaceProvidersDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		ProcessDescriptor oldProcess = processViewer.getSelected();
-		FlowDescriptor product = productViewer.getSelected();
-		ProcessDescriptor newProcess = replacementViewer.getSelected();
-		ProcessDao dao = new ProcessDao(Database.get());
-		dao.replace(oldProcess.id, product.id, newProcess != null ? newProcess.id : null);
-		Database.get().getEntityFactory().getCache().evictAll();
+		var origin = sourceCombo.getSelected();
+		var flow = flowCombo.getSelected();
+		var target = targetCombo.getSelected();
+
 		super.okPressed();
+		App.runWithProgress(
+				"Replace providers...",
+				() -> replacer.replace(origin, target, flow));
 	}
 
 }

@@ -41,14 +41,14 @@ public class ReplaceFlowsDialog extends FormDialog {
 			MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
-		var flows = App.exec("Find used flows...", () -> {
+		var flows = App.exec("Collect used flows...", () -> {
 			var all = FlowReplacer.getUsedFlowsOf(db);
 			all.sort((f1, f2) -> Strings.compare(Labels.name(f1), Labels.name(f2)));
 			return all;
 		});
 		if (flows.size() < 2) {
 			MsgBox.info(
-					"No used flows found",
+					"No replaceable flows found",
 					"There are no used flows in the database that could be replaced");
 			return;
 		}
