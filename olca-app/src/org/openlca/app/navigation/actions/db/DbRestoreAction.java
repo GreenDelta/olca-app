@@ -34,7 +34,7 @@ public class DbRestoreAction extends Action implements INavigationAction {
 	private String naviFolder;
 
 	public DbRestoreAction() {
-		setText(M.AddDatabase);
+		setText(M.FromFileDots);
 		setImageDescriptor(Icon.DATABASE_IMPORT.descriptor());
 	}
 

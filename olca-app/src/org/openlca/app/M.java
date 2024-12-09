@@ -30,7 +30,6 @@ public class M extends NLS {
 	public static String Actors;
 	public static String Add;
 	public static String AddATag;
-	public static String AddDatabase;
 	public static String AddFlow;
 	public static String AddIndicator;
 	public static String AddInputFlow;
@@ -668,7 +667,9 @@ public class M extends NLS {
 	public static String French;
 	public static String FromExportedZolca;
 	public static String FromFile;
-	public static String FromGitDots;
+	public static String FromFileDots;
+	public static String FromRepositoryDots;
+	public static String FromScratchDots;
 	public static String FromUrl;
 
 	// G

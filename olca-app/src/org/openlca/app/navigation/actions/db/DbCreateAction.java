@@ -22,7 +22,7 @@ public class DbCreateAction extends Action implements INavigationAction {
 	private String folder;
 
 	public DbCreateAction() {
-		setText(M.NewDatabase);
+		setText(M.FromScratchDots);
 		setImageDescriptor(Images.newDatabase());
 	}
 
