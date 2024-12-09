@@ -54,15 +54,19 @@ project and other open source software.
 
    <plugins>
       <plugin id="com.ibm.icu"/>
+      <plugin id="com.sun.el.javax.el"/>
       <plugin id="com.sun.jna"/>
       <plugin id="com.sun.jna.platform"/>
       <plugin id="jakarta.annotation-api"/>
       <plugin id="jakarta.inject.jakarta.inject-api"/>
       <plugin id="olca-app"/>
+      <plugin id="org.apache.aries.spifly.dynamic.bundle"/>
       <plugin id="org.apache.batik.constants"/>
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.i18n"/>
       <plugin id="org.apache.batik.util"/>
+      <plugin id="org.apache.commons.collections"/>
+      <plugin id="org.apache.commons.commons-beanutils"/>
       <plugin id="org.apache.commons.commons-io"/>
       <plugin id="org.apache.commons.jxpath"/>
       <plugin id="org.apache.commons.logging"/>
@@ -76,6 +80,7 @@ project and other open source software.
       <plugin id="org.eclipse.core.databinding.property"/>
       <plugin id="org.eclipse.core.expressions"/>
       <plugin id="org.eclipse.core.filesystem"/>
+      <plugin id="org.eclipse.core.filesystem.linux.x86_64"/>
       <plugin id="org.eclipse.core.filesystem.macosx"/>
       <plugin id="org.eclipse.core.filesystem.win32.x86_64"/>
       <plugin id="org.eclipse.core.jobs"/>
@@ -124,6 +129,9 @@ project and other open source software.
       <plugin id="org.eclipse.equinox.weaving.hook"/>
       <plugin id="org.eclipse.gef"/>
       <plugin id="org.eclipse.help"/>
+      <plugin id="org.eclipse.jdt.core"/>
+      <plugin id="org.eclipse.jdt.core.compiler.batch"/>
+      <plugin id="org.eclipse.jetty.servlet-api"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.jface.notifications"/>
@@ -152,6 +160,14 @@ project and other open source software.
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.urischeme"/>
+      <plugin id="org.jdom"/>
+      <plugin id="org.mortbay.jasper.apache-el"/>
+      <plugin id="org.mortbay.jasper.apache-jsp"/>
+      <plugin id="org.objectweb.asm"/>
+      <plugin id="org.objectweb.asm.commons"/>
+      <plugin id="org.objectweb.asm.tree"/>
+      <plugin id="org.objectweb.asm.tree.analysis"/>
+      <plugin id="org.objectweb.asm.util"/>
       <plugin id="org.osgi.service.component"/>
       <plugin id="org.osgi.service.event"/>
       <plugin id="org.osgi.service.prefs"/>
