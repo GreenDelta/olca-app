@@ -40,6 +40,8 @@ class MergeAction extends Action implements INavigationAction {
 	public void run() {
 		var repo = Repository.CURRENT;
 		try {
+			if (!DatabaseCheck.isValid())
+				return;
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;

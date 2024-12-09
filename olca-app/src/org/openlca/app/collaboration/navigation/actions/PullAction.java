@@ -70,6 +70,8 @@ class PullAction extends Action implements INavigationAction {
 				MsgBox.info(M.NoCommitToFetchInfo);
 				return;
 			}
+			if (!DatabaseCheck.isValid())
+				return;
 			var libraryResolver = WorkspaceLibraryResolver.forRemote();
 			if (libraryResolver == null)
 				return;
