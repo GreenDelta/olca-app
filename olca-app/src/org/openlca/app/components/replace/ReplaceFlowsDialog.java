@@ -1,15 +1,11 @@
 package org.openlca.app.components.replace;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -33,11 +29,10 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private final IDatabase db;
 	private final List<FlowDescriptor> usedFlows;
 
-	private FlowViewer selectionViewer;
-	private FlowViewer replacementViewer;
-	private Button excludeWithProviders;
-	private Button replaceFlowsButton;
-	private Button replaceImpactsButton;
+	private FlowViewer sourceCombo;
+	private FlowViewer targetCombo;
+	private Button processesCheck;
+	private Button impactsCheck;
 	private Button replaceBothButton;
 
 	public static void openDialog() {
@@ -87,51 +82,47 @@ public class ReplaceFlowsDialog extends FormDialog {
 		var top = UI.composite(parent, tk);
 		UI.gridLayout(top, 2, 20, 5);
 		UI.gridData(top, true, false);
-		selectionViewer = createFlowViewer(top, tk, M.ReplaceFlow, this::updateReplacementCandidates);
-		replacementViewer = createFlowViewer(top, tk, M.With, selected -> updateButtons());
-		replacementViewer.setEnabled(false);
-		selectionViewer.setInput(usedFlows);
+
+		UI.label(top, tk,  M.ReplaceFlow);
+		sourceCombo = new FlowViewer(top);
+		sourceCombo.addSelectionChangedListener(this::updateReplacementCandidates);
+
+		UI.label(top, tk, M.With);
+		targetCombo = new FlowViewer(top);
+		targetCombo.addSelectionChangedListener($ -> updateButtons());
+		targetCombo.setEnabled(false);
+
+		App.runInUI("Render flows", () -> sourceCombo.setInput(usedFlows));
 		tk.paintBordersFor(top);
 	}
 
-	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label,
-			Consumer<FlowDescriptor> onChange) {
-		UI.label(parent, toolkit, label);
-		FlowViewer viewer = new FlowViewer(parent);
-		viewer.addSelectionChangedListener(onChange);
-		return viewer;
-	}
 
 	private void updateReplacementCandidates(FlowDescriptor selected) {
-		var candidates = FlowReplacer.getCandidatesOf(db, selected);
+		var candidates = App.exec(
+				"Find candidates...", () -> FlowReplacer.getCandidatesOf(db, selected));
 		candidates.sort((f1, f2) -> Strings.compare(Labels.name(f1), Labels.name(f2)));
-		replacementViewer.setInput(candidates);
+		targetCombo.setInput(candidates);
 		if (candidates.size() == 1) {
-			replacementViewer.select(candidates.getFirst());
+			targetCombo.select(candidates.getFirst());
 		}
-		replacementViewer.setEnabled(candidates.size() > 1);
+		targetCombo.setEnabled(candidates.size() > 1);
 		updateButtons();
 	}
 
-	private void createBottom(Composite parent, FormToolkit toolkit) {
-		var bottom = UI.composite(parent, toolkit);
+	private void createBottom(Composite parent, FormToolkit tk) {
+		var bottom = UI.composite(parent, tk);
 		UI.gridLayout(bottom, 1, 0, 0);
-		Composite typeContainer = UI.composite(bottom, toolkit);
+		Composite typeContainer = UI.composite(bottom, tk);
 		UI.gridLayout(typeContainer, 4, 20, 5);
-		UI.label(typeContainer, toolkit, M.ReplaceIn);
-		replaceFlowsButton = UI.radio(typeContainer, toolkit, M.InputsOutputs);
-		replaceFlowsButton.setSelection(true);
-		Controls.onSelect(replaceFlowsButton, this::updateSelection);
-		replaceImpactsButton = UI.radio(typeContainer, toolkit, M.ImpactFactors);
-		Controls.onSelect(replaceImpactsButton, this::updateSelection);
-		replaceBothButton = UI.radio(typeContainer, toolkit, M.Both);
+		UI.label(typeContainer, tk, M.ReplaceIn);
+		processesCheck = UI.radio(typeContainer, tk, M.InputsOutputs);
+		processesCheck.setSelection(true);
+		Controls.onSelect(processesCheck, this::updateSelection);
+		impactsCheck = UI.radio(typeContainer, tk, M.ImpactFactors);
+		Controls.onSelect(impactsCheck, this::updateSelection);
+		replaceBothButton = UI.radio(typeContainer, tk, M.Both);
 		Controls.onSelect(replaceBothButton, this::updateSelection);
-		Composite excludeContainer = UI.composite(bottom, toolkit);
-		UI.gridLayout(excludeContainer, 2, 20, 5);
-		excludeWithProviders = UI.checkbox(excludeContainer, toolkit);
-		UI.label(excludeContainer, toolkit, M.ExcludeExchangesWithDefaultProviders);
-		toolkit.paintBordersFor(bottom);
-		createNote(parent, toolkit);
+		tk.paintBordersFor(bottom);
 	}
 
 	private void updateSelection(SelectionEvent e) {
@@ -140,8 +131,8 @@ public class ReplaceFlowsDialog extends FormDialog {
 		if (!source.getSelection())
 			return;
 		var buttons = new Button[]{
-				replaceFlowsButton,
-				replaceImpactsButton,
+				processesCheck,
+				impactsCheck,
 				replaceBothButton
 		};
 		for (var button : buttons) {
@@ -149,21 +140,11 @@ public class ReplaceFlowsDialog extends FormDialog {
 				continue;
 			button.setSelection(false);
 		}
-		excludeWithProviders.setEnabled(
-				source == replaceFlowsButton || source == replaceBothButton);
-	}
-
-	private void createNote(Composite parent, FormToolkit toolkit) {
-		String note = M.NoteDefaultProviders;
-		Label noteLabel = UI.label(parent, toolkit, note, SWT.WRAP);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		gd.widthHint = 300;
-		noteLabel.setLayoutData(gd);
 	}
 
 	private void updateButtons() {
-		FlowDescriptor first = selectionViewer.getSelected();
-		FlowDescriptor second = replacementViewer.getSelected();
+		FlowDescriptor first = sourceCombo.getSelected();
+		FlowDescriptor second = targetCombo.getSelected();
 		boolean enabled = first != null
 				&& first.id != 0L
 				&& second != null
@@ -179,15 +160,15 @@ public class ReplaceFlowsDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		var oldFlow = selectionViewer.getSelected();
-		var newFlow = replacementViewer.getSelected();
+		var oldFlow = sourceCombo.getSelected();
+		var newFlow = targetCombo.getSelected();
 
 		var replacer = FlowReplacer.of(db);
 		if (replaceBothButton.getSelection()) {
 			replacer.replaceIn(ModelType.PROCESS, ModelType.IMPACT_CATEGORY);
-		} else if (replaceFlowsButton.getSelection()) {
+		} else if (processesCheck.getSelection()) {
 			replacer.replaceIn(ModelType.PROCESS);
-		} else if (replaceImpactsButton.getSelection()) {
+		} else if (impactsCheck.getSelection()) {
 			replacer.replaceIn(ModelType.IMPACT_CATEGORY);
 		}
 
