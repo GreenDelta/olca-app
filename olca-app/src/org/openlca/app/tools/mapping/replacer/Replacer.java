@@ -22,6 +22,7 @@ import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.io.maps.MappingStatus;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
+import org.openlca.util.FlowReplacer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +123,9 @@ public class Replacer implements Runnable {
 							stats.failures);
 				} else {
 					deleteMapped = true;
-					usedFlows = new FlowDao(db).getUsed();
+					usedFlows = FlowReplacer.getUsedFlowsOf(db).stream()
+							.map(f -> f.id)
+							.collect(Collectors.toSet());
 				}
 			}
 

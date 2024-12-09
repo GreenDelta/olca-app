@@ -1,9 +1,6 @@
 package org.openlca.app.components.replace;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -17,16 +14,24 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowViewer;
-import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.util.FlowReplacer;
+import org.openlca.util.Strings;
 
 public class ReplaceFlowsDialog extends FormDialog {
+
+	private final IDatabase db;
+	private final List<FlowDescriptor> usedFlows;
 
 	private FlowViewer selectionViewer;
 	private FlowViewer replacementViewer;
@@ -36,16 +41,30 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private Button replaceBothButton;
 
 	public static void openDialog() {
-		if (Database.isNoneActive()) {
+		var db = Database.get();
+		if (db == null) {
 			MsgBox.error(M.NoDatabaseOpened, M.NeedOpenDatabase);
 			return;
 		}
-		new ReplaceFlowsDialog().open();
+		var flows = App.exec("Find used flows...", () -> {
+			var all = FlowReplacer.getUsedFlowsOf(db);
+			all.sort((f1, f2) -> Strings.compare(Labels.name(f1), Labels.name(f2)));
+			return all;
+		});
+		if (flows.size() < 2) {
+			MsgBox.info(
+					"No used flows found",
+					"There are no used flows in the database that could be replaced");
+			return;
+		}
+		new ReplaceFlowsDialog(db, flows).open();
 	}
 
-	public ReplaceFlowsDialog() {
+	private ReplaceFlowsDialog(IDatabase db, List<FlowDescriptor> usedFlows) {
 		super(UI.shell());
 		setBlockOnOpen(true);
+		this.db = db;
+		this.usedFlows = usedFlows;
 	}
 
 	@Override
@@ -57,22 +76,22 @@ public class ReplaceFlowsDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		FormToolkit toolkit = mForm.getToolkit();
-		Composite body = UI.dialogBody(mForm.getForm(), toolkit);
+		var tk = mForm.getToolkit();
+		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 1, 0, 20);
-		createTop(body, toolkit);
-		createBottom(body, toolkit);
+		createTop(body, tk);
+		createBottom(body, tk);
 	}
 
-	private void createTop(Composite parent, FormToolkit toolkit) {
-		Composite top = UI.composite(parent, toolkit);
+	private void createTop(Composite parent, FormToolkit tk) {
+		var top = UI.composite(parent, tk);
 		UI.gridLayout(top, 2, 20, 5);
 		UI.gridData(top, true, false);
-		selectionViewer = createFlowViewer(top, toolkit, M.ReplaceFlow, this::updateReplacementCandidates);
-		replacementViewer = createFlowViewer(top, toolkit, M.With, selected -> updateButtons());
+		selectionViewer = createFlowViewer(top, tk, M.ReplaceFlow, this::updateReplacementCandidates);
+		replacementViewer = createFlowViewer(top, tk, M.With, selected -> updateButtons());
 		replacementViewer.setEnabled(false);
-		selectionViewer.setInput(getUsed());
-		toolkit.paintBordersFor(top);
+		selectionViewer.setInput(usedFlows);
+		tk.paintBordersFor(top);
 	}
 
 	private FlowViewer createFlowViewer(Composite parent, FormToolkit toolkit, String label,
@@ -84,17 +103,18 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private void updateReplacementCandidates(FlowDescriptor selected) {
-		List<FlowDescriptor> candidates = getReplacementCandidates(selected);
+		var candidates = FlowReplacer.getCandidatesOf(db, selected);
+		candidates.sort((f1, f2) -> Strings.compare(Labels.name(f1), Labels.name(f2)));
 		replacementViewer.setInput(candidates);
 		if (candidates.size() == 1) {
-			replacementViewer.select(candidates.get(0));
+			replacementViewer.select(candidates.getFirst());
 		}
 		replacementViewer.setEnabled(candidates.size() > 1);
 		updateButtons();
 	}
 
 	private void createBottom(Composite parent, FormToolkit toolkit) {
-		Composite bottom = UI.composite(parent, toolkit);
+		var bottom = UI.composite(parent, toolkit);
 		UI.gridLayout(bottom, 1, 0, 0);
 		Composite typeContainer = UI.composite(bottom, toolkit);
 		UI.gridLayout(typeContainer, 4, 20, 5);
@@ -115,15 +135,22 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private void updateSelection(SelectionEvent e) {
-		Button source = (Button) e.getSource();
+		if (!(e.getSource() instanceof Button source))
+			return;
 		if (!source.getSelection())
 			return;
-		for (Button button : new Button[] { replaceFlowsButton, replaceImpactsButton, replaceBothButton }) {
+		var buttons = new Button[]{
+				replaceFlowsButton,
+				replaceImpactsButton,
+				replaceBothButton
+		};
+		for (var button : buttons) {
 			if (source == button)
 				continue;
 			button.setSelection(false);
 		}
-		excludeWithProviders.setEnabled(source == replaceFlowsButton || source == replaceBothButton);
+		excludeWithProviders.setEnabled(
+				source == replaceFlowsButton || source == replaceBothButton);
 	}
 
 	private void createNote(Composite parent, FormToolkit toolkit) {
@@ -144,26 +171,6 @@ public class ReplaceFlowsDialog extends FormDialog {
 		getButton(IDialogConstants.OK_ID).setEnabled(enabled);
 	}
 
-	private List<FlowDescriptor> getUsed() {
-		FlowDao dao = new FlowDao(Database.get());
-		Set<Long> ids = dao.getUsed();
-		List<FlowDescriptor> result = new ArrayList<>();
-		result.add(new FlowDescriptor());
-		result.addAll(dao.getDescriptors(ids));
-		return result;
-	}
-
-	private List<FlowDescriptor> getReplacementCandidates(FlowDescriptor flow) {
-		if (flow == null || flow.id == 0L)
-			return Collections.emptyList();
-		FlowDao dao = new FlowDao(Database.get());
-		Set<Long> ids = dao.getReplacementCandidates(flow.id, flow.flowType);
-		List<FlowDescriptor> result = new ArrayList<>();
-		result.addAll(dao.getDescriptors(ids));
-		result.remove(flow);
-		return result;
-	}
-
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		super.createButtonsForButtonBar(parent);
@@ -172,23 +179,20 @@ public class ReplaceFlowsDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		FlowDescriptor oldFlow = selectionViewer.getSelected();
-		FlowDescriptor newFlow = replacementViewer.getSelected();
-		FlowDao dao = new FlowDao(Database.get());
-		boolean replaceFlows = replaceBothButton.getSelection() || replaceFlowsButton.getSelection();
-		boolean replaceImpacts = replaceBothButton.getSelection() || replaceImpactsButton.getSelection();
-		if (replaceFlows) {
-			if (excludeWithProviders.getSelection()) {
-				dao.replaceExchangeFlowsWithoutProviders(oldFlow.id, newFlow.id);
-			} else {
-				dao.replaceExchangeFlows(oldFlow.id, newFlow.id);
-			}
+		var oldFlow = selectionViewer.getSelected();
+		var newFlow = replacementViewer.getSelected();
+
+		var replacer = FlowReplacer.of(db);
+		if (replaceBothButton.getSelection()) {
+			replacer.replaceIn(ModelType.PROCESS, ModelType.IMPACT_CATEGORY);
+		} else if (replaceFlowsButton.getSelection()) {
+			replacer.replaceIn(ModelType.PROCESS);
+		} else if (replaceImpactsButton.getSelection()) {
+			replacer.replaceIn(ModelType.IMPACT_CATEGORY);
 		}
-		if (replaceImpacts) {
-			dao.replaceImpactFlows(oldFlow.id, newFlow.id);
-		}
-		Database.get().getEntityFactory().getCache().evictAll();
+
 		super.okPressed();
+		App.runWithProgress("Replace flow", () -> replacer.replace(oldFlow, newFlow));
 	}
 
 }
