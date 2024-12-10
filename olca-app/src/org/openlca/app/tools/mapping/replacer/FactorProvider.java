@@ -71,7 +71,7 @@ class FactorProvider {
 			return factor * y;
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
-			log.error("failed to calculate conversion factor for " + entry, e);
+			log.error("failed to calculate conversion factor for {}", entry, e);
 			return 0;
 		}
 	}

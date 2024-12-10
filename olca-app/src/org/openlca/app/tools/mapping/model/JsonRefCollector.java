@@ -37,12 +37,8 @@ class JsonRefCollector {
 	private final File file;
 
 	private final List<ZipEntry> flowEntries = new ArrayList<>();
-	private final List<ZipEntry> categoryEntries = new ArrayList<>();
 	private final List<ZipEntry> propEntries = new ArrayList<>();
 	private final List<ZipEntry> unitEntries = new ArrayList<>();
-
-	// flow ID -> category path
-	private final Map<String, String> categoryPaths = new HashMap<>();
 
 	// property ID -> property name
 	private final Map<String, String> propertyNames = new HashMap<>();
@@ -61,12 +57,10 @@ class JsonRefCollector {
 		log.trace("collect flow references from {}", file);
 		try (ZipFile zip = new ZipFile(file)) {
 			scanEntries(zip);
-			categories(zip);
 			units(zip);
 			return buildFlows(zip);
 		} catch (Exception e) {
-			log.error("failed to collect flows from"
-					+ " zip file " + file, e);
+			log.error("failed to collect flows from zip file {}", file, e);
 			return Collections.emptyList();
 		}
 	}
@@ -85,10 +79,7 @@ class JsonRefCollector {
 			ref.flow.refId = id;
 			ref.flow.name = Json.getString(obj, "name");
 			ref.flow.flowType = Json.getEnum(obj, "flowType", FlowType.class);
-
-			// the category
-			String catID = Json.getRefId(obj, "category");
-			ref.flowCategory = categoryPaths.get(catID);
+			ref.flowCategory = Json.getString(obj, "category");
 
 			// find the reference flow property
 			String propID = null;
@@ -98,8 +89,7 @@ class JsonRefCollector {
 					if (!elem.isJsonObject())
 						continue;
 					JsonObject prop = elem.getAsJsonObject();
-					boolean isRef = Json.getBool(prop,
-							"referenceFlowProperty", false);
+					boolean isRef = Json.getBool(prop, "isRefFlowProperty", false);
 					if (!isRef)
 						continue;
 					propID = Json.getRefId(prop, "flowProperty");
@@ -131,54 +121,11 @@ class JsonRefCollector {
 			String name = e.getName();
 			if (name.startsWith("flows/")) {
 				flowEntries.add(e);
-			} else if (name.startsWith("categories/")) {
-				categoryEntries.add(e);
 			} else if (name.startsWith("flow_properties/")) {
 				propEntries.add(e);
 			} else if (name.startsWith("unit_groups/")) {
 				unitEntries.add(e);
 			}
-		}
-	}
-
-	private void categories(ZipFile zip) {
-		HashMap<String, String> names = new HashMap<>();
-		HashMap<String, String> parents = new HashMap<>();
-		for (ZipEntry e : categoryEntries) {
-			JsonObject obj = unpack(e, zip);
-			if (obj == null)
-				continue;
-			String type = Json.getString(obj, "modelType");
-			if (!"FLOW".equals(type))
-				continue;
-			String id = Json.getString(obj, "@id");
-			String name = Json.getString(obj, "name");
-			if (id == null || name == null)
-				continue;
-			names.put(id, name);
-
-			JsonObject parent = Json.getObject(obj, "category");
-			if (parent == null)
-				continue;
-			String parentID = Json.getString(parent, "@id");
-			if (parentID != null) {
-				parents.put(id, parentID);
-			}
-
-		}
-
-		for (Map.Entry<String, String> e : names.entrySet()) {
-			String id = e.getKey();
-			StringBuilder path = new StringBuilder(e.getValue());
-			String parent = parents.get(id);
-			while (parent != null) {
-				String pname = names.get(parent);
-				if (pname == null)
-					break;
-				path.insert(0, pname + "/");
-				parent = parents.get(parent);
-			}
-			categoryPaths.put(id, path.toString());
 		}
 	}
 
@@ -214,7 +161,7 @@ class JsonRefCollector {
 				if (!elem.isJsonObject())
 					continue;
 				JsonObject unit = elem.getAsJsonObject();
-				boolean isRef = Json.getBool(unit, "referenceUnit", false);
+				boolean isRef = Json.getBool(unit, "isRefUnit", false);
 				if (!isRef)
 					continue;
 				String id = Json.getString(unit, "@id");
@@ -236,8 +183,8 @@ class JsonRefCollector {
 
 	private JsonObject unpack(ZipEntry e, ZipFile zip) {
 		try (InputStream in = zip.getInputStream(e);
-				BufferedInputStream buffer = new BufferedInputStream(in);
-				Reader r = new InputStreamReader(buffer, "utf-8")) {
+				 BufferedInputStream buffer = new BufferedInputStream(in);
+				 Reader r = new InputStreamReader(buffer, "utf-8")) {
 			return new Gson().fromJson(r, JsonObject.class);
 		} catch (Exception ex) {
 			log.warn("failed to read JSON object from {}", e);
