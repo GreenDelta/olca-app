@@ -32,7 +32,7 @@ class ProcessLinkCursor extends UpdatableCursor {
 				return;
 
 			// select the provider
-			long provider = 0L;
+			long provider;
 			if (entry.targetFlow().provider != null) {
 				provider = entry.targetFlow().provider.id;
 			} else {

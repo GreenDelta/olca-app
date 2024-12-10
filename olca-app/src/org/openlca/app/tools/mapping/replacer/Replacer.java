@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -17,12 +16,17 @@ import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.io.maps.FlowMapEntry;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.io.maps.MappingStatus;
 import org.openlca.core.model.Flow;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.util.FlowReplacer;
+import org.openlca.util.VersionUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +43,9 @@ public class Replacer implements Runnable {
 
 	FactorProvider factors;
 
-	/** Contains the IDs of processes where flows should be replaced. */
+	/// Contains the IDs of processes where flows should be replaced.
 	Set<Long> processes = new HashSet<>();
-	/** Contains the IDs of LCIA categories where flows should be replaced. */
+	/// Contains the IDs of LCIA categories where flows should be replaced.
 	Set<Long> impacts = new HashSet<>();
 
 	public Replacer(ReplacerConfig conf) {
@@ -61,6 +65,8 @@ public class Replacer implements Runnable {
 		processes.clear();
 		impacts.clear();
 		for (var model : conf.models) {
+			if (model.isFromLibrary())
+				continue;
 			if (model.type == ModelType.PROCESS) {
 				processes.add(model.id);
 			} else if (model.type == ModelType.IMPACT_METHOD) {
@@ -81,9 +87,9 @@ public class Replacer implements Runnable {
 
 			// start and wait for the cursors to finish
 			log.info("start updatable cursors");
-			List<UpdatableCursor> cursors = createCursors();
-			ExecutorService pool = Executors.newFixedThreadPool(4);
-			for (UpdatableCursor c : cursors) {
+			var cursors = createCursors();
+			var pool = Executors.newFixedThreadPool(4);
+			for (var c : cursors) {
 				pool.execute(c);
 			}
 			pool.shutdown();
@@ -99,27 +105,22 @@ public class Replacer implements Runnable {
 			// whether these products are used in the quant. ref. of
 			// product systems and project variants and convert the
 			// amounts there.
-			// TODO also: we need to replace such flows in allocation
-			// factors; the application of the conversion factor is
-			// not required there.
+
+			updateVersions(cursors);
 
 			// collect and log statistics
-			Stats stats = new Stats();
-			for (UpdatableCursor c : cursors) {
+			var stats = new Stats();
+			for (var c : cursors) {
 				stats.add(c.stats);
 				c.stats.log(c.getClass().getName(), flows);
 			}
-
-			// TODO: update the version and last-update fields
-			// of the changed models; also call the indexer
-			// when the database is a connected repository
 
 			boolean deleteMapped = false;
 			Set<Long> usedFlows = null;
 			if (conf.deleteMapped) {
 				if (stats.failures > 0) {
 					log.warn("Will not delete mapped flows because"
-							+ " there were {} failures in replacement process",
+									+ " there were {} failures in replacement process",
 							stats.failures);
 				} else {
 					deleteMapped = true;
@@ -141,13 +142,15 @@ public class Replacer implements Runnable {
 				if (deleteMapped && !usedFlows.contains(flowID)) {
 					FlowDao dao = new FlowDao(db);
 					Flow flow = dao.getForId(flowID);
-					dao.delete(flow);
-					log.info("removed mapped flow {} uuid={}",
-							Labels.name(flow), flow.refId);
-					e.sourceFlow().status = MappingStatus.ok(M.AppliedAndRemoved);
-				} else {
-					e.sourceFlow().status = MappingStatus.ok(M.AppliedNotRemoved);
+					if (!flow.isFromLibrary()) {
+						dao.delete(flow);
+						log.info("removed mapped flow {} uuid={}",
+								Labels.name(flow), flow.refId);
+						e.sourceFlow().status = MappingStatus.ok(M.AppliedAndRemoved);
+						continue;
+					}
 				}
+				e.sourceFlow().status = MappingStatus.ok(M.AppliedNotRemoved);
 			}
 		} catch (Exception e) {
 			log.error("Flow replacement failed", e);
@@ -155,7 +158,7 @@ public class Replacer implements Runnable {
 	}
 
 	private List<UpdatableCursor> createCursors() {
-		List<UpdatableCursor> cursors = new ArrayList<>();
+		var cursors = new ArrayList<UpdatableCursor>();
 		if (!processes.isEmpty()) {
 			cursors.add(new AmountCursor(ModelType.PROCESS, this));
 			cursors.add(new ProcessLinkCursor(this));
@@ -206,5 +209,41 @@ public class Replacer implements Runnable {
 			flows.put(target.id, target);
 		}
 		factors = new FactorProvider(db, flows);
+	}
+
+	private void updateVersions(List<UpdatableCursor> cursors) {
+
+		// when processes changed, product system may change too
+		var systems = processes.isEmpty() ? Set.of() :
+				new ProductSystemDao(db)
+						.getDescriptors()
+						.stream()
+						.map(s -> s.id)
+						.collect(Collectors.toSet());
+
+		var updatedImpacts = new HashSet<Long>();
+		var updatedProcesses = new HashSet<Long>();
+		var updatedSystems = new HashSet<Long>();
+		for (var c : cursors) {
+			for (var id : c.updatedModels) {
+				if (impacts.contains(id)) {
+					updatedImpacts.add(id);
+				} else if (processes.contains(id)) {
+					updatedProcesses.add(id);
+				} else if (systems.contains(id)) {
+					updatedSystems.add(id);
+				}
+			}
+		}
+
+		if (!updatedImpacts.isEmpty()) {
+			VersionUpdate.of(db, ImpactCategory.class).run(updatedImpacts);
+		}
+		if (!updatedProcesses.isEmpty()) {
+			VersionUpdate.of(db, Process.class).run(updatedProcesses);
+		}
+		if (!updatedSystems.isEmpty()) {
+			VersionUpdate.of(db, ProductSystem.class).run(updatedSystems);
+		}
 	}
 }
