@@ -597,6 +597,7 @@ public class M extends NLS {
 	public static String FailedToDeleteFile;
 	public static String FailedToDownloadEpd;
 	public static String FailedToImportLibrary;
+	public static String FailedToLicenseLibrary;
 	public static String FailedToLoadFlowProperty;
 	public static String FailedToOpenFileAsJsonLdPackage;
 	public static String FailedToOpenTheLibrary;
@@ -891,6 +892,7 @@ public class M extends NLS {
 	public static String LibraryDownloadErr;
 	public static String LibraryExportExperimental;
 	public static String LibraryExported;
+	public static String LibraryLicensing;
 	public static String LicenseCorrupted;
 	public static String LicenseExpired;
 	public static String LicenseInformation;
@@ -999,6 +1001,7 @@ public class M extends NLS {
 	public static String NameOfTheNewFlow;
 	public static String NameShouldBeDifferent;
 	public static String Names;
+	public static String NeedAddLibrary;
 	public static String NeedOpenDatabase;
 	public static String NetCosts;
 	public static String Netcosts;
@@ -1070,6 +1073,7 @@ public class M extends NLS {
 	public static String NoImportFoundInfo;
 	public static String NoIntersections;
 	public static String NoIntersectionsInfo;
+	public static String NoLibrariesFound;
 	public static String NoLibrariesToAdd;
 	public static String NoLibrariesToAddInfo;
 	public static String NoLicenseDetected;
