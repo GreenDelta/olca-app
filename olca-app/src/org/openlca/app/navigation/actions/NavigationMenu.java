@@ -15,7 +15,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.navigation.actions.ImportFromGitAction;
+import org.openlca.app.collaboration.navigation.actions.CloneFromGitAction;
 import org.openlca.app.collaboration.navigation.actions.RepositoryMenu;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
@@ -85,10 +85,12 @@ public class NavigationMenu extends CommonActionProvider {
 				con.getSelection());
 
 		// database actions
-		addActions(selection, menu,
+		addNewDbActions(selection, menu,
 				new DbRestoreAction(),
-				new DbExportAction(),
 				new DbCreateAction(),
+				new CloneFromGitAction());
+		addActions(selection, menu,
+				new DbExportAction(),
 				new DbActivateAction(),
 				new DbValidationAction(),
 				new DbCopyAction(),
@@ -174,8 +176,17 @@ public class NavigationMenu extends CommonActionProvider {
 				new ExportAction(),
 				new ExportScriptAction(),
 				new ExportFlowMapAction(),
-				new ExportLibraryAction(),
-				ImportFromGitAction.forRootMenu());
+				new ExportLibraryAction());
+	}
+
+	private static void addNewDbActions(
+			List<INavigationElement<?>> selection,
+			IMenuManager menu,
+			INavigationAction... actions) {
+		var newDbMenu = new MenuManager(M.NewDatabase);
+		newDbMenu.setImageDescriptor(Icon.DATABASE.descriptor());
+		addActions(selection, newDbMenu, actions);
+		menu.add(newDbMenu);
 	}
 
 	public static MenuManager createImportMenu() {
@@ -188,8 +199,7 @@ public class NavigationMenu extends CommonActionProvider {
 				M.AmpFile,
 				Icon.FILE.descriptor(),
 				() -> new FileImport().run()));
-		// Git clone
-		menu.add(ImportFromGitAction.forImportMenu());
+
 		// open the generic import dialog
 		menu.add(Actions.create(M.OtherDots, icon, () -> {
 			try {

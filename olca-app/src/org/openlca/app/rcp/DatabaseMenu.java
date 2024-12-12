@@ -5,6 +5,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.navigation.actions.CloneFromGitAction;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.LinkingPropertiesPage;
 import org.openlca.app.db.tables.CurrencyTable;
@@ -23,6 +24,7 @@ import org.openlca.app.navigation.actions.db.DbPropertiesAction;
 import org.openlca.app.navigation.actions.db.DbRenameAction;
 import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.navigation.actions.db.DbValidationAction;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.core.model.ModelType;
@@ -42,8 +44,8 @@ class DatabaseMenu implements IMenuListener {
 
 	@Override
 	public void menuAboutToShow(IMenuManager menu) {
-		menu.add(new DbRestoreAction());
-		menu.add(new DbCreateAction());
+		addNewDbActions(menu);
+
 		if (Database.getActiveConfiguration() == null)
 			return;
 		var checkLinksAction = Actions.create(
@@ -81,4 +83,14 @@ class DatabaseMenu implements IMenuListener {
 
 		menu.add(contents);
 	}
+
+	private static void addNewDbActions(IMenuManager menu) {
+		var newDbMenu = new MenuManager(M.NewDatabase);
+		newDbMenu.setImageDescriptor(Icon.DATABASE.descriptor());
+		newDbMenu.add(new DbRestoreAction());
+		newDbMenu.add(new DbCreateAction());
+		newDbMenu.add(new CloneFromGitAction());
+		menu.add(newDbMenu);
+	}
+
 }
