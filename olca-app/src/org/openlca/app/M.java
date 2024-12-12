@@ -1720,6 +1720,8 @@ public class M extends NLS {
 	public static String UploadToEc3;
 	public static String UploadedAnExistingEpd;
 	public static String UploadedNewEpdDraft;
+	public static String UploadLibrariesMessage;
+	public static String UploadLibrariesTitle;
 	public static String UploadingLibraries;
 	public static String UpstreamImpacts;
 	public static String UpstreamInclDirect;

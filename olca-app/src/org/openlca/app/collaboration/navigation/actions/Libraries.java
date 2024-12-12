@@ -13,10 +13,12 @@ import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.LibraryInfo;
 import org.openlca.collaboration.model.WebRequestException;
 import org.openlca.core.library.LibraryPackage;
 import org.openlca.jsonld.LibraryLink;
+import org.openlca.util.Strings;
 
 class Libraries {
 
@@ -38,6 +40,8 @@ class Libraries {
 				.collect(Collectors.toList());
 		var libraryDir = Workspace.getLibraryDir();
 		if (toUpload.isEmpty())
+			return;
+		if (!Question.ask(M.UploadLibrariesTitle, M.UploadLibrariesMessage + "\n\n" + Strings.join(toUpload, '\n')))
 			return;
 		App.runWithProgress(M.UploadingLibraries, () -> {
 			toUpload.forEach(id -> {
