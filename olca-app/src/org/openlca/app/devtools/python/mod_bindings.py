@@ -192,6 +192,7 @@ import org.openlca.core.database.usage.FlowPropertyUseSearch as FlowPropertyUseS
 import org.openlca.jsonld.output.FlowPropertyWriter as FlowPropertyWriter
 import org.openlca.jsonld.input.FlowReader as FlowReader
 import org.openlca.core.io.maps.FlowRef as FlowRef
+import org.openlca.util.FlowReplacer as FlowReplacer
 import org.openlca.core.model.FlowResult as FlowResult
 import org.openlca.io.maps.FlowSync as FlowSync
 import org.openlca.core.matrix.cache.FlowTable as FlowTable
@@ -433,6 +434,7 @@ import org.openlca.proto.io.input.ProtoImport as ProtoImport
 import org.openlca.util.ProviderChainRemoval as ProviderChainRemoval
 import org.openlca.core.matrix.linking.ProviderIndex as ProviderIndex
 import org.openlca.core.matrix.linking.ProviderLinking as ProviderLinking
+import org.openlca.util.ProviderReplacer as ProviderReplacer
 import org.openlca.core.matrix.linking.ProviderSearch as ProviderSearch
 import org.openlca.jsonld.input.Quantity as Quantity
 import org.openlca.core.database.Query as Query
@@ -562,6 +564,7 @@ import org.openlca.core.results.UpstreamTree as UpstreamTree
 import org.openlca.validation.Validation as Validation
 import org.openlca.core.model.Version as Version
 import org.openlca.core.database.upgrades.VersionState as VersionState
+import org.openlca.util.VersionUpdate as VersionUpdate
 import org.openlca.io.openepd.io.Vocab as Vocab
 import org.openlca.io.ecospold2.input.WasteFlows as WasteFlows
 import org.openlca.geo.calc.WebMercator as WebMercator
