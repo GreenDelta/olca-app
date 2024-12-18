@@ -33,7 +33,7 @@ class GeoImport {
 			return;
 		System.out.println("  ... import ei3 geographies ...");
 		new GeoJsonImport(file, db)
-				.withMode(GeoJsonImport.Mode.NEW_AND_UPDATE)
+				.withMode(GeoJsonImport.Mode.UPDATE_ONLY)
 				.run();
 	}
 
