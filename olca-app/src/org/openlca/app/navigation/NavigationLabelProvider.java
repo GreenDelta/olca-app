@@ -28,6 +28,7 @@ import org.openlca.app.navigation.elements.MappingDirElement;
 import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ScriptElement;
+import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -283,9 +284,11 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	@Override
 	public Color getForeground(Object obj) {
-		return isFromLibrary(obj)
-				? Colors.get(55, 71, 79)
-				: null;
+		if (isFromLibrary(obj))
+			return Theme.isDark()
+					? Colors.get(103, 134, 151)
+					: Colors.get(55, 71, 79);
+		return null;
 	}
 
 	private boolean isFromLibrary(Object obj) {
