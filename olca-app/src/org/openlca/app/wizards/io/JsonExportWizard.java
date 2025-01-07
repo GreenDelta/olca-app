@@ -100,12 +100,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		}
 
 		private void doExport(IProgressMonitor monitor, ZipStore store) {
-			var libraries = database.getLibraries().stream()
-					.map(id -> Workspace.getLibraryDir().getLibrary(id))
-					.filter(Optional::isPresent)
-					.map(Optional::get)
-					.toList();
-			store.putLibraryLinks(resolveLinksOf(libraries));
+
 			var export = new JsonExport(database, store)
 					.withDefaultProviders(withProviders);
 			for (var model : models) {
@@ -119,6 +114,14 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 				}
 				monitor.worked(1);
 			}
+
+			var libraries = export.getReferencedLibraries()
+					.stream()
+					.map(id -> Workspace.getLibraryDir().getLibrary(id))
+					.filter(Optional::isPresent)
+					.map(Optional::get)
+					.toList();
+			store.putLibraryLinks(resolveLinksOf(libraries));
 		}
 
 		private static List<LibraryLink> resolveLinksOf(List<Library> libraries) {
