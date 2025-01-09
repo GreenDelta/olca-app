@@ -290,6 +290,13 @@
 				name="soda4LCA">
 		</editor>
 
+		<editor
+				class="org.openlca.app.tools.smartepd.SmartEpdTool"
+				default="false"
+				id="SmartEpdTool"
+				name="SmartEPD">
+		</editor>
+
 	</extension>
 
 	<extension
