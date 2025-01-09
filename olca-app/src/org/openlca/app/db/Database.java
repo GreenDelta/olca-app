@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.navigation.CopyPaste;
 import org.openlca.app.rcp.RcpWindowAdvisor;
 import org.openlca.app.rcp.Workspace;

@@ -3,10 +3,10 @@ package org.openlca.app.collaboration.viewers.diff;
 import java.time.Instant;
 
 import org.eclipse.jgit.lib.ObjectId;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;

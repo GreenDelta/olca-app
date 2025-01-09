@@ -56,7 +56,7 @@ class Actions {
 		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitRemoteRunner<>(runnable);
 		service.run(true, false, runner::run);
-		var repo = org.openlca.app.db.Repository.CURRENT;
+		var repo = org.openlca.app.collaboration.Repository.CURRENT;
 		if (runner.exception == null)
 			return runner.result;
 		if (!(runner.exception instanceof TransportException))
@@ -122,7 +122,7 @@ class Actions {
 	}
 
 	static boolean applyStash() throws GitAPIException, InvocationTargetException, IOException, InterruptedException {
-		var repo = org.openlca.app.db.Repository.CURRENT;
+		var repo = org.openlca.app.collaboration.Repository.CURRENT;
 		var libraryResolver = WorkspaceLibraryResolver.forStash();
 		if (libraryResolver == null)
 			return false;

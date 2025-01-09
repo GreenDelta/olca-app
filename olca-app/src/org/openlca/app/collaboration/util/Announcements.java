@@ -1,8 +1,8 @@
 package org.openlca.app.collaboration.util;
 
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
-import org.openlca.app.db.Repository;
 import org.openlca.app.util.MsgBox;
 
 public class Announcements {

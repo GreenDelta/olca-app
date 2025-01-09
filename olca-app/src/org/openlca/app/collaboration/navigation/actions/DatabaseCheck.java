@@ -1,8 +1,8 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.CategoryDao;

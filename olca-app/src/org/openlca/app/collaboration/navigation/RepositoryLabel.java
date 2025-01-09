@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.navigation.NavElement.ElementType;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;

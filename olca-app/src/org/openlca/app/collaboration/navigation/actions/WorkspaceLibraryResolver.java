@@ -28,13 +28,13 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	}
 
 	static WorkspaceLibraryResolver forRemote() {
-		var repo = org.openlca.app.db.Repository.CURRENT;
+		var repo = org.openlca.app.collaboration.Repository.CURRENT;
 		var commit = repo.commits.get(repo.commits.resolve(Constants.REMOTE_BRANCH));
 		return forCommit(commit);
 	}
 
 	static WorkspaceLibraryResolver forStash() throws GitAPIException {
-		var repo = org.openlca.app.db.Repository.CURRENT;
+		var repo = org.openlca.app.collaboration.Repository.CURRENT;
 		var commits = Git.wrap(repo).stashList().call();
 		if (commits == null || commits.isEmpty())
 			return null;
@@ -45,7 +45,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	static WorkspaceLibraryResolver forCommit(Commit commit) {
 		if (commit == null)
 			return null;
-		var repo = org.openlca.app.db.Repository.CURRENT;
+		var repo = org.openlca.app.collaboration.Repository.CURRENT;
 		var resolver = new WorkspaceLibraryResolver();
 		if (!resolver.init(repo, commit))
 			return null;
@@ -92,7 +92,7 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	}
 
 	private Library importFromCollaborationServer(String newLib) throws IOException {
-		var repo = org.openlca.app.db.Repository.CURRENT;
+		var repo = org.openlca.app.collaboration.Repository.CURRENT;
 		if (!repo.isCollaborationServer())
 			return null;
 		var stream = WebRequests.execute(

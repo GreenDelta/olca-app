@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.util.WebRequests;
-import org.openlca.app.db.Repository;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Question;

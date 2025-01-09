@@ -1,4 +1,4 @@
-package org.openlca.app.db;
+package org.openlca.app.collaboration;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.WebRequests;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.collaboration.client.CSClient;
 import org.openlca.core.database.IDatabase;
