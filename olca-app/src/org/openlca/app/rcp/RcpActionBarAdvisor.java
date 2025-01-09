@@ -43,6 +43,7 @@ import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.tools.openepd.EpdPanel;
 import org.openlca.app.tools.params.ParameterAnalysisDialog;
+import org.openlca.app.tools.smartepd.SmartEpdTool;
 import org.openlca.app.tools.soda.SodaClientTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
@@ -174,14 +175,16 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(Actions.create(
 				"Parameter analysis (experimental)", ParameterAnalysisDialog::show));
 
-		// openEPD
-		menu.add(Actions.create(M.GetEpdsFromEc3,
-			Icon.BUILDING.descriptor(), EpdPanel::open));
-		menu.add(Actions.create("soda4LCA",
-				Icon.SODA.descriptor(), SodaClientTool::open));
-
-		menu.add(Actions.create("CS Servers",
+		// API clients
+		var apiMenu = new MenuManager("API Clients");
+		menu.add(apiMenu);
+		apiMenu.add(Actions.create("CS Servers",
 				Icon.COLLABORATION_SERVER_LOGO.descriptor(), ServerNavigator::open));
+		apiMenu.add(Actions.create("soda4LCA",
+				Icon.SODA.descriptor(), SodaClientTool::open));
+		apiMenu.add(Actions.create(M.GetEpdsFromEc3,
+			Icon.BUILDING.descriptor(), EpdPanel::open));
+		apiMenu.add(Actions.create("SmartEPD", SmartEpdTool::open)); // TODO: icon
 
 		// console
 		menu.add(new Separator());
