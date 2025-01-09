@@ -113,7 +113,6 @@ public class SmartEpdTool extends SimpleFormEditor {
 			});
 		}
 
-
 		private static class TreeContent implements ITreeContentProvider {
 
 			@Override

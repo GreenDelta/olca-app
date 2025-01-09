@@ -49,6 +49,13 @@ record TreeModel(List<ProjectNode> projectNodes) {
 		public String name() {
 			return project.name();
 		}
+
+		@Override
+		public int hashCode() {
+			return project != null
+					? project.hashCode()
+					: System.identityHashCode(this);
+		}
 	}
 
 	record EpdNode(ProjectNode parent, SmartEpd epd) implements Node {
@@ -56,6 +63,13 @@ record TreeModel(List<ProjectNode> projectNodes) {
 		@Override
 		public String name() {
 			return epd.productName();
+		}
+
+		@Override
+		public int hashCode() {
+			return epd != null
+					? epd.hashCode()
+					: System.identityHashCode(this);
 		}
 	}
 }
