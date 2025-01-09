@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.ModelType;
-import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.git.util.TypedRefId;
+import org.openlca.git.util.TypedRefIdMap;
 import org.openlca.util.Strings;
 
 class ModelReferences {
 
 	private IDatabase database;
-	private TypedRefIdMap<Long> refIdToId = new TypedRefIdMap<>();
+	private TypedRefIdMap<IdAndLibrary> refIdToId = new TypedRefIdMap<>();
 	private EnumMap<ModelType, Map<Long, String>> idToRefId = new EnumMap<>(ModelType.class);
 	private ReferenceMap references = new ReferenceMap();
 	private ReferenceMap usages = new ReferenceMap();
@@ -52,15 +52,24 @@ class ModelReferences {
 		return get(usages, pair);
 	}
 
+	public String getLibrary(TypedRefId pair) {
+		var idAndLib = refIdToId.get(pair);
+		if (idAndLib == null)
+			return null;
+		return idAndLib.library;
+	}
+
 	private Set<ModelReference> get(ReferenceMap map, TypedRefId pair) {
-		var refs = new HashSet<ModelReference>();
 		var typeMap = map.get(pair.type);
 		if (typeMap == null)
-			return refs;
-		var id = refIdToId.get(pair);
-		var idMap = typeMap.get(id);
+			return new HashSet<>();
+		var idAndLib = refIdToId.get(pair);
+		if (idAndLib == null)
+			return new HashSet<>();
+		var idMap = typeMap.get(idAndLib.id);
 		if (idMap == null)
-			return refs;
+			return new HashSet<>();
+		var refs = new HashSet<ModelReference>();
 		idMap.keySet().forEach(targetType -> idMap.get(targetType)
 				.forEach(targetId -> {
 					var refId = idToRefId.get(targetType).get(targetId);
@@ -138,11 +147,12 @@ class ModelReferences {
 	}
 
 	private void scanGlobalParameters() {
-		var query = "SELECT id, ref_id FROM tbl_parameters WHERE scope = 'GLOBAL'";
+		var query = "SELECT id, ref_id, library FROM tbl_parameters WHERE scope = 'GLOBAL'";
 		NativeSql.on(database).query(query, rs -> {
 			var id = rs.getLong(1);
 			var refId = rs.getString(2);
-			putRefId(ModelType.PARAMETER, id, refId);
+			var lib = rs.getString(3);
+			putRefId(ModelType.PARAMETER, id, refId, lib);
 			return true;
 		});
 	}
@@ -333,7 +343,7 @@ class ModelReferences {
 		}
 		fields.addAll(Arrays.asList(targets));
 		var query = "SELECT " + fields.stream().collect(Collectors.joining(","))
-				+ (isRootEntity ? ",ref_id " : "")
+				+ (isRootEntity ? ",ref_id,library " : "")
 				+ " FROM " + table;
 		NativeSql.on(database).query(query, rs -> {
 			var ids = new long[fields.size()];
@@ -343,7 +353,8 @@ class ModelReferences {
 			var id = ids[0];
 			if (isRootEntity) {
 				var refId = rs.getString(fields.size() + 1);
-				putRefId(sourceField.type, id, refId);
+				var lib = rs.getString(fields.size() + 2);
+				putRefId(sourceField.type, id, refId, lib);
 			}
 			handler.handle(ids);
 			return true;
@@ -361,8 +372,8 @@ class ModelReferences {
 				.add(sourceId);
 	}
 
-	private void putRefId(ModelType type, long id, String refId) {
-		refIdToId.put(new TypedRefId(type, refId), id);
+	private void putRefId(ModelType type, long id, String refId, String library) {
+		refIdToId.put(new TypedRefId(type, refId), new IdAndLibrary(id, library));
 		idToRefId.computeIfAbsent(type, t -> new HashMap<>()).put(id, refId);
 	}
 
@@ -409,6 +420,9 @@ class ModelReferences {
 
 		void handle(long[] ids);
 
+	}
+
+	private record IdAndLibrary(long id, String library) {
 	}
 
 }

@@ -1,6 +1,9 @@
 package org.openlca.app.collaboration.navigation.actions;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitDialog;
@@ -9,14 +12,12 @@ import org.openlca.app.collaboration.preferences.CollaborationPreferenceDialog;
 import org.openlca.app.collaboration.util.PathFilters;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Repository;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
-import org.openlca.core.database.Daos;
 import org.openlca.git.model.Diff;
+import org.openlca.git.model.DiffType;
 import org.openlca.git.model.TriDiff;
-import org.openlca.git.util.ModelRefSet;
-import org.openlca.git.util.TypedRefId;
-import org.openlca.util.Strings;
 
 class Datasets {
 
@@ -32,16 +33,19 @@ class Datasets {
 		if (dialogResult == CommitDialog.CANCEL)
 			return null;
 		var withReferences = isStashCommit
-				? ReferenceCheck.forStash(Database.get(), diffs, dialog.getSelected())
-				: ReferenceCheck.forRemote(Database.get(), diffs, dialog.getSelected());
+				? ReferenceCheck.forStash(diffs, dialog.getSelected())
+				: ReferenceCheck.forRemote(diffs, dialog.getSelected());
 		if (withReferences == null)
 			return null;
+		var libraryAdditions = getLibraryAdditions(withReferences);
+		withReferences.addAll(getLibraryDatasets(diffs, libraryAdditions));
 		return new DialogResult(dialogResult, dialog.getMessage(), withReferences);
 	}
 
 	private static CommitDialog createCommitDialog(List<INavigationElement<?>> selection, List<Diff> diffs,
 			boolean canPush, boolean isStashCommit) {
 		var differences = diffs.stream()
+				.filter(Datasets::isForeground)
 				.map(d -> new TriDiff(d, null))
 				.toList();
 		var node = new DiffNodeBuilder(Database.get()).build(differences);
@@ -51,39 +55,50 @@ class Datasets {
 		}
 		var dialog = new CommitDialog(node, canPush, isStashCommit);
 		var paths = PathFilters.of(selection);
-		var lockedDatasets = determineLockedDatasets(diffs);
-		var initialSelection = new ModelRefSet();
-		diffs.stream()
-				.filter(ref -> ref.type != null)
-				.filter(ref -> selectionContainsPath(paths, ref.path) || lockedDatasets.contains(ref))
-				.forEach(initialSelection::add);
+		var initialSelection = diffs.stream()
+				.filter(ref -> selectionContainsPath(paths, ref.path))
+				.map(ref -> ref.path)
+				.collect(Collectors.toSet());
 		dialog.setInitialSelection(initialSelection);
-		dialog.setLockedDatasets(lockedDatasets);
 		return dialog;
 	}
 
-	private static ModelRefSet determineLockedDatasets(List<Diff> diffs) {
-		var all = new ModelRefSet();
-		diffs.stream()
-				.filter(diff -> diff.type != null)
-				.forEach(all::add);
-		if (CollaborationPreference.onlyFullCommits())
-			return all;
-		var fromLibrary = new ModelRefSet();
-		all.types().forEach(type -> {
-			fromLibrary.addAll(Daos.root(Database.get(), type).getDescriptors().stream()
-					.filter(d -> !Strings.nullOrEmpty(d.library))
-					.map(d -> new TypedRefId(d.type, d.refId))
-					.filter(all::contains).toList());
-		});
-		return fromLibrary;
+	static boolean isForeground(Diff diff) {
+		var descriptors = Repository.CURRENT.descriptors;
+		if (diff.isDataset)
+			return !descriptors.isFromLibrary(diff);
+		if (diff.isCategory) {
+			var c = descriptors.getCategory(diff.path);
+			return !descriptors.isOnlyInLibraries(c);
+		}
+		return true;
+	}
+
+	private static Set<String> getLibraryAdditions(List<Diff> selected) {
+		return selected.stream()
+				.filter(d -> d.isLibrary && d.diffType == DiffType.ADDED)
+				.map(d -> d.name)
+				.collect(Collectors.toSet());
+	}
+
+	private static List<Diff> getLibraryDatasets(List<Diff> diffs, Set<String> libraryAdditions) {
+		if (libraryAdditions.isEmpty())
+			return new ArrayList<>();
+		var descriptors = Repository.CURRENT.descriptors;
+		return diffs.stream().filter(diff -> {
+			if (diff.isDataset && libraryAdditions.contains(descriptors.getLibrary(diff)))
+				return true;
+			if (diff.isCategory && descriptors.isOnlyInLibraries(descriptors.getCategory(diff.path), libraryAdditions))
+				return true;
+			return false;
+		}).collect(Collectors.toList());
 	}
 
 	private static boolean selectionContainsPath(List<String> paths, String path) {
 		if (paths.isEmpty())
 			return true;
 		for (var p : paths)
-			if (path.startsWith(p))
+			if (path.startsWith(p) || p.startsWith(path + "/"))
 				return true;
 		return false;
 	}

@@ -1,12 +1,11 @@
 package org.openlca.app.collaboration.navigation.actions;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -14,9 +13,7 @@ import org.openlca.app.collaboration.dialogs.CommitReferencesDialog;
 import org.openlca.app.collaboration.navigation.actions.ModelReferences.ModelReference;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
-import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
 import org.openlca.app.db.Database;
-import org.openlca.core.database.IDatabase;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.TriDiff;
@@ -26,18 +23,25 @@ import org.openlca.git.util.TypedRefIdSet;
 
 class ReferenceCheck {
 
-	private final IDatabase database;
 	private final TypedRefIdMap<Diff> diffs;
+	private final List<Diff> libraryDiffs;
+	private final Set<String> libraries;
 	private final ModelReferences references;
 	private final Set<DiffNode> input;
 	private final TypedRefIdMap<DiffNode> selection;
 	private final TypedRefIdSet visited;
 
-	private ReferenceCheck(IDatabase database, List<Diff> all, Set<DiffNode> input) {
-		this.database = database;
+	private ReferenceCheck(List<Diff> diffs, Set<DiffNode> input) {
 		this.diffs = new TypedRefIdMap<>();
-		all.stream().filter(diff -> !diff.isCategory && diff.type != null)
-				.forEach(diff -> this.diffs.put(diff, diff));
+		this.libraries = new HashSet<>();
+		this.libraryDiffs = new ArrayList<>();
+		for (var diff : diffs) {
+			if (!diff.isCategory && diff.type != null) {
+				this.diffs.put(diff, diff);
+			} else if (diff.isLibrary) {
+				this.libraryDiffs.add(diff);
+			}
+		}
 		this.input = input;
 		this.selection = new TypedRefIdMap<>();
 		input.stream()
@@ -47,24 +51,23 @@ class ReferenceCheck {
 		this.references = App.exec(M.CollectingReferencesDots, () -> ModelReferences.scan(Database.get()));
 	}
 
-	static List<Diff> forRemote(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+	static List<Diff> forRemote(List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences() || CollaborationPreference.onlyFullCommits())
 			return convert(input);
-		return new ReferenceCheck(database, all, input).run(false);
+		return new ReferenceCheck(all, input).run(false);
 	}
 
-	static List<Diff> forStash(IDatabase database, List<Diff> all, Set<DiffNode> input) {
+	static List<Diff> forStash(List<Diff> all, Set<DiffNode> input) {
 		if (!CollaborationPreference.checkReferences() || CollaborationPreference.onlyFullCommits())
 			return convert(input);
-		return new ReferenceCheck(database, all, input).run(true);
+		return new ReferenceCheck(all, input).run(true);
 	}
 
 	private List<Diff> run(boolean stashCommit) {
 		var references = collect();
 		if (references.isEmpty())
 			return convert(input);
-		var node = new DiffNodeBuilder(database).build(references);
-		var dialog = new CommitReferencesDialog(node, stashCommit);
+		var dialog = new CommitReferencesDialog(references, stashCommit);
 		if (dialog.open() != CommitReferencesDialog.OK)
 			return null;
 		var selected = dialog.getSelected();
@@ -86,10 +89,17 @@ class ReferenceCheck {
 			referenced.addAll(collected);
 			stack.addAll(collected);
 		}
-		return diffs.values().stream()
+		var collected = new HashSet<TriDiff>();
+		diffs.values().stream()
 				.filter(referenced::contains)
+				.filter(Datasets::isForeground)
 				.map(diff -> new TriDiff(diff, null))
-				.collect(Collectors.toSet());
+				.forEach(collected::add);
+		libraryDiffs.stream()
+				.filter(diff -> libraries.contains(diff.name))
+				.map(diff -> new TriDiff(diff, null))
+				.forEach(collected::add);
+		return collected;
 	}
 
 	private Set<ModelReference> collect(TypedRefId pair) {
@@ -97,18 +107,18 @@ class ReferenceCheck {
 		if (visited.contains(pair))
 			return referenced;
 		visited.add(pair);
-		filter(references.getReferences(pair))
+		references.getReferences(pair).stream()
+				.filter(ref -> !selection.contains(ref) && diffs.contains(ref))
 				.forEach(referenced::add);
-		filter(references.getUsages(pair))
+		references.getUsages(pair).stream()
+				.filter(ref -> !selection.contains(ref) && diffs.contains(ref))
 				.filter(ref -> diffs.get(ref).diffType != DiffType.ADDED)
 				.forEach(referenced::add);
+		var lib = references.getLibrary(pair);
+		if (lib != null) {
+			libraries.add(lib);
+		}
 		return referenced;
-	}
-
-	private Stream<ModelReference> filter(Set<ModelReference> references) {
-		return references.stream()
-				.filter(Predicate.not(selection::contains))
-				.filter(diffs::contains);
 	}
 
 	private static List<Diff> convert(Set<DiffNode> nodes) {

@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.dialogs;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -10,22 +11,23 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
+import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
-import org.openlca.git.model.DiffType;
-import org.openlca.git.util.ModelRefSet;
+import org.openlca.git.model.TriDiff;
 
 public class CommitReferencesDialog extends FormDialog {
 
 	private CommitViewer viewer;
-	private DiffNode node;
+	private Set<TriDiff> references;
 	private boolean isStashCommit;
 
-	public CommitReferencesDialog(DiffNode node, boolean isStashCommit) {
+	public CommitReferencesDialog(Set<TriDiff> references, boolean isStashCommit) {
 		super(UI.shell());
 		setBlockOnOpen(true);
-		this.node = node;
+		this.references = references;
 		this.isStashCommit = isStashCommit;
 	}
 
@@ -43,24 +45,15 @@ public class CommitReferencesDialog extends FormDialog {
 		form.reflow(true);
 	}
 
-	private ModelRefSet getNewElements(DiffNode node) {
-		var newElements = new ModelRefSet();
-		var diff = node.contentAsTriDiff();
-		if (diff != null && diff.left != null && diff.left.diffType == DiffType.ADDED) {
-			newElements.add(diff);
-		}
-		if (node.children == null)
-			return newElements;
-		node.children.forEach(child -> getNewElements(child)
-				.forEach(newElements::add));
-		return newElements;
-	}
-
 	private void createModelViewer(Composite parent) {
 		viewer = new CommitViewer(parent);
-		var newElements = getNewElements(node);
-		viewer.setLockedElements(newElements);
-		viewer.setSelection(newElements, node);
+		var node = new DiffNodeBuilder(Database.get()).build(references);
+		var selection = new HashSet<String>();
+		references.stream()
+				.filter(diff -> diff.right != null)
+				.map(diff -> diff.right.path)
+				.forEach(selection::add);
+		viewer.setSelection(selection, node);
 		CheckboxTreeViewers.setInput(
 				parent, viewer.getViewer(), node, () -> CheckboxTreeViewers.expandGrayed(viewer.getViewer()));
 	}

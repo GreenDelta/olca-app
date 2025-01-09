@@ -12,13 +12,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
 import org.openlca.git.model.TriDiff;
-import org.openlca.git.util.ModelRefSet;
 
 public class CommitViewer extends DiffNodeViewer {
 
-	// The option lockedElements will prevent the user to uncheck certain
-	// elements
-	private ModelRefSet lockedElements;
 	private DiffNodeCheckedContentProvider selectionProvider;
 	private final Runnable onCheckStateChanged;
 
@@ -47,15 +43,8 @@ public class CommitViewer extends DiffNodeViewer {
 		return (CheckboxTreeViewer) super.getViewer();
 	}
 
-	public void setLockedElements(ModelRefSet value) {
-		this.lockedElements = value;
-	}
-
-	public void setSelection(ModelRefSet initialSelection, DiffNode root) {
+	public void setSelection(Set<String> initialSelection, DiffNode root) {
 		var selection = collectChildren(initialSelection, root);
-		root.children.stream()
-				.filter(DiffNode::isLibrariesNode)
-				.forEach(selection::add);
 		selectionProvider.setSelection(selection);
 	}
 
@@ -66,15 +55,13 @@ public class CommitViewer extends DiffNodeViewer {
 	}
 
 	// if models is null, select all
-	private Set<DiffNode> collectChildren(ModelRefSet models, DiffNode node) {
+	private Set<DiffNode> collectChildren(Set<String> models, DiffNode node) {
 		var nodes = new HashSet<DiffNode>();
 		if (node == null)
 			return nodes;
 		for (var child : node.children) {
-			if (child.isLibrariesNode() || child.isLibraryNode()) {
-				nodes.add(child);
-			} else if (child.content instanceof TriDiff d) {
-				if (models == null || models.contains(d)) {
+			if (child.content instanceof TriDiff d) {
+				if (models == null || models.contains(d.path)) {
 					nodes.add(child);
 				}
 			}
@@ -112,7 +99,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected boolean isSelectable(DiffNode element) {
-			return element.content instanceof TriDiff || element.isLibrariesNode();
+			return element.content instanceof TriDiff || element.isLibraryNode();
 		}
 
 		@Override
@@ -127,21 +114,11 @@ public class CommitViewer extends DiffNodeViewer {
 				}
 				return;
 			}
-
 			var diff = elem.contentAsTriDiff();
 			if (diff == null || diff.noAction()) {
 				getViewer().setChecked(elem, false);
 				return;
 			}
-
-			if (!checked &&
-					(lockedElements.contains(diff)
-							|| elem.isLibrariesNode()
-							|| elem.isLibraryNode())) {
-				getViewer().setChecked(elem, true);
-				return;
-			}
-
 			if (!checked) {
 				getSelection().remove(elem);
 			} else {
