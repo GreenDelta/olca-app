@@ -100,6 +100,8 @@ public class SmartEpdTool extends SimpleFormEditor {
 			var tree = Trees.createViewer(body, "Project/EPD");
 			tree.setLabelProvider(new TreeLabel());
 			tree.setContentProvider(new TreeContent());
+			TreeMenu.mountOn(client, tree);
+
 			App.runInUI("Fetching data ...", () -> {
 				var res = TreeModel.fetch(client);
 				if (res.hasError()) {

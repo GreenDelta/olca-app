@@ -38,12 +38,19 @@ record TreeModel(List<ProjectNode> projectNodes) {
 	}
 
 	interface Node {
+		String id();
+
 		String name();
 	}
 
 	record ProjectNode(
 			SmartProject project, List<EpdNode> epdNodes
 	) implements Node {
+
+		@Override
+		public String id() {
+			return project.id();
+		}
 
 		@Override
 		public String name() {
@@ -59,6 +66,11 @@ record TreeModel(List<ProjectNode> projectNodes) {
 	}
 
 	record EpdNode(ProjectNode parent, SmartEpd epd) implements Node {
+
+		@Override
+		public String id() {
+			return epd.id();
+		}
 
 		@Override
 		public String name() {

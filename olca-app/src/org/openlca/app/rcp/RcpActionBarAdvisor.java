@@ -184,7 +184,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				Icon.SODA.descriptor(), SodaClientTool::open));
 		apiMenu.add(Actions.create(M.GetEpdsFromEc3,
 			Icon.BUILDING.descriptor(), EpdPanel::open));
-		apiMenu.add(Actions.create("SmartEPD", SmartEpdTool::open)); // TODO: icon
+		apiMenu.add(Actions.create("SmartEPD (experimental)",
+				SmartEpdTool::open)); // TODO: icon
 
 		// console
 		menu.add(new Separator());
