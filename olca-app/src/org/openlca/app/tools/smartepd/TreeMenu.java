@@ -25,12 +25,10 @@ class TreeMenu {
 
 	private final SmartEpdClient client;
 	private final TreeViewer tree;
-	private final IDatabase db;
 
 	TreeMenu(SmartEpdClient client, TreeViewer tree) {
 		this.client = client;
 		this.tree = tree;
-		this.db = Database.get();
 	}
 
 	static void mountOn(SmartEpdClient client, TreeViewer tree) {
@@ -77,6 +75,7 @@ class TreeMenu {
 	}
 
 	private IDatabase assertDb() {
+		var db = Database.get();
 		if (db == null) {
 			MsgBox.info(M.NoDatabaseOpened, M.NoDatabaseOpenedInfo);
 			return null;
