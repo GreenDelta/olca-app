@@ -21,7 +21,7 @@ public class M extends NLS {
 	public static String AboutOpenLCA;
 	public static String AccessAndUseRestrictions;
 	public static String Action;
-	public static String ActionMightBrakeDatabase;
+	public static String ActionMightBreakDatabase;
 	public static String ActivityQuantity;
 	public static String ActivityUnit;
 	public static String ActivityValue;
@@ -367,7 +367,6 @@ public class M extends NLS {
 	public static String DataSetOtherEvaluation;
 	public static String DataSetOwner;
 	public static String DataSetWritten;
-	public static String DataSetsLinkedToDataSetRemoved;
 	public static String DataSourceInformation;
 	public static String DataStock;
 	public static String DataTreatment;

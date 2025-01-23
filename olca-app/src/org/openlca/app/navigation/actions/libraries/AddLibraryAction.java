@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.window.Window;
@@ -15,36 +13,27 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.components.MountLibraryDialog;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.ImportLibraryDialog;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.Library;
-import org.openlca.core.library.PreMountCheck;
 
 public class AddLibraryAction extends Action implements INavigationAction {
-
-	private Consumer<Set<Library>> callback;
 
 	public AddLibraryAction() {
 		setText(M.AddLibrary);
 		setImageDescriptor(Icon.LIBRARY.descriptor());
-	}
-
-	void setCallback(Consumer<Set<Library>> callback) {
-		this.callback = callback;
 	}
 
 	@Override
@@ -52,34 +41,35 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		return selection.get(0) instanceof DatabaseElement e
-			&& Database.isActive(e.getContent());
+				&& Database.isActive(e.getContent());
 	}
 
-	@Override
-	public void run() {
+	static Library askForLibrary() {
 		var db = Database.get();
 		if (db == null) {
 			MsgBox.error(M.NoDatabaseOpened);
-			return;
+			return null;
 		}
 		var dialog = new Dialog(db);
 		if (dialog.open() != Window.OK
-			|| dialog.combo == null
-			|| dialog.combo.selected == null)
-			return;
+				|| dialog.combo == null
+				|| dialog.combo.selected == null)
+			return null;
 
 		var lib = dialog.combo.selected;
 		if (db.getLibraries().contains(lib.name())) {
 			MsgBox.error(M.TheLibraryIsAlreadyPresent + " - " + lib.name());
-			return;
+			return null;
 		}
-		var checkResult = App.exec(
-			M.CheckLibraryDots, () -> PreMountCheck.check(db, lib));
-		if (checkResult.isError()) {
-			ErrorReporter.on("Failed to check library", checkResult.error());
+		return lib;
+	}
+
+	@Override
+	public void run() {
+		var lib = askForLibrary();
+		if (lib == null)
 			return;
-		}
-		MountLibraryDialog.show(lib, checkResult, callback);
+		Libraries.mount(lib);
 	}
 
 	private static class Dialog extends FormDialog {
@@ -116,17 +106,17 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			combo = new LibCombo(UI.labeledCombo(comp, tk, M.Library));
 			UI.filler(comp, tk);
 			var importButton = tk.createButton(
-				comp, M.ImportFromFileDots, SWT.NONE);
+					comp, M.ImportFromFileDots, SWT.NONE);
 			Controls.onSelect(importButton, $ -> {
 				var file = FileChooser.openFile()
-					.withTitle(M.SelectLibraryPackage)
-					.withExtensions("*.zip")
-					.select()
-					.orElse(null);
+						.withTitle(M.SelectLibraryPackage)
+						.withExtensions("*.zip")
+						.select()
+						.orElse(null);
 				if (file == null)
 					return;
 				ImportLibraryDialog.open(file)
-					.ifPresent(combo::updateWith);
+						.ifPresent(combo::updateWith);
 			});
 		}
 	}
@@ -159,18 +149,18 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		private void fill() {
 			var db = Database.get();
 			var dbLibs = db != null
-				? db.getLibraries()
-				: Collections.emptySet();
+					? db.getLibraries()
+					: Collections.emptySet();
 			libraries.clear();
 			Workspace.getLibraryDir()
-				.getLibraries()
-				.stream()
-				.filter(lib -> !dbLibs.contains(lib.name()))
-				.forEach(libraries::add);
+					.getLibraries()
+					.stream()
+					.filter(lib -> !dbLibs.contains(lib.name()))
+					.forEach(libraries::add);
 			libraries.sort(Comparator.comparing(Library::name));
 			var items = libraries.stream()
-				.map(Library::name)
-				.toArray(String[]::new);
+					.map(Library::name)
+					.toArray(String[]::new);
 			combo.setItems(items);
 		}
 

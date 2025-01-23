@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -16,13 +16,13 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.MountLibraryDialog;
 import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.app.licence.LibrarySession;
 import org.openlca.app.rcp.Workspace;
@@ -31,13 +31,13 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryPackage;
+import org.openlca.core.library.PreMountCheck;
+import org.openlca.core.library.Unmounter;
 import org.openlca.core.library.reader.LibReader;
 import org.openlca.core.library.reader.LibReaderRegistry;
-import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.license.License;
@@ -91,8 +91,7 @@ public final class Libraries {
 		if (license.isPresent()) {
 			var credentials = retrieveSession(lib.name()).orElse(null);
 			if (credentials == null) {
-				log.error("Error while retrieving the library credentials of {}"
-						, lib.name());
+				log.error("Error while retrieving the library credentials of {}", lib.name());
 				return Optional.empty();
 			}
 			builder.withDecryption(() -> license.get().getDecryptCipher(credentials));
@@ -173,24 +172,13 @@ public final class Libraries {
 
 	public static void fillExchangesOf(Process process) {
 		fill(process, (db, lib) -> {
-			var exchanges = lib.getExchanges(TechFlow.of(process), db);
-			var qref = process.quantitativeReference;
-			if (qref != null) {
-				process.quantitativeReference = exchanges.stream()
-						.filter(e -> Objects.equals(qref.flow, e.flow)
-								& qref.isInput == e.isInput)
-						.findFirst()
-						.orElse(null);
-			}
-			process.exchanges.clear();
-			process.exchanges.addAll(exchanges);
+			org.openlca.core.library.Libraries.fillExchangesOf(db, lib, process);
 		});
 	}
 
 	public static void fillFactorsOf(ImpactCategory impact) {
 		fill(impact, (db, lib) -> {
-			var factors = lib.getImpactFactors(Descriptor.of(impact), db);
-			impact.impactFactors.addAll(factors);
+			org.openlca.core.library.Libraries.fillFactorsOf(db, lib, impact);
 		});
 	}
 
@@ -220,7 +208,7 @@ public final class Libraries {
 	}
 
 	public static Library importFromUrl(String url) {
-		try (var stream = new URL(url).openStream()) {
+		try (var stream = URI.create(url).toURL().openStream()) {
 			return importFromStream(stream);
 		} catch (IOException e) {
 			ErrorReporter.on(M.ErrorTryingToResolveLibraryUrl, e);
@@ -248,6 +236,24 @@ public final class Libraries {
 				}
 			}
 		}
+	}
+
+	public static void mount(Library lib) {
+		var checkResult = App.exec(M.CheckLibraryDots,
+				() -> PreMountCheck.check(Database.get(), lib));
+		if (checkResult.isError()) {
+			ErrorReporter.on("Failed to check library", checkResult.error());
+			return;
+		}
+		MountLibraryDialog.show(lib, checkResult);
+	}
+
+	public static void unmount(Library lib) {
+		// TODO ask user if they want to keep data sets or delete them
+		var reader = readerOf(lib);
+		if (reader.isEmpty())
+			return;
+		Unmounter.keepAll(Database.get()).unmount(reader.get());
 	}
 
 	public static Optional<CertificateInfo> getLicense(File folder) {

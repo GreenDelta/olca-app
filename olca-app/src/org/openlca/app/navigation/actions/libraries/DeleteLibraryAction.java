@@ -12,6 +12,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -23,7 +24,6 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.Library;
-import org.openlca.core.library.Unmounter;
 import org.openlca.util.Dirs;
 
 public class DeleteLibraryAction extends Action implements INavigationAction {
@@ -65,12 +65,9 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		// check if this is a mounted library
 		var db = element.getDatabase();
 		if (db.isPresent()) {
-			if (Question.ask(M.RemovingLibraryWarning,
-					M.RemovingLibraryExplanations + "\r\n" + M.DoYouWantToContinue)) {
-				App.runWithProgress(M.RemovingLibraryDots,
-						() -> new Unmounter(db.get()).unmountUnsafe(lib.name()),
-						Navigator::refresh);
-			}
+			App.runWithProgress(M.RemovingLibraryDots,
+					() -> Libraries.unmount(lib),
+					Navigator::refresh);
 		} else {
 			delete(lib);
 		}
