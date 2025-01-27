@@ -250,10 +250,15 @@ public final class Libraries {
 
 	public static void unmount(Library lib) {
 		// TODO ask user if they want to keep data sets or delete them
-		var reader = readerOf(lib);
-		if (reader.isEmpty())
-			return;
-		Unmounter.keepAll(Database.get()).unmount(reader.get());
+		var license = License.of(lib.folder());
+		if (license.isPresent()) {
+			Unmounter.keepNone(Database.get()).unmount(lib.name());
+		} else {
+			var reader = readerOf(lib);
+			if (reader.isEmpty())
+				return;
+			Unmounter.keepAll(Database.get()).unmount(reader.get());
+		}
 	}
 
 	public static Optional<CertificateInfo> getLicense(File folder) {
