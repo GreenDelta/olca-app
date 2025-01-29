@@ -48,7 +48,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		super(parent);
 		this.canMerge = canMerge;
 		this.entryMap = Repository.CURRENT != null
-				? Repository.CURRENT.references.find().includeCategories().asMap()
+				? Repository.CURRENT.references.find().includeCategories().includeLibraries().asMap()
 				: null;
 	}
 
