@@ -1,6 +1,5 @@
 package org.openlca.app.collaboration.dialogs;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 
 import org.eclipse.swt.SWT;
@@ -162,7 +161,7 @@ class LocationGroup extends Composite {
 						}
 					}
 				}
-			} catch (MalformedURLException e) {
+			} catch (Exception e) {
 			}
 			this.protocol = protocol;
 			this.host = host;
