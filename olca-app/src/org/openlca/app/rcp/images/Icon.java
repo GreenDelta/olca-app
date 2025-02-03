@@ -154,6 +154,7 @@ public enum Icon {
 	SEARCH("search.png"),
 	SIMAPRO_WIZARD("wizard/simapro.png"),
 	SIMULATE("calculation/simulate.png"),
+	SMART_EPD("smartepd.png"),
 	SODA("soda.png"),
 	SQL("sql.png"),
 	STASH("collaboration/stash.png"),

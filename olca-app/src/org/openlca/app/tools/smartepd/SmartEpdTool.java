@@ -17,6 +17,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.smartepd.TreeModel.EpdNode;
 import org.openlca.app.tools.smartepd.TreeModel.Node;
@@ -74,7 +75,7 @@ public class SmartEpdTool extends SimpleFormEditor {
 		client = Cache.getAppCache().remove(inp.id, SmartEpdClient.class);
 		if (client == null)
 			throw new PartInitException("failed to get the SmartEPD client");
-		// TODO set the title image
+		setTitleImage(Icon.SMART_EPD.get());
 		super.init(site, input);
 	}
 
@@ -98,6 +99,8 @@ public class SmartEpdTool extends SimpleFormEditor {
 			var tk = mForm.getToolkit();
 			var body = UI.body(form, tk);
 			var tree = Trees.createViewer(body, "Project/EPD");
+			tree.getTree().setLinesVisible(false);
+			Trees.bindColumnWidths(tree.getTree(), 1.0);
 			tree.setLabelProvider(new TreeLabel());
 			tree.setContentProvider(new TreeContent());
 			TreeMenu.mountOn(client, tree);
@@ -153,7 +156,7 @@ public class SmartEpdTool extends SimpleFormEditor {
 				if (col != 0)
 					return null;
 				if (obj instanceof ProjectNode) {
-					return Images.get(ModelType.PROJECT);
+					return Icon.SMART_EPD.get();
 				}
 				if (obj instanceof EpdNode) {
 					return Images.get(ModelType.EPD);

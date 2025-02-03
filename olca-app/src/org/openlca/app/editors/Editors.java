@@ -25,6 +25,7 @@ import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.logging.LogFileEditor;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.smartepd.SmartEpdTool;
 import org.openlca.app.tools.soda.SodaClientTool;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
@@ -35,7 +36,7 @@ public class Editors {
 	}
 
 	/**
-	 * Adds a refresh function to the tool-bar of the given form (content of a
+	 * Adds a refresh function to the toolbar of the given form (content of an
 	 * editor page). When this function is executed the given editor is closed and
 	 * opened again.
 	 */
@@ -72,6 +73,8 @@ public class Editors {
 				if (editor instanceof LogFileEditor)
 					continue;
 				if (editor instanceof SodaClientTool)
+					continue;
+				if (editor instanceof SmartEpdTool)
 					continue;
 
 				refs.add(ref);

@@ -183,14 +183,13 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		apiMenu.add(Actions.create("soda4LCA",
 				Icon.SODA.descriptor(), SodaClientTool::open));
 		apiMenu.add(Actions.create(M.GetEpdsFromEc3,
-			Icon.BUILDING.descriptor(), EpdPanel::open));
+				Icon.BUILDING.descriptor(), EpdPanel::open));
 		apiMenu.add(Actions.create("SmartEPD (experimental)",
-				SmartEpdTool::open)); // TODO: icon
+				Icon.SMART_EPD.descriptor(), SmartEpdTool::open));
 
 		// console
 		menu.add(new Separator());
 		menu.add(new FormulaConsoleAction());
-
 
 		// add tools actions for ecoinvent imports
 		if (App.runsInDevMode()) {

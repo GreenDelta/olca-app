@@ -1,5 +1,15 @@
 package org.openlca.app;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
@@ -25,16 +35,6 @@ import org.openlca.nativelib.Module;
 import org.openlca.nativelib.NativeLib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 public class App {
 
@@ -192,7 +192,7 @@ public class App {
 				if (Objects.equals(input.getDescriptor(), d))
 					return ref;
 			} catch (Exception e) {
-				log.error("editor search failed", e);
+				ErrorReporter.on("editor search failed for: " + d, e);
 			}
 		}
 		return null;
@@ -237,7 +237,7 @@ public class App {
 				monitor.done();
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
-			log.error("Error while running progress " + name, e);
+			ErrorReporter.on("Error while running progress: " + name, e);
 		}
 	}
 
@@ -262,7 +262,7 @@ public class App {
 				}
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
-			log.error("Error while running progress " + name, e);
+			ErrorReporter.on("Error while running progress: " + name, e);
 			if (!fnSucceeded.get() && onError != null) {
 				onError.run();
 			}
@@ -285,7 +285,7 @@ public class App {
 						monitor.done();
 					});
 		} catch (Exception e) {
-			ErrorReporter.on("exec " + task + " failed", e);
+			ErrorReporter.on("Execution of " + task + " failed", e);
 		}
 		return ref.get();
 	}
