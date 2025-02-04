@@ -85,7 +85,7 @@
     "hasEPDs": false
   },
   {
-    "name": "Small Data Providers Database",
+    "name": "ILCD-EL Small Data Providers Database",
     "url": "https://eplca.jrc.ec.europa.eu/SDPDB/",
     "hasEPDs": false
   },
@@ -102,6 +102,21 @@
   {
     "name": "TianGong Life Cycle Inventory",
     "url": "https://lcadata.tiangong.world/",
+    "hasEPDs": false
+  },
+  {
+    "name": "EF Representative Products",
+    "url": "https://eplca.jrc.ec.europa.eu/EF-node/",
+    "hasEPDs": false
+  },
+  {
+    "name": "EF Small Data Provider",
+    "url": "https://eplca.jrc.ec.europa.eu/EF-SDP/",
+    "hasEPDs": false
+  },
+  {
+    "name": "Umweltbundesamt Probas2",
+    "url": "https://data.probas.umweltbundesamt.de/",
     "hasEPDs": false
   }
 ]
