@@ -64,7 +64,10 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			return;
 		try {
 			category = tryInsert(category);
-			// we have to refresh the category starting from it's root
+			if (category == null)
+				return;
+
+			// we have to refresh the category starting from its root
 			// otherwise the object model is out of sync.
 			var element = Navigator.findElement(category.modelType);
 			Navigator.refresh(element);
@@ -82,9 +85,10 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			return dao.insert(c);
 		parent.childCategories.add(c);
 		parent = dao.update(parent);
-		for (var child : parent.childCategories)
+		for (var child : parent.childCategories) {
 			if (c.refId.equals(child.refId))
 				return child;
+		}
 		return null;
 	}
 

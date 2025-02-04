@@ -41,7 +41,7 @@ class RenameAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
+		var first = selection.getFirst();
 		if (!(first instanceof ModelElement
 			|| first instanceof CategoryElement)
 			|| first.getLibrary().isPresent())
@@ -88,8 +88,8 @@ class RenameAction extends Action implements INavigationAction {
 			MsgBox.error(M.NameCannotBeEmpty);
 			return;
 		}
-		if (element instanceof CategoryElement) {
-			doUpdate(((CategoryElement) element).getContent(), newName);
+		if (element instanceof CategoryElement ce) {
+			doUpdate(ce.getContent(), newName);
 		} else {
 			doUpdate(((ModelElement) element).getContent(), newName);
 		}
@@ -112,6 +112,8 @@ class RenameAction extends Action implements INavigationAction {
 		var dao = (RootEntityDao<T, ?>) Daos.root(Database.get(), d.type);
 		T entity = dao.getForId(d.id);
 		entity.name = newName.trim();
+		entity.lastChange = System.currentTimeMillis();
+		entity.version += 1;
 		dao.update(entity);
 		Cache.evict(d);
 		Navigator.refresh(element.getParent());
