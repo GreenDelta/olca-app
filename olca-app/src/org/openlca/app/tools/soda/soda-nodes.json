@@ -113,5 +113,10 @@
     "name": "EF Small Data Provider",
     "url": "https://eplca.jrc.ec.europa.eu/EF-SDP/",
     "hasEPDs": false
+  },
+  {
+    "name": "Umweltbundesamt Probas2",
+    "url": "https://data.probas.umweltbundesamt.de/",
+    "hasEPDs": false
   }
 ]
