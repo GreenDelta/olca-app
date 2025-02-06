@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.CommitReferencesDialog;
-import org.openlca.app.collaboration.navigation.actions.ModelReferences.ModelReference;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.db.Database;
@@ -82,12 +81,12 @@ class ReferenceCheck {
 	private Set<TriDiff> collect() {
 		var referenced = new TypedRefIdSet();
 		var stack = new Stack<TypedRefId>();
-		selection.forEach((type, refId, node) -> stack.add(new TypedRefId(type, refId)));
+		selection.keySet().forEach(ref -> stack.add(ref));
 		while (!stack.isEmpty()) {
 			var next = stack.pop();
 			var collected = collect(next);
 			referenced.addAll(collected);
-			stack.addAll(collected);
+			collected.forEach(ref -> stack.add(ref));
 		}
 		var collected = new HashSet<TriDiff>();
 		diffs.values().stream()
@@ -102,8 +101,8 @@ class ReferenceCheck {
 		return collected;
 	}
 
-	private Set<ModelReference> collect(TypedRefId pair) {
-		var referenced = new HashSet<ModelReference>();
+	private TypedRefIdSet collect(TypedRefId pair) {
+		var referenced = new TypedRefIdSet();
 		if (visited.contains(pair))
 			return referenced;
 		visited.add(pair);

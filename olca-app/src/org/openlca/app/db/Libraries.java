@@ -22,7 +22,6 @@ import java.util.function.BiConsumer;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.components.MountLibraryDialog;
 import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.app.licence.LibrarySession;
 import org.openlca.app.rcp.Workspace;
@@ -31,8 +30,6 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryPackage;
-import org.openlca.core.library.PreMountCheck;
-import org.openlca.core.library.Unmounter;
 import org.openlca.core.library.reader.LibReader;
 import org.openlca.core.library.reader.LibReaderRegistry;
 import org.openlca.core.model.ImpactCategory;
@@ -235,29 +232,6 @@ public final class Libraries {
 					log.trace("Error deleting tmp file", e);
 				}
 			}
-		}
-	}
-
-	public static void mount(Library lib) {
-		var checkResult = App.exec(M.CheckLibraryDots,
-				() -> PreMountCheck.check(Database.get(), lib));
-		if (checkResult.isError()) {
-			ErrorReporter.on("Failed to check library", checkResult.error());
-			return;
-		}
-		MountLibraryDialog.show(lib, checkResult);
-	}
-
-	public static void unmount(Library lib) {
-		// TODO ask user if they want to keep data sets or delete them
-		var license = License.of(lib.folder());
-		if (license.isPresent()) {
-			Unmounter.keepNone(Database.get()).unmount(lib.name());
-		} else {
-			var reader = readerOf(lib);
-			if (reader.isEmpty())
-				return;
-			Unmounter.keepAll(Database.get()).unmount(reader.get());
 		}
 	}
 

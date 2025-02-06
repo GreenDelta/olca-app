@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
@@ -57,9 +55,8 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 		if (replaceWith == null)
 			return;
 		var toReplace = element.getContent();
-		App.runWithProgress(M.RemovingLibraryDots,
-				() -> Libraries.unmount(toReplace),
-				() -> Libraries.mount(replaceWith));
+		LibraryActions.unmount(toReplace,
+				() -> LibraryActions.mount(replaceWith));
 	}
 
 }

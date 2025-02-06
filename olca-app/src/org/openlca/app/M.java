@@ -395,6 +395,7 @@ public class M extends NLS {
 	public static String DeleteAllFileInFolderQuestion;
 	public static String DeleteCurrentAccessToken;
 	public static String DeleteDatabase;
+	public static String DeleteDataSets;
 	public static String DeleteFile;
 	public static String DeleteFileQuestion;
 	public static String DeleteFlow;
@@ -850,10 +851,11 @@ public class M extends NLS {
 	public static String Italian;
 	public static String ItemCannotBeAddedToProductSystem;
 
-// J
+	// J
 
 	// K
 	public static String KeepAllExistingLinks;
+	public static String KeepDataSets;
 	public static String KeepDataSetDeleted;
 	public static String KeepExisting;
 	public static String KeepLocalDataSet;
@@ -1678,6 +1680,8 @@ public class M extends NLS {
 	public static String UnknownQ;
 	public static String UnknownSupportedFlowSourceErr;
 	public static String Unlimited;
+	public static String UnmountTitle;
+	public static String UnmountQuestion;
 	public static String UnsavedChanges;
 	public static String Unspecified;
 	public static String UnsupportedFileFormatInfo;

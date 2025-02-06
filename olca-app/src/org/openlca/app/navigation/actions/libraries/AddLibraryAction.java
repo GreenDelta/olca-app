@@ -16,7 +16,6 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -69,7 +68,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		var lib = askForLibrary();
 		if (lib == null)
 			return;
-		Libraries.mount(lib);
+		LibraryActions.mount(lib);
 	}
 
 	private static class Dialog extends FormDialog {

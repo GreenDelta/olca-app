@@ -12,7 +12,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -65,9 +64,7 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 		// check if this is a mounted library
 		var db = element.getDatabase();
 		if (db.isPresent()) {
-			App.runWithProgress(M.RemovingLibraryDots,
-					() -> Libraries.unmount(lib),
-					Navigator::refresh);
+			LibraryActions.unmount(lib, Navigator::refresh);
 		} else {
 			delete(lib);
 		}
