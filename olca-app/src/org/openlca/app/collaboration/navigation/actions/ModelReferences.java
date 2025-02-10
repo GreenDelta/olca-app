@@ -1,7 +1,6 @@
 package org.openlca.app.collaboration.navigation.actions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -233,11 +232,19 @@ class ModelReferences {
 		scanTable("tbl_process_links", false,
 				new ModelField(ModelType.PRODUCT_SYSTEM, "f_product_system"),
 				new ModelField(ModelType.PROCESS, "f_process"),
-				new ModelField(ModelType.PROCESS, "f_provider"),
+				new ModelField(new Condition("provider_type", this::getProviderType), "f_provider"),
 				new ModelField(ModelType.FLOW, "f_flow"));
 		var setToSystem = scanTable("tbl_parameter_redef_sets", false, "id",
 				new ModelField(ModelType.PRODUCT_SYSTEM, "f_product_system"));
 		scanParameterRedefs(ModelType.PRODUCT_SYSTEM, setToSystem::get);
+	}
+
+	private ModelType getProviderType(Object type) {
+		if (type.equals(0))
+			return ModelType.PROCESS;
+		if (type.equals(1))
+			return ModelType.PRODUCT_SYSTEM;
+		return ModelType.RESULT;
 	}
 
 	private void scanProjects() {
@@ -306,57 +313,74 @@ class ModelReferences {
 	 */
 	private Map<Long, Long> scanTable(String table, boolean isRootEntity, String idField, ModelField source,
 			ModelField... targets) {
-		var targetFields = targets != null
-				? Arrays.stream(targets).map(t -> t.field).toArray(n -> new String[n])
-				: new String[0];
 		var map = new HashMap<Long, Long>();
-		query(table, isRootEntity, source, idField, targetFields, ids -> {
+		query(table, isRootEntity, source, idField, targets, values -> {
 			var col = 0;
-			var sourceId = ids[col++];
+			var sourceId = (long) values[col++];
 			if (idField != null) {
-				map.put(ids[col++], sourceId);
+				map.put((long) values[col++], sourceId);
 			}
-			if (source.mediator != null) {
-				sourceId = source.mediator.apply(sourceId);
+			if (source.idMapper != null) {
+				sourceId = source.idMapper.apply(sourceId);
 			}
 			if (targets == null)
 				return;
 			for (var target : targets) {
-				var targetId = ids[col++];
+				var targetId = (long) values[col++];
 				if (targetId == 0l)
 					continue;
-				if (target.mediator != null) {
-					targetId = target.mediator.apply(targetId);
+				if (target.idMapper != null) {
+					targetId = target.idMapper.apply(targetId);
 				}
-				putRef(source.type, sourceId, target.type, targetId);
+				var targetType = target.type;
+				if (target.condition != null) {
+					var conditionValue = values[col++];
+					targetType = target.condition.typeMapper.apply(conditionValue);
+				}
+				putRef(source.type, sourceId, targetType, targetId);
 			}
 		});
 		return map;
 	}
 
-	private void query(String table, boolean isRootEntity, ModelField sourceField, String idField, String[] targets,
-			ResultHandler handler) {
+	private void query(String table, boolean isRootEntity, ModelField sourceField, String idField,
+			ModelField[] targets, ResultHandler handler) {
 		var fields = new ArrayList<String>();
+		var conditionIndices = new HashSet<Integer>();
 		fields.add(sourceField.field);
 		if (idField != null) {
 			fields.add(idField);
 		}
-		fields.addAll(Arrays.asList(targets));
+		if (targets != null) {
+			var conditionIndex = fields.size();
+			for (var target : targets) {
+				fields.add(target.field);
+				conditionIndex++;
+				if (target.condition != null) {
+					fields.add(target.condition.field);
+					conditionIndices.add(conditionIndex++);
+				}
+			}
+		}
 		var query = "SELECT " + fields.stream().collect(Collectors.joining(","))
 				+ (isRootEntity ? ",ref_id,library " : "")
 				+ " FROM " + table;
 		NativeSql.on(database).query(query, rs -> {
-			var ids = new long[fields.size()];
+			var values = new Object[fields.size()];
 			for (var i = 0; i < fields.size(); i++) {
-				ids[i] += rs.getLong(i + 1);
+				if (conditionIndices.contains(i)) {
+					values[i] = rs.getObject(i + 1);
+				} else {
+					values[i] = rs.getLong(i + 1);
+				}
 			}
-			var id = ids[0];
+			var id = (long) values[0];
 			if (isRootEntity) {
 				var refId = rs.getString(fields.size() + 1);
 				var lib = rs.getString(fields.size() + 2);
 				putRefId(sourceField.type, id, refId, lib);
 			}
-			handler.handle(ids);
+			handler.handle(values);
 			return true;
 		});
 	}
@@ -381,16 +405,40 @@ class ModelReferences {
 
 		private final ModelType type;
 		private final String field;
-		private final Function<Long, Long> mediator;
+		private final Condition condition;
+		private final Function<Long, Long> idMapper;
 
 		private ModelField(ModelType type, String field) {
-			this(type, field, null);
-		}
-
-		private ModelField(ModelType type, String field, Function<Long, Long> mediator) {
 			this.type = type;
 			this.field = field;
-			this.mediator = mediator;
+			this.condition = null;
+			this.idMapper = null;
+		}
+
+		private ModelField(Condition condition, String field) {
+			this.type = null;
+			this.field = field;
+			this.condition = condition;
+			this.idMapper = null;
+		}
+
+		private ModelField(ModelType type, String field, Function<Long, Long> idMapper) {
+			this.type = type;
+			this.field = field;
+			this.condition = null;
+			this.idMapper = null;
+		}
+
+	}
+
+	private class Condition {
+
+		private final String field;
+		private final Function<Object, ModelType> typeMapper;
+
+		private Condition(String field, Function<Object, ModelType> typeMapper) {
+			this.field = field;
+			this.typeMapper = typeMapper;
 		}
 
 	}
@@ -418,7 +466,7 @@ class ModelReferences {
 
 	private interface ResultHandler {
 
-		void handle(long[] ids);
+		void handle(Object[] values);
 
 	}
 
