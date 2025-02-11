@@ -2,7 +2,7 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.model.ModelRef;
-import org.openlca.git.util.TypedRefIdMap;
+import org.openlca.util.TypedRefIdMap;
 
 import com.google.gson.JsonObject;
 

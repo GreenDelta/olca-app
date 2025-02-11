@@ -28,7 +28,7 @@ import org.openlca.git.model.Diff;
 import org.openlca.git.model.TriDiff;
 import org.openlca.git.repo.Conflicts;
 import org.openlca.git.util.Constants;
-import org.openlca.git.util.TypedRefIdMap;
+import org.openlca.util.TypedRefIdMap;
 
 class ConflictResolver {
 

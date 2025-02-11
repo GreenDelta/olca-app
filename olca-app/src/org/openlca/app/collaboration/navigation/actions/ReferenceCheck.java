@@ -13,12 +13,13 @@ import org.openlca.app.collaboration.dialogs.CommitReferencesDialog;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.db.Database;
+import org.openlca.core.database.ModelReferences;
+import org.openlca.core.model.TypedRefId;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.TriDiff;
-import org.openlca.git.util.TypedRefId;
-import org.openlca.git.util.TypedRefIdMap;
-import org.openlca.git.util.TypedRefIdSet;
+import org.openlca.util.TypedRefIdMap;
+import org.openlca.util.TypedRefIdSet;
 
 class ReferenceCheck {
 
@@ -106,13 +107,16 @@ class ReferenceCheck {
 		if (visited.contains(pair))
 			return referenced;
 		visited.add(pair);
-		references.getReferences(pair).stream()
-				.filter(ref -> !selection.contains(ref) && diffs.contains(ref))
-				.forEach(referenced::add);
-		references.getUsages(pair).stream()
-				.filter(ref -> !selection.contains(ref) && diffs.contains(ref))
-				.filter(ref -> diffs.get(ref).diffType != DiffType.ADDED)
-				.forEach(referenced::add);
+		references.iterateReferences(pair, ref -> {
+			if (!selection.contains(ref) && diffs.contains(ref)) {
+				referenced.add(ref);
+			}
+		});
+		references.iterateUsages(pair, ref -> {
+			if (!selection.contains(ref) && diffs.contains(ref) && diffs.get(ref).diffType != DiffType.ADDED) {
+				referenced.add(ref);
+			}
+		});
 		var lib = references.getLibrary(pair);
 		if (lib != null) {
 			libraries.add(lib);

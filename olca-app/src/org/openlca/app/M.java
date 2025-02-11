@@ -391,11 +391,11 @@ public class M extends NLS {
 	public static String DefaultProvider;
 	public static String DefaultValue;
 	public static String Delete;
+	public static String DeleteAll;
 	public static String DeleteAllFileInFolder;
 	public static String DeleteAllFileInFolderQuestion;
 	public static String DeleteCurrentAccessToken;
 	public static String DeleteDatabase;
-	public static String DeleteDataSets;
 	public static String DeleteFile;
 	public static String DeleteFileQuestion;
 	public static String DeleteFlow;
@@ -854,11 +854,12 @@ public class M extends NLS {
 	// J
 
 	// K
+	public static String KeepAll;
 	public static String KeepAllExistingLinks;
-	public static String KeepDataSets;
 	public static String KeepDataSetDeleted;
 	public static String KeepExisting;
 	public static String KeepLocalDataSet;
+	public static String KeepUsed;
 	public static String KeepVersionDb;
 	public static String Key;
 	public static String KnownHosts;

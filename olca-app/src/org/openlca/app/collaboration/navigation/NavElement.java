@@ -3,9 +3,9 @@ package org.openlca.app.collaboration.navigation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.core.model.TypedRefId;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.git.util.TypedRefId;
 
 record NavElement(ElementType type, Object content, boolean isFromLibrary, List<NavElement> children) {
 

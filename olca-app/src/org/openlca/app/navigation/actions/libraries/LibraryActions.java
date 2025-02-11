@@ -32,11 +32,13 @@ class LibraryActions {
 			if (reader.isEmpty())
 				return;
 			var answer = Question.ask(M.UnmountTitle, M.UnmountQuestion,
-					new String[] { M.Cancel, M.KeepDataSets, M.DeleteDataSets });
+					new String[] { M.Cancel, M.KeepAll, M.KeepUsed, M.DeleteAll });
 			if (answer == 0)
 				return;
 			if (answer == 1) {
 				action = () -> Unmounter.keepAll(Database.get(), reader.get());
+			} else if (answer == 2) {
+				action = () -> Unmounter.keepUsed(Database.get(), reader.get());
 			}
 		}
 		App.runWithProgress(M.RemovingLibraryDots, action, callback);

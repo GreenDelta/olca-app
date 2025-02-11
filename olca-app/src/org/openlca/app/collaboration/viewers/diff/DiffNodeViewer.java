@@ -32,7 +32,7 @@ import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
 import org.openlca.git.model.TriDiff;
 import org.openlca.git.util.ModelRefMap;
-import org.openlca.git.util.TypedRefIdMap;
+import org.openlca.util.TypedRefIdMap;
 
 import com.google.gson.JsonObject;
 
