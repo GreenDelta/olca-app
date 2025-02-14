@@ -57,7 +57,7 @@ public class ExportProcess implements IRunnableWithProgress {
 	private void tryExportProcess(Export exp, Descriptor d) {
 		try {
 			var p = db.get(Process.class, d.id);
-			new ProcessExport(exp).write(p);
+			new ProcessExport(exp, p).write();
 			monitor.worked(1);
 		} catch (Exception e) {
 			log.error("Process export failed", e);
@@ -67,7 +67,7 @@ public class ExportProcess implements IRunnableWithProgress {
 	private void tryExportSystem(Export exp, Descriptor d) {
 		try {
 			var system = db.get(ProductSystem.class, d.id);
-			new SystemExport(exp).write(system);
+			new SystemExport(exp, system).write();
 			monitor.worked(1);
 		} catch (Exception e) {
 			log.error("System export failed", e);
