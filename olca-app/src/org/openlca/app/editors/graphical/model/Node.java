@@ -55,12 +55,13 @@ public class Node extends MinMaxComponent {
 	public RootDescriptor descriptor;
 	private RootEntity entity;
 
-	/**
-	 * Define if the input or this output side is expanded.
-	 * 0: not expanded, 1: input expanded, 2: output expanded, 3: both
-	 * expanded
-	 */
-	public int isExpanded;
+	/// Defines the expansion state of the input and output side:
+	/// + 0: not expanded
+	/// + 1: input side expanded
+	/// + 2: output side expanded
+	/// + 3: both sides expanded
+	private int expansionState;
+
 	/**
 	 * Helper variable when exploring graph in CollapseCommand
 	 */
@@ -215,26 +216,27 @@ public class Node extends MinMaxComponent {
 	}
 
 	public boolean isExpanded(Side side) {
-		if (side == Side.BOTH)
+		if (side == null)
 			return false;
-		var bitPosition = side == Side.INPUT ? 1 : 2;
-		return ((isExpanded >> bitPosition) & 1) == 1;
+		return switch (side) {
+			case INPUT -> (expansionState & 1) == 1;
+			case OUTPUT -> (expansionState & 2) == 2;
+			case BOTH -> (expansionState & 3) == 3;
+		};
 	}
 
 	public void setExpanded(Side side, boolean value) {
-		if (side == Side.BOTH) {
-			setExpanded(Side.INPUT, value);
-			setExpanded(Side.OUTPUT, value);
+		if (side == null)
+			return;
+		int oldState = expansionState;
+		expansionState = switch (side) {
+			case INPUT -> value ? expansionState | 1 : expansionState & ~1;
+			case OUTPUT -> value ? expansionState | 2 : expansionState & ~2;
+			case BOTH -> value ? 3 : 0;
+		};
+		if (oldState != expansionState) {
+			firePropertyChange(EXPANDED_PROP, oldState, expansionState);
 		}
-
-		var oldIsExpanded = isExpanded;
-		var bitPosition = side == Side.INPUT ? 1 : 2;
-		if (value)
-			isExpanded |= 1 << bitPosition;
-		else
-			isExpanded &= ~(1 << bitPosition);
-		if (oldIsExpanded != isExpanded)
-			firePropertyChange(EXPANDED_PROP, oldIsExpanded, isExpanded);
 	}
 
 	/**
