@@ -75,6 +75,12 @@ class LinkCandidate implements Comparable<LinkCandidate> {
 
 	@Override
 	public int compareTo(LinkCandidate o) {
+		if (isDefaultProvider != o.isDefaultProvider)
+			return isDefaultProvider ? -1 : 1;
+		if (isConnected != o.isConnected)
+			return isConnected ? -1 : 1;
+		if (isInSystem != o.isInSystem)
+			return isInSystem ? -1 : 1;
 		String n1 = Labels.name(process);
 		String n2 = Labels.name(o.process);
 		return n1.toLowerCase().compareTo(n2.toLowerCase());
