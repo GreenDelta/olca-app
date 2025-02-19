@@ -1,10 +1,10 @@
 package org.openlca.app.editors.graphical.search;
 
+import static org.openlca.app.editors.graphical.search.ConnectionDialog.LABELS.*;
+
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.swt.widgets.TableItem;
-
-import static org.openlca.app.editors.graphical.search.ConnectionDialog.LABELS.CONNECT;
-import static org.openlca.app.editors.graphical.search.ConnectionDialog.LABELS.CREATE;
+import org.openlca.app.util.ErrorReporter;
 
 class ConnectionCellModifier implements ICellModifier {
 
@@ -16,10 +16,10 @@ class ConnectionCellModifier implements ICellModifier {
 
 	@Override
 	public boolean canModify(Object obj, String prop) {
-		if (!(obj instanceof Candidate c))
+		if (!(obj instanceof LinkCandidate c))
 			return false;
 		if (prop.equals(CREATE))
-			return !c.processExists && (c.doCreate || dialog.canBeAdded(c));
+			return !c.isInSystem && (c.doCreate || dialog.canBeAdded(c));
 		if (prop.equals(CONNECT))
 			return c.doConnect || dialog.canBeConnected(c);
 		return false;
@@ -27,7 +27,7 @@ class ConnectionCellModifier implements ICellModifier {
 
 	@Override
 	public Object getValue(Object obj, String prop) {
-		if (!(obj instanceof Candidate c))
+		if (!(obj instanceof LinkCandidate c))
 			return null;
 		if (prop.equals(CREATE))
 			return c.doCreate;
@@ -40,22 +40,46 @@ class ConnectionCellModifier implements ICellModifier {
 	public void modify(Object obj, String prop, Object value) {
 		if (!(obj instanceof TableItem item))
 			return;
-		if (!(item.getData() instanceof Candidate c))
+		if (!(item.getData() instanceof LinkCandidate c))
 			return;
-		if (prop.equals(CREATE)) {
-			c.doCreate = Boolean.parseBoolean(value.toString());
-			if (c.doCreate && dialog.canBeConnected(c))
-				c.doConnect = true;
-			else if (c.doConnect && !c.processExists)
-				c.doConnect = false;
+
+		boolean b;
+		try {
+			b = Boolean.parseBoolean(value.toString());
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to parse boolean: " + value, e);
+			return;
 		}
-		else if (prop.equals(CONNECT)) {
-			c.doConnect = Boolean.parseBoolean(value.toString());
-			if (c.doConnect && !c.processExists) {
-				c.doCreate = true;
-			}
+
+		if (prop.equals(CREATE)) {
+			setCreate(c, b);
+		} else if (prop.equals(CONNECT)) {
+			setConnect(c, b);
 		}
 		dialog.viewer.refresh();
+	}
+
+	private void setCreate(LinkCandidate c, boolean b) {
+		if (c.doCreate == b)
+			return;
+		c.doCreate = b;
+		if (b) {
+			c.doConnect = dialog.canBeConnected(c);
+		} else if (c.doConnect) {
+			// it can be only connected if it is in the system
+			c.doConnect = c.isInSystem;
+		}
+	}
+
+	private void setConnect(LinkCandidate c, boolean b) {
+		if (c.doConnect == b)
+			return;
+		c.doConnect = b;
+		if (b && !c.isInSystem) {
+			// if it is connected but not in the system,
+			// it must be created
+			c.doCreate = true;
+		}
 	}
 
 }

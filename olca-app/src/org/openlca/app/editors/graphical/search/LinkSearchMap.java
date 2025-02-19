@@ -1,16 +1,17 @@
 package org.openlca.app.editors.graphical.search;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import org.openlca.core.model.ProcessLink;
+
 import gnu.trove.impl.Constants;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TIntHashSet;
-import org.openlca.core.model.ProcessLink;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 
 /**
@@ -23,15 +24,16 @@ public class LinkSearchMap {
 	 * A map process-ID -> process links, where the process is a provider means
 	 * it has the product output or waste input that is described by the link.
 	 */
-	final TLongObjectHashMap<TIntArrayList> providerIndex;
+	private final TLongObjectHashMap<TIntArrayList> providerIndex;
 
 	/**
 	 * A map process-ID -> process links, where the process is connected by a
 	 * product input or waste output to another process.
 	 */
-	TLongObjectHashMap<TIntArrayList> connectionIndex;
+	private final TLongObjectHashMap<TIntArrayList> connectionIndex;
 
-	ArrayList<ProcessLink> data;
+	private final ArrayList<ProcessLink> data;
+
 	public LinkSearchMap(Collection<ProcessLink> links) {
 		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
 				Constants.DEFAULT_LOAD_FACTOR, -1L);
@@ -45,7 +47,7 @@ public class LinkSearchMap {
 		}
 	}
 
-	void index(long key, int val, TLongObjectHashMap<TIntArrayList> map) {
+	private void index(long key, int val, TLongObjectHashMap<TIntArrayList> map) {
 		TIntArrayList list = map.get(key);
 		if (list == null) {
 			list = new TIntArrayList(Constants.DEFAULT_CAPACITY, -1);

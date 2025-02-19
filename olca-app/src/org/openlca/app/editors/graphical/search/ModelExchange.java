@@ -1,21 +1,23 @@
 package org.openlca.app.editors.graphical.search;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.util.Labels;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.matrix.index.LongPair;
 import org.openlca.core.model.Exchange;
-import org.openlca.core.model.FlowType;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * Describes the exchange that is already in the product system model and for
@@ -23,61 +25,63 @@ import java.util.*;
  */
 class ModelExchange {
 
-	/** The real exchange entity. */
+	/// The real exchange entity.
 	final Exchange exchange;
 
-	/** The ID of the process to which this exchange belongs. */
+	/// The ID of the process to which this exchange belongs.
 	final RootDescriptor process;
 
-	/**
-	 * Indicates whether this exchange is already connected. This is only relevant
-	 * if this is not a provider flow.
-	 */
+	/// Indicates whether this exchange is a provider flow, i.e. a flow that
+	/// is a product output or waste input of the process.
+	final boolean isProvider;
+
+	/// Indicates whether this exchange is already connected. This is only
+	/// relevant if this is not a provider flow.
 	final boolean isConnected;
 
-	private Graph graph;
+	final Graph graph;
 
-	ModelExchange(ExchangeItem exchangeItem) {
-		exchange = exchangeItem.exchange;
-		process = exchangeItem.getNode().descriptor;
-		graph = exchangeItem.getGraph();
-		if (isProvider()) {
-			isConnected = false;
-		} else {
-			isConnected = graph.linkSearch
-					.getConnectionLinks(process.id)
-					.stream()
-					.anyMatch(link -> link.exchangeId == exchange.id);
-		}
-	}
+	ModelExchange(ExchangeItem item) {
+		exchange = item.exchange;
+		process = item.getNode().descriptor;
+		graph = item.getGraph();
 
-	boolean isProvider() {
-		boolean isWaste = exchange.flow.flowType == FlowType.WASTE_FLOW;
-		return isWaste == exchange.isInput;
+		isProvider = exchange.flow != null &&
+				exchange.flow.flowType != null &&
+				switch (exchange.flow.flowType) {
+					case PRODUCT_FLOW -> !exchange.isInput;
+					case WASTE_FLOW -> exchange.isInput;
+					default -> false;
+				};
+
+		isConnected = !isProvider &&
+				graph.linkSearch
+						.getConnectionLinks(process.id)
+						.stream()
+						.anyMatch(link -> link.exchangeId == exchange.id);
 	}
 
 	boolean isInput() {
 		return exchange.isInput;
 	}
 
-	List<Candidate> searchCandidates(IDatabase db) {
+	List<LinkCandidate> searchLinkCandidates(IDatabase db) {
 
 		// search for processes that have an exchange
 		// with the flow on the opposite side
-		List<LongPair> exchanges = new ArrayList<>();
-		Set<Long> exchangeIds = new HashSet<>();
-		Set<Long> processIds = new HashSet<>();
+		var exchanges = new ArrayList<LongPair>();
+		var exchangeIds = new HashSet<Long>();
+		var processIds = new HashSet<Long>();
 		try {
 			String sql = "SELECT id, f_owner FROM tbl_exchanges "
 					+ "WHERE f_flow = " + exchange.flow.id
 					+ " AND is_input = " + (exchange.isInput ? 0 : 1);
 			NativeSql.on(db).query(sql, r -> {
-				long exchangeID = r.getLong("id");
-				long processID = r.getLong("f_owner");
-				exchanges.add(LongPair.of(
-						exchangeID, processID));
-				exchangeIds.add(exchangeID);
-				processIds.add(processID);
+				long exchangeId = r.getLong("id");
+				long processId = r.getLong("f_owner");
+				exchanges.add(LongPair.of(exchangeId, processId));
+				exchangeIds.add(exchangeId);
+				processIds.add(processId);
 				return true;
 			});
 		} catch (Exception e) {
@@ -85,26 +89,26 @@ class ModelExchange {
 			log.error("Error loading connection candidates", e);
 		}
 
-		List<ProcessDescriptor> procs = new ProcessDao(db)
-				.getDescriptors(processIds);
-		Map<Long, RootDescriptor> processes = new HashMap<>();
-		for (ProcessDescriptor p : procs) {
+		var processes = new HashMap<Long, RootDescriptor>();
+		for (var p : db.getDescriptors(Process.class, processIds)) {
 			processes.put(p.id, p);
 		}
 
 		// add product systems that have the same exchanges as
 		// the process candidates as reference flows (these can
 		// be connected as sub-systems
-		Set<Long> systemIds = new HashSet<Long>();
+		var systemIds = new HashSet<Long>();
 		try {
 			String sql = "SELECT id, f_reference_exchange FROM"
 					+ " tbl_product_systems";
 			NativeSql.on(db).query(sql, r -> {
-				long exchangeID = r.getLong(2);
-				if (exchangeIds.contains(exchangeID)) {
-					long systemID = r.getLong(1);
-					exchanges.add(LongPair.of(exchangeID, systemID));
-					systemIds.add(systemID);
+				long exchangeId = r.getLong(2);
+				if (!exchangeIds.contains(exchangeId))
+					return true;
+				long systemId = r.getLong(1);
+				if (systemId != graph.getProductSystem().id) {
+					exchanges.add(LongPair.of(exchangeId, systemId));
+					systemIds.add(systemId);
 				}
 				return true;
 			});
@@ -114,41 +118,28 @@ class ModelExchange {
 		}
 
 		if (!systemIds.isEmpty()) {
-			new ProductSystemDao(db).getDescriptors(systemIds)
-					.forEach(d -> {
-						processes.put(d.id, d);
-					});
+			db.getDescriptors(ProductSystem.class, systemIds)
+					.forEach(d -> processes.put(d.id, d));
 		}
 
-		List<Candidate> candidates = new ArrayList<>();
+		var candidates = new ArrayList<LinkCandidate>();
 		for (LongPair e : exchanges) {
 			var p = processes.get(e.second());
 			if (p == null)
 				continue;
-			var c = new Candidate(p);
-			c.exchangeId = e.first();
-			c.processExists = graph.getProductSystem().processes.contains(p.id);
-			c.isDefaultProvider = !isProvider()
-					&& this.exchange.defaultProviderId == p.id;
-			if (isProvider()) {
-				c.isConnected = graph.linkSearch
-						.getConnectionLinks(c.process.id)
-						.stream()
-						.anyMatch(link -> link.exchangeId == c.exchangeId);
-			}
-			candidates.add(c);
+			candidates.add(LinkCandidate.of(this, p, e.first()));
 		}
 
 		Collections.sort(candidates);
 		return candidates;
 	}
 
-	boolean canConnect(Candidate c, List<Candidate> all) {
-		if (isProvider())
+	boolean canConnect(LinkCandidate c, List<LinkCandidate> all) {
+		if (isProvider)
 			return !c.isConnected;
 		if (isConnected)
 			return false;
-		for (Candidate other : all) {
+		for (LinkCandidate other : all) {
 			if (Objects.equals(other, c))
 				continue;
 			if (other.doConnect || other.doCreate)
@@ -157,8 +148,8 @@ class ModelExchange {
 		return true;
 	}
 
-	public boolean canBeAdded(Candidate c, List<Candidate> all) {
-		for (Candidate other : all) {
+	public boolean canBeAdded(LinkCandidate c, List<LinkCandidate> all) {
+		for (LinkCandidate other : all) {
 			if (Objects.equals(other, c))
 				continue;
 			if (other.doCreate || other.doConnect)
@@ -169,38 +160,3 @@ class ModelExchange {
 
 }
 
-/** Contains the data of a possible connection candidate. */
-class Candidate implements Comparable<Candidate> {
-
-	final RootDescriptor process;
-	long exchangeId;
-	boolean processExists;
-
-	boolean isConnected;
-	boolean isDefaultProvider;
-
-	boolean doConnect;
-	boolean doCreate;
-
-	Candidate(RootDescriptor process) {
-		this.process = process;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Candidate other))
-			return false;
-		if (other.process == null)
-			return process == null;
-		return Objects.equals(other.process, process)
-				&& exchangeId == other.exchangeId;
-	}
-
-	@Override
-	public int compareTo(Candidate o) {
-		String n1 = Labels.name(process);
-		String n2 = Labels.name(o.process);
-		return n1.toLowerCase().compareTo(n2.toLowerCase());
-	}
-
-}

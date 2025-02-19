@@ -38,7 +38,7 @@ public class ConnectionDialog extends Dialog {
 
 	/** The exchange for which we search possible connection candidates. */
 	private final ModelExchange exchange;
-	private final List<Candidate> candidates;
+	private final List<LinkCandidate> candidates;
 	TableViewer viewer;
 
 	/**
@@ -51,7 +51,7 @@ public class ConnectionDialog extends Dialog {
 		setBlockOnOpen(true);
 		exchange = new ModelExchange(exchangeItem);
 		this.isDirty = isDirty;
-		candidates = exchange.searchCandidates(Database.get());
+		candidates = exchange.searchLinkCandidates(Database.get());
 		setShellStyle(SWT.RESIZE);
 	}
 
@@ -86,17 +86,17 @@ public class ConnectionDialog extends Dialog {
 		return new Point(1200, 500);
 	}
 
-	boolean canBeConnected(Candidate c) {
+	boolean canBeConnected(LinkCandidate c) {
 		return exchange.canConnect(c, candidates);
 	}
 
-	boolean canBeAdded(Candidate c) {
+	boolean canBeAdded(LinkCandidate c) {
 		return exchange.canBeAdded(c, candidates);
 	}
 
 	public List<RootDescriptor> getNewProcesses() {
 		List<RootDescriptor> processes = new ArrayList<>();
-		for (Candidate c : candidates) {
+		for (LinkCandidate c : candidates) {
 			if (c.doCreate) {
 				processes.add(c.process);
 			}
@@ -106,12 +106,12 @@ public class ConnectionDialog extends Dialog {
 
 	public List<ProcessLink> getNewLinks() {
 		List<ProcessLink> newLinks = new ArrayList<>();
-		for (Candidate c : candidates) {
+		for (LinkCandidate c : candidates) {
 			if (!c.doConnect)
 				continue;
 			var link = new ProcessLink();
 			link.flowId = exchange.exchange.flow.id;
-			if (exchange.isProvider()) {
+			if (exchange.isProvider) {
 				link.providerId = exchange.process.id;
 				link.setProviderType(exchange.process.type);
 				link.processId = c.process.id;

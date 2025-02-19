@@ -17,35 +17,29 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 
 	@Override
 	public Image getColumnImage(Object obj, int col) {
-		if (!(obj instanceof Candidate con))
+		if (!(obj instanceof LinkCandidate c))
 			return null;
 		switch (col) {
 		case 0:
-			return Images.get(con.process);
+			return Images.get(c.process);
 		case 1:
-			if (con.doCreate)
+			if (c.doCreate)
 				return Icon.CHECK_TRUE.get();
-			if (!con.processExists && dialog.canBeConnected(con))
+			if (!c.isInSystem && dialog.canBeConnected(c))
 				return Icon.CHECK_FALSE.get();
 			return null;
 		case 2:
-			if (con.doConnect)
+			if (c.doConnect)
 				return Icon.CHECK_TRUE.get();
-			if (dialog.canBeConnected(con))
+			if (dialog.canBeConnected(c))
 				return Icon.CHECK_FALSE.get();
 			return null;
 		case 3:
-			if (con.processExists)
-				return Icon.ACCEPT.get();
-			return null; // just show a - (getColumnText)
+			return c.isInSystem ? Icon.ACCEPT.get() : null;
 		case 4:
-			if (con.isConnected)
-				return Icon.ACCEPT.get();
-			return null; // just show a - (getColumnText)
+			return c.isConnected ? Icon.ACCEPT.get() : null;
 		case 5:
-			if (con.isDefaultProvider)
-				return Icon.ACCEPT.get();
-			return null; // just show a - (getColumnText)
+			return c.isDefaultProvider ? Icon.ACCEPT.get() : null;
 		default:
 			return null;
 		}
@@ -53,25 +47,15 @@ class ConnectionLabelProvider extends BaseLabelProvider implements ITableLabelPr
 
 	@Override
 	public String getColumnText(Object obj, int col) {
-		if (!(obj instanceof Candidate con))
+		if (!(obj instanceof LinkCandidate c))
 			return null;
-		switch (col) {
-		case 0:
-			return Labels.name(con.process);
-		case 3:
-			if (!con.processExists)
-				return "-";
-			return null; // show checkmark icon (getColumnImage)
-		case 4:
-			if (!con.isConnected)
-				return "-";
-			return null; // show checkmark icon (getColumnImage)
-		case 5:
-			if (!con.isDefaultProvider)
-				return "-";
-			return null; // show checkmark icon (getColumnImage)
-		}
-		return null;
+		return switch (col) {
+			case 0 -> Labels.name(c.process);
+			case 3 -> !c.isInSystem ? "-" : null;
+			case 4 -> !c.isConnected ? "-" : null;
+			case 5 -> !c.isDefaultProvider ? "-" : null;
+			default -> null;
+		};
 	}
 
 }
