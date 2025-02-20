@@ -15,14 +15,15 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.model.ExchangeItem;
-import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.components.graphics.figures.ComponentFigure;
 import org.openlca.app.components.graphics.figures.GridPos;
 import org.openlca.app.components.graphics.figures.RoundBorder;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
@@ -35,19 +36,22 @@ public class ExchangeFigure extends ComponentFigure {
 	private static final Integer SIGNIF_NUMBER = 2;
 	public final static Dimension BORDER_ARC_SIZE = new Dimension(6, 6);
 	private final Theme theme;
-	public ExchangeItem exchangeItem;
+	public ExchangeItem item;
 	private final Exchange exchange;
+
+	private ImageFigure icon;
 	private Label label;
 	private Figure amount;
 	private Label unitLabel;
+
 	private boolean selected;
 	private IOPaneFigure paneFigure;
 
-	public ExchangeFigure(ExchangeItem exchangeItem) {
-		super(exchangeItem);
-		this.exchangeItem = exchangeItem;
-		this.exchange = exchangeItem.exchange;
-		this.theme = exchangeItem.getGraph().getEditor().getTheme();
+	public ExchangeFigure(ExchangeItem item) {
+		super(item);
+		this.item = item;
+		this.exchange = item.exchange;
+		this.theme = item.getGraph().getEditor().getTheme();
 
 		var layout = new GridLayout(4, false);
 		layout.marginWidth = 0;
@@ -66,17 +70,17 @@ public class ExchangeFigure extends ComponentFigure {
 	public void setChildren(IOPaneFigure paneFigure) {
 		this.paneFigure = paneFigure;
 
-		var image = new ImageFigure(Images.get(exchange.flow));
-		add(image, GridPos.leadCenter());
+		icon = new ImageFigure(getIconImage());
+		add(icon, GridPos.leadCenter());
 
 		label = new Label(Labels.name(exchange.flow));
-		label.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
+		label.setForegroundColor(theme.labelColor(item.flowType()));
 		if (exchange.isAvoided) {
 			setItalic(true);
 		}
 		add(label, new GridData(SWT.LEAD, SWT.CENTER, true, false));
 
-		var flowColor = theme.labelColor(exchangeItem.flowType());
+		var flowColor = theme.labelColor(item.flowType());
 		amount = exchange.formula != null
 				? getAmountWithFormula(exchange, flowColor)
 				: getAmount(exchange, flowColor);
@@ -84,10 +88,22 @@ public class ExchangeFigure extends ComponentFigure {
 
 		unitLabel = new Label(Labels.name(exchange.unit));
 		unitLabel.setLabelAlignment(PositionConstants.LEFT);
-		unitLabel.setForegroundColor(theme.labelColor(exchangeItem.flowType()));
+		unitLabel.setForegroundColor(theme.labelColor(item.flowType()));
 		add(unitLabel);
 
 		setChildrenConstraints();
+	}
+
+	private Image getIconImage() {
+		if (item.isInput()
+				&& item.isProduct()
+				&& item.getTargetConnections().isEmpty())
+			return Icon.FLOW_PRODUCT_UNLINKED.get();
+		if (item.isOutput()
+				&& item.isWaste()
+				&& item.getSourceConnections().isEmpty())
+			return Icon.FLOW_WASTE_UNLINKED.get();
+		return Images.get(exchange.flow);
 	}
 
 	private static Figure getAmount(Exchange exchange, Color color) {
@@ -122,7 +138,7 @@ public class ExchangeFigure extends ComponentFigure {
 	private String getExchangeTooltip() {
 		if (exchange == null || exchange.flow == null)
 			return "";
-		var type = exchangeItem.flowType();
+		var type = item.flowType();
 		var prefix = type == null
 				? "?"
 				: Labels.of(type);
@@ -152,8 +168,11 @@ public class ExchangeFigure extends ComponentFigure {
 			g.setBackgroundColor(Colors.gray());
 			g.fillRectangle(getBounds());
 		}
-		if (exchangeItem.isQuantitativeReference()) {
+		if (item.isQuantitativeReference()) {
 			setBold(true);
+		}
+		if (icon != null) {
+			icon.setImage(getIconImage());
 		}
 
 		g.setForegroundColor(ColorConstants.white);
@@ -216,7 +235,7 @@ public class ExchangeFigure extends ComponentFigure {
 	public void setHighlighted(boolean b) {
 		var border = (LineBorder) getBorder();
 		if (b) {
-			var node = exchangeItem.getNode();
+			var node = item.getNode();
 			var box = node.getThemeBox();
 			var color = theme.boxBorderColor(box);
 			border.setColor(color);

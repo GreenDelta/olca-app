@@ -1,13 +1,13 @@
 package org.openlca.app.editors.graphical.model;
 
+import java.util.Objects;
+
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.util.Strings;
-
-import java.util.Objects;
 
 public class ExchangeItem extends Component {
 
@@ -17,10 +17,24 @@ public class ExchangeItem extends Component {
 		this.exchange = exchange;
 	}
 
+	public boolean isInput() {
+		return exchange != null && exchange.isInput;
+	}
+
+	public boolean isOutput() {
+		return exchange != null && !exchange.isInput;
+	}
+
+	public boolean isProduct() {
+		return flowType() == FlowType.PRODUCT_FLOW;
+	}
+
 	public boolean isWaste() {
-		if (exchange == null || exchange.flow == null)
-			return false;
-		return exchange.flow.flowType == FlowType.WASTE_FLOW;
+		return flowType() == FlowType.WASTE_FLOW;
+	}
+
+	public boolean isElementary() {
+		return flowType() == FlowType.ELEMENTARY_FLOW;
 	}
 
 	public FlowType flowType() {
@@ -121,10 +135,6 @@ public class ExchangeItem extends Component {
 		var flowType = exchange.flow.flowType;
 		return (getIOPane().isForInputs() && flowType == FlowType.WASTE_FLOW)
 			|| (!getIOPane().isForInputs() && flowType == FlowType.PRODUCT_FLOW);
-	}
-
-	public boolean isElementary() {
-		return exchange.flow.flowType == FlowType.ELEMENTARY_FLOW;
 	}
 
 	private static int typeOrderOf(Exchange e) {
