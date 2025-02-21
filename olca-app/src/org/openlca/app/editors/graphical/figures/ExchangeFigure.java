@@ -97,11 +97,11 @@ public class ExchangeFigure extends ComponentFigure {
 	private Image getIconImage() {
 		if (item.isInput()
 				&& item.isProduct()
-				&& item.getTargetConnections().isEmpty())
+				&& !item.isConnected())
 			return Icon.FLOW_PRODUCT_UNLINKED.get();
 		if (item.isOutput()
 				&& item.isWaste()
-				&& item.getSourceConnections().isEmpty())
+				&& !item.isConnected())
 			return Icon.FLOW_WASTE_UNLINKED.get();
 		return Images.get(exchange.flow);
 	}
