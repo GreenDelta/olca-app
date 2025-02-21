@@ -8,7 +8,6 @@ import java.util.Objects;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.SWT;
-import org.openlca.app.editors.graphical.model.Node;
 
 /**
  * Abstract prototype of a model component.
@@ -81,14 +80,6 @@ abstract public class Component extends Element implements
 	public void addChildQuietly(Component child) {
 		children.add(child);
 		child.setParent(this);
-	}
-
-	public void addChildren(List<Node> children) {
-		for (var child : children) {
-			children.add(child);
-			child.setParent(this);
-		}
-		firePropertyChange(CHILDREN_PROP, null, null);
 	}
 
 	public void setParent(Component parent) {
@@ -211,15 +202,6 @@ abstract public class Component extends Element implements
 		var links = new LinkedHashSet<>(getAllSourceConnections());
 		links.addAll(getAllTargetConnections());
 		return new ArrayList<>(links);
-	}
-
-	public List<Component> getSiblings(boolean forInputs) {
-		var links = forInputs
-				? getAllTargetConnections()
-				: getAllSourceConnections();
-		return links.stream()
-				.map((forInputs) ? Link::getSourceNode : Link::getTargetNode)
-				.toList();
 	}
 
 	@Override

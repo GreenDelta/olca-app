@@ -61,6 +61,8 @@ public enum Icon {
 	FETCH("collaboration/fetch.png"),
 	FILE("file.png"),
 	FIREFOX("firefox.png"),
+	FLOW_PRODUCT_UNLINKED("graphical/flow_product_unlinked.png"),
+	FLOW_WASTE_UNLINKED("graphical/flow_waste_unlinked.png"),
 	FOLDER("folder.png"),
 	FOLDER_BLUE("folder_blue.png"),
 	FOLDER_OPEN("folder_open.png"),
