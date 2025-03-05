@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.navigation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.app.db.Libraries;
 import org.openlca.core.model.TypedRefId;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -18,7 +19,7 @@ record NavElement(ElementType type, Object content, boolean isFromLibrary, List<
 	}
 
 	NavElement(Descriptor d) {
-		this(ElementType.MODEL, d, d.isFromLibrary(), new ArrayList<>());
+		this(ElementType.MODEL, d, Libraries.isFrom(d), new ArrayList<>());
 	}
 
 	boolean is(ElementType... types) {
@@ -39,7 +40,7 @@ record NavElement(ElementType type, Object content, boolean isFromLibrary, List<
 	
 	enum ElementType {
 
-		DATABASE, LIBRARY_DIR, LIBRARY, GROUP, MODEL_TYPE, CATEGORY, MODEL;
+		DATABASE, DATAPACKAGES, DATAPACKAGE, GROUP, MODEL_TYPE, CATEGORY, MODEL;
 
 	}
 

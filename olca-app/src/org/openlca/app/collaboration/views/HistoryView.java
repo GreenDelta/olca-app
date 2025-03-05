@@ -113,8 +113,8 @@ public class HistoryView extends ViewPart {
 		public String getText(Object element) {
 			if (!(element instanceof Diff diff))
 				return null;
-			if (diff.isLibrary)
-				return M.Libraries + "/" + diff.name;
+			if (diff.isDataPackage)
+				return M.DataPackage + "/" + diff.name;
 			if (diff.isCategory)
 				return diff.getCategoryPath();
 			var text = diff.category;
@@ -138,7 +138,8 @@ public class HistoryView extends ViewPart {
 			} else if (diff.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
-			if (diff.isLibrary)
+			if (diff.isDataPackage) 
+				// TODO different icon for data package?
 				return Images.library(overlay);
 			if (diff.isCategory)
 				return Images.getForCategory(diff.type, overlay);

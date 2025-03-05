@@ -23,15 +23,15 @@ public final class Categories {
 	 * otherwise the unchanged category or {@code null} if the given category was
 	 * {@code null}
 	 */
-	public static Category removeLibraryFrom(Category category) {
+	public static Category removeDataPackageFrom(Category category) {
 		if (category == null)
 			return null;
-		if (category.library == null)
+		if (category.dataPackage == null)
 			return category;
 		var dao = new CategoryDao(Database.get());
 		var c = category;
-		while (c != null && c.library != null) {
-			c.library = null;
+		while (c != null && c.dataPackage != null) {
+			c.dataPackage = null;
 			c = dao.update(c);
 			c = c.category;
 		}

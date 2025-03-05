@@ -7,24 +7,23 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Question;
 
 public class UpdateLibraryAction extends Action implements INavigationAction {
 
-	private LibraryElement element;
+	private DataPackageElement element;
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (first instanceof LibraryElement) {
-			this.element = (LibraryElement) first;
-			if (this.element.getContent() == null)
-				return false;
-			return this.element.getDatabase().isPresent();
+		if (first instanceof DataPackageElement elem && elem.getDatabase().isPresent()
+				&& elem.getContent().isLibrary()) {
+			this.element = elem;
 		}
 		return false;
 	}
@@ -54,7 +53,8 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 		var replaceWith = AddLibraryAction.askForLibrary();
 		if (replaceWith == null)
 			return;
-		var toReplace = element.getContent();
+		var toReplace = Workspace.getLibraryDir().getLibrary(
+				element.getContent().name()).orElse(null);
 		LibraryActions.unmount(toReplace,
 				() -> LibraryActions.mount(replaceWith));
 	}

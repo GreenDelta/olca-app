@@ -86,7 +86,7 @@ public class NavCache {
 		buildGroup(root, null, UNGROUPED_TYPES);
 		buildGroup(root, M.IndicatorsAndParameters, GROUP1_TYPES);
 		buildGroup(root, M.BackgroundData, GROUP2_TYPES);
-		buildLibraryDir(root);
+		buildDataPackages(root);
 	}
 
 	private void buildGroup(NavElement parent, String group, ModelType[] types) {
@@ -107,15 +107,15 @@ public class NavCache {
 		return children;
 	}
 
-	private void buildLibraryDir(NavElement root) {
-		var libs = Database.get().getLibraries();
-		if (libs.isEmpty())
+	private void buildDataPackages(NavElement root) {
+		var packages = Database.dataPackages();
+		if (packages.isEmpty())
 			return;
-		var libDir = new NavElement(ElementType.LIBRARY_DIR);
-		for (var lib : libs) {
-			libDir.children().add(new NavElement(ElementType.LIBRARY, lib));
+		var packagesElem = new NavElement(ElementType.DATAPACKAGES);
+		for (var p : packages.getAll()) {
+			packagesElem.children().add(new NavElement(ElementType.DATAPACKAGE, p));
 		}
-		root.children().add(libDir);
+		root.children().add(packagesElem);
 	}
 
 	private List<NavElement> buildCategories(ModelType type, Category category) {

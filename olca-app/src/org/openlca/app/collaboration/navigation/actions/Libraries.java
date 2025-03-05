@@ -16,8 +16,8 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.LibraryInfo;
 import org.openlca.collaboration.model.WebRequestException;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.core.library.LibraryPackage;
-import org.openlca.jsonld.LibraryLink;
 import org.openlca.util.Strings;
 
 class Libraries {
@@ -25,7 +25,9 @@ class Libraries {
 	static void uploadTo(Repository repo) {
 		if (!repo.isCollaborationServer())
 			return;
-		var libraries = repo.getInfo().libraries();
+		var libraries = repo.getInfo().dataPackages().stream()
+				.filter(DataPackage::isLibrary)
+				.collect(Collectors.toList());
 		if (libraries.isEmpty())
 			return;
 		var serverLibraries = new HashSet<String>();
@@ -35,7 +37,7 @@ class Libraries {
 					.forEach(serverLibraries::add);
 		});
 		var toUpload = libraries.stream()
-				.map(LibraryLink::id)
+				.map(DataPackage::name)
 				.filter(Predicate.not(serverLibraries::contains))
 				.collect(Collectors.toList());
 		var libraryDir = Workspace.getLibraryDir();

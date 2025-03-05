@@ -78,9 +78,9 @@ class Search implements Runnable {
 
 		matches.stream()
 				.sorted((m1, m2) -> {
-					var c = Boolean.compare(
-							m1.descriptor.isFromLibrary(),
-							m2.descriptor.isFromLibrary());
+					var c = Strings.compare(
+							m1.descriptor.dataPackage,
+							m2.descriptor.dataPackage);
 					if (c != 0)
 						return c;
 					c = Double.compare(m2.factor, m1.factor);

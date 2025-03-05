@@ -64,7 +64,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		parameterSupport = new ParameterChangeSupport();
 		parameterSupport.onEvaluation(this::evalFormulas);
 		var impact = getModel();
-		if (impact.isFromLibrary()) {
+		if (Libraries.isFrom(impact)) {
 			Libraries.fillFactorsOf(impact);
 		}
 	}
@@ -84,7 +84,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 		try {
 			addPage(new InfoPage(this));
 			addPage(new ImpactFactorPage(this));
-			if (!getModel().isFromLibrary()) {
+			if (getModel().dataPackage == null) {
 				addPage(ParameterPage.create(this));
 				addPage(new GeoPage(this));
 				addPage(new ImpactSimilaritiesPage(this));

@@ -3,6 +3,8 @@ package org.openlca.app.navigation.elements;
 import java.util.List;
 import java.util.Optional;
 
+import org.openlca.core.database.IDatabase.DataPackage;
+
 /**
  * Interface for elements in the navigation tree.
  */
@@ -21,11 +23,11 @@ public interface INavigationElement<T> {
 	void update();
 
 	/**
-	 * Returns an optional library filter that is set on this element. For the
-	 * navigation this means, that only the content of this library should be
+	 * Returns an optional data package filter that is set on this element. For the
+	 * navigation this means, that only the content of this data package should be
 	 * shown and that specific actions are not allowed here.
 	 */
-	default Optional<String> getLibrary() {
+	default Optional<DataPackage> getDataPackage() {
 		return Optional.empty();
 	}
 }

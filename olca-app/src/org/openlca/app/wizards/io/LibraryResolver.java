@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -14,63 +15,66 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryDir;
 import org.openlca.core.library.PreMountCheck;
-import org.openlca.jsonld.LibraryLink;
 
 class LibraryResolver {
 
 	private final LibraryDir libDir = Workspace.getLibraryDir();
 	private final IDatabase database = Database.get();
-	private final LinkedList<LibraryLink> links = new LinkedList<>();
+	private final LinkedList<DataPackage> libraries;
 	private final Set<String> handled = new HashSet<>();
 	private final Consumer<Boolean> callback;
 
-	private LibraryResolver(List<LibraryLink> links, Consumer<Boolean> callback) {
-		this.links.addAll(links);
+	private LibraryResolver(List<DataPackage> libraries, Consumer<Boolean> callback) {
+		this.libraries = new LinkedList<>(libraries);
 		this.callback = callback;
 	}
 
-	static void resolve(List<LibraryLink> links, Consumer<Boolean> callback) {
-		if (links.isEmpty()) {
+	static void resolve(Set<DataPackage> packages, Consumer<Boolean> callback) {
+		var libraries = packages.stream()
+				.filter(DataPackage::isLibrary)
+				.collect(Collectors.toList());
+		if (libraries.isEmpty()) {
 			callback.accept(true);
 			return;
 		}
-		new LibraryResolver(links, callback).next();
+		new LibraryResolver(libraries, callback).next();
 	}
 
 	private void next() {
-		if (links.isEmpty()) {
+		if (libraries.isEmpty()) {
 			callback.accept(true);
 			return;
 		}
-		var link = links.pop();
-		var lib = libDir.getLibrary(link.id()).orElse(null);
+		var next = libraries.pop();
+		var lib = libDir.getLibrary(next.name()).orElse(null);
 		if (lib == null) {
-			askFor(link);
-		} else if (!handled.contains(lib.name()) && !database.getLibraries().contains(lib.name())) {
+			askFor(next);
+		} else if (!handled.contains(lib.name())) {
 			mount(lib);
-		} else if (links.isEmpty()) {
+		} else if (libraries.isEmpty()) {
 			callback.accept(true);
 		} else {
 			next();
 		}
 	}
 
-	private void askFor(LibraryLink link) {
-		var dialog = new LibraryDialog(link);
+	private void askFor(DataPackage library) {
+		var dialog = new LibraryDialog(library);
 		if (dialog.open() != LibraryDialog.OK) {
 			callback.accept(false);
 			return;
 		}
 		var resolved = dialog.isFileSelected()
-				? App.exec(M.ExtractingLibrary + " - " + link.id(),
+				? App.exec(M.ExtractingLibrary + " - " + library.name(),
 						() -> Libraries.importFromFile(new File(dialog.getLocation())))
-				: App.exec(M.DownloadingAndExtractingLibrary + " - " + link.id(),
+				: App.exec(M.DownloadingAndExtractingLibrary + " - " + library.name(),
 						() -> Libraries.importFromUrl(dialog.getLocation()));
 		if (resolved == null) {
-			askFor(link);
+			askFor(library);
 		} else {
 			mount(resolved);
 		}

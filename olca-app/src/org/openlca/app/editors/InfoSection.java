@@ -26,6 +26,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.comments.CommentControl;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
@@ -64,9 +65,15 @@ public class InfoSection {
 		// name and library
 		ModelPage.text(container, M.Name, "name", editor, tk)
 				.setEditable(editor.isEditable());
-		if (entity.isFromLibrary()) {
-			ModelPage.text(container, M.Library, "library", editor, tk)
-					.setEditable(false);
+		if (entity.dataPackage != null) {
+			var dataPackage = Database.dataPackages().get(entity.dataPackage);
+			if (Libraries.isFrom(entity)) {
+				UI.labeledText(container, tk, M.Library)
+						.setText(entity.dataPackage);
+			} else {
+				UI.labeledText(container, tk, M.DataPackage)
+						.setText(dataPackage.id());
+			}
 		}
 
 		// category
@@ -89,7 +96,7 @@ public class InfoSection {
 
 		// description
 		ModelPage.multiText(container, M.Description, "description", editor, tk)
-			.setEditable(editor.isEditable());
+				.setEditable(editor.isEditable());
 
 		// version
 		UI.filler(container, tk);

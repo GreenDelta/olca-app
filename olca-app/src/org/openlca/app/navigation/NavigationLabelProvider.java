@@ -17,13 +17,13 @@ import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
+import org.openlca.app.navigation.elements.DataPackagesElement;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.Group;
 import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryDirElement;
-import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.navigation.elements.MappingDirElement;
 import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.ModelElement;
@@ -36,13 +36,14 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.core.database.config.DatabaseConfig;
-import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryDir;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Categories;
+import org.openlca.util.Strings;
 
 public class NavigationLabelProvider extends ColumnLabelProvider
 		implements ICommonLabelProvider, IColorProvider {
@@ -98,8 +99,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			var text = category != null
 					? String.join(" / ", Categories.path(category)) + " / " + name
 					: name;
-			return descriptor.isFromLibrary()
-					? descriptor.library + ": " + text
+			return !Strings.nullOrEmpty(descriptor.dataPackage)
+					? descriptor.dataPackage + ": " + text
 					: text;
 		}
 
@@ -119,17 +120,18 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 					: null;
 		}
 
-		// libraries
-		if (obj instanceof LibraryDirElement elem) {
+		// data packages
+		if (obj instanceof DataPackagesElement elem) {
 			var libDir = elem.getContent();
 			return libDir != null
 					? libDir.folder().getAbsolutePath()
 					: null;
 		}
-		if (obj instanceof LibraryElement elem) {
-			var lib = elem.getContent();
-			return lib != null
-					? lib.folder().getAbsolutePath()
+		if (obj instanceof DataPackageElement elem) {
+			var dataPackage = elem.getContent();
+			return dataPackage != null && dataPackage.isLibrary()
+					? Workspace.getLibraryDir().getLibrary(dataPackage.name())
+							.get().folder().getAbsolutePath()
 					: null;
 		}
 
@@ -170,7 +172,11 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		// libraries
 		if (content instanceof LibraryDir)
 			return Icon.FOLDER.get();
-		if (content instanceof Library lib) {
+		if (content instanceof DataPackage p) {
+			if (!p.isLibrary())
+				return Icon.LIBRARY.get();
+			var libraryDir = (LibraryDir) elem.getParent().getContent();
+			var lib = libraryDir.getLibrary(p.name()).get();
 			var license = Libraries.getLicense(lib.folder());
 			return license.map(l -> Images.licensedLibrary(l.isValid()))
 					.orElse(Icon.LIBRARY.get());
@@ -235,9 +241,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Labels.name(d);
 		if (content instanceof LibraryDir)
 			return M.Libraries;
-		if (content instanceof Library lib)
-			return lib.name();
-
+		if (content instanceof DataPackage p)
+			return p.id();
 		if (elem instanceof MappingDirElement)
 			return M.MappingFiles;
 		if (content instanceof File file)
@@ -255,7 +260,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (elem instanceof DatabaseElement dbElem
 				&& Database.isActive(dbElem.getContent()))
 			return UI.boldFont();
-		return isFromLibrary(elem)
+		return isFromDataPackage(elem)
 				? UI.italicFont()
 				: null;
 	}
@@ -284,18 +289,18 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	@Override
 	public Color getForeground(Object obj) {
-		if (isFromLibrary(obj))
+		if (isFromDataPackage(obj))
 			return Theme.isDark()
 					? Colors.get(103, 134, 151)
 					: Colors.get(55, 71, 79);
 		return null;
 	}
 
-	private boolean isFromLibrary(Object obj) {
+	private boolean isFromDataPackage(Object obj) {
 		if (obj instanceof ModelElement e)
-			return e.isFromLibrary();
+			return e.getDataPackage().isPresent();
 		if (obj instanceof CategoryElement e)
-			return e.hasLibraryContent();
+			return e.hasDataPackageContent();
 		return false;
 	}
 

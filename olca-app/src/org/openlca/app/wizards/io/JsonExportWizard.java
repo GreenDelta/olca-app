@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -20,12 +22,12 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.core.library.Library;
 import org.openlca.core.model.Callback.Message;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.jsonld.LibraryLink;
 import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.output.JsonExport;
 import org.slf4j.LoggerFactory;
@@ -115,16 +117,18 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 				monitor.worked(1);
 			}
 
-			var libraries = export.getReferencedLibraries()
+			// TODO export data package links
+			var libraries = export.getReferencedDataPackages()
 					.stream()
-					.map(id -> Workspace.getLibraryDir().getLibrary(id))
+					.filter(DataPackage::isLibrary)
+					.map(p -> Workspace.getLibraryDir().getLibrary(p.name()))
 					.filter(Optional::isPresent)
 					.map(Optional::get)
 					.toList();
-			store.putLibraryLinks(resolveLinksOf(libraries));
+			store.putDataPackages(resolveLinksOf(libraries));
 		}
 
-		private static List<LibraryLink> resolveLinksOf(List<Library> libraries) {
+		private static Set<DataPackage> resolveLinksOf(List<Library> libraries) {
 			var all = new LinkedHashSet<>(libraries);
 			for (var library : libraries) {
 				all.addAll(library.getTransitiveDependencies());
@@ -137,8 +141,8 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 							return 1;
 						return 0;
 					})
-					.map(l -> new LibraryLink(l.name(), null))
-					.toList();
+					.map(l -> DataPackage.library(l.name(), null))
+					.collect(Collectors.toSet());
 		}
 
 		private void doExport(JsonExport export, RootEntity entity) {

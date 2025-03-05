@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Controls;
@@ -27,7 +28,6 @@ import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Process;
 import org.openlca.util.Databases;
-import org.openlca.util.Strings;
 
 public class LibraryExportDialog extends FormDialog {
 
@@ -188,18 +188,19 @@ public class LibraryExportDialog extends FormDialog {
 			DQSystem flowDqs
 	) {
 		static Props of(IDatabase db) {
-			boolean hasLibraryProcesses = false;
-			boolean hasInventory = false;
+			var hasLibraryProcesses = false;
+			var hasInventory = false;
+			var libraries = Libraries.get();
 			for (var d : db.getDescriptors(Process.class)) {
 				hasInventory = true;
-				if (Strings.notEmpty(d.library)) {
+				if (libraries.contains(d.dataPackage)) {
 					hasLibraryProcesses = true;
 					break;
 				}
 			}
-			boolean hasImpacts = false;
+			var hasImpacts = false;
 			for (var d : db.getDescriptors(ImpactCategory.class)) {
-				if (Strings.nullOrEmpty(d.library)) {
+				if (!libraries.contains(d.dataPackage)) {
 					hasImpacts = true;
 					break;
 				}

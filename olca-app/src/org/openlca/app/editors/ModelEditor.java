@@ -164,7 +164,7 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 	}
 
 	public boolean isEditable() {
-		return model != null && !model.isFromLibrary();
+		return model != null && model.dataPackage != null;
 	}
 
 	public void updateModel() {
@@ -227,9 +227,9 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 		String newName = diag.getValue();
 		try {
 			T clone = (T) model.copy();
-			if (clone.isFromLibrary()) {
-				clone.library = null;
-				clone.category = Categories.removeLibraryFrom(clone.category);
+			if (clone.dataPackage != null) {
+				clone.dataPackage = null;
+				clone.category = Categories.removeDataPackageFrom(clone.category);
 			}
 			clone.name = newName;
 			clone = dao.insert(clone);

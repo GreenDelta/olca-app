@@ -33,11 +33,11 @@ public class CategoryElement extends NavigationElement<Category> {
 		if (category == null)
 			return Collections.emptyList();
 
-		var lib = getLibrary().orElse(null);
+		var dataPackage = getDataPackage().orElse(null);
 		var list = new ArrayList<INavigationElement<?>>();
 
 		// child categories
-		if (lib == null) {
+		if (dataPackage == null) {
 			category.childCategories.stream()
 				.map(c -> new CategoryElement(this, c))
 				.forEach(list::add);
@@ -45,7 +45,7 @@ public class CategoryElement extends NavigationElement<Category> {
 			var test = DatabaseElement.categoryTesterOf(this);
 			if (test != null) {
 				category.childCategories.stream()
-					.filter(c -> test.hasLibraryContent(c, lib))
+					.filter(c -> test.hasDataPackageContent(c, dataPackage.name()))
 					.map(c -> new CategoryElement(this, c))
 					.forEach(list::add);
 			}
@@ -56,11 +56,47 @@ public class CategoryElement extends NavigationElement<Category> {
 		if (dao == null)
 			return list;
 		for (var d : dao.getDescriptors(Optional.of(category))) {
-			if (lib == null || lib.equals(d.library)) {
+			if (dataPackage == null || dataPackage.name().equals(d.dataPackage)) {
 				list.add(new ModelElement(this, d));
 			}
 		}
 		return list;
+	}
+
+	/**
+	 * Returns {@code true} if the category of this element or a child category
+	 * of it contain model elements from a data package.
+	 */
+	public boolean hasDataPackageContent() {
+		var test = DatabaseElement.categoryTesterOf(this);
+		return test != null && test.hasDataPackageContent(getContent());
+	}
+
+	/**
+	 * Returns {@code true} if the category of this element or a child category
+	 * of it contain model elements from the given data package.
+	 */
+	public boolean hasDataPackageContent(String dataPackage) {
+		var test = DatabaseElement.categoryTesterOf(this);
+		return test != null && test.hasDataPackageContent(getContent(), dataPackage);
+	}
+
+	/**
+	 * Returns {@code true} if the category of this element or a child category
+	 * of it contain model elements only from the given data package.
+	 */
+	public boolean hasOnlyDataPackageContent(String dataPackage) {
+		var test = DatabaseElement.categoryTesterOf(this);
+		return test != null && test.hasOnlyDataPackageContent(getContent(), dataPackage);
+	}
+
+	/**
+	 * Returns {@code true} if the category of this element or a child category
+	 * of it contain model elements that do not belong to a data package.
+	 */
+	public boolean hasNonDataPackageContent() {
+		var test = DatabaseElement.categoryTesterOf(this);
+		return test != null && test.hasNonDataPackageContent(getContent());
 	}
 
 	/**

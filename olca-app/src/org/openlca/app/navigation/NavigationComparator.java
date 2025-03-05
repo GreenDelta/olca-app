@@ -11,8 +11,8 @@ import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
-import org.openlca.app.navigation.elements.LibraryDirElement;
-import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.DataPackagesElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.ScriptElement;
@@ -63,9 +63,9 @@ public class NavigationComparator extends ViewerComparator {
 			return 4;
 		if (o instanceof ModelElement)
 			return 5;
-		if (o instanceof LibraryDirElement)
+		if (o instanceof DataPackagesElement)
 			return 6;
-		if (o instanceof LibraryElement)
+		if (o instanceof DataPackageElement)
 			return 7;
 		if (o instanceof ScriptElement)
 			return 8;

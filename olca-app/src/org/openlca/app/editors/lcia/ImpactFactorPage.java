@@ -21,6 +21,7 @@ import org.openlca.app.components.ModelSelector;
 import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.components.UncertaintyCellEditor;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentDialogModifier;
 import org.openlca.app.editors.comments.CommentPaths;
@@ -108,7 +109,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		Viewers.sortByDouble(viewer, (ImpactFactor f) -> f.value, 2);
 		viewer.setLabelProvider(label);
 
-		if (!getModel().isFromLibrary()) {
+		if (!Libraries.isFrom(getModel())) {
 			bindModifySupport(viewer);
 		}
 		Tables.bindColumnWidths(viewer, 0.2, 0.2, 0.125, 0.125, 0.125, 0.125);
@@ -181,8 +182,8 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			}
 		});
 
-		// only copy for library models
-		if (getModel().isFromLibrary()) {
+		// only copy for data package models
+		if (getModel().dataPackage != null) {
 			Actions.bind(viewer, TableClipboard.onCopySelected(viewer));
 			return;
 		}

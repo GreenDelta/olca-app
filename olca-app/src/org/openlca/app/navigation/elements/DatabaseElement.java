@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.CategoryContentTest;
@@ -87,20 +86,19 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 			ModelType.SOURCE,
 			ModelType.LOCATION)));
 
-		addLibraryElements(list);
+		addDataPackagesElement(list);
 		addScriptElements(list);
 
 		return list;
 	}
 
-	private void addLibraryElements(List<INavigationElement<?>> list) {
+	private void addDataPackagesElement(List<INavigationElement<?>> list) {
 		var db = Database.get();
 		if (db == null)
 			return;
-		var libs = db.getLibraries();
-		if (!libs.isEmpty()) {
-			var libDir = Workspace.getLibraryDir();
-			var elem = new LibraryDirElement(this, libDir).only(libs);
+		var packages = Database.dataPackages().getAll();
+		if (!packages.isEmpty()) {
+			var elem = new DataPackagesElement(this, packages);
 			list.add(elem);
 		}
 	}

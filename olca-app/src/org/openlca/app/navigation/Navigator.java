@@ -42,12 +42,13 @@ import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
 import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.navigation.elements.ScriptElement;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.viewers.Selections;
@@ -99,8 +100,9 @@ public class Navigator extends CommonNavigator {
 				if (file.isDirectory())
 					return;
 				OpenScriptAction.run(file);
-			} else if (elem instanceof LibraryElement e) {
-				var library = e.getContent();
+			} else if (elem instanceof DataPackageElement e && e.getContent().isLibrary()) {
+				var library = Workspace.getLibraryDir().getLibrary(
+						e.getContent().name()).orElse(null);
 				LibraryEditor.open(library);
 			} else if (elem instanceof MappingFileElement e) {
 				var mapping = e.getContent();
@@ -145,6 +147,7 @@ public class Navigator extends CommonNavigator {
 	 * Refresh the navigation view if it is available.
 	 */
 	public static void refresh() {
+		Database.refreshDataPackages();
 		var viewer = getNavigationViewer();
 		var root = getNavigationRoot();
 		if (viewer == null || root == null)

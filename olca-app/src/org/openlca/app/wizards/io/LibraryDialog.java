@@ -13,32 +13,28 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.jsonld.LibraryLink;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.util.Strings;
 
 public class LibraryDialog extends FormDialog {
 
-	private final LibraryLink link;
+	private final DataPackage dataPackage;
 	private Button urlCheck;
 	private Button fileCheck;
 	private Mode selectedMode = Mode.URL;
 	private String location;
 
-	public LibraryDialog(String lib) {
-		this(new LibraryLink(lib, null));
-	}
-
-	public LibraryDialog(LibraryLink link) {
+	public LibraryDialog(DataPackage dataPackage) {
 		super(UI.shell());
 		setBlockOnOpen(true);
-		this.link = link;
+		this.dataPackage = dataPackage;
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var formBody = UI.header(form, form.getToolkit(),
 				M.LocateLibrary,
-				M.SpecifyLibraryLocation + " - " + link.id());
+				M.SpecifyLibraryLocation + " - " + dataPackage.name());
 		var body = UI.composite(formBody, form.getToolkit());
 		UI.gridLayout(body, 1);
 		UI.gridData(body, true, true).widthHint = 500;
@@ -49,9 +45,9 @@ public class LibraryDialog extends FormDialog {
 	private void createContent(Composite parent, FormToolkit tk) {
 		urlCheck = createCheckboxSection(parent, tk, M.FromUrl, Mode.URL, (composite, check) -> {
 			var text = UI.text(composite, tk);
-			if (!Strings.nullOrEmpty(link.url())) {
-				location = link.url();
-				text.setText(link.url());
+			if (!Strings.nullOrEmpty(dataPackage.url())) {
+				location = dataPackage.url();
+				text.setText(dataPackage.url());
 			}
 			text.addModifyListener(e -> {
 				location = text.getText();

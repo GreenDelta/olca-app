@@ -11,8 +11,8 @@ import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryDirElement;
-import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.DataPackagesElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.git.RepositoryInfo;
@@ -41,9 +41,9 @@ public class PathFilters {
 	private static String getPath(INavigationElement<?> element) {
 		if (element instanceof DatabaseElement)
 			return "";
-		if (element instanceof LibraryDirElement)
+		if (element instanceof DataPackagesElement)
 			return RepositoryInfo.FILE_NAME;
-		if (element instanceof LibraryElement e)
+		if (element instanceof DataPackageElement e)
 			return getPath(e.getParent()) + "/" + e.getContent().name();
 		if (element instanceof ModelTypeElement e)
 			return e.getContent().name();

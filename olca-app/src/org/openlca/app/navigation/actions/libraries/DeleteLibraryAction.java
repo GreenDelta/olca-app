@@ -5,6 +5,7 @@ import static org.openlca.app.licence.LibrarySession.removeSession;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.action.Action;
@@ -14,28 +15,29 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
+import org.openlca.app.navigation.elements.DataPackageElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
+import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.Library;
 import org.openlca.util.Dirs;
 
 public class DeleteLibraryAction extends Action implements INavigationAction {
 
-	private LibraryElement element;
+	private DataPackageElement element;
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (first instanceof LibraryElement) {
-			this.element = (LibraryElement) first;
+		if (first instanceof DataPackageElement elem && elem.getContent().isLibrary()) {
+			this.element = elem;
 			return true;
 		}
 		return false;
@@ -57,16 +59,17 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 	public void run() {
 		if (element == null)
 			return;
-		var lib = element.getContent();
-		if (lib == null)
+		var lib = Workspace.getLibraryDir().getLibrary(
+				element.getContent().name());
+		if (lib.isEmpty())
 			return;
 
 		// check if this is a mounted library
 		var db = element.getDatabase();
 		if (db.isPresent()) {
-			LibraryActions.unmount(lib, Navigator::refresh);
+			LibraryActions.unmount(lib.get(), Navigator::refresh);
 		} else {
-			delete(lib);
+			delete(lib.get());
 		}
 	}
 
@@ -144,13 +147,25 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 			if (config == null)
 				return Optional.empty();
 			if (Database.isActive(config)) {
-				var db = Database.get();
-				return db.getLibraries().contains(lib.name())
+				return Database.dataPackages().getLibraries().contains(lib.name())
 						? Optional.of(Usage.db(config))
 						: Optional.empty();
 			}
 			try (var db = config.connect(Workspace.dbDir())) {
-				return db.getVersion() >= 10 && db.getLibraries().contains(lib.name())
+				if (db.getVersion() < 10)
+					return Optional.empty();
+				if (db.getVersion() < 15) {
+					var isUsing = new AtomicBoolean(false);
+					NativeSql.on(db).query("SELECT count(id) FROM tbl_libraries WHERE id = '" + lib.name() + "'",
+							rs -> {
+								isUsing.set(rs.getInt(1) > 0);
+								return true;
+							});
+					return isUsing.get()
+							? Optional.of(Usage.db(config))
+							: Optional.empty();
+				}
+				return Database.dataPackages().getLibraries().contains(lib.name())
 						? Optional.of(Usage.db(config))
 						: Optional.empty();
 			} catch (Exception e) {

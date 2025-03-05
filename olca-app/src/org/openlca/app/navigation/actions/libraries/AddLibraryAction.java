@@ -56,7 +56,8 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			return null;
 
 		var lib = dialog.combo.selected;
-		if (db.getLibraries().contains(lib.name())) {
+		// TODO check if overwriting package is wanted
+		if (Database.dataPackages().contains(lib.name())) {
 			MsgBox.error(M.TheLibraryIsAlreadyPresent + " - " + lib.name());
 			return null;
 		}
@@ -148,7 +149,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 		private void fill() {
 			var db = Database.get();
 			var dbLibs = db != null
-					? db.getLibraries()
+					? Database.dataPackages().getLibraries()
 					: Collections.emptySet();
 			libraries.clear();
 			Workspace.getLibraryDir()

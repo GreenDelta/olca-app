@@ -67,7 +67,8 @@ public class CopyPaste {
 	private static boolean isSupported(INavigationElement<?> elem) {
 		if (!(elem instanceof ModelElement) && !(elem instanceof CategoryElement))
 			return false;
-		return elem.getLibrary().isEmpty();
+		return elem.getDataPackage().isEmpty() 
+				|| !elem.getDataPackage().get().isLibrary();
 	}
 
 	private static ModelType getModelType(INavigationElement<?> e) {
@@ -233,7 +234,7 @@ public class CopyPaste {
 		var entity = dao.getForId(d.id);
 		if (entity == null)
 			return;
-		if (entity.isFromLibrary()) {
+		if (Libraries.isFrom(entity)) {
 			if (entity instanceof Process p) {
 				Libraries.fillExchangesOf(p);
 			} else if (entity instanceof ImpactCategory i) {
@@ -241,7 +242,7 @@ public class CopyPaste {
 			}
 		}
 		var copy = (RootEntity) entity.copy();
-		copy.library = null;
+		copy.dataPackage = null;
 		copy.category = category;
 		copy.name = copy.name + " (copy)";
 		DatabaseDir.copyDir(entity, copy);

@@ -72,7 +72,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 	public Set<DiffNode> getChecked() {
 		return selectionProvider.getSelection().stream()
-				.filter(Predicate.not(DiffNode::isLibrariesNode))
+				.filter(Predicate.not(DiffNode::isDataPackagesNode))
 				.collect(Collectors.toSet());
 	}
 
@@ -84,7 +84,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected boolean isLeaf(DiffNode element) {
-			return (element.content instanceof TriDiff || element.isLibraryNode()) && element.children.isEmpty();
+			return (element.content instanceof TriDiff || element.isDataPackageNode()) && element.children.isEmpty();
 		}
 
 		@Override
@@ -99,7 +99,7 @@ public class CommitViewer extends DiffNodeViewer {
 
 		@Override
 		protected boolean isSelectable(DiffNode element) {
-			return element.content instanceof TriDiff || element.isLibraryNode();
+			return element.content instanceof TriDiff || element.isDataPackageNode();
 		}
 
 		@Override

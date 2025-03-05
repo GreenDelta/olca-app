@@ -8,10 +8,11 @@ import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryDirElement;
-import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.DataPackagesElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -28,10 +29,10 @@ class NavFinder {
 	NavElement find(NavElement root, INavigationElement<?> elem) {
 		if (elem instanceof DatabaseElement)
 			return root;
-		if (elem instanceof LibraryDirElement)
-			return findLibraryDir(root);
-		if (elem instanceof LibraryElement e)
-			return findLibrary(root, e.getContent().name());
+		if (elem instanceof DataPackagesElement)
+			return findDataPackages(root);
+		if (elem instanceof DataPackageElement e)
+			return findDataPackage(root, e.getContent());
 		if (elem instanceof GroupElement e)
 			return findGroup(root, e.getContent().label);
 		if (elem instanceof ModelTypeElement e)
@@ -43,15 +44,15 @@ class NavFinder {
 		return null;
 	}
 
-	private NavElement findLibraryDir(NavElement root) {
-		return findChild(root, elem -> elem.is(ElementType.LIBRARY_DIR));
+	private NavElement findDataPackages(NavElement root) {
+		return findChild(root, elem -> elem.is(ElementType.DATAPACKAGES));
 	}
 
-	private NavElement findLibrary(NavElement root, String id) {
-		var libraryDir = findLibraryDir(root);
+	private NavElement findDataPackage(NavElement root, DataPackage dataPackage) {
+		var libraryDir = findDataPackages(root);
 		if (libraryDir == null)
 			return null;
-		return findChild(libraryDir, elem -> elem.is(ElementType.LIBRARY) && elem.content().equals(id));
+		return findChild(libraryDir, elem -> elem.is(ElementType.DATAPACKAGE) && elem.content().equals(dataPackage));
 	}
 
 	private NavElement findGroup(NavElement root, String label) {

@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.util.Dirs;
 
 /**
@@ -47,9 +49,11 @@ public class NavigationRoot extends PlatformObject implements
 
 		// libraries
 		var libDir = Workspace.getLibraryDir();
-		var libs = libDir.getLibraries();
+		var libs = libDir.getLibraries().stream()
+				.map(lib -> DataPackage.library(lib.name(), null))
+				.collect(Collectors.toSet());
 		if (!libs.isEmpty()) {
-			childs.add(new LibraryDirElement(this, libDir));
+			childs.add(new DataPackagesElement(this, libs));
 		}
 
 		// add a script folder if scripts are stored

@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.Graph;
@@ -42,16 +43,18 @@ public class DeleteExchangeCommand extends Command {
 	private final Graph graph;
 	private final GraphEditor editor;
 
-
 	private Process process;
 	private Exchange exchange;
 
 	/**
 	 * Create a command that will remove the exchange item from its parent.
 	 *
-	 * @param parent the parent containing the child
-	 * @param child  the component to remove
-	 * @throws IllegalArgumentException if any parameter is null
+	 * @param parent
+	 *            the parent containing the child
+	 * @param child
+	 *            the component to remove
+	 * @throws IllegalArgumentException
+	 *             if any parameter is null
 	 */
 	public DeleteExchangeCommand(IOPane parent, ExchangeItem child) {
 		if (parent == null || child == null) {
@@ -70,7 +73,7 @@ public class DeleteExchangeCommand extends Command {
 		if (node == null || node.descriptor == null
 				|| node.descriptor.type != ModelType.PROCESS
 				|| child.exchange == null
-				|| node.descriptor.isFromLibrary())
+				|| Libraries.isFrom(node.descriptor))
 			return false;
 
 		process = (Process) node.getEntity();
@@ -136,7 +139,8 @@ public class DeleteExchangeCommand extends Command {
 			List<Exchange> techFlows) {
 		var usages = new ExchangeUseSearch(Database.get(), process)
 				.findUses(exchange);
-		// The exchange cannot be removed if it is used in another product system.
+		// The exchange cannot be removed if it is used in another product
+		// system.
 		usages.remove(Descriptor.of(graph.getProductSystem()));
 		if (!usages.isEmpty()) {
 			MsgBox.error(M.CannotRemoveExchanges,

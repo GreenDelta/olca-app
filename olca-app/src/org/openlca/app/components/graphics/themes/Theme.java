@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.Optional;
 
 import org.eclipse.swt.graphics.Color;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.results.analysis.sankey.model.SankeyLinkType;
 import org.openlca.app.util.Colors;
 import org.openlca.core.model.FlowType;
@@ -239,7 +240,7 @@ public class Theme {
 		public static Box of(RootDescriptor descriptor, boolean isReference) {
 			if (descriptor == null)
 				return DEFAULT;
-			if (descriptor.isFromLibrary())
+			if (Libraries.isFrom(descriptor))
 				return LIBRARY_PROCESS;
 			if (isReference)
 				return REFERENCE_PROCESS;
