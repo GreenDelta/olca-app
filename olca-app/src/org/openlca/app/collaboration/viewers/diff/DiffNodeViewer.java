@@ -48,7 +48,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		super(parent);
 		this.canMerge = canMerge;
 		this.entryMap = Repository.CURRENT != null
-				? Repository.CURRENT.references.find().includeCategories().includeLibraries().asMap()
+				? Repository.CURRENT.references.find().includeCategories().includeDataPackages().asMap()
 				: null;
 	}
 
@@ -199,9 +199,9 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var node = (DiffNode) element;
 			if (node.isDatabaseNode())
 				return node.contentAsDatabase().getName();
-			if (node.isLibrariesNode())
+			if (node.isDataPackagesNode())
 				return M.Libraries;
-			if (node.isLibraryNode()) {
+			if (node.isDataPackageNode()) {
 				var path = node.contentAsTriDiff().path;
 				return path.substring(path.indexOf("/") + 1);
 			}
@@ -238,7 +238,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var node = (DiffNode) element;
 			if (node.isModelTypeNode())
 				return Images.getForCategory(node.getModelType());
-			if (node.isLibrariesNode())
+			if (node.isDataPackagesNode())
 				return Icon.FOLDER.get();
 			if (node.isCategoryNode()) {
 				if (node.content instanceof String s)
@@ -250,7 +250,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			}
 			var diff = node.contentAsTriDiff();
 			var overlay = getOverlay(diff);
-			if (node.isLibraryNode())
+			if (node.isDataPackageNode())
 				return Images.library(overlay);
 			return Images.get(diff.type, overlay);
 		}
@@ -314,9 +314,9 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		}
 
 		private int compare(Viewer viewer, DiffNode node1, DiffNode node2) {
-			if (node1.isLibrariesNode())
+			if (node1.isDataPackagesNode())
 				return 1;
-			if (node2.isLibrariesNode())
+			if (node2.isDataPackagesNode())
 				return -1;
 			if (node1.isModelTypeNode() && node2.isModelTypeNode())
 				return compareModelTypes(node1, node2);

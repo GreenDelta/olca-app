@@ -357,6 +357,7 @@ public class M extends NLS {
 	public static String DataConflicts;
 	public static String DataDocumentor;
 	public static String DataGenerator;
+	public static String DataPackage;
 	public static String DataQuality;
 	public static String DataQualityEntry;
 	public static String DataQualityProperties;

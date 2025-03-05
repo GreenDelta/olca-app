@@ -25,7 +25,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryDirElement;
+import org.openlca.app.navigation.elements.DataPackagesElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
@@ -202,7 +202,7 @@ class ModelSelectionPage extends WizardPage {
 		if (navigator == null)
 			return new HashSet<>();
 		return new HashSet<>(Navigator.collect(navigator.getAllSelected(),
-				elem -> !(elem instanceof LibraryDirElement)
+				elem -> !(elem instanceof DataPackagesElement)
 						&& !(elem instanceof DatabaseElement)
 						&& !(elem instanceof ModelTypeElement),
 				elem -> elem instanceof ModelElement m && fitsType(m) ? elem : null));
@@ -260,7 +260,7 @@ class ModelSelectionPage extends WizardPage {
 
 		@Override
 		public boolean select(Viewer viewer, Object parentElement, Object element) {
-			if (element instanceof LibraryDirElement)
+			if (element instanceof DataPackagesElement)
 				return false;
 			if (element instanceof CategoryElement e)
 				return e.hasNonLibraryContent();

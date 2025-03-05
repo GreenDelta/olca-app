@@ -1,6 +1,6 @@
 package org.openlca.app.collaboration.navigation;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import org.eclipse.swt.graphics.Image;
@@ -8,21 +8,21 @@ import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.navigation.NavElement.ElementType;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
+import org.openlca.app.navigation.elements.DataPackagesElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryDirElement;
-import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.Path;
-import org.openlca.jsonld.LibraryLink;
 import org.openlca.util.Strings;
 
 public class RepositoryLabel {
@@ -33,11 +33,10 @@ public class RepositoryLabel {
 		if (Database.get() == null || !Repository.isConnected())
 			return null;
 		if (elem instanceof ModelElement e
-				&& !e.getLibrary().isPresent()
 				&& !e.isFromLibrary()
 				&& isNew(NavCache.get(e)))
 			return Images.get(e.getContent(), Overlay.ADDED);
-		if (elem instanceof LibraryElement e
+		if (elem instanceof DataPackageElement e
 				&& e.getDatabase().isPresent()
 				&& isNew(NavCache.get(e)))
 			return Images.library(Overlay.ADDED);
@@ -69,13 +68,14 @@ public class RepositoryLabel {
 	}
 
 	public static String getStateIndicator(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected() || elem == null || elem.getLibrary().isPresent())
+		if (Database.get() == null || !Repository.isConnected() || elem == null ||
+				(elem.getDataPackage().isPresent() && elem.getDataPackage().get().isLibrary()))
 			return null;
 		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
 			return null;
-		if (elem instanceof LibraryDirElement && elem.getParent() instanceof NavigationRoot)
+		if (elem instanceof DataPackagesElement && elem.getParent() instanceof NavigationRoot)
 			return null;
-		if (elem instanceof LibraryElement e && e.getDatabase() == null)
+		if (elem instanceof DataPackageElement e && e.getDatabase() == null)
 			return null;
 		if (!hasChanged(NavCache.get(elem)))
 			return null;
@@ -83,7 +83,8 @@ public class RepositoryLabel {
 	}
 
 	public static boolean hasChanged(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected() || elem == null || elem.getLibrary().isPresent())
+		if (Database.get() == null || !Repository.isConnected() || elem == null
+				|| (elem.getDataPackage().isPresent() && elem.getDataPackage().get().isLibrary()))
 			return false;
 		return hasChanged(NavCache.get(elem));
 	}
@@ -97,10 +98,10 @@ public class RepositoryLabel {
 			var d = (RootDescriptor) elem.content();
 			return !Repository.CURRENT.index.isSameVersion(getPath(d), d);
 		}
-		if (elem.is(ElementType.DATABASE) && Repository.CURRENT.librariesChanged())
+		if (elem.is(ElementType.DATABASE) && Repository.CURRENT.dataPackagesChanged())
 			return true;
-		if (elem.is(ElementType.LIBRARY_DIR))
-			return Repository.CURRENT.librariesChanged();
+		if (elem.is(ElementType.DATAPACKAGES))
+			return Repository.CURRENT.dataPackagesChanged();
 		for (var child : elem.children())
 			if (hasChanged(child) || (child.is(ElementType.MODEL, ElementType.CATEGORY) && isNew(child)))
 				return true;
@@ -110,7 +111,7 @@ public class RepositoryLabel {
 	private static boolean isNew(NavElement elem) {
 		if (elem == null || elem.isFromLibrary())
 			return false;
-		if (elem.is(ElementType.LIBRARY) && isNewLibrary((String) elem.content()))
+		if (elem.is(ElementType.DATAPACKAGE) && isNewDataPackage((DataPackage) elem.content()))
 			return true;
 		if (elem.is(ElementType.CATEGORY) && !Repository.CURRENT.index.contains(getPath(elem.content())))
 			return true;
@@ -138,10 +139,12 @@ public class RepositoryLabel {
 		return false;
 	}
 
-	private static boolean isNewLibrary(String lib) {
+	private static boolean isNewDataPackage(DataPackage dataPackage) {
 		var info = Repository.CURRENT.getInfo();
-		var libsBefore = info == null ? new ArrayList<LibraryLink>() : info.libraries();
-		return !libsBefore.contains(new LibraryLink(lib, null));
+		var before = info != null
+				? info.dataPackages()
+				: new HashSet<>();
+		return !before.contains(dataPackage);
 	}
 
 	private static String getPath(Object o) {

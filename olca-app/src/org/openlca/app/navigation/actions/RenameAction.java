@@ -44,16 +44,14 @@ class RenameAction extends Action implements INavigationAction {
 		var first = selection.getFirst();
 		if (!(first instanceof ModelElement
 			|| first instanceof CategoryElement)
-			|| first.getLibrary().isPresent())
+			|| first.getDataPackage().isPresent())
 			return false;
-		if (first instanceof ModelElement e) {
+		if (first instanceof ModelElement e)
 			if (e.isFromLibrary())
 				return false;
-		}
-		if (first instanceof CategoryElement e) {
-			if (e.hasLibraryContent())
+		if (first instanceof CategoryElement e)
+			if (e.hasDataPackageContent())
 				return false;
-		}
 		this.element = first;
 		return true;
 	}

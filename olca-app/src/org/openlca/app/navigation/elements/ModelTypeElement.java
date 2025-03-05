@@ -22,10 +22,10 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 		var db = Database.get();
 
 		var list = new ArrayList<INavigationElement<?>>();
-		var lib = getLibrary().orElse(null);
+		var dataPackage = getDataPackage().orElse(null);
 
 		// add root categories
-		if (lib == null) {
+		if (dataPackage == null) {
 			new CategoryDao(db).getRootCategories(type)
 				.stream()
 				.map(root -> new CategoryElement(this, root))
@@ -35,7 +35,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 			if (test != null) {
 				new CategoryDao(db).getRootCategories(type)
 					.stream()
-					.filter(root -> test.hasLibraryContent(root, lib))
+					.filter(root -> test.hasDataPackageContent(root, dataPackage.name()))
 					.map(root -> new CategoryElement(this, root))
 					.forEach(list::add);
 			}
@@ -46,7 +46,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 		if (dao == null)
 			return list;
 		for (var d : dao.getDescriptors(Optional.empty())) {
-			if (lib == null || Objects.equals(lib, d.library)) {
+			if (dataPackage == null || Objects.equals(dataPackage, d.dataPackage)) {
 				list.add(new ModelElement(this, d));
 			}
 		}

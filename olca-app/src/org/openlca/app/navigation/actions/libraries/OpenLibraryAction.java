@@ -6,7 +6,8 @@ import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.core.library.Library;
@@ -25,9 +26,10 @@ public class OpenLibraryAction extends Action implements INavigationAction {
 		if (selection == null || selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof LibraryElement))
+		if (!(first instanceof DataPackageElement elem) || !elem.getContent().isLibrary())
 			return false;
-		library = ((LibraryElement) first).getContent();
+		library = Workspace.getLibraryDir().getLibrary(
+				elem.getContent().name()).orElse(null);
 		return library != null;
 	}
 

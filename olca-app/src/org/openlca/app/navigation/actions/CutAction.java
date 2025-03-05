@@ -20,10 +20,9 @@ class CutAction extends Action implements INavigationAction {
 		if (!NaviClipboard.canCut(elems))
 			return false;
 		for (var elem : elems) {
-			if (elem instanceof ModelElement e && e.isFromLibrary()) {
+			if (elem instanceof ModelElement e && e.getDataPackage().isPresent())
 				return false;
-			}
-			if (elem instanceof CategoryElement e && e.hasLibraryContent())
+			if (elem instanceof CategoryElement e && e.hasDataPackageContent())
 				return false;
 		}
 		selection = elems;

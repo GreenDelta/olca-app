@@ -37,8 +37,8 @@ class Datasets {
 				: ReferenceCheck.forRemote(diffs, dialog.getSelected());
 		if (withReferences == null)
 			return null;
-		var libraryAdditions = getLibraryAdditions(withReferences);
-		withReferences.addAll(getLibraryDatasets(diffs, libraryAdditions));
+		var packageAdditions = getDataPackageAdditions(withReferences);
+		withReferences.addAll(getDataPackageDatasets(diffs, packageAdditions));
 		return new DialogResult(dialogResult, dialog.getMessage(), withReferences);
 	}
 
@@ -66,29 +66,29 @@ class Datasets {
 	static boolean isForeground(Diff diff) {
 		var descriptors = Repository.CURRENT.descriptors;
 		if (diff.isDataset)
-			return !descriptors.isFromLibrary(diff);
+			return !descriptors.isFromDataPackage(diff);
 		if (diff.isCategory) {
 			var c = descriptors.getCategory(diff.path);
-			return !descriptors.isOnlyInLibraries(c);
+			return !descriptors.isOnlyInDataPackages(c);
 		}
 		return true;
 	}
 
-	private static Set<String> getLibraryAdditions(List<Diff> selected) {
+	private static Set<String> getDataPackageAdditions(List<Diff> selected) {
 		return selected.stream()
-				.filter(d -> d.isLibrary && d.diffType == DiffType.ADDED)
+				.filter(d -> d.isDataPackage && d.diffType == DiffType.ADDED)
 				.map(d -> d.name)
 				.collect(Collectors.toSet());
 	}
 
-	private static List<Diff> getLibraryDatasets(List<Diff> diffs, Set<String> libraryAdditions) {
+	private static List<Diff> getDataPackageDatasets(List<Diff> diffs, Set<String> libraryAdditions) {
 		if (libraryAdditions.isEmpty())
 			return new ArrayList<>();
 		var descriptors = Repository.CURRENT.descriptors;
 		return diffs.stream().filter(diff -> {
-			if (diff.isDataset && libraryAdditions.contains(descriptors.getLibrary(diff)))
+			if (diff.isDataset && libraryAdditions.contains(descriptors.getDataPackage(diff)))
 				return true;
-			if (diff.isCategory && descriptors.isOnlyInLibraries(descriptors.getCategory(diff.path), libraryAdditions))
+			if (diff.isCategory && descriptors.isOnlyInDataPackages(descriptors.getCategory(diff.path), libraryAdditions))
 				return true;
 			return false;
 		}).collect(Collectors.toList());

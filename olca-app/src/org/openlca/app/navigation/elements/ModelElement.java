@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.db.Cache;
+import org.openlca.app.db.Libraries;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class ModelElement extends NavigationElement<RootDescriptor> {
@@ -18,8 +19,7 @@ public class ModelElement extends NavigationElement<RootDescriptor> {
 	}
 
 	public boolean isFromLibrary() {
-		var content = getContent();
-		return content != null && content.isFromLibrary();
+		return Libraries.isFrom(getContent());
 	}
 
 	@Override

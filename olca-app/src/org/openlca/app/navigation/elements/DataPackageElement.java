@@ -8,13 +8,13 @@ import java.util.Optional;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.library.Library;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.core.model.ModelType;
 
-public class LibraryElement extends NavigationElement<Library> {
+public class DataPackageElement extends NavigationElement<DataPackage> {
 
-	LibraryElement(INavigationElement<?> parent, Library library) {
-		super(parent, library);
+	DataPackageElement(INavigationElement<?> parent, DataPackage dataPackage) {
+		super(parent, dataPackage);
 	}
 
 	@Override

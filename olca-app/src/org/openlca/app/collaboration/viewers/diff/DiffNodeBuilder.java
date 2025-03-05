@@ -50,8 +50,8 @@ public class DiffNodeBuilder {
 	private void createNode(TriDiff diff) {
 		var parent = !Strings.nullOrEmpty(diff.category)
 				? getOrCreateCategoryNode(diff.type, diff.category)
-				: diff.isLibrary
-						? getOrCreateLibrariesNode()
+				: diff.isDataPackage
+						? getOrCreateDataPackagesNode()
 						: getOrCreateModelTypeNode(diff.type);
 		var node = new DiffNode(parent, diff);
 		parent.children.add(node);
@@ -84,15 +84,15 @@ public class DiffNodeBuilder {
 		return typeNode;
 	}
 
-	private DiffNode getOrCreateLibrariesNode() {
-		var librariesNode = nodes.get(RepositoryInfo.FILE_NAME);
-		if (librariesNode != null)
-			return librariesNode;
+	private DiffNode getOrCreateDataPackagesNode() {
+		var dataPackagesNode = nodes.get(RepositoryInfo.FILE_NAME);
+		if (dataPackagesNode != null)
+			return dataPackagesNode;
 		var root = nodes.get(null);
-		librariesNode = new DiffNode(root, null);
-		root.children.add(librariesNode);
-		nodes.put(RepositoryInfo.FILE_NAME, librariesNode);
-		return librariesNode;
+		dataPackagesNode = new DiffNode(root, null);
+		root.children.add(dataPackagesNode);
+		nodes.put(RepositoryInfo.FILE_NAME, dataPackagesNode);
+		return dataPackagesNode;
 	}
 
 	private String getKey(TriDiff diff) {

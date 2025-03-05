@@ -85,6 +85,7 @@ import org.openlca.core.database.Daos as Daos
 import org.openlca.io.oneclick.DataColumn as DataColumn
 import org.openlca.core.DataDir as DataDir
 import org.openlca.ipc.handlers.DataHandler as DataHandler
+import org.openlca.core.database.DataPackage as DataPackage
 import org.openlca.proto.io.server.DataUpdateService as DataUpdateService
 import org.openlca.core.database.config.DatabaseConfigList as DatabaseConfigList
 import org.openlca.core.database.DatabaseException as DatabaseException
@@ -301,7 +302,6 @@ import org.openlca.core.library.LibraryDir as LibraryDir
 import org.openlca.core.library.LibraryExport as LibraryExport
 import org.openlca.core.library.LibraryInfo as LibraryInfo
 import org.openlca.core.results.providers.libblocks.LibraryInversionSolver as LibraryInversionSolver
-import org.openlca.jsonld.LibraryLink as LibraryLink
 import org.openlca.core.library.LibraryPackage as LibraryPackage
 import org.openlca.geo.geojson.LineString as LineString
 import org.openlca.core.matrix.linking.LinkingConfig as LinkingConfig

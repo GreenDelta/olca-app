@@ -37,6 +37,7 @@ import org.openlca.core.library.reader.LibReaderRegistry;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.license.License;
@@ -53,6 +54,10 @@ public final class Libraries {
 	private static final Logger log = LoggerFactory.getLogger(Libraries.class);
 
 	private Libraries() {
+	}
+
+	public static Set<String> get() {
+		return Database.dataPackages().getLibraries();
 	}
 
 	/**
@@ -114,15 +119,14 @@ public final class Libraries {
 
 		return readers.isEmpty()
 				? Optional.empty()
-				: Optional.of(LibReaderRegistry.of(readers));
+				: Optional.of(LibReaderRegistry.of(Database.get(), readers));
 	}
 
 	public static Optional<Set<Library>> forCalculation() {
 		var db = Database.get();
 		if (db == null)
 			return Optional.empty();
-		var mounted = db.getLibraries()
-				.stream()
+		var mounted = get().stream()
 				.map(libId -> Workspace.getLibraryDir().getLibrary(libId))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
@@ -150,12 +154,10 @@ public final class Libraries {
 	}
 
 	public static boolean checkValidity(RootDescriptor d) {
-		if (d.isFromLibrary())
-			return LibrarySession.isValid(d.library);
-
-		if (d instanceof ProductSystemDescriptor) {
+		if (Database.dataPackages().isFromLibrary(d))
+			return LibrarySession.isValid(d.dataPackage);
+		if (d instanceof ProductSystemDescriptor)
 			return checkValidity();
-		}
 		return true;
 	}
 
@@ -180,15 +182,23 @@ public final class Libraries {
 	}
 
 	private static void fill(RootEntity e, BiConsumer<IDatabase, LibReader> fn) {
-		if (e == null || !e.isFromLibrary())
+		if (e == null || !Database.dataPackages().isFromLibrary(e))
 			return;
 		var db = Database.get();
 		if (db == null)
 			return;
-		var lib = readerOf(e.library).orElse(null);
+		var lib = readerOf(e.dataPackage).orElse(null);
 		if (lib == null)
 			return;
 		fn.accept(db, lib);
+	}
+
+	public static boolean isFrom(Descriptor d) {
+		return Database.dataPackages().isFromLibrary(d);
+	}
+
+	public static boolean isFrom(RootEntity e) {
+		return Database.dataPackages().isFromLibrary(e);
 	}
 
 	public static Library importFromFile(File file) {

@@ -24,8 +24,8 @@ import org.openlca.util.TypedRefIdSet;
 class ReferenceCheck {
 
 	private final TypedRefIdMap<Diff> diffs;
-	private final List<Diff> libraryDiffs;
-	private final Set<String> libraries;
+	private final List<Diff> dataPackageDiffs;
+	private final Set<String> dataPackages;
 	private final ModelReferences references;
 	private final Set<DiffNode> input;
 	private final TypedRefIdMap<DiffNode> selection;
@@ -33,13 +33,13 @@ class ReferenceCheck {
 
 	private ReferenceCheck(List<Diff> diffs, Set<DiffNode> input) {
 		this.diffs = new TypedRefIdMap<>();
-		this.libraries = new HashSet<>();
-		this.libraryDiffs = new ArrayList<>();
+		this.dataPackages = new HashSet<>();
+		this.dataPackageDiffs = new ArrayList<>();
 		for (var diff : diffs) {
 			if (!diff.isCategory && diff.type != null) {
 				this.diffs.put(diff, diff);
-			} else if (diff.isLibrary) {
-				this.libraryDiffs.add(diff);
+			} else if (diff.isDataPackage) {
+				this.dataPackageDiffs.add(diff);
 			}
 		}
 		this.input = input;
@@ -95,8 +95,8 @@ class ReferenceCheck {
 				.filter(Datasets::isForeground)
 				.map(diff -> new TriDiff(diff, null))
 				.forEach(collected::add);
-		libraryDiffs.stream()
-				.filter(diff -> libraries.contains(diff.name))
+		dataPackageDiffs.stream()
+				.filter(diff -> dataPackages.contains(diff.name))
 				.map(diff -> new TriDiff(diff, null))
 				.forEach(collected::add);
 		return collected;
@@ -117,9 +117,9 @@ class ReferenceCheck {
 				referenced.add(ref);
 			}
 		});
-		var lib = references.getLibrary(pair);
+		var lib = references.getDataPackage(pair);
 		if (lib != null) {
-			libraries.add(lib);
+			dataPackages.add(lib);
 		}
 		return referenced;
 	}

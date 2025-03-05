@@ -3,6 +3,7 @@ package org.openlca.app.rcp.images;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.collaboration.util.Comments;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.elements.Group;
 import org.openlca.app.navigation.elements.GroupType;
 import org.openlca.app.util.FileType;
@@ -50,7 +51,7 @@ public class Images {
 		var icon = icon(e);
 		if (icon == null)
 			return null;
-		return e instanceof RootEntity root && root.isFromLibrary()
+		return e instanceof RootEntity root && Libraries.isFrom(root)
 				? ImageManager.get(icon, Overlay.LIBRARY)
 				: ImageManager.get(icon);
 	}
@@ -59,7 +60,7 @@ public class Images {
 		var icon = icon(d);
 		if (icon == null)
 			return null;
-		return d.isFromLibrary()
+		return Libraries.isFrom(d)
 				? ImageManager.get(icon, Overlay.LIBRARY)
 				: ImageManager.get(icon);
 	}
@@ -203,7 +204,7 @@ public class Images {
 		var icon = icon(entity);
 		if (icon == null)
 			return null;
-		return entity instanceof RootEntity root && root.isFromLibrary()
+		return entity instanceof RootEntity root && Libraries.isFrom(root)
 				? ImageManager.descriptor(icon, Overlay.LIBRARY)
 				: ImageManager.descriptor(icon);
 	}

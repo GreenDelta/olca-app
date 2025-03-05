@@ -13,7 +13,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentControl;
@@ -62,10 +62,8 @@ class InfoPage extends ModelPage<Process> {
 
 		// we can only support direct calculations when no
 		// libraries are bound to the database
-		boolean withDirect = Database.get()
-			.getLibraries()
-			.isEmpty();
-		int columns = withDirect ? 3 : 2;
+		var withDirect = Libraries.get().isEmpty();
+		var columns = withDirect ? 3 : 2;
 		UI.gridLayout(inner, columns, 5, 0);
 
 		// create a product system

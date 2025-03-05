@@ -46,7 +46,7 @@ class CreateModelAction extends Action implements INavigationAction {
 			type = category.modelType;
 		}
 
-		if (type == null || first.getLibrary().isPresent())
+		if (type == null || first.getDataPackage().isPresent())
 			return false;
 		parent = first;
 		setText(getText());

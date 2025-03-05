@@ -30,8 +30,8 @@ public class GroupElement extends NavigationElement<Group> {
 		// if available
 		if (group.type != GroupType.BACKGROUND_DATA)
 			return elements;
-		var lib = getLibrary();
-		if (lib.isPresent())
+		var dataPackage = getDataPackage();
+		if (dataPackage.isPresent())
 			return elements;
 		var db = Database.get();
 		if (db == null)

@@ -13,6 +13,7 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.IDatabase.DataPackages;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DatabaseConfigList;
 import org.openlca.core.database.config.DerbyConfig;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Database {
 
+	private static DataPackages dataPackages;
 	private static IDatabase database;
 	private static DatabaseConfig config;
 	private static final DatabaseConfigList configurations = readConfigs();
@@ -37,6 +39,17 @@ public class Database {
 
 	public static IDatabase get() {
 		return database;
+	}
+	
+	public static DataPackages dataPackages() {
+		return dataPackages;
+	}
+
+	public static void refreshDataPackages() {
+		dataPackages = null;
+		if (database == null)
+			return;
+		dataPackages = database.getDataPackages();
 	}
 
 	public static IDatabase activate(DatabaseConfig config) {
@@ -65,6 +78,7 @@ public class Database {
 	public static void setActive(DatabaseConfig config, IDatabase db) {
 		try {
 			database = db;
+			dataPackages = db.getDataPackages();
 			Database.config = config;
 			Cache.create(database);
 			Repository.open(Repository.gitDir(database.getName()), database);
@@ -75,6 +89,7 @@ public class Database {
 			}
 			Cache.close();
 			database = null;
+			dataPackages = null;
 			Database.config = null;
 			throw e;
 		}
@@ -98,9 +113,10 @@ public class Database {
 			}
 			database.close();
 			database = null;
+			dataPackages = null;
 			config = null;
 			RcpWindowAdvisor.updateWindowTitle();
-		} catch (RuntimeException e){
+		} catch (RuntimeException e) {
 			// if an error occurs we still reset these globals
 			config = null;
 			database = null;
@@ -199,9 +215,10 @@ public class Database {
 	 * database. Such a name is valid if a folder with that name can be created
 	 * in the workspace and when no database with the same name already exists.
 	 *
-	 * @param name the name of the new database
+	 * @param name
+	 *            the name of the new database
 	 * @return the validation error for display or {@code null} when the name is
-	 * valid
+	 *         valid
 	 */
 	public static String validateNewName(String name) {
 		if (name == null || name.isBlank() || name.isEmpty())
@@ -221,4 +238,5 @@ public class Database {
 				? M.NewDatabase_AlreadyExists
 				: null;
 	}
+
 }

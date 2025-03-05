@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
-import static org.openlca.app.components.graphics.layouts.GraphLayout.*;
+import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ import org.openlca.app.components.graphics.model.Link;
 import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
@@ -208,7 +209,7 @@ public class Node extends MinMaxComponent {
 
 	public boolean isEditable() {
 		if (entity instanceof Process process) {
-			return !process.isFromLibrary()
+			return !Libraries.isFrom(process)
 					&& process.processType == ProcessType.UNIT_PROCESS
 					&& getGraph().getConfig().isNodeEditingEnabled();
 		}

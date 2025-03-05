@@ -18,7 +18,8 @@ public class NavigationDragAssistant extends CommonDragAdapterAssistant {
 		event.doit = true;
 		for (var o : selection) {
 			if (o instanceof CategoryElement catElem) {
-				if (catElem.hasLibraryContent()) {
+				if (catElem.hasDataPackageContent()
+						&& catElem.getDataPackage().get().isLibrary()) {
 					event.doit = false;
 					break;
 				}

@@ -8,7 +8,8 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.LibraryElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Popup;
@@ -29,9 +30,10 @@ public class ExportLibraryAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof LibraryElement))
+		if (!(first instanceof DataPackageElement elem) || !elem.getContent().isLibrary())
 			return false;
-		library = ((LibraryElement)first).getContent();
+		library = Workspace.getLibraryDir().getLibrary(
+				elem.getContent().name()).orElse(null);
 		return library != null;
 	}
 
@@ -45,13 +47,13 @@ public class ExportLibraryAction extends Action implements INavigationAction {
 			return;
 		try {
 			App.runWithProgress(
-				M.ExportLibraryDots,
-				() -> LibraryPackage.zip(library, target),
-				() -> Popup.info(M.LibraryExported + " - " + target.getName()));
+					M.ExportLibraryDots,
+					() -> LibraryPackage.zip(library, target),
+					() -> Popup.info(M.LibraryExported + " - " + target.getName()));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to export library "
-				+ library.name() + " to file "
-				+ target.getName(), e);
+					+ library.name() + " to file "
+					+ target.getName(), e);
 		}
 	}
 }

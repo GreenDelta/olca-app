@@ -2,6 +2,7 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -12,6 +13,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.wizards.io.LibraryDialog;
+import org.openlca.core.database.IDatabase.DataPackage;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryDir;
 import org.openlca.git.actions.LibraryResolver;
@@ -54,10 +56,12 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	
 	// init before resolve is called in GitMerge, to avoid invalid thread access
 	private boolean init(ClientRepository repo, Commit commit) {
-		var remoteLibs = repo.getLibraries(commit);
-		var localLibs = Database.get().getLibraries();
+		var remoteLibs = repo.getDataPackages(commit).stream()
+				.filter(DataPackage::isLibrary)
+				.collect(Collectors.toList());
+		var localLibs = Database.get().getDataPackages().getLibraries();
 		for (var newLib : remoteLibs) {
-			if (localLibs.contains(newLib))
+			if (localLibs.contains(newLib.name()))
 				continue;
 			if (preresolve(newLib) == null)
 				return false;
@@ -70,12 +74,12 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 		return libDir.getLibrary(newLib).orElse(null);
 	}
 
-	private Library preresolve(String newLib) {
+	private Library preresolve(DataPackage newLib) {
 		try {
-			var lib = resolve(newLib);
+			var lib = resolve(newLib.name());
 			if (lib != null)
 				return lib;
-			lib = importFromCollaborationServer(newLib);
+			lib = importFromCollaborationServer(newLib.name());
 			if (lib != null)
 				return lib;
 			var dialog = new LibraryDialog(newLib);

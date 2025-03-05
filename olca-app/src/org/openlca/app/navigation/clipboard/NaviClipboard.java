@@ -214,7 +214,7 @@ public class NaviClipboard {
 		var entity = dao.getForId(d.id);
 		if (entity == null)
 			return;
-		if (entity.isFromLibrary()) {
+		if (Libraries.isFrom(entity)) {
 			if (entity instanceof Process p) {
 				Libraries.fillExchangesOf(p);
 			} else if (entity instanceof ImpactCategory i) {
@@ -222,7 +222,7 @@ public class NaviClipboard {
 			}
 		}
 		var copy = (RootEntity) entity.copy();
-		copy.library = null;
+		copy.dataPackage = null;
 		copy.category = category;
 		copy.name = copy.name + " (copy)";
 		DatabaseDir.copyDir(entity, copy);

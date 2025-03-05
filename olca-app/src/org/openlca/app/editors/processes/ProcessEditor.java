@@ -45,7 +45,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 		evalFormulas();
 		parameterSupport = new ParameterChangeSupport();
 		parameterSupport.onEvaluation(this::evalFormulas);
-		if (process.isFromLibrary()) {
+		if (Libraries.isFrom(process)) {
 			Libraries.fillExchangesOf(process);
 		}
 	}

@@ -36,12 +36,12 @@ public class DiffNode {
 		return content instanceof TriDiff d && !d.isCategory;
 	}
 
-	boolean isLibrariesNode() {
+	boolean isDataPackagesNode() {
 		return content == null;
 	}
 
-	boolean isLibraryNode() {
-		return content instanceof TriDiff d && d.isLibrary;
+	boolean isDataPackageNode() {
+		return content instanceof TriDiff d && d.isDataPackage;
 	}
 
 	ModelType getModelType() {

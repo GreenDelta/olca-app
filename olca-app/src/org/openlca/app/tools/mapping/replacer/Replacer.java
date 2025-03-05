@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.tools.mapping.model.DBProvider;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.FlowDao;
@@ -18,7 +19,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.ProductSystemDao;
 import org.openlca.core.io.maps.FlowMapEntry;
-import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.io.maps.MappingStatus;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ImpactCategory;
@@ -65,7 +65,7 @@ public class Replacer implements Runnable {
 		processes.clear();
 		impacts.clear();
 		for (var model : conf.models) {
-			if (model.isFromLibrary())
+			if (Libraries.isFrom(model))
 				continue;
 			if (model.type == ModelType.PROCESS) {
 				processes.add(model.id);
@@ -93,7 +93,7 @@ public class Replacer implements Runnable {
 				pool.execute(c);
 			}
 			pool.shutdown();
-			int i = 0;
+			var i = 0;
 			while (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
 				i++;
 				log.info("waiting for cursors to finish; {} seconds", i * 10);
@@ -115,7 +115,7 @@ public class Replacer implements Runnable {
 				c.stats.log(c.getClass().getName(), flows);
 			}
 
-			boolean deleteMapped = false;
+			var deleteMapped = false;
 			Set<Long> usedFlows = null;
 			if (conf.deleteMapped) {
 				if (stats.failures > 0) {
@@ -131,8 +131,9 @@ public class Replacer implements Runnable {
 			}
 
 			// update the mapping entries
-			for (Long flowID : entries.keySet()) {
-				FlowMapEntry e = entries.get(flowID);
+			var dao = new FlowDao(db);
+			for (var flowID : entries.keySet()) {
+				var e = entries.get(flowID);
 				if (flowID == null || e == null)
 					continue;
 				if (stats.hadFailures(flowID)) {
@@ -140,9 +141,8 @@ public class Replacer implements Runnable {
 					continue;
 				}
 				if (deleteMapped && !usedFlows.contains(flowID)) {
-					FlowDao dao = new FlowDao(db);
-					Flow flow = dao.getForId(flowID);
-					if (!flow.isFromLibrary()) {
+					var flow = dao.getForId(flowID);
+					if (!Libraries.isFrom(flow)) {
 						dao.delete(flow);
 						log.info("removed mapped flow {} uuid={}",
 								Labels.name(flow), flow.refId);
@@ -174,7 +174,7 @@ public class Replacer implements Runnable {
 
 		// first persist all target flows in the database that
 		// do not have an error flag
-		List<FlowRef> targetFlows = conf.mapping.entries.stream()
+		var targetFlows = conf.mapping.entries.stream()
 				.filter(e -> e.targetFlow() != null
 						&& e.targetFlow().status != null
 						&& !e.targetFlow().status.isError())
@@ -183,8 +183,8 @@ public class Replacer implements Runnable {
 
 		conf.provider.persist(targetFlows, db);
 
-		DBProvider dbProvider = new DBProvider(db);
-		for (FlowMapEntry e : conf.mapping.entries) {
+		var dbProvider = new DBProvider(db);
+		for (var e : conf.mapping.entries) {
 
 			// only do the replacement for matched mapping entries
 			// (both flows should have no error flag)
@@ -197,10 +197,10 @@ public class Replacer implements Runnable {
 				continue;
 
 			// sync the flows
-			Flow source = dbProvider.sync(e.sourceFlow());
+			var source = dbProvider.sync(e.sourceFlow());
 			if (source == null)
 				continue;
-			Flow target = dbProvider.sync(e.targetFlow());
+			var target = dbProvider.sync(e.targetFlow());
 			if (target == null)
 				continue;
 

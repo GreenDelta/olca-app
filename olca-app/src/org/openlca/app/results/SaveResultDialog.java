@@ -140,7 +140,7 @@ public class SaveResultDialog extends FormDialog {
 					db, editor.setup(), editor.result(), name)
 					: SystemProcess.create(
 					db, editor.setup(), editor.result(), name);
-				process.category = Categories.removeLibraryFrom(process.category);
+				process.category = Categories.removeDataPackageFrom(process.category);
 				return db.insert(process);
 			}
 

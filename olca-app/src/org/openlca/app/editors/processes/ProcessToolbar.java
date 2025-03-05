@@ -12,6 +12,7 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.db.LinkingProperties;
 import org.openlca.app.db.LinkingPropertiesPage;
 import org.openlca.app.editors.Editors;
@@ -49,9 +50,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		// add direct calculation if the database is not connected
 		// to a library
-		boolean withDirect = Database.get()
-				.getLibraries()
-				.isEmpty();
+		var withDirect = Libraries.get().isEmpty();
 		if (withDirect) {
 			toolbar.add(Actions.create(M.DirectCalculation,
 					Icon.RUN.descriptor(),

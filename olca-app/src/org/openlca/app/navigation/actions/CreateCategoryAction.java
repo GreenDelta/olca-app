@@ -51,8 +51,8 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			modelType = category.modelType;
 		}
 
-		// also, do not allow creation of categories in libraries
-		return modelType != null && first.getLibrary().isEmpty();
+		// also, do not allow creation of categories in data packages
+		return modelType != null && first.getDataPackage().isEmpty();
 	}
 
 	@Override
