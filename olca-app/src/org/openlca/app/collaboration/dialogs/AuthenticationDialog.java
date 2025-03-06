@@ -183,7 +183,8 @@ public class AuthenticationDialog extends FormDialog {
 		@Override
 		public boolean onUnauthorized() {
 			MsgBox.warning(M.NoSufficientRights);
-			return false;
+			CredentialStore.clearUsername(url);
+			return true;
 		}
 
 	}

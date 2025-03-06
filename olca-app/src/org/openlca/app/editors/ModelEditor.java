@@ -58,24 +58,23 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 	}
 
 	public Comments getComments() {
+		if (comments == null) {
+			comments = loadComments();
+		}
 		return comments;
 	}
 
 	public boolean hasComment(String path) {
-		return App.isCommentingEnabled() && comments != null
-				&& comments.hasPath(path);
+		return getComments().hasPath(path);
 	}
 
 	public boolean hasAnyComment(String path) {
-		return App.isCommentingEnabled() && comments != null
-				&& comments.hasAnyPath(path);
+		return getComments().hasAnyPath(path);
 	}
 
 	protected void addExtensionPages() throws PartInitException {
-		if (App.isCommentingEnabled()
-				&& comments != null
-				&& comments.hasRefId(model.refId)) {
-			addPage(new CommentsPage(this, comments, model));
+		if (getComments().hasRefId(model.refId)) {
+			addPage(new CommentsPage(this, getComments(), model));
 		}
 		if (FeatureFlag.ADDITIONAL_PROPERTIES.isEnabled()) {
 			addPage(new AdditionalPropertiesPage<>(this));
@@ -125,21 +124,20 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 		try {
 			dao = Daos.base(Database.get(), modelClass);
 			model = dao.getForId(i.getDescriptor().id);
-			loadComments(i.getDescriptor().type,
-					i.getDescriptor().refId);
 		} catch (Exception e) {
 			ErrorReporter.on("failed to load " + modelClass.getSimpleName()
 					+ " from editor input", e);
 		}
 	}
 
-	private void loadComments(ModelType type, String refId) {
+	private Comments loadComments() {
 		if (!App.isCommentingEnabled()
 				|| !Repository.isConnected()
 				|| !Repository.CURRENT.isCollaborationServer())
-			return;
-		comments = new Comments(WebRequests.execute(M.Comments, 
-				() -> Repository.CURRENT.client.getComments(Repository.CURRENT.id, type.name(), refId),
+			return new Comments(new ArrayList<>());
+		return new Comments(WebRequests.execute(M.Comments,
+				() -> Repository.CURRENT.client.getComments(Repository.CURRENT.id,
+						ModelType.of(model.getClass()).name(), model.refId),
 				new ArrayList<>()));
 	}
 

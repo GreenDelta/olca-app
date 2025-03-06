@@ -69,16 +69,16 @@ class Actions {
 		if (!tokenRequired) {
 			CredentialStore.clearPassword(repo.serverUrl, repo.user());
 		}
-		if (notPermitted) {
-			throw new TransportException(M.NoSufficientRights);
-		}
 		if (passwordMissing) {
-			throw new TransportException(
-					"We have updated our password encryption. Since we only store encrypted passwords, we are not able to migrate your current password. Please use the 'Forgot your password?' link on the website to request a new password being sent to your email address.");
+			MsgBox.warning("We have updated our password encryption. Since we only store encrypted passwords, we are not able to migrate your current password. Please use the 'Forgot your password?' link on the website to request a new password being sent to your email address.");
+			return null;
 		}
-		if (!notAuthorized && !tokenRequired)
+		if (!notPermitted && !notAuthorized && !tokenRequired)
 			throw runner.exception;
-		if (notAuthorized) {
+		if (notPermitted) {
+			MsgBox.warning(M.NoSufficientRights);
+			credentials = repo.promptCredentials();			
+		} else if (notAuthorized) {
 			credentials = repo.promptCredentials();
 		} else if (tokenRequired) {
 			credentials = repo.promptToken();
