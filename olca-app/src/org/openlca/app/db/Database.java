@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
-import org.openlca.app.navigation.CopyPaste;
+import org.openlca.app.navigation.clipboard.NaviClipboard;
 import org.openlca.app.rcp.RcpWindowAdvisor;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
@@ -92,7 +92,7 @@ public class Database {
 	public static void close() throws Exception {
 		try {
 			Cache.close();
-			CopyPaste.clearCache();
+			NaviClipboard.clearCache();
 			if (Repository.CURRENT != null) {
 				Repository.CURRENT.close();
 			}

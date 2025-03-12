@@ -205,15 +205,13 @@ public class Navigator extends CommonNavigator {
 
 	private static ModelType modelTypeOf(INavigationElement<?> elem) {
 		var content = elem.getContent();
-		if (content == null)
-			return null;
-		if (content instanceof ModelType t)
-			return t;
-		if (content instanceof Descriptor d)
-			return d.type;
-		if (content instanceof Category c)
-			return c.modelType;
-		return null;
+		return switch (content) {
+			case null -> null;
+			case ModelType t -> t;
+			case Descriptor d -> d.type;
+			case Category c -> c.modelType;
+			default -> null;
+		};
 	}
 
 	private static DatabaseElement databaseElementOf(INavigationElement<?> elem) {
@@ -352,7 +350,7 @@ public class Navigator extends CommonNavigator {
 	public static void revealFirstChild(INavigationElement<?> navElem) {
 		if (navElem == null || navElem.getChildren().isEmpty())
 			return;
-		var first = navElem.getChildren().get(0);
+		var first = navElem.getChildren().getFirst();
 		var navigator = Navigator.getInstance();
 		if (navigator == null)
 			return;
@@ -366,7 +364,7 @@ public class Navigator extends CommonNavigator {
 		var all = getAllSelected();
 		return all.isEmpty()
 				? null
-				: all.get(0);
+				: all.getFirst();
 	}
 
 	public List<INavigationElement<?>> getAllSelected() {
@@ -437,7 +435,7 @@ public class Navigator extends CommonNavigator {
 		return null;
 	}
 
-	private class RefreshListener implements KeyListener {
+	private static class RefreshListener implements KeyListener {
 
 		@Override
 		public void keyReleased(KeyEvent e) {

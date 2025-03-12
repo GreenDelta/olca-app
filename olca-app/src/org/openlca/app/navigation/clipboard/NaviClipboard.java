@@ -1,4 +1,4 @@
-package org.openlca.app.navigation;
+package org.openlca.app.navigation.clipboard;
 
 import java.util.List;
 import java.util.Objects;
@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.Libraries;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
@@ -20,13 +21,13 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-public class CopyPaste {
+public class NaviClipboard {
 
 	private enum Action {
 		NONE, COPY, CUT
 	}
 
-	private static List<INavigationElement<?>> cache = null;
+	private static List<INavigationElement<?>> content = null;
 	private static Action currentAction = Action.NONE;
 
 	public static void copy(List<INavigationElement<?>> elements) {
@@ -40,7 +41,7 @@ public class CopyPaste {
 			return;
 		initialize(Action.CUT, elements);
 		var navigator = Navigator.getInstance();
-		for (var elem : cache) {
+		for (var elem : content) {
 			elem.getParent().getChildren().remove(elem);
 			if (navigator != null) {
 				navigator.getCommonViewer().refresh(elem.getParent());
@@ -88,7 +89,7 @@ public class CopyPaste {
 		if (currentAction == Action.CUT) {
 			restore();
 		}
-		cache = elements;
+		content = elements;
 		currentAction = action;
 	}
 
@@ -96,16 +97,16 @@ public class CopyPaste {
 		if (elements == null || elements.isEmpty())
 			return;
 		if (cacheIsEmpty()) {
-			cache = elements;
+			content = elements;
 			return;
 		}
-		cache.addAll(elements);
+		content.addAll(elements);
 	}
 
 	private static void restore() {
 		if (cacheIsEmpty())
 			return;
-		for (INavigationElement<?> element : cache) {
+		for (INavigationElement<?> element : content) {
 			paste(element, element.getParent());
 			var modelRoot = Navigator.findElement(getModelType(element));
 			Navigator.refresh(modelRoot);
@@ -118,7 +119,7 @@ public class CopyPaste {
 		if (!canPasteTo(categoryElement))
 			return;
 		try {
-			for (INavigationElement<?> element : cache) {
+			for (INavigationElement<?> element : content) {
 				paste(element, categoryElement);
 			}
 		} finally {
@@ -129,7 +130,7 @@ public class CopyPaste {
 	}
 
 	public static void clearCache() {
-		cache = null;
+		content = null;
 		currentAction = Action.NONE;
 	}
 
@@ -148,7 +149,7 @@ public class CopyPaste {
 			return false;
 		if (!(elem instanceof CategoryElement || elem instanceof ModelTypeElement))
 			return false;
-		return getModelType(elem) == getModelType(cache.get(0));
+		return getModelType(elem) == getModelType(content.get(0));
 	}
 
 	private static void paste(INavigationElement<?> element, INavigationElement<?> category) {
@@ -220,7 +221,7 @@ public class CopyPaste {
 	private static void copy(
 			CategoryElement copyRoot, INavigationElement<?> copyTarget
 	) {
-		CategoryCopy.create(copyRoot, copyTarget, CopyPaste::copyTo);
+		CategoryCopy.create(copyRoot, copyTarget, NaviClipboard::copyTo);
 	}
 
 	private static void copyTo(ModelElement e, Category category) {
@@ -249,6 +250,6 @@ public class CopyPaste {
 	}
 
 	public static boolean cacheIsEmpty() {
-		return cache == null || cache.isEmpty();
+		return content == null || content.isEmpty();
 	}
 }

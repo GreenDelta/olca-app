@@ -1,4 +1,4 @@
-package org.openlca.app.navigation;
+package org.openlca.app.navigation.clipboard;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;

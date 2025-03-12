@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
-import org.openlca.app.navigation.CopyPaste;
+import org.openlca.app.navigation.clipboard.NaviClipboard;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 
@@ -18,9 +18,9 @@ class PasteAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (CopyPaste.cacheIsEmpty())
+		if (NaviClipboard.cacheIsEmpty())
 			return false;
-		if (!CopyPaste.canPasteTo(first))
+		if (!NaviClipboard.canPasteTo(first))
 			return false;
 		category = first;
 		return true;
@@ -28,7 +28,7 @@ class PasteAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		CopyPaste.pasteTo(category);
+		NaviClipboard.pasteTo(category);
 	}
 
 	@Override

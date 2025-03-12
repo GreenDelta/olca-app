@@ -1,5 +1,10 @@
 package org.openlca.app.navigation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -10,6 +15,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonDropAdapterAssistant;
 import org.openlca.app.db.Database;
+import org.openlca.app.navigation.clipboard.NaviClipboard;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -18,11 +24,6 @@ import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.core.database.config.DerbyConfig;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 
@@ -93,15 +94,15 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 			List<INavigationElement<?>> elements,
 			INavigationElement<?> target
 	) {
-		if (!CopyPaste.canMove(elements, target))
+		if (!NaviClipboard.canMove(elements, target))
 			return Status.CANCEL_STATUS;
 		boolean copy = (op & DND.DROP_COPY) == DND.DROP_COPY;
 		if (copy) {
-			CopyPaste.copy(elements);
+			NaviClipboard.copy(elements);
 		} else {
-			CopyPaste.cut(elements);
+			NaviClipboard.cut(elements);
 		}
-		CopyPaste.pasteTo(target);
+		NaviClipboard.pasteTo(target);
 		return Status.OK_STATUS;
 	}
 

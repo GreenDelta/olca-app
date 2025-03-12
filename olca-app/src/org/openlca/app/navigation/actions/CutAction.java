@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
-import org.openlca.app.navigation.CopyPaste;
+import org.openlca.app.navigation.clipboard.NaviClipboard;
 import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
@@ -17,7 +17,7 @@ class CutAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elems) {
-		if (!CopyPaste.isSupported(elems))
+		if (!NaviClipboard.isSupported(elems))
 			return false;
 		for (var elem : elems) {
 			if (elem instanceof ModelElement e && e.isFromLibrary()) {
@@ -32,7 +32,7 @@ class CutAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		CopyPaste.cut(selection);
+		NaviClipboard.cut(selection);
 	}
 
 	@Override
