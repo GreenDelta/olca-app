@@ -16,7 +16,7 @@ class CopyAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elements) {
-		if (!NaviClipboard.isSupported(elements))
+		if (!NaviClipboard.canCopy(elements))
 			return false;
 		for (var elem : elements) {
 			if (elem instanceof CategoryElement ce && ce.hasLibraryContent())
@@ -28,7 +28,7 @@ class CopyAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		NaviClipboard.copy(selection);
+		NaviClipboard.get().copy(selection);
 	}
 
 	@Override

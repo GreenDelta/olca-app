@@ -17,7 +17,7 @@ class CutAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> elems) {
-		if (!NaviClipboard.isSupported(elems))
+		if (!NaviClipboard.canCut(elems))
 			return false;
 		for (var elem : elems) {
 			if (elem instanceof ModelElement e && e.isFromLibrary()) {
@@ -32,7 +32,7 @@ class CutAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		NaviClipboard.cut(selection);
+		NaviClipboard.get().cut(selection);
 	}
 
 	@Override

@@ -43,7 +43,7 @@ class Checks {
 		return null;
 	}
 
-	private static boolean isValidTarget(
+	static boolean isValidTarget(
 			List<INavigationElement<?>> elems, INavigationElement<?> target
 	) {
 		var type = elems != null && !elems.isEmpty()
@@ -63,9 +63,9 @@ class Checks {
 						return false;
 				}
 			}
+			return true;
 		}
-		return target instanceof CategoryElement
-				|| target instanceof ModelTypeElement;
+		return target instanceof ModelTypeElement;
 	}
 
 	private static boolean canApply(
