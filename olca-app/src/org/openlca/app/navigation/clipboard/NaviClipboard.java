@@ -16,28 +16,59 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
+/// The clipboard for the navigation viewer. Note that this class is not
+/// thread-safe. It is designed to be used as a singleton instance in the UI
+/// thread only.
 public class NaviClipboard {
 
-	private enum Action {
-		NONE, COPY, CUT
+	private final static NaviClipboard instance = new NaviClipboard();
+
+	private List<INavigationElement<?>> content;
+	private Action currentAction;
+
+	private NaviClipboard() {
 	}
 
-	private static List<INavigationElement<?>> content = null;
-	private static Action currentAction = Action.NONE;
+	public static NaviClipboard get() {
+		return instance;
+	}
 
-	public static void copy(List<INavigationElement<?>> elements) {
-		if (!isSupported(elements))
+	// region: predicates
+
+	public static boolean canCopy(List<INavigationElement<?>> elems) {
+		return Checks.canCopy(elems);
+	}
+
+	public static boolean canCopyTo(
+			List<INavigationElement<?>> elems, INavigationElement<?> target
+	) {
+		return Checks.canCopyTo(elems, target);
+	}
+
+	public static boolean canCut(List<INavigationElement<?>> elems) {
+		return Checks.canCut(elems);
+	}
+
+	public static boolean canMoveTo(
+			List<INavigationElement<?>> elems, INavigationElement<?> target
+	) {
+		return Checks.canMoveTo(elems, target);
+	}
+
+	// endregion
+
+	public void copy(List<INavigationElement<?>> elements) {
+		if (!canCopy(elements))
 			return;
 		initialize(Action.COPY, elements);
 	}
 
-	public static void cut(List<INavigationElement<?>> elements) {
-		if (!isSupported(elements))
+	public void cut(List<INavigationElement<?>> elements) {
+		if (!canCut(elements))
 			return;
 		initialize(Action.CUT, elements);
 		var navigator = Navigator.getInstance();
@@ -49,39 +80,9 @@ public class NaviClipboard {
 		}
 	}
 
-	public static boolean isSupported(List<INavigationElement<?>> elems) {
-		if (elems == null || elems.isEmpty())
-			return false;
-		ModelType modelType = null;
-		for (INavigationElement<?> element : elems) {
-			if (!isSupported(element))
-				return false;
-			ModelType currentModelType = getModelType(element);
-			if (modelType == null)
-				modelType = currentModelType;
-			else if (currentModelType != modelType)
-				return false;
-		}
-		return true;
-	}
-
-	private static boolean isSupported(INavigationElement<?> elem) {
-		if (!(elem instanceof ModelElement) && !(elem instanceof CategoryElement))
-			return false;
-		return elem.getLibrary().isEmpty();
-	}
-
-	private static ModelType getModelType(INavigationElement<?> e) {
-		if (e instanceof ModelElement me)
-			return me.getContent().type;
-		if (e instanceof CategoryElement ce)
-			return ce.getContent().modelType;
-		if (e instanceof ModelTypeElement mte)
-			return mte.getContent();
-		return null;
-	}
-
-	private static void initialize(Action action,List<INavigationElement<?>> elements) {
+	private void initialize(Action action,List<INavigationElement<?>> elements) {
+		// TODO check if extending the content makes sense here because
+		// this is also not how typical file browsers work
 		if (action == Action.CUT && currentAction == Action.CUT) {
 			extendCache(elements);
 			return;
@@ -93,28 +94,30 @@ public class NaviClipboard {
 		currentAction = action;
 	}
 
-	private static void extendCache(List<INavigationElement<?>> elements) {
+	private void extendCache(List<INavigationElement<?>> elements) {
 		if (elements == null || elements.isEmpty())
 			return;
-		if (cacheIsEmpty()) {
+		if (isEmpty()) {
 			content = elements;
 			return;
 		}
 		content.addAll(elements);
 	}
 
-	private static void restore() {
-		if (cacheIsEmpty())
+	private void restore() {
+		if (isEmpty())
 			return;
-		for (INavigationElement<?> element : content) {
+		for (var element : content) {
 			paste(element, element.getParent());
-			var modelRoot = Navigator.findElement(getModelType(element));
+			var type = Checks.typeOf(element);
+
+			var modelRoot = Navigator.findElement(type);
 			Navigator.refresh(modelRoot);
 		}
 	}
 
-	public static void pasteTo(INavigationElement<?> categoryElement) {
-		if (cacheIsEmpty())
+	public void pasteTo(INavigationElement<?> categoryElement) {
+		if (isEmpty())
 			return;
 		if (!canPasteTo(categoryElement))
 			return;
@@ -123,15 +126,15 @@ public class NaviClipboard {
 				paste(element, categoryElement);
 			}
 		} finally {
-			clearCache();
+			clear();
 			var root = Navigator.findElement(Database.getActiveConfiguration());
 			Navigator.refresh(root);
 		}
 	}
 
-	public static void clearCache() {
+	public void clear() {
 		content = null;
-		currentAction = Action.NONE;
+		currentAction = null;
 	}
 
 	public static boolean canMove(
@@ -144,15 +147,15 @@ public class NaviClipboard {
 		return getModelType(target) == getModelType(elems.get(0));
 	}
 
-	public static boolean canPasteTo(INavigationElement<?> elem) {
-		if (cacheIsEmpty())
+	public boolean canPasteTo(INavigationElement<?> elem) {
+		if (isEmpty())
 			return false;
 		if (!(elem instanceof CategoryElement || elem instanceof ModelTypeElement))
 			return false;
 		return getModelType(elem) == getModelType(content.get(0));
 	}
 
-	private static void paste(INavigationElement<?> element, INavigationElement<?> category) {
+	private void paste(INavigationElement<?> element, INavigationElement<?> category) {
 		if (currentAction == Action.CUT) {
 			if (element instanceof CategoryElement ce)
 				move(ce, category);
@@ -167,19 +170,19 @@ public class NaviClipboard {
 		}
 	}
 
-	private static Category getCategory(INavigationElement<?> element) {
+	private Category getCategory(INavigationElement<?> element) {
 		return element instanceof CategoryElement catElem
 				? catElem.getContent()
 				: null;
 	}
 
-	private static void move(CategoryElement element, INavigationElement<?> categoryElement) {
+	private void move(CategoryElement element, INavigationElement<?> categoryElement) {
 		Category newParent = getCategory(categoryElement);
 		Category oldParent = getCategory(element.getParent());
 		Category category = element.getContent();
 		if (Objects.equals(category, newParent))
 			return;
-		if (isChild(newParent, category))
+		if (Checks.isChildOf(newParent, category))
 			return; // do not create category cycles
 		if (oldParent != null)
 			oldParent.childCategories.remove(category);
@@ -196,19 +199,7 @@ public class NaviClipboard {
 		dao.update(category);
 	}
 
-	private static boolean isChild(Category category, Category parent) {
-		if (category == null || parent == null)
-			return false;
-		Category p = category.category;
-		while (p != null) {
-			if (Objects.equals(p, parent))
-				return true;
-			p = p.category;
-		}
-		return false;
-	}
-
-	private static void move(ModelElement element, INavigationElement<?> categoryElement) {
+	private void move(ModelElement element, INavigationElement<?> categoryElement) {
 		RootDescriptor entity = element.getContent();
 		Category category = getCategory(categoryElement);
 		Optional<Category> parent = Optional.ofNullable(category);
@@ -218,7 +209,7 @@ public class NaviClipboard {
 	/**
 	 * Copy the category `copyRoot` with its content under the `copyTarget`.
 	 */
-	private static void copy(
+	private void copy(
 			CategoryElement copyRoot, INavigationElement<?> copyTarget
 	) {
 		CategoryCopy.create(copyRoot, copyTarget, NaviClipboard::copyTo);
@@ -249,7 +240,7 @@ public class NaviClipboard {
 		Database.get().insert(copy);
 	}
 
-	public static boolean cacheIsEmpty() {
+	public boolean isEmpty() {
 		return content == null || content.isEmpty();
 	}
 }

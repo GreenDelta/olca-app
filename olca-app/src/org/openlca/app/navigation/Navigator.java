@@ -206,11 +206,10 @@ public class Navigator extends CommonNavigator {
 	private static ModelType modelTypeOf(INavigationElement<?> elem) {
 		var content = elem.getContent();
 		return switch (content) {
-			case null -> null;
 			case ModelType t -> t;
 			case Descriptor d -> d.type;
 			case Category c -> c.modelType;
-			default -> null;
+			case null, default -> null;
 		};
 	}
 

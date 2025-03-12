@@ -94,15 +94,20 @@ public class NavigationDropAssistant extends CommonDropAdapterAssistant {
 			List<INavigationElement<?>> elements,
 			INavigationElement<?> target
 	) {
-		if (!NaviClipboard.canMove(elements, target))
-			return Status.CANCEL_STATUS;
 		boolean copy = (op & DND.DROP_COPY) == DND.DROP_COPY;
+		boolean canDo = copy
+				? NaviClipboard.canCopyTo(elements, target)
+				: NaviClipboard.canMoveTo(elements, target);
+		if (!canDo)
+			return Status.CANCEL_STATUS;
+
+		var clipboard = NaviClipboard.get();
 		if (copy) {
-			NaviClipboard.copy(elements);
+			clipboard.copy(elements);
 		} else {
-			NaviClipboard.cut(elements);
+			clipboard.cut(elements);
 		}
-		NaviClipboard.pasteTo(target);
+		clipboard.pasteTo(target);
 		return Status.OK_STATUS;
 	}
 

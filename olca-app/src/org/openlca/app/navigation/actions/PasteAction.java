@@ -17,10 +17,8 @@ class PasteAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
-		if (NaviClipboard.cacheIsEmpty())
-			return false;
-		if (!NaviClipboard.canPasteTo(first))
+		var first = selection.getFirst();
+		if (!NaviClipboard.get().canPasteTo(first))
 			return false;
 		category = first;
 		return true;
@@ -28,7 +26,7 @@ class PasteAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		NaviClipboard.pasteTo(category);
+		NaviClipboard.get().pasteTo(category);
 	}
 
 	@Override
