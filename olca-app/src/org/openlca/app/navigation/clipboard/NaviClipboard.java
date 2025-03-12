@@ -79,26 +79,35 @@ public class NaviClipboard {
 		}
 	}
 
-	private void initialize(Action action,List<INavigationElement<?>> elements) {
-		if (action == Action.CUT && this.action == Action.CUT) {
-			extendCache(elements);
-			return;
+	private void initialize(
+			Action nextAction, List<INavigationElement<?>> elements
+	) {
+
+		// in case of a cut operation, we can extend the content
+		// if the content is of the same type
+		if (nextAction == Action.CUT && this.action == Action.CUT) {
+			if (extendContent(elements))
+				return;
 		}
+
+		// otherwise we restore the content first, if required
 		if (this.action == Action.CUT) {
 			restore();
 		}
 		content = elements;
-		this.action = action;
+		this.action = nextAction;
 	}
 
-	private void extendCache(List<INavigationElement<?>> elements) {
+	private boolean extendContent(List<INavigationElement<?>> elements) {
 		if (elements == null || elements.isEmpty())
-			return;
+			return true; // should not happen
 		if (isEmpty()) {
 			content = elements;
-			return;
+			return true;
 		}
-		content.addAll(elements);
+		var currentType = Checks.typeOf(content.getFirst());
+		var nextType = Checks.typeOf(elements.getFirst());
+		return currentType == nextType;
 	}
 
 	private void restore() {
