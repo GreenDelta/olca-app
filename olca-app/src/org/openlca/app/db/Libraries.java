@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -168,15 +170,13 @@ public final class Libraries {
 	}
 
 	public static void fillExchangesOf(Process process) {
-		fill(process, (db, lib) -> {
-			org.openlca.core.library.Libraries.fillExchangesOf(db, lib, process);
-		});
+		fill(process, (db, lib) ->
+				org.openlca.core.library.Libraries.fillExchangesOf(db, lib, process));
 	}
 
 	public static void fillFactorsOf(ImpactCategory impact) {
-		fill(impact, (db, lib) -> {
-			org.openlca.core.library.Libraries.fillFactorsOf(db, lib, impact);
-		});
+		fill(impact, (db, lib) ->
+				org.openlca.core.library.Libraries.fillFactorsOf(db, lib, impact));
 	}
 
 	private static void fill(RootEntity e, BiConsumer<IDatabase, LibReader> fn) {
@@ -205,8 +205,11 @@ public final class Libraries {
 	}
 
 	public static Library importFromUrl(String url) {
-		try (var stream = URI.create(url).toURL().openStream()) {
-			return importFromStream(stream);
+		try {
+			var encoded = encodeUrl(url);
+			try (var stream = URI.create(encoded).toURL().openStream()) {
+				return importFromStream(stream);
+			}
 		} catch (IOException e) {
 			ErrorReporter.on(M.ErrorTryingToResolveLibraryUrl, e);
 			return null;
@@ -257,4 +260,27 @@ public final class Libraries {
 		}
 	}
 
+	/// Library names can contain spaces, that we need to encode. Also, the
+	/// standard URL encoding does not encode spaces as %20, but as +, which
+	/// seem to cannot be handled by the Collaboration Server?
+	private static String encodeUrl(String url) {
+		if (url == null)
+			return null;
+		var parts = url.split("://");
+		if (parts.length < 2)
+			return url.strip();
+		var protocol = parts[0];
+		var sub = parts[1].split("/");
+		if (sub.length < 2)
+			return url.strip();
+		var encoded = new StringBuilder(protocol.strip())
+				.append("://")
+				.append(sub[0].strip());
+		for (int i = 1; i < sub.length; i++) {
+			var segment = URLEncoder.encode(sub[i].strip(), StandardCharsets.UTF_8)
+					.replace("+", "%20");
+			encoded.append("/").append(segment);
+		}
+		return encoded.toString();
+	}
 }
