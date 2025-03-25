@@ -1,6 +1,5 @@
 package org.openlca.app.navigation.actions.db;
 
-import java.io.File;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -23,6 +22,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.config.DerbyConfig;
+import org.openlca.util.Strings;
 
 public class DbCopyAction extends Action implements INavigationAction {
 
@@ -37,7 +37,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
+		var first = selection.getFirst();
 		if (!(first instanceof DatabaseElement e))
 			return false;
 		var config = e.getContent();
@@ -51,9 +51,9 @@ public class DbCopyAction extends Action implements INavigationAction {
 	public void run() {
 		if (config == null) {
 			var conf = Database.getActiveConfiguration();
-			if (!(conf instanceof DerbyConfig))
+			if (!(conf instanceof DerbyConfig dConf))
 				return;
-			config = (DerbyConfig) conf;
+			config = dConf;
 		}
 
 		var dialog = new InputDialog(UI.shell(),
@@ -81,14 +81,20 @@ public class DbCopyAction extends Action implements INavigationAction {
 					return;
 				Database.close();
 			}
-			File fromFolder = DatabaseDir.getRootFolder(config.name());
-			File toFolder = DatabaseDir.getRootFolder(newName);
+			var fromFolder = DatabaseDir.getRootFolder(config.name());
+			var toFolder = DatabaseDir.getRootFolder(newName);
 			FileUtils.copyDirectory(fromFolder, toFolder);
-			DerbyConfig newConf = new DerbyConfig();
+
+			var newConf = new DerbyConfig();
 			newConf.name(newName);
+			if (Strings.notEmpty(config.category())) {
+				newConf.setCategory(config.category());
+			}
 			Database.register(newConf);
-			if (isActive)
+
+			if (isActive) {
 				Database.activate(config);
+			}
 			Navigator.refresh();
 			HistoryView.refresh();
 			CompareView.clear();
@@ -96,5 +102,4 @@ public class DbCopyAction extends Action implements INavigationAction {
 			ErrorReporter.on("failed to copy database", e);
 		}
 	}
-
 }
