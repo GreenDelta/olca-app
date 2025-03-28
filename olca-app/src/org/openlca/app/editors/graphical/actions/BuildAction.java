@@ -1,22 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.ui.actions.WorkbenchPartAction;
-import org.openlca.app.db.Database;
-import org.openlca.app.editors.graphical.GraphEditor;
-import org.openlca.app.editors.graphical.edit.NodeEditPart;
-import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
-import org.openlca.app.components.graphics.model.Side;
-import org.openlca.core.database.FlowDao;
-import org.openlca.core.database.ProcessDao;
-import org.openlca.core.matrix.linking.ProviderLinking;
-import org.openlca.core.model.Exchange;
-import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProcessType;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.core.model.descriptors.RootDescriptor;
+import static org.openlca.app.components.graphics.model.Component.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,7 +8,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.ui.actions.WorkbenchPartAction;
+import org.openlca.app.components.graphics.model.Side;
+import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.edit.NodeEditPart;
+import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
+import org.openlca.core.database.FlowDao;
+import org.openlca.core.database.ProcessDao;
+import org.openlca.core.matrix.linking.ProviderLinking;
+import org.openlca.core.model.Exchange;
+import org.openlca.core.model.Process;
+import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.ProviderType;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 public abstract class BuildAction extends WorkbenchPartAction {
 
@@ -94,16 +95,7 @@ public abstract class BuildAction extends WorkbenchPartAction {
 		link.flowId = exchange.flow.id;
 		link.processId = process.id;
 		link.providerId = provider.id;
-		if (provider.type == null) {
-			link.providerType = ProcessLink.ProviderType.PROCESS;
-		}
-		else {
-			link.providerType = switch (provider.type) {
-				case PRODUCT_SYSTEM -> ProcessLink.ProviderType.SUB_SYSTEM;
-				case RESULT -> ProcessLink.ProviderType.RESULT;
-				default -> ProcessLink.ProviderType.PROCESS;
-			};
-		}
+		link.providerType = ProviderType.of(provider.type);
 		return link;
 	}
 

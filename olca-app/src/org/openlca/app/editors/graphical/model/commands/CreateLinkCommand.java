@@ -8,6 +8,7 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.ProviderType;
 
 
 public class CreateLinkCommand extends Command {
@@ -25,11 +26,6 @@ public class CreateLinkCommand extends Command {
 	@Override
 	public boolean canExecute() {
 		return target != null && source != null;
-	}
-
-	@Override
-	public boolean canUndo() {
-		return true;
 	}
 
 	@Override
@@ -65,14 +61,14 @@ public class CreateLinkCommand extends Command {
 						: target.exchange.id;
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.providerId = descriptor.id;
-				processLink.setProviderType(descriptor.type);
+				processLink.providerType = ProviderType.of(descriptor.type);
 			}
 		}
 		if (source != null) {
 			var descriptor = source.getNode().descriptor;
 			if (type == FlowType.PRODUCT_FLOW) {
 				processLink.providerId = descriptor.id;
-				processLink.setProviderType(descriptor.type);
+				processLink.providerType = ProviderType.of(descriptor.type);
 			} else if (type == FlowType.WASTE_FLOW) {
 				processLink.processId = descriptor.id;
 				// setting the exchange ID to the internal ID if the entity is dirty.

@@ -19,6 +19,7 @@ import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.core.model.ProviderType;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class ConnectionDialog extends Dialog {
@@ -113,12 +114,12 @@ public class ConnectionDialog extends Dialog {
 			link.flowId = exchange.exchange.flow.id;
 			if (exchange.isProvider) {
 				link.providerId = exchange.process.id;
-				link.setProviderType(exchange.process.type);
+				link.providerType = ProviderType.of(exchange.process.type);
 				link.processId = c.process.id;
 				link.exchangeId = c.exchangeId;
 			} else {
 				link.providerId = c.process.id;
-				link.setProviderType(c.process.type);
+				link.providerType = ProviderType.of(c.process.type);
 				// setting the exchange ID to the internal ID if the entity is dirty.
 				link.exchangeId = isDirty
 						? exchange.exchange.internalId

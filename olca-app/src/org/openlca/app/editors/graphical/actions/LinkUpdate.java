@@ -1,9 +1,9 @@
 package org.openlca.app.editors.graphical.actions;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Objects;
+
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
@@ -14,12 +14,14 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.ProviderType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Objects;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 
 public class LinkUpdate {
 
@@ -157,7 +159,7 @@ public class LinkUpdate {
 		link.providerId = providerId;
 		link.exchangeId = exchangeId;
 		link.processId = process.id;
-		link.providerType = ProcessLink.ProviderType.PROCESS;
+		link.providerType = ProviderType.PROCESS;
 		link.flowId = exchange.flowId;
 		return link;
 	}
@@ -256,15 +258,8 @@ public class LinkUpdate {
 		set.add(val);
 	}
 
-	private static class TExchange {
+	private record TExchange(long flowId, long defaultProviderId) {
 
-		final long flowId;
-		final long defaultProviderId;
-
-		TExchange(long flowId, long defaultProviderId) {
-			this.flowId = flowId;
-			this.defaultProviderId = defaultProviderId;
-		}
 	}
 
 	public static class Config {

@@ -8,6 +8,7 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.ProviderType;
 
 public class ReconnectLinkCommand extends Command {
 
@@ -36,25 +37,20 @@ public class ReconnectLinkCommand extends Command {
 	}
 
 	@Override
-	public boolean canUndo() {
-		return true;
-	}
-
-	@Override
 	public void execute() {
 		graph.removeLink(oldLink.processLink);
 
-		var processLink = new ProcessLink();
-		processLink.providerId = sourceNode.descriptor.id;
-		processLink.setProviderType(sourceNode.descriptor.type);
-		processLink.flowId = oldLink.processLink.flowId;
-		processLink.processId = targetItem.getNode().descriptor.id;
-		processLink.exchangeId = targetItem.exchange.id;
+		var pLink = new ProcessLink();
+		pLink.providerId = sourceNode.descriptor.id;
+		pLink.providerType = ProviderType.of(sourceNode.descriptor.type);
+		pLink.flowId = oldLink.processLink.flowId;
+		pLink.processId = targetItem.getNode().descriptor.id;
+		pLink.exchangeId = targetItem.exchange.id;
 
-		graph.getProductSystem().processLinks.add(processLink);
-		graph.linkSearch.put(processLink);
-		link = new GraphLink(processLink, sourceNode, targetItem);
-		graph.mapProcessLinkToGraphLink.put(processLink, link);
+		graph.getProductSystem().processLinks.add(pLink);
+		graph.linkSearch.put(pLink);
+		link = new GraphLink(pLink, sourceNode, targetItem);
+		graph.mapProcessLinkToGraphLink.put(pLink, link);
 
 		graph.editor.setDirty();
 	}
