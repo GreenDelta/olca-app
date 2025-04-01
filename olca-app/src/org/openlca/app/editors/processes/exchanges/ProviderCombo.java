@@ -13,10 +13,12 @@ import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ProviderType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
-class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
+class ProviderCombo extends ComboBoxCellModifier<Exchange, RootDescriptor> {
 
 	private final IDatabase db = Database.get();
 	private final EntityCache cache = Cache.getEntityCache();
@@ -37,7 +39,7 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 	}
 
 	@Override
-	protected ProcessDescriptor[] getItems(Exchange e) {
+	protected RootDescriptor[] getItems(Exchange e) {
 		var providerIds = getProviderIds(e);
 		if (providerIds.isEmpty())
 			return new ProcessDescriptor[0];
@@ -60,18 +62,21 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, ProcessDescriptor> {
 	}
 
 	@Override
-	protected String getText(ProcessDescriptor d) {
+	protected String getText(RootDescriptor d) {
 		return d != null
 			? Labels.name(d)
 			: "";
 	}
 
 	@Override
-	protected void setItem(Exchange e, ProcessDescriptor d) {
+	protected void setItem(Exchange e, RootDescriptor d) {
 		long next = d != null ? d.id : 0L;
 		if (next == e.defaultProviderId)
 			return;
 		e.defaultProviderId = next;
+		e.defaultProviderType = d != null
+				? ProviderType.of(d.type)
+				: ProviderType.PROCESS;
 		editor.setDirty(true);
 	}
 
