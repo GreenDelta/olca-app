@@ -236,9 +236,21 @@ public class ParameterSection {
 		boolean skipped = false;
 		for (Parameter param : params) {
 			String name = param.name;
-			if (!Parameters.isValidName(name) || exists(name)) {
+			if (!Parameters.isValidName(name)) {
 				skipped = true;
 				continue;
+			}
+			// if the name exists, add a _copy suffix to make it unique
+			if (exists(name)) {
+				param.name = param.name + "_copy";
+			}
+			// if it still exists, add a numeric suffix to make it unique (_copy1, _copy2, ...)
+			if (exists(param.name)) {
+				int suffix = 1;
+				while (exists(param.name + suffix)) {
+					suffix++;
+				}
+				param.name = param.name + suffix;
 			}
 			entity().parameters.add(param);
 		}
