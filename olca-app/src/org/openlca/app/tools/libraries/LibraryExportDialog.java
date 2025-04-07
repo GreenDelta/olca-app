@@ -17,6 +17,7 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.core.database.IDatabase;
@@ -53,8 +54,9 @@ public class LibraryExportDialog extends FormDialog {
 					M.CollectDatabasePropertiesDots,
 					() -> Props.of(db));
 			if (props.hasLibraryProcesses) {
-				MsgBox.error(M.ContainsLibraryProcesses, M.ContainsLibraryProcessesErr);
-				return;
+				var b = Question.ask(M.ContainsLibraryProcesses, M.ContainsLibraryProcessesQ);
+				if (!b)
+					return;
 			}
 			new LibraryExportDialog(props).open();
 		} catch (Exception e) {
@@ -187,6 +189,7 @@ public class LibraryExportDialog extends FormDialog {
 			boolean hasUncertainty,
 			DQSystem flowDqs
 	) {
+
 		static Props of(IDatabase db) {
 			boolean hasLibraryProcesses = false;
 			boolean hasInventory = false;

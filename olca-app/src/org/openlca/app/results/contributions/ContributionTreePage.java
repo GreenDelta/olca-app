@@ -1,5 +1,7 @@
 package org.openlca.app.results.contributions;
 
+import java.util.HashMap;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -30,6 +32,7 @@ import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
@@ -205,6 +208,23 @@ public class ContributionTreePage extends FormPage {
 	private class Label extends BaseLabelProvider implements ITableLabelProvider {
 
 		private final ContributionImage image = new ContributionImage();
+		private final HashMap<Long, String> groups;
+
+		Label() {
+			HashMap<Long, String> gs = null;
+			if (setup.target() instanceof ProductSystem sys
+					&& !sys.analysisGroups.isEmpty()) {
+				gs = new HashMap<>();
+				for (var g : sys.analysisGroups) {
+					for (var pid : g.processes) {
+						gs.put(pid, g.name);
+					}
+				}
+			}
+			groups = gs != null && !gs.isEmpty()
+					? gs
+					: null;
+		}
 
 		@Override
 		public void dispose() {
@@ -230,7 +250,7 @@ public class ContributionTreePage extends FormPage {
 				return null;
 			return switch (col) {
 				case 0 -> Numbers.percent(shareOf(node.result()));
-				case 1 -> Labels.name(node.provider().provider());
+				case 1 -> getName(node);
 				case 2 -> Numbers.format(node.requiredAmount()) + " "
 						+ Labels.refUnit(node.provider());
 				case 3 -> Numbers.format(node.result());
@@ -240,6 +260,18 @@ public class ContributionTreePage extends FormPage {
 				}
 				default -> null;
 			};
+		}
+
+		private String getName(UpstreamNode node) {
+			if (node == null || node.provider() == null)
+				return null;
+			var name = Labels.name(node.provider().provider());
+			if (groups == null)
+				return name;
+			var group = groups.get(node.provider().providerId());
+			return group != null
+					? group + " :: " + name
+					: name;
 		}
 
 		private String getUnit() {
