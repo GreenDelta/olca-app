@@ -1,5 +1,8 @@
 package org.openlca.app.editors.graphical.actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.gef.ui.actions.UpdateAction;
 import org.eclipse.jface.action.IMenuCreator;
@@ -15,14 +18,11 @@ import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
+import org.openlca.core.matrix.linking.LinkingConfig.PreferredType;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class BuildSupplyChainMenuAction extends SelectionAction
 		implements UpdateAction {
@@ -49,16 +49,16 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 			var item = new MenuItem(menu, SWT.CASCADE);
 			item.setText(action.getText());
 			var subMenu = new Menu(item);
-			createSubItem(subMenu, action, ProviderLinking.IGNORE_DEFAULTS, ProcessType.UNIT_PROCESS);
-			createSubItem(subMenu, action, ProviderLinking.IGNORE_DEFAULTS, ProcessType.LCI_RESULT);
-			createSubItem(subMenu, action, ProviderLinking.PREFER_DEFAULTS, ProcessType.UNIT_PROCESS);
-			createSubItem(subMenu, action, ProviderLinking.PREFER_DEFAULTS, ProcessType.LCI_RESULT);
+			createSubItem(subMenu, action, ProviderLinking.IGNORE_DEFAULTS, PreferredType.UNIT_PROCESS);
+			createSubItem(subMenu, action, ProviderLinking.IGNORE_DEFAULTS, PreferredType.SYSTEM_PROCESS);
+			createSubItem(subMenu, action, ProviderLinking.PREFER_DEFAULTS, PreferredType.UNIT_PROCESS);
+			createSubItem(subMenu, action, ProviderLinking.PREFER_DEFAULTS, PreferredType.SYSTEM_PROCESS);
 			createSubItem(subMenu, action, ProviderLinking.ONLY_DEFAULTS, null);
 			item.setMenu(subMenu);
 		}
 
 		private void createSubItem(
-			Menu menu, BuildAction action, ProviderLinking linking, ProcessType type) {
+			Menu menu, BuildAction action, ProviderLinking linking, PreferredType type) {
 			MenuItem item = new MenuItem(menu, SWT.NONE);
 			String label = Labels.of(linking);
 			if (type != null) {

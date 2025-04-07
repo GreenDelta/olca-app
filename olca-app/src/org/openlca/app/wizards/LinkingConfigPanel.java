@@ -10,6 +10,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.linking.LinkingConfig;
+import org.openlca.core.matrix.linking.LinkingConfig.PreferredType;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.ProcessType;
 
@@ -93,11 +94,11 @@ class LinkingConfigPanel {
 	}
 
 	public LinkingConfig getLinkingConfig() {
-		LinkingConfig config = new LinkingConfig();
+		var config = new LinkingConfig();
 		if (preferUnitRadio.getSelection()) {
-			config.preferredType(ProcessType.UNIT_PROCESS);
+			config.preferredType(PreferredType.UNIT_PROCESS);
 		} else {
-			config.preferredType(ProcessType.LCI_RESULT);
+			config.preferredType(PreferredType.SYSTEM_PROCESS);
 		}
 		if (ignoreProvidersRadio.getSelection()) {
 			config.providerLinking(ProviderLinking.IGNORE_DEFAULTS);

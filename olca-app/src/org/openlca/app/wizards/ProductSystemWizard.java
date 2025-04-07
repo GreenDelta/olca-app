@@ -12,9 +12,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.linking.LinkingConfig;
+import org.openlca.core.matrix.linking.LinkingConfig.PreferredType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
@@ -102,7 +102,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		if (!page.addSupplyChain() || config == null)
 			return M.None;
 		String suffix = "; " + M.PreferredProcessType + ": ";
-		if (config.preferredType() == ProcessType.UNIT_PROCESS) {
+		if (config.preferredType() == PreferredType.UNIT_PROCESS) {
 			suffix += M.UnitProcess;
 		} else {
 			suffix += M.SystemProcess;

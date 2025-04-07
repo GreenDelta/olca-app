@@ -11,8 +11,8 @@ import org.openlca.app.util.UI;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.LinkingConfig;
+import org.openlca.core.matrix.linking.LinkingConfig.PreferredType;
 import org.openlca.core.matrix.linking.ProviderLinking;
-import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.ProductSystems;
@@ -33,12 +33,12 @@ public class BuildSupplyChainAction extends BuildAction {
 		setId(GraphActionIds.BUILD_SUPPLY_CHAIN);
 		setText(M.Complete);
 		config = new LinkingConfig()
-			.preferredType(ProcessType.UNIT_PROCESS)
+			.preferredType(PreferredType.UNIT_PROCESS)
 			.providerLinking(ProviderLinking.PREFER_DEFAULTS);
 	}
 
 	@Override
-	public void setPreferredType(ProcessType preferredType) {
+	public void setPreferredType(PreferredType preferredType) {
 		config.preferredType(preferredType);
 	}
 
