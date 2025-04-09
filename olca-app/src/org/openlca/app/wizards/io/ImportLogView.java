@@ -30,8 +30,8 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -55,7 +55,7 @@ public class ImportLogView extends SimpleFormEditor {
 	private Collection<Message> messages;
 
 	public static void open(ImportLog log) {
-		var id = Cache.getAppCache().put(log);
+		var id = AppContext.put(log);
 		var input = new SimpleEditorInput(id, M.ImportDetails);
 		Editors.open(input, "ImportLogView");
 	}
@@ -66,7 +66,7 @@ public class ImportLogView extends SimpleFormEditor {
 		super.init(site, raw);
 		if (!(raw instanceof SimpleEditorInput input))
 			return;
-		var obj = Cache.getAppCache().remove(input.id);
+		var obj = AppContext.remove(input.id);
 		messages = obj instanceof ImportLog log
 				? log.messages()
 				: Collections.emptySet();

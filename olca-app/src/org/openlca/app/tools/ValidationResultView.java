@@ -12,8 +12,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -36,7 +36,7 @@ public class ValidationResultView extends SimpleFormEditor {
 	public static void open(List<Item> items) {
 		if (items == null)
 			return;
-		var cacheKey = Cache.getAppCache().put(items);
+		var cacheKey = AppContext.put(items);
 		Editors.open(
 			new SimpleEditorInput(cacheKey, M.ValidationResult),
 			"ValidationResultView");
@@ -47,7 +47,7 @@ public class ValidationResultView extends SimpleFormEditor {
 		throws PartInitException {
 		super.init(site, input);
 		var inp = (SimpleEditorInput) input;
-		items = Cache.getAppCache().remove(inp.id);
+		items = AppContext.remove(inp.id);
 	}
 
 	@Override

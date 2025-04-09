@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Objects;
 
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.navigation.clipboard.NaviClipboard;
@@ -66,14 +67,14 @@ public class Database {
 		try {
 			database = db;
 			Database.config = config;
-			Cache.create(database);
+			AppContext.change(database);
 			Repository.open(Repository.gitDir(database.getName()), database);
 			RcpWindowAdvisor.updateWindowTitle();
 		} catch (RuntimeException e) {
 			if (Repository.CURRENT != null) {
 				Repository.CURRENT.close();
 			}
-			Cache.close();
+			AppContext.clear();
 			database = null;
 			Database.config = null;
 			throw e;
@@ -91,7 +92,7 @@ public class Database {
 	 */
 	public static void close() throws Exception {
 		try {
-			Cache.close();
+			AppContext.clear();
 			NaviClipboard.get().clear();
 			if (Repository.CURRENT != null) {
 				Repository.CURRENT.close();
@@ -204,7 +205,7 @@ public class Database {
 	 * valid
 	 */
 	public static String validateNewName(String name) {
-		if (name == null || name.isBlank() || name.isEmpty())
+		if (name == null || name.isBlank())
 			return M.EmptyNameNotAllowed;
 		if (!name.strip().equals(name)) {
 			return M.EmptyNameNotAllowedDatabaseInfo;

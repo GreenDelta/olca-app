@@ -1,6 +1,6 @@
 package org.openlca.app.editors.processes.exchanges;
 
-import org.openlca.app.db.Cache;
+import org.openlca.app.AppContext;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
@@ -31,7 +31,7 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, RootDescriptor> {
 
 	@Override
 	protected RootDescriptor[] getItems(Exchange e) {
-		var map = Cache.getMatrixCache().getProviderMap();
+		var map = AppContext.getProviderMap();
 		if (map == null || e == null || e.flow == null)
 			return new RootDescriptor[0];
 		return map.getProvidersOf(e.flow.id)
@@ -45,7 +45,7 @@ class ProviderCombo extends ComboBoxCellModifier<Exchange, RootDescriptor> {
 	protected RootDescriptor getItem(Exchange e) {
 		if (e.defaultProviderId == 0L)
 			return null;
-		var map = Cache.getMatrixCache().getProviderMap();
+		var map = AppContext.getProviderMap();
 		return map != null
 				? map.getProvider(e.defaultProviderId)
 				: null;

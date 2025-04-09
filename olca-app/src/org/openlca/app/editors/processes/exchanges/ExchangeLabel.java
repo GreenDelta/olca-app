@@ -10,7 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.db.Cache;
+import org.openlca.app.AppContext;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
@@ -122,7 +122,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 	private RootDescriptor getDefaultProvider(Exchange e) {
 		if (e.defaultProviderId == 0)
 			return null;
-		var map = Cache.getMatrixCache().getProviderMap();
+		var map = AppContext.getProviderMap();
 		return map != null
 				? map.getProvider(e.defaultProviderId)
 				: null;

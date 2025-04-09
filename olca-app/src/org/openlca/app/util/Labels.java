@@ -3,8 +3,8 @@ package org.openlca.app.util;
 import java.math.RoundingMode;
 import java.util.Objects;
 
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.AggregationType;
@@ -64,7 +64,7 @@ public class Labels {
 	public static String name(Descriptor d) {
 		if (d == null || d.name == null)
 			return "";
-		var cache = Cache.getEntityCache();
+		var cache = AppContext.getEntityCache();
 		String text = d.name;
 		if (cache == null)
 			return text;
@@ -118,7 +118,7 @@ public class Labels {
 	public static String refUnit(FlowDescriptor flow) {
 		if (flow == null)
 			return "";
-		FlowProperty refProp = Cache.getEntityCache().get(
+		FlowProperty refProp = AppContext.getEntityCache().get(
 				FlowProperty.class,
 				flow.refFlowPropertyId);
 		if (refProp == null)
@@ -150,7 +150,8 @@ public class Labels {
 	public static String category(RootDescriptor d) {
 		if (d == null || d.category == null)
 			return "";
-		Category c = Cache.getEntityCache().get(Category.class, d.category);
+		Category c = AppContext.getEntityCache().get(
+				Category.class, d.category);
 		if (c == null)
 			return "";
 		return CategoryPath.getFull(c);
@@ -402,7 +403,7 @@ public class Labels {
 		static String append(String name, Long locationId) {
 			if (locationId == null)
 				return name;
-			var cache = Cache.getEntityCache();
+			var cache = AppContext.getEntityCache();
 			if (cache == null)
 				return name;
 			var location = cache.get(LocationDescriptor.class, locationId);

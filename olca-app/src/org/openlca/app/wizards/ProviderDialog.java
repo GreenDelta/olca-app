@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -139,7 +139,7 @@ class ProviderDialog extends Dialog {
 	}
 
 	private <T extends Descriptor> String getLabel(Class<T> clazz, long id) {
-		EntityCache cache = Cache.getEntityCache();
+		EntityCache cache = AppContext.getEntityCache();
 		if (cache == null)
 			return "?";
 		T d = cache.get(clazz, id);

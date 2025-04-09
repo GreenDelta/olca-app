@@ -10,8 +10,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.projects.ProjectResultData;
@@ -31,7 +31,7 @@ public class ProjectResultEditor extends FormEditor {
 	public static void open(ProjectResultData data) {
 		if (data == null)
 			return;
-		var id = Cache.getAppCache().put(data);
+		var id = AppContext.put(data);
 		var input = new SimpleEditorInput(
 				id, M.Result + " - " + Labels.name(data.project()));
 		Editors.open(input, "ProjectResultEditor");
@@ -43,7 +43,7 @@ public class ProjectResultEditor extends FormEditor {
 		super.init(site, input);
 		setTitleImage(Images.get(ModelType.PROJECT));
 		var simpleInput = (SimpleEditorInput) input;
-		var obj = Cache.getAppCache().remove(simpleInput.id);
+		var obj = AppContext.remove(simpleInput.id);
 		if (!(obj instanceof ProjectResultData))
 			throw new PartInitException("editor input must be a project result");
 		data = (ProjectResultData) obj;

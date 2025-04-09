@@ -12,10 +12,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.components.ParameterRedefDialog;
 import org.openlca.app.components.UncertaintyCellEditor;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.editors.comments.CommentDialogModifier;
@@ -221,7 +221,7 @@ class ParameterRedefTable {
 	private class LabelProvider extends org.eclipse.jface.viewers.LabelProvider
 			implements ITableLabelProvider {
 
-		private final EntityCache cache = Cache.getEntityCache();
+		private final EntityCache cache = AppContext.getEntityCache();
 
 		@Override
 		public Image getColumnImage(Object obj, int column) {
@@ -270,7 +270,7 @@ class ParameterRedefTable {
 
 	private static class ParameterComparator implements Comparator<ParameterRedef> {
 
-		private EntityCache cache = Cache.getEntityCache();
+		private EntityCache cache = AppContext.getEntityCache();
 
 		@Override
 		public int compare(ParameterRedef o1, ParameterRedef o2) {

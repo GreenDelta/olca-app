@@ -1,8 +1,8 @@
 package org.openlca.app.editors.flows;
 
 import org.eclipse.ui.forms.IManagedForm;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.util.UI;
@@ -27,7 +27,7 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
 		var viewer = new FlowPropertyFactorViewer(
-				comp, Cache.getEntityCache(), editor);
+				comp, AppContext.getEntityCache(), editor);
 		setInitialInput(viewer);
 		CommentAction.bindTo(
 				section, viewer, "flowProperties", editor.getComments());

@@ -9,8 +9,8 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
@@ -96,7 +96,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 			return false;
 		} finally {
 			Navigator.refresh();
-			Cache.evictAll();
+			AppContext.evictAll();
 		}
 	}
 

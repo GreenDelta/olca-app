@@ -2,9 +2,9 @@ package org.openlca.app.results.simulation;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
 import org.openlca.core.model.CalculationSetup;
@@ -36,7 +36,7 @@ class SimulationExportAction extends Action {
 		App.run(M.ExportResultsToExcel, () -> {
 			try {
 				var export = new SimulationResultExport(
-						setup, result, Cache.getEntityCache());
+						setup, result, AppContext.getEntityCache());
 				export.run(file);
 			} catch (Exception e) {
 				log.error("Result export failed", e);

@@ -9,9 +9,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.components.ParameterUsageView;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
@@ -38,7 +38,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 		App.runWithProgress(M.SearchForUsageDots,
 			() -> ref.set(ParameterUsageTree.of(param, owner, Database.get())),
 			() -> {
-				String resultKey = Cache.getAppCache().put(ref.get());
+				String resultKey = AppContext.put(ref.get());
 				Input input = new Input(param.name, resultKey);
 				Editors.open(input, "ParameterUsagePage");
 			});
@@ -49,7 +49,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 		App.runWithProgress(M.SearchForUsageDots,
 			() -> ref.set(ParameterUsageTree.of(param, Database.get())),
 			() -> {
-				String resultKey = Cache.getAppCache().put(ref.get());
+				String resultKey = AppContext.put(ref.get());
 				Input input = new Input(param, resultKey);
 				Editors.open(input, "ParameterUsagePage");
 			});
@@ -63,8 +63,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 		if (!(input instanceof Input pin)) {
 			tree = ParameterUsageTree.empty();
 		} else {
-			tree = Cache.getAppCache().remove(
-				pin.id, ParameterUsageTree.class);
+			tree = AppContext.remove(pin.id, ParameterUsageTree.class);
 			if (tree == null) {
 				tree = ParameterUsageTree.empty();
 			}

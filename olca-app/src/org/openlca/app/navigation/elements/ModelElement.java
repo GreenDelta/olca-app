@@ -3,7 +3,7 @@ package org.openlca.app.navigation.elements;
 import java.util.Collections;
 import java.util.List;
 
-import org.openlca.app.db.Cache;
+import org.openlca.app.AppContext;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 public class ModelElement extends NavigationElement<RootDescriptor> {
@@ -25,7 +25,7 @@ public class ModelElement extends NavigationElement<RootDescriptor> {
 	@Override
 	public void update() {
 		var content = getContent();
-		var newContent = Cache.getEntityCache().get(
+		var newContent = AppContext.getEntityCache().get(
 			content.getClass(), content.id);
 		setContent(newContent);
 		super.update();

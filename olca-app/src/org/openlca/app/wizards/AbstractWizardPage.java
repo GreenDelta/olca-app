@@ -8,7 +8,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.RootEntity;
 
-abstract class AbstractWizardPage<T extends RootEntity> extends
+public abstract class AbstractWizardPage<T extends RootEntity> extends
 		WizardPage {
 
 	private Text descriptionText;

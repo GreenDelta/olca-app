@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowPropertyCombo;
@@ -88,11 +87,9 @@ public class FlowWizard extends AbstractWizard<Flow> {
 		private void addFlowProperty(Flow flow) {
 			try {
 				long id = propertyCombo.getSelected().id;
-				FlowProperty flowProp = Cache.getEntityCache().get(
-						FlowProperty.class,
-						id);
+				var flowProp = Database.get().get(FlowProperty.class, id);
 				flow.referenceFlowProperty = flowProp;
-				FlowPropertyFactor factor = new FlowPropertyFactor();
+				var factor = new FlowPropertyFactor();
 				factor.conversionFactor = 1;
 				factor.flowProperty = flowProp;
 				flow.flowPropertyFactors.add(factor);

@@ -4,7 +4,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.openlca.app.db.Cache;
+import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -20,7 +20,7 @@ public class SodaClientTool extends SimpleFormEditor {
 		var con = LoginDialog.show().orElse(null);
 		if (con == null || con.hasError())
 			return;
-		var id = Cache.getAppCache().put(con);
+		var id = AppContext.put(con);
 		var input = new SimpleEditorInput(id, Strings.cut(con.toString(), 25));
 		Editors.open(input, "SodaClientTool");
 	}
@@ -29,7 +29,7 @@ public class SodaClientTool extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		var inp = (SimpleEditorInput) input;
-		con = Cache.getAppCache().remove(inp.id, Connection.class);
+		con = AppContext.remove(inp.id, Connection.class);
 		setTitleImage(Icon.SODA.get());
 		super.init(site, input);
 	}

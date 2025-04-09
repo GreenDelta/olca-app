@@ -7,8 +7,8 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
@@ -118,7 +118,7 @@ public class ImpactMethodViewer extends
 				return Labels.name(method);
 			if (col != 1 || method.category == null)
 				return null;
-			var cache = Cache.getEntityCache();
+			var cache = AppContext.getEntityCache();
 			var category = cache.get(Category.class, method.category);
 			return category == null
 					? null

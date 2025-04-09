@@ -5,10 +5,10 @@ import java.net.URISyntaxException;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.util.Announcements;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DbTemplate;
@@ -41,7 +41,7 @@ public class Clone {
 			onError(config);
 			Actions.handleException("Error importing repository", url, e);
 		} finally {
-			Cache.evictAll();
+			AppContext.evictAll();
 			Actions.refresh();
 		}
 	}

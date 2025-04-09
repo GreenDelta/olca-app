@@ -11,10 +11,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.AppCache;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
@@ -80,7 +79,7 @@ public class MappingTool extends SimpleFormEditor {
 		if(mapping == null)
 			return;
 		var uid = "db:mapping/" + mapping.id;
-		Cache.getAppCache().put(uid, mapping);
+		AppContext.put(uid, mapping);
 		Editors.open(
 				new SimpleEditorInput(uid, mapping.name),
 				"MappingTool");
@@ -93,10 +92,9 @@ public class MappingTool extends SimpleFormEditor {
 		if (uid == null) {
 			uid = UUID.randomUUID().toString();
 			mapping.refId = uid;
-		}
-		AppCache cache = Cache.getAppCache();
+		}		
 		var cacheID = uid + " /mapping";
-		cache.put(cacheID, mapping);
+		AppContext.put(cacheID, mapping);
 		Editors.open(
 				new SimpleEditorInput(cacheID, M.FlowMapping),
 				"MappingTool");
@@ -109,7 +107,7 @@ public class MappingTool extends SimpleFormEditor {
 		setTitleImage(Images.get(ModelType.FLOW));
 		try {
 			var inp = (SimpleEditorInput) input;
-			var raw = Cache.getAppCache().remove(inp.id);
+			var raw = AppContext.remove(inp.id);
 			if (raw instanceof FlowMap) {
 				mapping = (FlowMap) raw;
 			} else if (raw instanceof MappingFile) {
