@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -28,35 +29,44 @@ import org.openlca.app.viewers.tables.modify.ICellModifier.CellEditingType;
  */
 public class ModifySupport<T> {
 
-	private Map<String, ICellModifier<T>> cellModifiers;
 	private final ColumnViewer viewer;
+	private final Map<String, ICellModifier<T>> cellModifiers;
+	private Map<String, Predicate<T>> filters;
 
 	public ModifySupport(ColumnViewer viewer) {
 		this.viewer = viewer;
-		initCellEditors();
-	}
-
-	private void initCellEditors() {
-		var props = viewer.getColumnProperties();
-		if (props == null)
-			return;
-		viewer.setCellModifier(new CellModifier());
-		var editors = new CellEditor[props.length];
 		this.cellModifiers = new HashMap<>();
-		viewer.setCellEditors(editors);
+		var props = viewer.getColumnProperties();
+		if (props != null) {
+			viewer.setCellModifier(new CellModifier());
+			var editors = new CellEditor[props.length];
+			viewer.setCellEditors(editors);
+		}
 	}
 
-	/**
-	 * Binds directly a cell editor to the given property. It is assumed that the
-	 * editor directly operates on the values in the respective table and that the
-	 * values are set in the respective editor.
-	 */
+	/// Directly binds a cell editor to a given property. The editor should
+	/// then handle the values.
 	public ModifySupport<T> bind(String property, CellEditor editor) {
 		int idx = findIndex(property);
 		if (idx == -1)
 			return this;
 		var editors = ensureEditors(idx);
 		editors[idx] = editor;
+		return this;
+	}
+
+	/// Directly binds a cell editor to a given property. The editor is only
+	/// activated, when the given filter returns true for an element.
+	public ModifySupport<T> bind(
+			String property, CellEditor editor, Predicate<T> filter
+	) {
+		bind(property, editor);
+		if (filter != null) {
+			if (filters == null) {
+				filters = new HashMap<>();
+			}
+			filters.put(property, filter);
+		}
 		return this;
 	}
 
@@ -189,12 +199,21 @@ public class ModifySupport<T> {
 		public boolean canModify(Object element, String property) {
 			if (element == null || property == null)
 				return false;
-			if (cellModifiers.containsKey(property)) {
-				ICellModifier<T> modifier = cellModifiers.get(property);
-				return modifier != null && modifier.canModify((T) element);
-			}
-			CellEditor editor = getCellEditor(property);
-			return editor != null;
+
+			// check if there is a registered modifier
+			var modifier = cellModifiers.get(property);
+			if (modifier != null)
+				return modifier.canModify((T) element);
+
+			// check if there is a registered filter
+			var filter = filters != null
+					? filters.get(property)
+					: null;
+			if (filter != null)
+				return filter.test((T) element);
+
+			// otherwise, check if there is a cell editor
+			return getCellEditor(property) != null;
 		}
 
 		@Override
@@ -238,7 +257,7 @@ public class ModifySupport<T> {
 				refresh(elem);
 			}
 			// update the viewer
-			if (viewer == null || viewer.getControl().isDisposed())
+			if (viewer.getControl().isDisposed())
 				return;
 			if (modifier != null && modifier.affectsOtherElements()) {
 				viewer.refresh(true);
