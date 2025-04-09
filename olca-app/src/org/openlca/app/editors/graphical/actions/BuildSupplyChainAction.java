@@ -4,7 +4,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.UI;
@@ -81,7 +80,7 @@ public class BuildSupplyChainAction extends BuildAction {
 		@Override
 		public void run(IProgressMonitor monitor) {
 			monitor.beginTask(M.BuildSupplyChain, IProgressMonitor.UNKNOWN);
-			var builder = new ProductSystemBuilder(Cache.getMatrixCache(), config);
+			var builder = new ProductSystemBuilder(Database.get(), config);
 			var alreadyLinked = ProductSystems.linkedExchangesOf(
 					graph.getProductSystem());
 			for (var exchange : mapExchangeToProcess.keySet()) {

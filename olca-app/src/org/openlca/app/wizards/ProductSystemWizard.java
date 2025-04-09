@@ -136,7 +136,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				monitor.beginTask(M.CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
 				ProductSystemBuilder builder = new ProductSystemBuilder(
-						Cache.getMatrixCache(), config);
+						Database.get(), config);
 				builder.autoComplete(system);
 				system = ProductSystemBuilder.update(Database.get(), system);
 				monitor.done();
