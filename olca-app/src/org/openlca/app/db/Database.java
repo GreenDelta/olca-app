@@ -40,7 +40,7 @@ public class Database {
 	public static IDatabase get() {
 		return database;
 	}
-	
+
 	public static DataPackages dataPackages() {
 		return dataPackages;
 	}
@@ -81,12 +81,10 @@ public class Database {
 			dataPackages = db.getDataPackages();
 			Database.config = config;
 			Cache.create(database);
-			Repository.open(Repository.gitDir(database.getName()), database);
+			Repository.open(database);
 			RcpWindowAdvisor.updateWindowTitle();
 		} catch (RuntimeException e) {
-			if (Repository.CURRENT != null) {
-				Repository.CURRENT.close();
-			}
+			Repository.closeAll();
 			Cache.close();
 			database = null;
 			dataPackages = null;
@@ -108,9 +106,7 @@ public class Database {
 		try {
 			Cache.close();
 			NaviClipboard.get().clear();
-			if (Repository.CURRENT != null) {
-				Repository.CURRENT.close();
-			}
+			Repository.closeAll();
 			database.close();
 			database = null;
 			dataPackages = null;

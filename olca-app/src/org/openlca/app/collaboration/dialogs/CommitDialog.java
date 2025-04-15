@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
@@ -84,7 +85,7 @@ public class CommitDialog extends FormDialog {
 		UI.gridData(comp, true, true);
 		UI.gridLayout(comp, 1);
 		section.setClient(comp);
-		viewer = new CommitViewer(comp, this::updateButtons);
+		viewer = new CommitViewer(comp, Repository.get(), this::updateButtons);
 		viewer.setSelection(initialSelection, node);
 		CheckboxTreeViewers.setInput(comp, viewer.getViewer(), node, () -> {
 			CheckboxTreeViewers.expandGrayed(viewer.getViewer());

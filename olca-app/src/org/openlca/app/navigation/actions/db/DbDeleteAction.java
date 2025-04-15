@@ -101,9 +101,7 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		File dbFolder = DatabaseDir.getRootFolder(config.name());
 		if (dbFolder.isDirectory())
 			Dirs.delete(dbFolder);
-		File gitFolder = Repository.gitDir(config.name());
-		if (gitFolder.isDirectory())
-			Dirs.delete(gitFolder);
+		Repository.delete(config.name());
 		if (config instanceof DerbyConfig)
 			Database.remove((DerbyConfig) config);
 		else if (config instanceof MySqlConfig)

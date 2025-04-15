@@ -16,6 +16,8 @@ import org.openlca.app.rcp.images.Icon;
 
 class StashApplyAction extends Action implements INavigationAction {
 
+	private Repository repo;
+
 	@Override
 	public String getText() {
 		return M.Apply;
@@ -29,7 +31,6 @@ class StashApplyAction extends Action implements INavigationAction {
 	@Override
 	public boolean isEnabled() {
 		try {
-			var repo = Repository.CURRENT;
 			return repo.commits.stash() != null;
 		} catch (GitAPIException e) {
 			return false;
@@ -49,8 +50,9 @@ class StashApplyAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return Repository.isConnected();
+	public boolean accept(List<INavigationElement<?>> selection) {
+		repo = Actions.getRepo(selection);
+		return repo != null && repo.dataPackage == null;
 	}
 
 }

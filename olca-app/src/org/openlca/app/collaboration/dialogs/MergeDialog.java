@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.MergeViewer;
 import org.openlca.app.util.UI;
@@ -37,7 +38,7 @@ public class MergeDialog extends FormDialog {
 		var form = UI.header(mform, M.Merge);
 		var toolkit = mform.getToolkit();
 		var body = UI.body(form, toolkit);
-		viewer = new MergeViewer(body);
+		viewer = new MergeViewer(body, Repository.get());
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));
 		viewer.setOnMerge(() -> getButton(OK).setEnabled(!viewer.hasConflicts()));

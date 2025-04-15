@@ -8,8 +8,8 @@ import org.openlca.app.util.MsgBox;
 public class Announcements {
 
 	public static void check() {
-		var repo = Repository.CURRENT;
-		if (!Repository.isConnected() || !repo.isCollaborationServer())
+		var repo = Repository.get();
+		if (repo == null || !repo.isCollaborationServer())
 			return;
 		var announcement = WebRequests.execute(repo.client::getAnnouncement);
 		if (announcement == null || announcement.message() == null || announcement.message().isEmpty())

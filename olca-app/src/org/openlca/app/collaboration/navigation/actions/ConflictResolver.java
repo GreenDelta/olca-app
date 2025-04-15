@@ -32,29 +32,40 @@ import org.openlca.util.TypedRefIdMap;
 
 class ConflictResolver {
 
-	static ConflictResult resolve(String ref)
+	private final Repository repo;
+	private final String ref;
+
+	private ConflictResolver(Repository repo, String ref) {
+		this.repo = repo;
+		this.ref = ref;
+	}
+
+	static ConflictResult resolve(Repository repo, String ref)
 			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
-		if (ref == null)
+		if (repo == null || ref == null)
 			return null;
-		var repo = Repository.CURRENT;
+		return new ConflictResolver(repo, ref).resolve();
+	}
+
+	private ConflictResult resolve()
+			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
 		var conflicts = Conflicts.of(repo, ref);
 		var workspaceConflicts = App.exec(M.CheckingForWorkspaceConflicts,
-				() -> SplitConflicts.of(conflicts.withWorkspace()));
-		var solution = solveWorkspaceConflicts(ref, workspaceConflicts.remaining);
+				() -> new SplitConflicts(conflicts.withWorkspace()));
+		var solution = solveWorkspaceConflicts(workspaceConflicts.remaining);
 		if (solution == ConflictSolution.CANCELED)
 			return null;
 		var localConflicts = App.exec(M.CheckingForLocalConflicts,
-				() -> SplitConflicts.of(conflicts.withLocal()));
+				() -> new SplitConflicts(conflicts.withLocal()));
 		var resolved = solveLocalConflicts(localConflicts);
 		workspaceConflicts.equal.forEach(c -> resolved.put(c, ConflictResolution.isEqual()));
 		return new ConflictResult(new ConflictResolutionMap(resolved), solution);
 	}
 
-	private static ConflictSolution solveWorkspaceConflicts(String ref, List<TriDiff> remaining)
+	private ConflictSolution solveWorkspaceConflicts(List<TriDiff> remaining)
 			throws IOException, GitAPIException, InvocationTargetException, InterruptedException {
 		if (remaining.isEmpty())
 			return ConflictSolution.NONE;
-		var repo = Repository.CURRENT;
 		while (!remaining.isEmpty()) {
 			var answers = new ArrayList<>(Arrays.asList(M.Cancel, M.DiscardChanges, M.CommitChanges));
 			if (!ref.equals(Constants.STASH_REF)) {
@@ -69,7 +80,7 @@ class ConflictResolver {
 							.changes(toChanges(remaining)));
 					return ConflictSolution.DISCARDED;
 				case 2:
-					remaining = commitChanges(ref, remaining);
+					remaining = commitChanges(remaining);
 					if (remaining == null)
 						return ConflictSolution.CANCELED;
 					break;
@@ -85,16 +96,15 @@ class ConflictResolver {
 		return ConflictSolution.COMMITTED;
 	}
 
-	private static List<Diff> toChanges(List<TriDiff> remaining) {
+	private List<Diff> toChanges(List<TriDiff> remaining) {
 		return remaining.stream()
 				.map(diff -> diff.left)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
 
-	private static List<TriDiff> commitChanges(String ref, List<TriDiff> remaining)
+	private List<TriDiff> commitChanges(List<TriDiff> remaining)
 			throws InvocationTargetException, IOException, GitAPIException, InterruptedException {
-		var repo = Repository.CURRENT;
 		var diffs = remaining.stream()
 				.map(c -> c.right)
 				.filter(Objects::nonNull)
@@ -122,9 +132,8 @@ class ConflictResolver {
 				.collect(Collectors.toList());
 	}
 
-	private static boolean stashChanges(List<Diff> changes)
+	private boolean stashChanges(List<Diff> changes)
 			throws GitAPIException, IOException, InvocationTargetException, InterruptedException {
-		var repo = Repository.CURRENT;
 		var user = repo.promptUser();
 		if (user == null)
 			return false;
@@ -140,7 +149,7 @@ class ConflictResolver {
 		return true;
 	}
 
-	private static TypedRefIdMap<ConflictResolution> solveLocalConflicts(SplitConflicts conflicts) {
+	private TypedRefIdMap<ConflictResolution> solveLocalConflicts(SplitConflicts conflicts) {
 		var solved = new TypedRefIdMap<ConflictResolution>();
 		conflicts.equal.forEach(c -> solved.put(c, ConflictResolution.isEqual()));
 		if (conflicts.remaining.isEmpty())
@@ -168,12 +177,12 @@ class ConflictResolver {
 
 	}
 
-	private record SplitConflicts(List<TriDiff> equal, List<TriDiff> remaining) {
+	private class SplitConflicts {
 
-		private static SplitConflicts of(List<TriDiff> conflicts) {
-			var repo = Repository.CURRENT;
-			var equal = new ArrayList<TriDiff>();
-			var remaining = new ArrayList<TriDiff>();
+		private final List<TriDiff> equal = new ArrayList<>();
+		private final List<TriDiff> remaining = new ArrayList<>();
+
+		private SplitConflicts(List<TriDiff> conflicts) {
 			conflicts.forEach(c -> {
 				if (c.right != null && repo.equalsWorkspace(c.right.newRef)) {
 					equal.add(c);
@@ -181,7 +190,6 @@ class ConflictResolver {
 					remaining.add(c);
 				}
 			});
-			return new SplitConflicts(equal, remaining);
 		}
 
 	}

@@ -23,6 +23,8 @@ import org.openlca.git.util.Constants;
 
 class PushAction extends Action implements INavigationAction {
 
+	private Repository repo;
+
 	@Override
 	public String getText() {
 		return M.Push;
@@ -35,21 +37,21 @@ class PushAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return !Repository.CURRENT.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty();
+		var repo = Repository.get();
+		return !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty();
 	}
 
 	@Override
 	public void run() {
-		var credentials = Repository.CURRENT.promptCredentials();
+		var credentials = repo.promptCredentials();
 		run(credentials);
 	}
 
 	void run(GitCredentialsProvider credentials) {
 		if (credentials == null)
 			return;
-		var repo = Repository.CURRENT;
 		try {
-			var result = Actions.run(credentials,
+			var result = Actions.run(repo, credentials,
 					GitPush.from(repo));
 			if (result == null)
 				return;
@@ -63,7 +65,7 @@ class PushAction extends Action implements INavigationAction {
 			}
 			Libraries.uploadTo(repo);
 			Collections.reverse(result.newCommits());
-			new HistoryDialog(M.PushedCommits, result.newCommits()).open();
+			new HistoryDialog(M.PushedCommits, repo, result.newCommits()).open();
 			ServerNavigator.refresh(RepositoryElement.class, r -> r.id().equals(repo.id));
 			return;
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
@@ -74,8 +76,9 @@ class PushAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return Repository.isConnected();
+	public boolean accept(List<INavigationElement<?>> selection) {
+		repo = Actions.getRepo(selection);
+		return repo != null && repo.dataPackage == null;
 	}
 
 }

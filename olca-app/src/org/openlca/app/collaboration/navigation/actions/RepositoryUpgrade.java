@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,6 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.actions.ConflictResolver;
 import org.openlca.git.actions.GitFetch;
-import org.openlca.git.actions.GitInit;
 import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.model.Commit;
@@ -63,15 +61,13 @@ public class RepositoryUpgrade {
 			if (!Question.ask(M.UpdateRepositoryConnection,
 					M.UpdateRepositoryConnectionQuestion))
 				return;
-			if (!upgrade.run(config)) {
-				Dirs.delete(Repository.gitDir(database.getName()));
-			}
+			upgrade.run(config);
 		} catch (Throwable e) {
 			log.warn("Could not upgrade repository connection", e);
 		}
 	}
 
-	boolean run(Config config) {
+	private boolean run(Config config) {
 		var repo = initGit(config.url, config.username);
 		if (repo == null)
 			return false;
@@ -126,37 +122,28 @@ public class RepositoryUpgrade {
 	}
 
 	private Repository initGit(String url, String user) {
-		try {
-			var gitDir = Repository.gitDir(database.getName());
-			if (gitDir.exists() && gitDir.list() != null && gitDir.list().length > 0) {
-				Dirs.delete(gitDir);
-			}
-			GitInit.in(gitDir).remoteUrl(url).run();
-			var repo = Repository.initialize(gitDir, Database.get());
-			if (repo == null)
-				return null;
-			if (repo.isCollaborationServer()) {
-				repo.user(user);
-				return repo;
-			}
-			url = Input.promptString(M.CouldNotConnect,
-					M.CouldNotConnectCollaborationServerInfo,
-					url);
-			if (url == null)
-				return null;
-			return initGit(url, user);
-		} catch (GitAPIException | URISyntaxException e) {
-			log.warn("Error initializing git repo from " + url, e);
+		var repo = Repository.initialize(Database.get(), url);
+		if (repo == null)
 			return null;
+		if (repo.isCollaborationServer()) {
+			repo.user(user);
+			return repo;
 		}
+		repo.disconnect();
+		url = Input.promptString(M.CouldNotConnect,
+				M.CouldNotConnectCollaborationServerInfo,
+				url);
+		if (url == null)
+			return null;
+		return initGit(url, user);
 	}
 
 	private boolean pull(Repository repo, GitCredentialsProvider credentials) {
 		try {
-			var commits = Actions.run(credentials, GitFetch.to(repo));
+			var commits = Actions.run(Repository.get(), credentials, GitFetch.to(repo));
 			if (commits == null || commits.isEmpty())
 				return true;
-			var libraryResolver = WorkspaceLibraryResolver.forRemote();
+			var libraryResolver = WorkspaceLibraryResolver.forRemote(repo);
 			if (libraryResolver == null)
 				return false;
 			var descriptors = new ModelRefMap<RootDescriptor>();
@@ -205,7 +192,8 @@ public class RepositoryUpgrade {
 			return false;
 		if (diff.isCategory)
 			return true;
-		var remoteModel = Repository.CURRENT.datasets.parse(diff.oldRef, "lastChange", "version");
+		var repo = Repository.get();
+		var remoteModel = repo.datasets.parse(diff.oldRef, "lastChange", "version");
 		if (remoteModel == null)
 			return false;
 		var version = Version.fromString(string(remoteModel, "version")).getValue();

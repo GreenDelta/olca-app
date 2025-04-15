@@ -63,4 +63,15 @@ public class DataPackageElement extends NavigationElement<DataPackage> {
 		}
 		return Optional.empty();
 	}
+	
+	public boolean isLibrary() {
+		var dataPackage = getContent();
+		if (dataPackage == null)
+			return false;
+		var database = getDatabase();
+		if (database.isEmpty())
+			return false;
+		return database.get().getDataPackages().isLibrary(getContent().name());
+	}
+	
 }

@@ -49,10 +49,10 @@ class NavFinder {
 	}
 
 	private NavElement findDataPackage(NavElement root, DataPackage dataPackage) {
-		var libraryDir = findDataPackages(root);
-		if (libraryDir == null)
+		var dataPackages = findDataPackages(root);
+		if (dataPackages == null)
 			return null;
-		return findChild(libraryDir, elem -> elem.is(ElementType.DATAPACKAGE) && elem.content().equals(dataPackage));
+		return findChild(dataPackages, elem -> elem.is(ElementType.DATAPACKAGE) && elem.content().equals(dataPackage));
 	}
 
 	private NavElement findGroup(NavElement root, String label) {

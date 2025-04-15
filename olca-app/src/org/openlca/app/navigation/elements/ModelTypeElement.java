@@ -46,7 +46,7 @@ public class ModelTypeElement extends NavigationElement<ModelType> {
 		if (dao == null)
 			return list;
 		for (var d : dao.getDescriptors(Optional.empty())) {
-			if (dataPackage == null || Objects.equals(dataPackage, d.dataPackage)) {
+			if (dataPackage == null || Objects.equals(dataPackage.name(), d.dataPackage)) {
 				list.add(new ModelElement(this, d));
 			}
 		}

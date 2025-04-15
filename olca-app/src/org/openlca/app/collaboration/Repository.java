@@ -2,6 +2,9 @@ package org.openlca.app.collaboration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -14,36 +17,57 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.collaboration.client.CSClient;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.descriptors.Descriptors;
+import org.openlca.git.actions.GitInit;
 import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
+import org.openlca.util.Dirs;
+import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Repository extends ClientRepository {
 
 	private static final Logger log = LoggerFactory.getLogger(Repository.class);
-	public static Repository CURRENT;
-	public static final String GIT_DIR = "repositories";
+	private static Map<DataPackage, Repository> OPEN = new HashMap<>();
+	private static Descriptors DESCRIPTORS;
+	private static final String GIT_DIR = "repositories";
 	public final String url;
 	public final String serverUrl;
 	public final String id;
+	public final DataPackage dataPackage;
 	public final CSClient client;
 
-	private Repository(File gitDir, IDatabase database) throws IOException {
-		super(gitDir, database);
+	private Repository(IDatabase database, DataPackage dataPackage) throws IOException {
+		super(gitDir(database, dataPackage), database, descriptors());
 		this.url = url();
 		if (url != null && (!url.startsWith("git@") && !url.startsWith("http")))
 			throw new IllegalArgumentException("Unsupported protocol");
-		var splitIndex = url.startsWith("git@")
-				? url.lastIndexOf(":")
-				: url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
-		this.serverUrl = url.substring(0, splitIndex);
-		var isCollaborationServer = WebRequests.execute(
-				() -> CSClient.isCollaborationServer(serverUrl), false);
-		this.client = isCollaborationServer
-				? new CSClient(serverUrl, () -> AuthenticationDialog.promptCredentials(serverUrl, user()))
-				: null;
-		this.id = url.substring(splitIndex + 1);
+		this.dataPackage = dataPackage;
+		if (url != null) {
+			var splitIndex = url.startsWith("git@")
+					? url.lastIndexOf(":")
+					: url.substring(0, url.lastIndexOf("/")).lastIndexOf("/");
+			this.serverUrl = url.substring(0, splitIndex);
+			this.id = url.substring(splitIndex + 1);
+			var isCollaborationServer = WebRequests.execute(
+					() -> CSClient.isCollaborationServer(serverUrl), false);
+			this.client = isCollaborationServer
+					? new CSClient(serverUrl, () -> AuthenticationDialog.promptCredentials(serverUrl, user()))
+					: null;
+		} else {
+			this.serverUrl = null;
+			this.id = null;
+			this.client = null;
+		}
+	}
+
+	public static Descriptors descriptors() {
+		if (DESCRIPTORS == null) {
+			DESCRIPTORS = Descriptors.of(Database.get());
+		}
+		return DESCRIPTORS;
 	}
 
 	private String url() {
@@ -63,39 +87,101 @@ public class Repository extends ClientRepository {
 		}
 	}
 
-	public static Repository initialize(File gitDir, IDatabase database) {
-		return open(gitDir, database, true);
+	public static Repository get() {
+		return OPEN.get(null);
 	}
 
-	public static Repository open(File gitDir, IDatabase database) {
-		return open(gitDir, database, false);
+	public static Repository get(DataPackage dataPackage) {
+		return OPEN.get(dataPackage);
 	}
 
-	private static Repository open(File gitDir, IDatabase database, boolean createIfNotExists) {
-		if (CURRENT != null) {
-			CURRENT.close();
-			CURRENT = null;
+	public static Repository initialize(IDatabase database, String url) {
+		return initialize(database, null, url);
+	}
+
+	public static Repository initialize(IDatabase database, DataPackage dataPackage, String url) {
+		var gitDir = gitDir(database, dataPackage);
+		try {
+			GitInit.in(gitDir).remoteUrl(url).run();
+		} catch (GitAPIException | URISyntaxException e) {
+			log.warn("Error initializing git repo from " + url, e);
+			Dirs.delete(gitDir);
+			return null;
 		}
 		try {
-			if ((!gitDir.exists() && !gitDir.isDirectory() || gitDir.listFiles().length == 0) && !createIfNotExists)
+			var repo = new Repository(database, dataPackage);
+			if (!repo.exists()) {
+				repo.close();
 				return null;
-			CURRENT = new Repository(gitDir, database);
-			if (!gitDir.exists())
-				CURRENT.create(true);
-			return CURRENT;
+			}
+			OPEN.put(dataPackage, repo);
+			return repo;
 		} catch (IOException e) {
 			log.error("Error opening Git repo", e);
 			return null;
 		}
 	}
 
-	public static File gitDir(String databaseName) {
-		var repos = new File(Workspace.root(), GIT_DIR);
-		return new File(repos, databaseName);
+	public static void rename(String oldName, String newName) {
+		var oldGitDir = Repository.gitDir(oldName, null);
+		if (oldGitDir.exists()) {
+			var newGitFolder = Repository.gitDir(newName, null);
+			if (!oldGitDir.renameTo(newGitFolder)) {
+				log.error("failed to rename repository dir");
+			}
+		}
 	}
 
-	public static boolean isConnected() {
-		return CURRENT != null;
+	public static void delete(String databaseName) {
+		var gitDir = gitDir(databaseName, null);
+		Dirs.delete(gitDir);
+	}
+
+	public static void open(IDatabase database) {
+		closeAll();
+		open(database, null);
+		for (var dataPackage : database.getDataPackages().getAll()) {
+			open(database, dataPackage);
+		}
+	}
+
+	public static Repository open(IDatabase database, DataPackage dataPackage) {
+		DESCRIPTORS = null;
+		var repo = OPEN.get(dataPackage);
+		if (repo != null) {
+			repo.close();
+		}
+		try {
+			repo = new Repository(database, dataPackage);
+			if (!repo.exists()) {
+				repo.close();
+				return null;
+			}
+			OPEN.put(dataPackage, repo);
+			return repo;
+		} catch (IOException e) {
+			log.error("Error opening Git repo", e);
+			return null;
+		}
+	}
+
+	private static File gitDir(IDatabase database, DataPackage dataPackage) {
+		return gitDir(database.getName(), dataPackage != null ? dataPackage.name() : null);
+	}
+
+	private static File gitDir(String databaseName, String packageName) {
+		var repos = new File(Workspace.root(), GIT_DIR);
+		var root = new File(repos, databaseName);
+		if (Strings.nullOrEmpty(packageName))
+			return root;
+		return new File(root, "x-" + packageName);
+	}
+
+	public static void closeAll() {
+		DESCRIPTORS = null;
+		for (var open : OPEN.values()) {
+			open.close();
+		}
 	}
 
 	public PersonIdent promptUser() {
@@ -135,7 +221,7 @@ public class Repository extends ClientRepository {
 				return true;
 		return false;
 	}
-	
+
 	public boolean isCollaborationServer() {
 		return client != null;
 	}
@@ -158,12 +244,23 @@ public class Repository extends ClientRepository {
 		}
 	}
 
+	private boolean exists() {
+		if (dir == null || !dir.exists() || !dir.isDirectory())
+			return false;
+		return new File(dir, "config").exists() && new File(dir, "HEAD").exists();
+	}
+
+	public void disconnect() {
+		close();
+		Dirs.delete(dir);
+	}
+
 	@Override
 	public void close() {
 		if (client != null) {
 			WebRequests.execute(client::close);
 		}
+		OPEN.remove(dataPackage);
 		super.close();
-		CURRENT = null;
 	}
 }

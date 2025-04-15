@@ -1,6 +1,5 @@
 package org.openlca.app.editors.currencies;
 
-import java.util.Calendar;
 import java.util.Objects;
 
 import org.eclipse.ui.IEditorPart;
@@ -12,7 +11,6 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.util.Question;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
-import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,14 +55,12 @@ class RefCurrencyUpdate implements Runnable {
 	public void run() {
 		try {
 			CurrencyDao dao = new CurrencyDao(Database.get());
-			c.lastChange = Calendar.getInstance().getTimeInMillis();
-			Version.incUpdate(c);
+			c.wasUpdated();
 			c = dao.update(c);
 			double f = c.conversionFactor;
 			for (Currency o : dao.getAll()) {
 				o.referenceCurrency = c;
-				o.lastChange = Calendar.getInstance().getTimeInMillis();
-				Version.incUpdate(o);
+				o.wasUpdated();
 				if (Objects.equals(c, o)) {
 					o.conversionFactor = 1.0;
 					c = dao.update(o);

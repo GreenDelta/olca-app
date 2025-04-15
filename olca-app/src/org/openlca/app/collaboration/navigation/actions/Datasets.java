@@ -64,7 +64,7 @@ class Datasets {
 	}
 
 	static boolean isForeground(Diff diff) {
-		var descriptors = Repository.CURRENT.descriptors;
+		var descriptors = Repository.descriptors();
 		if (diff.isDataset)
 			return !descriptors.isFromDataPackage(diff);
 		if (diff.isCategory) {
@@ -84,7 +84,7 @@ class Datasets {
 	private static List<Diff> getDataPackageDatasets(List<Diff> diffs, Set<String> libraryAdditions) {
 		if (libraryAdditions.isEmpty())
 			return new ArrayList<>();
-		var descriptors = Repository.CURRENT.descriptors;
+		var descriptors = Repository.descriptors();
 		return diffs.stream().filter(diff -> {
 			if (diff.isDataset && libraryAdditions.contains(descriptors.getDataPackage(diff)))
 				return true;

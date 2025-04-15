@@ -110,8 +110,7 @@ class RenameAction extends Action implements INavigationAction {
 		var dao = (RootEntityDao<T, ?>) Daos.root(Database.get(), d.type);
 		T entity = dao.getForId(d.id);
 		entity.name = newName.trim();
-		entity.lastChange = System.currentTimeMillis();
-		entity.version += 1;
+		entity.wasUpdated();
 		dao.update(entity);
 		Cache.evict(d);
 		Navigator.refresh(element.getParent());

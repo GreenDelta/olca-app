@@ -22,6 +22,8 @@ class FetchAction extends Action implements INavigationAction {
 	static final String NOTHING_TO_FETCH = "Remote does not have " + Constants.LOCAL_REF
 			+ " available for fetch.";
 
+	private Repository repo;
+
 	@Override
 	public String getText() {
 		return M.Fetch;
@@ -39,19 +41,18 @@ class FetchAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var repo = Repository.CURRENT;
 		try {
 			var credentials = repo.promptCredentials();
 			if (credentials == null)
 				return;
-			var newCommits = Actions.run(credentials,
+			var newCommits = Actions.run(repo, credentials,
 					GitFetch.to(repo));
 			if (newCommits == null)
 				return;
 			if (newCommits.isEmpty()) {
 				MsgBox.info(M.NoCommitToFetchInfo);
 			} else {
-				new HistoryDialog(M.FetchedCommits, newCommits).open();
+				new HistoryDialog(M.FetchedCommits, repo, newCommits).open();
 			}
 		} catch (GitAPIException | InvocationTargetException | InterruptedException e) {
 			if (e instanceof TransportException && NOTHING_TO_FETCH.equals(e.getMessage())) {
@@ -66,8 +67,9 @@ class FetchAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return Repository.isConnected();
+	public boolean accept(List<INavigationElement<?>> selection) {
+		repo = Actions.getRepo(selection);
+		return repo != null;
 	}
 
 }

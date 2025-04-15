@@ -24,11 +24,13 @@ import org.openlca.util.Strings;
 public class HistoryDialog extends FormDialog {
 
 	private final String title;
+	private final Repository repo;
 	private final List<Commit> commits;
 
-	public HistoryDialog(String title, List<Commit> commits) {
+	public HistoryDialog(String title, Repository repo, List<Commit> commits) {
 		super(UI.shell());
 		this.title = title;
+		this.repo = repo;
 		this.commits = commits;
 		setBlockOnOpen(true);
 	}
@@ -54,7 +56,6 @@ public class HistoryDialog extends FormDialog {
 	}
 
 	private void onDoubleClick(DoubleClickEvent event) {
-		var repo = Repository.CURRENT;
 		if (repo == null || !repo.isCollaborationServer())
 			return;
 		Commit element = Selections.firstOf(event);

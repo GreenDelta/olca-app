@@ -5,20 +5,22 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.git.model.Commit;
+import org.openlca.git.repo.OlcaRepository;
 
 public class SelectCommitDialog extends FormDialog {
 
+	private final OlcaRepository repo;
 	private HistoryViewer viewer;
 	private Commit selection;
 
-	public SelectCommitDialog() {
+	public SelectCommitDialog(OlcaRepository repo) {
 		super(UI.shell());
+		this.repo = repo;
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public class SelectCommitDialog extends FormDialog {
 			selection = Viewers.getFirstSelected(viewer.getViewer());
 			updateButtons();
 		});
-		viewer.setRepository(Repository.CURRENT);
+		viewer.setRepository(repo);
 	}
 
 	private void updateButtons() {

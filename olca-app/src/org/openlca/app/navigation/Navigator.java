@@ -447,10 +447,11 @@ public class Navigator extends CommonNavigator {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (e.keyCode == SWT.F5) {
-				if (Repository.isConnected()) {
-					App.runWithProgress(M.UpdatingLocalIndex, Repository.CURRENT.index::reload);
+				var repo = Repository.get();
+				if (repo != null) {
+					App.runWithProgress(M.UpdatingLocalIndex, repo.index::reload);
+					Navigator.refresh();
 				}
-				Navigator.refresh();
 			}
 		}
 

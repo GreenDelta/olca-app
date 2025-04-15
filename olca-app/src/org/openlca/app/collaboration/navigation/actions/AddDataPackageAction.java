@@ -3,20 +3,27 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.dialogs.ConnectDialog;
-import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.MsgBox;
 
-class ConnectAction extends Action implements INavigationAction {
+public class AddDataPackageAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return M.ConnectDots;
+		return M.AddDataPackageDots;
+	}
+
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		return Icon.LIBRARY.descriptor();
 	}
 
 	@Override
@@ -25,12 +32,25 @@ class ConnectAction extends Action implements INavigationAction {
 		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
 		var url = dialog.url();
-		var repo = Repository.initialize(Database.get(), url);
-		if (repo != null) {
-			repo.user(dialog.user());
-			Announcements.check();
+		var packageName = url.substring(url.lastIndexOf("/") + 1);
+		var db = Database.get();
+		if (db.getDataPackage(packageName) != null) {
+			MsgBox.warning("Data package already exists");
+			return;
 		}
-		Actions.refresh();
+		var dataPackage = Database.get().addDataPackage(packageName, url);
+		try {
+			var repo = Repository.initialize(Database.get(), dataPackage, url);
+			if (repo == null)
+				return;
+			repo.user(dialog.user());
+			PullAction.silent().on(repo).run();
+			repo.close();
+		} catch (Exception e) {
+			Actions.handleException("Error connecting to repository", url, e);
+		} finally {
+			Actions.refresh();
+		}
 	}
 
 	@Override
@@ -41,9 +61,7 @@ class ConnectAction extends Action implements INavigationAction {
 		if (!(first instanceof DatabaseElement))
 			return false;
 		var elem = (DatabaseElement) first;
-		if (!Database.isActive(elem.getContent()))
-			return false;
-		return Repository.get() == null;
+		return Database.isActive(elem.getContent());
 	}
 
 }

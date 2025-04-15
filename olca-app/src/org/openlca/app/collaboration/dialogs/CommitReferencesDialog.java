@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.viewers.diff.CommitViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
 import org.openlca.app.collaboration.viewers.diff.DiffNodeBuilder;
@@ -46,7 +47,7 @@ public class CommitReferencesDialog extends FormDialog {
 	}
 
 	private void createModelViewer(Composite parent) {
-		viewer = new CommitViewer(parent);
+		viewer = new CommitViewer(parent, Repository.get());
 		var node = new DiffNodeBuilder(Database.get()).build(references);
 		var selection = new HashSet<String>();
 		references.stream()

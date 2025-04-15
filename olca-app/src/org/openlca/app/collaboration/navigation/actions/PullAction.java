@@ -25,6 +25,7 @@ import org.openlca.git.util.Constants;
 class PullAction extends Action implements INavigationAction {
 
 	private final boolean silent;
+	private Repository repo;
 
 	PullAction() {
 		this(false);
@@ -35,7 +36,14 @@ class PullAction extends Action implements INavigationAction {
 	}
 
 	static PullAction silent() {
-		return new PullAction(true);
+		var action = new PullAction(true);
+		action.repo = Repository.get();
+		return action;
+	}
+
+	public PullAction on(Repository repo) {
+		this.repo = repo;
+		return this;
 	}
 
 	@Override
@@ -55,31 +63,29 @@ class PullAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var repo = Repository.CURRENT;
 		try {
 			var credentials = repo.promptCredentials();
 			if (credentials == null)
 				return;
-			var newCommits = Actions.run(credentials,
+			var newCommits = Actions.run(repo, credentials,
 					GitFetch.to(repo));
 			if (newCommits == null)
 				return;
 			if (!newCommits.isEmpty()) {
-				new HistoryDialog(M.FetchedCommits, newCommits).open();
-			} else if (Repository.CURRENT.localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty()) {
+				new HistoryDialog(M.FetchedCommits, repo, newCommits).open();
+			} else if (repo.localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty()) {
 				MsgBox.info(M.NoCommitToFetchInfo);
 				return;
 			}
-			if (!DatabaseCheck.isValid())
-				return;
-			var libraryResolver = WorkspaceLibraryResolver.forRemote();
+			var libraryResolver = WorkspaceLibraryResolver.forRemote(repo);
 			if (libraryResolver == null)
 				return;
-			var conflictResult = ConflictResolver.resolve(Constants.REMOTE_REF);
+			var conflictResult = ConflictResolver.resolve(repo, Constants.REMOTE_REF);
 			if (conflictResult == null)
 				return;
 			var mergeResult = Actions.run(GitMerge
 					.on(repo)
+					.into(repo.dataPackage)
 					.as(credentials.ident)
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
@@ -108,12 +114,16 @@ class PullAction extends Action implements INavigationAction {
 		} finally {
 			Cache.evictAll();
 			Actions.refresh();
+			if (!silent && repo.dataPackage != null) {
+				repo.close();
+			}
 		}
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return Repository.isConnected();
+	public boolean accept(List<INavigationElement<?>> selection) {
+		repo = Actions.getRepo(selection);
+		return repo != null;
 	}
 
 }

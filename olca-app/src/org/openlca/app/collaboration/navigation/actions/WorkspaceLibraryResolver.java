@@ -8,6 +8,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
@@ -18,44 +19,42 @@ import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryDir;
 import org.openlca.git.actions.LibraryResolver;
 import org.openlca.git.model.Commit;
-import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
 
 class WorkspaceLibraryResolver implements LibraryResolver {
 
+	private final Repository repo;
 	private final LibraryDir libDir;
 
-	private WorkspaceLibraryResolver() {
+	private WorkspaceLibraryResolver(Repository repo) {
+		this.repo = repo;
 		this.libDir = Workspace.getLibraryDir();
 	}
 
-	static WorkspaceLibraryResolver forRemote() {
-		var repo = org.openlca.app.collaboration.Repository.CURRENT;
+	static WorkspaceLibraryResolver forRemote(Repository repo) {
 		var commit = repo.commits.get(repo.commits.resolve(Constants.REMOTE_BRANCH));
-		return forCommit(commit);
+		return forCommit(repo, commit);
 	}
 
-	static WorkspaceLibraryResolver forStash() throws GitAPIException {
-		var repo = org.openlca.app.collaboration.Repository.CURRENT;
+	static WorkspaceLibraryResolver forStash(Repository repo) throws GitAPIException {
 		var commits = Git.wrap(repo).stashList().call();
 		if (commits == null || commits.isEmpty())
 			return null;
 		var commit = new Commit(commits.iterator().next());
-		return forCommit(commit);
+		return forCommit(repo, commit);
 	}
 
-	static WorkspaceLibraryResolver forCommit(Commit commit) {
+	static WorkspaceLibraryResolver forCommit(Repository repo, Commit commit) {
 		if (commit == null)
 			return null;
-		var repo = org.openlca.app.collaboration.Repository.CURRENT;
-		var resolver = new WorkspaceLibraryResolver();
+		var resolver = new WorkspaceLibraryResolver(repo);
 		if (!resolver.init(repo, commit))
 			return null;
 		return resolver;
 	}
 	
 	// init before resolve is called in GitMerge, to avoid invalid thread access
-	private boolean init(ClientRepository repo, Commit commit) {
+	private boolean init(Repository repo, Commit commit) {
 		var remoteLibs = repo.getDataPackages(commit).stream()
 				.filter(DataPackage::isLibrary)
 				.collect(Collectors.toList());
@@ -96,7 +95,6 @@ class WorkspaceLibraryResolver implements LibraryResolver {
 	}
 
 	private Library importFromCollaborationServer(String newLib) throws IOException {
-		var repo = org.openlca.app.collaboration.Repository.CURRENT;
 		if (!repo.isCollaborationServer())
 			return null;
 		var stream = WebRequests.execute(

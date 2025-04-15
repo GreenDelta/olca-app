@@ -13,7 +13,6 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.dialogs.JsonCompareDialog;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.collaboration.viewers.json.olca.ModelNodeBuilder;
@@ -31,6 +30,7 @@ import org.openlca.git.actions.ConflictResolver.ConflictResolutionType;
 import org.openlca.git.model.DiffType;
 import org.openlca.git.model.Reference;
 import org.openlca.git.model.TriDiff;
+import org.openlca.git.repo.OlcaRepository;
 import org.openlca.git.util.ModelRefMap;
 import org.openlca.util.TypedRefIdMap;
 
@@ -40,18 +40,24 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 
 	DiffNode root;
 	private final boolean canMerge;
+	private OlcaRepository repo;
 	private Map<String, Reference> entryMap;
 	private Runnable onMerge;
 	private ModelRefMap<ConflictResolution> resolvedConflicts = new ModelRefMap<>();
 
-	DiffNodeViewer(Composite parent, boolean canMerge) {
+	DiffNodeViewer(Composite parent, OlcaRepository repo, boolean canMerge) {
 		super(parent);
+		this.repo = repo;
 		this.canMerge = canMerge;
-		this.entryMap = Repository.CURRENT != null
-				? Repository.CURRENT.references.find().includeCategories().includeDataPackages().asMap()
+		this.entryMap = repo != null
+				? repo.references.find().includeCategories().includeDataPackages().asMap()
 				: null;
 	}
 
+	public void setRepository(OlcaRepository repo) {
+		this.repo = repo;
+	}
+	
 	@Override
 	public void setInput(Collection<DiffNode> collection) {
 		if (collection.isEmpty()) {
@@ -118,22 +124,22 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 		if (diff.right == null) {
 			if (diff.left == null || diff.left.diffType == DiffType.ADDED)
 				return null;
-			return RefJson.get(diff.left.oldRef, diff);
+			return RefJson.get(repo, diff.left.oldRef, diff);
 		}
 		if (diff.left == null || diff.left.diffType == DiffType.DELETED)
 			return null;
-		return RefJson.get(diff.left.newRef, diff);
+		return RefJson.get(repo, diff.left.newRef, diff);
 	}
 
 	private JsonObject getRight(TriDiff diff) {
 		if (diff.right == null) {
 			if (diff.left == null || diff.left.diffType == DiffType.DELETED)
 				return null;
-			return RefJson.get(diff.left.newRef, diff);
+			return RefJson.get(repo, diff.left.newRef, diff);
 		}
 		if (diff.right.diffType == DiffType.DELETED)
 			return null;
-		return RefJson.get(diff.right.newRef, diff);
+		return RefJson.get(repo, diff.right.newRef, diff);
 	}
 
 	private DiffNode getSelected(DoubleClickEvent event) {
@@ -215,7 +221,6 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			var descriptor = Daos.root(Database.get(), diff.type).getDescriptorForRefId(diff.refId);
 			if (descriptor != null)
 				return descriptor.name;
-			var repo = Repository.CURRENT;
 			if (diff.right != null && hasObjectId(diff.right.newRef))
 				return repo.datasets.getName(diff.right.newRef);
 			if (diff.left != null && hasObjectId(diff.left.newRef))

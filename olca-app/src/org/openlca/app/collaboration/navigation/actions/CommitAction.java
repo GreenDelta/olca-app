@@ -19,6 +19,7 @@ import org.openlca.util.Strings;
 
 class CommitAction extends Action implements INavigationAction {
 
+	private Repository repo;
 	private List<INavigationElement<?>> selection;
 
 	@Override
@@ -38,7 +39,6 @@ class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var repo = Repository.CURRENT;
 		try {
 			if (!DatabaseCheck.isValid())
 				return;
@@ -68,10 +68,9 @@ class CommitAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
-		if (!Repository.isConnected())
-			return false;
+		repo = Actions.getRepo(selection);
 		this.selection = selection;
-		return true;
+		return repo != null && repo.dataPackage == null;
 	}
 
 }

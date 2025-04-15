@@ -4,7 +4,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -117,23 +116,26 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 				monitor.worked(1);
 			}
 
-			// TODO export data package links
-			var libraries = export.getReferencedDataPackages()
-					.stream()
-					.filter(DataPackage::isLibrary)
-					.map(p -> Workspace.getLibraryDir().getLibrary(p.name()))
-					.filter(Optional::isPresent)
-					.map(Optional::get)
-					.toList();
-			store.putDataPackages(resolveLinksOf(libraries));
+			var dataPackages = export.getReferencedDataPackages();
+			store.putDataPackages(resolveLinksOf(dataPackages));
 		}
 
-		private static Set<DataPackage> resolveLinksOf(List<Library> libraries) {
-			var all = new LinkedHashSet<>(libraries);
-			for (var library : libraries) {
-				all.addAll(library.getTransitiveDependencies());
+		private static List<DataPackage> resolveLinksOf(Set<DataPackage> dataPackages) {
+			var libraries = new LinkedHashSet<Library>();
+			var nonLibraries = new LinkedHashSet<DataPackage>();
+			for (var dataPackage : dataPackages) {
+				// TODO not supporting data package dependencies
+				if (!dataPackage.isLibrary()) {
+					nonLibraries.add(dataPackage);
+					continue;
+				}
+				var library = Workspace.getLibraryDir().getLibrary(dataPackage.name());
+				if (library.isEmpty())
+					continue;
+				libraries.add(library.get());
+				libraries.addAll(library.get().getTransitiveDependencies());
 			}
-			return all.stream()
+			var all = libraries.stream()
 					.sorted((l1, l2) -> {
 						if (l1.getTransitiveDependencies().contains(l2))
 							return -1;
@@ -142,7 +144,9 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 						return 0;
 					})
 					.map(l -> DataPackage.library(l.name(), null))
-					.collect(Collectors.toSet());
+					.collect(Collectors.toList());
+			all.addAll(nonLibraries);
+			return all;
 		}
 
 		private void doExport(JsonExport export, RootEntity entity) {

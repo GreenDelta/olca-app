@@ -23,6 +23,7 @@ import org.openlca.git.actions.GitReset;
 
 class DiscardAction extends Action implements INavigationAction {
 
+	private Repository repo;
 	private List<INavigationElement<?>> selection;
 
 	@Override
@@ -50,7 +51,7 @@ class DiscardAction extends Action implements INavigationAction {
 		if (!Question.ask(M.DiscardChangesQ, M.DiscardChangesQuestion))
 			return;
 		try {
-			var repo = Repository.CURRENT;
+			var repo = Repository.get();
 			var selected = PathFilters.of(selection).stream()
 					.map(filter -> repo.diffs.find()
 							.filter(filter)
@@ -61,7 +62,7 @@ class DiscardAction extends Action implements INavigationAction {
 			Actions.run(GitReset.on(repo)
 					.to(head)
 					.changes(selected)
-					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(head)));
+					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(repo, head)));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error discarding changes", e);
 		} finally {
@@ -72,10 +73,9 @@ class DiscardAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
-		if (!Repository.isConnected())
-			return false;
+		repo = Actions.getRepo(selection);
 		this.selection = selection;
-		return true;
+		return repo != null && repo.dataPackage == null;
 	}
 
 }

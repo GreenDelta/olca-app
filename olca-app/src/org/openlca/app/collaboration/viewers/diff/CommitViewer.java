@@ -12,18 +12,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.trees.CheckboxTreeViewers;
 import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
 import org.openlca.git.model.TriDiff;
+import org.openlca.git.repo.OlcaRepository;
 
 public class CommitViewer extends DiffNodeViewer {
 
 	private DiffNodeCheckedContentProvider selectionProvider;
 	private final Runnable onCheckStateChanged;
 
-	public CommitViewer(Composite parent) {
-		this(parent, null);
+	public CommitViewer(Composite parent, OlcaRepository repo) {
+		this(parent, repo, null);
 	}
 
-	public CommitViewer(Composite parent, Runnable onCheckStateChanged) {
-		super(parent, false);
+	public CommitViewer(Composite parent, OlcaRepository repo, Runnable onCheckStateChanged) {
+		super(parent, repo, false);
 		this.onCheckStateChanged = onCheckStateChanged;
 	}
 

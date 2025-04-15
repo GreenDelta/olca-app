@@ -17,7 +17,6 @@ import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.core.database.IDatabase.DataPackage;
-import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -30,10 +29,10 @@ public class RepositoryLabel {
 	public static final String CHANGED_STATE = "> ";
 
 	public static Image getWithOverlay(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected())
+		if (Database.get() == null || Repository.get() == null)
 			return null;
 		if (elem instanceof ModelElement e
-				&& !e.isFromLibrary()
+				&& !e.getDataPackage().isPresent()
 				&& isNew(NavCache.get(e)))
 			return Images.get(e.getContent(), Overlay.ADDED);
 		if (elem instanceof DataPackageElement e
@@ -46,10 +45,9 @@ public class RepositoryLabel {
 		return null;
 	}
 
-	public static String getRepositoryText(DatabaseConfig dbConfig) {
-		if (!Database.isActive(dbConfig) || !Repository.isConnected())
+	public static String getRepositoryText(Repository repo) {
+		if (repo == null)
 			return null;
-		var repo = Repository.CURRENT;
 		var ahead = repo.localHistory.getAheadOf(Constants.REMOTE_REF);
 		var behind = repo.localHistory.getBehindOf(Constants.REMOTE_REF);
 		var user = repo.user();
@@ -68,8 +66,8 @@ public class RepositoryLabel {
 	}
 
 	public static String getStateIndicator(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected() || elem == null ||
-				(elem.getDataPackage().isPresent() && elem.getDataPackage().get().isLibrary()))
+		var repo = Repository.get();
+		if (Database.get() == null || repo == null || elem == null || elem.getDataPackage().isPresent())
 			return null;
 		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
 			return null;
@@ -83,25 +81,25 @@ public class RepositoryLabel {
 	}
 
 	public static boolean hasChanged(INavigationElement<?> elem) {
-		if (Database.get() == null || !Repository.isConnected() || elem == null
-				|| (elem.getDataPackage().isPresent() && elem.getDataPackage().get().isLibrary()))
+		if (Database.get() == null || Repository.get() == null || elem == null || elem.getDataPackage().isPresent())
 			return false;
 		return hasChanged(NavCache.get(elem));
 	}
 
 	private static boolean hasChanged(NavElement elem) {
-		if (Database.get() == null || !Repository.isConnected() || elem == null || elem.isFromLibrary())
+		if (Database.get() == null || Repository.get() == null || elem == null || elem.isFromDataPackage())
 			return false;
 		if (elem.is(ElementType.MODEL)) {
 			if (isNew(elem))
 				return false;
 			var d = (RootDescriptor) elem.content();
-			return !Repository.CURRENT.index.isSameVersion(getPath(d), d);
+			var repo = Repository.get();
+			return !repo.index.isSameVersion(getPath(d), d);
 		}
-		if (elem.is(ElementType.DATABASE) && Repository.CURRENT.dataPackagesChanged())
+		if (elem.is(ElementType.DATABASE) && Repository.get().dataPackagesChanged())
 			return true;
 		if (elem.is(ElementType.DATAPACKAGES))
-			return Repository.CURRENT.dataPackagesChanged();
+			return Repository.get().dataPackagesChanged();
 		for (var child : elem.children())
 			if (hasChanged(child) || (child.is(ElementType.MODEL, ElementType.CATEGORY) && isNew(child)))
 				return true;
@@ -109,13 +107,14 @@ public class RepositoryLabel {
 	}
 
 	private static boolean isNew(NavElement elem) {
-		if (elem == null || elem.isFromLibrary())
+		if (elem == null || elem.isFromDataPackage())
 			return false;
 		if (elem.is(ElementType.DATAPACKAGE) && isNewDataPackage((DataPackage) elem.content()))
 			return true;
-		if (elem.is(ElementType.CATEGORY) && !Repository.CURRENT.index.contains(getPath(elem.content())))
+		var repo = Repository.get();
+		if (elem.is(ElementType.CATEGORY) && !repo.index.contains(getPath(elem.content())))
 			return true;
-		if (elem.is(ElementType.MODEL) && Repository.CURRENT.index.getPath(elem.getTypedRefId()) == null)
+		if (elem.is(ElementType.MODEL) && repo.index.getPath(elem.getTypedRefId()) == null)
 			return true;
 		return false;
 	}
@@ -129,7 +128,8 @@ public class RepositoryLabel {
 		if (!elem.is(ElementType.MODEL_TYPE, ElementType.CATEGORY))
 			return false;
 		var path = getPath(elem.content());
-		var fromIndex = Repository.CURRENT.index.getSubPaths(path);
+		var repo = Repository.get();
+		var fromIndex = repo.index.getSubPaths(path);
 		var fromNavigation = elem.children()
 				.stream().map(e -> getPath(e.content()))
 				.collect(Collectors.toSet());
@@ -140,7 +140,7 @@ public class RepositoryLabel {
 	}
 
 	private static boolean isNewDataPackage(DataPackage dataPackage) {
-		var info = Repository.CURRENT.getInfo();
+		var info = Repository.get().getInfo();
 		var before = info != null
 				? info.dataPackages()
 				: new HashSet<>();
@@ -153,7 +153,7 @@ public class RepositoryLabel {
 		if (o instanceof Category c)
 			return Path.of(c);
 		if (o instanceof RootDescriptor d)
-			return Path.of(Repository.CURRENT.descriptors.categoryPaths, d);
+			return Path.of(Repository.descriptors().categoryPaths, d);
 		return null;
 	}
 

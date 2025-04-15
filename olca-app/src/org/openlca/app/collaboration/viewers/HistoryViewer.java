@@ -9,15 +9,16 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.git.model.Commit;
+import org.openlca.git.repo.OlcaRepository;
 import org.openlca.git.util.Constants;
 
 public class HistoryViewer extends AbstractTableViewer<Commit> {
 
+	private OlcaRepository repo;
 	String localCommitId;
 	String remoteCommitId;
 	List<Commit> commits;
@@ -46,7 +47,8 @@ public class HistoryViewer extends AbstractTableViewer<Commit> {
 		return actions;
 	}
 
-	public void setRepository(Repository repo) {
+	public void setRepository(OlcaRepository repo) {
+		this.repo = repo;
 		if (repo == null) {
 			localCommitId = null;
 			remoteCommitId = null;
@@ -82,7 +84,7 @@ public class HistoryViewer extends AbstractTableViewer<Commit> {
 		@Override
 		public void run() {
 			var commit = getSelected();
-			CompareView.update(commit);
+			CompareView.update(repo, commit);
 		}
 
 	}

@@ -16,6 +16,8 @@ import org.openlca.git.actions.GitStashDrop;
 
 class StashDropAction extends Action implements INavigationAction {
 
+	private Repository repo;
+
 	@Override
 	public String getText() {
 		return M.Drop;
@@ -28,7 +30,6 @@ class StashDropAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		var repo = Repository.CURRENT;
 		try {
 			return repo.commits.stash() != null;
 		} catch (GitAPIException e) {
@@ -38,7 +39,6 @@ class StashDropAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var repo = Repository.CURRENT;
 		try {
 			GitStashDrop.from(repo).run();
 		} catch (IOException e) {
@@ -50,8 +50,9 @@ class StashDropAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return Repository.isConnected();
+	public boolean accept(List<INavigationElement<?>> selection) {
+		repo = Actions.getRepo(selection);
+		return repo != null && repo.dataPackage == null;
 	}
 
 }

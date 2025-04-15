@@ -61,18 +61,18 @@ public class NavCache {
 	public static void refresh(ModelType type) {
 		var database = Database.get();
 		INSTANCE = new NavCache();
-		if (database == null || !Repository.isConnected())
+		if (database == null || Repository.get() == null)
 			return;
 		if (type == null) {
-			Repository.CURRENT.descriptors.reload();
+			Repository.descriptors().reload();
 		} else {
-			Repository.CURRENT.descriptors.reload(type);
+			Repository.descriptors().reload(type);
 		}
 		INSTANCE.build();
 	}
 
 	static NavElement get(INavigationElement<?> elem) {
-		return new NavFinder(Repository.CURRENT).find(INSTANCE.root, elem);
+		return new NavFinder(Repository.get()).find(INSTANCE.root, elem);
 	}
 
 	public boolean hasChanges() {
@@ -121,28 +121,28 @@ public class NavCache {
 	private List<NavElement> buildCategories(ModelType type, Category category) {
 		var categories = category != null
 				? category.childCategories
-				: Repository.CURRENT.descriptors.getCategories(type);
+				: Repository.descriptors().getCategories(type);
 		return categories.stream()
 				.map(c -> {
 					var children = buildChildren(type, c);
-					return new NavElement(ElementType.CATEGORY, c, isOnlyLibrary(children), children);
+					return new NavElement(ElementType.CATEGORY, c, isOnlyDataPackage(children), children);
 				})
 				.collect(Collectors.toList());
 	}
 
-	private boolean isOnlyLibrary(List<NavElement> elements) {
+	private boolean isOnlyDataPackage(List<NavElement> elements) {
 		if (elements.isEmpty())
 			return false;
 		for (var element : elements)
-			if (!element.isFromLibrary())
+			if (!element.isFromDataPackage())
 				return false;
 		return true;
 	}
 
 	private List<NavElement> buildDatasets(ModelType type, Category category) {
 		var datasets = category != null
-				? Repository.CURRENT.descriptors.get(category)
-				: Repository.CURRENT.descriptors.get(type);
+				? Repository.descriptors().get(category)
+				: Repository.descriptors().get(type);
 		return datasets.stream()
 				.map(NavElement::new)
 				.collect(Collectors.toList());

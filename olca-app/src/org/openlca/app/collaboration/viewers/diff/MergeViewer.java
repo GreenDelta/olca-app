@@ -9,11 +9,12 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.git.model.TriDiff;
+import org.openlca.git.repo.OlcaRepository;
 
 public class MergeViewer extends DiffNodeViewer {
 
-	public MergeViewer(Composite parent) {
-		super(parent, true);
+	public MergeViewer(Composite parent, OlcaRepository repo) {
+		super(parent, repo, true);
 	}
 
 	@Override

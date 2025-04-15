@@ -17,11 +17,11 @@ class DatabaseCheck {
 		var updatedOthers = checkOthers();
 		if (updatedOthers != null && !updatedOthers) {
 			if (updatedSlashes != null) {
-				Repository.CURRENT.descriptors.reload();
+				Repository.descriptors().reload();
 			}
 			return false;
 		}
-		Repository.CURRENT.descriptors.reload();
+		Repository.descriptors().reload();
 		return true;
 	}
 

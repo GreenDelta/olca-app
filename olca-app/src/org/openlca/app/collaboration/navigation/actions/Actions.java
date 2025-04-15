@@ -2,6 +2,7 @@ package org.openlca.app.collaboration.navigation.actions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -10,12 +11,15 @@ import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
+import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.WebRequestException;
@@ -31,6 +35,30 @@ class Actions {
 		Navigator.refresh();
 		HistoryView.refresh();
 		CompareView.clear();
+	}
+
+	static Repository getRepo(List<INavigationElement<?>> elements) {
+		if (elements == null || elements.isEmpty())
+			return null;
+		var selected = "";
+		for (var element : elements) {
+			var current = element.getDataPackage().isPresent()
+					? element.getDataPackage().get().name()
+					: null;
+			if (!"".equals(selected)) {
+				if (current == null && selected != null)
+					return null;
+				if (current != null && !current.equals(selected))
+					return null;
+			}
+			selected = current;
+		}
+		var database = Database.get();
+		var dataPackage = selected != null
+				? database.getDataPackage(selected)
+				: null;
+		return Repository.get(dataPackage);
+
 	}
 
 	static void handleException(String message, Exception e) {
@@ -50,13 +78,12 @@ class Actions {
 		}
 	}
 
-	static <T> T run(GitCredentialsProvider credentials, GitRemoteAction<T> runnable)
+	static <T> T run(Repository repo, GitCredentialsProvider credentials, GitRemoteAction<T> runnable)
 			throws InvocationTargetException, InterruptedException, GitAPIException {
 		runnable.authorizeWith(credentials);
 		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitRemoteRunner<>(runnable);
 		service.run(true, false, runner::run);
-		var repo = org.openlca.app.collaboration.Repository.CURRENT;
 		if (runner.exception == null)
 			return runner.result;
 		if (!(runner.exception instanceof TransportException))
@@ -70,14 +97,15 @@ class Actions {
 			CredentialStore.clearPassword(repo.serverUrl, repo.user());
 		}
 		if (passwordMissing) {
-			MsgBox.warning("We have updated our password encryption. Since we only store encrypted passwords, we are not able to migrate your current password. Please use the 'Forgot your password?' link on the website to request a new password being sent to your email address.");
+			MsgBox.warning(
+					"We have updated our password encryption. Since we only store encrypted passwords, we are not able to migrate your current password. Please use the 'Forgot your password?' link on the website to request a new password being sent to your email address.");
 			return null;
 		}
 		if (!notPermitted && !notAuthorized && !tokenRequired)
 			throw runner.exception;
 		if (notPermitted) {
 			MsgBox.warning(M.NoSufficientRights);
-			credentials = repo.promptCredentials();			
+			credentials = repo.promptCredentials();
 		} else if (notAuthorized) {
 			credentials = repo.promptCredentials();
 		} else if (tokenRequired) {
@@ -85,7 +113,7 @@ class Actions {
 		}
 		if (credentials == null)
 			return null;
-		return run(credentials, runnable);
+		return run(repo, credentials, runnable);
 	}
 
 	static <T> T run(GitProgressAction<T> runnable)
@@ -122,11 +150,13 @@ class Actions {
 	}
 
 	static boolean applyStash() throws GitAPIException, InvocationTargetException, IOException, InterruptedException {
-		var repo = org.openlca.app.collaboration.Repository.CURRENT;
-		var libraryResolver = WorkspaceLibraryResolver.forStash();
+		var repo = Repository.get();
+		if (repo == null)
+			return false;
+		var libraryResolver = WorkspaceLibraryResolver.forStash(repo);
 		if (libraryResolver == null)
 			return false;
-		var conflictResult = ConflictResolver.resolve(Constants.STASH_REF);
+		var conflictResult = ConflictResolver.resolve(repo, Constants.STASH_REF);
 		if (conflictResult == null)
 			return false;
 		Actions.run(GitStashApply.on(repo)

@@ -16,6 +16,8 @@ import org.openlca.app.rcp.images.Icon;
 
 class ChangeUserAction extends Action implements INavigationAction {
 
+	private Repository repo;
+	
 	@Override
 	public String getText() {
 		return M.ChangeUser;
@@ -28,11 +30,10 @@ class ChangeUserAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		
-		var ident = AuthenticationDialog.promptUser(Repository.CURRENT.serverUrl, null);
+		var ident = AuthenticationDialog.promptUser(repo.serverUrl, null);
 		if (ident == null)
 			return;
-		Repository.CURRENT.user(ident.getName());
+		repo.user(ident.getName());
 		Navigator.refresh();
 	}
 
@@ -45,7 +46,8 @@ class ChangeUserAction extends Action implements INavigationAction {
 			return false;
 		if (!Database.isActive(elem.getContent()))
 			return false;
-		return Repository.isConnected();
+		repo = Actions.getRepo(selection);
+		return repo != null;
 	}
 
 }

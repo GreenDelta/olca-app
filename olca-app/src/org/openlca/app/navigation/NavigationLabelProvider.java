@@ -12,6 +12,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
@@ -209,14 +210,22 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		var baseText = getBaseText(elem);
 		if (baseText == null)
 			return null;
-		if (elem instanceof DatabaseElement dbElem) {
-			var config = dbElem.getContent();
-			var repoText = RepositoryLabel.getRepositoryText(config);
-			if (repoText != null)
-				baseText += repoText;
-		}
 		if (!indicateRepositoryState)
 			return baseText;
+		if (elem instanceof DatabaseElement dbElem) {
+			var config = dbElem.getContent();
+			if (Database.isActive(config)) {
+				var repoText = RepositoryLabel.getRepositoryText(Repository.get());
+				if (repoText != null) {
+					baseText += repoText;
+				}
+			}
+		} else if (elem instanceof DataPackageElement dpElement && !dpElement.isLibrary()) {
+			var repoText = RepositoryLabel.getRepositoryText(Repository.get(dpElement.getContent()));
+			if (repoText != null) {
+				baseText += repoText;
+			}
+		}
 		var state = RepositoryLabel.getStateIndicator(elem);
 		if (state == null)
 			return baseText;
@@ -242,7 +251,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof LibraryDir)
 			return M.Libraries;
 		if (content instanceof DataPackage p)
-			return p.id();
+			return p.name();
 		if (elem instanceof MappingDirElement)
 			return M.MappingFiles;
 		if (content instanceof File file)

@@ -21,6 +21,8 @@ import org.openlca.git.util.Constants;
 
 class MergeAction extends Action implements INavigationAction {
 
+	private Repository repo;
+	
 	@Override
 	public String getText() {
 		return M.MergeDots;
@@ -33,19 +35,16 @@ class MergeAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return !Repository.CURRENT.localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty();
+		return repo.localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty();
 	}
 
 	@Override
 	public void run() {
-		var repo = Repository.CURRENT;
 		try {
-			if (!DatabaseCheck.isValid())
-				return;
-			var libraryResolver = WorkspaceLibraryResolver.forRemote();
+			var libraryResolver = WorkspaceLibraryResolver.forRemote(repo);
 			if (libraryResolver == null)
 				return;
-			var conflictResult = ConflictResolver.resolve(Constants.REMOTE_REF);
+			var conflictResult = ConflictResolver.resolve(repo, Constants.REMOTE_REF);
 			if (conflictResult == null)
 				return;
 			var user = !repo.localHistory.getAheadOf(Constants.REMOTE_REF).isEmpty()
@@ -55,6 +54,7 @@ class MergeAction extends Action implements INavigationAction {
 				return;
 			var mergeResult = Actions.run(GitMerge
 					.on(repo)
+					.into(repo.dataPackage)
 					.as(user)
 					.resolveConflictsWith(conflictResult.resolutions())
 					.resolveLibrariesWith(libraryResolver));
@@ -77,8 +77,9 @@ class MergeAction extends Action implements INavigationAction {
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return Repository.isConnected();
+	public boolean accept(List<INavigationElement<?>> selection) {
+		repo = Actions.getRepo(selection);
+		return repo != null;
 	}
 
 }

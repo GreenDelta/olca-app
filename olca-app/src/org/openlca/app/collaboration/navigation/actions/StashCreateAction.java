@@ -18,6 +18,7 @@ import org.openlca.git.actions.GitStashCreate;
 
 class StashCreateAction extends Action implements INavigationAction {
 
+	private Repository repo;
 	private List<INavigationElement<?>> selection;
 
 	@Override
@@ -33,7 +34,6 @@ class StashCreateAction extends Action implements INavigationAction {
 	@Override
 	public boolean isEnabled() {
 		try {
-			var repo = Repository.CURRENT;
 			if (repo.commits.stash() != null)
 				return false;
 			return NavCache.get().hasChanges();
@@ -44,7 +44,6 @@ class StashCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		var repo = Repository.CURRENT;
 		try {
 			var diffs = repo.diffs.find().withDatabase();
 			var input = Datasets.select(selection, diffs, false, true);
@@ -55,7 +54,7 @@ class StashCreateAction extends Action implements INavigationAction {
 				return;
 			Actions.run(GitStashCreate.on(repo)
 					.as(user)
-					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(repo.commits.head()))
+					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(repo, repo.commits.head()))
 					.changes(input.datasets()));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);
@@ -67,10 +66,9 @@ class StashCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
-		if (!Repository.isConnected())
-			return false;
+		repo = Actions.getRepo(selection);
 		this.selection = selection;
-		return true;
+		return repo != null && repo.dataPackage == null;
 	}
 
 }

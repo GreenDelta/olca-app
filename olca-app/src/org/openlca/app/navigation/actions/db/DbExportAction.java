@@ -13,7 +13,6 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.components.FileChooser;
@@ -135,17 +134,11 @@ public class DbExportAction extends Action implements INavigationAction {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
 				String relativePath = folder.toPath().relativize(file).toString();
-				if (exclude(relativePath))
-					return FileVisitResult.CONTINUE;
 				fileSources.add(new FileSource(relativePath.replace("\\", "/"), file.toFile()));
 				return FileVisitResult.CONTINUE;
 			}
 		});
 		return fileSources.toArray(new ZipEntrySource[0]);
-	}
-
-	private boolean exclude(String relativePath) {
-		return relativePath.startsWith(DatabaseDir.FILE_STORAGE + File.separator + Repository.GIT_DIR);
 	}
 
 	private void updateUI(File zip, boolean active) {

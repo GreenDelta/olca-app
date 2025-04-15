@@ -4,9 +4,6 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.views.HistoryView;
@@ -16,10 +13,12 @@ import org.openlca.app.rcp.images.Icon;
 
 class ShowInHistoryAction extends Action implements INavigationAction {
 
+	private Repository repo;
+
 	ShowInHistoryAction() {
 		setText(M.ShowInHistory);
 	}
-	
+
 	@Override
 	public ImageDescriptor getImageDescriptor() {
 		return Icon.HISTORY_VIEW.descriptor();
@@ -27,22 +26,13 @@ class ShowInHistoryAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		IWorkbenchPage page = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow()
-				.getActivePage();
-		if (page == null)
-			return;
-		try {
-			page.showView(HistoryView.ID);
-			HistoryView.refresh();
-		} catch (PartInitException e) {
-			Actions.handleException("Error opening sync view", e);
-		}
+		HistoryView.update(repo);
 	}
 
 	@Override
-	public boolean accept(List<INavigationElement<?>> elements) {
-		return Repository.isConnected();
+	public boolean accept(List<INavigationElement<?>> selection) {
+		repo = Actions.getRepo(selection);
+		return repo != null;
 	}
 
 }

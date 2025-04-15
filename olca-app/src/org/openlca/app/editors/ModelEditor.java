@@ -1,7 +1,6 @@
 package org.openlca.app.editors;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,7 +31,6 @@ import org.openlca.core.database.Daos;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.Version;
 import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
@@ -131,12 +129,13 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 	}
 
 	private Comments loadComments() {
-		if (!App.isCommentingEnabled()
-				|| !Repository.isConnected()
-				|| !Repository.CURRENT.isCollaborationServer())
+		if (!App.isCommentingEnabled())
+			return new Comments(new ArrayList<>());
+		var repo = Repository.get();
+		if (repo == null || !repo.isCollaborationServer())
 			return new Comments(new ArrayList<>());
 		return new Comments(WebRequests.execute(M.Comments,
-				() -> Repository.CURRENT.client.getComments(Repository.CURRENT.id,
+				() -> repo.client.getComments(repo.id,
 						ModelType.of(model.getClass()).name(), model.refId),
 				new ArrayList<>()));
 	}
@@ -148,8 +147,7 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 				monitor.beginTask(M.SaveDots + " " + modelClass.getSimpleName(),
 						IProgressMonitor.UNKNOWN);
 			}
-			model.lastChange = Calendar.getInstance().getTimeInMillis();
-			Version.incUpdate(model);
+			model.wasUpdated();
 			model = dao.update(model);
 			doAfterUpdate();
 			if (monitor != null) {

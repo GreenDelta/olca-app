@@ -66,21 +66,16 @@ public class InfoSection {
 		ModelPage.text(container, M.Name, "name", editor, tk)
 				.setEditable(editor.isEditable());
 		if (entity.dataPackage != null) {
-			var dataPackage = Database.dataPackages().get(entity.dataPackage);
-			if (Libraries.isFrom(entity)) {
-				UI.labeledText(container, tk, M.Library)
-						.setText(entity.dataPackage);
-			} else {
-				UI.labeledText(container, tk, M.DataPackage)
-						.setText(dataPackage.id());
-			}
+			var label = Libraries.isFrom(entity) ? M.Library : M.DataPackage;
+			ModelPage.text(container, label, "dataPackage", editor, tk)
+					.setEditable(false);
 		}
 
 		// category
 		UI.label(container, tk, M.Category);
 		List<String> path = entity.category != null
-			? Categories.path(entity.category)
-			: Collections.emptyList();
+				? Categories.path(entity.category)
+				: Collections.emptyList();
 		if (path.isEmpty()) {
 			UI.label(container, tk, M.NoneHyphen);
 		} else {

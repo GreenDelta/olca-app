@@ -3,7 +3,6 @@ package org.openlca.app.collaboration.viewers.diff;
 import java.time.Instant;
 
 import org.eclipse.jgit.lib.ObjectId;
-import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.db.Database;
@@ -13,6 +12,7 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
 import org.openlca.git.model.ModelRef;
 import org.openlca.git.model.Reference;
+import org.openlca.git.repo.OlcaRepository;
 import org.openlca.jsonld.output.JsonExport;
 
 import com.google.gson.Gson;
@@ -23,11 +23,11 @@ public class RefJson {
 
 	private static Gson gson = new Gson();
 
-	public static JsonObject get(Reference remote) {
-		return get(remote, null);
+	public static JsonObject get(OlcaRepository repo, Reference remote) {
+		return get(repo, remote, null);
 	}
 
-	static JsonObject get(Reference remote, ModelRef local) {
+	static JsonObject get(OlcaRepository repo, Reference remote, ModelRef local) {
 		if ((remote != null && remote.isCategory) || (local != null && local.isCategory))
 			return null;
 		if (remote == null || remote.objectId.equals(ObjectId.zeroId())) {
@@ -35,7 +35,7 @@ public class RefJson {
 				return null;
 			return getLocalJson(local.type, local.refId);
 		}
-		var json = gson.fromJson(Repository.CURRENT.datasets.get(remote), JsonObject.class);
+		var json = gson.fromJson(repo.datasets.get(remote), JsonObject.class);
 		if (json == null)
 			return null;
 		split(json, remote.type);

@@ -30,6 +30,7 @@ public class M extends NLS {
 	public static String Actors;
 	public static String Add;
 	public static String AddATag;
+	public static String AddDataPackageDots;
 	public static String AddFlow;
 	public static String AddIndicator;
 	public static String AddInputFlow;

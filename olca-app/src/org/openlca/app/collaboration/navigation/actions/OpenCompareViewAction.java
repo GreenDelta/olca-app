@@ -16,6 +16,7 @@ import org.openlca.git.model.Commit;
 class OpenCompareViewAction extends Action implements INavigationAction {
 
 	private final boolean compareWithHead;
+	private Repository repo;
 	private List<INavigationElement<?>> selection;
 
 	OpenCompareViewAction(boolean compareWithHead) {
@@ -32,22 +33,20 @@ class OpenCompareViewAction extends Action implements INavigationAction {
 	public void run() {
 		Commit commit = null;
 		if (compareWithHead) {
-			commit = Repository.CURRENT.commits.head();
+			commit = repo.commits.head();
 		} else {
-			var dialog = new SelectCommitDialog();
+			var dialog = new SelectCommitDialog(repo);
 			if (dialog.open() != IDialogConstants.OK_ID)
 				return;
 			commit = dialog.getSelection();
 		}
-		CompareView.update(commit, selection);
+		CompareView.update(repo, commit, selection);
 	}
 
 	@Override
 	public boolean accept(List<INavigationElement<?>> selection) {
-		if (!Repository.isConnected())
-			return false;
-		this.selection = selection;
-		return true;
+		repo = Actions.getRepo(selection);
+		return repo != null;
 	}
 
 }

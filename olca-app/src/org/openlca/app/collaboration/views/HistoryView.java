@@ -7,9 +7,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
 import org.openlca.app.collaboration.viewers.diff.RefJson;
 import org.openlca.app.collaboration.viewers.json.JsonCompareViewer;
@@ -20,12 +21,14 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.BaseLabelProvider;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.git.model.Diff;
 import org.openlca.git.model.DiffType;
+import org.openlca.git.repo.ClientRepository;
 
 public class HistoryView extends ViewPart {
 
@@ -34,10 +37,40 @@ public class HistoryView extends ViewPart {
 	private HistoryViewer historyViewer;
 	private AbstractTableViewer<Diff> referenceViewer;
 	private JsonCompareViewer diffViewer;
+	private ClientRepository repo;
 
 	public HistoryView() {
 		instance = this;
 		setTitleImage(Icon.HISTORY_VIEW.get());
+	}
+
+	public static void refresh() {
+		if (instance == null || instance.repo == null)
+			return;
+		var db = Database.get();
+		if (db == null || !db.getName().equals(instance.repo.database.getName())) {
+			update(null);
+		} else {
+			update(instance.repo);
+		}
+	}
+
+	public static void update(ClientRepository repo) {
+		if (instance == null) {
+			var page = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow()
+					.getActivePage();
+			if (page == null)
+				return;
+			try {
+				page.showView(CompareView.ID);
+			} catch (PartInitException e) {
+				ErrorReporter.on("Error opening compare view", e);
+				return;
+			}
+		}
+		instance.repo = repo;
+		instance.historyViewer.setRepository(repo);
 	}
 
 	@Override
@@ -49,7 +82,6 @@ public class HistoryView extends ViewPart {
 		var secondRow = new SashForm(body, SWT.HORIZONTAL | SWT.SMOOTH);
 		createDiffViewer(secondRow);
 		createReferenceViewer(secondRow);
-		refresh();
 	}
 
 	private void createHistoryViewer(Composite parent) {
@@ -58,8 +90,8 @@ public class HistoryView extends ViewPart {
 		Tables.bindColumnWidths(historyViewer.getViewer(), 0.1, 0.7, 0.1, 0.1);
 		historyViewer.addSelectionChangedListener((commit) -> {
 			referenceViewer.select(null);
-			var diffs = Repository.isConnected() && commit != null
-					? Repository.CURRENT.diffs.find().commit(commit).withPreviousCommit()
+			var diffs = repo != null && commit != null
+					? repo.diffs.find().commit(commit).withPreviousCommit()
 					: new ArrayList<Diff>();
 			referenceViewer.setInput(diffs);
 		});
@@ -74,12 +106,12 @@ public class HistoryView extends ViewPart {
 		};
 		UI.gridData(referenceViewer.getViewer().getTable(), true, true);
 		referenceViewer.addSelectionChangedListener((diff) -> {
-			if (diff == null || !Repository.isConnected() || diff.isCategory) {
+			if (diff == null || repo == null || diff.isCategory) {
 				diffViewer.setInput(null);
 				return;
 			}
-			var previousElement = RefJson.get(diff.oldRef);
-			var currentElement = RefJson.get(diff.newRef);
+			var previousElement = RefJson.get(repo, diff.oldRef);
+			var currentElement = RefJson.get(repo, diff.newRef);
 			var node = new ModelNodeBuilder().build(previousElement, currentElement);
 			diffViewer.setInput(node);
 		});
@@ -88,12 +120,6 @@ public class HistoryView extends ViewPart {
 	private void createDiffViewer(Composite parent) {
 		diffViewer = JsonCompareViewer.forComparison(parent, null, null);
 		diffViewer.initialize(new ModelLabelProvider(), ModelDependencyResolver.INSTANCE);
-	}
-
-	public static void refresh() {
-		if (instance == null)
-			return;
-		instance.historyViewer.setRepository(Repository.CURRENT);
 	}
 
 	@Override
@@ -107,7 +133,7 @@ public class HistoryView extends ViewPart {
 
 	}
 
-	private static class ReferenceLabel extends BaseLabelProvider {
+	private class ReferenceLabel extends BaseLabelProvider {
 
 		@Override
 		public String getText(Object element) {
@@ -121,11 +147,13 @@ public class HistoryView extends ViewPart {
 			if (!text.isEmpty()) {
 				text += "/";
 			}
-			var descriptor = Database.get().getDescriptor(diff.type.getModelClass(), diff.refId);
+			var descriptor = repo.descriptors.get(diff);
 			if (descriptor != null)
 				return text + descriptor.name;
-			var ref = diff.oldRef == null ? diff.newRef : diff.oldRef;
-			return text + Repository.CURRENT.datasets.getName(ref);
+			var ref = diff.oldRef == null
+					? diff.newRef
+					: diff.oldRef;
+			return text + repo.datasets.getName(ref);
 		}
 
 		@Override
@@ -138,7 +166,7 @@ public class HistoryView extends ViewPart {
 			} else if (diff.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
-			if (diff.isDataPackage) 
+			if (diff.isDataPackage)
 				// TODO different icon for data package?
 				return Images.library(overlay);
 			if (diff.isCategory)

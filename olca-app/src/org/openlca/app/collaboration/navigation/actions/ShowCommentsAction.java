@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.editors.CommentsEditor;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -37,8 +36,9 @@ class ShowCommentsAction extends Action implements INavigationAction {
 		var first = selection.get(0);
 		if (!(first instanceof DatabaseElement))
 			return false;
-		return CollaborationPreference.commentsEnabled()
-				&& Repository.isConnected()
-				&& Repository.CURRENT.isCollaborationServer();
+		if (!CollaborationPreference.commentsEnabled())
+			return false;
+		var repo = Actions.getRepo(selection);
+		return repo != null && repo.dataPackage == null && repo.isCollaborationServer();
 	}
 }

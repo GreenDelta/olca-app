@@ -113,7 +113,7 @@ public class App {
 	}
 
 	public static boolean isCommentingEnabled() {
-		return Repository.isConnected() && CollaborationPreference.commentsEnabled();
+		return Repository.get() != null && CollaborationPreference.commentsEnabled();
 	}
 
 	/**
