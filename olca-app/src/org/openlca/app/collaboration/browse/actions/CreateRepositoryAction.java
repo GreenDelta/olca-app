@@ -12,6 +12,7 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 import org.openlca.app.collaboration.browse.elements.ServerElement;
+import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Overlay;
@@ -82,7 +83,10 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 				group = groups.get(groupCombo.getSelectionIndex());
 				updateButtons();
 			});
-			groupCombo.select(0);
+			var initialGroup = getInitialGroup();
+			if (initialGroup != null) {
+				groupCombo.select(initialGroup);
+			}
 			var nameText = UI.labeledText(container, toolkit, M.Name, SWT.NONE);
 			nameText.addModifyListener(e -> {
 				name = nameText.getText();
@@ -91,6 +95,16 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 			UI.label(container);
 			UI.label(container, toolkit, M.RepositoryNameHint);
 			form.getForm().reflow(true);
+		}
+
+		private Integer getInitialGroup() {
+			var username = CredentialStore.getUsername(elem.getClient().url);
+			if (Strings.nullOrEmpty(username))
+				return null;
+			for (var i = 0; i < groups.size(); i++) 
+				if (username.equals(groups.get(i)))
+					return i;
+			return null;
 		}
 
 		@Override
