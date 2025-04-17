@@ -25,6 +25,13 @@ class PushAction extends Action implements INavigationAction {
 
 	private Repository repo;
 
+	public PushAction() {
+	}
+	
+	public PushAction(Repository repo) {
+		this.repo = repo;
+	}
+	
 	@Override
 	public String getText() {
 		return M.Push;

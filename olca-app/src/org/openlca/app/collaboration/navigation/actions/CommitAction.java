@@ -58,7 +58,7 @@ class CommitAction extends Action implements INavigationAction {
 				return;
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
 				return;
-			new PushAction().run(credentials);
+			new PushAction(repo).run(credentials);
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error during commit", repo.serverUrl, e);
 		} finally {
