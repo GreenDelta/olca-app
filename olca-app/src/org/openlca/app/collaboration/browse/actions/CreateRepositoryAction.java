@@ -95,6 +95,7 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 			UI.label(container);
 			UI.label(container, toolkit, M.RepositoryNameHint);
 			form.getForm().reflow(true);
+			nameText.setFocus();
 		}
 
 		private Integer getInitialGroup() {
