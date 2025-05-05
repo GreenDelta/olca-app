@@ -91,7 +91,7 @@ public class ExchangeItem extends Component {
 			return false;
 
 		var linkSearch = node.getGraph().linkSearch;
-		var isInput = getIOPane().isForInputs();
+		var isInput = isInput();
 
 		var links = ((isInput && flowType() == FlowType.WASTE_FLOW)
 				|| (!isInput && flowType() == FlowType.PRODUCT_FLOW))
