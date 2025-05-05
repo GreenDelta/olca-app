@@ -10,13 +10,11 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
@@ -31,14 +29,8 @@ import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.libraries.LibraryEditor;
-import org.openlca.app.navigation.actions.DeleteMappingAction;
-import org.openlca.app.navigation.actions.DeleteModelAction;
-import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.actions.OpenMappingAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
-import org.openlca.app.navigation.actions.db.DbDeleteAction;
-import org.openlca.app.navigation.actions.libraries.DeleteLibraryAction;
-import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -112,26 +104,7 @@ public class Navigator extends CommonNavigator {
 		});
 
 		// bind delete key
-		viewer.getTree().addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.character == SWT.DEL && event.stateMask == 0) {
-					var selection = viewer.getSelection();
-					if (selection.isEmpty())
-						return;
-					List<INavigationElement<?>> elems = Selections.allOf(selection);
-					Stream.of(
-							new DbDeleteAction(),
-							new DeleteLibraryAction(),
-							new DeleteModelAction(),
-							new DeleteMappingAction(),
-							new DeleteScriptAction())
-							.filter((INavigationAction a) -> a.accept(elems))
-							.findFirst()
-							.ifPresent(INavigationAction::run);
-				}
-			}
-		});
+		viewer.getTree().addKeyListener(new KeyBinding(viewer));
 	}
 
 	/**
