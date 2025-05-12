@@ -112,7 +112,7 @@ class CalculationWizardPage extends WizardPage {
 		}
 
 		combo.select(0);
-		setup.setParameters(paramSets.get(0));
+		setup.setParameters(paramSets.getFirst());
 		Controls.onSelect(combo, e -> {
 			int i = combo.getSelectionIndex();
 			setup.setParameters(paramSets.get(i));
@@ -253,9 +253,6 @@ class CalculationWizardPage extends WizardPage {
 		costCheck.setSelection(setup.calcSetup.hasCosts());
 		Controls.onSelect(costCheck,
 				_e -> setup.calcSetup.withCosts(costCheck.getSelection()));
-		if (setup.hasLibraries) {
-			costCheck.setEnabled(false);
-		}
 	}
 
 	private void updateOptions() {

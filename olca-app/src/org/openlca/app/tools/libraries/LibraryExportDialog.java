@@ -114,6 +114,12 @@ public class LibraryExportDialog extends FormDialog {
 					return button;
 				};
 
+		// costs
+		if (props.hasInventory) {
+			check.apply("With costs", b -> config.withCosts = b)
+					.setSelection(config.withCosts);
+		}
+
 		// inversion check
 		if (props.hasInventory) {
 			check.apply(M.PrecalculateMatrices, b -> config.withInversion = b)
@@ -158,6 +164,7 @@ public class LibraryExportDialog extends FormDialog {
 		super.okPressed();
 		var export = new LibraryExport(props.db, exportDir)
 				.withConfig(info)
+				.withCosts(config.withCosts)
 				.withAllocation(config.allocation)
 				.withInversion(config.withInversion)
 				.withUncertainties(config.withUncertainties);
@@ -170,6 +177,7 @@ public class LibraryExportDialog extends FormDialog {
 	private static class Config {
 		String name;
 		AllocationMethod allocation;
+		boolean withCosts;
 		boolean regionalized;
 		boolean withUncertainties;
 		boolean withInversion;
