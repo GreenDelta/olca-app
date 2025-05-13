@@ -12,6 +12,8 @@ import org.openlca.app.collaboration.util.Announcements;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DbTemplate;
+import org.openlca.app.editors.Editors;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Input;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.upgrades.Upgrades;
@@ -26,6 +28,17 @@ public class Clone {
 	private static final Logger log = LoggerFactory.getLogger(Clone.class);
 
 	public static void of(String url, String user, String password) {
+
+		// first, close a possibly open database
+		if (!Editors.closeAll())
+			return;
+		try {
+			Database.close();
+		} catch (Exception e) {
+			ErrorReporter.on("failed to close database", e);
+			return;
+		}
+
 		var repoName = url.substring(url.lastIndexOf("/") + 1);
 		var config = initDatabase(repoName);
 		if (config == null)

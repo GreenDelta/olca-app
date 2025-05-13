@@ -33,7 +33,7 @@ class CloneAction extends Action implements IServerNavigationAction {
 	public boolean accept(List<IServerNavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
+		var first = selection.getFirst();
 		if (!(first instanceof RepositoryElement repoElem))
 			return false;
 		this.elem = repoElem;

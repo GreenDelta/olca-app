@@ -32,7 +32,7 @@ public class CloneFromGitAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.isEmpty())
 			return true;
-		var first = selection.get(0);
+		var first = selection.getFirst();
 		return first instanceof DatabaseElement
 				|| first instanceof DatabaseDirElement
 				|| first instanceof NavigationRoot;
