@@ -18,6 +18,7 @@ import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.comments.CommentsPage;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.preferences.FeatureFlag;
@@ -160,7 +161,9 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 	}
 
 	public boolean isEditable() {
-		return model != null && model.dataPackage != null;
+		if (model == null)
+			return false;
+		return !Libraries.isFrom(model);
 	}
 
 	public void updateModel() {
