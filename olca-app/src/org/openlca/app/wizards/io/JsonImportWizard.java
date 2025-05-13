@@ -121,6 +121,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 		Page(File zip) {
 			super("JsonImportPage");
 			setTitle(M.ImportOpenLcaDataPackage);
+			setDescription("Select an openLCA data package (*.zip) for the import.");
 			this.zip = zip;
 			setPageComplete(zip != null);
 		}
