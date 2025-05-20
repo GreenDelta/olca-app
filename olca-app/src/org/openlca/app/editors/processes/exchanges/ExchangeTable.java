@@ -31,12 +31,12 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.core.database.FlowDao;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.ProviderType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
@@ -252,22 +252,22 @@ class ExchangeTable {
 		Process process = editor.getModel();
 		boolean added = false;
 		for (var d : descriptors) {
-			long flowId = Exchanges.refFlowID(d);
+			long flowId = Exchanges.refFlowIdOf(d);
 			if (flowId < 1)
 				continue;
-			FlowDao dao = new FlowDao(Database.get());
-			Flow flow = dao.getForId(flowId);
+			var flow = Database.get().get(Flow.class, flowId);
 			if (!canAdd(flow))
 				continue;
 			var e = forInputs
 					? process.input(flow, 1)
 					: process.output(flow, 1);
-			if (d.type == ModelType.PROCESS
-					&& Exchanges.canHaveProvider(e)) {
+			if (Exchanges.canHaveProvider(e, d)) {
 				e.defaultProviderId = d.id;
+				e.defaultProviderType = ProviderType.of(d.type);
 			}
 			added = true;
 		}
+
 		if (!added)
 			return;
 		viewer.setInput(process.exchanges);

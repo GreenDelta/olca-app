@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.NativeSql;
@@ -27,52 +28,53 @@ import org.slf4j.LoggerFactory;
  */
 public class Exchanges {
 
-	/**
-	 * Get the ID of the reference flow of the given descriptor.
-	 */
-	static long refFlowID(Descriptor d) {
+	/// Get the ID of the reference flow of the given descriptor. If the
+	/// descriptor is itself a flow, it returns the ID of that flow.
+	static long refFlowIdOf(Descriptor d) {
 		if (d == null)
 			return -1L;
-
 		if (d.type == ModelType.FLOW)
 			return d.id;
 
-		String sql = null;
-		if (d.type == ModelType.PROCESS) {
-			sql = "select e.f_flow from tbl_processes p "
-					+ "inner join tbl_exchanges e on "
-					+ "p.f_quantitative_reference = e.id "
-					+ "where p.id = " + d.id;
-		} else if (d.type == ModelType.PRODUCT_SYSTEM) {
-			sql = "select e.f_flow from tbl_product_systems s "
-					+ "inner join tbl_exchanges e on "
-					+ "s.f_reference_exchange = e.id "
-					+ "where s.id = " + d.id;
-		}
+		var sql = switch (d.type) {
+			case ModelType.PROCESS -> "select e.f_flow from"
+					+ " tbl_processes p inner join tbl_exchanges e on"
+					+ " p.f_quantitative_reference = e.id"
+					+ " where p.id = " + d.id;
+			case ModelType.PRODUCT_SYSTEM -> "select e.f_flow from"
+					+ " tbl_product_systems s inner join tbl_exchanges e on "
+					+ " s.f_reference_exchange = e.id"
+					+ " where s.id = " + d.id;
+			case ModelType.RESULT -> "select e.f_flow from"
+					+ " tbl_results r inner join tbl_flow_results e on "
+					+ " r.f_reference_flow = e.id"
+					+ " where r.id = " + d.id;
+			case null, default -> null;
+		};
 		if (sql == null)
 			return -1L;
 
 		try {
-			AtomicLong id = new AtomicLong(-1L);
+			var id = new AtomicLong(-1L);
 			NativeSql.on(Database.get()).query(sql, r -> {
 				id.set(r.getLong(1));
 				return false;
 			});
 			return id.get();
 		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(Exchanges.class);
-			log.error("Failed to query ref. flow: {}", sql, e);
+			ErrorReporter.on("Failed to query ref. flow: " + sql, e);
 			return -1L;
 		}
 	}
 
-	static boolean canHaveProvider(Exchange e) {
-		if (e == null || e.flow == null)
+	static boolean canHaveProvider(Exchange e, Descriptor d) {
+		if (e == null || e.flow == null || d == null)
 			return false;
-		if (e.isInput)
-			return e.flow.flowType == FlowType.PRODUCT_FLOW;
-		else
-			return e.flow.flowType == FlowType.WASTE_FLOW;
+		if (d.type != ModelType.PROCESS && d.type != ModelType.RESULT)
+			return false;
+		return e.isInput
+			? e.flow.flowType == FlowType.PRODUCT_FLOW
+			: e.flow.flowType == FlowType.WASTE_FLOW;
 	}
 
 	/**
