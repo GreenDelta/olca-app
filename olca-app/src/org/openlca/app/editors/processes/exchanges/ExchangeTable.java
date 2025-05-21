@@ -128,7 +128,7 @@ class ExchangeTable {
 		ms.bind(UNCERTAINTY, new UncertaintyCellEditor(
 				viewer.getTable(), editor));
 		ms.bind(DESCRIPTION, new CommentEditor(viewer, editor));
-		ms.bind(PROVIDER, new ProviderCombo2(viewer, editor));
+		ms.bind(PROVIDER, new ProviderCombo(viewer, editor));
 
 		ms.bind(AVOIDED, new AvoidedCheck(editor));
 		ms.bind(LOCATION, new LocationCell(
