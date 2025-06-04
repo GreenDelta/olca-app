@@ -11,6 +11,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
 import org.openlca.app.collaboration.viewers.diff.RefJson;
 import org.openlca.app.collaboration.viewers.json.JsonCompareViewer;
@@ -45,14 +46,17 @@ public class HistoryView extends ViewPart {
 	}
 
 	public static void refresh() {
-		if (instance == null || instance.repo == null)
+		if (instance == null)
 			return;
 		var db = Database.get();
-		if (db == null || !db.getName().equals(instance.repo.database.getName())) {
+		if (db == null) {
 			update(null);
-		} else {
-			update(instance.repo);
+			return;
 		}
+		if (instance.repo == null || !db.getName().equals(instance.repo.database.getName())) {
+			instance.repo = Repository.get();
+		}		
+		update(instance.repo);
 	}
 
 	public static void update(ClientRepository repo) {
