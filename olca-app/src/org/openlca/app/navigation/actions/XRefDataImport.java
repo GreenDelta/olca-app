@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.DatabaseElement;
@@ -37,11 +37,10 @@ class XRefDataImport extends Action implements INavigationAction {
 	public void run() {
 		File dir = FileChooser.selectFolder();
 		if (dir == null)
-			return;
-		Cache.evictAll();
+			return;		
 		RefDataImport refImport = new RefDataImport(dir, Database.get());
 		App.run(M.ImportReferenceData, refImport, () -> {
-			Cache.evictAll();
+			AppContext.evictAll();
 			Navigator.refresh();
 		});
 	}

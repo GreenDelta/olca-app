@@ -10,7 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.openlca.app.db.Cache;
+import org.openlca.app.AppContext;
 import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
@@ -24,7 +24,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
 class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
@@ -49,11 +49,10 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			case 3 -> Images.get(ModelType.UNIT_GROUP);
 			case 6 -> getAvoidedCheck(e);
 			case 7 -> {
-				if (e.defaultProviderId == 0)
-					yield null;
-				var d = Cache.getEntityCache().get(
-						ProcessDescriptor.class, e.defaultProviderId);
-				yield d != null ? Images.get(d) : null;
+				var p = getDefaultProvider(e);
+				yield p != null
+						? Images.get(p)
+						: null;
 			}
 			case 11 -> Images.get(editor.getComments(), CommentPaths.get(e));
 			default -> null;
@@ -89,7 +88,10 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			case 3 -> Labels.name(e.unit);
 			case 4 -> getCostValue(e);
 			case 5 -> Uncertainty.string(e.uncertainty);
-			case 7 -> getDefaultProvider(e);
+			case 7 -> {
+				var p = getDefaultProvider(e);
+				yield p != null ? Labels.name(p) : "";
+			}
 			case 8 -> {
 				// data quality entry
 				if (Strings.nullOrEmpty(e.dqEntry))
@@ -117,13 +119,12 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 				: path;
 	}
 
-	private String getDefaultProvider(Exchange e) {
+	private RootDescriptor getDefaultProvider(Exchange e) {
 		if (e.defaultProviderId == 0)
 			return null;
-		var cache = Cache.getEntityCache();
-		var p = cache.get(ProcessDescriptor.class, e.defaultProviderId);
-		return p != null
-				? Labels.name(p)
+		var map = AppContext.getProviderMap();
+		return map != null
+				? map.getProvider(e.defaultProviderId)
 				: null;
 	}
 

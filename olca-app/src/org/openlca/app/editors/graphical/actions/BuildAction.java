@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.components.graphics.model.Component.*;
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,6 +18,7 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.ProcessDao;
+import org.openlca.core.matrix.linking.LinkingConfig.PreferredType;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
@@ -32,7 +33,7 @@ public abstract class BuildAction extends WorkbenchPartAction {
 	protected final GraphEditor editor;
 	protected Graph graph;
 	protected Map<Exchange, Process> mapExchangeToProcess;
-	protected ProcessType preferredType;
+	protected PreferredType preferredType;
 	protected ProviderLinking providers;
 	protected final FlowDao flowDao = new FlowDao(Database.get());
 	protected final ProcessDao processDao = new ProcessDao(Database.get());
@@ -47,7 +48,7 @@ public abstract class BuildAction extends WorkbenchPartAction {
 		this.mapExchangeToProcess = mapExchangesToProcess;
 	}
 
-	public void setPreferredType(ProcessType preferredType) {
+	public void setPreferredType(PreferredType preferredType) {
 		this.preferredType = preferredType;
 	}
 
@@ -69,13 +70,24 @@ public abstract class BuildAction extends WorkbenchPartAction {
 
 		ProcessDescriptor bestMatch = null;
 		for (var d : getProviders(e)) {
-			if (d.processType == preferredType)
+			if (hasPreferredType(d))
 				return d;
 			if (bestMatch != null)
 				continue;
 			bestMatch = d;
 		}
 		return bestMatch;
+	}
+
+	private boolean hasPreferredType(ProcessDescriptor d) {
+		if (d == null)
+			return false;
+		return switch (d.processType) {
+			case ProcessType.UNIT_PROCESS ->
+					preferredType == PreferredType.UNIT_PROCESS;
+			case ProcessType.LCI_RESULT ->
+					preferredType == PreferredType.SYSTEM_PROCESS;
+		};
 	}
 
 	protected List<ProcessDescriptor> getProviders(Exchange e) {

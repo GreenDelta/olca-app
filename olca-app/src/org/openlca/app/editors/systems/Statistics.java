@@ -13,7 +13,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
-import org.openlca.core.matrix.cache.ProcessTable;
+import org.openlca.core.matrix.cache.ProviderMap;
 import org.openlca.core.matrix.index.LongPair;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
@@ -169,13 +169,13 @@ class Statistics {
 			log.error("Failed to collect default providers", e);
 		}
 
-		var ptable = ProcessTable.create(db);
+		var ptable = ProviderMap.create(db);
 		for (ProcessLink link : system.processLinks) {
 			long defaultP = defaults.get(link.exchangeId);
 			if (defaultP == link.providerId) {
 				defaultProviderLinkCount++;
 			}
-			var products = ptable.getProviders(link.flowId);
+			var products = ptable.getProvidersOf(link.flowId);
 			if (products == null || products.isEmpty())
 				continue;
 			if (products.size() == 1) {

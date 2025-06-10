@@ -1,10 +1,7 @@
 package org.openlca.app.wizards;
 
-import java.util.UUID;
-
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowPropertyTypeViewer;
@@ -74,21 +71,22 @@ public class FlowPropertyWizard extends AbstractWizard<FlowProperty> {
 
 		@Override
 		public FlowProperty createModel() {
-			FlowProperty flowProperty = new FlowProperty();
-			flowProperty.refId = UUID.randomUUID().toString();
-			flowProperty.name = getModelName();
-			flowProperty.description = getModelDescription();
-			try {
-				flowProperty.unitGroup = Cache.getEntityCache()
-					.get(UnitGroup.class, unitGroupCombo.getSelected().id);
-			} catch (Exception e) {
+
+			// load the selected unit group
+			var u = unitGroupCombo.getSelected();
+			var db = Database.get();
+			var unitGroup = u != null && db != null
+					? db.get(UnitGroup.class, u.id)
+					: null;
+			if (unitGroup == null) {
 				Logger log = LoggerFactory.getLogger(getClass());
-				log.error("failed to load unit group", e);
+				log.error("failed to load unit group {}", u);
 			}
-			flowProperty.flowPropertyType = typeCombo.getSelected();
-			return flowProperty;
+
+			var prop = FlowProperty.of(getModelName(), unitGroup);
+			prop.description = getModelDescription();
+			prop.flowPropertyType = typeCombo.getSelected();
+			return prop;
 		}
-
 	}
-
 }

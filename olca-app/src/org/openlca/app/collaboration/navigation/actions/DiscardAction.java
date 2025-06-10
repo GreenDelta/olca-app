@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.collaboration.util.PathFilters;
-import org.openlca.app.db.Cache;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -66,7 +66,7 @@ class DiscardAction extends Action implements INavigationAction {
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error discarding changes", e);
 		} finally {
-			Cache.evictAll();
+			AppContext.evictAll();
 			Actions.refresh();
 		}
 	}

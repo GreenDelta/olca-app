@@ -12,13 +12,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.EntityCache;
-import org.openlca.core.matrix.CalcExchange;
+import org.openlca.core.matrix.cache.ExchangeTable.Linkable;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -30,14 +30,14 @@ import org.slf4j.LoggerFactory;
 class ProviderDialog extends Dialog {
 
 	private final Options options;
-	private final CalcExchange exchange;
+	private final Linkable exchange;
 	private final List<TechFlow> providers;
 
 	private Button saveCheck;
 	private Button autoContinueCheck;
 	private Button cancelCheck;
 
-	public static Options select(CalcExchange e, List<TechFlow> providers) {
+	public static Options select(Linkable e, List<TechFlow> providers) {
 		Options opts = new Options();
 		if (providers == null || providers.isEmpty())
 			return opts;
@@ -57,7 +57,7 @@ class ProviderDialog extends Dialog {
 	}
 
 	public ProviderDialog(Options options,
-			CalcExchange e, List<TechFlow> providers) {
+			Linkable e, List<TechFlow> providers) {
 		super(UI.shell());
 		this.options = options;
 		this.exchange = e;
@@ -71,13 +71,13 @@ class ProviderDialog extends Dialog {
 
 		UI.label(c, M.Process);
 		String processLabel = getLabel(
-				ProcessDescriptor.class, exchange.processId);
+				ProcessDescriptor.class, exchange.processId());
 		UI.label(c, Strings.cut(processLabel, 120))
 				.setToolTipText(processLabel);
 
 		UI.label(c, M.Flow);
 		String flowLabel = getLabel(
-				FlowDescriptor.class, exchange.flowId);
+				FlowDescriptor.class, exchange.flowId());
 		UI.label(c, Strings.cut(flowLabel, 120))
 				.setToolTipText(flowLabel);
 
@@ -139,7 +139,7 @@ class ProviderDialog extends Dialog {
 	}
 
 	private <T extends Descriptor> String getLabel(Class<T> clazz, long id) {
-		EntityCache cache = Cache.getEntityCache();
+		EntityCache cache = AppContext.getEntityCache();
 		if (cache == null)
 			return "?";
 		T d = cache.get(clazz, id);

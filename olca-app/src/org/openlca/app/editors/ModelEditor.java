@@ -12,11 +12,11 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.util.Comments;
 import org.openlca.app.collaboration.util.WebRequests;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.comments.CommentsPage;
@@ -29,7 +29,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
-import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.util.Strings;
@@ -177,11 +176,8 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 	protected void doAfterUpdate() {
 		setDirty(false);
 		var descriptor = getEditorInput().getDescriptor();
-		EntityCache cache = Cache.getEntityCache();
-		cache.refresh(descriptor.getClass(), descriptor.id);
-		cache.invalidate(modelClass, model.id);
 		this.setPartName(Labels.name(model));
-		Cache.evict(descriptor);
+		AppContext.evict(descriptor);
 		emitEvent(ON_SAVED);
 		Navigator.refresh(Navigator.findElement(descriptor));
 	}

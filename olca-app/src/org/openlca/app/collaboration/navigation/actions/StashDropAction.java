@@ -6,9 +6,9 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
-import org.openlca.app.db.Cache;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
@@ -44,7 +44,7 @@ class StashDropAction extends Action implements INavigationAction {
 		} catch (IOException e) {
 			Actions.handleException("Error dropping stash", e);
 		} finally {
-			Cache.evictAll();
+			AppContext.evictAll();
 			Actions.refresh();
 		}
 	}

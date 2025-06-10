@@ -17,8 +17,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
@@ -218,7 +218,7 @@ class ResultPage extends FormPage {
 			var link = (ImageHyperlink) e.widget;
 			var data = link.getData();
 			if (data instanceof CategoryDescriptor d) {
-				var c = Cache.getEntityCache().get(Category.class, d.id);
+				var c = AppContext.getEntityCache().get(Category.class, d.id);
 				Navigator.select(c);
 			} else if (data instanceof RootDescriptor d) {
 				App.open(d);

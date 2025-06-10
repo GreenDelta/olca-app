@@ -4,14 +4,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.App;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +52,6 @@ abstract class AbstractWizard<T extends RootEntity> extends
 			model.category = category;
 			model.lastChange = System.currentTimeMillis();
 			createDao().insert(model);
-			var descriptor = Descriptor.of(model);
-			Cache.registerNew(descriptor);
 			App.open(model);
 			return true;
 		} catch (Exception e) {

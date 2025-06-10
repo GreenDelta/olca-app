@@ -9,8 +9,8 @@ import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.navigation.Navigator;
@@ -179,7 +179,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			var db = Database.get();
 			var instance = db.get(d.type.getModelClass(), d.id);
 			db.delete(instance);
-			Cache.evict(d);
+			AppContext.evict(d);
 			DatabaseDir.deleteDir(d);
 		} catch (Exception e) {
 			ErrorReporter.on("failed to delete " + d, e);
@@ -222,7 +222,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 				dao.update(parent);
 			}
 			dao.delete(category);
-			Cache.evict(Descriptor.of(category));
+			AppContext.evict(Descriptor.of(category));
 			return true;
 		} catch (Exception e) {
 			ErrorReporter.on("failed to delete category " + category, e);

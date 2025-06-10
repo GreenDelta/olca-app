@@ -14,9 +14,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
@@ -71,7 +71,7 @@ class ExcelExportWizard extends Wizard {
 		var file = page.file;
 		if (file == null)
 			return false;
-		var cache = Cache.getEntityCache();
+		var cache = AppContext.getEntityCache();
 		var export = new ResultExport(
 				editor.setup(), editor.result(), file, cache)
 				.withDqResult(editor.dqResult())

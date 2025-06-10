@@ -11,10 +11,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.navigator.ICommonContentExtensionSite;
 import org.eclipse.ui.navigator.ICommonLabelProvider;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.navigation.RepositoryLabel;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.navigation.elements.CategoryElement;
@@ -95,7 +95,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			var name = Labels.name(descriptor);
 			if (descriptor.category == null)
 				return name;
-			var category = Cache.getEntityCache().get(
+			var category = AppContext.getEntityCache().get(
 					Category.class, descriptor.category);
 			var text = category != null
 					? String.join(" / ", Categories.path(category)) + " / " + name

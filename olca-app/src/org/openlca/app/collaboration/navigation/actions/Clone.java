@@ -3,13 +3,15 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.io.File;
 
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.util.Announcements;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.db.DbTemplate;
+import org.openlca.app.editors.Editors;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Input;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.upgrades.Upgrades;
@@ -18,6 +20,17 @@ import org.openlca.util.Strings;
 public class Clone {
 
 	public static void of(String url, String user, String password) {
+
+		// first, close a possibly open database
+		if (!Editors.closeAll())
+			return;
+		try {
+			Database.close();
+		} catch (Exception e) {
+			ErrorReporter.on("failed to close database", e);
+			return;
+		}
+
 		var repoName = url.substring(url.lastIndexOf("/") + 1);
 		var config = initDatabase(repoName);
 		if (config == null)
@@ -30,7 +43,7 @@ public class Clone {
 		} catch (Exception e) {
 			Actions.handleException("Error importing repository", url, e);
 		} finally {
-			Cache.evictAll();
+			AppContext.evictAll();
 			Actions.refresh();
 		}
 	}

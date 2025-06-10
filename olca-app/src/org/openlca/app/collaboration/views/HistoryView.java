@@ -3,6 +3,7 @@ package org.openlca.app.collaboration.views;
 import java.util.ArrayList;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Image;
@@ -154,7 +155,7 @@ public class HistoryView extends ViewPart {
 			var descriptor = repo.descriptors.get(diff);
 			if (descriptor != null)
 				return text + descriptor.name;
-			var ref = diff.oldRef == null
+			var ref = diff.oldRef == null || ObjectId.zeroId().equals(diff.oldRef.objectId)
 					? diff.newRef
 					: diff.oldRef;
 			return text + repo.datasets.getName(ref);

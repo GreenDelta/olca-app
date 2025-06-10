@@ -1,16 +1,36 @@
 package org.openlca.app.util;
 
+import java.math.RoundingMode;
+import java.util.Objects;
+
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.NAHandling;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
+import org.openlca.core.matrix.linking.LinkingConfig.PreferredType;
 import org.openlca.core.matrix.linking.ProviderLinking;
+import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.Category;
+import org.openlca.core.model.Currency;
+import org.openlca.core.model.EpdType;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.FlowProperty;
+import org.openlca.core.model.FlowPropertyType;
+import org.openlca.core.model.FlowType;
+import org.openlca.core.model.Location;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.*;
+import org.openlca.core.model.ProcessType;
+import org.openlca.core.model.RefEntity;
+import org.openlca.core.model.RiskLevel;
+import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.UncertaintyType;
+import org.openlca.core.model.Unit;
+import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
@@ -22,9 +42,6 @@ import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.RoundingMode;
-import java.util.Objects;
-
 public class Labels {
 
 	private Labels() {
@@ -33,29 +50,33 @@ public class Labels {
 	public static String name(RefEntity entity) {
 		if (entity == null || entity.name == null)
 			return "";
-		if (entity instanceof Flow flow)
-			return LocationCode.append(flow.name, flow.location);
-		if (entity instanceof Process process)
-			return LocationCode.append(process.name, process.location);
-		if (entity instanceof Location location)
-			return LocationCode.append(location.name, location.code);
-		return entity.name;
+		return switch (entity) {
+			case Flow flow ->
+					LocationCode.append(flow.name, flow.location);
+			case Process process ->
+					LocationCode.append(process.name, process.location);
+			case Location location ->
+					LocationCode.append(location.name, location.code);
+			default -> entity.name;
+		};
 	}
 
 	public static String name(Descriptor d) {
 		if (d == null || d.name == null)
 			return "";
-		var cache = Cache.getEntityCache();
+		var cache = AppContext.getEntityCache();
 		String text = d.name;
 		if (cache == null)
 			return text;
-		if (d instanceof ProcessDescriptor process)
-			return LocationCode.append(process.name, process.location);
-		if (d instanceof FlowDescriptor flow)
-			return LocationCode.append(flow.name, flow.location);
-		if (d instanceof LocationDescriptor location)
-			return LocationCode.append(location.name, location.code);
-		return text;
+		return switch (d) {
+			case ProcessDescriptor process ->
+					LocationCode.append(process.name, process.location);
+			case FlowDescriptor flow ->
+					LocationCode.append(flow.name, flow.location);
+			case LocationDescriptor location ->
+					LocationCode.append(location.name, location.code);
+			default -> text;
+		};
 	}
 
 	public static String name(TechFlow product) {
@@ -97,7 +118,7 @@ public class Labels {
 	public static String refUnit(FlowDescriptor flow) {
 		if (flow == null)
 			return "";
-		FlowProperty refProp = Cache.getEntityCache().get(
+		FlowProperty refProp = AppContext.getEntityCache().get(
 				FlowProperty.class,
 				flow.refFlowPropertyId);
 		if (refProp == null)
@@ -129,7 +150,8 @@ public class Labels {
 	public static String category(RootDescriptor d) {
 		if (d == null || d.category == null)
 			return "";
-		Category c = Cache.getEntityCache().get(Category.class, d.category);
+		Category c = AppContext.getEntityCache().get(
+				Category.class, d.category);
 		if (c == null)
 			return "";
 		return CategoryPath.getFull(c);
@@ -203,6 +225,16 @@ public class Labels {
 		return switch (t) {
 			case LCI_RESULT -> M.SystemProcess;
 			case UNIT_PROCESS -> M.UnitProcess;
+		};
+	}
+
+	public static String of(PreferredType t) {
+		if (t == null)
+			return null;
+		return switch (t) {
+			case UNIT_PROCESS -> M.UnitProcess;
+			case SYSTEM_PROCESS -> M.SystemProcess;
+			case RESULT -> M.Result;
 		};
 	}
 
@@ -305,7 +337,6 @@ public class Labels {
 			case DQ_SYSTEM -> M.DataQualitySystem;
 			case RESULT -> M.Result;
 			case EPD -> "EPD";
-			default -> M.Unknown;
 		};
 	}
 
@@ -372,7 +403,7 @@ public class Labels {
 		static String append(String name, Long locationId) {
 			if (locationId == null)
 				return name;
-			var cache = Cache.getEntityCache();
+			var cache = AppContext.getEntityCache();
 			if (cache == null)
 				return name;
 			var location = cache.get(LocationDescriptor.class, locationId);

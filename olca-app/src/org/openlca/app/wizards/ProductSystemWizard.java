@@ -7,16 +7,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.Labels;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.linking.LinkingConfig;
+import org.openlca.core.matrix.linking.LinkingConfig.PreferredType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +72,6 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 			Runner runner = new Runner(system, config);
 			getContainer().run(true, true, runner);
 			system = runner.system;
-			Cache.registerNew(Descriptor.of(system));
 			App.open(system);
 			return true;
 		} catch (Exception e) {
@@ -102,7 +99,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 		if (!page.addSupplyChain() || config == null)
 			return M.None;
 		String suffix = "; " + M.PreferredProcessType + ": ";
-		if (config.preferredType() == ProcessType.UNIT_PROCESS) {
+		if (config.preferredType() == PreferredType.UNIT_PROCESS) {
 			suffix += M.UnitProcess;
 		} else {
 			suffix += M.SystemProcess;
@@ -136,7 +133,7 @@ public class ProductSystemWizard extends AbstractWizard<ProductSystem> {
 				monitor.beginTask(M.CreatingProductSystem,
 						IProgressMonitor.UNKNOWN);
 				ProductSystemBuilder builder = new ProductSystemBuilder(
-						Cache.getMatrixCache(), config);
+						Database.get(), config);
 				builder.autoComplete(system);
 				system = ProductSystemBuilder.update(Database.get(), system);
 				monitor.done();

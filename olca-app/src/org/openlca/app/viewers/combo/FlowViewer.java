@@ -6,8 +6,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Category;
@@ -24,7 +24,7 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
 	public FlowViewer(Composite parent) {
 		super(parent);
-		this.cache = Cache.getEntityCache();
+		this.cache = AppContext.getEntityCache();
 		setInput(new FlowDescriptor[0]);
 	}
 

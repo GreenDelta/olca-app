@@ -6,7 +6,7 @@ import java.util.Set;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.matrix.cache.FlowTable;
-import org.openlca.core.matrix.cache.ProcessTable;
+import org.openlca.core.matrix.cache.ProviderMap;
 import org.openlca.core.model.FlowType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +38,12 @@ public class LinkingProperties {
 
 		final IDatabase db;
 		final FlowTable flowTypes;
-		final ProcessTable processes;
+		final ProviderMap processes;
 
 		Check(IDatabase db) {
 			this.db = db;
 			flowTypes = FlowTable.create(db);
-			processes = ProcessTable.create(db);
+			processes = ProviderMap.create(db);
 		}
 
 		void doIt(LinkingProperties props) {
@@ -63,7 +63,7 @@ public class LinkingProperties {
 						return true;
 					long providerID = r.getLong(4);
 					if (providerID == 0
-							|| processes.getType(providerID) == null) {
+							|| processes.getProvider(providerID) == null) {
 						props.processesWithoutProviders.add(r.getLong(1));
 					}
 					return true;
@@ -74,9 +74,9 @@ public class LinkingProperties {
 		}
 
 		void checkMultiProviders(LinkingProperties props) {
-			for (var products : processes.getProviders()) {
+			for (var products : processes.getTechFlows()) {
 				long flowID = products.flowId();
-				var providers = processes.getProviders(flowID);
+				var providers = processes.getProvidersOf(flowID);
 				if (providers != null && providers.size() > 1) {
 					props.multiProviderFlows.add(flowID);
 				}

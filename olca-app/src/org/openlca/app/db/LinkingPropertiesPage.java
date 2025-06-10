@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
@@ -55,7 +56,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 	public static void show(LinkingProperties props) {
 		if (props == null)
 			return;
-		String key = Cache.getAppCache().put(props);
+		String key = AppContext.put(props);
 		var input = new SimpleEditorInput(key, M.LinkingProperties);
 		Editors.open(input, "editors.LinkingPropertiesPage");
 	}
@@ -65,9 +66,8 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 			throws PartInitException {
 		super.init(site, input);
 		setTitleImage(Icon.DATABASE.get());
-		SimpleEditorInput in = (SimpleEditorInput) input;
-		props = Cache.getAppCache().remove(
-				in.id, LinkingProperties.class);
+		var in = (SimpleEditorInput) input;
+		props = AppContext.remove(in.id, LinkingProperties.class);
 	}
 
 	@Override

@@ -22,8 +22,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
@@ -59,7 +59,7 @@ public class ParameterRedefDialog extends FormDialog {
 	 */
 	public static List<ParameterRedef> select(Set<Long> validContexts) {
 		TreeModel model = loadModel(Database.get(),
-				Cache.getEntityCache(), validContexts);
+				AppContext.getEntityCache(), validContexts);
 		ParameterRedefDialog d = new ParameterRedefDialog(UI.shell(), model);
 		return d.open() != OK
 				? Collections.emptyList()

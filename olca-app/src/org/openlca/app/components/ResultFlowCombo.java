@@ -7,8 +7,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -95,7 +95,7 @@ public class ResultFlowCombo extends AbstractComboViewer<EnviFlow> {
 			if (enviFlow.flow() == null)
 				return null;
 
-			EntityCache cache = Cache.getEntityCache();
+			EntityCache cache = AppContext.getEntityCache();
 			switch (col) {
 
 			case 0:

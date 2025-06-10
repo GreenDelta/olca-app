@@ -19,9 +19,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.components.ContributionImage;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.systems.Statistics.LinkDegree;
 import org.openlca.app.rcp.images.Images;
@@ -152,7 +152,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 
 	private void calculate() {
 		App.runWithProgress(M.UpdatingStatisticsDots,
-			() -> stats = Statistics.calculate(getModel(), Cache.getEntityCache()),
+			() -> stats = Statistics.calculate(getModel(), AppContext.getEntityCache()),
 			() -> {
 				if (stats != null) {
 					for (Runnable update : updates) {

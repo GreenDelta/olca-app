@@ -110,6 +110,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 		Page(File initial) {
 			super("SimaProCsvImportWizard.Page");
 			setTitle(M.SimaProCSVImport);
+			setDescription("Select one or more SimaPro CSV files for the import.");
 			this.files = initial != null
 					? List.of(initial)
 					: List.of();

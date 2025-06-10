@@ -5,8 +5,8 @@ import java.util.function.Function;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
@@ -166,7 +166,7 @@ class TableLabel extends LabelProvider
 			return null;
 		if (ref.flow.category == null)
 			return null;
-		Category category = Cache.getEntityCache().get(
+		Category category = AppContext.getEntityCache().get(
 			Category.class, ref.flow.category);
 		if (category == null)
 			return null;

@@ -28,29 +28,25 @@ import org.openlca.app.viewers.tables.modify.ICellModifier.CellEditingType;
  */
 public class ModifySupport<T> {
 
-	private Map<String, ICellModifier<T>> cellModifiers;
 	private final ColumnViewer viewer;
+	private final Map<String, ICellModifier<T>> cellModifiers;
 
 	public ModifySupport(ColumnViewer viewer) {
 		this.viewer = viewer;
-		initCellEditors();
-	}
-
-	private void initCellEditors() {
-		var props = viewer.getColumnProperties();
-		if (props == null)
-			return;
-		viewer.setCellModifier(new CellModifier());
-		var editors = new CellEditor[props.length];
 		this.cellModifiers = new HashMap<>();
-		viewer.setCellEditors(editors);
+		var props = viewer.getColumnProperties();
+		if (props != null) {
+			viewer.setCellModifier(new CellModifier());
+			var editors = new CellEditor[props.length];
+			viewer.setCellEditors(editors);
+		}
 	}
 
-	/**
-	 * Binds directly a cell editor to the given property. It is assumed that the
-	 * editor directly operates on the values in the respective table and that the
-	 * values are set in the respective editor.
-	 */
+	/// Directly binds a cell editor to a given property. The editor should
+	/// then handle the value editing then completely. The activation of the
+	/// editor can be controlled by setting a validator to the editor that
+	/// returns non-null (the validation error) if the respective value is
+	/// invalid, the editor is not activated then.
 	public ModifySupport<T> bind(String property, CellEditor editor) {
 		int idx = findIndex(property);
 		if (idx == -1)
@@ -138,12 +134,12 @@ public class ModifySupport<T> {
 		var editors = ensureEditors(index);
 		editors[index] = switch (modifier.getCellEditingType()) {
 			case TEXTBOX -> modifier.getStyle() != SWT.NONE
-				? new TextCellEditor(getComponent(), modifier.getStyle())
-				: new TextCellEditor(getComponent());
+					? new TextCellEditor(getComponent(), modifier.getStyle())
+					: new TextCellEditor(getComponent());
 			case COMBOBOX -> new ComboEditor(getComponent(), new String[0]);
 			case CHECKBOX -> modifier.getStyle() != SWT.NONE
-				? new CheckboxCellEditor(getComponent(), modifier.getStyle())
-				: new CheckboxCellEditor(getComponent());
+					? new CheckboxCellEditor(getComponent(), modifier.getStyle())
+					: new CheckboxCellEditor(getComponent());
 		};
 	}
 
@@ -182,19 +178,28 @@ public class ModifySupport<T> {
 	}
 
 	private class CellModifier implements
-		org.eclipse.jface.viewers.ICellModifier {
+			org.eclipse.jface.viewers.ICellModifier {
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public boolean canModify(Object element, String property) {
 			if (element == null || property == null)
 				return false;
-			if (cellModifiers.containsKey(property)) {
-				ICellModifier<T> modifier = cellModifiers.get(property);
-				return modifier != null && modifier.canModify((T) element);
-			}
-			CellEditor editor = getCellEditor(property);
-			return editor != null;
+
+			// check if there is a registered modifier
+			var modifier = cellModifiers.get(property);
+			if (modifier != null)
+				return modifier.canModify((T) element);
+
+			// check if there is a cell editor with a validator
+			// registered
+			var editor = getCellEditor(property);
+			if (editor == null)
+				return false;
+			var validator = editor.getValidator();
+			if (validator == null)
+				return true;
+			return validator.isValid(element) == null;
 		}
 
 		@Override
@@ -215,7 +220,7 @@ public class ModifySupport<T> {
 		}
 
 		private Object getComboIndex(
-			ICellModifier<T> modifier, T elem, Object value) {
+				ICellModifier<T> modifier, T elem, Object value) {
 			refresh(elem);
 			Object[] values = modifier.getValues(elem);
 			if (values == null)
@@ -230,15 +235,15 @@ public class ModifySupport<T> {
 		@Override
 		public void modify(Object element, String property, Object value) {
 			var widget = element instanceof Item
-				? ((Item) element).getData()
-				: element;
+					? ((Item) element).getData()
+					: element;
 			var modifier = cellModifiers.get(property);
 			if (modifier != null) {
 				T elem = setModifierValue(widget, value, modifier);
 				refresh(elem);
 			}
 			// update the viewer
-			if (viewer == null || viewer.getControl().isDisposed())
+			if (viewer.getControl().isDisposed())
 				return;
 			if (modifier != null && modifier.affectsOtherElements()) {
 				viewer.refresh(true);
@@ -249,7 +254,7 @@ public class ModifySupport<T> {
 
 		@SuppressWarnings("unchecked")
 		private T setModifierValue(Object element, Object value,
-															 ICellModifier<T> modifier) {
+				ICellModifier<T> modifier) {
 			T elem = (T) element;
 			switch (modifier.getCellEditingType()) {
 				case TEXTBOX -> modifier.modify(elem, value.toString());
@@ -262,7 +267,7 @@ public class ModifySupport<T> {
 		}
 
 		private void setComboValue(ICellModifier<T> modifier, T elem,
-															 Object value) {
+				Object value) {
 			if (value instanceof Integer) {
 				int index = (int) value;
 				if (index == -1)

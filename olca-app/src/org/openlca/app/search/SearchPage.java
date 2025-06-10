@@ -11,8 +11,8 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
@@ -29,7 +29,7 @@ public class SearchPage extends SimpleFormEditor {
 	private List<Descriptor> results;
 
 	public static void show(String term, List<Descriptor> results) {
-		String resultKey = Cache.getAppCache().put(results);
+		String resultKey = AppContext.put(results);
 		Input input = new Input(term, resultKey);
 		Editors.open(input, "SearchPage");
 	}
@@ -43,7 +43,7 @@ public class SearchPage extends SimpleFormEditor {
 			var list = UsageSearch.of(d.type, Database.get()).find(d.id);
 			ref.set(new ArrayList<>(list));
 		}, () -> {
-			String resultKey = Cache.getAppCache().put(ref.get());
+			String resultKey = AppContext.put(ref.get());
 			Input input = new Input(d, resultKey);
 			Editors.open(input, "SearchPage");
 		});
@@ -60,8 +60,7 @@ public class SearchPage extends SimpleFormEditor {
 			results = Collections.emptyList();
 		} else {
 			this.input = (Input) input;
-			results = Cache.getAppCache().remove(
-					this.input.resultKey, List.class);
+			results = AppContext.remove(this.input.resultKey, List.class);
 			if (results == null) {
 				results = Collections.emptyList();
 			}

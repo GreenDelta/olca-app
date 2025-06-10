@@ -5,8 +5,8 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.EntityCache;
@@ -68,7 +68,7 @@ public class ProcessCombo extends AbstractComboViewer<ProcessDescriptor> {
 			case 1:
 				if (p.location == null)
 					return null;
-				EntityCache cache = Cache.getEntityCache();
+				EntityCache cache = AppContext.getEntityCache();
 				if (cache == null)
 					return "?";
 				LocationDescriptor loc = cache.get(

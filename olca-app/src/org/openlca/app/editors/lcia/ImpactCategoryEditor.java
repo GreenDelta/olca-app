@@ -12,8 +12,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.InfoSection;
@@ -190,7 +190,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 					return Labels.name(m);
 				if (col != 1 || m.category == null)
 					return null;
-				var category = Cache.getEntityCache()
+				var category = AppContext.getEntityCache()
 					.get(Category.class, m.category);
 				return category == null
 					? null

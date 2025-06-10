@@ -4,15 +4,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.ProductSystemBuilder;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.LinkingConfig;
+import org.openlca.core.matrix.linking.LinkingConfig.PreferredType;
 import org.openlca.core.matrix.linking.ProviderLinking;
-import org.openlca.core.model.ProcessType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.ProductSystems;
@@ -33,12 +32,12 @@ public class BuildSupplyChainAction extends BuildAction {
 		setId(GraphActionIds.BUILD_SUPPLY_CHAIN);
 		setText(M.Complete);
 		config = new LinkingConfig()
-			.preferredType(ProcessType.UNIT_PROCESS)
+			.preferredType(PreferredType.UNIT_PROCESS)
 			.providerLinking(ProviderLinking.PREFER_DEFAULTS);
 	}
 
 	@Override
-	public void setPreferredType(ProcessType preferredType) {
+	public void setPreferredType(PreferredType preferredType) {
 		config.preferredType(preferredType);
 	}
 
@@ -81,7 +80,7 @@ public class BuildSupplyChainAction extends BuildAction {
 		@Override
 		public void run(IProgressMonitor monitor) {
 			monitor.beginTask(M.BuildSupplyChain, IProgressMonitor.UNKNOWN);
-			var builder = new ProductSystemBuilder(Cache.getMatrixCache(), config);
+			var builder = new ProductSystemBuilder(Database.get(), config);
 			var alreadyLinked = ProductSystems.linkedExchangesOf(
 					graph.getProductSystem());
 			for (var exchange : mapExchangeToProcess.keySet()) {

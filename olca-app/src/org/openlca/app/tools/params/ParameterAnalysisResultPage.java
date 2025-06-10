@@ -27,9 +27,9 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -58,7 +58,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 	static void open(ParamResult result) {
 		if (result == null)
 			return;
-		var key = Cache.getAppCache().put(result);
+		var key = AppContext.put(result);
 		var input = new SimpleEditorInput(key, "Parameter analysis results");
 		Editors.open(input, "ParameterAnalysisResultPage");
 	}
@@ -70,7 +70,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 		super.init(site, input);
 		setTitleImage(Icon.ANALYSIS_RESULT.get());
 		var inp = (SimpleEditorInput) input;
-		result = Cache.getAppCache().remove(inp.id, ParamResult.class);
+		result = AppContext.remove(inp.id, ParamResult.class);
 	}
 
 	@Override

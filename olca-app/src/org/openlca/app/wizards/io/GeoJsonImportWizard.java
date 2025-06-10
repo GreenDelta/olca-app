@@ -29,7 +29,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 
 	public GeoJsonImportWizard() {
 		setWindowTitle(M.ImportGeoJson);
-		setDefaultPageImageDescriptor(Icon.IMPORT.descriptor());
+		setDefaultPageImageDescriptor(Icon.IMPORT_WIZARD.descriptor());
 		setNeedsProgressMonitor(true);
 	}
 

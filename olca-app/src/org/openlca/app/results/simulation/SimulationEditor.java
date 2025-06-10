@@ -7,8 +7,8 @@ import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -35,8 +35,8 @@ public class SimulationEditor extends SimpleFormEditor {
 		try {
 			var sim = Simulator.create(setup, Database.get())
 					.withSolver(App.getSolver());
-			var setupKey = Cache.getAppCache().put(setup);
-			var simKey = Cache.getAppCache().put(sim);
+			var setupKey = AppContext.put(setup);
+			var simKey = AppContext.put(sim);
 			var input = new SimulationInput(setupKey, simKey);
 			Editors.open(input, ID);
 		} catch (Exception e) {
@@ -51,9 +51,9 @@ public class SimulationEditor extends SimpleFormEditor {
 		super.init(site, editorInput);
 		setTitleImage(Icon.SIMULATE.get());
 		var input = (SimulationInput) editorInput;
-		setup = Cache.getAppCache().remove(input.setupKey, CalculationSetup.class);
+		setup = AppContext.remove(input.setupKey, CalculationSetup.class);
 		setPartName(Strings.cut(Labels.name(setup.target()), 75));
-		simulator = Cache.getAppCache().remove(input.solverKey, Simulator.class);
+		simulator = AppContext.remove(input.solverKey, Simulator.class);
 	}
 
 	@Override

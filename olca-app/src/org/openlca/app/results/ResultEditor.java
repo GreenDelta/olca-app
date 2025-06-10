@@ -11,8 +11,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.preferences.FeatureFlag;
@@ -50,7 +50,7 @@ public class ResultEditor extends FormEditor {
 		if (bundle == null)
 			return;
 		var name = nameOf(bundle.setup());
-		var id = Cache.getAppCache().put(bundle);
+		var id = AppContext.put(bundle);
 		var input = new SimpleEditorInput(id, name);
 		Editors.open(input, ResultEditor.ID);
 	}
@@ -83,7 +83,7 @@ public class ResultEditor extends FormEditor {
 		super.init(site, input);
 		setTitleImage(Icon.ANALYSIS_RESULT.get());
 		var inp = (SimpleEditorInput) input;
-		bundle = Cache.getAppCache().remove(inp.id, ResultBundle.class);
+		bundle = AppContext.remove(inp.id, ResultBundle.class);
 		setPartName(inp.getName());
 	}
 

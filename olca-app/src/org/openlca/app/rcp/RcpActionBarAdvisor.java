@@ -20,13 +20,13 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.openlca.app.App;
+import org.openlca.app.AppContext;
 import org.openlca.app.Config;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.browse.ServerNavigator;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.components.replace.ReplaceFlowsDialog;
 import org.openlca.app.components.replace.ReplaceProvidersDialog;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.IpcDialog;
 import org.openlca.app.devtools.python.PythonEditor;
@@ -240,7 +240,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			log.error("EcoSpold 2 import failed", e);
 		} finally {
 			Navigator.refresh();
-			Cache.evictAll();
+			AppContext.evictAll();
 		}
 	}
 

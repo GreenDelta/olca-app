@@ -12,7 +12,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
-import org.openlca.app.db.Cache;
+import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
@@ -64,7 +64,7 @@ public class SmartEpdTool extends SimpleFormEditor {
 		// open the editor
 		if (client == null)
 			return;
-		var id = Cache.getAppCache().put(client);
+		var id = AppContext.put(client);
 		var input = new SimpleEditorInput(id, "SmartEPD");
 		Editors.open(input, "SmartEpdTool");
 	}
@@ -72,7 +72,7 @@ public class SmartEpdTool extends SimpleFormEditor {
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		var inp = (SimpleEditorInput) input;
-		client = Cache.getAppCache().remove(inp.id, SmartEpdClient.class);
+		client = AppContext.remove(inp.id, SmartEpdClient.class);
 		if (client == null)
 			throw new PartInitException("failed to get the SmartEPD client");
 		setTitleImage(Icon.SMART_EPD.get());

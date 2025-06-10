@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.wizards.ProviderDialog.Options;
-import org.openlca.core.matrix.CalcExchange;
+import org.openlca.core.matrix.cache.ExchangeTable.Linkable;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.LinkingCallback;
 
@@ -22,12 +22,12 @@ public class ProviderCallback implements LinkingCallback {
 	}
 
 	@Override
-	public List<TechFlow> select(CalcExchange e, List<TechFlow> candidates) {
+	public List<TechFlow> select(Linkable e, List<TechFlow> candidates) {
 		if (e == null || candidates == null)
 			return null;
 		if (autoSelect)
 			return candidates;
-		var saved = savedSelections.get(e.flowId);
+		var saved = savedSelections.get(e.flowId());
 		if (saved != null)
 			return Collections.singletonList(saved);
 		Options opts = ProviderDialog.select(e, candidates);
@@ -36,7 +36,7 @@ public class ProviderCallback implements LinkingCallback {
 		autoSelect = opts.autoContinue;
 		cancel = opts.cancel;
 		if (opts.saveSelected) {
-			savedSelections.put(e.flowId, opts.selected);
+			savedSelections.put(e.flowId(), opts.selected);
 		}
 		return Collections.singletonList(opts.selected);
 	}

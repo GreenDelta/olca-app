@@ -5,8 +5,8 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Cache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.parameters.RenameParameterDialog;
 import org.openlca.app.navigation.Navigator;
@@ -97,7 +97,7 @@ class RenameAction extends Action implements INavigationAction {
 		try {
 			category.name = newName.trim();
 			category = new CategoryDao(Database.get()).update(category);
-			Cache.evict(Descriptor.of(category));
+			AppContext.evict(Descriptor.of(category));
 			Navigator.refresh(element);
 		} catch (final Exception e) {
 			ErrorReporter.on("Failed to update category", e);
@@ -112,7 +112,7 @@ class RenameAction extends Action implements INavigationAction {
 		entity.name = newName.trim();
 		entity.wasUpdated();
 		dao.update(entity);
-		Cache.evict(d);
+		AppContext.evict(d);
 		Navigator.refresh(element.getParent());
 	}
 }

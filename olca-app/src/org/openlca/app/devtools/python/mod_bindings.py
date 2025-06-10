@@ -155,6 +155,7 @@ import org.openlca.jsonld.output.EpdWriter as EpdWriter
 import org.openlca.io.xls.Excel as Excel
 import org.openlca.util.Exceptions as Exceptions
 import org.openlca.core.model.Exchange as Exchange
+import org.openlca.core.matrix.cache.ExchangeCache as ExchangeCache
 import org.openlca.core.database.ExchangeDao as ExchangeDao
 import org.openlca.core.io.ExchangeProviderQueue as ExchangeProviderQueue
 import org.openlca.core.matrix.cache.ExchangeTable as ExchangeTable
@@ -248,6 +249,7 @@ import org.openlca.io.ecospold1.input.ImportConfig as ImportConfig
 import org.openlca.core.io.ImportLog as ImportLog
 import org.openlca.proto.io.input.ImportStatus as ImportStatus
 import org.openlca.proto.io.input.In as In
+import org.openlca.core.results.providers.InMemLibrarySolver as InMemLibrarySolver
 import org.openlca.proto.io.InMemoryProtoStore as InMemoryProtoStore
 import org.openlca.core.model.store.InMemoryStore as InMemoryStore
 import org.openlca.core.matrix.IndexedMatrix as IndexedMatrix
@@ -299,7 +301,7 @@ import org.openlca.core.library.Libraries as Libraries
 import org.openlca.core.library.Library as Library
 import org.openlca.core.library.LibraryDatabase as LibraryDatabase
 import org.openlca.core.library.LibraryDir as LibraryDir
-import org.openlca.core.library.LibraryExport as LibraryExport
+import org.openlca.core.library.export.LibraryExport as LibraryExport
 import org.openlca.core.library.LibraryInfo as LibraryInfo
 import org.openlca.core.results.providers.libblocks.LibraryInversionSolver as LibraryInversionSolver
 import org.openlca.core.library.LibraryPackage as LibraryPackage
@@ -328,7 +330,6 @@ import org.openlca.core.matrix.io.MarketFormatWriter as MarketFormatWriter
 import org.openlca.io.ecospold2.input.MarketProcessCleanUp as MarketProcessCleanUp
 import org.openlca.core.matrix.io.MatBinMatrixReader as MatBinMatrixReader
 import org.openlca.core.matrix.format.MatrixBuilder as MatrixBuilder
-import org.openlca.core.matrix.cache.MatrixCache as MatrixCache
 import org.openlca.core.matrix.MatrixConfig as MatrixConfig
 import org.openlca.core.matrix.format.MatrixConverter as MatrixConverter
 import org.openlca.core.matrix.MatrixData as MatrixData
@@ -407,7 +408,6 @@ import org.openlca.io.ilcd.input.ProcessImport as ProcessImport
 import org.openlca.core.model.ProcessLink as ProcessLink
 import org.openlca.core.matrix.ProcessLinkSearchMap as ProcessLinkSearchMap
 import org.openlca.jsonld.input.ProcessReader as ProcessReader
-import org.openlca.core.matrix.cache.ProcessTable as ProcessTable
 import org.openlca.core.model.ProcessType as ProcessType
 import org.openlca.core.database.usage.ProcessUseSearch as ProcessUseSearch
 import org.openlca.jsonld.output.ProcessWriter as ProcessWriter
@@ -435,8 +435,8 @@ import org.openlca.proto.io.input.ProtoImport as ProtoImport
 import org.openlca.util.ProviderChainRemoval as ProviderChainRemoval
 import org.openlca.core.matrix.linking.ProviderIndex as ProviderIndex
 import org.openlca.core.matrix.linking.ProviderLinking as ProviderLinking
+import org.openlca.core.matrix.cache.ProviderMap as ProviderMap
 import org.openlca.util.ProviderReplacer as ProviderReplacer
-import org.openlca.core.matrix.linking.ProviderSearch as ProviderSearch
 import org.openlca.jsonld.input.Quantity as Quantity
 import org.openlca.core.database.Query as Query
 import org.openlca.io.refdata.RefDataExport as RefDataExport
@@ -582,6 +582,7 @@ import org.openlca.core.database.usage.UnitUsageSearch as UnitUsageSearch
 import org.openlca.jsonld.output.UnitWriter as UnitWriter
 import org.openlca.core.library.Unmounter as Unmounter
 import org.openlca.jsonld.input.UpdateMode as UpdateMode
+import org.openlca.core.database.upgrades.Upgrade15 as Upgrade15
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree
