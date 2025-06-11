@@ -1,5 +1,6 @@
 package org.openlca.app.collaboration.browse.elements;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.collaboration.model.LibraryInfo;
@@ -17,7 +18,7 @@ public class LibraryElement extends ServerNavigationElement<LibraryInfo> {
 
 	@Override
 	protected List<IServerNavigationElement<?>> queryChildren() {
-		return null;
+		return new ArrayList<>();
 	}
 
 }

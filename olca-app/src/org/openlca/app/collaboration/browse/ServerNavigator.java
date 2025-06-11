@@ -216,7 +216,7 @@ public class ServerNavigator extends CommonNavigator {
 			if (next.getClass().equals(clazz)) {
 				if (fits.test((T) next.getContent()))
 					return next;
-			} else {
+			} else if (next.getChildren() != null) {
 				queue.addAll(next.getChildren());
 			}
 		}
