@@ -496,7 +496,7 @@
 			</property>
 			<property
          name="aboutText"
-         value="openLCA 2.5&#x0D;&#x0A;&#x0D;&#x0A;Copyright (c) 2007 - 2025 GreenDelta. All rights reserved.&#x0D;&#x0A;Visit http://openlca.org and http://greendelta.com&#x0D;&#x0A;&#x0D;&#x0A;This product includes software developed in the openLCA&#x0D;&#x0A;project and other open source software.">
+         value="openLCA 2.5&#x0A;&#x0A;Copyright (c) 2007 - 2025 GreenDelta. All rights reserved.&#x0A;Visit http://openlca.org and http://greendelta.com&#x0A;&#x0A;This product includes software developed in the openLCA&#x0A;project and other open source software.">
 			</property>
 			<property
 					name="aboutImage"
@@ -517,8 +517,12 @@
 					value="0,495,676,5">
 			</property>
    <property
-         name="preferenceCustomization"
-         value="plugin_customization.ini">
+         name="startupForegroundColor"
+         value="000000">
+   </property>
+   <property
+         name="startupMessageRect"
+         value="7,570,445,20">
    </property>
 		</product>
 	</extension>
