@@ -478,6 +478,7 @@ import org.openlca.ipc.RpcResponse as RpcResponse
 import org.openlca.ipc.handlers.RuntimeHandler as RuntimeHandler
 import org.openlca.core.database.internal.SQLScriptWriter as SQLScriptWriter
 import org.openlca.core.results.Sankey as Sankey
+import org.openlca.core.library.export.Scaler as Scaler
 import org.openlca.jsonld.SchemaVersion as SchemaVersion
 import org.openlca.core.database.internal.ScriptRunner as ScriptRunner
 import org.openlca.core.matrix.solvers.SeqAgg as SeqAgg
