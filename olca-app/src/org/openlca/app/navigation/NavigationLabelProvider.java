@@ -37,7 +37,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.LibraryDir;
 import org.openlca.core.model.Category;

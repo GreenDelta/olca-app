@@ -16,7 +16,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.wizards.io.LibraryDialog;
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryDir;
 import org.openlca.git.actions.DependencyResolver;
@@ -78,7 +78,9 @@ class WorkspaceDepencencyResolver implements DependencyResolver {
 	public IResolvedDependency<?> resolve(DataPackage dataPackage) {
 		if (dataPackage.isLibrary())
 			return IResolvedDependency.library(dataPackage, resolveLibrary(dataPackage));
-		return IResolvedDependency.repository(dataPackage, resolveRepository(dataPackage));
+		if (dataPackage.isRepository())
+			return IResolvedDependency.repository(dataPackage, resolveRepository(dataPackage));
+		return null;
 	}
 
 	private Library resolveLibrary(DataPackage newPackage) {

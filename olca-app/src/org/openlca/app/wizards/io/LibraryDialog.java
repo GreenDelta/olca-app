@@ -13,7 +13,7 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 import org.openlca.util.Strings;
 
 public class LibraryDialog extends FormDialog {

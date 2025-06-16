@@ -16,7 +16,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.LibraryInfo;
 import org.openlca.collaboration.model.WebRequestException;
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 import org.openlca.core.library.LibraryPackage;
 import org.openlca.util.Strings;
 

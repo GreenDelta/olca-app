@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.openlca.app.rcp.Workspace;
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 import org.openlca.core.library.LibraryDir;
 
 public class DataPackagesElement extends NavigationElement<LibraryDir> {

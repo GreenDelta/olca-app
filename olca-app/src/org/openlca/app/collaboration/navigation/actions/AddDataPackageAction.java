@@ -13,7 +13,7 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 
 public class AddDataPackageAction extends Action implements INavigationAction {
 
@@ -39,7 +39,7 @@ public class AddDataPackageAction extends Action implements INavigationAction {
 			MsgBox.warning("Data package already exists");
 			return;
 		}
-		var dataPackage = new DataPackage(packageName, null, url, false);
+		var dataPackage = DataPackage.repository(packageName, null, url);
 		try {
 			var repo = Repository.initialize(Database.get(), dataPackage, url);
 			if (repo == null)
@@ -48,7 +48,7 @@ public class AddDataPackageAction extends Action implements INavigationAction {
 			PullAction.silent().on(repo).run();
 			var latestCommitId = repo.commits.find().latestId();
 			repo.close();
-			Database.get().addDataPackage(packageName, latestCommitId, url);
+			Database.get().addRepository(packageName, latestCommitId, url);
 		} catch (Exception e) {
 			Actions.handleException("Error connecting to repository", url, e);
 		} finally {

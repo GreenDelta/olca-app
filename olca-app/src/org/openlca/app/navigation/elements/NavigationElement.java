@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.openlca.app.db.Database;
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
 /**

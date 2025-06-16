@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.PlatformObject;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 import org.openlca.util.Dirs;
 
 /**

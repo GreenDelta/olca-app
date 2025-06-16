@@ -3,7 +3,7 @@ package org.openlca.app.navigation.elements;
 import java.util.List;
 import java.util.Optional;
 
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 
 /**
  * Interface for elements in the navigation tree.

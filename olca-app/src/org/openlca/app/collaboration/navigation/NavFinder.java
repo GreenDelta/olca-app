@@ -5,14 +5,14 @@ import java.util.function.Predicate;
 
 import org.openlca.app.collaboration.navigation.NavElement.ElementType;
 import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
+import org.openlca.app.navigation.elements.DataPackagesElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.navigation.elements.DataPackagesElement;
-import org.openlca.app.navigation.elements.DataPackageElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
-import org.openlca.core.database.IDatabase.DataPackage;
+import org.openlca.core.database.DataPackage;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
