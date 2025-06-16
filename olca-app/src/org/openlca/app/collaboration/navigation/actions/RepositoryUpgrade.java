@@ -143,8 +143,8 @@ public class RepositoryUpgrade {
 			var commits = Actions.run(Repository.get(), credentials, GitFetch.to(repo));
 			if (commits == null || commits.isEmpty())
 				return true;
-			var libraryResolver = WorkspaceLibraryResolver.forRemote(repo);
-			if (libraryResolver == null)
+			var dependencyResolver = WorkspaceDepencencyResolver.forRemote(repo);
+			if (dependencyResolver == null)
 				return false;
 			var descriptors = new ModelRefMap<RootDescriptor>();
 			for (var type : ModelType.values()) {
@@ -159,7 +159,7 @@ public class RepositoryUpgrade {
 			boolean wasStashed = stashDifferences(repo, commit, credentials.ident, descriptors);
 			Actions.run(GitMerge.on(repo)
 					.as(credentials.ident)
-					.resolveLibrariesWith(libraryResolver)
+					.resolveDependenciesWith(dependencyResolver)
 					.resolveConflictsWith(new EqualResolver(descriptors)));
 			if (!wasStashed)
 				return true;

@@ -16,7 +16,7 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitMerge;
-import org.openlca.git.actions.GitMerge.MergeResult;
+import org.openlca.git.actions.GitMerge.MergeResultType;
 import org.openlca.git.util.Constants;
 
 class MergeAction extends Action implements INavigationAction {
@@ -41,8 +41,8 @@ class MergeAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		try {
-			var libraryResolver = WorkspaceLibraryResolver.forRemote(repo);
-			if (libraryResolver == null)
+			var dependencyResolver = WorkspaceDepencencyResolver.forRemote(repo);
+			if (dependencyResolver == null)
 				return;
 			var conflictResult = ConflictResolver.resolve(repo, Constants.REMOTE_REF);
 			if (conflictResult == null)
@@ -57,15 +57,15 @@ class MergeAction extends Action implements INavigationAction {
 					.into(repo.dataPackage)
 					.as(user)
 					.resolveConflictsWith(conflictResult.resolutions())
-					.resolveLibrariesWith(libraryResolver));
-			if (mergeResult == MergeResult.ABORTED)
+					.resolveDependenciesWith(dependencyResolver));
+			if (mergeResult.type() == MergeResultType.ABORTED)
 				return;
 			if (conflictResult.solution() == ConflictSolution.STASHED) {
 				Actions.askApplyStash();
 			}
-			if (mergeResult == MergeResult.MOUNT_ERROR) {
+			if (mergeResult.type() == MergeResultType.MOUNT_ERROR) {
 				MsgBox.error(M.CouldNotMountLibrary);
-			} else if (mergeResult == MergeResult.NO_CHANGES) {
+			} else if (mergeResult.type() == MergeResultType.NO_CHANGES) {
 				MsgBox.info(M.NoChangesToMerge);
 			}
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {

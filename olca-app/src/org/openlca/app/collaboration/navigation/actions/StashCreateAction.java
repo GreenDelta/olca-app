@@ -54,7 +54,7 @@ class StashCreateAction extends Action implements INavigationAction {
 				return;
 			Actions.run(GitStashCreate.on(repo)
 					.as(user)
-					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(repo, repo.commits.head()))
+					.resolveDependenciesWith(WorkspaceDepencencyResolver.forCommit(repo, repo.commits.head()))
 					.changes(input.datasets()));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error stashing changes", e);

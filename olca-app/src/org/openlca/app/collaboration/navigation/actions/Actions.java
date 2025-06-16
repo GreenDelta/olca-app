@@ -153,15 +153,15 @@ class Actions {
 		var repo = Repository.get();
 		if (repo == null)
 			return false;
-		var libraryResolver = WorkspaceLibraryResolver.forStash(repo);
-		if (libraryResolver == null)
+		var dependencyResolver = WorkspaceDepencencyResolver.forStash(repo);
+		if (dependencyResolver == null)
 			return false;
 		var conflictResult = ConflictResolver.resolve(repo, Constants.STASH_REF);
 		if (conflictResult == null)
 			return false;
 		Actions.run(GitStashApply.on(repo)
 				.resolveConflictsWith(conflictResult.resolutions())
-				.resolveLibrariesWith(libraryResolver));
+				.resolveDependenciesWith(dependencyResolver));
 		return true;
 	}
 

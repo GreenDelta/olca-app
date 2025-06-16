@@ -62,7 +62,7 @@ class DiscardAction extends Action implements INavigationAction {
 			Actions.run(GitReset.on(repo)
 					.to(head)
 					.changes(selected)
-					.resolveLibrariesWith(WorkspaceLibraryResolver.forCommit(repo, head)));
+					.resolveDependenciesWith(WorkspaceDepencencyResolver.forCommit(repo, head)));
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {
 			Actions.handleException("Error discarding changes", e);
 		} finally {

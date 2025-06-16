@@ -84,7 +84,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-io-2.4.2-DATAPACKAGES.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.jgit-7.1.0.202411261347-r.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.jgit-7.3.0.202506031305-r.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-9.7.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-4.0.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-4.0.4.jar"/>
