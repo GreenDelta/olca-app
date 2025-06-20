@@ -1,6 +1,6 @@
 package org.openlca.app.tools.smartepd;
 
-import java.io.File;
+import java.util.List;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -16,9 +16,9 @@ import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.ApiKeyAuth;
 import org.openlca.app.tools.smartepd.TreeModel.EpdNode;
 import org.openlca.app.tools.smartepd.TreeModel.Node;
 import org.openlca.app.tools.smartepd.TreeModel.ProjectNode;
@@ -27,7 +27,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.smartepd.SmartEpdClient;
-import org.slf4j.LoggerFactory;
+import org.openlca.util.Res;
 
 public class SmartEpdTool extends SimpleFormEditor {
 
@@ -35,36 +35,18 @@ public class SmartEpdTool extends SimpleFormEditor {
 
 	public static void open() {
 
-		SmartEpdClient client = null;
-
-		// check if there is a cached auth
-		var authFile = new File(Workspace.root(), ".smartepd.json");
-		var auth = Auth.readFrom(authFile).orElse(null);
-		if (auth != null) {
-			var res = App.exec("Connecting to API...", auth::createClient);
-			if(!res.hasError()) {
-				client = res.value();
-			} else {
-				LoggerFactory.getLogger(SmartEpdTool.class)
-						.info("failed to connect to the SmartEPD API " +
-								"with cached connection: {}", res.error());
-			}
-		}
-
-		// open the auth dialog if there is no cached auth
-		if (client == null) {
-			var con = AuthDialog.show().orElse(null);
-			if (con == null)
-				return;
-			auth = con.auth();
-			auth.write(authFile);
-			client = con.client();
-		}
-
-		// open the editor
-		if (client == null)
+		var client = ApiKeyAuth.fromCacheOrDialog(
+				".smartepd.json", "https://smart-epd.herokuapp.com/api", key -> {
+					var c = SmartEpdClient.of(key.endpoint(), key.value());
+					var err = c.getProjects();
+					return err.hasError()
+							? err.wrapError("Failed to connect to API; projects query failed")
+							: Res.of(c);
+				});
+		if (client.isEmpty())
 			return;
-		var id = AppContext.put(client);
+
+		var id = AppContext.put(client.get());
 		var input = new SimpleEditorInput(id, "SmartEPD");
 		Editors.open(input, "SmartEpdTool");
 	}
@@ -122,8 +104,8 @@ public class SmartEpdTool extends SimpleFormEditor {
 
 			@Override
 			public Object[] getElements(Object root) {
-				return root instanceof TreeModel model
-						? model.projectNodes().toArray()
+				return root instanceof TreeModel(List<ProjectNode> projectNodes)
+						? projectNodes.toArray()
 						: new Object[0];
 			}
 
