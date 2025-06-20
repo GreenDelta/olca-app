@@ -11,6 +11,7 @@ import org.openlca.app.M;
 import org.openlca.app.util.UI;
 import org.openlca.core.io.ImportLog;
 import org.openlca.io.Import;
+import org.openlca.util.Strings;
 
 public class ImportLogDialog extends FormDialog {
 
@@ -25,6 +26,15 @@ public class ImportLogDialog extends FormDialog {
 				: M.ImportFinished;
 		App.runInUI(title,
 				() -> new ImportLogDialog(imp.log(), title).open());
+	}
+
+	public static void show(String title, ImportLog log) {
+		if (log == null)
+			return;
+		var t = Strings.nullOrEmpty(title)
+				? M.ImportFinished
+				: title;
+		App.runInUI(title, () -> new ImportLogDialog(log, t).open());
 	}
 
 	private ImportLogDialog(ImportLog log, String title) {
@@ -71,7 +81,7 @@ public class ImportLogDialog extends FormDialog {
 		long count = log.messages().stream()
 				.filter(ImportLog.Message::hasDescriptor)
 				.count();
-		tk.	createLabel(body, M.HandledDataSets + " (" + count + ")")
+		tk.createLabel(body, M.HandledDataSets + " (" + count + ")")
 				.setFont(UI.boldFont());
 
 		var comp = tk.createComposite(body);
