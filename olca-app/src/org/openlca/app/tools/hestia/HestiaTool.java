@@ -71,7 +71,7 @@ public class HestiaTool extends SimpleFormEditor {
 		client = AppContext.remove(inp.id, HestiaClient.class);
 		if (client == null)
 			throw new PartInitException("failed to get the Hestia client");
-		setTitleImage(Icon.CONNECT.get());
+		setTitleImage(Icon.HESTIA.get());
 		super.init(site, input);
 	}
 

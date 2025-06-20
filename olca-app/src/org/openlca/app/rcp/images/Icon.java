@@ -86,6 +86,7 @@ public enum Icon {
 	GIT_GRAPH_BRANCH_REMOTE_END	("collaboration/graph/branch-remote-end.png"),
 
 	HELP("help.png"),
+	HESTIA("hestia.png"),
 	HISTORY_VIEW("collaboration/history_view.png"),
 	HOME("home.png"),
 
