@@ -187,7 +187,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				Icon.BUILDING.descriptor(), EpdPanel::open));
 		apiMenu.add(Actions.create("SmartEPD (experimental)",
 				Icon.SMART_EPD.descriptor(), SmartEpdTool::open));
-		apiMenu.add(Actions.create("Hestia",
+		apiMenu.add(Actions.create("Hestia (experimental)",
 				Icon.HESTIA.descriptor(), HestiaTool::open));
 
 		// console
@@ -206,8 +206,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 		menuBar.add(menu);
 	}
-
-
 
 	private void runSpold2Import(ModelType type) {
 		var db = Database.get();

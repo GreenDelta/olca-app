@@ -132,7 +132,7 @@ public class HestiaTool extends SimpleFormEditor {
 
 			table = Tables.createViewer(comp, "Cycle", "ID");
 			UI.gridData(table.getControl(), true, true);
-			Tables.bindColumnWidths(table, 0.8, 0.2);
+			Tables.bindColumnWidths(table, 0.6, 0.4);
 			table.setLabelProvider(new SearchResultLabel());
 
 			var importAction = Actions.create(

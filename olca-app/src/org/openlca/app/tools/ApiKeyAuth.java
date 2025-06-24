@@ -13,6 +13,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.jsonld.Json;
@@ -94,6 +95,11 @@ public class ApiKeyAuth<T> extends FormDialog {
 		urlText.addModifyListener(e -> checkOk());
 		apiKeyText = UI.labeledText(comp, tk, "API key");
 		apiKeyText.addModifyListener(e -> checkOk());
+
+		UI.filler(comp);
+		var saveCheck = UI.checkbox(comp, tk, "Save API key");
+		saveCheck.setSelection(cacheIt);
+		Controls.onSelect(saveCheck, $ -> cacheIt = saveCheck.getSelection());
 	}
 
 	private void checkOk() {
