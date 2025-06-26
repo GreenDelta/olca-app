@@ -63,7 +63,7 @@ public class Main {
 
 	private static void importDQS(IDatabase db) throws Exception {
 		var store = new MemStore();
-		String[] dqs = {"ecoinvent_dqs.json", "ilcd_dqs.json"};
+		String[] dqs = {"ecoinvent_dqs.json", "ilcd_dqs.json", "ciroth_muller_weidema_lesange_dqs.json", "pcr_dqs.json", "psilca_dqs.json", "un_global_dqs.json", "us_epa_flow_dqs.json", "us_epa_process_dqs.json"};
 		for (String dq : dqs) {
 			System.out.println("  ... import DQS " + dq);
 			File f = F("data/dqs/" + dq);
