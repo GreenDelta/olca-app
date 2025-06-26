@@ -1,0 +1,81 @@
+{
+  "@type": "DQSystem",
+  "@id": "70bf370f-9912-4ec1-baa3-fbd4eaf85a10",
+  "name": "US EPA Process Pedigree Matrix",
+  "description": "The creation, management, and use of data quality information for life cycle assessment.\nEdelen, A., Ingwersen, W.W. Int J Life Cycle Assess 23, 759–772 (2018).\nhttp://dx.doi.org/10.1007/s11367-017-1348-1",
+  "hasUncertainties": false,
+  "indicators": [
+    {
+      "name": "Process Review",
+      "position": 1,
+      "scores": [
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Documented reviews by a minimum of two types of reviewers, with one being a third party",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "1",
+          "description": "Documented reviews by a minimum of two types of third party reviewers",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Documented review by an internal reviewer",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "5",
+          "description": "No documented review",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Documented review by a third party reviewer",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Process Completeness",
+      "position": 2,
+      "scores": [
+        {
+          "position": 4,
+          "label": "4",
+          "description": "<40% of determined flows have been given a value",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "3",
+          "description": "40-59% of determined flows have been given a value",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "5",
+          "description": "Process completeness not scored",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "2",
+          "description": "60-79% of determined flows have been evaluated and given a value",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "1",
+          "description": ">80% of determined flows have been evaluated and given a value",
+          "uncertainty": 0
+        }
+      ]
+    }
+  ]
+}

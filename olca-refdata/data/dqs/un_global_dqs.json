@@ -1,0 +1,117 @@
+{
+  "@type": "DQSystem",
+  "@id": "0ce1361c-05ce-4264-b0f4-53247bb0c6e7",
+  "name": "UN Global Data Quality System",
+  "description": "Data quality level and criteria of the UN Environment Global Guidance on LCA database development. Table E.1 in EN 15804:2012 + A2:2019.",
+  "hasUncertainties": false,
+  "indicators": [
+    {
+      "name": "Technical representativeness",
+      "position": 2,
+      "scores": [
+        {
+          "position": 4,
+          "label": "Poor",
+          "description": "Data on related processes or products; organic wheat under study, data for organic rye provided.",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "Good",
+          "description": "Data from processes and products under study (with similar technology). Evidence of deviations in state of technology, e.g. different by-product.",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "Very poor",
+          "description": "Data on related processes on but with a different scale or from different technology; organic wheat under study, data for conventional wheat provided.",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "Very good",
+          "description": "Data from processes and products under study. Same state of technology applied as defined in goal and scope (i.e. identical technology).",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "Fair",
+          "description": "Data from processes and products under study but from different technology. This score is also applied when no technology is specified; e.g. wheat (no further specification).",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Geographical representativeness",
+      "position": 1,
+      "scores": [
+        {
+          "position": 3,
+          "label": "Fair",
+          "description": "Data from area with similar production conditions.",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "Very good",
+          "description": "Data from area under study.",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "Very poor",
+          "description": "Data from unknown or distinctly different area (North America instead of Middle East, OECD- Europe instead of Russia).",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "Poor",
+          "description": "Data from area with slightly similar production conditions.",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "Good",
+          "description": "Average data from larger area in which the area under study is included.",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Time representativeness",
+      "position": 3,
+      "scores": [
+        {
+          "position": 5,
+          "label": "Very poor",
+          "description": "Age of data unknown or more than 15 years of difference between the reference year according to the documentation, and the time period for which data are representative.",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "Good",
+          "description": "Less than 6 years of difference between the reference year according to the documentation, and the time period for which data are representative.",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "Very good",
+          "description": "Less than 3 years difference between the reference year according to the documentation, and the time period for which data are representative.",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "Fair",
+          "description": "Less than 10 years of difference between the reference year according to the documentation, and the time period for which data are representative.",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "Poor",
+          "description": "Less than 15 years of difference between the reference year according to the documentation, and the time period for which data are representative",
+          "uncertainty": 0
+        }
+      ]
+    }
+  ]
+}
