@@ -1686,6 +1686,7 @@ public class M extends NLS {
 	public static String UnsavedChanges;
 	public static String Unspecified;
 	public static String UnsupportedFileFormatInfo;
+  public static String Upcoming;
 	public static String Up;
 	public static String Update;
 	public static String UpdateDataSets;

@@ -60,29 +60,59 @@ public class LibraryLicensePage extends FormPage {
 			CertificateInfo license) {
 		var comp = UI.formSection(body, tk, M.Status, 2);
 
+		createStatusLabel(comp, tk, license);
+		createExpiryDateLabel(comp, tk, license);
+		createStartDateLabel(comp, tk, license);
+	}
+
+	private void createStatusLabel(Composite comp, FormToolkit tk,
+      CertificateInfo license) {
 		UI.label(comp, tk, M.Status);
 		var label = UI.cLabel(comp, tk);
+
+		var date = new Date();
+		if (license.notBefore().after(date)) {
+      label.setText(M.Upcoming);
+      label.setImage(Icon.YELLOW_DOT.get());
+			return;
+		}
+
 		if (license.isValid()) {
 			label.setText(M.Valid);
 			label.setImage(Icon.GREEN_DOT.get());
-		} else {
-			label.setText(M.Expired);
-			label.setImage(Icon.RED_DOT.get());
+			return;
 		}
 
+		label.setText(M.Expired);
+		label.setImage(Icon.RED_DOT.get());
+  }
+
+	private void createExpiryDateLabel(Composite comp, FormToolkit tk,
+			CertificateInfo license) {
 		UI.label(comp, tk, M.ExpiryDate);
+
 		var notAfter = license.notAfter();
-		var expiryDate = DateFormat.getDateInstance().format(notAfter);
+		var date = DateFormat.getDateInstance().format(notAfter);
 		var timeDiff = Math.abs(notAfter.getTime() - new Date().getTime());
 		var daysDiff = TimeUnit.DAYS.convert(timeDiff, TimeUnit.MILLISECONDS);
-		var expiryText = license.isValid()
-				? expiryDate + " (" + daysDiff + " " + M.DaysFromNow + ")"
-				: expiryDate + " (" + daysDiff + " " + M.DaysAgo + ")";
-		UI.label(comp, tk, expiryText);
+		var text = notAfter.after(new Date())
+				? date + " (" + daysDiff + " " + M.DaysFromNow + ")"
+				: date + " (" + daysDiff + " " + M.DaysAgo + ")";
+		UI.label(comp, tk, text);
+	}
 
+	private void createStartDateLabel(Composite comp, FormToolkit tk,
+			CertificateInfo license) {
 		UI.label(comp, tk, M.StartDate);
-		UI.label(comp, tk, DateFormat.getDateInstance().format(license.notBefore()));
 
+		var notBefore = license.notBefore();
+		var date = DateFormat.getDateInstance().format(notBefore);
+		var timeDiff = Math.abs(notBefore.getTime() - new Date().getTime());
+		var daysDiff = TimeUnit.DAYS.convert(timeDiff, TimeUnit.MILLISECONDS);
+		var text = notBefore.after(new Date())
+				? date + " (" + daysDiff + " " + M.DaysFromNow + ")"
+				: date;
+		UI.label(comp, tk, text);
 	}
 
 	private void createPeopleSection(Composite comp, FormToolkit tk,
