@@ -12,10 +12,11 @@ import org.openlca.core.model.ModelType;
 import org.openlca.io.refdata.RefDataImport;
 import org.openlca.jsonld.MemStore;
 import org.openlca.jsonld.input.JsonImport;
+import org.openlca.util.Dirs;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import org.openlca.util.Dirs;
+
 import refdata.RefData.Set;
 
 public class Main {
@@ -63,7 +64,16 @@ public class Main {
 
 	private static void importDQS(IDatabase db) throws Exception {
 		var store = new MemStore();
-		String[] dqs = {"ecoinvent_dqs.json", "ilcd_dqs.json", "ciroth_muller_weidema_lesange_dqs.json", "pcr_dqs.json", "psilca_dqs.json", "un_global_dqs.json", "us_epa_flow_dqs.json", "us_epa_process_dqs.json"};
+		String[] dqs = {
+				"ecoinvent_dqs.json", 
+				"ilcd_dqs.json", 
+				"ciroth_muller_weidema_lesage_dqs.json", 
+				"pcr_dqs.json", 
+				"psilca_dqs.json", 
+				"un_global_dqs.json", 
+				"us_epa_flow_dqs.json", 
+				"us_epa_process_dqs.json"
+		};
 		for (String dq : dqs) {
 			System.out.println("  ... import DQS " + dq);
 			File f = F("data/dqs/" + dq);
