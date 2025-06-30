@@ -1,0 +1,189 @@
+{
+  "@type": "DQSystem",
+  "@id": "d13b2bc4-5e84-4cc8-a6be-9101ebb252ff",
+  "name": "US EPA Flow Pedigree Matrix",
+  "description": "The creation, management, and use of data quality information for life cycle assessment.\nEdelen, A., Ingwersen, W.W. Int J Life Cycle Assess 23, 759–772 (2018).\nhttp://dx.doi.org/10.1007/s11367-017-1348-1",
+  "hasUncertainties": false,
+  "indicators": [
+    {
+      "name": "Technological Correlation",
+      "position": 4,
+      "scores": [
+        {
+          "position": 5,
+          "label": "5",
+          "description": "None of the technology categories are equivalent",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "ONE of the technology categoreis is equivalent",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "2",
+          "description": "THREE of the technology categories are equivalent",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "3",
+          "description": "TWO of the technology categoreis are equivalent",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "1",
+          "description": "All technology categories are equivalent",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Temporal Correlation",
+      "position": 2,
+      "scores": [
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Less than 6 years of difference",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Less than 15 years of difference",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Less than 10 years of difference",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "1",
+          "description": "Less than 3 years of difference",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "5",
+          "description": "Age of data unknown or more than 15 years",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Flow Reliability",
+      "position": 1,
+      "scores": [
+        {
+          "position": 5,
+          "label": "5",
+          "description": "Undocumented estimates",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Verified data based on a calculation \r\n\r\nOR non-verified data based on measurements",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Documented estimate",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "1",
+          "description": "Verified data based on measurement(s)",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Non-verified data based on a calculation",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Geographical Correlation",
+      "position": 3,
+      "scores": [
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Within two levels of resolution \r\n\r\nAND a realted area of study",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "5",
+          "description": "From a different or unknown area of study",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Within one level of resolution \r\n\r\nAND a related area of study",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Outside of two levels of resolution \r\n\r\nBUT a related area of study",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "1",
+          "description": "Data from same resolution \r\n\r\nAND same area of study",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Data Collection Methods",
+      "position": 5,
+      "scores": [
+        {
+          "position": 5,
+          "label": "5",
+          "description": "Unknown\r\n\r\nOR data from a small number of sites AND from shorter periods",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Representative data from 40-59% of the relevant market, over an adequate period\r\n\r\nOR representative data from 60-79% of the relevant market, over a shorter period of time",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "1",
+          "description": "Representative data from >80% of the relevant market, over an adequate period of time",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Representative data from <40% of the relevant market, over an adequate period of time\r\n\r\nOR representative data from 40-59% of the relevant market, over a shorter period of time",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Representative data from 60-79% of the relevant market, over an adequate period\r\n\r\nOR representative data from > 80% of the relevant market, over a shorter period of time",
+          "uncertainty": 0
+        }
+      ]
+    }
+  ]
+}
