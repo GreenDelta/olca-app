@@ -64,7 +64,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	public static NavigationLabelProvider withoutRepositoryState() {
 		return new NavigationLabelProvider(false);
-	}
+	}	
 
 	@Override
 	public void addListener(ILabelProviderListener listener) {
@@ -232,7 +232,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		return state + baseText;
 	}
 
-	private String getBaseText(INavigationElement<?> elem) {
+	String getBaseText(INavigationElement<?> elem) {
 
 		if (elem instanceof DatabaseDirElement dirElem)
 			return dirElem.getContent();

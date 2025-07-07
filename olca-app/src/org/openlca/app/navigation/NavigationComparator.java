@@ -6,13 +6,13 @@ import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
-import org.openlca.app.collaboration.navigation.RepositoryLabel;
 import org.openlca.app.navigation.elements.CategoryElement;
+import org.openlca.app.navigation.elements.DataPackageElement;
+import org.openlca.app.navigation.elements.DataPackagesElement;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.GroupElement;
-import org.openlca.app.navigation.elements.DataPackagesElement;
-import org.openlca.app.navigation.elements.DataPackageElement;
+import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.ScriptElement;
@@ -20,6 +20,8 @@ import org.openlca.util.Strings;
 
 public class NavigationComparator extends ViewerComparator {
 
+	private NavigationLabelProvider labelProvider = NavigationLabelProvider.withoutRepositoryState();
+	
 	@Override
 	public int compare(Viewer viewer, Object e1, Object e2) {
 		if (e1 == null || e2 == null)
@@ -77,7 +79,7 @@ public class NavigationComparator extends ViewerComparator {
 		String name2 = getLabel(viewer, e2);
 		return Strings.compare(name1, name2);
 	}
-	
+
 	private String getLabel(Viewer viewer, Object obj) {
 		if (obj == null)
 			return "";
@@ -85,15 +87,19 @@ public class NavigationComparator extends ViewerComparator {
 			return obj.toString();
 		var prov = cv.getLabelProvider();
 		if (prov instanceof ILabelProvider provider) {
-			var label = provider.getText(obj);
+			var label = "";
+			if (obj instanceof INavigationElement elem) {
+				// avoid different sorting depending on the repository state
+				label = labelProvider.getBaseText(elem);
+			} else {
+				label = provider.getText(obj);
+			}
 			if (label == null)
 				return "";
-			var changed = RepositoryLabel.CHANGED_STATE;
-			return label.startsWith(changed)
-					? label.substring(changed.length())
-					: label;
+			return label;
 		}
 		return obj.toString();
 	}
 
+	
 }

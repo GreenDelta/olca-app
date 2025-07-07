@@ -9,21 +9,28 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
+import org.openlca.app.collaboration.navigation.actions.ConflictResolutions;
+import org.openlca.app.collaboration.viewers.diff.ConflictViewer;
 import org.openlca.app.collaboration.viewers.diff.DiffNode;
-import org.openlca.app.collaboration.viewers.diff.MergeViewer;
 import org.openlca.app.util.UI;
 import org.openlca.git.actions.ConflictResolver.ConflictResolution;
-import org.openlca.util.TypedRefIdMap;
+import org.openlca.git.actions.ConflictResolver.GitContext;
 
-public class MergeDialog extends FormDialog {
+public class ConflictDialog extends FormDialog {
 
-	private DiffNode rootNode;
-	private MergeViewer viewer;
 	private static final int OVERWRITE = 2;
 	private static final int KEEP = 3;
+	private final Repository repo;
+	private final ConflictResolutions resolutions;
+	private final GitContext context;
+	private final DiffNode rootNode;
+	private ConflictViewer viewer;
 
-	public MergeDialog(DiffNode rootNode) {
+	public ConflictDialog(Repository repo, ConflictResolutions resolutions, GitContext context, DiffNode rootNode) {
 		super(UI.shell());
+		this.repo = repo;
+		this.resolutions = resolutions;
+		this.context = context;
 		this.rootNode = rootNode;
 		setBlockOnOpen(true);
 	}
@@ -35,13 +42,15 @@ public class MergeDialog extends FormDialog {
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var form = UI.header(mform, M.Merge);
+		var form = context == GitContext.LOCAL
+				? UI.header(mform, M.ResolveLocalConflicts)
+				: UI.header(mform, M.ResolveWorkspaceConflicts);
 		var toolkit = mform.getToolkit();
 		var body = UI.body(form, toolkit);
-		viewer = new MergeViewer(body, Repository.get());
+		viewer = new ConflictViewer(body, repo, resolutions, context);
+		viewer.setOnMerge(() -> getButton(OK).setEnabled(!viewer.hasConflicts()));
 		form.reflow(true);
 		viewer.setInput(Collections.singletonList(rootNode));
-		viewer.setOnMerge(() -> getButton(OK).setEnabled(!viewer.hasConflicts()));
 	}
 
 	@Override
@@ -55,7 +64,11 @@ public class MergeDialog extends FormDialog {
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, OVERWRITE, M.OverwriteLocalChanges, false);
+		if (context == GitContext.LOCAL) {
+			createButton(parent, OVERWRITE, M.OverwriteLocalChanges, false);
+		} else {
+			createButton(parent, OVERWRITE, M.OverwriteWorkspaceChanges, false);
+		}
 		createButton(parent, KEEP, M.OverwriteRemoteChanges, false);
 		super.createButtonsForButtonBar(parent);
 	}
@@ -63,23 +76,16 @@ public class MergeDialog extends FormDialog {
 	@Override
 	protected void buttonPressed(int buttonId) {
 		if (buttonId == OVERWRITE) {
-			solveAll(ConflictResolution.overwrite());
+			solveAll(ConflictResolution.overwrite(context));
 		} else if (buttonId == KEEP) {
-			solveAll(ConflictResolution.keep());
+			solveAll(ConflictResolution.keep(context));
 		} else {
 			super.buttonPressed(buttonId);
 		}
 	}
 
-	public TypedRefIdMap<ConflictResolution> getResolvedConflicts() {
-		return viewer.getResolvedConflicts();
-	}
-
 	private void solveAll(ConflictResolution resolution) {
-		viewer.getResolvedConflicts().clear();
-		viewer.getConflicts().stream()
-				.map(DiffNode::contentAsTriDiff)
-				.forEach(d -> viewer.getResolvedConflicts().put(d, resolution));
+		viewer.solveAll(resolution);
 		viewer.refresh();
 		getButton(OK).setEnabled(true);
 		getButton(OVERWRITE).setEnabled(false);

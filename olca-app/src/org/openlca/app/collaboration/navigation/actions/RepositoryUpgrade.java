@@ -21,6 +21,7 @@ import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.TypedRefId;
 import org.openlca.core.model.Version;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -30,7 +31,6 @@ import org.openlca.git.actions.GitMerge;
 import org.openlca.git.actions.GitStashCreate;
 import org.openlca.git.model.Commit;
 import org.openlca.git.model.Diff;
-import org.openlca.git.model.ModelRef;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.ModelRefMap;
 import org.openlca.jsonld.Json;
@@ -163,7 +163,7 @@ public class RepositoryUpgrade {
 					.resolveConflictsWith(new EqualResolver(descriptors)));
 			if (!wasStashed)
 				return true;
-			return Actions.applyStash();
+			return Stash.applyOn(repo);
 		} catch (GitAPIException | InvocationTargetException | InterruptedException | IOException e) {
 			log.warn("Error pulling from " + repo.url + "/" + repo.id, e);
 			return false;
@@ -234,18 +234,30 @@ public class RepositoryUpgrade {
 		}
 
 		@Override
-		public boolean isConflict(ModelRef ref) {
+		public boolean isConflict(TypedRefId ref) {
 			return descriptors.contains(ref);
 		}
 
 		@Override
-		public ConflictResolutionType peekConflictResolution(ModelRef ref) {
-			return isConflict(ref) ? ConflictResolutionType.IS_EQUAL : null;
+		public ConflictResolutionInfo peekConflictResolution(TypedRefId ref) {
+			return resolveConflict(ref, null);
 		}
 
 		@Override
-		public ConflictResolution resolveConflict(ModelRef ref, JsonObject fromHistory) {
-			return isConflict(ref) ? ConflictResolution.isEqual() : null;
+		public ConflictResolutionInfo peekConflictResolutionWithWorkspace(TypedRefId ref) {
+			return resolveConflictWithWorkspace(ref, null);
+		}
+		
+		@Override
+		public ConflictResolution resolveConflict(TypedRefId ref, JsonObject remote) {
+			return isConflict(ref)
+					? ConflictResolution.isEqual(GitContext.LOCAL)
+					: null;
+		}
+		
+		@Override
+		public ConflictResolution resolveConflictWithWorkspace(TypedRefId ref, JsonObject remote) {
+			return null;
 		}
 
 	}

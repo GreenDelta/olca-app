@@ -42,7 +42,7 @@ public class DiffNodeBuilder {
 	private void build(TriDiff diff) {
 		if (nodes.containsKey(getKey(diff)))
 			return;
-		if (diff.noAction())
+		if (diff.isEqual())
 			return;
 		createNode(diff);
 	}

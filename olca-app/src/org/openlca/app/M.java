@@ -177,8 +177,7 @@ public class M extends NLS {
 	public static String Change;
 	public static String ChangeUser;
 	public static String CharactFactorsForSub;
-	public static String CheckingForLocalConflicts;
-	public static String CheckingForWorkspaceConflicts;
+	public static String CheckingForConflicts;
 	public static String CheckingLibraries;
 	public static String CheckDatabaseLinks;
 	public static String CheckFeatures;
@@ -1199,6 +1198,7 @@ public class M extends NLS {
 	public static String OverwriteFileQuestion;
 	public static String OverwriteLocalChanges;
 	public static String OverwriteRemoteChanges;
+	public static String OverwriteWorkspaceChanges;
 	public static String Owner;
 
 	// P
@@ -1390,6 +1390,8 @@ public class M extends NLS {
 	public static String ResetLayout;
 	public static String ResetSelection;
 	public static String Resize;
+	public static String ResolveLocalConflicts;
+	public static String ResolveWorkspaceConflicts;
 	public static String RestoreLayout;
 	public static String RestoreLayoutQ;
 	public static String Result;

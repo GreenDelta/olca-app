@@ -126,7 +126,7 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 		private boolean isComplete() {
 			if (Strings.nullOrEmpty(group))
 				return false;
-			if (Strings.nullOrEmpty(name) || name.length() < 4 || !name.matches("^[a-zA-Z0-9_]+$"))
+			if (Strings.nullOrEmpty(name) || name.length() < 3 || !name.matches("^[a-zA-Z0-9_]+$"))
 				return false;
 			return true;
 		}

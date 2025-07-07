@@ -24,7 +24,7 @@ public class CommitViewer extends DiffNodeViewer {
 	}
 
 	public CommitViewer(Composite parent, OlcaRepository repo, Runnable onCheckStateChanged) {
-		super(parent, repo, false);
+		super(parent, repo);
 		this.onCheckStateChanged = onCheckStateChanged;
 	}
 
@@ -116,7 +116,7 @@ public class CommitViewer extends DiffNodeViewer {
 				return;
 			}
 			var diff = elem.contentAsTriDiff();
-			if (diff == null || diff.noAction()) {
+			if (diff == null || diff.isEqual()) {
 				getViewer().setChecked(elem, false);
 				return;
 			}

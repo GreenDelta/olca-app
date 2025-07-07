@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.storage.file.WindowCacheConfig;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.WebRequests;
@@ -252,6 +253,10 @@ public class Repository extends ClientRepository {
 
 	public void disconnect() {
 		close();
+		// TODO this is a workaround to avoid open file handles that jgit
+		// is holding (see https://github.com/eclipse-jgit/jgit/issues/155)
+		new WindowCacheConfig().install();
+		//
 		Dirs.delete(dir);
 	}
 

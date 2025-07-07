@@ -23,26 +23,22 @@ public class RefJson {
 
 	private static Gson gson = new Gson();
 
-	public static JsonObject get(OlcaRepository repo, Reference remote) {
-		return get(repo, remote, null);
+	public static JsonObject get(OlcaRepository repo, Reference ref) {
+		return get(repo, ref, null);
 	}
 
-	static JsonObject get(OlcaRepository repo, Reference remote, ModelRef local) {
-		if ((remote != null && remote.isCategory) || (local != null && local.isCategory))
+	static JsonObject get(OlcaRepository repo, Reference ref, ModelRef workspace) {
+		if ((ref != null && ref.isCategory) || (workspace != null && workspace.isCategory))
 			return null;
-		if (remote == null || remote.objectId.equals(ObjectId.zeroId())) {
-			if (local == null)
+		if (ref == null || ref.objectId.equals(ObjectId.zeroId())) {
+			if (workspace == null)
 				return null;
-			return getLocalJson(local.type, local.refId);
+			return getWorkspaceJson(workspace.type, workspace.refId);
 		}
-		var json = gson.fromJson(repo.datasets.get(remote), JsonObject.class);
-		if (json == null)
-			return null;
-		split(json, remote.type);
-		return json;
+		return getLocalJson(repo, ref);
 	}
 
-	private static JsonObject getLocalJson(ModelType type, String refId) {
+	static JsonObject getWorkspaceJson(ModelType type, String refId) {
 		var entity = load(type, refId);
 		if (entity == null)
 			return null;
@@ -51,13 +47,21 @@ public class RefJson {
 		return json;
 	}
 
+	static JsonObject getLocalJson(OlcaRepository repo, Reference ref) {
+		var json = gson.fromJson(repo.datasets.get(ref), JsonObject.class);
+		if (json == null)
+			return null;
+		split(json, ref.type);
+		return json;		
+	}
+	
 	private static RootEntity load(ModelType type, String refId) {
 		if (type == null || refId == null)
 			return null;
 		return Daos.root(Database.get(), type).getForRefId(refId);
 	}
 
-	private static void split(JsonObject json, ModelType type) {
+	static void split(JsonObject json, ModelType type) {
 		if (type == ModelType.PROCESS) {
 			split(json, "exchanges", "isInput", "inputs", "outputs");
 		} else if (type == ModelType.RESULT) {

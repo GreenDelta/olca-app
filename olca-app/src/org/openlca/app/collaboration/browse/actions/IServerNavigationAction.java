@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.action.IAction;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 
-interface IServerNavigationAction extends IAction {
+public interface IServerNavigationAction extends IAction {
 
 	/**
 	 * Returns true, if this action accepts the given selection from the server

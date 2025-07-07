@@ -21,13 +21,10 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.util.MsgBox;
-import org.openlca.app.util.Question;
 import org.openlca.collaboration.model.WebRequestException;
 import org.openlca.git.Compatibility.UnsupportedClientVersionException;
 import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
-import org.openlca.git.actions.GitStashApply;
-import org.openlca.git.util.Constants;
 
 class Actions {
 
@@ -137,32 +134,6 @@ class Actions {
 			else if (runner.exception instanceof IOException e)
 				throw e;
 		return runner.result;
-	}
-
-	static void askApplyStash() throws InvocationTargetException, GitAPIException, IOException, InterruptedException {
-		var answers = new String[] { M.No, M.Yes };
-		var result = Question.ask(M.ApplyStashedChanges,
-				M.ApplyStashedChangesQuestion,
-				answers);
-		if (result == 0)
-			return;
-		applyStash();
-	}
-
-	static boolean applyStash() throws GitAPIException, InvocationTargetException, IOException, InterruptedException {
-		var repo = Repository.get();
-		if (repo == null)
-			return false;
-		var dependencyResolver = WorkspaceDepencencyResolver.forStash(repo);
-		if (dependencyResolver == null)
-			return false;
-		var conflictResult = ConflictResolver.resolve(repo, Constants.STASH_REF);
-		if (conflictResult == null)
-			return false;
-		Actions.run(GitStashApply.on(repo)
-				.resolveConflictsWith(conflictResult.resolutions())
-				.resolveDependenciesWith(dependencyResolver));
-		return true;
 	}
 
 	private static class GitRemoteRunner<T> implements IRunnableWithProgress {

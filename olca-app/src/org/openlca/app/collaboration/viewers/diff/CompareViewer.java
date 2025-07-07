@@ -8,7 +8,7 @@ import org.openlca.git.repo.OlcaRepository;
 public class CompareViewer extends DiffNodeViewer {
 
 	public CompareViewer(Composite parent, OlcaRepository repo) {
-		super(parent, repo, false);
+		super(parent, repo);
 	}
 
 	@Override

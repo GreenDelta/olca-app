@@ -24,8 +24,7 @@ class ConnectAction extends Action implements INavigationAction {
 		var dialog = new ConnectDialog();
 		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
-		var url = dialog.url();
-		var repo = Repository.initialize(Database.get(), url);
+		var repo = Repository.initialize(Database.get(), dialog.url());
 		if (repo != null) {
 			repo.user(dialog.user());
 			Announcements.check();
@@ -38,10 +37,9 @@ class ConnectAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
+		if (!(first instanceof DatabaseElement dbElem))
 			return false;
-		var elem = (DatabaseElement) first;
-		if (!Database.isActive(elem.getContent()))
+		if (!Database.isActive(dbElem.getContent()))
 			return false;
 		return Repository.get() == null;
 	}

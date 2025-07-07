@@ -40,7 +40,7 @@ class StashApplyAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		try {
-			Actions.applyStash();
+			Stash.applyOn(repo);
 		} catch (IOException | GitAPIException | InvocationTargetException | InterruptedException e) {
 			Actions.handleException("Error applying stashed changes", e);
 		} finally {

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jgit.storage.file.WindowCacheConfig;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
@@ -101,6 +102,10 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		File dbFolder = DatabaseDir.getRootFolder(config.name());
 		if (dbFolder.isDirectory())
 			Dirs.delete(dbFolder);
+		// TODO this is a workaround to avoid open file handles that jgit
+		// is holding (see https://github.com/eclipse-jgit/jgit/issues/155)
+		new WindowCacheConfig().install();
+		//
 		Repository.delete(config.name());
 		if (config instanceof DerbyConfig)
 			Database.remove((DerbyConfig) config);

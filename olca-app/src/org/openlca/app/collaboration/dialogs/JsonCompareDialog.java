@@ -22,7 +22,7 @@ public class JsonCompareDialog extends FormDialog {
 	public final static int KEEP = 2;
 	public final static int OVERWRITE = 3;
 	private final JsonNode root;
-	private final boolean canMerge;
+	private final boolean isMergeDialog;
 	private JsonCompareViewer viewer;
 	private IJsonNodeLabelProvider labelProvider;
 	private IDependencyResolver dependencyResolver;
@@ -37,10 +37,10 @@ public class JsonCompareDialog extends FormDialog {
 		return create(node, true);
 	}
 
-	private static JsonCompareDialog create(JsonNode node, boolean canMerge) {
+	private static JsonCompareDialog create(JsonNode node, boolean isMergeDialog) {
 		if (node == null)
 			return null;
-		var dialog = new JsonCompareDialog(node, canMerge);
+		var dialog = new JsonCompareDialog(node, isMergeDialog);
 		dialog.setTitle(Json.getName(node.element()));
 		dialog.setLogo(Images.get(Json.getModelType(node.element())));
 		dialog.setDependencyResolver(ModelDependencyResolver.INSTANCE);
@@ -48,16 +48,18 @@ public class JsonCompareDialog extends FormDialog {
 		return dialog;
 	}
 
-	private JsonCompareDialog(JsonNode root, boolean canMerge) {
+	private JsonCompareDialog(JsonNode root, boolean isMergeDialog) {
 		super(UI.shell());
 		this.root = root;
-		this.canMerge = canMerge;
+		this.isMergeDialog = isMergeDialog;
 		setBlockOnOpen(true);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
-		var title = canMerge ? M.Merge : M.Compare;
+		var title = isMergeDialog
+				? M.Merge
+				: M.Compare;
 		if (this.title != null) {
 			title += " - " + this.title;
 		}
@@ -67,7 +69,7 @@ public class JsonCompareDialog extends FormDialog {
 		}
 		var toolkit = mform.getToolkit();
 		var body = UI.body(form, toolkit);
-		viewer = canMerge
+		viewer = isMergeDialog
 				? JsonCompareViewer.forMerging(body, toolkit, root)
 				: JsonCompareViewer.forComparison(body, toolkit, root);
 		viewer.initialize(labelProvider, dependencyResolver);
@@ -79,7 +81,7 @@ public class JsonCompareDialog extends FormDialog {
 	protected void createButtonsForButtonBar(Composite parent) {
 		var hasLeft = root.left != null;
 		var hasRight = root.right != null;
-		if (!canMerge) {
+		if (!isMergeDialog) {
 			createButton(parent, IDialogConstants.OK_ID, M.Close, true);
 		} else if (hasLeft && hasRight) {
 			createButton(parent, IDialogConstants.OK_ID, M.MarkAsMerged, true);
