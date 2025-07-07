@@ -47,7 +47,6 @@ public class AddDataPackageAction extends Action implements INavigationAction {
 			repo.user(dialog.user());
 			PullAction.silent().on(repo).run();
 			var latestCommitId = repo.commits.find().latestId();
-			repo.close();
 			Database.get().addRepository(packageName, latestCommitId, url);
 		} catch (Exception e) {
 			Actions.handleException("Error connecting to repository", url, e);

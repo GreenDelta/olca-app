@@ -17,18 +17,10 @@ public abstract class NavigationElement<T> implements INavigationElement<T> {
 	private List<INavigationElement<?>> cache;
 	private T content;
 	private final INavigationElement<?> parent;
-	private final DataPackage dataPackage;
 
 	public NavigationElement(INavigationElement<?> parent, T content) {
 		this.parent = parent;
 		this.content = content;
-		if (content instanceof DataPackage dp) {
-			dataPackage = dp;
-		} else if (content instanceof RootDescriptor d) {
-			dataPackage = Database.dataPackages().get(d.dataPackage);
-		} else {
-			dataPackage = parent.getDataPackage().orElse(null);
-		}
 	}
 
 	@Override
@@ -65,6 +57,14 @@ public abstract class NavigationElement<T> implements INavigationElement<T> {
 
 	@Override
 	public Optional<DataPackage> getDataPackage() {
+		DataPackage dataPackage = null;
+		if (content instanceof DataPackage dp) {
+			dataPackage = dp;
+		} else if (content instanceof RootDescriptor d) {
+			dataPackage = Database.dataPackages().get(d.dataPackage);
+		} else {
+			dataPackage = parent.getDataPackage().orElse(null);
+		}
 		return Optional.ofNullable(dataPackage);
 	}
 
@@ -76,8 +76,8 @@ public abstract class NavigationElement<T> implements INavigationElement<T> {
 			return super.hashCode();
 		var parent = getParent();
 		return parent == null
-			? content.hashCode()
-			: Objects.hash(content, getParent());
+				? content.hashCode()
+				: Objects.hash(content, getParent());
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public abstract class NavigationElement<T> implements INavigationElement<T> {
 
 		var other = (NavigationElement<?>) o;
 		return Objects.equals(this.content, other.content)
-			&& Objects.equals(this.parent, other.parent);
+				&& Objects.equals(this.parent, other.parent);
 	}
 
 }

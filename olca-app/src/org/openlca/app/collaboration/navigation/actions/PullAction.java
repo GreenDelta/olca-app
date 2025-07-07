@@ -86,9 +86,6 @@ class PullAction extends Action implements INavigationAction {
 		} finally {
 			AppContext.evictAll();
 			Actions.refresh();
-			if (!silent && repo.dataPackage != null) {
-				repo.close();
-			}
 		}
 	}
 

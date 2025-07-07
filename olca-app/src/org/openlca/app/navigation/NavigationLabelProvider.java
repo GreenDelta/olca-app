@@ -64,7 +64,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 
 	public static NavigationLabelProvider withoutRepositoryState() {
 		return new NavigationLabelProvider(false);
-	}	
+	}
 
 	@Override
 	public void addListener(ILabelProviderListener listener) {
