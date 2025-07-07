@@ -41,7 +41,7 @@ public class Repository extends ClientRepository {
 	public final CSClient client;
 
 	private Repository(IDatabase database, DataPackage dataPackage) throws IOException {
-		super(gitDir(database, dataPackage), database, descriptors());
+		super(gitDir(database, dataPackage), database, dataPackage, descriptors());
 		this.url = url();
 		if (url != null && (!url.startsWith("git@") && !url.startsWith("http")))
 			throw new IllegalArgumentException("Unsupported protocol");
