@@ -1,0 +1,117 @@
+{
+  "@type": "DQSystem",
+  "@id": "3de9698a-f5d5-43cb-9179-4cf150da37ee",
+  "name": "PCR Data Quality System",
+  "description": "Data quality level and criteria of the UN Environment Global Guidance on LCA database development. Table E.1 in EN 15804:2012 + A2:2019.",
+  "hasUncertainties": false,
+  "indicators": [
+    {
+      "name": "Technical representativeness",
+      "position": 2,
+      "scores": [
+        {
+          "position": 4,
+          "label": "Poor",
+          "description": "Technology aspects are different from what described in the title and metadata. Requires major improvements.",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "Very good",
+          "description": "Technology aspects have been modelled exactly as described in the title and metadata, without any significant need for improvement.",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "Very poor",
+          "description": "Technology aspects are completely different from what described in the title and metadata. Substantial improvement is necessary.",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "Good",
+          "description": "Technology aspects are very similar to what described in the title and metadata with need for limited improvements. For example: use of generic technologies’ data instead of modelling all the single plants.",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "Fair",
+          "description": "Technology aspects are similar to what described in the title and metadata but merits improvements. Some of the relevant processes are not modelled with specific data but using proxies.",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Time representativeness",
+      "position": 3,
+      "scores": [
+        {
+          "position": 4,
+          "label": "Poor",
+          "description": "Data are not older than 10 years as expressed in the ILCD field (“data set valid until” and the difference between the “valid until” and the “reference year” is not higher than 8 years, confirmed by the reviewer(s)).",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "Fair",
+          "description": "Data are not older than 6 years as expressed in the ILCD field (“data set valid until” and the difference between the “valid until” and the “reference year” is not higher than 8 years).",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "Good",
+          "description": "Data are not older than 3 years as expressed in the ILCD field (“data set valid until” and the difference between the “valid until” and the “reference year” is not higher than 8 years).",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": "Very good",
+          "description": "Data are not older than 0 years as expressed in the ILCD field (“data set valid until” and the difference between the “valid until” and the “reference year” is not higher than 8 years).",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "Very poor",
+          "description": "Data are older than 10 years as expressed in the ILCD field (“data set valid until” and the difference between the “valid until” and the “reference year” is not higher than 8.",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Geographical representativeness",
+      "position": 1,
+      "scores": [
+        {
+          "position": 1,
+          "label": "Very good",
+          "description": "The processes included in the data set are fully representative for the geography stated in the “location” indicated in the metadata.",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "Very poor",
+          "description": "The processes included in the data set are not representative for the geography stated in the “location” indicated in the metadata.",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "Fair",
+          "description": "The processes included in the data set are sufficiently representative for the geography stated in the “location” indicated in the metadata. E.g. the represented country differs but has a very similar electricity grid mix profile.",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "Poor",
+          "description": "The processes included in the data set are only partly representative for the geography stated in the “location” indicated in the metadata. E.g. the represented country differs and has a substantially different electricity grid mix profile.",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "Good",
+          "description": "The processes included in the data set are well representative for the geography stated in the “location” indicated in the metadata.",
+          "uncertainty": 0
+        }
+      ]
+    }
+  ]
+}

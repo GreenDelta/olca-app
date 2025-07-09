@@ -804,6 +804,7 @@ public class M extends NLS {
 	public static String Indicators;
 	public static String IndicatorsAndParameters;
 	public static String IndicatorsScores;
+	public static String Indonesian;
 	public static String Information;
 	public static String InfrastructureFlow;
 	public static String InfrastructureModeling;
@@ -864,6 +865,7 @@ public class M extends NLS {
 	public static String KeepVersionDb;
 	public static String Key;
 	public static String KnownHosts;
+	public static String Korean;
 
 	// L
 	public static String LCCAddedValuesTable;
@@ -1690,6 +1692,7 @@ public class M extends NLS {
 	public static String UnsavedChanges;
 	public static String Unspecified;
 	public static String UnsupportedFileFormatInfo;
+  public static String Upcoming;
 	public static String Up;
 	public static String Update;
 	public static String UpdateDataSets;

@@ -179,7 +179,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			var libraryDir = (LibraryDir) elem.getParent().getContent();
 			var lib = libraryDir.getLibrary(p.name()).get();
 			var license = Libraries.getLicense(lib.folder());
-			return license.map(l -> Images.licensedLibrary(l.isValid()))
+			return license.map(l -> Images.licensedLibrary(l))
 					.orElse(Icon.LIBRARY.get());
 		}
 

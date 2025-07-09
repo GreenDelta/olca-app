@@ -175,6 +175,8 @@ public enum Icon {
 
 	VALIDATE("validate.png"),
 
+	YELLOW_DOT("yellow_dot.png"),
+
 	WARNING("warning.png");
 
 	final String fileName;

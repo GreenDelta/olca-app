@@ -1,0 +1,189 @@
+{
+  "@type": "DQSystem",
+  "@id": "a3670110-c795-427e-9b29-7d0833dd098e",
+  "name": "PSILCA Data Quality System",
+  "description": "Data quality system for the PSICLA database.",
+  "hasUncertainties": false,
+  "indicators": [
+    {
+      "name": "Completeness conformance",
+      "position": 2,
+      "scores": [
+        {
+          "position": 5,
+          "label": "5",
+          "description": "Single data point / completeness unknown",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": " 1",
+          "description": "Complete data for country-specific sector / country",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Non-representative selection, low bias",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Representative selection of country-specific sector / country",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Non-representative selection, unknown bias",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Geographical  conformance",
+      "position": 4,
+      "scores": [
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Country with similar conditions or average of countries with slightly different conditions",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Average of countries with different conditions, geography under study included, with small share; or not included",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "5",
+          "description": "Data from unknown or distinctly different regions",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": " 1",
+          "description": "Data from same geography (country)",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Average of countries with different conditions, geography under study included, with large share; or country with slightly different conditions",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Reliability of the source(s)",
+      "position": 1,
+      "scores": [
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Non-verified data partly based on assumptions or data from non-recognized sources",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": " 1",
+          "description": "Statistical study, or verified data from primary data collection from several sources",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "5",
+          "description": "Non-qualified estimate or unknown origin",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Verified data from primary data collection from one single source or non-verified data from primary sources , or data from recognized secondary sources",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Qualified estimate (e.g. by expert) ",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Temporal conformance",
+      "position": 3,
+      "scores": [
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Less than 3 years of difference to the time period of the dataset",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Less than 5 years of difference to the time period of the dataset",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": " 1",
+          "description": "Less than 1 year of difference to the time period of the dataset",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "5",
+          "description": "Age of data unknown or data with more than 5 years of difference to the time period of the dataset",
+          "uncertainty": 0
+        },
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Less than 2 years of difference to the time period of the dataset",
+          "uncertainty": 0
+        }
+      ]
+    },
+    {
+      "name": "Further technical conformance",
+      "position": 5,
+      "scores": [
+        {
+          "position": 2,
+          "label": "2",
+          "description": "Data from similar sector, e.g. within the same sector hierarchy; or average of sectors with similar technology",
+          "uncertainty": 0
+        },
+        {
+          "position": 4,
+          "label": "4",
+          "description": "Average of different sectors, sector under study included, with small share; or not included",
+          "uncertainty": 0
+        },
+        {
+          "position": 1,
+          "label": " 1",
+          "description": "Data from same technology (sector)",
+          "uncertainty": 0
+        },
+        {
+          "position": 5,
+          "label": "5",
+          "description": "Data with unknown technology / sector or from distinctly different sector",
+          "uncertainty": 0
+        },
+        {
+          "position": 3,
+          "label": "3",
+          "description": "Data from slightly different sector, or average of different sectors, sector under study included, with large share",
+          "uncertainty": 0
+        }
+      ]
+    }
+  ]
+}
