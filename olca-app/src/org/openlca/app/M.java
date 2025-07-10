@@ -30,7 +30,6 @@ public class M extends NLS {
 	public static String Actors;
 	public static String Add;
 	public static String AddATag;
-	public static String AddDataPackageDots;
 	public static String AddFlow;
 	public static String AddIndicator;
 	public static String AddInputFlow;
@@ -46,6 +45,7 @@ public class M extends NLS {
 	public static String AddScore;
 	public static String AddSection;
 	public static String AddStickyNote;
+	public static String AddSubRepositoryDots;
 	public static String AddSystemModel;
 	public static String AddedValue;
 	public static String AdditionalInformation;
@@ -357,7 +357,7 @@ public class M extends NLS {
 	public static String DataConflicts;
 	public static String DataDocumentor;
 	public static String DataGenerator;
-	public static String DataPackage;
+	public static String DataPackages;
 	public static String DataQuality;
 	public static String DataQualityEntry;
 	public static String DataQualityProperties;
@@ -441,7 +441,7 @@ public class M extends NLS {
 	public static String DiscardChangesQuestion;
 	public static String DiscardExistingStash;
 	public static String Disconnect;
-	public static String DisconnectingDataPackage;
+	public static String DisconnectingRepository;
 	public static String Display;
 	public static String DisplayInChart;
 	public static String DoNotShowThisMessageAgain;

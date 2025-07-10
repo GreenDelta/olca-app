@@ -146,6 +146,13 @@ public class Images {
 				: ImageManager.get(icon, overlay);
 	}
 
+	public static Image repository(Overlay overlay) {
+		var icon = Icon.REPOSITORY;
+		return overlay == null
+				? icon.get()
+				: ImageManager.get(icon, overlay);
+	}
+
 	public static Image get(ModelType type, Overlay overlay) {
 		if (type == ModelType.CATEGORY) {
 			return overlay == null

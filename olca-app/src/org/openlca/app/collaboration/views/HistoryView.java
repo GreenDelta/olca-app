@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.viewers.HistoryViewer;
 import org.openlca.app.collaboration.viewers.diff.RefJson;
@@ -145,7 +144,7 @@ public class HistoryView extends ViewPart {
 			if (!(element instanceof Diff diff))
 				return null;
 			if (diff.isDataPackage)
-				return M.DataPackage + "/" + diff.name;
+				return diff.name;
 			if (diff.isCategory)
 				return diff.getCategoryPath();
 			var text = diff.category;
@@ -171,9 +170,10 @@ public class HistoryView extends ViewPart {
 			} else if (diff.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
-			if (diff.isDataPackage)
-				// TODO different icon for data package?
+			if (diff.isLibrary)
 				return Images.library(overlay);
+			if (diff.isDataPackage)
+				return Images.repository(overlay);
 			if (diff.isCategory)
 				return Images.getForCategory(diff.type, overlay);
 			return Images.get(diff.type, overlay);

@@ -175,7 +175,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Icon.FOLDER.get();
 		if (content instanceof DataPackage p) {
 			if (!p.isLibrary())
-				return Icon.LIBRARY.get();
+				return Icon.REPOSITORY.get();
 			var libraryDir = (LibraryDir) elem.getParent().getContent();
 			var lib = libraryDir.getLibrary(p.name()).get();
 			var license = Libraries.getLicense(lib.folder());
@@ -238,6 +238,11 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return dirElem.getContent();
 		if (elem instanceof GroupElement groupElem)
 			return groupElem.getContent().label;
+		if (elem instanceof DataPackagesElement dpElem)
+			if (dpElem.getParent() instanceof DatabaseElement)
+				return M.DataPackages;
+			else
+				return M.Libraries;
 
 		var content = elem.getContent();
 		if (content instanceof DatabaseConfig config)
@@ -248,8 +253,6 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Labels.plural(type);
 		if (content instanceof Descriptor d)
 			return Labels.name(d);
-		if (content instanceof LibraryDir)
-			return M.Libraries;
 		if (content instanceof DataPackage p)
 			return p.name();
 		if (elem instanceof MappingDirElement)

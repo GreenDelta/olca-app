@@ -15,7 +15,7 @@ import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.navigation.actions.AddDataPackageAction;
+import org.openlca.app.collaboration.navigation.actions.AddRepositoryAction;
 import org.openlca.app.collaboration.navigation.actions.CloneFromGitAction;
 import org.openlca.app.collaboration.navigation.actions.RepositoryMenu;
 import org.openlca.app.db.Database;
@@ -100,7 +100,7 @@ public class NavigationMenu extends CommonActionProvider {
 				new DbDeleteAction(),
 				new DbCloseAction(),
 				new AddLibraryAction(),
-				new AddDataPackageAction());
+				new AddRepositoryAction());
 
 		// dev. extensions
 		if (App.runsInDevMode()) {

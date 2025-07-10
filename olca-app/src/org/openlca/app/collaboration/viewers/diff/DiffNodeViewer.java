@@ -177,7 +177,11 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 				return M.Libraries;
 			if (node.isDataPackageNode()) {
 				var path = node.contentAsTriDiff().path;
-				return path.substring(path.indexOf("/") + 1);
+				path = path.substring(path.indexOf("/") + 1);
+				if (path.contains(":")) {
+					path = path.substring(path.indexOf(":") + 1);
+				}
+				return path;
 			}
 			if (node.isModelTypeNode())
 				return Labels.plural(node.getModelType());

@@ -38,7 +38,7 @@ class PullAction extends Action implements INavigationAction {
 		return action;
 	}
 
-	public PullAction on(Repository repo) {
+	PullAction on(Repository repo) {
 		this.repo = repo;
 		return this;
 	}

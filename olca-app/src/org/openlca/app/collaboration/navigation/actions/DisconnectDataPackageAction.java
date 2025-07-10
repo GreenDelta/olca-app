@@ -43,7 +43,7 @@ public class DisconnectDataPackageAction extends Action implements INavigationAc
 		} else if (answer == 2) {
 			action = () -> Unmounter.keepUsed(Database.get(), dataPackage.name());
 		}
-		App.runWithProgress(M.DisconnectingDataPackage, action, () -> {
+		App.runWithProgress(M.DisconnectingRepository, action, () -> {
 			Repository.delete(Database.get().getName(), dataPackage);
 			Navigator.refresh();
 		});

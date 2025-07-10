@@ -15,16 +15,16 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.DataPackage;
 
-public class AddDataPackageAction extends Action implements INavigationAction {
+public class AddRepositoryAction extends Action implements INavigationAction {
 
 	@Override
 	public String getText() {
-		return M.AddDataPackageDots;
+		return M.AddSubRepositoryDots;
 	}
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return Icon.LIBRARY.descriptor();
+		return Icon.REPOSITORY.descriptor();
 	}
 
 	@Override
