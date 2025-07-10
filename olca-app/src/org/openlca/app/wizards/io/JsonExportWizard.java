@@ -63,11 +63,11 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		var models = page.getSelectedModels();
 		if (models == null || models.isEmpty())
 			return true;
-		File target = page.getExportDestination();
+		var target = page.getExportDestination();
 		if (target == null)
 			return false;
 		try {
-			Export export = new Export(target, models, db);
+			var export = new Export(target, models, db);
 			getContainer().run(true, true, export);
 			return true;
 		} catch (Exception e) {
@@ -116,26 +116,22 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 				monitor.worked(1);
 			}
 
-			var dataPackages = export.getReferencedDataPackages();
-			store.putDataPackages(resolveLinksOf(dataPackages));
+			var libraries = export.getReferencedLibraries();
+			store.putDataPackages(resolveLinksOf(libraries));
 		}
 
 		private static List<DataPackage> resolveLinksOf(Set<DataPackage> dataPackages) {
 			var libraries = new LinkedHashSet<Library>();
-			var nonLibraries = new LinkedHashSet<DataPackage>();
 			for (var dataPackage : dataPackages) {
-				// TODO not supporting data package dependencies
-				if (!dataPackage.isLibrary()) {
-					nonLibraries.add(dataPackage);
+				if (!dataPackage.isLibrary())
 					continue;
-				}
 				var library = Workspace.getLibraryDir().getLibrary(dataPackage.name());
 				if (library.isEmpty())
 					continue;
 				libraries.add(library.get());
 				libraries.addAll(library.get().getTransitiveDependencies());
 			}
-			var all = libraries.stream()
+			return libraries.stream()
 					.sorted((l1, l2) -> {
 						if (l1.getTransitiveDependencies().contains(l2))
 							return -1;
@@ -145,8 +141,6 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 					})
 					.map(l -> DataPackage.library(l.name(), null))
 					.collect(Collectors.toList());
-			all.addAll(nonLibraries);
-			return all;
 		}
 
 		private void doExport(JsonExport export, RootEntity entity) {
