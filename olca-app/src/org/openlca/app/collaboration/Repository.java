@@ -134,7 +134,15 @@ public class Repository extends ClientRepository {
 	}
 
 	public static void delete(String databaseName) {
-		var gitDir = gitDir(databaseName, null);
+		delete(databaseName, null);
+	}
+
+	public static void delete(String databaseName, DataPackage dataPackage) {
+		var repo = OPEN.get(dataPackage);
+		if (repo != null) {
+			repo.close();
+		}
+		var gitDir = gitDir(databaseName, dataPackage != null ? dataPackage.name() : null);
 		Dirs.delete(gitDir);
 	}
 

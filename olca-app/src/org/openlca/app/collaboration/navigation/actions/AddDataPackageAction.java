@@ -60,9 +60,8 @@ public class AddDataPackageAction extends Action implements INavigationAction {
 		if (selection.size() != 1)
 			return false;
 		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
+		if (!(first instanceof DatabaseElement elem))
 			return false;
-		var elem = (DatabaseElement) first;
 		return Database.isActive(elem.getContent());
 	}
 

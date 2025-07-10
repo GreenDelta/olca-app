@@ -44,7 +44,7 @@ public class RepositoryMenu {
 				new OpenCompareViewAction(false));
 		repoMenu.add(new Separator());
 		added += NavigationMenu.addActions(selection, repoMenu,
-				new DisconnectAction());
+				new DisconnectAction(), new DisconnectDataPackageAction());
 		if (added == 0)
 			return;
 		menu.add(new Separator());

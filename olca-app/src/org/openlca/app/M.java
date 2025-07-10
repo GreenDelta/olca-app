@@ -441,6 +441,7 @@ public class M extends NLS {
 	public static String DiscardChangesQuestion;
 	public static String DiscardExistingStash;
 	public static String Disconnect;
+	public static String DisconnectingDataPackage;
 	public static String Display;
 	public static String DisplayInChart;
 	public static String DoNotShowThisMessageAgain;
