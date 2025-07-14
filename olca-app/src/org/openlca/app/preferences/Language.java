@@ -11,13 +11,7 @@ public enum Language {
 
 	ARABIC(M.Arabic, "ar"),
 
-	BULGARIAN(M.Bulgarian, "bg"),
-
-	CATALAN(M.Catalan, "ca"),
-
 	CHINESESIMPLIFIED(M.ChineseSimplified, "zh_cn"),
-
-	CHINESETRADITIONAL(M.ChineseTraditional, "zh_tw"),
 
 	ENGLISH(M.English, "en"),
 
@@ -25,15 +19,13 @@ public enum Language {
 
 	GERMAN(M.German, "de"),
 
-	HUNGARIAN(M.Hungarian, "hu"),
+	INDONESIAN(M.Indonesian, "id"),
 
 	ITALIAN(M.Italian, "it"),
 
-	PORTUGUESE(M.Portuguese, "pt"),
+	KOREAN(M.Korean, "ko"),
 
-	SPANISH(M.Spanish, "es"),
-
-	TURKISH(M.Turkish, "tr");
+	SPANISH(M.Spanish, "es");
 
 	private final String code;
 	private final String displayName;

@@ -1,5 +1,7 @@
 package org.openlca.app.rcp.images;
 
+import java.util.Date;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.openlca.app.collaboration.util.Comments;
@@ -25,6 +27,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.license.certificate.CertificateInfo;
 
 public class Images {
 
@@ -294,9 +297,14 @@ public class Images {
 		return ImageManager.descriptor(Icon.COLLABORATION_SERVER_LOGO, Overlay.NEW);
 	}
 
-	public static Image licensedLibrary(boolean isValid) {
-		var overlay = isValid ? Overlay.VALID : Overlay.INVALID;
-		return ImageManager.get(Icon.LIBRARY, overlay);
+	public static Image licensedLibrary(CertificateInfo license) {
+		if (license.isValid())
+			return ImageManager.get(Icon.LIBRARY, Overlay.VALID);
+
+		if (license.notBefore().after(new Date()))
+			return ImageManager.get(Icon.LIBRARY, Overlay.UPCOMING);
+
+		return ImageManager.get(Icon.LIBRARY, Overlay.EXPIRED);
 	}
 
 	private static ModelIcon icon(RefEntity entity) {

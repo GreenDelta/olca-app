@@ -172,7 +172,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Icon.FOLDER.get();
 		if (content instanceof Library lib) {
 			var license = Libraries.getLicense(lib.folder());
-			return license.map(l -> Images.licensedLibrary(l.isValid()))
+			return license.map(l -> Images.licensedLibrary(l))
 					.orElse(Icon.LIBRARY.get());
 		}
 
