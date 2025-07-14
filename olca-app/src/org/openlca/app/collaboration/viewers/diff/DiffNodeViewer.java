@@ -174,7 +174,7 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			if (node.isDatabaseNode())
 				return node.contentAsDatabase().getName();
 			if (node.isDataPackagesNode())
-				return M.Libraries;
+				return M.DataPackages;
 			if (node.isDataPackageNode()) {
 				var path = node.contentAsTriDiff().path;
 				path = path.substring(path.indexOf("/") + 1);
@@ -227,8 +227,11 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 			}
 			var diff = node.contentAsTriDiff();
 			var overlay = getOverlay(diff);
-			if (node.isDataPackageNode())
+			if (node.isDataPackageNode()) {
+				if (diff.isRepository)
+					return Images.repository(overlay);
 				return Images.library(overlay);
+			}
 			return Images.get(diff.type, overlay);
 		}
 
