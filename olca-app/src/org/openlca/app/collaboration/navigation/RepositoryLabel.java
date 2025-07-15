@@ -38,7 +38,10 @@ public class RepositoryLabel {
 		if (elem instanceof DataPackageElement e
 				&& e.getDatabase().isPresent()
 				&& isNew(NavCache.get(e)))
-			return Images.library(Overlay.ADDED);
+			if (e.getDataPackage().get().isRepository())
+				return Images.repository(Overlay.ADDED);
+			else
+				return Images.library(Overlay.ADDED);
 		if (elem instanceof CategoryElement e
 				&& isNew(NavCache.get(e)))
 			return Images.get(e.getContent(), Overlay.ADDED);

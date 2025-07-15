@@ -170,10 +170,10 @@ public class HistoryView extends ViewPart {
 			} else if (diff.diffType == DiffType.DELETED) {
 				overlay = Overlay.DELETED;
 			}
-			if (diff.isLibrary)
-				return Images.library(overlay);
-			if (diff.isDataPackage)
+			if (diff.isRepository)
 				return Images.repository(overlay);
+			if (diff.isDataPackage)
+				return Images.library(overlay);
 			if (diff.isCategory)
 				return Images.getForCategory(diff.type, overlay);
 			return Images.get(diff.type, overlay);
