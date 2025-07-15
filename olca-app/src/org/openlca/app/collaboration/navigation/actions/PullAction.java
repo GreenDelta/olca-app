@@ -68,11 +68,13 @@ class PullAction extends Action implements INavigationAction {
 					GitFetch.to(repo));
 			if (newCommits == null)
 				return;
-			if (!newCommits.isEmpty()) {
-				new HistoryDialog(M.FetchedCommits, repo, newCommits).open();
-			} else if (repo.localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty()) {
-				MsgBox.info(M.NoCommitToFetchInfo);
-				return;
+			if (!silent) {
+				if (!newCommits.isEmpty()) {
+					new HistoryDialog(M.FetchedCommits, repo, newCommits).open();
+				} else if (repo.localHistory.getBehindOf(Constants.REMOTE_REF).isEmpty()) {
+					MsgBox.info(M.NoCommitToFetchInfo);
+					return;
+				}
 			}
 			Merge.on(repo, credentials.ident, silent);
 		} catch (IOException | InvocationTargetException | InterruptedException | GitAPIException e) {

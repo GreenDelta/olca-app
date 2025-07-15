@@ -67,7 +67,7 @@ public class RepositoryLabel {
 
 	public static String getStateIndicator(INavigationElement<?> elem) {
 		var repo = Repository.get();
-		if (Database.get() == null || repo == null || elem == null || elem.getDataPackage().isPresent())
+		if (Database.get() == null || repo == null || elem == null)
 			return null;
 		if (elem instanceof DatabaseElement e && !Database.isActive(e.getContent()))
 			return null;
@@ -81,7 +81,7 @@ public class RepositoryLabel {
 	}
 
 	public static boolean hasChanged(INavigationElement<?> elem) {
-		if (Database.get() == null || Repository.get() == null || elem == null || elem.getDataPackage().isPresent())
+		if (Database.get() == null || Repository.get() == null || elem == null)
 			return false;
 		return hasChanged(NavCache.get(elem));
 	}
@@ -96,14 +96,41 @@ public class RepositoryLabel {
 			var repo = Repository.get();
 			return !repo.index.isSameVersion(getPath(d), d);
 		}
-		if (elem.is(ElementType.DATABASE) && Repository.get().dataPackagesChanged())
+		if (elem.is(ElementType.DATABASE) && dataPackagesChanged())
 			return true;
 		if (elem.is(ElementType.DATAPACKAGES))
-			return Repository.get().dataPackagesChanged();
+			return dataPackagesChanged();
+		if (elem.is(ElementType.DATAPACKAGE))
+			return dataPackageChanged((DataPackage) elem.content());
 		for (var child : elem.children())
 			if (hasChanged(child) || (child.is(ElementType.MODEL, ElementType.CATEGORY) && isNew(child)))
 				return true;
 		return containsDeleted(elem);
+	}
+
+	private static boolean dataPackagesChanged() {
+		var repo = Repository.get();
+		var before = repo.getDataPackages();
+		var now = Database.dataPackages().getAll();
+		if (before.size() != now.size())
+			return true;
+		for (var lib : before)
+			if (!now.contains(lib))
+				return true;
+		for (var lib : now) {
+			if (!before.contains(lib))
+				return true;
+			var fromDb = before.stream().filter(n -> n.name().equals(lib.name())).findFirst().orElse(null);
+			if (!fromDb.version().equals(lib.version()))
+				return true;
+		}
+		return false;
+	}
+
+	private static boolean dataPackageChanged(DataPackage dataPackage) {
+		var repo = Repository.get();
+		var fromRepo = repo.getDataPackage(dataPackage.name());
+		return fromRepo != null && !fromRepo.version().equals(dataPackage.version());
 	}
 
 	private static boolean isNew(NavElement elem) {

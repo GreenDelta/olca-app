@@ -7,6 +7,7 @@ import org.openlca.app.collaboration.util.Json;
 import org.openlca.app.collaboration.viewers.json.content.JsonNode;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.Daos;
+import org.openlca.core.database.DataPackage;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
@@ -14,6 +15,7 @@ import org.openlca.git.model.ModelRef;
 import org.openlca.git.model.Reference;
 import org.openlca.git.repo.OlcaRepository;
 import org.openlca.jsonld.output.JsonExport;
+import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -28,8 +30,12 @@ public class RefJson {
 	}
 
 	static JsonObject get(OlcaRepository repo, Reference ref, ModelRef workspace) {
-		if ((ref != null && ref.isCategory) || (workspace != null && workspace.isCategory))
+		if ((ref != null && ref.isCategory) || (ref == null && workspace != null && workspace.isCategory))
 			return null;
+		if (ref != null && ref.isDataPackage && !Strings.nullOrEmpty(ref.commitId))
+			return toJson(repo.getDataPackage(ref.name, ref.commitId));
+		if ((ref != null && ref.isDataPackage) || (ref == null && workspace != null && workspace.isDataPackage))
+			return toJson(Database.get().getDataPackage(workspace.name));
 		if (ref == null || ref.objectId.equals(ObjectId.zeroId())) {
 			if (workspace == null)
 				return null;
@@ -52,9 +58,9 @@ public class RefJson {
 		if (json == null)
 			return null;
 		split(json, ref.type);
-		return json;		
+		return json;
 	}
-	
+
 	private static RootEntity load(ModelType type, String refId) {
 		if (type == null || refId == null)
 			return null;
@@ -132,6 +138,17 @@ public class RefJson {
 		if (remoteLastId > mergedLastId) {
 			merged.addProperty("lastInternalId", remoteLastId);
 		}
+	}
+
+	private static JsonObject toJson(DataPackage dataPackage) {
+		if (dataPackage == null)
+			return null;
+		var o = new JsonObject();
+		o.addProperty("name", dataPackage.name());
+		if (dataPackage.isRepository()) {
+			o.addProperty("commitId", dataPackage.version());
+		}
+		return o;
 	}
 
 }

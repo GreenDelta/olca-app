@@ -3,6 +3,7 @@ package org.openlca.app.collaboration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -188,7 +189,7 @@ public class Repository extends ClientRepository {
 
 	public static void closeAll() {
 		DESCRIPTORS = null;
-		for (var open : OPEN.values()) {
+		for (var open : new ArrayList<>(OPEN.values())) {
 			open.close();
 		}
 	}
@@ -215,20 +216,6 @@ public class Repository extends ClientRepository {
 			return null;
 		user(credentials.user);
 		return credentials;
-	}
-
-	public boolean dataPackagesChanged() {
-		var before = getDataPackages();
-		var now = Database.dataPackages().getAll();
-		if (before.size() != now.size())
-			return true;
-		for (var lib : before)
-			if (!now.contains(lib))
-				return true;
-		for (var lib : now)
-			if (!before.contains(lib))
-				return true;
-		return false;
 	}
 
 	public boolean isCollaborationServer() {

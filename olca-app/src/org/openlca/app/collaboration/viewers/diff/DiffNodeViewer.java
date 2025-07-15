@@ -77,7 +77,10 @@ abstract class DiffNodeViewer extends AbstractViewer<DiffNode, TreeViewer> {
 	}
 
 	protected void openCompareDialog(DiffNode selected, TriDiff diff, JsonNode node) {
-		JsonCompareDialog.forComparison(node).open();
+		var dialog = JsonCompareDialog.forComparison(node);
+		if (dialog == null)
+			return;
+		dialog.open();
 	}
 
 	private JsonNode createNode(TriDiff diff) {

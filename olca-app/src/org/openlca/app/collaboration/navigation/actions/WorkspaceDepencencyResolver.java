@@ -68,7 +68,8 @@ class WorkspaceDepencencyResolver implements DependencyResolver {
 		for (var newPackage : remotePackages) {
 			if (localPackages.contains(newPackage.name()))
 				continue;
-			if (!resolve(newPackage).isResolved())
+			var resolved = resolve(newPackage);
+			if (resolved == null)
 				return false;
 		}
 		return true;
@@ -76,10 +77,22 @@ class WorkspaceDepencencyResolver implements DependencyResolver {
 
 	@Override
 	public IResolvedDependency<?> resolve(DataPackage dataPackage) {
-		if (dataPackage.isLibrary())
-			return IResolvedDependency.library(dataPackage, resolveLibrary(dataPackage));
-		if (dataPackage.isRepository())
-			return IResolvedDependency.repository(dataPackage, resolveRepository(dataPackage));
+		if (dataPackage.isLibrary()) {
+			var lib = resolveLibrary(dataPackage);
+			if (lib == null)
+				return null;
+			return IResolvedDependency.library(dataPackage, lib);
+		}
+		if (dataPackage.isRepository()) {
+			var current = Repository.get();
+			if (current != null && current.url.equals(dataPackage.url()))
+				// allow cyclic references by skipping own repository
+				return IResolvedDependency.repository(dataPackage, null);
+			var repo = resolveRepository(dataPackage);
+			if (repo == null)
+				return null;
+			return IResolvedDependency.repository(dataPackage, repo);
+		}
 		return null;
 	}
 
@@ -134,9 +147,11 @@ class WorkspaceDepencencyResolver implements DependencyResolver {
 			}
 		}
 		var dataPackages = repo.getDataPackages();
-		for (var dependency : dataPackages)
-			if (!resolve(dependency).isResolved())
+		for (var dependency : dataPackages) {
+			var resolved = resolve(dependency);
+			if (resolved == null)
 				return null;
+		}
 		return repo;
 	}
 }

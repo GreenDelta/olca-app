@@ -20,6 +20,13 @@ class PropertyLabels {
 	}
 
 	static String get(JsonNode node) {
+		var type = ModelUtil.typeOf(node);
+		var path = ModelUtil.pathOf(node);
+		if (type == null)
+			if (path.equals("name"))
+				return M.Name;
+			else if (path.equals("commitId"))
+				return M.Version;
 		return get(labels, node, PropertyLabels::propertyOf);
 	}
 
