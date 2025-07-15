@@ -3,6 +3,8 @@ package org.openlca.app.collaboration.navigation.actions;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
 class WorkspaceDepencencyResolver implements DependencyResolver {
 
 	private static final Logger log = LoggerFactory.getLogger(WorkspaceDepencencyResolver.class);
+	private final Map<DataPackage, IResolvedDependency<?>> resolved = new HashMap<>();
 	private final Repository repo;
 	private final LibraryDir libDir;
 
@@ -77,11 +80,15 @@ class WorkspaceDepencencyResolver implements DependencyResolver {
 
 	@Override
 	public IResolvedDependency<?> resolve(DataPackage dataPackage) {
+		if (resolved.containsKey(dataPackage))
+			return resolved.get(dataPackage);
 		if (dataPackage.isLibrary()) {
 			var lib = resolveLibrary(dataPackage);
 			if (lib == null)
 				return null;
-			return IResolvedDependency.library(dataPackage, lib);
+			var dependency = IResolvedDependency.library(dataPackage, lib);
+			resolved.put(dataPackage, dependency);
+			return dependency;
 		}
 		if (dataPackage.isRepository()) {
 			var current = Repository.get();
@@ -91,7 +98,15 @@ class WorkspaceDepencencyResolver implements DependencyResolver {
 			var repo = resolveRepository(dataPackage);
 			if (repo == null)
 				return null;
-			return IResolvedDependency.repository(dataPackage, repo);
+			var dependency = IResolvedDependency.repository(dataPackage, repo);
+			resolved.put(dataPackage, dependency);
+			var dataPackages = repo.getDataPackages();
+			for (var subDependency : dataPackages) {
+				var resolved = resolve(subDependency);
+				if (resolved == null)
+					return null;
+			}
+			return dependency;
 		}
 		return null;
 	}
@@ -131,26 +146,20 @@ class WorkspaceDepencencyResolver implements DependencyResolver {
 
 	private ClientRepository resolveRepository(DataPackage newPackage) {
 		var repo = Repository.get(newPackage);
-		if (repo == null) {
-			repo = Repository.initialize(Database.get(), newPackage, newPackage.url());
-			if (repo == null)
-				return null;
-			var credentials = AuthenticationDialog.promptCredentials(repo.serverUrl);
-			if (credentials == null)
-				return null;
-			repo.user(credentials.user);
-			try {
-				Actions.run(repo, credentials, GitFetch.to(repo));
-			} catch (InvocationTargetException | InterruptedException | GitAPIException e) {
-				log.error("Error resolving library " + newPackage.name(), e);
-				return null;
-			}
-		}
-		var dataPackages = repo.getDataPackages();
-		for (var dependency : dataPackages) {
-			var resolved = resolve(dependency);
-			if (resolved == null)
-				return null;
+		if (repo != null)
+			return repo;
+		repo = Repository.initialize(Database.get(), newPackage, newPackage.url());
+		if (repo == null)
+			return null;
+		var credentials = AuthenticationDialog.promptCredentials(repo.serverUrl);
+		if (credentials == null)
+			return null;
+		repo.user(credentials.user);
+		try {
+			Actions.run(repo, credentials, GitFetch.to(repo));
+		} catch (InvocationTargetException | InterruptedException | GitAPIException e) {
+			log.error("Error resolving library " + newPackage.name(), e);
+			return null;
 		}
 		return repo;
 	}
