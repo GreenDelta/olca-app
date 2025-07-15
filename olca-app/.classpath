@@ -39,7 +39,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/hk2-locator-3.0.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/hk2-utils-3.0.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/j2objc-annotations-3.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jackson-core-2.18.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson-core-2.19.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-api-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.annotation-api-2.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.inject-api-2.0.1.jar"/>
