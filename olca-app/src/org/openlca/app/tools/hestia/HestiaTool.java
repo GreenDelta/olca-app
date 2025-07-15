@@ -35,7 +35,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.wizards.io.ImportLogDialog;
-import org.openlca.core.io.ImportLog;
+import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.hestia.HestiaClient;
 import org.openlca.io.hestia.HestiaImport;
@@ -172,8 +172,8 @@ public class HestiaTool extends SimpleFormEditor {
 				return;
 			}
 
-			var log = ImportLog.ofSize(1000);
-			var imp = new HestiaImport(client, db);
+			var imp = new HestiaImport(client, db, FlowMap.empty());
+			var log = imp.log();
 			App.runWithProgress(
 					"Importing data sets...",
 					() -> {
