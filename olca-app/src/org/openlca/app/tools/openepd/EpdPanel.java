@@ -90,7 +90,7 @@ public class EpdPanel extends SimpleFormEditor {
 			var searchButton = UI.button(searchComp, tk, M.Search);
 			searchButton.setImage(Icon.SEARCH.get());
 			UI.label(searchComp, tk, M.MaxCount);
-			var spinner = UI.spinner(searchComp, tk, SWT.BORDER);
+			var spinner = UI.spinner(searchComp, tk);
 			spinner.setValues(100, 10, 1000, 0, 50, 100);
 
 			// descriptor table

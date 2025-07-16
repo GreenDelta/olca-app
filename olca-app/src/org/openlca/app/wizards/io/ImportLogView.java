@@ -272,7 +272,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 			UI.label(optComp, tk, " | ");
 			UI.label(optComp, tk, M.MaxNumberOfMessages);
-			var spinner = UI.spinner(optComp, tk, SWT.BORDER);
+			var spinner = UI.spinner(optComp, tk);
 			spinner.setValues(maxCount, 1000, 1_000_000, 0, 1000, 5000);
 			spinner.addModifyListener($ -> {
 				maxCount = spinner.getSelection();

@@ -1,14 +1,9 @@
 package org.openlca.app.results.analysis.sankey.actions;
 
-import static org.eclipse.draw2d.PositionConstants.EAST;
-import static org.eclipse.draw2d.PositionConstants.NORTH;
-import static org.eclipse.draw2d.PositionConstants.SOUTH;
-import static org.eclipse.draw2d.PositionConstants.WEST;
-import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
-import static org.openlca.app.components.graphics.figures.Connection.ROUTER_NULL;
+import static org.eclipse.draw2d.PositionConstants.*;
+import static org.openlca.app.components.graphics.figures.Connection.*;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -56,7 +51,7 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 		UI.label(comp, tk, M.MinContributionShare);
 		var inner = UI.composite(comp, tk);
 		UI.gridLayout(inner, 2, 10, 0);
-		var spinner = UI.spinner(inner, tk, SWT.BORDER);
+		var spinner = UI.spinner(inner, tk);
 		spinner.setIncrement(100);
 		spinner.setMinimum(0);
 		spinner.setMaximum(100000);
@@ -72,7 +67,7 @@ class SankeySelectionDialog extends FormDialog implements SelectionHandler {
 		UI.label(comp, tk, M.MaxNumberOfProcesses);
 		var inner = UI.composite(comp, tk);
 		UI.gridLayout(inner, 2, 10, 0);
-		var spinner = UI.spinner(inner, tk, SWT.BORDER);
+		var spinner = UI.spinner(inner, tk);
 		spinner.setIncrement(1);
 		spinner.setMinimum(1);
 		spinner.setMaximum(items.techFlows().size());

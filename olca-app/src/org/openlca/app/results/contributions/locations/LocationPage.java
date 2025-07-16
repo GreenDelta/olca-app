@@ -100,7 +100,7 @@ public class LocationPage extends FormPage {
 		UI.gridLayout(checkComp, 5);
 
 		UI.label(checkComp, tk, M.DontShowSmallerThen);
-		Spinner spinner = UI.spinner(checkComp, tk, SWT.BORDER);
+		Spinner spinner = UI.spinner(checkComp, tk);
 		spinner.setValues(1, 0, 100, 0, 1, 10);
 		UI.label(checkComp, tk, "%");
 		Controls.onSelect(spinner, e -> {

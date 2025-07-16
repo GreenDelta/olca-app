@@ -98,7 +98,7 @@ public class UI {
 					return fn.apply(args);
 				} catch (Exception e) {
 					var log = LoggerFactory.getLogger(UI.class);
-					log.error("failed to execute browser function " + name, e);
+					log.error("failed to execute browser function {}", name, e);
 					return null;
 				}
 			}
@@ -742,8 +742,8 @@ public class UI {
 		return imageHyperlink(comp, tk, SWT.NONE);
 	}
 
-	public static Spinner spinner(Composite comp, FormToolkit tk, int style) {
-		var spinner = new Spinner(comp, style);
+	public static Spinner spinner(Composite comp, FormToolkit tk) {
+		var spinner = new Spinner(comp, SWT.BORDER);
 		tk.adapt(spinner);
 		return spinner;
 	}

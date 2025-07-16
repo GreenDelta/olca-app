@@ -10,7 +10,6 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
@@ -96,7 +95,7 @@ public class ParameterAnalysisDialog extends FormDialog {
 		allocationCombo.select(AllocationMethod.USE_DEFAULT);
 
 		UI.label(top, tk, M.NumberOfIterations);
-		iterationSpinner = UI.spinner(top, tk, SWT.BORDER);
+		iterationSpinner = UI.spinner(top, tk);
 		iterationSpinner.setValues(10, 2, 100_000, 0, 1, 10);
 
 		paramTable = Tables.createViewer(
