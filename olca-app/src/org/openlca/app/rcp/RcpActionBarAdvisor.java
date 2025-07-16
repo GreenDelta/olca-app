@@ -39,6 +39,7 @@ import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.NavigationMenu;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.hestia.HestiaTool;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.tools.openepd.EpdPanel;
@@ -186,6 +187,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				Icon.BUILDING.descriptor(), EpdPanel::open));
 		apiMenu.add(Actions.create("SmartEPD (experimental)",
 				Icon.SMART_EPD.descriptor(), SmartEpdTool::open));
+		apiMenu.add(Actions.create("Hestia (experimental)",
+				Icon.HESTIA.descriptor(), HestiaTool::open));
 
 		// console
 		menu.add(new Separator());
@@ -203,8 +206,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		}
 		menuBar.add(menu);
 	}
-
-
 
 	private void runSpold2Import(ModelType type) {
 		var db = Database.get();

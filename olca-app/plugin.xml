@@ -297,6 +297,13 @@
 				name="SmartEPD">
 		</editor>
 
+		<editor
+				class="org.openlca.app.tools.hestia.HestiaTool"
+				default="false"
+				id="HestiaTool"
+				name="Hestia">
+		</editor>
+
 	</extension>
 
 	<extension
