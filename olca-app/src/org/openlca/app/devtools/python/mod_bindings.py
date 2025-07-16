@@ -59,6 +59,7 @@ import org.openlca.core.results.Contribution as Contribution
 import org.openlca.core.results.Contributions as Contributions
 import org.openlca.core.matrix.cache.ConversionTable as ConversionTable
 import org.openlca.util.Copy as Copy
+import org.openlca.io.maps.CountryInfo as CountryInfo
 import org.openlca.core.matrix.io.Csv as Csv
 import org.openlca.core.matrix.io.CsvExport as CsvExport
 import org.openlca.core.model.Currency as Currency
@@ -68,6 +69,7 @@ import org.openlca.core.database.descriptors.CurrencyDescriptors as CurrencyDesc
 import org.openlca.jsonld.input.CurrencyReader as CurrencyReader
 import org.openlca.core.database.usage.CurrencyUseSearch as CurrencyUseSearch
 import org.openlca.jsonld.output.CurrencyWriter as CurrencyWriter
+import org.openlca.io.hestia.Cycle as Cycle
 import org.openlca.core.math.data_quality.DQData as DQData
 import org.openlca.core.model.DQIndicator as DQIndicator
 import org.openlca.core.math.data_quality.DQResult as DQResult
@@ -86,6 +88,7 @@ import org.openlca.io.oneclick.DataColumn as DataColumn
 import org.openlca.core.DataDir as DataDir
 import org.openlca.ipc.handlers.DataHandler as DataHandler
 import org.openlca.core.database.DataPackage as DataPackage
+import org.openlca.core.database.DataPackages as DataPackages
 import org.openlca.proto.io.server.DataUpdateService as DataUpdateService
 import org.openlca.core.database.config.DatabaseConfigList as DatabaseConfigList
 import org.openlca.core.database.DatabaseException as DatabaseException
@@ -103,6 +106,7 @@ import org.openlca.core.database.Derby as Derby
 import org.openlca.core.database.config.DerbyConfig as DerbyConfig
 import org.openlca.core.model.descriptors.Descriptor as Descriptor
 import org.openlca.core.model.descriptors.DescriptorBuilder as DescriptorBuilder
+import org.openlca.core.database.descriptors.Descriptors as Descriptors
 import org.openlca.core.library.reader.DirectLibReader as DirectLibReader
 import org.openlca.core.model.Direction as Direction
 import org.openlca.util.Dirs as Dirs
@@ -221,6 +225,10 @@ import org.openlca.io.HSCSim as HSCSim
 import org.openlca.ipc.handlers.HandlerContext as HandlerContext
 import org.openlca.core.matrix.format.HashPointByteMatrix as HashPointByteMatrix
 import org.openlca.core.matrix.format.HashPointMatrix as HashPointMatrix
+import org.openlca.io.hestia.HestiaClient as HestiaClient
+import org.openlca.io.hestia.HestiaImport as HestiaImport
+import org.openlca.io.hestia.HestiaRef as HestiaRef
+import org.openlca.io.hestia.HestiaSource as HestiaSource
 import org.openlca.core.matrix.ImpactBuilder as ImpactBuilder
 import org.openlca.core.model.ImpactCategory as ImpactCategory
 import org.openlca.core.database.ImpactCategoryDao as ImpactCategoryDao
@@ -391,6 +399,7 @@ import org.openlca.text.PhraseParser as PhraseParser
 import org.openlca.text.PhraseSimilarity as PhraseSimilarity
 import org.openlca.geo.geojson.Point as Point
 import org.openlca.geo.geojson.Polygon as Polygon
+import org.openlca.io.hestia.Practice as Practice
 import org.openlca.core.library.PreMountCheck as PreMountCheck
 import org.openlca.core.library.PreMountState as PreMountState
 import org.openlca.geo.calc.PrecisionReduction as PrecisionReduction
@@ -464,6 +473,7 @@ import org.openlca.core.services.ResultState as ResultState
 import org.openlca.core.database.usage.ResultUsageSearch as ResultUsageSearch
 import org.openlca.jsonld.output.ResultWriter as ResultWriter
 import org.openlca.util.Results as Results
+import org.openlca.core.library.Retagger as Retagger
 import org.openlca.core.model.doc.Review as Review
 import org.openlca.core.model.doc.ReviewScope as ReviewScope
 import org.openlca.core.model.doc.ReviewScopeConverter as ReviewScopeConverter
@@ -478,8 +488,11 @@ import org.openlca.ipc.RpcResponse as RpcResponse
 import org.openlca.ipc.handlers.RuntimeHandler as RuntimeHandler
 import org.openlca.core.database.internal.SQLScriptWriter as SQLScriptWriter
 import org.openlca.core.results.Sankey as Sankey
+import org.openlca.core.library.export.Scaler as Scaler
 import org.openlca.jsonld.SchemaVersion as SchemaVersion
 import org.openlca.core.database.internal.ScriptRunner as ScriptRunner
+import org.openlca.io.hestia.SearchQuery as SearchQuery
+import org.openlca.io.hestia.SearchResult as SearchResult
 import org.openlca.core.matrix.solvers.SeqAgg as SeqAgg
 import org.openlca.core.matrix.solvers.SequentialSolver as SequentialSolver
 import org.openlca.proto.io.server.Server as Server
@@ -493,6 +506,7 @@ import org.openlca.core.results.providers.SimpleResultProvider as SimpleResultPr
 import org.openlca.core.results.SimulationResult as SimulationResult
 import org.openlca.io.xls.results.SimulationResultExport as SimulationResultExport
 import org.openlca.core.math.Simulator as Simulator
+import org.openlca.io.hestia.Site as Site
 import org.openlca.io.smartepd.SmartEpd as SmartEpd
 import org.openlca.io.smartepd.SmartEpdClient as SmartEpdClient
 import org.openlca.io.smartepd.SmartEpdReader as SmartEpdReader
@@ -550,6 +564,7 @@ import org.openlca.core.results.TechFlowValue as TechFlowValue
 import org.openlca.core.matrix.index.TechIndex as TechIndex
 import org.openlca.core.matrix.linking.TechIndexBuilder as TechIndexBuilder
 import org.openlca.core.matrix.linking.TechIndexCutoffBuilder as TechIndexCutoffBuilder
+import org.openlca.io.hestia.Term as Term
 import org.openlca.util.TopoSort as TopoSort
 import org.openlca.core.database.TransDeps as TransDeps
 import org.openlca.util.Triple as Triple
@@ -586,6 +601,7 @@ import org.openlca.core.database.upgrades.Upgrade15 as Upgrade15
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree
+import org.openlca.io.hestia.User as User
 import org.openlca.validation.Validation as Validation
 import org.openlca.core.model.Version as Version
 import org.openlca.core.database.upgrades.VersionState as VersionState
