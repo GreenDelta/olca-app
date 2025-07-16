@@ -140,7 +140,14 @@ public class HestiaTool extends SimpleFormEditor {
 
 			var importAction = Actions.create(
 					M.ImportSelected, Icon.IMPORT.descriptor(), this::runImport);
-			Actions.bind(table, importAction);
+			var previewAction = Actions.create(
+					"Show cycle", Icon.HESTIA.descriptor(), () -> {
+						SearchResult r = Viewers.getFirstSelected(table);
+						if (r != null) {
+							CyclePreviewDialog.show(client, r.id());
+						}
+					});
+			Actions.bind(table, previewAction, importAction);
 		}
 
 		private void runSearch() {
