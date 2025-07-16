@@ -4,9 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.openlca.core.database.IDatabase;
 import org.slf4j.Logger;
@@ -14,36 +12,37 @@ import org.slf4j.LoggerFactory;
 
 class SqlCommand {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	public String exec(String sqlStatement, IDatabase database) {
-		if (sqlStatement == null)
+	public String exec(String sql, IDatabase db) {
+		if (sql == null)
 			return "invalid sql statement";
-		String stmt = sqlStatement.trim().toLowerCase();
-		if (stmt.startsWith("select ") || stmt.startsWith("show "))
-			return runSelect(database, sqlStatement);
-		else
-			return runUpdate(database, sqlStatement);
+		var stmt = sql.trim().toLowerCase();
+		return stmt.startsWith("select ") || stmt.startsWith("show ")
+				? runSelect(db, sql)
+				: runUpdate(db, sql);
 	}
 
-	private String runSelect(IDatabase database, String query) {
+	private String runSelect(IDatabase db, String query) {
 		log.info("run select statement {}", query);
-		try (Connection con = database.createConnection()) {
-			List<String[]> table = new ArrayList<>();
-			ResultSet result = con.createStatement().executeQuery(query);
-			String[] fields = getFields(result);
+		try (var con = db.createConnection();
+				 var stmt = con.createStatement();
+				 var result = stmt.executeQuery(query)) {
+
+			var table = new ArrayList<String[]>();
+			var fields = getFields(result);
 			table.add(fields);
+
 			while (result.next()) {
-				String[] row = new String[fields.length];
+				var row = new String[fields.length];
 				table.add(row);
 				for (int i = 0; i < fields.length; i++) {
-					String field = fields[i];
-					Object o = result.getObject(field);
-					if (o != null)
+					var o = result.getObject(i + 1);
+					if (o != null) {
 						row[i] = o.toString();
+					}
 				}
 			}
-			result.close();
 			return new TextTable().format(table);
 		} catch (Exception e) {
 			return handleException(e);
@@ -51,8 +50,8 @@ class SqlCommand {
 	}
 
 	private String[] getFields(ResultSet result) throws Exception {
-		ResultSetMetaData metaData = result.getMetaData();
-		String[] fields = new String[metaData.getColumnCount()];
+		var metaData = result.getMetaData();
+		var fields = new String[metaData.getColumnCount()];
 		for (int i = 0; i < fields.length; i++) {
 			fields[i] = metaData.getColumnLabel(i + 1);
 		}
