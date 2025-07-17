@@ -185,7 +185,7 @@ public class MatrixExportDialog extends FormDialog {
 		}
 
 		combo.select(0);
-		config.parameters = paramSets.get(0);
+		config.parameters = paramSets.getFirst();
 		Controls.onSelect(combo, e -> {
 			int i = combo.getSelectionIndex();
 			config.parameters = paramSets.get(i);
@@ -197,7 +197,7 @@ public class MatrixExportDialog extends FormDialog {
 		var combo = new AllocationCombo(
 				comp, AllocationMethod.values());
 		combo.setNullable(false);
-		combo.select(AllocationMethod.USE_DEFAULT);
+		combo.select(config.allocation);
 		combo.addSelectionChangedListener(
 				method -> config.allocation = method);
 	}
@@ -246,7 +246,7 @@ public class MatrixExportDialog extends FormDialog {
 
 		File folder;
 		Format format = Format.PYTHON;
-		AllocationMethod allocation;
+		AllocationMethod allocation = AllocationMethod.USE_DEFAULT;
 		ImpactMethod impactMethod;
 		ParameterRedefSet parameters;
 		boolean regionalized;
@@ -280,7 +280,7 @@ public class MatrixExportDialog extends FormDialog {
 				// the product system we do not show this in
 				// the UI, but we add it by default here
 				if (system.parameterSets.size() == 1) {
-					var ps = system.parameterSets.get(0);
+					var ps = system.parameterSets.getFirst();
 					config.withParameterRedefs(ps.parameters);
 				}
 			}
