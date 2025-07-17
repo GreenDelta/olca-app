@@ -24,6 +24,7 @@ public class ServerNavigationMenu extends CommonActionProvider {
 				new DownloadLibraryAction(),
 				new CloneAction(),
 				new ConnectAction(),
+				new AddAsRepositoryAction(),
 				new DeleteRepositoryAction(),
 				new UnregisterServerAction());
 	}

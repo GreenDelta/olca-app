@@ -187,6 +187,19 @@ public class Repository extends ClientRepository {
 		return new File(root, "x-" + packageName);
 	}
 
+	public static boolean isConnected(String url) {
+		var db = Database.get();
+		if (db == null)
+			return false;
+		var packageName = url.substring(url.lastIndexOf("/") + 1);
+		if (db.getDataPackage(packageName) != null)
+			return true;
+		var repo = Repository.get();
+		if (repo != null && repo.url.equals(url))
+			return true;
+		return false;
+	}
+
 	public static void closeAll() {
 		DESCRIPTORS = null;
 		for (var open : new ArrayList<>(OPEN.values())) {

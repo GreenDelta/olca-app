@@ -19,12 +19,12 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.git.actions.GitFetch;
 import org.openlca.git.util.Constants;
 
-class PullAction extends Action implements INavigationAction {
+public class PullAction extends Action implements INavigationAction {
 
 	private final boolean silent;
 	private Repository repo;
 
-	PullAction() {
+	public PullAction() {
 		this(false);
 	}
 
@@ -32,13 +32,13 @@ class PullAction extends Action implements INavigationAction {
 		this.silent = silent;
 	}
 
-	static PullAction silent() {
+	public static PullAction silent() {
 		var action = new PullAction(true);
 		action.repo = Repository.get();
 		return action;
 	}
 
-	PullAction on(Repository repo) {
+	public PullAction on(Repository repo) {
 		this.repo = repo;
 		return this;
 	}

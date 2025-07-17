@@ -30,6 +30,7 @@ public class M extends NLS {
 	public static String Actors;
 	public static String Add;
 	public static String AddATag;
+	public static String AddAsSubRepository;
 	public static String AddFlow;
 	public static String AddIndicator;
 	public static String AddInputFlow;
@@ -1384,6 +1385,7 @@ public class M extends NLS {
 	public static String ReplacementError;
 	public static String Report;
 	public static String Repository;
+	public static String RepositoryAlreadyConnected;
 	public static String RepositoryNameHint;
 	public static String RepositoryId;
 	public static String RepresentativeDataset;

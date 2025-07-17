@@ -11,6 +11,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
+import org.openlca.app.util.MsgBox;
 
 class ConnectAction extends Action implements INavigationAction {
 
@@ -24,7 +25,12 @@ class ConnectAction extends Action implements INavigationAction {
 		var dialog = new ConnectDialog();
 		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
-		var repo = Repository.initialize(Database.get(), dialog.url());
+		var url = dialog.url();
+		if (Repository.isConnected(url)) {
+			MsgBox.info(M.RepositoryAlreadyConnected);
+			return;
+		}
+		var repo = Repository.initialize(Database.get(), url);
 		if (repo != null) {
 			repo.user(dialog.user());
 			Announcements.check();

@@ -3,42 +3,38 @@ package org.openlca.app.collaboration.browse.actions;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 import org.openlca.app.collaboration.browse.elements.RepositoryElement;
 import org.openlca.app.collaboration.browse.elements.ServerElement;
-import org.openlca.app.collaboration.util.Announcements;
-import org.openlca.app.collaboration.views.CompareView;
-import org.openlca.app.collaboration.views.HistoryView;
-import org.openlca.app.db.Database;
-import org.openlca.app.navigation.Navigator;
+import org.openlca.app.collaboration.navigation.actions.AddRepositoryAction;
+import org.openlca.app.rcp.images.Icon;
 
-public class ConnectAction extends Action implements IServerNavigationAction {
+public class AddAsRepositoryAction extends Action implements IServerNavigationAction {
 
 	private String repoUrl;
 	private String user;
 
 	@Override
 	public String getText() {
-		return M.Connect;
+		return M.AddAsSubRepository;
+	}
+
+	@Override
+	public ImageDescriptor getImageDescriptor() {
+		return Icon.REPOSITORY.descriptor();
 	}
 
 	@Override
 	public boolean isEnabled() {
 		return !Repository.isConnected(repoUrl);
 	}
-	
+
 	@Override
 	public void run() {
-		var repo = Repository.initialize(Database.get(), repoUrl);
-		if (repo == null)
-			return;
-		repo.user(user);
-		Announcements.check();
-		Navigator.refresh();
-		HistoryView.refresh();
-		CompareView.clear();
+		AddRepositoryAction.connect(repoUrl, user);
 	}
 
 	@Override

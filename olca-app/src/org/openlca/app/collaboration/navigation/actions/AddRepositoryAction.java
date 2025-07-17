@@ -25,31 +25,35 @@ public class AddRepositoryAction extends Action implements INavigationAction {
 	public ImageDescriptor getImageDescriptor() {
 		return Icon.REPOSITORY.descriptor();
 	}
+	
 
-	@Override
-	public void run() {
-		var dialog = new ConnectDialog();
-		if (dialog.open() == ConnectDialog.CANCEL)
-			return;
-		var url = dialog.url();
-		var packageName = url.substring(url.lastIndexOf("/") + 1);
-		var db = Database.get();
-		if (db.getDataPackage(packageName) != null) {
+
+	public static void connect(String url, String user) {
+		if (Repository.isConnected(url)) {
 			MsgBox.warning("Data package already exists");
 			return;
 		}
+		var packageName = url.substring(url.lastIndexOf("/") + 1);
 		var dataPackage = Database.get().addRepository(packageName, null, url);
 		try {
 			var repo = Repository.initialize(Database.get(), dataPackage, url);
 			if (repo == null)
 				return;
-			repo.user(dialog.user());
+			repo.user(user);
 			PullAction.silent().on(repo).run();
 		} catch (Exception e) {
 			Actions.handleException("Error connecting to repository", url, e);
 		} finally {
 			Actions.refresh();
 		}
+	}
+
+	@Override
+	public void run() {
+		var dialog = new ConnectDialog();
+		if (dialog.open() == ConnectDialog.CANCEL)
+			return;
+		connect(dialog.url(), dialog.user());
 	}
 
 	@Override
