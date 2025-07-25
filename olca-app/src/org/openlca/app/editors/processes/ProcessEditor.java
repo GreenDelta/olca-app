@@ -17,6 +17,7 @@ import org.openlca.app.editors.processes.exchanges.ProcessExchangePage;
 import org.openlca.app.editors.processes.social.SocialAspectsPage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.util.AllocationUtils;
@@ -36,7 +37,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-		throws PartInitException {
+			throws PartInitException {
 		super.init(site, input);
 		var process = getModel();
 		if (process.documentation == null) {
@@ -54,7 +55,7 @@ public class ProcessEditor extends ModelEditor<Process> {
 		Process p = getModel();
 		var errors = Formulas.eval(Database.get(), p);
 		if (!errors.isEmpty()) {
-			String message = errors.get(0);
+			String message = errors.getFirst();
 			if (errors.size() > 1)
 				message += " (" + (errors.size() - 1) + " " + M.More + ")";
 			MsgBox.error(M.FormulaEvaluationFailed, message);
@@ -80,10 +81,20 @@ public class ProcessEditor extends ModelEditor<Process> {
 			addPage(ParameterPage.create(this));
 			addPage(new AllocationPage(this));
 			addPage(new SocialAspectsPage(this));
-			addPage(new ImpactPage(this));
+			if (showImpactPage()) {
+				addPage(new ImpactPage(this));
+			}
 			addExtensionPages();
 		} catch (Exception e) {
 			ErrorReporter.on("failed to add page", e);
 		}
+	}
+
+	private boolean showImpactPage() {
+		var db = Database.get();
+		if (db == null)
+			return false;
+		var methods = db.getDescriptors(ImpactMethod.class);
+		return !methods.isEmpty();
 	}
 }
