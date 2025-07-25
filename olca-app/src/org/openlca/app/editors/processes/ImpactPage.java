@@ -44,6 +44,7 @@ class ImpactPage extends ModelPage<Process> {
 
 	private ImpactMethodViewer combo;
 	private Button zeroCheck;
+	private Button regioCheck;
 	private TreeViewer tree;
 	private LcaResult result;
 
@@ -57,7 +58,8 @@ class ImpactPage extends ModelPage<Process> {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		var comp = UI.composite(body, tk);
-		UI.gridLayout(comp, 5);
+		UI.gridLayout(comp, 9, 10, 0);
+
 		UI.label(comp, tk, M.ImpactAssessmentMethod);
 		combo = new ImpactMethodViewer(comp);
 		var methods = new ImpactMethodDao(Database.get())
@@ -66,10 +68,19 @@ class ImpactPage extends ModelPage<Process> {
 				.collect(Collectors.toList());
 		combo.setInput(methods);
 		combo.addSelectionChangedListener(this::setTreeInput);
+		UI.label(comp, tk, "|");
 
 		zeroCheck = UI.labeledCheckbox(comp, tk, M.ExcludeZeroValues);
 		zeroCheck.setSelection(true);
 		Controls.onSelect(zeroCheck, e -> setTreeInput(combo.getSelected()));
+		UI.label(comp, tk, "|");
+
+		regioCheck = UI.labeledCheckbox(comp, tk, M.RegionalizedCalculation);
+		regioCheck.setSelection(false);
+		Controls.onSelect(regioCheck, e -> {
+			result = null;
+			setTreeInput(combo.getSelected());
+		});
 
 		var reload = UI.button(comp, tk, M.Reload);
 		var image = Icon.REFRESH.get();
@@ -121,9 +132,10 @@ class ImpactPage extends ModelPage<Process> {
 		}
 
 		if (result == null) {
+			var regionalized = regioCheck.getSelection();
 			App.runInUI(M.ComputeLciaResultsDots,
 					() -> {
-				var res = DirectProcessResult.calculate(getModel());
+				var res = DirectProcessResult.calculate(getModel(), regionalized);
 				if (res.hasError()) {
 					MsgBox.error("Calculation failed", res.error());
 				} else {

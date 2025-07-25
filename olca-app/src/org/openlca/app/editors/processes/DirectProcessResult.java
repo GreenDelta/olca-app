@@ -39,14 +39,17 @@ class DirectProcessResult {
 
 	private final IDatabase db;
 	private final Process process;
-	private final boolean regionalized = false;
+	private final boolean regionalized;
 
 	private final ImpactIndex impactIdx;
 	private final FormulaInterpreter interpreter;
 
-	private DirectProcessResult(IDatabase db, Process process) {
+	private DirectProcessResult(
+			IDatabase db, Process process, boolean regionalized
+	) {
 		this.db = db;
 		this.process = process;
+		this.regionalized = regionalized;
 		impactIdx = ImpactIndex.of(db);
 
 		// initialize the parameter interpreter
@@ -66,7 +69,7 @@ class DirectProcessResult {
 		}
 	}
 
-	static Res<LcaResult> calculate(Process process) {
+	static Res<LcaResult> calculate(Process process, boolean regionalized) {
 
 		if (process == null)
 			return Res.error("The process is empty.");
@@ -79,7 +82,7 @@ class DirectProcessResult {
 		if (db == null)
 			return Res.error("No database is open.");
 
-		return new DirectProcessResult(db, process).calculate();
+		return new DirectProcessResult(db, process, regionalized).calculate();
 	}
 
 	private Res<LcaResult> calculate() {
@@ -137,13 +140,19 @@ class DirectProcessResult {
 				? EnviIndex.createRegionalized()
 				: EnviIndex.create();
 		var b = new MatrixBuilder();
+
+		var procLoc = regionalized && process.location != null
+				? Descriptor.of(process.location)
+				: null;
+
 		for (var e : process.exchanges) {
 			if (e.flow == null || e.flow.flowType != FlowType.ELEMENTARY_FLOW)
 				continue;
 			var flow = Descriptor.of(e.flow);
-			var loc = e.location != null
+			var loc = regionalized && e.location != null
 					? Descriptor.of(e.location)
-					: null;
+					: procLoc;
+
 			int i = e.isInput
 					? index.add(EnviFlow.inputOf(flow, loc))
 					: index.add(EnviFlow.outputOf(flow, loc));
