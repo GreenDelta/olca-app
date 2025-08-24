@@ -8,6 +8,7 @@ const config = {
   entry: {
     home: './src/home/home.tsx',
     report: './src/report/report.tsx',
+    python: './src/python/python.tsx',
   },
   module: {
     rules: [
@@ -37,9 +38,6 @@ const config = {
         { from: 'node_modules/chart.js/dist/chart.min.js', to: dist + '/lib/chart.min.js' },
         { from: 'node_modules/milligram/dist/milligram.min.css', to: dist + '/lib/milligram.min.css' },
         { from: 'node_modules/normalize.css/normalize.css', to: dist + '/lib/normalize.css' },
-        { from: 'node_modules/codemirror/lib/*.*', to: () => `${dist}/lib/[name][ext]` },
-        { from: 'node_modules/codemirror/theme/ayu-mirage.css', to: () => `${dist}/lib/ayu-mirage.css` },
-        { from: 'node_modules/codemirror/mode/python/python.js', to: dist + '/lib/python.js' },
         { from: 'node_modules/jquery/dist/jquery.min.js', to: dist + '/lib/jquery.min.js' },
         { from: 'node_modules/@picocss/pico/css/pico.min.css', to: `${dist}/lib/pico.min.css` },
       ]
@@ -57,7 +55,6 @@ const config = {
     "react": "React",
     "react-dom": "ReactDOM",
     "chart.js": "Chart",
-    "codemirror": "CodeMirror",
   },
 };
 
