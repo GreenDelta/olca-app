@@ -8,12 +8,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,8 +24,9 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.library.Libraries.NoValidLibraryPackageException;
+import org.openlca.core.library.Libraries.NoValidLibraryUrlException;
 import org.openlca.core.library.Library;
-import org.openlca.core.library.LibraryPackage;
 import org.openlca.core.library.reader.LibReader;
 import org.openlca.core.library.reader.LibReaderRegistry;
 import org.openlca.core.model.ImpactCategory;
@@ -170,13 +165,11 @@ public final class Libraries {
 	}
 
 	public static void fillExchangesOf(Process process) {
-		fill(process, (db, lib) ->
-				org.openlca.core.library.Libraries.fillExchangesOf(db, lib, process));
+		fill(process, (db, lib) -> org.openlca.core.library.Libraries.fillExchangesOf(db, lib, process));
 	}
 
 	public static void fillFactorsOf(ImpactCategory impact) {
-		fill(impact, (db, lib) ->
-				org.openlca.core.library.Libraries.fillFactorsOf(db, lib, impact));
+		fill(impact, (db, lib) -> org.openlca.core.library.Libraries.fillFactorsOf(db, lib, impact));
 	}
 
 	private static void fill(RootEntity e, BiConsumer<IDatabase, LibReader> fn) {
@@ -192,49 +185,32 @@ public final class Libraries {
 	}
 
 	public static Library importFromFile(File file) {
-		if (file == null)
-			return null;
-		var info = LibraryPackage.getInfo(file);
-		if (info == null) {
+		try {
+			return org.openlca.core.library.Libraries.importFromFile(file, Workspace.getLibraryDir());
+		} catch (NoValidLibraryPackageException e) {
 			MsgBox.error(M.NotAValidLibraryPackage + " - " + file.getName());
 			return null;
 		}
-		var libDir = Workspace.getLibraryDir();
-		LibraryPackage.unzip(file, libDir);
-		return libDir.getLibrary(info.name()).orElse(null);
 	}
 
 	public static Library importFromUrl(String url) {
 		try {
-			var encoded = encodeUrl(url);
-			try (var stream = URI.create(encoded).toURL().openStream()) {
-				return importFromStream(stream);
-			}
-		} catch (IOException e) {
+			return org.openlca.core.library.Libraries.importFromUrl(url, Workspace.getLibraryDir());
+		} catch (NoValidLibraryUrlException e) {
 			ErrorReporter.on(M.ErrorTryingToResolveLibraryUrl, e);
+			return null;
+		} catch (NoValidLibraryPackageException e) {
+			MsgBox.error(M.NotAValidLibraryPackage);
 			return null;
 		}
 	}
 
 	public static Library importFromStream(InputStream stream) {
-		var file = (Path) null;
-		var library = (Library) null;
 		try {
-			file = Files.createTempFile("olca-library", ".zip");
-			Files.copy(stream, file, StandardCopyOption.REPLACE_EXISTING);
-			library = importFromFile(file.toFile());
-			return library;
-		} catch (IOException e) {
-			log.error("Error copying library from stream", e);
+			return org.openlca.core.library.Libraries.importFromStream(stream, Workspace.getLibraryDir());
+		} catch (NoValidLibraryPackageException e) {
+			MsgBox.error(M.NotAValidLibraryPackage);
 			return null;
-		} finally {
-			if (file != null && file.toFile().exists()) {
-				try {
-					Files.delete(file);
-				} catch (IOException e) {
-					log.trace("Error deleting tmp file", e);
-				}
-			}
 		}
 	}
 
@@ -260,27 +236,4 @@ public final class Libraries {
 		}
 	}
 
-	/// Library names can contain spaces, that we need to encode. Also, the
-	/// standard URL encoding does not encode spaces as %20, but as +, which
-	/// seem to cannot be handled by the Collaboration Server?
-	private static String encodeUrl(String url) {
-		if (url == null)
-			return null;
-		var parts = url.split("://");
-		if (parts.length < 2)
-			return url.strip();
-		var protocol = parts[0];
-		var sub = parts[1].split("/");
-		if (sub.length < 2)
-			return url.strip();
-		var encoded = new StringBuilder(protocol.strip())
-				.append("://")
-				.append(sub[0].strip());
-		for (int i = 1; i < sub.length; i++) {
-			var segment = URLEncoder.encode(sub[i].strip(), StandardCharsets.UTF_8)
-					.replace("+", "%20");
-			encoded.append("/").append(segment);
-		}
-		return encoded.toString();
-	}
 }
