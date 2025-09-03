@@ -26,17 +26,13 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 	private final ContributionImage image = new ContributionImage();
 
 	void update(Object selection) {
-		if (selection instanceof EnviFlow f) {
-			unit = Labels.refUnit(f);
-		} else if (selection instanceof FlowDescriptor f) {
-			unit = Labels.refUnit(f);
-		} else if (selection instanceof ImpactDescriptor i) {
-			unit = i.referenceUnit;
-		} else if (selection instanceof CostResultDescriptor) {
-			unit = Labels.getReferenceCurrencyCode();
-		} else {
-			unit = "";
-		}
+		unit = switch (selection) {
+			case EnviFlow f -> Labels.refUnit(f);
+			case FlowDescriptor f -> Labels.refUnit(f);
+			case ImpactDescriptor i -> i.referenceUnit;
+			case CostResultDescriptor ignored -> Labels.getReferenceCurrencyCode();
+			case null, default -> "";
+		};
 	}
 
 	@Override
@@ -53,15 +49,13 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 			return image.get(c.share);
 		if (col != 0)
 			return null;
-		if (c.item instanceof Descriptor d)
-			return Images.get(d);
-		if (c.item instanceof RootEntity e)
-			return Images.get(e);
-		if (c.item instanceof EnviFlow ef)
-			return Images.get(ef);
-		if (c.item instanceof TechFlow tf)
-			return Images.get(tf);
-		return null;
+		return switch (c.item) {
+			case Descriptor d -> Images.get(d);
+			case RootEntity e -> Images.get(e);
+			case EnviFlow ef -> Images.get(ef);
+			case TechFlow tf -> Images.get(tf);
+			case null, default -> null;
+		};
 	}
 
 	@Override
@@ -79,22 +73,20 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 	private String getLabel(Contribution<?> c) {
 		if (c == null || c.item == null)
 			return M.None;
-		if (c.item instanceof Location loc) {
-			String label = loc.name;
-			if (loc.code != null
-					&& !Strings.nullOrEqual(loc.code, label)) {
-				label += " - " + loc.code;
+		return switch (c.item) {
+			case Location loc -> {
+				var label = loc.name;
+				if (loc.code != null && !Strings.nullOrEqual(loc.code, label)) {
+					label += " - " + loc.code;
+				}
+				yield label;
 			}
-			return label;
-		}
-		if (c.item instanceof EnviFlow ef)
-			return Labels.name(ef);
-		if (c.item instanceof TechFlow tf)
-			return Labels.name(tf);
-		if (c.item instanceof Descriptor d)
-			return Labels.name(d);
-		if (c.item instanceof RefEntity e)
-			return Labels.name(e);
-		return null;
+			case EnviFlow ef -> Labels.name(ef);
+			case TechFlow tf -> Labels.name(tf);
+			case Descriptor d -> Labels.name(d);
+			case RefEntity e -> Labels.name(e);
+			default -> null;
+		};
 	}
+
 }

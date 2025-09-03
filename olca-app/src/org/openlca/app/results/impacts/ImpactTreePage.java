@@ -36,7 +36,7 @@ public class ImpactTreePage extends FormPage {
 	private ContributionCutoff cutoff;
 
 	final ResultItemOrder items;
-	boolean flowsFirst = true;
+	boolean flowsFirst = false;
 
 	public ImpactTreePage(ResultEditor editor) {
 		super(editor, "ImpactTreePage", M.ImpactAnalysis);
@@ -69,10 +69,10 @@ public class ImpactTreePage extends FormPage {
 		var comp = UI.composite(parent, tk);
 		UI.gridLayout(comp, 5);
 		UI.label(comp, tk, M.SubgroupBy);
-		var flowCheck = UI.radio(comp, tk, M.Flows);
-		flowCheck.setSelection(flowsFirst);
 		var processCheck = UI.radio(comp, tk, M.Processes);
 		processCheck.setSelection(!flowsFirst);
+		var flowCheck = UI.radio(comp, tk, M.Flows);
+		flowCheck.setSelection(flowsFirst);
 		Controls.onSelect(flowCheck, e -> {
 			flowsFirst = flowCheck.getSelection();
 			setInput();

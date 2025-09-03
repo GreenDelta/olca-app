@@ -115,7 +115,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 						zip = file;
 						setPageComplete(true);
 					})
-					.withTitle(M.SelectAZipFileWithIlcdDataDots)
+					.withDialogTitle(M.SelectAZipFileWithIlcdDataDots)
 					.withExtensions("*.zip")
 					.withSelection(zip)
 					.render(comp);

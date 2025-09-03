@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.Viewer;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
@@ -30,14 +29,11 @@ class TreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getElements(Object obj) {
-		if (obj == null)
-			return new Object[0];
-		if (obj instanceof Object[])
-			return (Object[]) obj;
-		if (obj instanceof Collection<?> coll) {
-			return coll.toArray();
-		}
-		return new Object[0];
+		return switch (obj) {
+			case Object[] objects -> objects;
+			case Collection<?> coll -> coll.toArray();
+			case null, default -> new Object[0];
+		};
 	}
 
 	@Override
@@ -55,15 +51,12 @@ class TreeContentProvider implements ITreeContentProvider {
 		double total = c.amount;
 
 		Object selection = page.getSelection();
-		Stream<Contribution<?>> stream = null;
-		if (selection instanceof FlowDescriptor flow) {
-			stream = contributions(loc, total, flow);
-		} else if (selection instanceof CostResultDescriptor costs) {
-			stream = contributions(loc, total, costs);
-		} else if (selection instanceof ImpactDescriptor impact) {
-			stream = contributions(loc, total, impact);
-		}
-
+		Stream<Contribution<?>> stream = switch (selection) {
+			case FlowDescriptor flow -> contributions(loc, total, flow);
+			case CostResultDescriptor costs -> contributions(loc, total, costs);
+			case ImpactDescriptor impact -> contributions(loc, total, impact);
+			case null, default -> null;
+		};
 		if (stream == null)
 			return null;
 
@@ -86,14 +79,6 @@ class TreeContentProvider implements ITreeContentProvider {
 		if (c.childs != null && !c.childs.isEmpty())
 			return false;
 		return c.item instanceof Location;
-	}
-
-	@Override
-	public void dispose() {
-	}
-
-	@Override
-	public void inputChanged(Viewer viewer, Object old, Object newInput) {
 	}
 
 	private Stream<Contribution<?>> contributions(
@@ -151,11 +136,11 @@ class TreeContentProvider implements ITreeContentProvider {
 			return techFlows(loc)
 					.stream()
 					.map(techFlow -> {
-				var c = Contribution.of(techFlow);
-				c.amount = result.getDirectImpactOf(impact, techFlow);
-				c.computeShare(total);
-				return c;
-			});
+						var c = Contribution.of(techFlow);
+						c.amount = result.getDirectImpactOf(impact, techFlow);
+						c.computeShare(total);
+						return c;
+					});
 		}
 
 		// first collect all flows in that location

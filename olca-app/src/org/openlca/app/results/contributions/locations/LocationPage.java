@@ -7,9 +7,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -26,6 +24,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
+import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -80,27 +79,27 @@ public class LocationPage extends FormPage {
 
 	private void createCombos(Composite body, FormToolkit tk) {
 
-		Composite outer = UI.composite(body, tk);
+		var outer = UI.composite(body, tk);
 		UI.gridLayout(outer, 2, 5, 0);
-		Composite comboComp = UI.composite(outer, tk);
+		var comboComp = UI.composite(outer, tk);
 		UI.gridLayout(comboComp, 2);
 		combos = Combo.on(editor)
 				.onSelected(this::onSelected)
 				.create(comboComp, tk);
-		if (editor.items().enviFlows().size() > 0) {
-			combos.selectWithEvent(editor.items().enviFlows().get(0));
+		if (!editor.items().enviFlows().isEmpty()) {
+			combos.selectWithEvent(editor.items().enviFlows().getFirst());
 		}
 
-		Composite cutoffComp = UI.composite(outer, tk);
+		var cutoffComp = UI.composite(outer, tk);
 		UI.gridLayout(cutoffComp, 1, 0, 0);
-		GridData gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
+		var gd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
 		cutoffComp.setLayoutData(gd);
 
-		Composite checkComp = UI.composite(cutoffComp, tk);
+		var checkComp = UI.composite(cutoffComp, tk);
 		UI.gridLayout(checkComp, 5);
 
 		UI.label(checkComp, tk, M.DontShowSmallerThen);
-		Spinner spinner = UI.spinner(checkComp, tk);
+		var spinner = UI.spinner(checkComp, tk);
 		spinner.setValues(1, 0, 100, 0, 1, 10);
 		UI.label(checkComp, tk, "%");
 		Controls.onSelect(spinner, e -> {
@@ -108,7 +107,7 @@ public class LocationPage extends FormPage {
 			refreshSelection();
 		});
 
-		Button zeroCheck = UI.labeledCheckbox(checkComp, tk, M.ExcludeZeroEntries);
+		var zeroCheck = UI.labeledCheckbox(checkComp, tk, M.ExcludeZeroEntries);
 		zeroCheck.setSelection(skipZeros);
 		Controls.onSelect(zeroCheck, event -> {
 			skipZeros = zeroCheck.getSelection();
@@ -133,10 +132,12 @@ public class LocationPage extends FormPage {
 			if (obj == null)
 				return;
 			if (obj instanceof Contribution<?> c) {
-				if (c.item instanceof RootDescriptor) {
-					App.open((RootDescriptor) c.item);
-				} else if (c.item instanceof RootEntity) {
-					App.open((RootEntity) c.item);
+				switch (c.item) {
+					case RootDescriptor d -> App.open(d);
+					case RootEntity e -> App.open(e);
+					case TechFlow tf -> App.open(tf.provider());
+					case null, default -> {
+					}
 				}
 			}
 		});

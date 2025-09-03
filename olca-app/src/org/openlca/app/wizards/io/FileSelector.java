@@ -19,7 +19,8 @@ class FileSelector {
 
 	private String[] extensions;
 	private File selection;
-	private String title;
+	private String dialogTitle;
+	private String label = M.File;
 
 	private FileSelector(Consumer<File> handler) {
 		this.handler = handler;
@@ -43,13 +44,22 @@ class FileSelector {
 		return this;
 	}
 
-	FileSelector withTitle(String title) {
-		this.title = title;
+	/// Set the title of the file dialog which is opened by this selector.
+	FileSelector withDialogTitle(String title) {
+		this.dialogTitle = title;
+		return this;
+	}
+
+	/// Set the label of the selector component, default is `File`.
+	FileSelector withLabel(String label) {
+		if (label != null) {
+			this.label = label;
+		}
 		return this;
 	}
 
 	void render(Composite comp) {
-		var text = UI.labeledText(comp, M.File, SWT.READ_ONLY);
+		var text = UI.labeledText(comp, label, SWT.READ_ONLY);
 		text.setBackground(Colors.systemColor(SWT.COLOR_LIST_BACKGROUND));
 		if (selection != null) {
 			text.setText(selection.getName());
@@ -58,13 +68,13 @@ class FileSelector {
 		var browse = new Button(comp, SWT.NONE);
 		browse.setText(M.Browse);
 		browse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-		if (title != null) {
-			browse.setToolTipText(title);
+		if (dialogTitle != null) {
+			browse.setToolTipText(dialogTitle);
 		}
 
 		Controls.onSelect(browse, e -> {
 			var file = FileChooser.openFile()
-					.withTitle(title)
+					.withTitle(dialogTitle)
 					.withExtensions(extensions)
 					.select()
 					.orElse(null);
