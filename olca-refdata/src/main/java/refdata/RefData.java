@@ -1,7 +1,7 @@
 package refdata;
 
 import java.io.File;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
@@ -101,7 +101,7 @@ class RefData {
 				"/master/refdata/" + name;
 		System.out.println("download: " + path);
 		try {
-			var url = new URL(path);
+			var url = new URI(path).toURL();
 			try (var input = url.openStream()) {
 				Files.copy(input, target.toPath());
 			}
