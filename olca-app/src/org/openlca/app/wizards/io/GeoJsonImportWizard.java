@@ -110,7 +110,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 						json = file;
 						setPageComplete(true);
 					})
-					.withTitle(M.SelectAGeoJsonFileDots)
+					.withDialogTitle(M.SelectAGeoJsonFileDots)
 					.withExtensions("*.geojson", "*.json")
 					.withSelection(json)
 					.render(fileComp);
