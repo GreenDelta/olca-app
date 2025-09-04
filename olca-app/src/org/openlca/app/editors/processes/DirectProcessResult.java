@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
+import org.openlca.core.database.DataPackages;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.matrix.Demand;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 class DirectProcessResult {
 
 	private final IDatabase db;
+	private final DataPackages dataPackages;
 	private final Process process;
 	private final boolean regionalized;
 
@@ -48,6 +50,7 @@ class DirectProcessResult {
 			IDatabase db, Process process, boolean regionalized
 	) {
 		this.db = db;
+		this.dataPackages = db.getDataPackages();
 		this.process = process;
 		this.regionalized = regionalized;
 		impactIdx = ImpactIndex.of(db);
@@ -175,7 +178,7 @@ class DirectProcessResult {
 
 		boolean withLibs = false;
 		for (var i : impactIdx) {
-			if (i.isFromLibrary()) {
+			if (dataPackages.isFromLibrary(i)) {
 				withLibs = true;
 				break;
 			}
