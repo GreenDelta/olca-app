@@ -8,6 +8,7 @@ const config = {
   entry: {
     home: './src/home/home.tsx',
     report: './src/report/report.tsx',
+    agent: './src/agent/agent.tsx',
   },
   module: {
     rules: [

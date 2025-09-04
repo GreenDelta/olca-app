@@ -29,6 +29,7 @@ import org.openlca.app.components.replace.ReplaceFlowsDialog;
 import org.openlca.app.components.replace.ReplaceProvidersDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.devtools.IpcDialog;
+import org.openlca.app.devtools.agent.AgentEditor;
 import org.openlca.app.devtools.python.PythonEditor;
 import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.StartPage;
@@ -251,6 +252,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		devMenu.add(Actions.create("SQL", Icon.SQL.descriptor(), SqlEditor::open));
 		devMenu.add(Actions.create(M.Console, Icon.CONSOLE.descriptor(), Console::show));
 		devMenu.add(Actions.create(M.Python, Icon.PYTHON.descriptor(), PythonEditor::open));
+		devMenu.add(Actions.create("Agent", Icon.PYTHON.descriptor(), AgentEditor::open));
 		devMenu.add(Actions.create(M.IpcServer, Icon.IPC.descriptor(), IpcDialog::show));
 	}
 

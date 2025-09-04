@@ -43,6 +43,14 @@
 		</editor>
 
 		<editor
+				class="org.openlca.app.devtools.agent.AgentEditor"
+				default="false"
+				id="AgentEditor"
+				name="Agent"
+				contributorClass="org.openlca.app.devtools.Toolbar">
+		</editor>
+
+		<editor
 				class="org.openlca.app.tools.params.ParameterAnalysisResultPage"
 				default="false"
 				id="ParameterAnalysisResultPage"
