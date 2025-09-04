@@ -1,7 +1,7 @@
 package refdata;
 
 import java.io.File;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
@@ -44,7 +44,7 @@ class GeoImport {
 		try {
 			var path = "https://geography.ecoinvent.org/files/all.geojson.bz2";
 			System.out.println("  ... fetch geographies from: " + path + " ...");
-			var url = new URL(path);
+			var url = new URI(path).toURL();
 			try (var bz2 = url.openStream();
 				var input = new BZip2CompressorInputStream(bz2)) {
 				Files.copy(input, file.toPath(),
