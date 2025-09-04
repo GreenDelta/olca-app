@@ -1,0 +1,443 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "olca-custom-registry",
+  "homepage": "http://localhost:3000",
+  "items": [
+    {
+      "name": "chat",
+      "type": "registry:block",
+      "title": "Chat Component",
+      "description": "A composable and customizable chat interface component with message history, typing indicators, file attachments support, and auto-scrolling behavior",
+      "documentation": {
+        "features": [
+          "Message history display",
+          "Real-time typing indicators", 
+          "File attachment support",
+          "Auto-scrolling with manual override",
+          "Prompt suggestions for empty states",
+          "Stop generation capability",
+          "Fully customizable styling"
+        ],
+        "usage": {
+          "basic": "Basic chat interface with useChat hook from ai/react",
+          "withSuggestions": "Chat with prompt suggestions for empty states",
+          "custom": "Custom implementation using individual sub-components"
+        },
+        "props": {
+          "messages": "Array of chat messages to display (Message[])",
+          "input": "Current input value (string)",
+          "handleInputChange": "Input change handler (React.ChangeEvent<HTMLTextAreaElement>) => void",
+          "handleSubmit": "Form submission handler (event?, options?) => void",
+          "isGenerating": "Whether AI is currently generating a response (boolean)",
+          "stop": "Function to stop AI generation () => void",
+          "setMessages": "Optional function to update messages state (Message[]) => void",
+          "append": "Function to append a new message (Message) => void (required for suggestions)",
+          "suggestions": "Array of prompt suggestions to show when chat is empty (string[])",
+          "onRateResponse": "Callback to handle user rating of AI responses (messageId: string, rating: 'thumbs-up' | 'thumbs-down') => void",
+          "className": "Additional CSS classes for ChatContainer (string)",
+          "transcribeAudio": "Function to transcribe audio (blob: Blob) => Promise<string>"
+        },
+        "subComponents": {
+          "ChatContainer": "Container component that wraps the whole chat interface",
+          "ChatMessages": "Provides a message list with auto-scrolling behavior and typing indicators",
+          "ChatForm": "Form component that wraps message input and submit button",
+          "MessageInput": "Input component for typing messages",
+          "MessageList": "List component for displaying messages",
+          "PromptSuggestions": "Component for displaying prompt suggestions"
+        }
+      },
+      "files": [
+        {
+          "path": "registry/chat/chat.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/chat/chat-container.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/chat/chat-form.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/chat/chat-messages.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/chat/message-input.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/chat/message-list.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/chat/prompt-suggestions.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/chat/examples/basic-usage.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/chat/examples/with-suggestions.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/chat/examples/custom-implementation.tsx",
+          "type": "registry:example"
+        }
+      ],
+      "dependencies": [
+        "ai/react",
+        "lucide-react",
+        "@radix-ui/react-slot"
+      ]
+    },
+    {
+      "name": "message-input",
+      "type": "registry:component",
+      "title": "Message Input",
+      "description": "A textarea component with file attachment support, auto-resizing, and drag-and-drop capabilities",
+      "documentation": {
+        "features": [
+          "Auto-resizing textarea",
+          "File attachments support",
+          "Drag and drop file uploads",
+          "Submit on Enter (configurable)",
+          "Stop generation button",
+          "Double-enter interrupt behavior",
+          "Voice input with transcription",
+          "Fully customizable styling"
+        ],
+        "usage": {
+          "basic": "Basic message input with auto-resizing",
+          "withAttachments": "Message input with file attachment support",
+          "withStop": "Message input with stop generation button",
+          "withInterrupt": "Message input with double-enter interrupt behavior",
+          "withVoice": "Message input with voice transcription support"
+        },
+        "props": {
+          "value": "Current input value (string) - Required",
+          "onChange": "Input change handler (React.ChangeEvent<HTMLTextAreaElement>) => void - Required",
+          "isGenerating": "Whether AI is generating (boolean) - Required",
+          "submitOnEnter": "Whether to submit on Enter key (boolean) - Default: true",
+          "stop": "Function to stop generation () => void",
+          "placeholder": "Input placeholder text (string) - Default: 'Ask AI...'",
+          "allowAttachments": "Enable file attachments (boolean)",
+          "enableInterrupt": "Enable double-enter interrupt (boolean) - Default: true",
+          "transcribeAudio": "Function to transcribe audio (blob: Blob) => Promise<string>",
+          "files": "Currently attached files (File[] | null) - Required when allowAttachments is true",
+          "setFiles": "Files state setter (React.Dispatch<React.SetStateAction<File[] | null>>) - Required when allowAttachments is true"
+        },
+        "interruptBehavior": "When enableInterrupt is enabled and isGenerating is true, pressing Enter once will show a prompt asking the user to press Enter again to interrupt the generation. The prompt will disappear either when the user presses Enter again (triggering the stop function) or when the generation completes.",
+        "autoResizing": "The textarea automatically resizes based on content up to a maximum height of 240px.",
+        "fileAttachments": "Enable file attachments with drag-and-drop support when allowAttachments is true.",
+        "voiceInput": "Enable voice input with audio transcription when transcribeAudio prop is provided."
+      },
+      "files": [
+        {
+          "path": "registry/message-input/message-input.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/message-input/examples/basic-usage.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/message-input/examples/with-attachments.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/message-input/examples/with-stop.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/message-input/examples/with-interrupt.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/message-input/examples/with-voice.tsx",
+          "type": "registry:example"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "@radix-ui/react-slot"
+      ]
+    },
+    {
+      "name": "message-list",
+      "type": "registry:component",
+      "title": "Message List",
+      "description": "A component for rendering a list of chat messages with a typing indicator",
+      "documentation": {
+        "features": [
+          "Vertical list of chat messages",
+          "Optional typing indicators",
+          "Timestamps display",
+          "Custom message options",
+          "Dynamic message styling",
+          "Auto-scrolling behavior",
+          "Message attachments support",
+          "Fully customizable styling"
+        ],
+        "usage": {
+          "basic": "Basic message list with messages array",
+          "withCustomOptions": "Message list with custom message styling",
+          "withDynamicOptions": "Message list with dynamic styling based on message role",
+          "withTyping": "Message list with typing indicator",
+          "withTimestamps": "Message list with timestamp display"
+        },
+        "props": {
+          "messages": "Array of messages to display (Message[]) - Required",
+          "showTimeStamps": "Whether to show timestamps on messages (boolean) - Default: true",
+          "isTyping": "Whether to show the typing indicator (boolean) - Default: false",
+          "messageOptions": "Additional options to pass to each ChatMessage component (AdditionalMessageOptions | (message: Message) => AdditionalMessageOptions)",
+          "className": "Additional CSS classes for the message list container (string)"
+        },
+        "messageType": {
+          "id": "Unique identifier for the message (string)",
+          "role": "Message role - 'user' | 'assistant' (string)",
+          "content": "Message content text (string)",
+          "createdAt": "Message creation timestamp (Date) - Optional",
+          "attachments": "File attachments (File[]) - Optional"
+        },
+        "messageOptions": "AdditionalMessageOptions can be either a static object or a function that receives the message and returns options for that specific message."
+      },
+      "files": [
+        {
+          "path": "registry/message-list/message-list.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/message-list/chat-message.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/message-list/examples/basic-usage.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/message-list/examples/with-custom-options.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/message-list/examples/with-dynamic-options.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/message-list/examples/with-typing.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/message-list/examples/with-attachments.tsx",
+          "type": "registry:example"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "@radix-ui/react-slot"
+      ]
+    },
+    {
+      "name": "chat-message",
+      "type": "registry:component",
+      "title": "Chat Message",
+      "description": "A customizable message bubble component for chat interfaces with support for user and AI messages",
+      "documentation": {
+        "features": [
+          "Customizable message bubble styling",
+          "Support for user and AI messages",
+          "Markdown content rendering",
+          "Timestamp display",
+          "Animation styles (slide, scale, fade, none)",
+          "Contextual actions on hover",
+          "File attachments support",
+          "Accessibility features",
+          "Keyboard navigation support"
+        ],
+        "usage": {
+          "basic": "Basic message bubble with role and content",
+          "withTimestamp": "Message with timestamp display",
+          "withActions": "Message with hover actions (assistant only)",
+          "withAttachments": "Message with file attachments",
+          "withAnimations": "Message with different animation styles"
+        },
+        "props": {
+          "role": "The role of the message sender - 'user' | 'assistant' (string) - Required",
+          "content": "The message content (supports markdown) (string) - Required",
+          "id": "Unique identifier for the message (string) - Required",
+          "createdAt": "Timestamp for the message (Date)",
+          "showTimeStamp": "Whether to show the timestamp (boolean) - Default: false",
+          "animation": "Animation style for the message bubble - 'none' | 'slide' | 'scale' | 'fade' (string) - Default: 'scale'",
+          "actions": "Actions to show on hover (assistant only) (ReactNode)",
+          "attachments": "Array of attached files (File[])",
+          "className": "Additional CSS classes (string)"
+        },
+        "animations": {
+          "none": "No animation",
+          "slide": "Slide in from the side",
+          "scale": "Scale up animation (default)",
+          "fade": "Fade in animation"
+        },
+        "accessibility": [
+          "Messages are properly structured for screen readers",
+          "Timestamps use semantic HTML",
+          "Actions are keyboard accessible",
+          "Color contrast meets WCAG guidelines"
+        ]
+      },
+      "files": [
+        {
+          "path": "registry/chat-message/chat-message.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/chat-message/examples/basic-usage.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/chat-message/examples/with-timestamp.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/chat-message/examples/with-actions.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/chat-message/examples/with-attachments.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/chat-message/examples/with-animations.tsx",
+          "type": "registry:example"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "@radix-ui/react-slot"
+      ]
+    },
+    {
+      "name": "prompt-suggestions",
+      "type": "registry:component",
+      "title": "Prompt Suggestions",
+      "description": "A component that displays clickable prompt suggestions for empty chat states",
+      "documentation": {
+        "features": [
+          "Clickable prompt suggestions",
+          "Grid layout for suggestions",
+          "Customizable label text",
+          "Empty chat state support",
+          "Quick conversation starters",
+          "Responsive design",
+          "Accessibility features",
+          "Keyboard navigation support"
+        ],
+        "usage": {
+          "basic": "Basic prompt suggestions with default styling",
+          "customLabel": "Prompt suggestions with custom label text",
+          "lcaFocused": "LCA-focused prompt suggestions for environmental analysis",
+          "conversationStarters": "General conversation starter suggestions"
+        },
+        "props": {
+          "label": "The heading text displayed above the suggestions (string)",
+          "append": "Function called when a suggestion is clicked (message: { role: 'user'; content: string }) => void - Required",
+          "suggestions": "Array of suggestion strings to display as buttons (string[]) - Required",
+          "className": "Additional CSS classes (string)"
+        },
+        "useCases": [
+          "Empty chat state when no messages exist",
+          "Getting users started with conversation",
+          "Providing example queries or topics",
+          "Guiding users to specific functionality"
+        ]
+      },
+      "files": [
+        {
+          "path": "registry/prompt-suggestions/prompt-suggestions.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/prompt-suggestions/examples/basic-usage.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/prompt-suggestions/examples/custom-label.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/prompt-suggestions/examples/lca-focused.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/prompt-suggestions/examples/conversation-starters.tsx",
+          "type": "registry:example"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "@radix-ui/react-slot"
+      ]
+    },
+    {
+      "name": "typing-indicator",
+      "type": "registry:component",
+      "title": "Typing Indicator",
+      "description": "A simple animated typing indicator component",
+      "documentation": {
+        "features": [
+          "Animated three dots",
+          "Minimal and elegant design",
+          "Smooth animation timing",
+          "Customizable styling",
+          "Lightweight implementation",
+          "Accessibility friendly",
+          "Easy to integrate",
+          "Responsive design"
+        ],
+        "usage": {
+          "basic": "Basic typing indicator with default styling",
+          "customStyling": "Typing indicator with custom colors and sizing",
+          "inMessage": "Typing indicator integrated within message components",
+          "standalone": "Standalone typing indicator for chat interfaces"
+        },
+        "props": {
+          "className": "Additional CSS classes for custom styling (string)",
+          "size": "Size of the typing indicator - 'sm' | 'md' | 'lg' (string) - Default: 'md'",
+          "color": "Color variant - 'default' | 'primary' | 'muted' (string) - Default: 'default'"
+        },
+        "useCases": [
+          "Chat interfaces showing when someone is typing",
+          "Loading states for message generation",
+          "AI response indicators",
+          "Real-time collaboration features"
+        ]
+      },
+      "files": [
+        {
+          "path": "registry/typing-indicator/typing-indicator.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "registry/typing-indicator/examples/basic-usage.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/typing-indicator/examples/custom-styling.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/typing-indicator/examples/in-message.tsx",
+          "type": "registry:example"
+        },
+        {
+          "path": "registry/typing-indicator/examples/standalone.tsx",
+          "type": "registry:example"
+        }
+      ],
+      "dependencies": []
+    }
+  ]
+}

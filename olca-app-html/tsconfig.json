@@ -14,7 +14,11 @@
       "es6",
       "dom"
     ],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "src/**/*"
