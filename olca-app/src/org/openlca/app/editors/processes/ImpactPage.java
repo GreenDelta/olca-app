@@ -2,7 +2,6 @@ package org.openlca.app.editors.processes;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -24,6 +23,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -31,34 +31,20 @@ import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.core.database.ImpactMethodDao;
-import org.openlca.core.math.ReferenceAmount;
-import org.openlca.core.matrix.Demand;
-import org.openlca.core.matrix.ImpactBuilder;
-import org.openlca.core.matrix.MatrixData;
-import org.openlca.core.matrix.ParameterTable;
-import org.openlca.core.matrix.format.JavaMatrix;
-import org.openlca.core.matrix.format.MatrixBuilder;
 import org.openlca.core.matrix.index.EnviFlow;
-import org.openlca.core.matrix.index.EnviIndex;
-import org.openlca.core.matrix.index.ImpactIndex;
-import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.core.matrix.index.TechIndex;
-import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.LcaResult;
-import org.openlca.core.results.providers.ResultProviders;
-import org.openlca.core.results.providers.SolverContext;
 import org.openlca.util.Strings;
 
 class ImpactPage extends ModelPage<Process> {
 
 	private ImpactMethodViewer combo;
 	private Button zeroCheck;
+	private Button regioCheck;
 	private TreeViewer tree;
 	private LcaResult result;
 
@@ -72,7 +58,8 @@ class ImpactPage extends ModelPage<Process> {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		var comp = UI.composite(body, tk);
-		UI.gridLayout(comp, 5);
+		UI.gridLayout(comp, 9, 10, 0);
+
 		UI.label(comp, tk, M.ImpactAssessmentMethod);
 		combo = new ImpactMethodViewer(comp);
 		var methods = new ImpactMethodDao(Database.get())
@@ -81,10 +68,19 @@ class ImpactPage extends ModelPage<Process> {
 				.collect(Collectors.toList());
 		combo.setInput(methods);
 		combo.addSelectionChangedListener(this::setTreeInput);
+		UI.label(comp, tk, "|");
 
 		zeroCheck = UI.labeledCheckbox(comp, tk, M.ExcludeZeroValues);
 		zeroCheck.setSelection(true);
 		Controls.onSelect(zeroCheck, e -> setTreeInput(combo.getSelected()));
+		UI.label(comp, tk, "|");
+
+		regioCheck = UI.labeledCheckbox(comp, tk, M.RegionalizedCalculation);
+		regioCheck.setSelection(false);
+		Controls.onSelect(regioCheck, e -> {
+			result = null;
+			setTreeInput(combo.getSelected());
+		});
 
 		var reload = UI.button(comp, tk, M.Reload);
 		var image = Icon.REFRESH.get();
@@ -119,7 +115,7 @@ class ImpactPage extends ModelPage<Process> {
 		Trees.onDoubleClick(tree, e -> onOpen.run());
 
 		if (!methods.isEmpty()) {
-			var m = methods.get(0);
+			var m = methods.getFirst();
 			combo.select(m);
 			setTreeInput(m);
 		}
@@ -129,21 +125,32 @@ class ImpactPage extends ModelPage<Process> {
 	private void setTreeInput(ImpactMethodDescriptor method) {
 		if (tree == null)
 			return;
+
 		if (method == null) {
 			tree.setInput(Collections.emptyList());
 			return;
 		}
+
 		if (result == null) {
-			App.runInUI(M.ComputeLciaResultsDots, () -> {
-				result = compute();
-				setTreeInput(method);
+			var regionalized = regioCheck.getSelection();
+			App.runInUI(M.ComputeLciaResultsDots,
+					() -> {
+				var res = DirectProcessResult.calculate(getModel(), regionalized);
+				if (res.hasError()) {
+					MsgBox.error("Calculation failed", res.error());
+				} else {
+					result = res.value();
+					setTreeInput(method);
+				}
 			});
 			return;
 		}
+
 		if (!result.hasEnviFlows() || !result.hasImpacts()) {
 			tree.setInput(Collections.emptyList());
 			return;
 		}
+
 		var contributions = new ImpactMethodDao(Database.get())
 				.getCategoryDescriptors(method.id)
 				.stream()
@@ -155,73 +162,6 @@ class ImpactPage extends ModelPage<Process> {
 				})
 				.collect(Collectors.toList());
 		tree.setInput(contributions);
-	}
-
-	private LcaResult compute() {
-
-		var data = new MatrixData();
-
-		// create a virtual demand of 1.0
-		var refProduct = TechFlow.of(getModel());
-		data.techIndex = new TechIndex(refProduct);
-		data.demand = Demand.of(refProduct, 1.0);
-		data.techMatrix = JavaMatrix.of(new double[][]{{1.0}});
-
-		// collect the elementary flow exchanges
-		var elemFlows = new ArrayList<Exchange>();
-		boolean regionalized = false;
-		for (var e : getModel().exchanges) {
-			if (e.flow == null
-					|| e.flow.flowType != FlowType.ELEMENTARY_FLOW)
-				continue;
-			if (e.location != null) {
-				regionalized = true;
-			}
-			elemFlows.add(e);
-		}
-		if (elemFlows.isEmpty()) {
-			// return an empty result if there are no elementary flows
-			var provider = ResultProviders.solve(SolverContext.of(data));
-			return new LcaResult(provider);
-		}
-
-		// create the flow index and B matrix / vector
-		data.enviIndex = regionalized
-				? EnviIndex.createRegionalized()
-				: EnviIndex.create();
-		var enviBuilder = new MatrixBuilder();
-		for (var e : elemFlows) {
-			var flow = Descriptor.of(e.flow);
-			var loc = e.location != null
-					? Descriptor.of(e.location)
-					: null;
-			int i = e.isInput
-					? data.enviIndex.add(EnviFlow.inputOf(flow, loc))
-					: data.enviIndex.add(EnviFlow.outputOf(flow, loc));
-			double amount = ReferenceAmount.get(e);
-			if (e.isInput && amount != 0) {
-				amount = -amount;
-			}
-			enviBuilder.add(i, 0, amount);
-		}
-		data.enviMatrix = enviBuilder.finish();
-
-		// build the impact index and matrix
-		var db = Database.get();
-		data.impactIndex = ImpactIndex.of(db);
-		var contexts = new HashSet<Long>();
-		contexts.add(getModel().id);
-		data.impactIndex.each((i, d) -> contexts.add(d.id));
-		var interpreter = ParameterTable.interpreter(
-				db, contexts, Collections.emptySet());
-		data.impactMatrix = ImpactBuilder.of(db, data.enviIndex)
-				.withImpacts(data.impactIndex)
-				.withInterpreter(interpreter)
-				.build().impactMatrix;
-
-		// create the result
-		var provider = ResultProviders.solve(SolverContext.of(data));
-		return new LcaResult(provider);
 	}
 
 	private class Content extends ArrayContentProvider

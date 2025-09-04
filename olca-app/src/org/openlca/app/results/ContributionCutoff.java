@@ -23,7 +23,7 @@ public class ContributionCutoff {
 		UI.gridLayout(comp, 3, 10, 0);
 		UI.gridData(comp, false, false).horizontalAlignment = SWT.RIGHT;
 		UI.label(comp, tk, M.DontShowSmallerThen);
-		spinner = UI.spinner(comp, tk, SWT.BORDER);
+		spinner = UI.spinner(comp, tk);
 		spinner.setValues(1, 0, 100, 0, 1, 10);
 		UI.label(comp, tk, "%");
 	}

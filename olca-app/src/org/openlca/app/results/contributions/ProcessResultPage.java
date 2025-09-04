@@ -137,7 +137,7 @@ public class ProcessResultPage extends FormPage {
 		});
 
 		UI.label(container, tk, M.DontShowSmallerThen);
-		flowSpinner = UI.spinner(container, tk, SWT.BORDER);
+		flowSpinner = UI.spinner(container, tk);
 		flowSpinner.setValues(1, 0, 10000, 2, 1, 100);
 		UI.label(container, tk, "%");
 		Controls.onSelect(flowSpinner, (e) -> {

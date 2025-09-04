@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -87,7 +86,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 			updateRows();
 		});
 
-		var spinner = UI.spinner(configComp, tk, SWT.BORDER);
+		var spinner = UI.spinner(configComp, tk);
 		spinner.setIncrement(1);
 		spinner.setMinimum(1);
 		spinner.setSelection(count);

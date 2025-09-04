@@ -35,7 +35,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.wizards.io.ImportLogDialog;
-import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.hestia.HestiaClient;
 import org.openlca.io.hestia.HestiaImport;
@@ -85,6 +84,7 @@ public class HestiaTool extends SimpleFormEditor {
 		private final HestiaClient client;
 		private TableViewer table;
 		private Text searchText;
+		private SettingsPanel settings;
 
 		Page(HestiaTool editor) {
 			super(editor, "Hestia", "Hestia");
@@ -97,11 +97,11 @@ public class HestiaTool extends SimpleFormEditor {
 			var tk = mForm.getToolkit();
 			var body = UI.body(form, tk);
 
-			createSearchSection(body, tk);
+			createConfigSection(body, tk);
 			createTableSection(body, tk);
 		}
 
-		private void createSearchSection(Composite body, FormToolkit tk) {
+		private void createConfigSection(Composite body, FormToolkit tk) {
 			var section = UI.section(body, tk, M.Search);
 			var comp = UI.sectionClient(section, tk, 1);
 
@@ -123,6 +123,9 @@ public class HestiaTool extends SimpleFormEditor {
 					runSearch();
 				}
 			});
+
+			settings = new SettingsPanel(searchComp, tk);
+
 		}
 
 		private void createTableSection(Composite body, FormToolkit tk) {
@@ -137,7 +140,14 @@ public class HestiaTool extends SimpleFormEditor {
 
 			var importAction = Actions.create(
 					M.ImportSelected, Icon.IMPORT.descriptor(), this::runImport);
-			Actions.bind(table, importAction);
+			var previewAction = Actions.create(
+					"Show cycle", Icon.HESTIA.descriptor(), () -> {
+						SearchResult r = Viewers.getFirstSelected(table);
+						if (r != null) {
+							CyclePreviewDialog.show(client, r.id());
+						}
+					});
+			Actions.bind(table, previewAction, importAction);
 		}
 
 		private void runSearch() {
@@ -146,10 +156,12 @@ public class HestiaTool extends SimpleFormEditor {
 				table.setInput(new ArrayList<>());
 				return;
 			}
+			var agg = settings.searchAggregated();
+			var count = settings.numberOfResults();
 
 			var ref = new AtomicReference<Res<List<SearchResult>>>();
 			App.runWithProgress("Searching Hestia...", () -> {
-				var res = client.search(new SearchQuery(25, query));
+				var res = client.search(new SearchQuery(count, query, agg));
 				ref.set(res);
 			}, () -> {
 				var res = ref.get();
@@ -172,7 +184,7 @@ public class HestiaTool extends SimpleFormEditor {
 				return;
 			}
 
-			var imp = new HestiaImport(client, db, FlowMap.empty());
+			var imp = new HestiaImport(client, db, settings.flowMap());
 			var log = imp.log();
 			App.runWithProgress(
 					"Importing data sets...",
