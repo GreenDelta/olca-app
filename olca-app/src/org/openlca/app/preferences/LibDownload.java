@@ -1,16 +1,17 @@
 package org.openlca.app.preferences;
 
-import org.openlca.nativelib.Module;
-import org.openlca.nativelib.NativeLib;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipFile;
+
+import org.openlca.nativelib.Module;
+import org.openlca.nativelib.NativeLib;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for downloading the native libraries of a module to a given
@@ -64,7 +65,7 @@ public class LibDownload {
 
 			var path = getUrl();
 			log.info("fetch jar from {}", path);
-			URL url = new URL(path);
+			URL url = new URI(path).toURL();
 
 			// download the jar/zip into a temporary file
 			var zip = Files.createTempFile(
