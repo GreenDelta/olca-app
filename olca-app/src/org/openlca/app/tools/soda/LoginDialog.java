@@ -1,7 +1,8 @@
 package org.openlca.app.tools.soda;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 import org.eclipse.swt.SWT;
@@ -127,8 +128,8 @@ class LoginDialog extends FormDialog {
 			if (!url.startsWith("http://") && !url.startsWith("https://"))
 				return M.UrlShouldStartWithHttp;
 			try {
-				new URL(url);
-			} catch (MalformedURLException e) {
+				new URI(url).toURL();
+			} catch (MalformedURLException | URISyntaxException e) {
 				return M.InvalidUrl + " - " + e.getMessage();
 			}
 
