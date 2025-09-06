@@ -20,7 +20,13 @@ const config = {
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      '@': path.resolve(__dirname, '.'),
+      '@/components': path.resolve(__dirname, 'components'),
+      '@/hooks': path.resolve(__dirname, 'hooks'),
+      '@/lib': path.resolve(__dirname, 'src/lib')
+    }
   },
   output: {
     filename: '[name].js',
@@ -46,10 +52,6 @@ const config = {
       ]
     }),
   ],
-  resolve: {
-    // Add `.ts` and `.tsx` as a resolvable extension.
-    extensions: [".ts", ".tsx", ".js"]
-  },
   // When importing a module whose path matches one of the following, just
   // assume a corresponding global variable exists and use that instead.
   // This is important because it allows us to avoid bundling all of our

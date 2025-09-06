@@ -1,4 +1,5 @@
 /* Agent Chat Styles */
+@import './agent-enhanced.css';
 .agent-app {
   height: 100vh;
   display: flex;

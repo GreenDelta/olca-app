@@ -1,14 +1,19 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { render } from "react-dom";
-
-// Types for chat messages
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  createdAt?: Date;
-  attachments?: File[];
-}
+import { 
+  Message, 
+  ToolCall, 
+  ToolResult, 
+  HumanInputRequest, 
+  LangGraphConfig,
+  StreamChunk 
+} from "./types";
+import { LangGraphService } from "./langgraphService";
+import { HumanInputModal, ConnectionStatus } from "./components/HumanInputModal";
+import { TypingIndicator } from "@/components/ui/typing-indicator";
+import { ChatMessage } from "@/components/ui/chat-message";
+import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
+import { MessageInput } from "@/components/ui/message-input";
 
 // LCA-focused prompt suggestions
 const lcaSuggestions = [
@@ -24,36 +29,171 @@ const AgentChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
+  const [toolCalls, setToolCalls] = useState<ToolCall[]>([]);
+  const [toolResults, setToolResults] = useState<ToolResult[]>([]);
+  const [humanInputRequest, setHumanInputRequest] = useState<HumanInputRequest | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('disconnected');
+  const [lastConnected, setLastConnected] = useState<Date | undefined>();
+  const [retryCount, setRetryCount] = useState(0);
+  
+  const langGraphService = useRef<LangGraphService | null>(null);
+  const currentStream = useRef<AsyncGenerator<StreamChunk, void, unknown> | null>(null);
+
+  // Initialize LangGraph service
+  useEffect(() => {
+    const config: LangGraphConfig = {
+      url: process.env.REACT_APP_LANGGRAPH_URL || 'http://localhost:8000',
+      apiKey: process.env.REACT_APP_LANGGRAPH_API_KEY || '',
+      timeout: 30000,
+      retryAttempts: 3
+    };
+
+    // Initialize real LangGraph service
+    langGraphService.current = new LangGraphService(config);
+    
+    // Connect to service
+    const connect = async () => {
+      const connected = await langGraphService.current!.connect();
+      if (connected) {
+        setConnectionStatus('connected');
+        setLastConnected(new Date());
+        setRetryCount(0);
+      } else {
+        setConnectionStatus('disconnected');
+      }
+    };
+
+    connect();
+
+    return () => {
+      if (langGraphService.current) {
+        langGraphService.current.destroy();
+      }
+    };
+  }, []);
 
   // Handle message submission
   const handleSubmit = useCallback(async (event?: React.FormEvent) => {
     if (event) event.preventDefault();
-    if (!input.trim() || isGenerating) return;
+    if (!input.trim() || isGenerating || !langGraphService.current) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
-      createdAt: new Date()
+      createdAt: new Date(),
+      status: 'completed'
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInput("");
     setIsGenerating(true);
 
-    // Simulate AI response (replace with actual AI integration)
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
+    try {
+      // Create or get current thread
+      if (!currentThreadId) {
+        const thread = await langGraphService.current.createThread();
+        setCurrentThreadId(thread.id);
+      }
+
+      // Create streaming assistant message
+      const assistantMessageId = (Date.now() + 1).toString();
+      const assistantMessage: Message = {
+        id: assistantMessageId,
         role: 'assistant',
-        content: `I understand you're asking about: "${userMessage.content}". This is a simulated response. In the full implementation, this would connect to an AI service that can help with LCA analysis, data interpretation, and process optimization.`,
-        createdAt: new Date()
+        content: '',
+        createdAt: new Date(),
+        status: 'streaming',
+        threadId: currentThreadId || undefined
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+
+      // Stream from LangGraph
+      const stream = langGraphService.current.stream({
+        threadId: currentThreadId!,
+        input: { message: userMessage.content },
+        streamMode: 'updates'
+      });
+
+      currentStream.current = stream;
+
+      // Process streaming updates
+      for await (const chunk of stream) {
+        await processStreamChunk(chunk, assistantMessageId);
+      }
+
+      // Mark message as completed
+      setMessages(prev => prev.map(msg => 
+        msg.id === assistantMessageId 
+          ? { ...msg, status: 'completed' }
+          : msg
+      ));
+
+    } catch (error) {
+      console.error('Streaming error:', error);
+      
+      // Add error message
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        role: 'system',
+        content: `Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`,
+        createdAt: new Date(),
+        status: 'error'
       };
       
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsGenerating(false);
-    }, 1500);
-  }, [input, isGenerating]);
+      currentStream.current = null;
+    }
+  }, [input, isGenerating, currentThreadId]);
+
+  // Process streaming chunks
+  const processStreamChunk = useCallback(async (chunk: StreamChunk, messageId: string) => {
+    switch (chunk.type) {
+      case 'tool_call':
+        const toolCall: ToolCall = {
+          ...chunk.data,
+          timestamp: new Date()
+        };
+        setToolCalls(prev => [...prev, toolCall]);
+        break;
+
+      case 'tool_result':
+        const toolResult: ToolResult = {
+          ...chunk.data,
+          timestamp: new Date()
+        };
+        setToolResults(prev => [...prev, toolResult]);
+        
+        // Update tool call status
+        setToolCalls(prev => prev.map(tc => 
+          tc.id === toolResult.toolCallId 
+            ? { ...tc, status: toolResult.success ? 'completed' : 'failed', error: toolResult.error }
+            : tc
+        ));
+        break;
+
+      case 'human_input_required':
+        setHumanInputRequest(chunk.data);
+        setIsGenerating(false);
+        break;
+
+      case 'message':
+        setMessages(prev => prev.map(msg => 
+          msg.id === messageId 
+            ? { ...msg, content: chunk.data.content, status: chunk.data.isStreaming ? 'streaming' : 'completed' }
+            : msg
+        ));
+        break;
+
+      case 'error':
+        console.error('Stream error:', chunk.data.error);
+        break;
+    }
+  }, []);
 
   // Handle input change
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -65,86 +205,159 @@ const AgentChat: React.FC = () => {
     setInput(suggestion);
   }, []);
 
+  // Handle human input submission
+  const handleHumanInputSubmit = useCallback(async (response: any) => {
+    if (!humanInputRequest || !langGraphService.current) return;
+
+    try {
+      await langGraphService.current.resumeWithHumanInput({
+        threadId: humanInputRequest.threadId || currentThreadId!,
+        runId: humanInputRequest.runId || '',
+        humanInput: response
+      });
+
+      setHumanInputRequest(null);
+      setIsGenerating(true);
+
+      // Continue processing the stream
+      // The stream will continue automatically after human input
+
+    } catch (error) {
+      console.error('Failed to submit human input:', error);
+      setHumanInputRequest(null);
+    }
+  }, [humanInputRequest, currentThreadId]);
+
+  // Handle human input cancellation
+  const handleHumanInputCancel = useCallback(() => {
+    setHumanInputRequest(null);
+    setIsGenerating(false);
+  }, []);
+
+  // Retry failed tool
+  const handleToolRetry = useCallback(async (toolCallId: string) => {
+    if (!langGraphService.current) return;
+
+    try {
+      await langGraphService.current.retryTool(toolCallId);
+    } catch (error) {
+      console.error('Failed to retry tool:', error);
+    }
+  }, []);
+
   // Stop generation
   const stopGeneration = useCallback(() => {
     setIsGenerating(false);
+    currentStream.current = null;
   }, []);
 
   return (
     <div className="agent-chat-container">
       <div className="chat-container">
+        <div className="connection-header">
+          <ConnectionStatus 
+            status={connectionStatus}
+            lastConnected={lastConnected}
+            retryCount={retryCount}
+          />
+        </div>
+        
         <div className="messages-container">
           {messages.length === 0 ? (
-            <div className="welcome-section">
-              <h3>Welcome to the openLCA Agent</h3>
-              <div className="suggestions-grid">
-                {lcaSuggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    className="suggestion-button"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <PromptSuggestions
+              label="Welcome to the openLCA Agent"
+              append={(message) => {
+                setInput(message.content);
+                handleSubmit();
+              }}
+              suggestions={lcaSuggestions}
+            />
           ) : (
-            <div className="message-list">
+            <div className="message-list space-y-4 p-4">
               {messages.map((message) => (
-                <div key={message.id} className={`message ${message.role}`}>
-                  <div className="message-content">
-                    {message.content}
-                  </div>
-                  <div className="message-time">
-                    {message.createdAt?.toLocaleTimeString()}
-                  </div>
+                <div key={message.id}>
+                  {(message.role === 'user' || message.role === 'assistant') && (
+                    <ChatMessage
+                      id={message.id}
+                      role={message.role}
+                      content={message.content}
+                      createdAt={message.createdAt}
+                      showTimeStamp={true}
+                      animation="scale"
+                      toolInvocations={message.toolCalls?.map(toolCall => ({
+                        state: toolCall.status === 'completed' ? 'result' : 
+                               toolCall.status === 'failed' ? 'result' : 'call',
+                        toolName: toolCall.name,
+                        result: toolCall.status === 'completed' ? 
+                          { result: toolResults.find(r => r.toolCallId === toolCall.id)?.result } :
+                          toolCall.status === 'failed' ? 
+                          { __cancelled: true, error: toolCall.error } : undefined
+                      }))}
+                    />
+                  )}
+                  
+                  {(message.role === 'tool' || message.role === 'system') && (
+                    <div className="flex items-start gap-2">
+                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                        <span className="text-xs font-medium">
+                          {message.role === 'tool' ? '🔧' : '⚙️'}
+                        </span>
+                      </div>
+                      <div className="bg-muted rounded-lg px-4 py-2 max-w-[80%]">
+                        <p className="text-sm">{message.content}</p>
+                        {message.createdAt && (
+                          <time className="text-xs text-muted-foreground">
+                            {message.createdAt.toLocaleTimeString()}
+                          </time>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {message.status === 'error' && (
+                    <div className="ml-10 mt-2 text-sm text-red-600">
+                      ⚠️ Error occurred
+                    </div>
+                  )}
                 </div>
               ))}
-              {isGenerating && (
-                <div className="message assistant">
-                  <div className="message-content">
-                    <div className="typing-indicator">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
+              
+              {isGenerating && !humanInputRequest && (
+                <div className="flex items-start gap-2">
+                  <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
+                    <span className="text-xs font-medium">AI</span>
                   </div>
+                  <TypingIndicator />
                 </div>
               )}
             </div>
           )}
         </div>
         
-        <form className="chat-form" onSubmit={handleSubmit}>
-          <div className="input-container">
-            <textarea
+        <div className="chat-form p-4 border-t">
+          <form onSubmit={handleSubmit}>
+            <MessageInput
               value={input}
               onChange={handleInputChange}
+              isGenerating={isGenerating}
+              stop={stopGeneration}
               placeholder="Ask the openLCA Agent..."
-              className="message-input"
-              rows={1}
-              disabled={isGenerating}
+              enableInterrupt={true}
+              allowAttachments={false}
             />
-            <button
-              type="submit"
-              disabled={!input.trim() || isGenerating}
-              className="send-button"
-            >
-              {isGenerating ? "..." : "Send"}
-            </button>
-            {isGenerating && (
-              <button
-                type="button"
-                onClick={stopGeneration}
-                className="stop-button"
-              >
-                Stop
-              </button>
-            )}
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
+      
+      {/* Human Input Modal */}
+      {humanInputRequest && (
+        <HumanInputModal
+          request={humanInputRequest}
+          onSubmit={handleHumanInputSubmit}
+          onCancel={handleHumanInputCancel}
+          isVisible={!!humanInputRequest}
+        />
+      )}
     </div>
   );
 };
@@ -188,31 +401,13 @@ const initializeApp = () => {
 declare global {
   interface Window {
     setTheme: (isDark: boolean) => void;
-    getMessages: () => Message[];
-    setMessages: (messages: Message[]) => void;
-    clearChat: () => void;
   }
 }
 
-// Expose functions for Java integration
+// Expose theme function for Java integration
+// This allows the Java app to control light/dark mode and opens the door for HTML <-> Java communication
 window.setTheme = (isDark: boolean) => {
   document.body.className = isDark ? 'dark' : 'light';
-};
-
-window.getMessages = () => {
-  // This would need to be connected to the React state
-  // For now, return empty array
-  return [];
-};
-
-window.setMessages = (messages: Message[]) => {
-  // This would need to be connected to the React state
-  // For now, do nothing
-};
-
-window.clearChat = () => {
-  // This would need to be connected to the React state
-  // For now, do nothing
 };
 
 // Initialize when DOM is ready
