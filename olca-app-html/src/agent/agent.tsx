@@ -25,7 +25,7 @@ const lcaSuggestions = [
   "Explain the uncertainty in these results",
   "What data quality issues should I address?",
   "Help me interpret these impact assessment results",
-  "✨ Compact header layout!"
+  "🎯 Consolidated CSS structure!"
 ];
 
 interface AgentChatProps {
