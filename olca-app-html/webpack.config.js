@@ -1,7 +1,27 @@
 const CopyPlugin = require('copy-webpack-plugin');
 const ZipPlugin = require('zip-webpack-plugin');
+const webpack = require('webpack');
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
 const dist = path.resolve(__dirname, 'dist');
+
+// Custom plugin to clean workspace HTML folder
+class CleanWorkspaceHtmlPlugin {
+  apply(compiler) {
+    compiler.hooks.beforeRun.tap('CleanWorkspaceHtmlPlugin', () => {
+      const workspaceHtmlDir = path.join(os.homedir(), 'openLCA-data-1.4', 'html', 'olca-app');
+      
+      if (fs.existsSync(workspaceHtmlDir)) {
+        console.log('🧹 Cleaning workspace HTML folder:', workspaceHtmlDir);
+        fs.rmSync(workspaceHtmlDir, { recursive: true, force: true });
+        console.log('✅ Workspace HTML folder cleaned successfully');
+      } else {
+        console.log('ℹ️  Workspace HTML folder does not exist, skipping cleanup');
+      }
+    });
+  }
+}
 
 const config = {
 
@@ -33,6 +53,11 @@ const config = {
     path: dist,
   },
   plugins: [
+    new CleanWorkspaceHtmlPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.REACT_APP_LANGGRAPH_URL': JSON.stringify(process.env.REACT_APP_LANGGRAPH_URL || 'http://localhost:8000'),
+      'process.env.REACT_APP_LANGGRAPH_API_KEY': JSON.stringify(process.env.REACT_APP_LANGGRAPH_API_KEY || ''),
+    }),
     new CopyPlugin({
       patterns: [
         { from: 'src/**/*.html', to: () => `${dist}/[name][ext]` },
@@ -49,6 +74,7 @@ const config = {
         { from: 'node_modules/codemirror/mode/python/python.js', to: dist + '/lib/python.js' },
         { from: 'node_modules/jquery/dist/jquery.min.js', to: dist + '/lib/jquery.min.js' },
         { from: 'node_modules/@picocss/pico/css/pico.min.css', to: `${dist}/lib/pico.min.css` },
+        { from: 'node_modules/tw-animate-css/dist/tw-animate.css', to: `${dist}/tw-animate-css` },
       ]
     }),
   ],

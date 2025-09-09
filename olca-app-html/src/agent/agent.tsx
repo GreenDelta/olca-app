@@ -43,8 +43,8 @@ const AgentChat: React.FC = () => {
   // Initialize LangGraph service
   useEffect(() => {
     const config: LangGraphConfig = {
-      url: process.env.REACT_APP_LANGGRAPH_URL || 'http://localhost:8000',
-      apiKey: process.env.REACT_APP_LANGGRAPH_API_KEY || '',
+      url: 'http://localhost:8000',
+      apiKey: 'xy',
       timeout: 30000,
       retryAttempts: 3
     };
@@ -334,7 +334,7 @@ const AgentChat: React.FC = () => {
           )}
         </div>
         
-        <div className="chat-form p-4 border-t">
+        <div className="p-4 border-t">
           <form onSubmit={handleSubmit}>
             <MessageInput
               value={input}

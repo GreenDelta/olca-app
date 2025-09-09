@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --config webpack.config.js --mode=production",
     "dev": "webpack --config webpack.config.js --mode=development --watch",
-    "server": "py -m http.server --directory ./dist 8080"
+    "server": "python -m http.server --directory ./dist 3000"
   },
   "license": "MPL-2.0",
   "devDependencies": {
