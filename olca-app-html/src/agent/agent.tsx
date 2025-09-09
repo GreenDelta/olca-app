@@ -25,10 +25,15 @@ const lcaSuggestions = [
   "Explain the uncertainty in these results",
   "What data quality issues should I address?",
   "Help me interpret these impact assessment results",
-  "Hot module replacement is working"
+  "✨ Compact header layout!"
 ];
 
-const AgentChat: React.FC = () => {
+interface AgentChatProps {
+  isDark: boolean;
+  onToggleTheme: () => void;
+}
+
+const AgentChat: React.FC<AgentChatProps> = ({ isDark, onToggleTheme }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -263,6 +268,13 @@ const AgentChat: React.FC = () => {
             lastConnected={lastConnected}
             retryCount={retryCount}
           />
+          <button 
+            onClick={onToggleTheme}
+            className="theme-toggle"
+            title="Toggle theme"
+          >
+            {isDark ? '☀️' : '🌙'}
+          </button>
         </div>
         
         <div className="messages-container">
@@ -376,18 +388,10 @@ const App: React.FC = () => {
   }, [isDark]);
 
   return (
-    <div className={`${isDark ? 'dark' : 'light'}`}>
-      <div>
-        <h1>openLCA Agent</h1>
-        <button 
-          onClick={toggleTheme}
-          className="theme-toggle"
-          title="Toggle theme"
-        >
-          {isDark ? '☀️' : '🌙'}
-        </button>
+    <div className={`agent-app ${isDark ? 'dark' : 'light'}`}>
+      <div className="agent-chat-container">
+        <AgentChat isDark={isDark} onToggleTheme={toggleTheme} />
       </div>
-      <AgentChat />
     </div>
   );
 };

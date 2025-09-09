@@ -255,7 +255,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
         className="status-indicator"
         style={{ backgroundColor: getStatusColor() }}
       />
-      <span className="status-text">{getStatusText()}</span>
+      <span className="text-sm">{getStatusText()}</span>
       {lastConnected && status === 'connected' && (
         <span className="last-connected">
           Last connected: {lastConnected.toLocaleTimeString()}
