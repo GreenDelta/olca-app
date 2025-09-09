@@ -101,6 +101,34 @@ module.exports = (_env, argv) => {
 
   if (argv.mode === 'development') {
     config.devtool = 'source-map';
+    
+    // Dev server configuration
+    config.devServer = {
+      static: {
+        directory: path.join(__dirname, 'dist'),
+      },
+      port: 3000,
+      hot: true,
+      liveReload: true,
+      open: true,
+      historyApiFallback: true,
+      compress: true,
+      client: {
+        overlay: {
+          errors: true,
+          warnings: false,
+        },
+      },
+      // Proxy API requests to your LangGraph server
+      proxy: [
+        {
+          context: ['/api'],
+          target: process.env.REACT_APP_LANGGRAPH_URL || 'http://localhost:8000',
+          changeOrigin: true,
+          secure: false,
+        },
+      ],
+    };
   }
 
   if (argv.mode === 'production') {

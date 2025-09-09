@@ -302,3 +302,8 @@ window._onClick = (e: globalThis.MouseEvent) => {
 function _onClick(e: MouseEvent<HTMLAnchorElement>) {
   window._onClick(e.nativeEvent);
 }
+
+// Hot Module Replacement (HMR) support
+if (module.hot) {
+  module.hot.accept();
+}

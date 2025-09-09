@@ -94,3 +94,8 @@ declare global {
   }
 }
 window.setData = setData;
+
+// Hot Module Replacement (HMR) support
+if (module.hot) {
+  module.hot.accept();
+}

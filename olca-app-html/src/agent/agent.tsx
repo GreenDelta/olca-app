@@ -24,7 +24,8 @@ const lcaSuggestions = [
   "How can I optimize this product system?",
   "Explain the uncertainty in these results",
   "What data quality issues should I address?",
-  "Help me interpret these impact assessment results"
+  "Help me interpret these impact assessment results",
+  "Hot module replacement is working"
 ];
 
 const AgentChat: React.FC = () => {
@@ -417,6 +418,11 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
   initializeApp();
+}
+
+// Hot Module Replacement (HMR) support
+if (module.hot) {
+  module.hot.accept();
 }
 
 export default App;
