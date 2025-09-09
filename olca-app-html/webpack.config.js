@@ -37,6 +37,14 @@ const config = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'postcss-loader'
+        ],
+      },
     ]
   },
   resolve: {
@@ -61,7 +69,6 @@ const config = {
     new CopyPlugin({
       patterns: [
         { from: 'src/**/*.html', to: () => `${dist}/[name][ext]` },
-        { from: 'src/**/*.css', to: () => `${dist}/[name][ext]` },
         { from: 'images', to: dist + "/images" },
         { from: 'fonts', to: dist + "/fonts" },
         { from: 'node_modules/react/umd/react.production.min.js', to: dist + '/lib/react.js' },

@@ -14,6 +14,8 @@ import { TypingIndicator } from "@/components/ui/typing-indicator";
 import { ChatMessage } from "@/components/ui/chat-message";
 import { PromptSuggestions } from "@/components/ui/prompt-suggestions";
 import { MessageInput } from "@/components/ui/message-input";
+import "../styles/global.css";
+import "./agent.css";
 
 // LCA-focused prompt suggestions
 const lcaSuggestions = [
@@ -373,8 +375,8 @@ const App: React.FC = () => {
   }, [isDark]);
 
   return (
-    <div className={`agent-app ${isDark ? 'dark' : 'light'}`}>
-      <div className="agent-header">
+    <div className={`${isDark ? 'dark' : 'light'}`}>
+      <div>
         <h1>openLCA Agent</h1>
         <button 
           onClick={toggleTheme}
