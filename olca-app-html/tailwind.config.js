@@ -4,6 +4,8 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,jsx,ts,tsx}",
     "./registry/**/*.{js,jsx,ts,tsx}",
+    "./src/agent/**/*.{js,jsx,ts,tsx}",
+    "./src/agent/components/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {},

@@ -50,10 +50,11 @@ const config = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
-      '@': path.resolve(__dirname, '.'),
-      '@/components': path.resolve(__dirname, 'components'),
-      '@/hooks': path.resolve(__dirname, 'hooks'),
-      '@/lib': path.resolve(__dirname, 'src/lib')
+      '@': path.resolve(__dirname, 'src/agent'),
+      '@/components': path.resolve(__dirname, 'src/agent/components'),
+      '@/hooks': path.resolve(__dirname, 'src/agent/hooks'),
+      '@/lib': path.resolve(__dirname, 'src/agent/lib'),
+      '@/providers': path.resolve(__dirname, 'src/agent/providers')
     }
   },
   output: {

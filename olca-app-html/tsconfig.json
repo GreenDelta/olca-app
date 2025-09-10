@@ -18,14 +18,15 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./components/*"],
-      "@/hooks/*": ["./hooks/*"]
+      "@/*": ["./src/agent/*"],
+      "@/components/*": ["./src/agent/components/*"],
+      "@/hooks/*": ["./src/agent/hooks/*"],
+      "@/lib/*": ["./src/agent/lib/*"],
+      "@/providers/*": ["./src/agent/providers/*"]
     }
   },
   "include": [
-    "src/**/*",
-    "components/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules"
