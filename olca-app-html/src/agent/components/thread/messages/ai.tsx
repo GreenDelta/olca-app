@@ -11,7 +11,6 @@ import { MessageContentComplex } from "@langchain/core/messages";
 import { Fragment } from "react";
 import { isAgentInboxInterruptSchema } from "@/lib/agent-inbox-interrupt";
 import { ThreadView } from "../agent-inbox";
-import { useQueryState, parseAsBoolean } from "@/hooks/useURLState";
 import { GenericInterruptView } from "./generic-interrupt";
 import { useArtifact } from "../artifact";
 
@@ -97,18 +96,17 @@ export function AssistantMessage({
   message,
   isLoading,
   handleRegenerate,
+  hideToolCalls,
 }: {
   message: Message | undefined;
   isLoading: boolean;
   handleRegenerate: (parentCheckpoint: Checkpoint | null | undefined) => void;
+  hideToolCalls: boolean;
 }) {
   const content = message?.content ?? [];
   const contentString = getContentString(content);
-  const [hideToolCalls] = useQueryState(
-    "hideToolCalls",
-    parseAsBoolean.withDefault(false),
-  );
 
+  console.log("hideToolCalls ai.tsx", hideToolCalls);
   const thread = useStreamContext();
   const isLastMessage =
     thread.messages[thread.messages.length - 1].id === message?.id;
@@ -185,25 +183,27 @@ export function AssistantMessage({
               isLastMessage={isLastMessage}
               hasNoAIOrToolMessages={hasNoAIOrToolMessages}
             />
-            <div
-              className={cn(
-                "mr-auto flex items-center gap-2 transition-opacity",
-                "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
-              )}
-            >
-              <BranchSwitcher
-                branch={meta?.branch}
-                branchOptions={meta?.branchOptions}
-                onSelect={(branch) => thread.setBranch(branch)}
-                isLoading={isLoading}
-              />
-              <CommandBar
-                content={contentString}
-                isLoading={isLoading}
-                isAiMessage={true}
-                handleRegenerate={() => handleRegenerate(parentCheckpoint)}
-              />
-            </div>
+            {!hideToolCalls && (
+              <div
+                className={cn(
+                  "mr-auto flex items-center gap-2 transition-opacity",
+                  "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
+                )}
+              >
+                <BranchSwitcher
+                  branch={meta?.branch}
+                  branchOptions={meta?.branchOptions}
+                  onSelect={(branch) => thread.setBranch(branch)}
+                  isLoading={isLoading}
+                />
+                <CommandBar
+                  content={contentString}
+                  isLoading={isLoading}
+                  isAiMessage={true}
+                  handleRegenerate={() => handleRegenerate(parentCheckpoint)}
+                />
+              </div>
+            )}
           </>
         )}
       </div>

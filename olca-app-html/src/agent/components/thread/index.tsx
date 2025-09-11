@@ -93,6 +93,7 @@ export function Thread() {
     "hideToolCalls",
     parseAsBoolean.withDefault(false),
   );
+  console.log("hideToolCalls index.tsx", hideToolCalls);
   const [input, setInput] = useState("");
   const {
     contentBlocks,
@@ -310,7 +311,7 @@ export function Thread() {
                   className="flex cursor-pointer items-center gap-2"
                   onClick={() => setThreadId(null)}
                   animate={{
-                    marginLeft: !chatHistoryOpen && isLargeScreen ? 48 : 0,
+                    marginLeft: isLargeScreen ? 48 : 0,
                   }}
                   transition={{
                     type: "spring",
@@ -352,7 +353,10 @@ export function Thread() {
                 !chatStarted && "mt-[25vh] flex flex-col items-stretch",
                 chatStarted && "grid grid-rows-[1fr_auto]",
               )}
-              contentClassName="pt-8 pb-16  max-w-3xl mx-auto flex flex-col gap-4 w-full"
+              contentClassName={cn(
+                "pt-8 pb-16 max-w-3xl mx-auto flex flex-col w-full",
+                hideToolCalls ? "gap-2" : "gap-4"
+              )}
               content={
                 <>
                   {messages
@@ -370,6 +374,7 @@ export function Thread() {
                           message={message}
                           isLoading={isLoading}
                           handleRegenerate={handleRegenerate}
+                          hideToolCalls={hideToolCalls ?? false}
                         />
                       ),
                     )}
@@ -381,6 +386,7 @@ export function Thread() {
                       message={undefined}
                       isLoading={isLoading}
                       handleRegenerate={handleRegenerate}
+                      hideToolCalls={hideToolCalls ?? false}
                     />
                   )}
                   {isLoading && !firstTokenReceived && (
