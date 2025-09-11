@@ -98,18 +98,7 @@ export default function ThreadHistory() {
   return (
     <>
       <div className="shadow-inner-right hidden h-screen w-[300px] shrink-0 flex-col items-start justify-start gap-6 border-r-[1px] border-slate-300 lg:flex">
-        <div className="flex w-full items-center justify-between px-4 pt-1.5">
-          <Button
-            className="hover:bg-gray-100"
-            variant="ghost"
-            onClick={() => setChatHistoryOpen(!chatHistoryOpen)}
-          >
-            {chatHistoryOpen ? (
-              <PanelRightOpen className="size-5" />
-            ) : (
-              <PanelRightClose className="size-5" />
-            )}
-          </Button>
+        <div className="flex w-full items-center justify-center px-4 pt-1.5">
           <h1 className="text-xl font-semibold tracking-tight">
             Thread History
           </h1>
