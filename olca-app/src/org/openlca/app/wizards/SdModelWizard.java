@@ -16,6 +16,7 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.sd.SdModelEditor;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -83,7 +84,9 @@ public class SdModelWizard extends Wizard implements INewWizard {
 				return false;
 			}
 
-			// TODO: open the SD model
+			// Open the SD model editor
+			var modelDir = res.value();
+			SdModelEditor.open(modelDir);
 			Navigator.refresh();
 			return true;
 		} catch (Exception e) {

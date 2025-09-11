@@ -277,6 +277,13 @@
 		</editor>
 
 		<editor
+				class="org.openlca.app.editors.sd.SdModelEditor"
+				default="false"
+				id="editors.SdModelEditor"
+				name="System Dynamics Model">
+		</editor>
+
+		<editor
 				class="org.openlca.app.tools.ValidationResultView"
 				default="false"
 				id="ValidationResultView"
