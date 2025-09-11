@@ -257,30 +257,24 @@ export function Thread() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      <div className="relative hidden lg:flex">
-        <motion.div
-          className="absolute z-20 h-full overflow-hidden border-r bg-white"
-          style={{ width: 300 }}
-          animate={
-            isLargeScreen
-              ? { x: chatHistoryOpen ? 0 : -300 }
-              : { x: chatHistoryOpen ? 0 : -300 }
-          }
-          initial={{ x: -300 }}
-          transition={
-            isLargeScreen
-              ? { type: "spring", stiffness: 300, damping: 30 }
-              : { duration: 0 }
-          }
-        >
-          <div
-            className="relative h-full"
+      {isLargeScreen && (
+        <div className="relative">
+          <motion.div
+            className="absolute z-20 h-full overflow-hidden border-r bg-white"
             style={{ width: 300 }}
+            animate={{ x: chatHistoryOpen ? 0 : -300 }}
+            initial={{ x: -300 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <ThreadHistory />
-          </div>
-        </motion.div>
-      </div>
+            <div
+              className="relative h-full"
+              style={{ width: 300 }}
+            >
+              <ThreadHistory />
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       <div
         className={cn(
@@ -295,11 +289,9 @@ export function Thread() {
           )}
           layout={isLargeScreen}
           animate={{
-            marginLeft: chatHistoryOpen ? (isLargeScreen ? 300 : 0) : 0,
-            width: chatHistoryOpen
-              ? isLargeScreen
-                ? "calc(100% - 300px)"
-                : "100%"
+            marginLeft: chatHistoryOpen && isLargeScreen ? 300 : 0,
+            width: chatHistoryOpen && isLargeScreen
+              ? "calc(100% - 300px)"
               : "100%",
           }}
           transition={
@@ -311,7 +303,7 @@ export function Thread() {
           {!chatStarted && (
             <div className="absolute top-0 left-0 z-10 flex w-full items-center justify-between gap-3 p-2 pl-4">
               <div>
-                {(!chatHistoryOpen || !isLargeScreen) && (
+                {(isLargeScreen || !chatHistoryOpen) && (
                   <Button
                     className="hover:bg-gray-100"
                     variant="ghost"
@@ -334,7 +326,7 @@ export function Thread() {
             <div className="relative z-10 flex items-center justify-between gap-3 p-2">
               <div className="relative flex items-center justify-start gap-2">
                 <div className="absolute left-0 z-10">
-                  {(!chatHistoryOpen || !isLargeScreen) && (
+                  {(isLargeScreen || !chatHistoryOpen) && (
                     <Button
                       className="hover:bg-gray-100"
                       variant="ghost"
@@ -352,7 +344,7 @@ export function Thread() {
                   className="flex cursor-pointer items-center gap-2"
                   onClick={() => setThreadId(null)}
                   animate={{
-                    marginLeft: !chatHistoryOpen ? 48 : 0,
+                    marginLeft: !chatHistoryOpen && isLargeScreen ? 48 : 0,
                   }}
                   transition={{
                     type: "spring",

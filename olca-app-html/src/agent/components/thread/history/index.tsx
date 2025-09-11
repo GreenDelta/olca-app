@@ -10,6 +10,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PanelRightOpen, PanelRightClose } from "lucide-react";
@@ -119,13 +120,10 @@ export default function ThreadHistory() {
           <ThreadList threads={threads} />
         )}
       </div>
-      <div className="lg:hidden">
+      {!isLargeScreen && (
         <Sheet
-          open={!!chatHistoryOpen && !isLargeScreen}
-          onOpenChange={(open) => {
-            if (isLargeScreen) return;
-            setChatHistoryOpen(open);
-          }}
+          open={chatHistoryOpen}
+          onOpenChange={setChatHistoryOpen}
         >
           <SheetContent
             side="left"
@@ -133,6 +131,9 @@ export default function ThreadHistory() {
           >
             <SheetHeader>
               <SheetTitle>Thread History</SheetTitle>
+              <SheetDescription>
+                Browse and select from your previous chat threads
+              </SheetDescription>
             </SheetHeader>
             <ThreadList
               threads={threads}
@@ -140,7 +141,7 @@ export default function ThreadHistory() {
             />
           </SheetContent>
         </Sheet>
-      </div>
+      )}
     </>
   );
 }
