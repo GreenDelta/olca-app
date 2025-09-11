@@ -9,6 +9,7 @@
     "allowJs": true,
     "removeComments": true,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "lib": [
       "es5",
       "es6",
