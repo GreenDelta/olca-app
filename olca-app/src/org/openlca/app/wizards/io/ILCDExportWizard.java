@@ -49,7 +49,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 					var comp = UI.composite(parent);
 					UI.fillHorizontal(comp);
 					UI.gridLayout(comp, 3);
-					FileSelector.on((file) -> template = file)
+					WizFileSelector.on((file) -> template = file)
 							.withExtensions("*.zip")
 							.withLabel(M.UseAZipFileTemplate)
 							.withDialogTitle("Select a valid ILCD package as export template")

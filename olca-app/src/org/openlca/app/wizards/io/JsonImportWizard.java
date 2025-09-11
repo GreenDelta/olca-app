@@ -134,7 +134,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			var fileComp = UI.composite(body);
 			UI.fillHorizontal(fileComp);
 			UI.gridLayout(fileComp, 3).marginBottom = 0;
-			FileSelector.on(file -> {
+			WizFileSelector.on(file -> {
 						zip = file;
 						setPageComplete(true);
 					})

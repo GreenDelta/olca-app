@@ -1,10 +1,10 @@
 package org.openlca.app.navigation.elements;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.app.db.Database;
+import org.openlca.app.util.SystemDynamics;
 
 public class SdRootElement extends NavigationElement<Void> {
 
@@ -14,20 +14,8 @@ public class SdRootElement extends NavigationElement<Void> {
 
 	@Override
 	protected List<INavigationElement<?>> queryChilds() {
-		var db = Database.get();
-		if (db == null)
-			return List.of();
-		var dir = db.getFileStorageLocation();
-		if (dir == null || !dir.exists())
-			return List.of();
-		var sdRoot = new File(dir, "sd-models");
-		if (!sdRoot.exists())
-			return List.of();
-		var modelDirs = sdRoot.listFiles();
-		if (modelDirs == null)
-			return List.of();
-		var sds = new ArrayList<INavigationElement<?>>(modelDirs.length);
-		for (var modelDir : modelDirs) {
+			var sds = new ArrayList<INavigationElement<?>>();
+		for (var modelDir : SystemDynamics.getModelDirsOf(Database.get())) {
 			sds.add(new SdModelElement(this, modelDir));
 		}
 		return sds;

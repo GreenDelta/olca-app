@@ -111,7 +111,7 @@ public class ILCDImportWizard extends Wizard implements IImportWizard {
 			UI.fillHorizontal(comp);
 			UI.gridLayout(comp, 3);
 
-			FileSelector.on(file -> {
+			WizFileSelector.on(file -> {
 						zip = file;
 						setPageComplete(true);
 					})

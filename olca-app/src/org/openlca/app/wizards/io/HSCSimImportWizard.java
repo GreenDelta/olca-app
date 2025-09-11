@@ -99,7 +99,7 @@ public class HSCSimImportWizard extends Wizard implements IImportWizard {
 			UI.fillHorizontal(comp);
 			UI.gridLayout(comp, 3);
 
-			FileSelector.on(file -> {
+			WizFileSelector.on(file -> {
 						json = file;
 						setPageComplete(true);
 					})

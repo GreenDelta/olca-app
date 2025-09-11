@@ -13,7 +13,8 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 
-class FileSelector {
+/// A component for selecting a file in a wizard.
+public class WizFileSelector {
 
 	private final Consumer<File> handler;
 
@@ -22,15 +23,15 @@ class FileSelector {
 	private String dialogTitle;
 	private String label = M.File;
 
-	private FileSelector(Consumer<File> handler) {
+	private WizFileSelector(Consumer<File> handler) {
 		this.handler = handler;
 	}
 
-	static FileSelector on(Consumer<File> handler) {
-		return new FileSelector(handler);
+	public static WizFileSelector on(Consumer<File> handler) {
+		return new WizFileSelector(handler);
 	}
 
-	FileSelector withExtensions(String... exts) {
+	public WizFileSelector withExtensions(String... exts) {
 		if (exts == null || exts.length == 0) {
 			extensions = null;
 			return this;
@@ -39,26 +40,26 @@ class FileSelector {
 		return this;
 	}
 
-	FileSelector withSelection(File file) {
+	public WizFileSelector withSelection(File file) {
 		this.selection = file;
 		return this;
 	}
 
 	/// Set the title of the file dialog which is opened by this selector.
-	FileSelector withDialogTitle(String title) {
+	public WizFileSelector withDialogTitle(String title) {
 		this.dialogTitle = title;
 		return this;
 	}
 
 	/// Set the label of the selector component, default is `File`.
-	FileSelector withLabel(String label) {
+	public WizFileSelector withLabel(String label) {
 		if (label != null) {
 			this.label = label;
 		}
 		return this;
 	}
 
-	void render(Composite comp) {
+	public void render(Composite comp) {
 		var text = UI.labeledText(comp, label, SWT.READ_ONLY);
 		text.setBackground(Colors.systemColor(SWT.COLOR_LIST_BACKGROUND));
 		if (selection != null) {
