@@ -90,6 +90,8 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 		addLibraryElements(list);
 		addScriptElements(list);
 
+		list.add(new SdRootElement(this));
+
 		return list;
 	}
 

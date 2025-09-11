@@ -28,6 +28,8 @@ import org.openlca.app.navigation.elements.MappingDirElement;
 import org.openlca.app.navigation.elements.MappingFileElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ScriptElement;
+import org.openlca.app.navigation.elements.SdModelElement;
+import org.openlca.app.navigation.elements.SdRootElement;
 import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
@@ -170,11 +172,16 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		// libraries
 		if (content instanceof LibraryDir)
 			return Icon.FOLDER.get();
-		if (content instanceof Library lib) {
-			var license = Libraries.getLicense(lib.folder());
-			return license.map(l -> Images.licensedLibrary(l))
+		if (content instanceof Library(File folder)) {
+			var license = Libraries.getLicense(folder);
+			return license.map(Images::licensedLibrary)
 					.orElse(Icon.LIBRARY.get());
 		}
+
+		if (obj instanceof SdRootElement)
+			return Icon.FOLDER.get();
+		if (obj instanceof SdModelElement)
+			return Images.get(FileType.MARKUP);
 
 		// files and folders
 		if (content instanceof File file) {
@@ -244,6 +251,13 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return file.getName();
 		if (content instanceof String)
 			return (String) content;
+
+		if (elem instanceof SdRootElement)
+			return "System dynamics models";
+		if (elem instanceof SdModelElement sdm) {
+			var dir = sdm.getContent();
+			return dir != null ? dir.getName() : "?";
+		}
 
 		return content == null ? "?" : content.toString();
 	}

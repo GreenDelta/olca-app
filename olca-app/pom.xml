@@ -107,6 +107,12 @@
 			<version>6.3.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.openlca</groupId>
+			<artifactId>olca-sd</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
