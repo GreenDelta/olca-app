@@ -1,6 +1,5 @@
 package org.openlca.app.editors.sd;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,15 +20,13 @@ import org.openlca.app.viewers.tables.Tables;
 
 public class SdModelParametersPage extends FormPage {
 
-	private final File modelDir;
 	private FormToolkit toolkit;
 	private TableViewer parameterTable;
 	private List<Parameter> parameters = new ArrayList<>();
 	private boolean dirty = false;
 
-	public SdModelParametersPage(FormEditor editor, File modelDir) {
+	public SdModelParametersPage(FormEditor editor) {
 		super(editor, "SdModelParametersPage", "Parameters");
-		this.modelDir = modelDir;
 	}
 
 	@Override

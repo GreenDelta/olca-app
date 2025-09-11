@@ -29,6 +29,7 @@ import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.libraries.LibraryEditor;
+import org.openlca.app.editors.sd.SdModelEditor;
 import org.openlca.app.navigation.actions.OpenMappingAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
@@ -40,6 +41,7 @@ import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.navigation.elements.ScriptElement;
+import org.openlca.app.navigation.elements.SdModelElement;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.viewers.Selections;
@@ -100,6 +102,8 @@ public class Navigator extends CommonNavigator {
 			} else if (elem instanceof EntryElement e && e.isDataset()) {
 				var url = e.getUrl();
 				Desktop.browse(url);
+			} else if (elem instanceof SdModelElement sdm) {
+				SdModelEditor.open(sdm.getContent());
 			}
 		});
 

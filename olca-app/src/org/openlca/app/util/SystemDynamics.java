@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.sd.xmile.Xmile;
 import org.openlca.util.Dirs;
 import org.openlca.util.Res;
 import org.openlca.util.Strings;
@@ -53,6 +54,21 @@ public class SystemDynamics {
 			return Res.of(modelDir);
 		} catch (Exception e) {
 			return Res.error("failed to create model folder", e);
+		}
+	}
+
+	public static Res<Xmile> openModel(File modelDir) {
+		if (modelDir == null || !modelDir.isDirectory())
+			return Res.error("no model directory provided");
+		var modelFile = new File(modelDir, "model.xml");
+		if (!modelFile.exists() || !modelFile.isFile())
+			return Res.error("model file does not exist: "
+					+ modelFile.getAbsolutePath());
+		try {
+			var xmile = Xmile.readFrom(modelFile);
+			return Res.of(xmile);
+		} catch (Exception e) {
+			return Res.error("failed to read model file", e);
 		}
 	}
 }

@@ -41,6 +41,7 @@ import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.actions.sd.CreateSdModelAction;
+import org.openlca.app.navigation.actions.sd.OpenSdModelAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
@@ -119,6 +120,7 @@ public class NavigationMenu extends CommonActionProvider {
 				new CalculateSystemAction(),
 				new CreateModelAction(),
 				new CreateSdModelAction(),
+				new OpenSdModelAction(),
 				new OpenUsageAction(),
 				new DeleteModelAction());
 

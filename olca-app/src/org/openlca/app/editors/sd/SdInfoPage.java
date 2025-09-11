@@ -1,32 +1,18 @@
 package org.openlca.app.editors.sd;
 
-import java.io.File;
-
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
 
-public class SdModelInfoPage extends FormPage {
+class SdInfoPage extends FormPage {
 
-	private final File modelDir;
-	private FormToolkit toolkit;
-	private Text nameText;
-	private Text startTimeText;
-	private Text endTimeText;
-	private Text timeStepsText;
-	private boolean dirty = false;
-
-	public SdModelInfoPage(FormEditor editor, File modelDir) {
-		super(editor, "SdModelInfoPage", "General information");
-		this.modelDir = modelDir;
+	SdInfoPage(FormEditor editor) {
+		super(editor, "SdModelInfoPage", M.GeneralInformation);
 	}
 
 	@Override
@@ -122,17 +108,4 @@ public class SdModelInfoPage extends FormPage {
 		dirty = false;
 	}
 
-	public void doSave(IProgressMonitor monitor) {
-		if (!dirty)
-			return;
-
-		// TODO: Save data to model file
-		// For now, just mark as clean
-		dirty = false;
-	}
-
-	@Override
-	public boolean isDirty() {
-		return dirty;
-	}
 }

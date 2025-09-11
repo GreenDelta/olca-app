@@ -8,23 +8,11 @@ import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
 
-public class SdModelEditorInput implements IEditorInput {
-
-	private final File modelDir;
-	private final String name;
-
-	public SdModelEditorInput(File modelDir) {
-		this.modelDir = modelDir;
-		this.name = modelDir.getName();
-	}
-
-	public File getModelDir() {
-		return modelDir;
-	}
+record SdEditorInput(File dir, String key) implements IEditorInput {
 
 	@Override
 	public boolean exists() {
-		return modelDir != null && modelDir.exists() && modelDir.isDirectory();
+		return dir != null && dir.exists() && dir.isDirectory();
 	}
 
 	@Override
@@ -34,7 +22,7 @@ public class SdModelEditorInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		return name;
+		return dir.getName();
 	}
 
 	@Override
@@ -44,7 +32,7 @@ public class SdModelEditorInput implements IEditorInput {
 
 	@Override
 	public String getToolTipText() {
-		return "System Dynamics Model: " + name;
+		return "System dynamics model: " + getName();
 	}
 
 	@Override
@@ -54,13 +42,17 @@ public class SdModelEditorInput implements IEditorInput {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof SdModelEditorInput other))
+		if (obj == null)
 			return false;
-		return modelDir != null && modelDir.equals(other.modelDir);
+		if (obj == this)
+			return true;
+		if (!(obj instanceof SdEditorInput other))
+			return false;
+		return dir != null && dir.equals(other.dir);
 	}
 
 	@Override
 	public int hashCode() {
-		return modelDir != null ? modelDir.hashCode() : 0;
+		return dir != null ? dir.hashCode() : 0;
 	}
 }

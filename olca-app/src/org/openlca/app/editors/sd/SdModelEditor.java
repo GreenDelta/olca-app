@@ -7,44 +7,55 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
+import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.FileType;
+import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.SystemDynamics;
+import org.openlca.sd.xmile.Xmile;
 
 public class SdModelEditor extends FormEditor {
 
 	public static final String ID = "editors.SdModelEditor";
 
 	private File modelDir;
-	private SdModelInfoPage infoPage;
-	private SdModelParametersPage parametersPage;
+	private Xmile xmile;
 
 	public static void open(File modelDir) {
 		if (modelDir == null || !modelDir.exists() || !modelDir.isDirectory())
 			return;
-		var input = new SdModelEditorInput(modelDir);
-		Editors.open(input, ID);
+		var xmile = SystemDynamics.openModel(modelDir);
+		if (xmile.hasError()) {
+			MsgBox.error("Failed to read model",
+					"Failed to read the model from the model folder: " + xmile.error());
+			return;
+		}
+		var key = AppContext.put(xmile.value());
+		Editors.open(new SdEditorInput(modelDir, key), ID);
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	public void init(
+			IEditorSite site, IEditorInput input
+	) throws PartInitException {
 		super.init(site, input);
+		setTitleImage(Images.get(FileType.MARKUP));
+		var inp = (SdEditorInput) input;
+		modelDir = inp.dir();
+		xmile = AppContext.remove(inp.key(), Xmile.class);
+	}
 
-		if (input instanceof SdModelEditorInput sdInput) {
-			this.modelDir = sdInput.getModelDir();
-			setPartName(sdInput.getName());
-		} else {
-			throw new PartInitException("Invalid editor input: " + input);
-		}
+	Xmile xmile() {
+		return xmile;
 	}
 
 	@Override
 	protected void addPages() {
 		try {
-			infoPage = new SdModelInfoPage(this, modelDir);
-			addPage(infoPage);
-
-			parametersPage = new SdModelParametersPage(this, modelDir);
-			addPage(parametersPage);
+			addPage(new SdInfoPage(this));
+			addPage(new SdModelParametersPage(this));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create SD model editor pages", e);
 		}
@@ -52,26 +63,14 @@ public class SdModelEditor extends FormEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		if (infoPage != null) {
-			infoPage.doSave(monitor);
-		}
-		if (parametersPage != null) {
-			parametersPage.doSave(monitor);
-		}
-		editorDirtyStateChanged();
 	}
 
 	@Override
 	public void doSaveAs() {
-		// Not supported
 	}
 
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
-	}
-
-	public File getModelDir() {
-		return modelDir;
 	}
 }
