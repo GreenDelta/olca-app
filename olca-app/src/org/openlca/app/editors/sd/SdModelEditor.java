@@ -51,6 +51,10 @@ public class SdModelEditor extends FormEditor {
 		return xmile;
 	}
 
+	String modelName() {
+		return modelDir.getName();
+	}
+
 	@Override
 	protected void addPages() {
 		try {
