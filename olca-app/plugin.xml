@@ -284,6 +284,13 @@
 		</editor>
 
 		<editor
+				class="org.openlca.app.editors.sd.SdResultEditor"
+				default="false"
+				id="editors.SdResultEditor"
+				name="System Dynamics Result">
+		</editor>
+
+		<editor
 				class="org.openlca.app.tools.ValidationResultView"
 				default="false"
 				id="ValidationResultView"
