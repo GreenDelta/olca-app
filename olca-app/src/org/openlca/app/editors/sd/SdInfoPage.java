@@ -5,6 +5,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.sd.xmile.Xmile;
 
@@ -57,6 +58,9 @@ class SdInfoPage extends FormPage {
 		dtText.setText(Double.toString(specs.dt));
 		UI.label(comp, tk, specs.timeUnit);
 
+		UI.filler(comp, tk);
+		var btn = UI.button(comp, tk, "Run simulation");
+		btn.setImage(Icon.RUN.get());
 	}
 
 	private void imageSection(Composite body, FormToolkit tk) {

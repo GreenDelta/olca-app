@@ -3,125 +3,120 @@ package org.openlca.app.editors.sd;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.Section;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.sd.eqn.Cell;
+import org.openlca.sd.eqn.Cell.BoolCell;
+import org.openlca.sd.eqn.Cell.EmptyCell;
+import org.openlca.sd.eqn.Cell.EqnCell;
+import org.openlca.sd.eqn.Cell.LookupCell;
+import org.openlca.sd.eqn.Cell.NonNegativeCell;
+import org.openlca.sd.eqn.Cell.NumCell;
+import org.openlca.sd.eqn.Cell.TensorCell;
+import org.openlca.sd.eqn.LookupFunc;
+import org.openlca.sd.eqn.Subscript;
+import org.openlca.sd.eqn.Tensor;
+import org.openlca.sd.eqn.Var;
+import org.openlca.sd.eqn.Var.Aux;
+import org.openlca.sd.eqn.Var.Rate;
+import org.openlca.sd.eqn.Var.Stock;
+import org.openlca.sd.eqn.Vars;
+import org.openlca.util.Strings;
 
 public class SdModelParametersPage extends FormPage {
 
-	private FormToolkit toolkit;
-	private TableViewer parameterTable;
-	private List<Parameter> parameters = new ArrayList<>();
-	private boolean dirty = false;
+	private final SdModelEditor editor;
 
-	public SdModelParametersPage(FormEditor editor) {
-		super(editor, "SdModelParametersPage", "Parameters");
+	public SdModelParametersPage(SdModelEditor editor) {
+		super(editor, "SdModelParametersPage", "Variables");
+		this.editor = editor;
 	}
 
 	@Override
-	protected void createFormContent(IManagedForm mform) {
-		ScrolledForm form = mform.getForm();
-		toolkit = mform.getToolkit();
-		form.setText("Model Parameters");
+	protected void createFormContent(IManagedForm mForm) {
+		var form = UI.header(mForm, "System dynamics model: " + editor.modelName());
+		var tk = mForm.getToolkit();
+		var body = UI.body(form, tk);
 
-		Composite body = form.getBody();
-		toolkit.decorateFormHeading(form.getForm());
-		toolkit.paintBordersFor(body);
-		UI.gridLayout(body, 1);
-
-		createParametersSection(body);
-		loadData();
-	}
-
-	private void createParametersSection(Composite parent) {
-		Section section = toolkit.createSection(parent,
-			Section.TITLE_BAR | Section.EXPANDED);
-		section.setText("Parameters");
+		var section = UI.section(body, tk, "Variables");
 		UI.gridData(section, true, true);
-
-		Composite comp = toolkit.createComposite(section);
-		section.setClient(comp);
+		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 
-		parameterTable = Tables.createViewer(comp,
-			"Name", "Value", "Unit", "Description");
-		parameterTable.setLabelProvider(new ParameterLabelProvider());
-		Tables.bindColumnWidths(parameterTable, 0.25, 0.25, 0.15, 0.35);
+		var table = Tables.createViewer(comp,
+				"Type", "Name", "Definition", "Unit");
+		Tables.bindColumnWidths(table, 0.10, 0.40, 0.40, 0.10);
+		UI.gridData(table.getControl(), true, true);
+		table.setLabelProvider(new Label());
 
-		// Make table fill the section
-		UI.gridData(parameterTable.getControl(), true, true);
+		var vars = Vars.readFrom(editor.xmile()).orElse(ArrayList::new);
+		vars.sort((vi, vj) -> {
+			var ti = typeOf(vi);
+			var tj = typeOf(vj);
+			return ti.equals(tj)
+					? Strings.compare(vi.name().label(), vj.name().label())
+					: Strings.compare(tj, ti);
+		});
+		table.setInput(vars);
 	}
 
-	private void loadData() {
-		// TODO: Load parameters from model file
-		// For now, add some example parameters
-		parameters.clear();
-		parameters.add(new Parameter("initial_population", "1000", "persons", "Initial population"));
-		parameters.add(new Parameter("growth_rate", "0.02", "1/year", "Population growth rate"));
-		parameters.add(new Parameter("carrying_capacity", "10000", "persons", "Maximum sustainable population"));
-
-		parameterTable.setInput(parameters);
-		dirty = false;
+	private static String typeOf(Var var) {
+		return switch (var) {
+			case Stock ignored -> "Stock";
+			case Aux ignored -> "Aux";
+			case Rate ignored -> "Rate";
+			case null -> "None";
+		};
 	}
 
-	public void doSave(IProgressMonitor monitor) {
-		if (!dirty)
-			return;
-
-		// TODO: Save parameters to model file
-		// For now, just mark as clean
-		dirty = false;
-	}
-
-	@Override
-	public boolean isDirty() {
-		return dirty;
-	}
-
-	private static class Parameter {
-		String name;
-		String value;
-		String unit;
-		String description;
-
-		Parameter(String name, String value, String unit, String description) {
-			this.name = name;
-			this.value = value;
-			this.unit = unit;
-			this.description = description;
-		}
-	}
-
-	private static class ParameterLabelProvider extends LabelProvider implements ITableLabelProvider {
+	private static class Label
+			extends LabelProvider implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
+		public Image getColumnImage(Object obj, int col) {
+			return col == 0 ? Icon.FORMULA.get() : null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof Parameter param))
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof Var v))
 				return null;
-
-			return switch (columnIndex) {
-				case 0 -> param.name;
-				case 1 -> param.value;
-				case 2 -> param.unit;
-				case 3 -> param.description;
+			return switch (col) {
+				case 0 -> typeOf(v);
+				case 1 -> v.name().label();
+				case 2 -> value(v.def());
 				default -> null;
 			};
 		}
+
+		private String value(Cell cell) {
+			return switch (cell) {
+				case NumCell(double value) -> Double.toString(value);
+				case TensorCell(Tensor t) -> toString(t);
+				case LookupCell(
+						String eqn, LookupFunc ignored, List<Subscript> ignore
+				) -> "Lookup(" + Strings.cut(eqn, 75) + ")";
+				case EqnCell(String eqn) -> Strings.cut(eqn, 80);
+				case BoolCell(boolean b) -> Boolean.toString(b);
+				case EmptyCell() -> " - ";
+				case NonNegativeCell(Cell v) -> "NonNegative(" + value(v) + ")";
+				case null -> "nil";
+			};
+		}
+
+		private String toString(Tensor t) {
+			var dims = t.dimensions()
+					.stream()
+					.map(dim -> dim.name().label())
+					.toList();
+			return "Array: " + String.join(" × ", dims);
+		}
+
 	}
 }
