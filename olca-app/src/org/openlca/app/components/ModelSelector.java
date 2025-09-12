@@ -96,7 +96,7 @@ public class ModelSelector extends FormDialog {
 	public RootDescriptor first() {
 		if (selection == null || selection.isEmpty())
 			return null;
-		return selection.get(0);
+		return selection.getFirst();
 	}
 
 	public ModelSelector withFilter(Predicate<RootDescriptor> p) {
