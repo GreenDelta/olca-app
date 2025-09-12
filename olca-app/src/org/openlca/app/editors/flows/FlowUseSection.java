@@ -30,7 +30,7 @@ class FlowUseSection {
 
 	/// The maximum number of links that should be shown in a section. A section is
 	/// currently not usable or even crashes if there is a large number of links.
-	private final int MAX_LINKS = 25;
+	private final int MAX_LINKS = 10;
 
 	private final Flow flow;
 	private final IDatabase db;

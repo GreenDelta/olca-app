@@ -7,6 +7,8 @@ import java.util.Set;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -32,6 +34,7 @@ class FlowUsePopup extends FormDialog {
 	private final Flow flow;
 	private final List<ProcessDescriptor> processes;
 	private final String usageType;
+	private TableViewer table;
 
 	public static void show(Flow flow, Set<Long> processIds, String usageType) {
 		if (flow == null || processIds.isEmpty())
@@ -82,12 +85,22 @@ class FlowUsePopup extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
-		var table = Tables.createViewer(body,
+
+		var searchText = UI.text(body, SWT.SEARCH);
+		searchText.setMessage(M.Filter);
+		UI.fillHorizontal(searchText);
+
+		table = Tables.createViewer(body,
 				M.Process,
 				M.Category);
 		table.setLabelProvider(new ProcessLabel());
 		table.setInput(processes);
 		Tables.bindColumnWidths(table, 0.7, 0.3);
+
+		searchText.addModifyListener(e -> {
+			var filtered = filter(searchText.getText());
+			table.setInput(filtered);
+		});
 
 		var onOpen = Actions.onOpen(() -> {
 			ProcessDescriptor p = Viewers.getFirstSelected(table);
@@ -98,6 +111,30 @@ class FlowUsePopup extends FormDialog {
 		});
 		Actions.bind(table, onOpen);
 		Tables.onDoubleClick(table, e -> onOpen.run());
+
+		searchText.setFocus();
+	}
+
+	private List<ProcessDescriptor> filter(String query) {
+		if (query == null)
+			return processes;
+		var q = query.strip().toLowerCase();
+		if (q.isEmpty())
+			return processes;
+		var terms = q.split("\\s+");
+		return processes.stream()
+				.filter(p -> {
+					var label = Labels.name(p);
+					if (Strings.nullOrEmpty(label))
+						return false;
+					label = label.toLowerCase();
+					for (var term : terms) {
+						if (!label.contains(term))
+							return false;
+					}
+					return true;
+				})
+				.toList();
 	}
 
 	private static class ProcessLabel
