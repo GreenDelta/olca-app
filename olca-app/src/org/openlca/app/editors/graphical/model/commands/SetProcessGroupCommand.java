@@ -35,19 +35,24 @@ import org.openlca.app.util.UI;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Strings;
 
 public class SetProcessGroupCommand extends Command {
 
-	private final NodeEditPart node;
-	private final RootDescriptor process;
+	private final List<NodeEditPart> nodes;
+	private final List<Long> processes;
 
 	public SetProcessGroupCommand(NodeEditPart node) {
-		this.node = node;
-		this.process = node.getModel() != null
-				? node.getModel().descriptor
-				: null;
+		this(List.of(node));
+	}
+
+	public SetProcessGroupCommand(List<NodeEditPart> nodes) {
+		this.nodes = nodes;
+		this.processes = nodes.stream()
+				.map(n -> n.getModel() != null ? n.getModel().descriptor : null)
+				.filter(Objects::nonNull)
+				.map(d -> d.id)
+				.toList();
 	}
 
 	@Override
@@ -62,14 +67,12 @@ public class SetProcessGroupCommand extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return process != null;
+		return !nodes.isEmpty() && nodes.size() == processes.size();
 	}
 
 	@Override
 	public void execute() {
-		var editor = node.getParent() instanceof GraphEditPart gp
-				? gp.getModel().editor
-				: null;
+		var editor = getEditor();
 		if (editor == null)
 			return;
 
@@ -82,52 +85,77 @@ public class SetProcessGroupCommand extends Command {
 			copy.add(c);
 		}
 		copy.sort((g1, g2) -> Strings.compare(g1.name, g2.name));
-		var current = findCurrent(copy);
 
-		// edit the copy
-		var dialog = new Dialog(editor, copy, current);
-		if (dialog.open() != Window.OK
-				|| (Objects.equals(current, dialog.selected)
-				&& !dialog.groupsChanged))
+		// edit the copy and check if something changed
+		var dialog = new Dialog(editor, copy, getCurrent(copy));
+		if (dialog.open() != Window.OK)
+			return;
+		boolean isCurrent = isCurrent(dialog.selected, copy);
+		if (isCurrent && !dialog.groupsChanged)
 			return;
 
 		// sync changes
 		origin.clear();
 		origin.addAll(copy);
 
-		if (!Objects.equals(current, dialog.selected)) {
-			if (current != null) {
-				current.processes.remove(process.id);
-			}
-			if (dialog.selected != null) {
-				dialog.selected.processes.add(process.id);
-			}
-			node.propertyChange(new PropertyChangeEvent(
-					this, Node.GROUP_PROP, current, dialog.selected));
-			editor.setDirty();
+		if (!isCurrent) {
+			applySelection(dialog.selected, copy);
 		}
-
 		if (dialog.groupsChanged) {
-			handleGroupChange(origin);
-			editor.setDirty();
+			applyGroupChange(origin);
+		}
+		editor.setDirty();
+	}
+
+	private GraphEditor getEditor() {
+		if (nodes.isEmpty())
+			return null;
+		return nodes.getFirst().getParent() instanceof GraphEditPart gep
+				? gep.getModel().editor
+				: null;
+	}
+
+	private AnalysisGroup getCurrent(List<AnalysisGroup> groups) {
+		return groups.stream()
+				.filter(g -> g.processes.containsAll(processes))
+				.findAny()
+				.orElse(null);
+	}
+
+	private boolean isCurrent(AnalysisGroup g, List<AnalysisGroup> groups) {
+		if (g != null)
+			return g.processes.containsAll(processes);
+		// the group is null -> no process can be in another group
+		for (var gi : groups) {
+			for (var pid : processes) {
+				if (gi.processes.contains(pid))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	/// Apply a newly selected group (which could be null) for the processes.
+	private void applySelection(AnalysisGroup selected, List<AnalysisGroup> gs) {
+		for (var g : gs) {
+			processes.forEach(g.processes::remove);
+		}
+		if (selected != null) {
+			selected.processes.addAll(processes);
+		}
+		for (var node : nodes) {
+			node.propertyChange(new PropertyChangeEvent(
+					this, Node.GROUP_PROP, null, selected));
 		}
 	}
 
-	private AnalysisGroup findCurrent(List<AnalysisGroup> groups) {
-		for (var g : groups) {
-			if (g.processes.contains(process.id))
-				return g;
-		}
-		return null;
-	}
-
-	/**
-	 * Handle changes, like name or color, of groups. This needs only be
-	 * called for other nodes that are already tagged with a group to update
-	 * their visuals.
-	 */
-	private void handleGroupChange(List<AnalysisGroup> groups) {
-		var parent = node.getParent();
+	 /// Handle changes, like name or color, of groups. This has an effect not
+	 /// only on the currently selected processes but all processes of the
+	 /// respective groups, their figures may need an update.
+	private void applyGroupChange(List<AnalysisGroup> groups) {
+		if (nodes.isEmpty())
+			return;
+		var parent = nodes.getFirst().getParent();
 		if (parent == null)
 			return;
 
@@ -145,8 +173,10 @@ public class SetProcessGroupCommand extends Command {
 			if (model == null || model.descriptor == null)
 				continue;
 			var group = map.get(model.descriptor.id);
-			var evt = new PropertyChangeEvent(this, Node.GROUP_PROP, null, group);
-			n.propertyChange(evt);
+			if (group != null) {
+				var evt = new PropertyChangeEvent(this, Node.GROUP_PROP, null, group);
+				n.propertyChange(evt);
+			}
 		}
 	}
 
