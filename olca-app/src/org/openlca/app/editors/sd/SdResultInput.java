@@ -1,30 +1,21 @@
 package org.openlca.app.editors.sd;
 
-import java.util.List;
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.openlca.sd.eqn.Var;
 
 public class SdResultInput implements IEditorInput {
 
 	private final String modelName;
-	private final List<Var> variables;
 	private final String key;
 
-	public SdResultInput(String modelName, List<Var> variables, String key) {
+	public SdResultInput(String modelName, String key) {
 		this.modelName = modelName;
-		this.variables = variables;
 		this.key = key;
 	}
 
 	public String modelName() {
 		return modelName;
-	}
-
-	public List<Var> variables() {
-		return variables;
 	}
 
 	public String key() {
@@ -57,7 +48,6 @@ public class SdResultInput implements IEditorInput {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T getAdapter(Class<T> adapter) {
 		return null;
 	}

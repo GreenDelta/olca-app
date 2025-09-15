@@ -52,7 +52,7 @@ class SdResultPage extends FormPage {
 
 			if (!variables.isEmpty()) {
 				varCombo.select(0);
-				selectedVar = variables.get(0);
+				selectedVar = variables.getFirst();
 			}
 		}
 

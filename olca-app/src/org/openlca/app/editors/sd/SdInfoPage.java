@@ -7,8 +7,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.sd.eqn.Vars;
+import org.openlca.sd.eqn.Simulator;
 import org.openlca.sd.xmile.Xmile;
 
 class SdInfoPage extends FormPage {
@@ -71,12 +72,12 @@ class SdInfoPage extends FormPage {
 	}
 
 	private void runSimulation() {
-		// For now, we'll just get the variables from the model
-		// Later this can be replaced with actual simulation results
-		var variables = Vars.readFrom(editor.xmile()).orElse(java.util.ArrayList::new);
-		if (!variables.isEmpty()) {
-			SdResultEditor.open(editor.modelName(), variables);
+		var sim = Simulator.of(editor.xmile());
+		if (sim.hasError()) {
+			MsgBox.error("Failed to create simulator", sim.error());
+			return;
 		}
+		SdResultEditor.open(editor.modelName(), sim.value());
 	}
 
 	private record SimSpecs(
