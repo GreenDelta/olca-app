@@ -24,7 +24,7 @@ public class SdResultEditor extends FormEditor {
 	public static final String ID = "editors.SdResultEditor";
 
 	private String modelName;
-	private List<Var> variables;
+	private List<Var> vars;
 
 	public static void open(String modelName, Simulator simulator) {
 		if (modelName == null || simulator == null)
@@ -54,15 +54,18 @@ public class SdResultEditor extends FormEditor {
 		setTitleImage(Images.get(FileType.MARKUP));
 		var inp = (SdResultInput) input;
 		modelName = inp.modelName();
-		variables = AppContext.remove(inp.key(), List.class);
+		vars = AppContext.remove(inp.key(), List.class);
+		if (vars == null) {
+			throw new PartInitException("No simulation result found in context");
+		}
 	}
 
 	String modelName() {
 		return modelName;
 	}
 
-	List<Var> variables() {
-		return variables;
+	List<Var> vars() {
+		return vars;
 	}
 
 	@Override
