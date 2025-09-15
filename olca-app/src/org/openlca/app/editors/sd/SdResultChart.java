@@ -14,11 +14,11 @@ import org.openlca.sd.eqn.Var;
 
 class SdResultChart {
 
-	private final CircularBufferDataProvider dataProvider;
+	private final CircularBufferDataProvider buffer;
 	public final XYGraph graph;
 
 	public SdResultChart(Composite parent, int height) {
-		dataProvider = new CircularBufferDataProvider(false);
+		buffer = new CircularBufferDataProvider(false);
 		var canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
 		UI.gridData(canvas, true, true).minimumHeight = height;
 		var lws = new LightweightSystem(canvas);
@@ -49,50 +49,47 @@ class SdResultChart {
 			}
 		}
 
-		dataProvider.setCurrentXDataArray(xs);
-		dataProvider.setCurrentYDataArray(ys);
+		buffer.setBufferSize(xs.length);
+		buffer.setCurrentXDataArray(xs);
+		buffer.setCurrentYDataArray(ys);
 		updateAxisRanges(xs, ys);
 	}
 
 	private void clearData() {
-		dataProvider.setCurrentXDataArray(new double[0]);
-		dataProvider.setCurrentYDataArray(new double[0]);
-		graph.setTitle("No variable selected");
+		buffer.setCurrentXDataArray(new double[0]);
+		buffer.setCurrentYDataArray(new double[0]);
 	}
 
-	private void updateAxisRanges(double[] xValues, double[] yValues) {
-		if (xValues.length == 0 || yValues.length == 0) {
+	private void updateAxisRanges(double[] xs, double[] ys) {
+		if (xs.length == 0 || ys.length == 0)
 			return;
-		}
 
 		// X-axis: iterations
 		var xAxis = graph.getPrimaryXAxis();
-		double maxX = xValues[xValues.length - 1];
+		double maxX = xs[xs.length - 1];
 		xAxis.setRange(0, Math.max(1, maxX + 1));
 
 		// Y-axis: variable values
 		var yAxis = graph.getPrimaryYAxis();
 		double minY = Double.MAX_VALUE;
 		double maxY = Double.MIN_VALUE;
+		for (double y : ys) {
+			minY = Math.min(minY, y);
+			maxY = Math.max(maxY, y);
+		}
 
-		for (double y : yValues) {
-			if (!Double.isNaN(y) && !Double.isInfinite(y)) {
-				minY = Math.min(minY, y);
-				maxY = Math.max(maxY, y);
+		double range = maxY - minY;
+		double margin = range * 0.1; // 10% margin
+		if (range == 0) {
+			margin = Math.abs(maxY) * 0.1;
+			if (margin == 0) {
+				margin = 1.0;
 			}
 		}
 
-		if (minY != Double.MAX_VALUE && maxY != Double.MIN_VALUE) {
-			double range = maxY - minY;
-			double margin = range * 0.1; // 10% margin
-			if (range == 0) {
-				margin = Math.abs(maxY) * 0.1;
-				if (margin == 0) {
-					margin = 1.0;
-				}
-			}
-			yAxis.setRange(minY - margin, maxY + margin);
-		}
+		yAxis.setRange(
+				minY > 0 ? 0 : minY - margin
+				, maxY + margin);
 	}
 
 	private XYGraph createGraph(LightweightSystem lws) {
@@ -101,29 +98,28 @@ class SdResultChart {
 		g.setShowTitle(true);
 		g.setShowLegend(false);
 		g.setBackgroundColor(Colors.white());
-		g.setTitle("No variable selected");
+		g.setTitle("");
 
 		// Configure X-axis
 		var xAxis = g.getPrimaryXAxis();
-		xAxis.setTitle("Iteration");
 		xAxis.setRange(0, 10);
 		xAxis.setMinorTicksVisible(false);
+		xAxis.setTitle("");
 
 		// Configure Y-axis
 		var yAxis = g.getPrimaryYAxis();
-		yAxis.setTitle("Value");
 		yAxis.setRange(0, 10);
 		yAxis.setMinorTicksVisible(false);
 		yAxis.setFormatPattern("###,###,##0.###");
+		yAxis.setTitle("");
 
 		// Add trace
-		var trace = new Trace("Variable", xAxis, yAxis, dataProvider);
-		trace.setPointStyle(Trace.PointStyle.CIRCLE);
+		var trace = new Trace("Variable", xAxis, yAxis, buffer);
+		trace.setPointStyle(Trace.PointStyle.NONE);
 		trace.setTraceType(Trace.TraceType.SOLID_LINE);
-		trace.setTraceColor(Colors.systemColor(SWT.COLOR_BLUE));
+		trace.setTraceColor(Colors.fromHex("#3F51B5"));
 		trace.setLineWidth(2);
 		g.addTrace(trace);
-
 		return g;
 	}
 }
