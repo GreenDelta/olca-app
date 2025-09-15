@@ -38,10 +38,11 @@ class SdResultExport {
 				return write(wb);
 			}
 
-			writeHeaderRow(wb, numericVars, sheet);
+			writeHeaders(wb, numericVars, sheet);
 			writeValueRows(numericVars, sheet);
-			sheet.autoSizeColumn(0);
 
+			// Auto-size all columns for better readability
+			sheet.autoSizeColumn(0);
 			return write(wb);
 		} catch (Exception e) {
 			return Res.error("failed to write simulation result", e);
@@ -56,33 +57,35 @@ class SdResultExport {
 	}
 
 	private void writeValueRows(List<Var> numericVars, Sheet sheet) {
-		int row = 1;
-		for (var var : numericVars) {
-			Excel.cell(sheet, row, 0, var.name().value());
+		for (int j = 0; j < numericVars.size(); j++) {
+			var var = numericVars.get(j);
 			var values = var.values();
 			for (int i = 0; i < values.size(); i++) {
 				var value = values.get(i);
 				if (value instanceof NumCell(double num)) {
-					Excel.cell(sheet, row, i + 1, num);
-				} else if (value != null) {
-					Excel.cell(sheet, row, i + 1, " - ");
+					Excel.cell(sheet, i + 1, j + 1, num);
 				}
 			}
-			row++;
 		}
 	}
 
-	private void writeHeaderRow(Workbook wb, List<Var> numericVars, Sheet sheet) {
-		var headerStyle = Excel.createBoldStyle(wb);
-		int maxIterations = numericVars.stream()
+	private void writeHeaders(Workbook wb, List<Var> numVars, Sheet sheet) {
+		var style = Excel.createBoldStyle(wb);
+		Excel.cell(sheet, 0, 0, "Iteration")
+				.ifPresent(cell -> cell.setCellStyle(style));
+		for (int i = 0; i < numVars.size(); i++) {
+			var var = numVars.get(i);
+			Excel.cell(sheet, 0, i + 1, var.name().label())
+					.ifPresent(cell -> cell.setCellStyle(style));
+		}
+
+		int iterations = numVars.stream()
 				.mapToInt(v -> v.values().size())
 				.max()
 				.orElse(0);
-		Excel.cell(sheet, 0, 0, "Variable / Iteration")
-				.ifPresent(cell -> cell.setCellStyle(headerStyle));
-		for (int i = 0; i < maxIterations; i++) {
-			Excel.cell(sheet, 0, i + 1, i + 1)
-					.ifPresent(cell -> cell.setCellStyle(headerStyle));
+		for (int row = 1; row <= iterations; row++) {
+			Excel.cell(sheet, row, 0, row)
+					.ifPresent(cell -> cell.setCellStyle(style));
 		}
 	}
 
@@ -96,5 +99,4 @@ class SdResultExport {
 				})
 				.toList();
 	}
-
 }
