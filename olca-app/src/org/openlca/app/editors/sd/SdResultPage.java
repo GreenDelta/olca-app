@@ -26,9 +26,6 @@ class SdResultPage extends FormPage {
 	private final SdResultEditor editor;
 	private final List<Var> vars;
 
-	private Combo varCombo;
-	private Var selectedVar;
-
 	SdResultPage(SdResultEditor editor) {
 		super(editor, "SdResultPage", "Results");
 		this.editor = editor;
@@ -42,8 +39,7 @@ class SdResultPage extends FormPage {
 		var body = UI.body(form, tk);
 
 		infoSection(body, tk);
-		createVariableSelection(body, tk);
-		createChartArea(body, tk);
+		chartSection(body, tk);
 	}
 
 	private void infoSection(Composite body, FormToolkit tk) {
@@ -77,67 +73,41 @@ class SdResultPage extends FormPage {
 		});
 	}
 
-	private void createVariableSelection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Variable selection");
-		UI.gridLayout(comp, 2);
-
-		UI.label(comp, tk, "Variable:");
-		varCombo = new Combo(comp, SWT.READ_ONLY);
-		UI.fillHorizontal(varCombo);
-
-		// Populate combo with variables
-
-		var items = vars.stream()
-				.map(this::getVariableLabel)
-				.toArray(String[]::new);
-		varCombo.setItems(items);
-
-		if (!vars.isEmpty()) {
-			varCombo.select(0);
-			selectedVar = vars.getFirst();
-		}
-
-		Controls.onSelect(varCombo, e -> {
-			int index = varCombo.getSelectionIndex();
-			if (index >= 0 && index < vars.size()) {
-				selectedVar = vars.get(index);
-				updateChart();
-			}
-		});
-	}
-
-	private void createChartArea(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Chart");
+	private void chartSection(Composite body, FormToolkit tk) {
+		var comp = UI.formSection(body, tk, "Numeric variables");
 		UI.gridLayout(comp, 1);
 
-		// Placeholder for chart - will be added later
-		var placeholder = UI.label(comp, tk, "Chart will be displayed here");
-	}
+		var numVars = Util.numericVarsOf(vars);
 
-	private String getVariableLabel(Var var) {
-		if (var == null)
-			return "Unknown";
-		var type = getVariableType(var);
-		var name = var.name() != null ? var.name().label() : "Unknown";
-		return type + ": " + name;
-	}
+		// Variable selection row
+		var selectionComp = UI.composite(comp, tk);
+		UI.gridLayout(selectionComp, 2);
+		UI.gridData(selectionComp, true, false);
 
-	private String getVariableType(Var var) {
-		return switch (var) {
-			case Stock ignored -> "Stock";
-			case Aux ignored -> "Aux";
-			case Rate ignored -> "Rate";
-			case null -> "None";
-		};
-	}
+		UI.label(selectionComp, tk, "Variable");
+		var combo = new Combo(selectionComp, SWT.READ_ONLY);
+		UI.fillHorizontal(combo);
 
-	private void updateChart() {
-		// TODO: Update chart when variable selection changes
-		// This will be implemented when the chart is added
-	}
+		var items = numVars.stream()
+				.map(v -> v.name().label())
+				.toArray(String[]::new);
+		combo.setItems(items);
 
-	public Var getSelectedVariable() {
-		return selectedVar;
+		var chart = new SdResultChart(comp, 300);
+		if (!numVars.isEmpty()) {
+			combo.select(0);
+			var firstVar = numVars.getFirst();
+			chart.update(firstVar);
+		}
+
+		// Handle variable selection changes
+		Controls.onSelect(combo, e -> {
+			int idx = combo.getSelectionIndex();
+			if (idx >= 0 && idx < numVars.size()) {
+				var selectedVar = numVars.get(idx);
+				chart.update(selectedVar);
+			}
+		});
 	}
 
 	private record VarsCount(

@@ -12,7 +12,6 @@ import org.openlca.io.xls.Excel;
 import org.openlca.sd.eqn.Cell.NumCell;
 import org.openlca.sd.eqn.Var;
 import org.openlca.util.Res;
-import org.openlca.util.Strings;
 
 class SdResultExport {
 
@@ -32,7 +31,7 @@ class SdResultExport {
 		try (var wb = new XSSFWorkbook()) {
 			var sheet = wb.createSheet("Simulation results");
 
-			var numericVars = getNumericVars();
+			var numericVars = Util.numericVarsOf(vars);
 			if (numericVars.isEmpty()) {
 				Excel.cell(sheet, 0, 0, "No numeric variables found");
 				return write(wb);
@@ -89,14 +88,5 @@ class SdResultExport {
 		}
 	}
 
-	private List<Var> getNumericVars() {
-		return vars.stream()
-				.filter(v -> v.value() instanceof NumCell)
-				.sorted((vi, vj) -> {
-					var ni = vi.name().label();
-					var nj = vj.name().label();
-					return Strings.compare(ni, nj);
-				})
-				.toList();
-	}
+
 }
