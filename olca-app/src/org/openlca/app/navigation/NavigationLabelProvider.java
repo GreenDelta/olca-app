@@ -181,7 +181,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (obj instanceof SdRootElement)
 			return Icon.FOLDER.get();
 		if (obj instanceof SdModelElement)
-			return Images.get(FileType.MARKUP);
+			return Icon.SD.get();
 
 		// files and folders
 		if (content instanceof File file) {

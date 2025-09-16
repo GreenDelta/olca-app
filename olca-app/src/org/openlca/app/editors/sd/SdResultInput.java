@@ -34,7 +34,7 @@ public class SdResultInput implements IEditorInput {
 
 	@Override
 	public String getName() {
-		return modelName + " - Simulation Result";
+		return modelName + " - Simulation result";
 	}
 
 	@Override

@@ -9,9 +9,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
-import org.openlca.app.rcp.images.Images;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.FileType;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.SystemDynamics;
 import org.openlca.sd.xmile.Xmile;
@@ -41,10 +40,11 @@ public class SdModelEditor extends FormEditor {
 			IEditorSite site, IEditorInput input
 	) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(Images.get(FileType.MARKUP));
 		var inp = (SdEditorInput) input;
 		modelDir = inp.dir();
 		xmile = AppContext.remove(inp.key(), Xmile.class);
+		setTitleImage(Icon.SD.get());
+		setPartName(inp.getName());
 	}
 
 	Xmile xmile() {

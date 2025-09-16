@@ -154,6 +154,7 @@ public enum Icon {
 	SAVE_AS("save_as.png"),
 	SAVE_AS_DISABLED("save_as_disabled.png"),
 	SAVE_AS_IMAGE("save_as_image.png"),
+	SD("sd.png"),
 	SEARCH("search.png"),
 	SIMAPRO_WIZARD("wizard/simapro.png"),
 	SIMULATE("calculation/simulate.png"),

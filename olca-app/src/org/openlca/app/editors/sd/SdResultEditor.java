@@ -11,6 +11,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.App;
 import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
@@ -58,6 +59,8 @@ public class SdResultEditor extends FormEditor {
 		if (vars == null) {
 			throw new PartInitException("No simulation result found in context");
 		}
+		setTitleImage(Icon.SD.get());
+		setPartName(inp.getName());
 	}
 
 	String modelName() {
