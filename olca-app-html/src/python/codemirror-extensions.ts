@@ -27,7 +27,7 @@ import { keymap } from '@codemirror/view';
 import {
     autocompletion,
     closeBrackets,
-    CompletionContext,
+    CompletionSource,
 } from '@codemirror/autocomplete';
 import olcaCompletions from '../../olca-completions.json';
 import { oneLight } from './one-light';
@@ -42,6 +42,12 @@ const indent = () => [
         },
     }),
 ];
+
+const increaseFontSize = EditorView.theme({
+    '&': {
+        fontSize: '1.3em',
+    },
+});
 
 const removeBorder = EditorView.theme({
     '&.cm-focused': {
@@ -86,7 +92,7 @@ const onChange = () => {
 // restrict completion inside strings/comments
 const dontComplete = ['String', 'FormatString', 'Comment', 'PropertyName'];
 
-const olcaCompletionSource = (context: CompletionContext) => {
+const olcaCompletionSource: CompletionSource = (context) => {
     const { state, pos, explicit } = context;
     const tree = syntaxTree(state);
     const inner = tree.resolveInner(pos, -1);
@@ -123,15 +129,16 @@ const baseExtensions: Extension[] = [
             localCompletionSource,
             olcaCompletionSource,
         ],
+        filterStrict: true,
     }),
     indent(),
     onChange(),
     keyMap,
     removeBorder,
+    increaseFontSize,
 ];
 
 export const extensionsOf = (theme: Theme) => {
-    return theme === 'dark'
-        ? [...baseExtensions, oneDark]
-        : [...baseExtensions, oneLight];
+    const t = theme === 'dark' ? oneDark : oneLight;
+    return [...baseExtensions, t];
 };
