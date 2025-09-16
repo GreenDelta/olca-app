@@ -5,12 +5,17 @@ from pathlib import Path
 mod_path = Path("../olca-app/src/org/openlca/app/devtools/python/mod_bindings.py")
 app_path = Path("../olca-app/src/org/openlca/app/devtools/python/app_bindings.py")
 
+miscellaneous = [
+    {"label": "db", "type": "variable", "detail": "org.openlca.core.database"}
+]
+
 mod_lines = mod_path.read_text(encoding="utf-8").splitlines()
 app_lines = app_path.read_text(encoding="utf-8").splitlines()
 
 lines = mod_lines + app_lines
 
 completions = []
+completions.extend(miscellaneous)
 for line in lines:
     if line.startswith("import "):
         as_match = re.search(r"as\s+(\w+)$", line)
