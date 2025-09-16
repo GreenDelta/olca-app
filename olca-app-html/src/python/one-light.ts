@@ -6,22 +6,24 @@ import { tags as t } from '@lezer/highlight';
 // This theme is a conversion of
 // [oneDark theme](https://github.com/codemirror/theme-one-dark/blob/main/src/one-dark.ts).
 
-const chalky = '#c18401',
-    coral = '#a62626',
-    cyan = '#0184bc',
-    invalid = '#ff0000',
-    ivory = '#383a42',
-    stone = '#a0a1a7',
-    malibu = '#4078f2',
-    sage = '#50a14f',
-    whiskey = '#986801',
-    violet = '#a626a4',
-    lightBackground = '#fafafa',
-    highlightBackground = '#eaeaea',
-    tooltipBackground = '#f0f0f0',
-    selection = '#d0d0d0',
-    cursor = '#526fff';
+const chalky = '#e5c07b',
+    coral = '#e06c75',
+    cyan = '#56b6c2',
+    invalid = '#ffffff',
+    ivory = '#454852',
+    stone = '#7d8799', // Brightened compared to original to increase contrast
+    malibu = '#61afef',
+    sage = '#98c379',
+    whiskey = '#d19a66',
+    violet = '#c678dd',
+    lightBackground = '#f0f0f0',
+    highlightBackground = '#eaeaef',
+    background = '#fafafa',
+    tooltipBackground = '#f5f5f7',
+    selection = '#dae2eb',
+    cursor = '#528bff';
 
+/// The colors used in the theme, as CSS color strings.
 export const color = {
     chalky,
     coral,
@@ -35,16 +37,18 @@ export const color = {
     violet,
     lightBackground,
     highlightBackground,
+    background,
     tooltipBackground,
     selection,
     cursor,
 };
 
+/// The editor theme styles for One Light.
 export const oneLightTheme = EditorView.theme(
     {
         '&': {
             color: ivory,
-            backgroundColor: lightBackground,
+            backgroundColor: background,
         },
 
         '.cm-content': {
@@ -53,32 +57,30 @@ export const oneLightTheme = EditorView.theme(
 
         '.cm-cursor, .cm-dropCursor': { borderLeftColor: cursor },
         '&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection':
-            {
-                backgroundColor: selection,
-            },
+            { backgroundColor: selection },
 
-        '.cm-panels': { backgroundColor: '#f5f5f5', color: ivory },
-        '.cm-panels.cm-panels-top': { borderBottom: '2px solid #ccc' },
-        '.cm-panels.cm-panels-bottom': { borderTop: '2px solid #ccc' },
+        '.cm-panels': { backgroundColor: lightBackground, color: ivory },
+        '.cm-panels.cm-panels-top': { borderBottom: '2px solid black' },
+        '.cm-panels.cm-panels-bottom': { borderTop: '2px solid black' },
 
         '.cm-searchMatch': {
-            backgroundColor: '#ffea00a0',
-            outline: '1px solid #f5a623',
+            backgroundColor: '#72a1ff59',
+            outline: '1px solid #457dff',
         },
         '.cm-searchMatch.cm-searchMatch-selected': {
-            backgroundColor: '#f5d76e80',
+            backgroundColor: '#6199ff2f',
         },
 
-        '.cm-activeLine': { backgroundColor: '#f0f0f0' },
-        '.cm-selectionMatch': { backgroundColor: '#d0f0c0' },
+        '.cm-activeLine': { backgroundColor: '#6699ff20' },
+        '.cm-selectionMatch': { backgroundColor: '#aafe661a' },
 
         '&.cm-focused .cm-matchingBracket, &.cm-focused .cm-nonmatchingBracket':
             {
-                backgroundColor: '#d6f0ff',
+                backgroundColor: '#bad0f847',
             },
 
         '.cm-gutters': {
-            backgroundColor: lightBackground,
+            backgroundColor: background,
             color: stone,
             border: 'none',
         },
@@ -90,11 +92,11 @@ export const oneLightTheme = EditorView.theme(
         '.cm-foldPlaceholder': {
             backgroundColor: 'transparent',
             border: 'none',
-            color: '#999',
+            color: '#ddd',
         },
 
         '.cm-tooltip': {
-            border: '1px solid #ccc',
+            border: 'none',
             backgroundColor: tooltipBackground,
         },
         '.cm-tooltip .cm-tooltip-arrow:before': {
@@ -115,6 +117,7 @@ export const oneLightTheme = EditorView.theme(
     { dark: false }
 );
 
+/// The highlighting style for code in the One Light theme.
 export const oneLightHighlightStyle = HighlightStyle.define([
     { tag: t.keyword, color: violet },
     {
@@ -160,6 +163,8 @@ export const oneLightHighlightStyle = HighlightStyle.define([
     { tag: t.invalid, color: invalid },
 ]);
 
+/// Extension to enable the One Light theme (both the editor theme and
+/// the highlight style).
 export const oneLight: Extension = [
     oneLightTheme,
     syntaxHighlighting(oneLightHighlightStyle),
