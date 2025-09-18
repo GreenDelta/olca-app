@@ -12,7 +12,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.search.SearchPage;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -22,21 +21,16 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Strings;
 
-/**
- * Renders the section with links to providers and recipients of a given flow.
- */
+/// Renders the section with links to providers and recipients of a given flow.
 class FlowUseSection {
 
-	/**
-	 * Shows the maximum number of links that should be shown in a section. A
-	 * section is currently not usable or even crashes if there is a huge number
-	 * of links.
-	 */
-	private final int MAX_LINKS = 25;
+
+	/// The maximum number of links that should be shown in a section. A section is
+	/// currently not usable or even crashes if there is a large number of links.
+	private final int MAX_LINKS = 10;
 
 	private final Flow flow;
 	private final IDatabase db;
@@ -76,23 +70,23 @@ class FlowUseSection {
 		int size = processIds.size();
 		if (size > MAX_LINKS) {
 			int rest = size - MAX_LINKS;
-			renderUsageLink(image, composite, rest);
+			renderUsageLink(image, composite, rest, label, processIds);
 		}
 	}
 
 	private List<ProcessDescriptor> loadDescriptors(Set<Long> ids) {
 		if (ids.isEmpty())
 			return Collections.emptyList();
-		ProcessDao dao = new ProcessDao(db);
-		TreeSet<Long> firstIds = new TreeSet<>();
+		var dao = new ProcessDao(db);
+		var firstIds = new TreeSet<Long>();
 		int i = 0;
-		for (Long id : ids) {
+		for (var id : ids) {
 			firstIds.add(id);
 			i++;
 			if (i > MAX_LINKS)
 				break;
 		}
-		List<ProcessDescriptor> list = dao.getDescriptors(firstIds);
+		var list = dao.getDescriptors(firstIds);
 		list.sort((d1, d2) -> Strings.compare(Labels.name(d1), Labels.name(d2)));
 		return list;
 	}
@@ -109,15 +103,20 @@ class FlowUseSection {
 		});
 	}
 
-	private void renderUsageLink(Image image, Composite composite, int rest) {
+	private void renderUsageLink(
+			Image image,
+			Composite comp,
+			int rest,
+			String usageType,
+			Set<Long> processIds
+	) {
 		if (rest < 1)
 			return;
-		var link = UI.imageHyperlink(composite, tk, SWT.TOP);
+		var link = UI.imageHyperlink(comp, tk, SWT.TOP);
 		link.setText(M.More + " (" + rest + ")");
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link,
-				e -> SearchPage.forUsage(Descriptor.of(flow)));
+				e -> FlowUsePopup.show(flow, processIds, usageType));
 	}
-
 }

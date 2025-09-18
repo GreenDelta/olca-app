@@ -72,16 +72,8 @@ public class PythonEditor extends ScriptingEditor {
 				browser.setJavascriptEnabled(true);
 
 				// initialize the script
-				UI.onLoaded(browser, HtmlFolder.getUrl("python.html"), () -> {
-
+				UI.onLoaded(browser, HtmlFolder.getUrl(htmlFileName()), () -> {
 					browser.getDisplay();
-					// set the theme
-					if (Theme.isDark()) {
-						browser.execute(
-								"codeMirror.setOption(\"theme\", \"ayu-mirage\")");
-						browser.execute(
-								"document.querySelector(\"body\").style.background=\"#2b2b2b\"");
-					}
 
 					// set the script content
 					if (Strings.notEmpty(script)) {
@@ -117,11 +109,26 @@ public class PythonEditor extends ScriptingEditor {
 						progress.close();
 						return null;
 					});
+
+					UI.bindFunction(browser, "_onRun", (args) -> {
+						if (args.length == 0 || args[0] == null)
+							return null;
+
+						String script = (String) args[0];
+						Console.show();
+						App.run(M.EvalScript, () -> Jython.exec(script));
+						return null;
+					});
 				});
 
 			} catch (Exception e) {
 				ErrorReporter.on("failed to create browser in Python editor", e);
 			}
+		}
+
+		public String htmlFileName() {
+			var theme = Theme.isDark() ? "dark" : "light";
+			return "python-" + theme + ".html";
 		}
 
 		public String getScript() {

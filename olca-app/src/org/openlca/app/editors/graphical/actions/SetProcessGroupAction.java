@@ -1,10 +1,11 @@
 package org.openlca.app.editors.graphical.actions;
 
-import org.eclipse.gef.Request;
+import java.util.List;
+
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
-import org.openlca.app.editors.graphical.requests.GraphRequestConstants;
+import org.openlca.app.editors.graphical.model.commands.SetProcessGroupCommand;
 import org.openlca.app.rcp.images.Icon;
 
 public class SetProcessGroupAction extends SelectionAction {
@@ -18,27 +19,25 @@ public class SetProcessGroupAction extends SelectionAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		return getSelectedNode() != null;
+		return !getSelectedNodes().isEmpty();
 	}
 
 	@Override
 	public void run() {
-		var node = getSelectedNode();
-		if (node == null)
+		var nodes = getSelectedNodes();
+		if (nodes.isEmpty())
 			return;
-		var cmd = node.getCommand(new Request(
-				GraphRequestConstants.REQ_SET_PROCESS_GROUP));
-		if (cmd != null) {
-			cmd.execute();
-		}
+		var cmd = new SetProcessGroupCommand(nodes);
+		cmd.execute();
 	}
 
-	private NodeEditPart getSelectedNode() {
+	private List<NodeEditPart> getSelectedNodes() {
 		var objects = getSelectedObjects();
-		if (objects == null || objects.size() != 1)
-			return null;
-		return objects.getFirst() instanceof NodeEditPart node
-				? node
-				: null;
+		if (objects == null || objects.isEmpty())
+			return List.of();
+		return objects.stream()
+				.filter(NodeEditPart.class::isInstance)
+				.map(NodeEditPart.class::cast)
+				.toList();
 	}
 }
