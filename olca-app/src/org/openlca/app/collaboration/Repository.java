@@ -179,6 +179,10 @@ public class Repository extends ClientRepository {
 		return gitDir(database.getName(), dataPackage != null ? dataPackage.name() : null);
 	}
 
+	public static File gitDir(String databaseName) {
+		return gitDir(databaseName, null);
+	}
+
 	private static File gitDir(String databaseName, String packageName) {
 		var repos = new File(Workspace.root(), GIT_DIR);
 		var root = new File(repos, databaseName);
@@ -264,8 +268,17 @@ public class Repository extends ClientRepository {
 		// TODO this is a workaround to avoid open file handles that jgit
 		// is holding (see https://github.com/eclipse-jgit/jgit/issues/155)
 		new WindowCacheConfig().install();
-		//
-		Dirs.delete(dir);
+		if (dir.listFiles() == null)
+			return;
+		// keep sub repository directories
+		for (var child : dir.listFiles()) {
+			if (child.getName().startsWith("x-"))
+				continue;
+			Dirs.delete(child);
+		}
+		if (dir.listFiles() != null && dir.listFiles().length == 0) {
+			Dirs.delete(dir);
+		}
 	}
 
 	@Override
