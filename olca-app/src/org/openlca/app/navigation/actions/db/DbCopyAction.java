@@ -8,6 +8,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.views.CompareView;
 import org.openlca.app.collaboration.views.HistoryView;
 import org.openlca.app.db.Database;
@@ -84,6 +85,10 @@ public class DbCopyAction extends Action implements INavigationAction {
 			var fromFolder = DatabaseDir.getRootFolder(config.name());
 			var toFolder = DatabaseDir.getRootFolder(newName);
 			FileUtils.copyDirectory(fromFolder, toFolder);
+
+			var fromRepoFolder = Repository.gitDir(config.name());
+			var toRepoFolder = Repository.gitDir(newName);
+			FileUtils.copyDirectory(fromRepoFolder, toRepoFolder);
 
 			var newConf = new DerbyConfig();
 			newConf.name(newName);
