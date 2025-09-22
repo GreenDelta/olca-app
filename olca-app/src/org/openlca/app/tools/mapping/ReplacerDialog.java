@@ -5,12 +5,12 @@ import java.util.Optional;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelCheckBoxTree;
+import org.openlca.app.db.Database;
 import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.tools.mapping.replacer.ReplacerConfig;
 import org.openlca.app.util.Controls;
@@ -47,7 +47,6 @@ class ReplacerDialog extends FormDialog {
 	private ReplacerDialog(ReplacerConfig conf) {
 		super(UI.shell());
 		setBlockOnOpen(true);
-		setBlockOnOpen(true);
 		this.conf = conf;
 	}
 
@@ -64,14 +63,20 @@ class ReplacerDialog extends FormDialog {
 		var comp = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(comp, 1, 10, 10);
 		UI.label(comp, tk, M.ThisWillReplaceFlowsInTheDb);
+		if (!Database.dataPackages().isEmpty()) {
+			var filterDataPackage = tk.createButton(
+					comp, M.FilterDataSetsFromDataPackage, SWT.CHECK);
+			Controls.onSelect(filterDataPackage,
+					_e -> tree.setFilterDataPackageDatasets(filterDataPackage.getSelection()));
+		}
 		tree = new ModelCheckBoxTree(
 				ModelType.PROCESS,
 				ModelType.IMPACT_METHOD);
 		tree.drawOn(comp, tk);
-		Button delete = tk.createButton(
+		var delete = tk.createButton(
 				comp, M.DeleteReplacedAndUnusedFlows, SWT.CHECK);
 		Controls.onSelect(delete,
-			_e -> conf.deleteMapped = delete.getSelection());
+				_e -> conf.deleteMapped = delete.getSelection());
 	}
 
 	@Override

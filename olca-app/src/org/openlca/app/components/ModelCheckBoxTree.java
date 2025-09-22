@@ -21,6 +21,7 @@ import org.openlca.app.navigation.NavigationLabelProvider;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
+import org.openlca.app.navigation.filters.DataPackageFilter;
 import org.openlca.app.navigation.filters.ModelTypeFilter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.ModelType;
@@ -29,9 +30,10 @@ import org.openlca.core.model.descriptors.RootDescriptor;
 public class ModelCheckBoxTree implements ICheckStateListener {
 
 	private final ModelType[] types;
+	private final DataPackageFilter dataPackageFilter = new DataPackageFilter();
 	private CheckboxTreeViewer tree;
 	private Runnable onChange;
-
+	
 	public ModelCheckBoxTree(ModelType... types) {
 		this.types = types;
 	}
@@ -44,6 +46,14 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 		this.onChange = fn;
 	}
 
+	public void setFilterDataPackageDatasets(boolean value) {
+		if (value) {
+			tree.addFilter(dataPackageFilter);
+		} else {
+			tree.removeFilter(dataPackageFilter);			
+		}
+	}
+	
 	public void drawOn(Composite comp, FormToolkit tk) {
 		tree = new CheckboxTreeViewer(comp,
 			SWT.VIRTUAL | SWT.MULTI | SWT.BORDER);

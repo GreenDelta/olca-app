@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
@@ -29,6 +31,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	private ProcessCombo sourceCombo;
 	private FlowViewer flowCombo;
 	private ProcessCombo targetCombo;
+	private Button excludeDataPackageDatasets;
 
 	public static void openDialog() {
 		var db = Database.get();
@@ -62,8 +65,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 	}
 
 	private ReplaceProvidersDialog(
-			ProviderReplacer replacer, List<ProcessDescriptor> usedProviders
-	) {
+			ProviderReplacer replacer, List<ProcessDescriptor> usedProviders) {
 		super(UI.shell());
 		setBlockOnOpen(true);
 		this.replacer = replacer;
@@ -97,6 +99,11 @@ public class ReplaceProvidersDialog extends FormDialog {
 		targetCombo = new ProcessCombo(body);
 		targetCombo.addSelectionChangedListener($ -> updateButtons());
 		targetCombo.setEnabled(false);
+
+		if (!Database.dataPackages().isEmpty()) {
+			excludeDataPackageDatasets = tk.createButton(
+					body, M.FilterDataSetsFromDataPackage, SWT.CHECK);
+		}
 
 		App.runInUI("Render providers", () -> sourceCombo.setInput(usedProviders));
 	}
@@ -147,6 +154,9 @@ public class ReplaceProvidersDialog extends FormDialog {
 		var flow = flowCombo.getSelected();
 		var target = targetCombo.getSelected();
 
+		if (excludeDataPackageDatasets != null && excludeDataPackageDatasets.getSelection()) {
+			replacer.excludeDataPackageDatasets();
+		}
 		super.okPressed();
 		App.runWithProgress(
 				"Replace providers...",

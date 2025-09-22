@@ -3,6 +3,7 @@ package org.openlca.app.components.replace;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -34,6 +35,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private Button processesCheck;
 	private Button impactsCheck;
 	private Button replaceBothButton;
+	private Button excludeDataPackageDatasets;
 
 	public static void openDialog() {
 		var db = Database.get();
@@ -83,7 +85,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 		UI.gridLayout(top, 2, 20, 5);
 		UI.gridData(top, true, false);
 
-		UI.label(top, tk,  M.ReplaceFlow);
+		UI.label(top, tk, M.ReplaceFlow);
 		sourceCombo = new FlowViewer(top);
 		sourceCombo.addSelectionChangedListener(this::updateReplacementCandidates);
 
@@ -95,7 +97,6 @@ public class ReplaceFlowsDialog extends FormDialog {
 		App.runInUI("Render flows", () -> sourceCombo.setInput(usedFlows));
 		tk.paintBordersFor(top);
 	}
-
 
 	private void updateReplacementCandidates(FlowDescriptor selected) {
 		var candidates = App.exec(
@@ -112,7 +113,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private void createBottom(Composite parent, FormToolkit tk) {
 		var bottom = UI.composite(parent, tk);
 		UI.gridLayout(bottom, 1, 0, 0);
-		Composite typeContainer = UI.composite(bottom, tk);
+		var typeContainer = UI.composite(bottom, tk);
 		UI.gridLayout(typeContainer, 4, 20, 5);
 		UI.label(typeContainer, tk, M.ReplaceIn);
 		processesCheck = UI.radio(typeContainer, tk, M.InputsOutputs);
@@ -122,6 +123,12 @@ public class ReplaceFlowsDialog extends FormDialog {
 		Controls.onSelect(impactsCheck, this::updateSelection);
 		replaceBothButton = UI.radio(typeContainer, tk, M.Both);
 		Controls.onSelect(replaceBothButton, this::updateSelection);
+		if (!Database.dataPackages().isEmpty()) {
+			var filterContainer = UI.composite(bottom, tk);
+			UI.gridLayout(filterContainer, 1, 20, 5);
+			excludeDataPackageDatasets = tk.createButton(
+					filterContainer, M.FilterDataSetsFromDataPackage, SWT.CHECK);
+		}
 		tk.paintBordersFor(bottom);
 	}
 
@@ -130,7 +137,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 			return;
 		if (!source.getSelection())
 			return;
-		var buttons = new Button[]{
+		var buttons = new Button[] {
 				processesCheck,
 				impactsCheck,
 				replaceBothButton
@@ -143,9 +150,9 @@ public class ReplaceFlowsDialog extends FormDialog {
 	}
 
 	private void updateButtons() {
-		FlowDescriptor first = sourceCombo.getSelected();
-		FlowDescriptor second = targetCombo.getSelected();
-		boolean enabled = first != null
+		var first = sourceCombo.getSelected();
+		var second = targetCombo.getSelected();
+		var enabled = first != null
 				&& first.id != 0L
 				&& second != null
 				&& second.id != 0L;
@@ -164,6 +171,9 @@ public class ReplaceFlowsDialog extends FormDialog {
 		var newFlow = targetCombo.getSelected();
 
 		var replacer = FlowReplacer.of(db);
+		if (excludeDataPackageDatasets != null && excludeDataPackageDatasets.getSelection()) {
+			replacer.excludeDataPackageDatasets();
+		}
 		if (replaceBothButton.getSelection()) {
 			replacer.replaceIn(ModelType.PROCESS, ModelType.IMPACT_CATEGORY);
 		} else if (processesCheck.getSelection()) {
