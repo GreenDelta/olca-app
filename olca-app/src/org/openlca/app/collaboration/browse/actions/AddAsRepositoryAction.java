@@ -32,7 +32,7 @@ public class AddAsRepositoryAction extends Action implements IServerNavigationAc
 		var db = Database.get();
 		var packageName = repoUrl.substring(repoUrl.lastIndexOf("/") + 1);
 		var dataPackage = db.getDataPackage(packageName);
-		return dataPackage != null;
+		return dataPackage == null;
 	}
 
 	@Override
