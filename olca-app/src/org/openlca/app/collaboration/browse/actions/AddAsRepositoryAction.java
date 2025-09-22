@@ -5,11 +5,11 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.openlca.app.M;
-import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.browse.elements.IServerNavigationElement;
 import org.openlca.app.collaboration.browse.elements.RepositoryElement;
 import org.openlca.app.collaboration.browse.elements.ServerElement;
 import org.openlca.app.collaboration.navigation.actions.AddRepositoryAction;
+import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 
 public class AddAsRepositoryAction extends Action implements IServerNavigationAction {
@@ -29,7 +29,10 @@ public class AddAsRepositoryAction extends Action implements IServerNavigationAc
 
 	@Override
 	public boolean isEnabled() {
-		return !Repository.isConnected(repoUrl);
+		var db = Database.get();
+		var packageName = repoUrl.substring(repoUrl.lastIndexOf("/") + 1);
+		var dataPackage = db.getDataPackage(packageName);
+		return dataPackage != null;
 	}
 
 	@Override

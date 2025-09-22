@@ -155,7 +155,7 @@ public class Repository extends ClientRepository {
 		}
 	}
 
-	public static Repository open(IDatabase database, DataPackage dataPackage) {
+	private static Repository open(IDatabase database, DataPackage dataPackage) {
 		DESCRIPTORS = null;
 		var repo = OPEN.get(dataPackage);
 		if (repo != null) {
@@ -164,6 +164,8 @@ public class Repository extends ClientRepository {
 		try {
 			repo = new Repository(database, dataPackage);
 			if (!repo.exists()) {
+				if (dataPackage != null && dataPackage.isRepository())
+					return initialize(database, dataPackage, dataPackage.url());
 				repo.close();
 				return null;
 			}
@@ -191,17 +193,11 @@ public class Repository extends ClientRepository {
 		return new File(root, "x-" + packageName);
 	}
 
-	public static boolean isConnected(String url) {
+	public static boolean isConnected() {
 		var db = Database.get();
 		if (db == null)
 			return false;
-		var packageName = url.substring(url.lastIndexOf("/") + 1);
-		if (db.getDataPackage(packageName) != null)
-			return true;
-		var repo = Repository.get();
-		if (repo != null && repo.url.equals(url))
-			return true;
-		return false;
+		return Repository.get() != null;
 	}
 
 	public static void closeAll() {
@@ -272,7 +268,7 @@ public class Repository extends ClientRepository {
 			return;
 		// keep sub repository directories
 		for (var child : dir.listFiles()) {
-			if (child.getName().startsWith("x-"))
+			if (child.isDirectory() && child.getName().startsWith("x-"))
 				continue;
 			Dirs.delete(child);
 		}

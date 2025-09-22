@@ -26,9 +26,9 @@ public class ConnectAction extends Action implements IServerNavigationAction {
 
 	@Override
 	public boolean isEnabled() {
-		return !Repository.isConnected(repoUrl);
+		return !Repository.isConnected();
 	}
-	
+
 	@Override
 	public void run() {
 		var repo = Repository.initialize(Database.get(), repoUrl);

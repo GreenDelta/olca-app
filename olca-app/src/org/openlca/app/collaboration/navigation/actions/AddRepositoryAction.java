@@ -25,16 +25,16 @@ public class AddRepositoryAction extends Action implements INavigationAction {
 	public ImageDescriptor getImageDescriptor() {
 		return Icon.REPOSITORY.descriptor();
 	}
-	
-
 
 	public static void connect(String url, String user) {
-		if (Repository.isConnected(url)) {
+		var db = Database.get();
+		var packageName = url.substring(url.lastIndexOf("/") + 1);
+		var dataPackage = db.getDataPackage(packageName);
+		if (dataPackage != null) {
 			MsgBox.warning("Data package already exists");
 			return;
 		}
-		var packageName = url.substring(url.lastIndexOf("/") + 1);
-		var dataPackage = Database.get().addRepository(packageName, null, url);
+		dataPackage = db.addRepository(packageName, null, url);
 		try {
 			var repo = Repository.initialize(Database.get(), dataPackage, url);
 			if (repo == null)

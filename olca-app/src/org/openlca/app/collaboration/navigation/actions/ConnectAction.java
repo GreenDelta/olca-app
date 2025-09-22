@@ -26,7 +26,7 @@ class ConnectAction extends Action implements INavigationAction {
 		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
 		var url = dialog.url();
-		if (Repository.isConnected(url)) {
+		if (Repository.isConnected()) {
 			MsgBox.info(M.RepositoryAlreadyConnected);
 			return;
 		}
