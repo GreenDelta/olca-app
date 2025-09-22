@@ -155,7 +155,7 @@ public class Repository extends ClientRepository {
 		}
 	}
 
-	private static Repository open(IDatabase database, DataPackage dataPackage) {
+	public static Repository open(IDatabase database, DataPackage dataPackage) {
 		DESCRIPTORS = null;
 		var repo = OPEN.get(dataPackage);
 		if (repo != null) {

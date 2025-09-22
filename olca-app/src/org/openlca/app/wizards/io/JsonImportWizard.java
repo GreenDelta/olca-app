@@ -84,9 +84,10 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 		LoggerFactory.getLogger(getClass())
 				.info("Import JSON LD package {} with update mode = {}", zip, mode);
 		try (var store = ZipStore.open(zip)) {
-			LibraryResolver.resolve(store.getDataPackages(), success -> {
+			DataPackageResolver.resolve(store.getDataPackages(), success -> {
 				if (!success)
 					return;
+				
 				try {
 					getContainer().run(true, true, (monitor) -> {
 						monitor.beginTask(M.ImportDots, IProgressMonitor.UNKNOWN);

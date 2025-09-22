@@ -1,15 +1,15 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.components.MountLibraryDialog;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
@@ -20,45 +20,48 @@ import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryDir;
 import org.openlca.core.library.PreMountCheck;
 
-class LibraryResolver {
+class DataPackageResolver {
 
 	private final LibraryDir libDir = Workspace.getLibraryDir();
 	private final IDatabase database = Database.get();
-	private final LinkedList<DataPackage> libraries;
+	private final LinkedList<DataPackage> dataPackages;
 	private final Set<String> handled = new HashSet<>();
 	private final Consumer<Boolean> callback;
 
-	private LibraryResolver(List<DataPackage> libraries, Consumer<Boolean> callback) {
-		this.libraries = new LinkedList<>(libraries);
+	private DataPackageResolver(Collection<DataPackage> dataPackages, Consumer<Boolean> callback) {
+		this.dataPackages = new LinkedList<>(dataPackages);
 		this.callback = callback;
 	}
 
-	static void resolve(Set<DataPackage> packages, Consumer<Boolean> callback) {
-		var libraries = packages.stream()
-				.filter(DataPackage::isLibrary)
-				.collect(Collectors.toList());
-		if (libraries.isEmpty()) {
+	static void resolve(Collection<DataPackage> dataPackages, Consumer<Boolean> callback) {
+		if (dataPackages.isEmpty()) {
 			callback.accept(true);
 			return;
 		}
-		new LibraryResolver(libraries, callback).next();
+		new DataPackageResolver(dataPackages, callback).next();
 	}
 
 	private void next() {
-		if (libraries.isEmpty()) {
+		if (dataPackages.isEmpty()) {
 			callback.accept(true);
 			return;
 		}
-		var next = libraries.pop();
-		var lib = libDir.getLibrary(next.name()).orElse(null);
-		if (lib == null) {
-			askFor(next);
-		} else if (!handled.contains(lib.name())) {
-			mount(lib);
-		} else if (libraries.isEmpty()) {
-			callback.accept(true);
-		} else {
+		var next = dataPackages.pop();
+		if (!next.isLibrary()) {
+			database.addRepository(next.name(), next.version(), next.url());
+			Repository.open(database, next);
 			next();
+		} else {
+			var lib = libDir.getLibrary(next.name()).orElse(null);
+			if (lib == null) {
+				askFor(next);
+			} else if (!handled.contains(lib.name())) {
+				mount(lib);
+			} else if (dataPackages.isEmpty()) {
+				callback.accept(true);
+			} else {
+				next();
+			}
 		}
 	}
 

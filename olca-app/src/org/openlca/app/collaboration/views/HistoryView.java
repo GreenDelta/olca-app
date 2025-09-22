@@ -67,7 +67,7 @@ public class HistoryView extends ViewPart {
 			if (page == null)
 				return;
 			try {
-				page.showView(CompareView.ID);
+				page.showView(ID);
 			} catch (PartInitException e) {
 				ErrorReporter.on("Error opening compare view", e);
 				return;

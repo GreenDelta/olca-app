@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -116,8 +117,12 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 				monitor.worked(1);
 			}
 
-			var libraries = export.getReferencedLibraries();
-			store.putDataPackages(resolveLinksOf(libraries));
+			var dataPackages = export.getReferencedDataPackages();
+			var resolved = resolveLinksOf(dataPackages);
+			dataPackages.stream()
+					.filter(Predicate.not(DataPackage::isLibrary))
+					.forEach(resolved::add);
+			store.putDataPackages(resolved);
 		}
 
 		private static List<DataPackage> resolveLinksOf(Set<DataPackage> dataPackages) {
