@@ -11,9 +11,11 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.storage.file.FileBasedConfig;
 import org.eclipse.jgit.storage.file.WindowCacheConfig;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
+import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
@@ -236,7 +238,22 @@ public class Repository extends ClientRepository {
 	}
 
 	public String user() {
-		return getConfig().getString("user", null, "name");
+		// from repo config
+		var repoConfigFile = new File(dir, "config");
+		if (repoConfigFile.exists()) {
+			var repoConfig = new FileBasedConfig(repoConfigFile, getFS());
+			if (repoConfig != null) {
+				var name = repoConfig.getString("user", null, "name");
+				if (!Strings.nullOrEmpty(name))
+					return name;
+			}
+		}
+		// from server config
+		var username = CredentialStore.getUsername(serverUrl);
+		if (!Strings.nullOrEmpty(username))
+			return username;		
+		// from global config
+		return getConfig().getString("user", null, "email");
 	}
 
 	public void user(String user) {

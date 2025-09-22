@@ -31,6 +31,13 @@ public class ServerConfigurations {
 		return CONFIGS;
 	}
 
+	public static String getUsername(String url) {
+		for (var config : CONFIGS)
+			if (config.url.equals(url))
+				return config.user;
+		return null;
+	}
+
 	public static void put(ServerConfig config) {
 		if (!checkCS(config))
 			return;
