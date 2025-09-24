@@ -13,7 +13,7 @@ public class CredentialStore {
 	private static Map<String, String> usernames = new HashMap<>();
 
 	public static String getUsername(String url) {
-		return usernames.get(url);
+		return usernames.getOrDefault(url, ServerConfigurations.getUsername(url));
 	}
 
 	public static String getPassword(String url, String username) {
