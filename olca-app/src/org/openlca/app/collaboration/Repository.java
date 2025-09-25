@@ -9,7 +9,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.storage.file.FileBasedConfig;
-import org.eclipse.jgit.storage.file.WindowCacheConfig;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.CredentialStore;
@@ -142,7 +141,7 @@ public class Repository extends ClientRepository {
 				return true;
 		return false;
 	}
-	
+
 	public boolean isCollaborationServer() {
 		return client != null;
 	}
@@ -161,11 +160,10 @@ public class Repository extends ClientRepository {
 		// from server config
 		var username = CredentialStore.getUsername(serverUrl);
 		if (!Strings.nullOrEmpty(username))
-			return username;		
+			return username;
 		// from global config
 		return getConfig().getString("user", null, "email");
 	}
-
 
 	public void user(String user) {
 		var config = getConfig();
@@ -188,8 +186,5 @@ public class Repository extends ClientRepository {
 		}
 		super.close();
 		CURRENT = null;
-		// TODO this is a workaround to avoid open file handles that jgit
-		// is holding (see https://github.com/eclipse-jgit/jgit/issues/155)
-		new WindowCacheConfig().install();
 	}
 }
