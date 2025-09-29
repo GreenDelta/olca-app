@@ -55,6 +55,10 @@ public class SdModelEditor extends FormEditor {
 		return modelDir.getName();
 	}
 
+	File modelDir() {
+		return modelDir;
+	}
+
 	@Override
 	protected void addPages() {
 		try {

@@ -5,8 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.imageio.ImageIO;
+
 import org.openlca.core.database.IDatabase;
 import org.openlca.sd.xmile.Xmile;
+import org.openlca.sd.xmile.img.ModelImage;
 import org.openlca.util.Dirs;
 import org.openlca.util.Res;
 import org.openlca.util.Strings;
@@ -71,4 +74,23 @@ public class SystemDynamics {
 			return Res.error("failed to read model file", e);
 		}
 	}
+
+	public static Res<File> getModelImage(File modelDir) {
+		var file = new File(modelDir, "model-image.png");
+		if (file.exists() && file.isFile())
+			return Res.of(file);
+		var model = openModel(modelDir);
+		if (model.hasError())
+			return model.wrapError("failed to load model");
+		try {
+			var image = ModelImage.createFrom(model.value());
+			if (image.hasError())
+				return Res.error(image.error());
+			ImageIO.write(image.value(), "png", file);
+			return Res.of(file);
+		} catch (Exception e) {
+			return Res.error("failed to create model image");
+		}
+	}
+
 }

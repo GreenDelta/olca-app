@@ -1,31 +1,34 @@
 package org.openlca.app.editors.sd;
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.SystemDynamics;
 import org.openlca.app.util.UI;
 import org.openlca.sd.eqn.Simulator;
 import org.openlca.sd.xmile.Xmile;
-import org.openlca.sd.xmile.svg.Svg;
-
-import com.github.weisj.jsvg.parser.SVGLoader;
 
 class SdInfoPage extends FormPage {
 
 	private final SdModelEditor editor;
+	private Canvas imageCanvas;
 
 	SdInfoPage(SdModelEditor editor) {
 		super(editor, "SdModelInfoPage", M.GeneralInformation);
@@ -79,28 +82,23 @@ class SdInfoPage extends FormPage {
 	}
 
 	private void imageSection(Composite body, FormToolkit tk) {
-		var comp = UI.formSection(body, tk, "Model graph");
+		var section = UI.section(body, tk, "Model graph");
+		UI.gridData(section, true, true);
+
+		// Add action button for changing image
+		var onChangeImage = Actions.create("Change image", Icon.EDIT.descriptor(), this::changeImage);
+		Actions.bind(section, onChangeImage);
+
+		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 
-		var svg = Svg.xmlOf(editor.xmile());
-		if (svg.hasError()) {
-			UI.label(comp, tk, "No model graph available");
-			return;
-		}
+		// Create canvas for image display
+		imageCanvas = new Canvas(comp, SWT.BORDER);
+		UI.gridData(imageCanvas, true, true).minimumHeight = 300;
+		imageCanvas.setBackground(Colors.white());
 
-		String xml = svg.value();
-		if (xml == null || xml.trim().isEmpty()) {
-			UI.label(comp, tk, "No model graph available");
-			return;
-		}
-
-		// Create canvas for SVG rendering
-		var canvas = new Canvas(comp, SWT.BORDER);
-		UI.gridData(canvas, true, true).minimumHeight = 300;
-		canvas.setBackground(Colors.white());
-
-		// Render SVG
-		canvas.addPaintListener(e -> renderSvg(e.gc, xml, canvas.getBounds().width, canvas.getBounds().height));
+		// Load and display the image
+		displayModelImage();
 	}
 
 	private void runSimulation() {
@@ -112,113 +110,78 @@ class SdInfoPage extends FormPage {
 		SdResultEditor.open(editor.modelName(), sim.value());
 	}
 
-	private void renderSvg(GC gc, String svgXml, int canvasWidth, int canvasHeight) {
+	private void displayModelImage() {
+		imageCanvas.addPaintListener(e -> {
+			var gc = e.gc;
+			var canvasWidth = imageCanvas.getBounds().width;
+			var canvasHeight = imageCanvas.getBounds().height;
+
+			var imageResult = SystemDynamics.getModelImage(editor.modelDir());
+			if (imageResult.hasError()) {
+				drawErrorMessage(gc, "No model image available", canvasWidth, canvasHeight);
+				return;
+			}
+
+			var imageFile = imageResult.value();
+			if (!imageFile.exists()) {
+				drawErrorMessage(gc, "No model image available", canvasWidth, canvasHeight);
+				return;
+			}
+
+			try {
+				var imageData = new ImageData(imageFile.getAbsolutePath());
+				var image = new Image(null, imageData);
+
+				// Calculate scaling to fit canvas while maintaining aspect ratio
+				double scaleX = (canvasWidth - 20.0) / imageData.width; // 10px margin on each side
+				double scaleY = (canvasHeight - 20.0) / imageData.height; // 10px margin top/bottom
+				double scale = Math.min(scaleX, scaleY);
+				scale = Math.min(scale, 1.0); // Don't scale up
+
+				// Center the image
+				int scaledWidth = (int) (imageData.width * scale);
+				int scaledHeight = (int) (imageData.height * scale);
+				int x = (canvasWidth - scaledWidth) / 2;
+				int y = (canvasHeight - scaledHeight) / 2;
+
+				// Draw scaled image
+				var scaledData = imageData.scaledTo(scaledWidth, scaledHeight);
+				var scaledImage = new Image(null, scaledData);
+				gc.drawImage(scaledImage, x, y);
+
+				image.dispose();
+				scaledImage.dispose();
+			} catch (Exception ex) {
+				ErrorReporter.on("Failed to load model image", ex);
+				drawErrorMessage(gc, "Failed to load model image: " + ex.getMessage(), canvasWidth, canvasHeight);
+			}
+		});
+	}
+
+	private void changeImage() {
+		var file = FileChooser.open("*.png");
+		if (file == null)
+			return;
+
+		var modelDir = editor.modelDir();
+		var targetFile = new File(modelDir, "model-image.png");
+
 		try {
-			// Parse SVG using JSVG
-			var loader = new SVGLoader();
-			var document = loader.load(new ByteArrayInputStream(svgXml.getBytes("UTF-8")));
-			if (document == null) {
-				drawErrorMessage(gc, "Failed to parse SVG", canvasWidth, canvasHeight);
-				return;
-			}
-
-			// Get SVG dimensions
-			var size = document.size();
-			if (size == null) {
-				drawErrorMessage(gc, "Invalid SVG dimensions", canvasWidth, canvasHeight);
-				return;
-			}
-
-			// Calculate scaling to fit canvas while maintaining aspect ratio
-			double svgWidth = size.getWidth();
-			double svgHeight = size.getHeight();
-
-			if (svgWidth <= 0 || svgHeight <= 0) {
-				drawErrorMessage(gc, "Invalid SVG size", canvasWidth, canvasHeight);
-				return;
-			}
-
-			double scaleX = (canvasWidth - 20.0) / svgWidth; // 10px margin on each side
-			double scaleY = (canvasHeight - 20.0) / svgHeight; // 10px margin top/bottom
-			double scale = Math.min(scaleX, scaleY);
-
-			// Center the image
-			int scaledWidth = (int) (svgWidth * scale);
-			int scaledHeight = (int) (svgHeight * scale);
-			int x = (canvasWidth - scaledWidth) / 2;
-			int y = (canvasHeight - scaledHeight) / 2;
-
-			// Create AWT BufferedImage for JSVG rendering
-			var bufferedImage = new java.awt.image.BufferedImage(
-					scaledWidth, scaledHeight, java.awt.image.BufferedImage.TYPE_INT_ARGB);
-			var graphics2D = bufferedImage.createGraphics();
-
-			// Enable antialiasing
-			graphics2D.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
-					java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-			graphics2D.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING,
-					java.awt.RenderingHints.VALUE_RENDER_QUALITY);
-
-			// Scale and render SVG
-			graphics2D.scale(scale, scale);
-			document.render(null, graphics2D);
-			graphics2D.dispose();
-
-			// Convert BufferedImage to SWT Image
-			var swtImage = convertToSwtImage(bufferedImage);
-			if (swtImage != null) {
-				gc.drawImage(swtImage, x, y);
-				swtImage.dispose();
-			} else {
-				drawErrorMessage(gc, "Failed to convert image", canvasWidth, canvasHeight);
-			}
-
+			Files.copy(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			imageCanvas.redraw(); // Refresh the image display
+			MsgBox.info("Image updated", "The model image has been updated successfully.");
 		} catch (Exception e) {
-			ErrorReporter.on("Failed to render SVG", e);
-			drawErrorMessage(gc, "Error rendering SVG: " + e.getMessage(), canvasWidth, canvasHeight);
+			ErrorReporter.on("Failed to update model image", e);
+			MsgBox.error("Failed to update image", "Could not update the model image: " + e.getMessage());
 		}
 	}
 
-	private void drawErrorMessage(GC gc, String message, int width, int height) {
-		gc.setForeground(Colors.systemColor(SWT.COLOR_RED));
+	private void drawErrorMessage(org.eclipse.swt.graphics.GC gc, String message, int width, int height) {
+		gc.setForeground(Colors.systemColor(SWT.COLOR_DARK_GRAY));
 		var textExtent = gc.textExtent(message);
 		int x = (width - textExtent.x) / 2;
 		int y = (height - textExtent.y) / 2;
 		gc.drawText(message, x, y, true);
-	}
-
-	private Image convertToSwtImage(java.awt.image.BufferedImage bufferedImage) {
-		try {
-			int width = bufferedImage.getWidth();
-			int height = bufferedImage.getHeight();
-
-			// Create SWT ImageData
-			var imageData = new org.eclipse.swt.graphics.ImageData(width, height, 24,
-					new org.eclipse.swt.graphics.PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
-
-			// Convert pixel by pixel
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < width; x++) {
-					int rgb = bufferedImage.getRGB(x, y);
-					int alpha = (rgb >> 24) & 0xFF;
-					int red = (rgb >> 16) & 0xFF;
-					int green = (rgb >> 8) & 0xFF;
-					int blue = rgb & 0xFF;
-
-					// Convert to SWT RGB format
-					int swtRgb = (red << 16) | (green << 8) | blue;
-					imageData.setPixel(x, y, swtRgb);
-					if (imageData.alphaData != null) {
-						imageData.setAlpha(x, y, alpha);
-					}
-				}
-			}
-
-			return new Image(null, imageData);
-		} catch (Exception e) {
-			ErrorReporter.on("Failed to convert BufferedImage to SWT Image", e);
-			return null;
-		}
 	}
 
 	private record SimSpecs(
