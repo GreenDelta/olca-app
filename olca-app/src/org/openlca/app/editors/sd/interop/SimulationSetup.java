@@ -3,7 +3,7 @@ package org.openlca.app.editors.sd.interop;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.ilcd.methods.ImpactMethod;
+import org.openlca.core.model.ImpactMethod;
 
 public class SimulationSetup {
 

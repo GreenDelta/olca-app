@@ -9,6 +9,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.sd.interop.SimulationSetup;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -21,6 +22,8 @@ public class SdModelEditor extends FormEditor {
 
 	private File modelDir;
 	private Xmile xmile;
+	private SimulationSetup setup;
+	private boolean dirty;
 
 	public static void open(File modelDir) {
 		if (modelDir == null || !modelDir.exists() || !modelDir.isDirectory())
@@ -47,6 +50,16 @@ public class SdModelEditor extends FormEditor {
 		setPartName(inp.getName());
 	}
 
+	public void setDirty() {
+		dirty = true;
+		editorDirtyStateChanged();
+	}
+
+	@Override
+	public boolean isDirty() {
+		return dirty;
+	}
+
 	Xmile xmile() {
 		return xmile;
 	}
@@ -57,6 +70,13 @@ public class SdModelEditor extends FormEditor {
 
 	File modelDir() {
 		return modelDir;
+	}
+
+	SimulationSetup setup() {
+		if (setup == null) {
+			setup = new SimulationSetup();
+		}
+		return setup;
 	}
 
 	@Override

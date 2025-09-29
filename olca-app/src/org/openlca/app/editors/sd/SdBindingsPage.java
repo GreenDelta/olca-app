@@ -10,31 +10,42 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
+import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.sd.interop.SimulationSetup;
 import org.openlca.app.editors.sd.interop.SystemBinding;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.combo.FlowPropertyFactorViewer;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
-import org.openlca.app.viewers.combo.UnitCombo;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.model.Flow;
+import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
 class SdBindingsPage extends FormPage {
 
+	private final IDatabase db;
 	private final SdModelEditor editor;
-	private final List<SystemBindingSection> bindingSections = new ArrayList<>();
+	private final SimulationSetup setup;
+
+	private final List<BindingSection> sections = new ArrayList<>();
 	private ScrolledForm form;
 	private FormToolkit tk;
 	private Composite body;
+	private AddButton addButton;
 
 	SdBindingsPage(SdModelEditor editor) {
 		super(editor, "SdBindingsPage", "Bindings");
 		this.editor = editor;
+		this.setup = editor.setup();
+		this.db = Database.get();
 	}
 
 	@Override
@@ -53,130 +64,159 @@ class SdBindingsPage extends FormPage {
 
 		// select impact method
 		UI.label(comp, tk, M.ImpactAssessmentMethod);
-		var methodCombo = new ImpactMethodViewer(comp);
+		var combo = new ImpactMethodViewer(comp);
 		var methods = new ImpactMethodDao(Database.get())
 				.getDescriptors()
 				.stream()
 				.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
 				.toList();
-		methodCombo.setInput(methods);
+		combo.setInput(methods);
 
+		if (setup.method() != null) {
+			combo.select(Descriptor.of(setup.method()));
+		}
+		combo.addSelectionChangedListener(d -> {
+			if (d == null)
+				return;
+			setup.method(db.get(ImpactMethod.class, d.id));
+			editor.setDirty();
+		});
 	}
 
 	private void createBindingSections() {
-
-		var setup = getSimulationSetup();
 		var bindings = setup.systemBindings();
 		for (int i = 0; i < bindings.size(); i++) {
-			bindingSections.add(new SystemBindingSection(i, bindings.get(i)));
+			sections.add(new BindingSection(i, bindings.get(i)));
 		}
-
-		// TODO: add AddButton
+		addButton = new AddButton();
 	}
 
-	private SimulationSetup getSimulationSetup() {
-		// TODO ...
-		return new SimulationSetup();
+	private void addNew(SystemBinding binding) {
+		if (binding == null)
+			return;
+		var pos = setup.systemBindings().size();
+		setup.systemBindings().add(binding);
+		sections.add(new BindingSection(pos, binding));
+		addButton.render();
+		form.reflow(true);
+		editor.setDirty();
 	}
 
-	private class SystemBindingSection {
+	private class BindingSection {
 
-		private final int index;
-		private final SystemBinding binding;
+		final int pos;
+		final SystemBinding binding;
 
-		SystemBindingSection(int index, SystemBinding binding) {
-			this.index = index;
+		BindingSection(int pos, SystemBinding binding) {
+			this.pos = pos;
 			this.binding = binding;
-			createSection();
+			render();
 		}
 
-		private void createSection() {
-			var sectionName = binding.system() != null
+		private void render() {
+			var name = binding.system() != null
 					? binding.system().name
-					: "System binding " + (index + 1);
-
-			var section = UI.section(body, tk, sectionName);
+					: "System binding " + (pos + 1);
+			var section = UI.section(body, tk, name);
 			UI.gridData(section, true, false);
 
-			var deleteAction = Actions.create("Delete", Icon.DELETE.descriptor(), () -> {
-				getSimulationSetup().systemBindings().remove(binding);
-				bindingSections.remove(this);
+			var onDelete = Actions.create("Delete", Icon.DELETE.descriptor(), () -> {
+				setup.systemBindings().remove(binding);
+				sections.remove(this);
 				section.dispose();
 				form.reflow(true);
 			});
-			Actions.bind(section, deleteAction);
+			Actions.bind(section, onDelete);
 
 			var comp = UI.sectionClient(section, tk);
-			createQuantitativeReferenceSection(comp);
-			createParameterBindingsTable(comp);
+			UI.gridLayout(comp, 1);
+			createQRefSection(comp);
+			createParamTable(comp);
 		}
 
-		private void createQuantitativeReferenceSection(Composite parent) {
-			var comp = UI.formSection(parent, tk, "Quantitative reference", 2);
+		private void createQRefSection(Composite parent) {
+			var comp = UI.formSection(parent, tk, "Quantitative reference", 3);
 
 			// Product system selection
+			UI.label(comp, tk, "Product system");
 			ModelLink.of(ProductSystem.class)
-					.setModel(binding.system());
+					.setModel(binding.system())
+					.setEditable(false)
+					.renderOn(comp, tk);
+			UI.filler(comp, tk);
 
-			// TODO: Reference flow/product
+			UI.label(comp, tk, "Reference flow");
+			ModelLink.of(Flow.class)
+					.setModel(binding.flow())
+					.setEditable(false)
+					.renderOn(comp, tk);
+			UI.filler(comp, tk);
 
+			var unit = binding.unit();
+			var unitSymbol = unit != null && Strings.notEmpty(unit.name)
+					? unit.name
+					: "?";
+			var amountText = UI.labeledText(comp, tk, M.Amount);
+			amountText.setText(Double.toString(binding.amount()));
+			UI.label(comp, tk, unitSymbol);
 
-			// Flow property
-			UI.label(comp, tk, M.FlowProperty);
-			var propertyCombo = new FlowPropertyFactorViewer(comp);
-			propertyCombo.addSelectionChangedListener(factor -> {
-				if (factor != null) {
-					binding.property(factor.flowProperty);
-					// TODO: Update unit options
+			amountText.addModifyListener(e -> {
+				try {
+					double v = Double.parseDouble(amountText.getText());
+					binding.amount(v);
+				} catch (Exception ignored) {
 				}
 			});
-			UI.filler(comp, tk);
-
-			// Unit
-			UI.label(comp, tk, M.Unit);
-			var unitCombo = new UnitCombo(comp);
-			unitCombo.addSelectionChangedListener(binding::unit);
-			UI.filler(comp, tk);
-
-			// Amount
-			var amountText = UI.labeledText(comp, tk, "Amount");
-			if (binding.amount() != null) {
-				amountText.setText(binding.amount().toString());
-			}
-			// TODO: Add proper binding for amount
-			UI.filler(comp, tk);
 		}
 
-		private void createParameterBindingsTable(Composite parent) {
+		private void createParamTable(Composite parent) {
 			var comp = UI.formSection(parent, tk, "Parameter bindings");
 
-			var table = Tables.createViewer(comp,
-					"Parameter",
-					"Value",
-					"Description");
-			UI.gridData(table.getControl(), true, true).minimumHeight = 150;
-
-			Tables.bindColumnWidths(table, 0.4, 0.3, 0.3);
-
-			// TODO: Implement table content provider and label provider
-			// TODO: Add actions for adding/editing/removing parameter bindings
-
+			var table = Tables.createViewer(comp, "Model variable", "Parameter");
+			Tables.bindColumnWidths(table, 0.5, 0.5);
 
 			// Add actions for parameter bindings
 			var addParam = Actions.create("Add parameter binding", Icon.ADD.descriptor(), () -> {
 				// TODO: Implement parameter binding creation dialog
 			});
-
-			var editParam = Actions.create("Edit parameter binding", Icon.EDIT.descriptor(), () -> {
-				// TODO: Implement parameter binding edit dialog
-			});
-
 			var deleteParam = Actions.create("Delete parameter binding", Icon.DELETE.descriptor(), () -> {
 				// TODO: Implement parameter binding deletion
 			});
 
-			Actions.bind(table, addParam, editParam, deleteParam);
+			Actions.bind(table, addParam, deleteParam);
 
+		}
+	}
+
+	class AddButton {
+
+		Composite comp;
+
+		AddButton() {
+			render();
+		}
+
+		void render() {
+			if (comp != null) {
+				comp.dispose();
+			}
+			comp = UI.composite(body, tk);
+			var grid = UI.gridLayout(comp, 1);
+			grid.marginLeft = 0;
+			grid.marginTop = 0;
+			grid.marginBottom = 10;
+			var btn = UI.button(comp, tk, "Add product system");
+			btn.setImage(Icon.ADD.get());
+			Controls.onSelect(btn, e -> {
+				var d = ModelSelector.select(ModelType.PRODUCT_SYSTEM);
+				if (d == null)
+					return;
+				var sys = db.get(ProductSystem.class, d.id);
+				if (sys == null)
+					return;
+				var binding = new SystemBinding().system(sys);
+				addNew(binding);
+			});
 		}
 	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Unit;
@@ -12,8 +13,6 @@ public class SystemBinding {
 
 	private ProductSystem system;
 	private AllocationMethod allocation;
-	private Unit unit;
-	private FlowProperty property;
 	private Double amount;
 	private final List<VarBinding> varBindings = new ArrayList<>();
 
@@ -27,7 +26,9 @@ public class SystemBinding {
 	}
 
 	public AllocationMethod allocation() {
-		return allocation;
+		return allocation != null
+				? allocation
+				: AllocationMethod.USE_DEFAULT;
 	}
 
 	public SystemBinding allocation(AllocationMethod allocation) {
@@ -35,26 +36,33 @@ public class SystemBinding {
 		return this;
 	}
 
-	public Unit unit() {
-		return unit;
+	public Flow flow() {
+		if (system == null)
+			return null;
+		var ex = system.referenceExchange;
+		return ex != null
+				? ex.flow
+				: null;
 	}
 
-	public SystemBinding unit(Unit unit) {
-		this.unit = unit;
-		return this;
+	public Unit unit() {
+		return system != null
+				? system.targetUnit
+				: null;
 	}
 
 	public FlowProperty property() {
-		return property;
+		return system != null && system.targetFlowPropertyFactor != null
+				? system.targetFlowPropertyFactor.flowProperty
+				: null;
 	}
 
-	public SystemBinding property(FlowProperty property) {
-		this.property = property;
-		return this;
-	}
-
-	public Double amount() {
-		return amount;
+	public double amount() {
+		if (amount != null)
+			return amount;
+		return system != null
+				? system.targetAmount
+				: 1;
 	}
 
 	public SystemBinding amount(Double amount) {
