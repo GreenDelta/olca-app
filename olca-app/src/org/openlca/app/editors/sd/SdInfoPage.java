@@ -5,10 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -28,7 +28,7 @@ import org.openlca.sd.xmile.Xmile;
 class SdInfoPage extends FormPage {
 
 	private final SdModelEditor editor;
-	private Canvas imageCanvas;
+	private SdImageView imageView;
 
 	SdInfoPage(SdModelEditor editor) {
 		super(editor, "SdModelInfoPage", M.GeneralInformation);
@@ -92,13 +92,15 @@ class SdInfoPage extends FormPage {
 		var comp = UI.sectionClient(section, tk);
 		UI.gridLayout(comp, 1);
 
-		// Create canvas for image display
-		imageCanvas = new Canvas(comp, SWT.BORDER);
-		UI.gridData(imageCanvas, true, true).minimumHeight = 300;
-		imageCanvas.setBackground(Colors.white());
+		// Create scrollable composite for the image
+		var scrolled = new ScrolledComposite(comp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		UI.gridData(scrolled, true, true).minimumHeight = 300;
+		scrolled.setBackground(Colors.white());
+		scrolled.setExpandHorizontal(true);
+		scrolled.setExpandVertical(true);
 
-		// Load and display the image
-		displayModelImage();
+		// Create image view
+		imageView = new SdImageView(scrolled, this::getModelImageFile);
 	}
 
 	private void runSimulation() {
@@ -110,52 +112,13 @@ class SdInfoPage extends FormPage {
 		SdResultEditor.open(editor.modelName(), sim.value());
 	}
 
-	private void displayModelImage() {
-		imageCanvas.addPaintListener(e -> {
-			var gc = e.gc;
-			var canvasWidth = imageCanvas.getBounds().width;
-			var canvasHeight = imageCanvas.getBounds().height;
-
-			var imageResult = SystemDynamics.getModelImage(editor.modelDir());
-			if (imageResult.hasError()) {
-				drawErrorMessage(gc, "No model image available", canvasWidth, canvasHeight);
-				return;
-			}
-
-			var imageFile = imageResult.value();
-			if (!imageFile.exists()) {
-				drawErrorMessage(gc, "No model image available", canvasWidth, canvasHeight);
-				return;
-			}
-
-			try {
-				var imageData = new ImageData(imageFile.getAbsolutePath());
-				var image = new Image(null, imageData);
-
-				// Calculate scaling to fit canvas while maintaining aspect ratio
-				double scaleX = (canvasWidth - 20.0) / imageData.width; // 10px margin on each side
-				double scaleY = (canvasHeight - 20.0) / imageData.height; // 10px margin top/bottom
-				double scale = Math.min(scaleX, scaleY);
-				scale = Math.min(scale, 1.0); // Don't scale up
-
-				// Center the image
-				int scaledWidth = (int) (imageData.width * scale);
-				int scaledHeight = (int) (imageData.height * scale);
-				int x = (canvasWidth - scaledWidth) / 2;
-				int y = (canvasHeight - scaledHeight) / 2;
-
-				// Draw scaled image
-				var scaledData = imageData.scaledTo(scaledWidth, scaledHeight);
-				var scaledImage = new Image(null, scaledData);
-				gc.drawImage(scaledImage, x, y);
-
-				image.dispose();
-				scaledImage.dispose();
-			} catch (Exception ex) {
-				ErrorReporter.on("Failed to load model image", ex);
-				drawErrorMessage(gc, "Failed to load model image: " + ex.getMessage(), canvasWidth, canvasHeight);
-			}
-		});
+	private File getModelImageFile() {
+		var imageResult = SystemDynamics.getModelImage(editor.modelDir());
+		if (imageResult.hasError()) {
+			return null;
+		}
+		var imageFile = imageResult.value();
+		return imageFile.exists() ? imageFile : null;
 	}
 
 	private void changeImage() {
@@ -168,7 +131,9 @@ class SdInfoPage extends FormPage {
 
 		try {
 			Files.copy(file.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			imageCanvas.redraw(); // Refresh the image display
+			if (imageView != null) {
+				imageView.forceUpdate(); // Force refresh the image display
+			}
 			MsgBox.info("Image updated", "The model image has been updated successfully.");
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to update model image", e);
@@ -176,12 +141,95 @@ class SdInfoPage extends FormPage {
 		}
 	}
 
-	private void drawErrorMessage(org.eclipse.swt.graphics.GC gc, String message, int width, int height) {
-		gc.setForeground(Colors.systemColor(SWT.COLOR_DARK_GRAY));
-		var textExtent = gc.textExtent(message);
-		int x = (width - textExtent.x) / 2;
-		int y = (height - textExtent.y) / 2;
-		gc.drawText(message, x, y, true);
+	/**
+	 * A simple image view for displaying model images in a scrollable area,
+	 * similar to the ImageView used in SourceInfoPage.
+	 */
+	private static class SdImageView {
+
+		private final ScrolledComposite scrolled;
+		private final java.util.function.Supplier<File> fileSupplier;
+		private Label label;
+		private File currentFile;
+		private long lastModified;
+
+		SdImageView(ScrolledComposite scrolled, java.util.function.Supplier<File> fileSupplier) {
+			this.scrolled = scrolled;
+			this.fileSupplier = fileSupplier;
+			update();
+		}
+
+		void update() {
+			File file = fileSupplier.get();
+			long modified = file != null && file.exists() ? file.lastModified() : 0;
+
+			// Only skip update if file is the same AND modification time hasn't changed
+			if (java.util.Objects.equals(file, currentFile) && modified == lastModified)
+				return;
+
+			currentFile = file;
+			lastModified = modified;
+			refreshImage();
+		}
+
+		void forceUpdate() {
+			currentFile = null; // Reset to force update
+			lastModified = 0;
+			update();
+		}
+
+		private void refreshImage() {
+			if (label != null) {
+				label.dispose();
+				label = null;
+			}
+
+			// Create placeholder or image
+			if (currentFile == null || !currentFile.exists()) {
+				createPlaceholder();
+				return;
+			}
+
+			// Check if it's an image file
+			var fileName = currentFile.getName().toLowerCase();
+			if (!(fileName.endsWith(".png") || fileName.endsWith(".jpg") ||
+				  fileName.endsWith(".jpeg") || fileName.endsWith(".gif") ||
+				  fileName.endsWith(".bmp"))) {
+				createPlaceholder();
+				return;
+			}
+
+			// Create the image label
+			try {
+				var image = new Image(scrolled.getDisplay(), currentFile.getAbsolutePath());
+				label = new Label(scrolled, SWT.NONE);
+				label.setImage(image);
+				label.addDisposeListener(e -> {
+					if (!image.isDisposed()) {
+						image.dispose();
+					}
+				});
+
+				// Set up scrolled composite
+				scrolled.setContent(label);
+				var size = label.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				scrolled.setMinSize(size);
+				scrolled.layout();
+			} catch (Exception e) {
+				ErrorReporter.on("Failed to load image: " + currentFile.getAbsolutePath(), e);
+				createPlaceholder();
+			}
+		}
+
+		private void createPlaceholder() {
+			label = new Label(scrolled, SWT.NONE);
+			label.setText("No model image available");
+			label.setForeground(Colors.systemColor(SWT.COLOR_DARK_GRAY));
+			scrolled.setContent(label);
+			var size = label.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			scrolled.setMinSize(size);
+			scrolled.layout();
+		}
 	}
 
 	private record SimSpecs(
