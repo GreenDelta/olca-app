@@ -10,56 +10,63 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.db.Database;
+import org.openlca.app.editors.sd.interop.SystemBinding;
 import org.openlca.app.editors.sd.interop.VarBinding;
+import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.Parameter;
-import org.openlca.sd.eqn.Id;
+import org.openlca.core.model.ParameterRedef;
+import org.openlca.sd.eqn.Var;
+import org.openlca.sd.eqn.Vars;
+import org.openlca.sd.xmile.Xmile;
+import org.openlca.util.ParameterRedefSets;
 import org.openlca.util.Strings;
 
 class SdVarBindingDialog extends FormDialog {
 
 	private final VarBinding binding;
-	private final List<Id> modelVariables;
-	private final List<Parameter> systemParameters;
+	private final List<Var> vars;
+	private final List<ParameterRedef> params;
 
-	private TableViewer variablesTable;
-	private TableViewer parametersTable;
-	private Text variablesFilter;
-	private Text parametersFilter;
+	private TableViewer varsTable;
+	private TableViewer paramsTable;
+	private Text varsFilter;
+	private Text paramsFilter;
 
-	public static Optional<VarBinding> create(
-			List<Id> modelVariables,
-			List<Parameter> systemParameters) {
-		var binding = new VarBinding();
-		var dialog = new SdVarBindingDialog(binding, modelVariables, systemParameters);
-		return dialog.open() == OK
-			? Optional.of(binding)
-			: Optional.empty();
+	public static Optional<VarBinding> create(Xmile xmile, SystemBinding binding) {
+		try {
+			var vars = Vars.readFrom(xmile);
+			if (vars.hasError()) {
+				MsgBox.error("Failed to read variables from model", vars.error());
+				return Optional.empty();
+			}
+			var params = ParameterRedefSets.allOf(Database.get(), binding.system())
+					.parameters;
+			var dialog = new SdVarBindingDialog(vars.value(), params);
+			return dialog.open() == OK
+					? Optional.of(dialog.binding)
+					: Optional.empty();
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to create binding dialog", e);
+			return Optional.empty();
+		}
 	}
 
-	public static boolean edit(
-			VarBinding binding,
-			List<Id> modelVariables,
-			List<Parameter> systemParameters) {
-		if (binding == null)
-			return false;
-		var dialog = new SdVarBindingDialog(binding, modelVariables, systemParameters);
-		return dialog.open() == OK;
-	}
-
-	private SdVarBindingDialog(
-			VarBinding binding,
-			List<Id> modelVariables,
-			List<Parameter> systemParameters) {
+	private SdVarBindingDialog(List<Var> vars, List<ParameterRedef> params) {
 		super(UI.shell());
-		this.binding = binding;
-		this.modelVariables = modelVariables;
-		this.systemParameters = systemParameters;
+		this.vars = vars;
+		this.params = params;
+		this.binding = new VarBinding();
 	}
 
 	@Override
@@ -70,7 +77,7 @@ class SdVarBindingDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(600, 400);
+		return new Point(800, 600);
 	}
 
 	@Override
@@ -78,97 +85,83 @@ class SdVarBindingDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 2, 10, 0);
-
-		createVariablesSection(body, tk);
-		createParametersSection(body, tk);
+		createVarsSection(body, tk);
+		createParamsSection(body, tk);
 	}
 
-	private void createVariablesSection(org.eclipse.swt.widgets.Composite body,
-			org.eclipse.ui.forms.widgets.FormToolkit tk) {
+	private void createVarsSection(Composite body, FormToolkit tk) {
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, true);
 		UI.gridLayout(comp, 1);
 
 		UI.label(comp, tk, "Model variable");
 
-		variablesFilter = UI.text(comp, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		UI.gridData(variablesFilter, true, false);
-		variablesFilter.setMessage("Search filter");
+		varsFilter = UI.text(comp, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		UI.gridData(varsFilter, true, false);
+		varsFilter.setMessage("Search");
 
-		variablesTable = new TableViewer(comp, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
-		UI.gridData(variablesTable.getControl(), true, true);
-		variablesTable.setContentProvider(ArrayContentProvider.getInstance());
-		variablesTable.setLabelProvider(new VariableLabelProvider());
-		variablesTable.setInput(modelVariables);
+		varsTable = new TableViewer(comp, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
+		UI.gridData(varsTable.getControl(), true, true);
+		varsTable.setContentProvider(ArrayContentProvider.getInstance());
+		varsTable.setLabelProvider(new VarLabel());
+		varsTable.setInput(vars);
 
-		// Select current variable if set
-		if (binding.varId() != null) {
-			// variablesTable.setSelection(Viewers.structuredSelection(binding.varId()));
-		}
-
-		// Handle selection
-		variablesTable.addSelectionChangedListener(e -> {
-			var selected = Viewers.getFirstSelected(variablesTable);
-			if (selected instanceof Id id) {
-				binding.varId(id);
+		varsTable.addSelectionChangedListener(e -> {
+			var selected = Viewers.getFirstSelected(varsTable);
+			if (selected instanceof Var v) {
+				binding.varId(v.name());
 			}
 		});
 
 		// Handle filter
-		variablesFilter.addModifyListener(e -> {
-			var filterText = variablesFilter.getText().toLowerCase();
+		varsFilter.addModifyListener(e -> {
+			var filterText = varsFilter.getText().toLowerCase();
 			if (Strings.nullOrEmpty(filterText)) {
-				variablesTable.setInput(modelVariables);
+				varsTable.setInput(vars);
 			} else {
-				var filtered = modelVariables.stream()
-					.filter(id -> id.label().toLowerCase().contains(filterText))
-					.toList();
-				variablesTable.setInput(filtered);
+				var filtered = vars.stream()
+						.filter(v -> v.name().label().toLowerCase().contains(filterText))
+						.toList();
+				varsTable.setInput(filtered);
 			}
 		});
 	}
 
-	private void createParametersSection(org.eclipse.swt.widgets.Composite body,
-			org.eclipse.ui.forms.widgets.FormToolkit tk) {
+	private void createParamsSection(Composite body, FormToolkit tk) {
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, true);
 		UI.gridLayout(comp, 1);
 
 		UI.label(comp, tk, "System parameter");
 
-		parametersFilter = UI.text(comp, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		UI.gridData(parametersFilter, true, false);
-		parametersFilter.setMessage("Search filter");
+		paramsFilter = UI.text(comp, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		UI.gridData(paramsFilter, true, false);
+		paramsFilter.setMessage("Search");
 
-		parametersTable = new TableViewer(comp, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
-		UI.gridData(parametersTable.getControl(), true, true);
-		parametersTable.setContentProvider(ArrayContentProvider.getInstance());
-		parametersTable.setLabelProvider(new ParameterLabelProvider());
-		parametersTable.setInput(systemParameters);
-
-		// Select current parameter if set
-		if (binding.parameter() != null) {
-			// parametersTable.setSelection(Viewers.structuredSelection(binding.parameter()));
-		}
+		paramsTable = new TableViewer(comp, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
+		UI.gridData(paramsTable.getControl(), true, true);
+		paramsTable.setContentProvider(ArrayContentProvider.getInstance());
+		paramsTable.setLabelProvider(new ParamLabel());
+		paramsTable.setInput(params);
 
 		// Handle selection
-		parametersTable.addSelectionChangedListener(e -> {
-			var selected = Viewers.getFirstSelected(parametersTable);
+		paramsTable.addSelectionChangedListener(e -> {
+			var selected = Viewers.getFirstSelected(paramsTable);
 			if (selected instanceof Parameter param) {
 				binding.parameter(param);
 			}
 		});
 
 		// Handle filter
-		parametersFilter.addModifyListener(e -> {
-			var filterText = parametersFilter.getText().toLowerCase();
+		paramsFilter.addModifyListener(e -> {
+			var filterText = paramsFilter.getText().toLowerCase();
 			if (Strings.nullOrEmpty(filterText)) {
-				parametersTable.setInput(systemParameters);
+				paramsTable.setInput(params);
 			} else {
-				var filtered = systemParameters.stream()
-					.filter(p -> p.name != null && p.name.toLowerCase().contains(filterText))
-					.toList();
-				parametersTable.setInput(filtered);
+				var filtered = params.stream()
+						.filter(p -> p.name != null && p.name.toLowerCase().contains(filterText))
+						.toList();
+				paramsTable.setInput(filtered);
 			}
 		});
 	}
@@ -182,34 +175,34 @@ class SdVarBindingDialog extends FormDialog {
 		super.okPressed();
 	}
 
-	private static class VariableLabelProvider extends BaseLabelProvider
+	private static class VarLabel extends BaseLabelProvider
 			implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
+		public Image getColumnImage(Object obj, int col) {
 			return null;
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			return element instanceof Id id ? id.value() : "";
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof Var v))
+				return null;
+			return v.name().value();
 		}
 	}
 
-	private static class ParameterLabelProvider extends BaseLabelProvider
+	private static class ParamLabel extends BaseLabelProvider
 			implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
+		public Image getColumnImage(Object obj, int col) {
+			return Icon.FORMULA.get();
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (element instanceof Parameter param) {
-				return param.name + (Strings.notEmpty(param.description)
-					? " - " + param.description
-					: "");
+		public String getColumnText(Object obj, int col) {
+			if (obj instanceof ParameterRedef p) {
+				return p.name;
 			}
 			return "";
 		}

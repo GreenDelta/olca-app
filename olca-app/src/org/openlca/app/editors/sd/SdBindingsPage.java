@@ -178,7 +178,7 @@ class SdBindingsPage extends FormPage {
 
 			// Add actions for parameter bindings
 			var addParam = Actions.create("Add parameter binding", Icon.ADD.descriptor(), () -> {
-			  SdVarBindingDialog.create(List.of(), List.of());
+			  SdVarBindingDialog.create(editor.xmile(), binding);
 			});
 			var deleteParam = Actions.create("Delete parameter binding", Icon.DELETE.descriptor(), () -> {
 				// TODO: Implement parameter binding deletion
