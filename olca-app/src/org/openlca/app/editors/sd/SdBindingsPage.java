@@ -3,6 +3,7 @@ package org.openlca.app.editors.sd;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -177,7 +178,7 @@ class SdBindingsPage extends FormPage {
 
 			// Add actions for parameter bindings
 			var addParam = Actions.create("Add parameter binding", Icon.ADD.descriptor(), () -> {
-				// TODO: Implement parameter binding creation dialog
+			  SdVarBindingDialog.create(List.of(), List.of());
 			});
 			var deleteParam = Actions.create("Delete parameter binding", Icon.DELETE.descriptor(), () -> {
 				// TODO: Implement parameter binding deletion
@@ -207,6 +208,7 @@ class SdBindingsPage extends FormPage {
 			grid.marginBottom = 10;
 			var btn = UI.button(comp, tk, "Add product system");
 			btn.setImage(Icon.ADD.get());
+			UI.gridData(btn, false, false).horizontalAlignment = SWT.CENTER;
 			Controls.onSelect(btn, e -> {
 				var d = ModelSelector.select(ModelType.PRODUCT_SYSTEM);
 				if (d == null)
