@@ -63,6 +63,7 @@ public class SdModelEditor extends FormEditor {
 	protected void addPages() {
 		try {
 			addPage(new SdInfoPage(this));
+			addPage(new SdBindingsPage(this));
 			addPage(new SdModelParametersPage(this));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create SD model editor pages", e);
