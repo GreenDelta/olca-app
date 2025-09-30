@@ -1,8 +1,5 @@
 package org.openlca.app.editors.sd;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
@@ -15,10 +12,12 @@ import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.sd.interop.SimulationSetup;
 import org.openlca.app.editors.sd.interop.SystemBinding;
+import org.openlca.app.editors.sd.interop.VarBinding;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.IDatabase;
@@ -36,7 +35,6 @@ class SdBindingsPage extends FormPage {
 	private final SdModelEditor editor;
 	private final SimulationSetup setup;
 
-	private final List<BindingSection> sections = new ArrayList<>();
 	private ScrolledForm form;
 	private FormToolkit tk;
 	private Composite body;
@@ -87,7 +85,7 @@ class SdBindingsPage extends FormPage {
 	private void createBindingSections() {
 		var bindings = setup.systemBindings();
 		for (int i = 0; i < bindings.size(); i++) {
-			sections.add(new BindingSection(i, bindings.get(i)));
+			new BindingSection(i, bindings.get(i));
 		}
 		addButton = new AddButton();
 	}
@@ -97,7 +95,7 @@ class SdBindingsPage extends FormPage {
 			return;
 		var pos = setup.systemBindings().size();
 		setup.systemBindings().add(binding);
-		sections.add(new BindingSection(pos, binding));
+		new BindingSection(pos, binding);
 		addButton.render();
 		form.reflow(true);
 		editor.setDirty();
@@ -123,7 +121,6 @@ class SdBindingsPage extends FormPage {
 
 			var onDelete = Actions.create("Delete", Icon.DELETE.descriptor(), () -> {
 				setup.systemBindings().remove(binding);
-				sections.remove(this);
 				section.dispose();
 				form.reflow(true);
 			});
@@ -171,21 +168,32 @@ class SdBindingsPage extends FormPage {
 		}
 
 		private void createParamTable(Composite parent) {
+
 			var comp = UI.formSection(parent, tk, "Parameter bindings");
 
 			var table = Tables.createViewer(comp, "Model variable", "Parameter");
 			Tables.bindColumnWidths(table, 0.5, 0.5);
 
-			// Add actions for parameter bindings
-			var addParam = Actions.create("Add parameter binding", Icon.ADD.descriptor(), () -> {
-			  SdVarBindingDialog.create(editor.xmile(), binding);
-			});
-			var deleteParam = Actions.create("Delete parameter binding", Icon.DELETE.descriptor(), () -> {
-				// TODO: Implement parameter binding deletion
-			});
+			var onAdd = Actions.create(
+					"Add parameter binding",
+					Icon.ADD.descriptor(),
+					() -> SdVarBindingDialog.create(editor.xmile(), binding)
+							.ifPresent(vb -> {
+								binding.varBindings().add(vb);
+								table.setInput(binding.varBindings());
+							}));
 
-			Actions.bind(table, addParam, deleteParam);
+			var onDel = Actions.create(
+					"Remove parameter binding", Icon.DELETE.descriptor(), () -> {
+						VarBinding vb = Viewers.getFirstSelected(table);
+						if (vb != null) {
+							binding.varBindings().remove(vb);
+							table.setInput(binding.varBindings());
+						}
+					});
 
+			Actions.bind(table, onAdd, onDel);
+			table.setInput(binding.varBindings());
 		}
 	}
 

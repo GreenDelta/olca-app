@@ -2,7 +2,9 @@ package org.openlca.app.editors.sd;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -56,9 +58,8 @@ class SdVarBindingDialog extends FormDialog {
 				return Strings.compare(li, lj);
 			});
 
-			var params = ParameterRedefSets.allOf(Database.get(), binding.system())
-					.parameters;
-			var dialog = new SdVarBindingDialog(varRes.value(), params);
+			var params = getFreeParamsOf(binding);
+			var dialog = new SdVarBindingDialog(vars, params);
 			return dialog.open() == OK
 					? Optional.of(dialog.binding)
 					: Optional.empty();
@@ -66,6 +67,30 @@ class SdVarBindingDialog extends FormDialog {
 			ErrorReporter.on("Failed to create binding dialog", e);
 			return Optional.empty();
 		}
+	}
+
+	private static List<ParameterRedef> getFreeParamsOf(SystemBinding binding) {
+		var all = ParameterRedefSets.allOf(
+				Database.get(), binding.system()).parameters;
+
+		Function<ParameterRedef, String> keyFn = p -> {
+			if (Strings.nullOrEmpty(p.name))
+				return "--";
+			var name = p.name.strip().toLowerCase();
+			return p.contextId == null
+					? name
+					: name + "//" + p.contextId;
+		};
+
+		var bound = binding.varBindings().stream()
+				.map(VarBinding::parameter)
+				.map(keyFn)
+				.collect(Collectors.toSet());
+
+		return all.stream()
+				.filter(p -> !bound.contains(keyFn.apply(p)))
+				.sorted((pi, pj) -> Strings.compare(pi.name, pj.name))
+				.toList();
 	}
 
 	private SdVarBindingDialog(List<Var> vars, List<ParameterRedef> params) {
