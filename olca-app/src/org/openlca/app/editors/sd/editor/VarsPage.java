@@ -1,6 +1,5 @@
 package org.openlca.app.editors.sd.editor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -23,10 +22,6 @@ import org.openlca.sd.eqn.LookupFunc;
 import org.openlca.sd.eqn.Subscript;
 import org.openlca.sd.eqn.Tensor;
 import org.openlca.sd.eqn.Var;
-import org.openlca.sd.eqn.Var.Aux;
-import org.openlca.sd.eqn.Var.Rate;
-import org.openlca.sd.eqn.Var.Stock;
-import org.openlca.sd.eqn.Vars;
 import org.openlca.util.Strings;
 
 public class VarsPage extends FormPage {
@@ -53,29 +48,11 @@ public class VarsPage extends FormPage {
 				"Type", "Name", "Definition", "Unit");
 		Tables.bindColumnWidths(table, 0.10, 0.40, 0.40, 0.10);
 		UI.gridData(table.getControl(), true, true);
-		table.setLabelProvider(new Label());
-
-		var vars = Vars.readFrom(editor.xmile()).orElse(ArrayList::new);
-		vars.sort((vi, vj) -> {
-			var ti = typeOf(vi);
-			var tj = typeOf(vj);
-			return ti.equals(tj)
-					? Strings.compare(vi.name().label(), vj.name().label())
-					: Strings.compare(tj, ti);
-		});
-		table.setInput(vars);
+		table.setLabelProvider(new VarsLabelProvider());
+		table.setInput(editor.vars());
 	}
 
-	private static String typeOf(Var var) {
-		return switch (var) {
-			case Stock ignored -> "Stock";
-			case Aux ignored -> "Aux";
-			case Rate ignored -> "Rate";
-			case null -> "None";
-		};
-	}
-
-	private static class Label
+	private static class VarsLabelProvider
 			extends LabelProvider implements ITableLabelProvider {
 
 		@Override
@@ -88,7 +65,7 @@ public class VarsPage extends FormPage {
 			if (!(obj instanceof Var v))
 				return null;
 			return switch (col) {
-				case 0 -> typeOf(v);
+				case 0 -> Util.typeOf(v);
 				case 1 -> v.name().label();
 				case 2 -> value(v.def());
 				default -> null;

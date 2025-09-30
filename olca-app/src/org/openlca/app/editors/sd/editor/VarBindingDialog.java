@@ -24,14 +24,11 @@ import org.openlca.app.editors.sd.interop.SystemBinding;
 import org.openlca.app.editors.sd.interop.VarBinding;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.sd.eqn.Id;
 import org.openlca.sd.eqn.Var;
-import org.openlca.sd.eqn.Vars;
-import org.openlca.sd.xmile.Xmile;
 import org.openlca.util.ParameterRedefSets;
 import org.openlca.util.Strings;
 
@@ -44,20 +41,10 @@ class VarBindingDialog extends FormDialog {
 	private TableViewer varsTable;
 	private TableViewer paramsTable;
 
-	public static Optional<VarBinding> create(Xmile xmile, SystemBinding binding) {
+	public static Optional<VarBinding> create(
+			List<Var> vars, SystemBinding binding
+	) {
 		try {
-			var varRes = Vars.readFrom(xmile);
-			if (varRes.hasError()) {
-				MsgBox.error("Failed to read variables from model", varRes.error());
-				return Optional.empty();
-			}
-			var vars = varRes.value();
-			vars.sort((vi, vj) -> {
-				var li = vi.name() != null ? vi.name().label() : "";
-				var lj = vj.name() != null ? vj.name().label() : "";
-				return Strings.compare(li, lj);
-			});
-
 			var params = getFreeParamsOf(binding);
 			var dialog = new VarBindingDialog(vars, params);
 			return dialog.open() == OK

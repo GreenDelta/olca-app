@@ -181,7 +181,7 @@ class BindingsPage extends FormPage {
 			var onAdd = Actions.create(
 					"Add parameter binding",
 					Icon.ADD.descriptor(),
-					() -> VarBindingDialog.create(editor.xmile(), binding)
+					() -> VarBindingDialog.create(editor.vars(), binding)
 							.ifPresent(vb -> {
 								binding.varBindings().add(vb);
 								table.setInput(binding.varBindings());
