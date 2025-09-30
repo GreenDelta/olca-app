@@ -1,18 +1,18 @@
 package org.openlca.app.editors.sd.interop;
 
-import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterRedef;
 import org.openlca.sd.eqn.Id;
 
 public class VarBinding {
 
-	private Parameter parameter;
+	private ParameterRedef parameter;
 	private Id varId;
 
-	public Parameter parameter() {
+	public ParameterRedef parameter() {
 		return parameter;
 	}
 
-	public VarBinding parameter(Parameter parameter) {
+	public VarBinding parameter(ParameterRedef parameter) {
 		this.parameter = parameter;
 		return this;
 	}

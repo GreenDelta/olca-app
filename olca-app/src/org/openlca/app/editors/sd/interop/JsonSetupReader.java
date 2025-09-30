@@ -5,15 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.Parameter;
+import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
 import org.openlca.sd.eqn.Id;
 import org.openlca.util.Res;
 import org.openlca.util.Strings;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class JsonSetupReader {
@@ -75,118 +77,81 @@ public class JsonSetupReader {
 
 	private SystemBinding systemBindingOf(JsonObject obj) {
 		try {
-			var binding = new SystemBinding();
+			var system = systemOf(obj);
+			if (system == null)
+				return null;
+			var binding = new SystemBinding()
+					.system(system)
+					.amount(Json.getDouble(obj, "amount", 1.0));
 
-			// Read system
-			readProductSystem(obj).ifPresent(binding::system);
+			var allocation = Json.getEnum(obj, "allocation", AllocationMethod.class);
+			binding.allocation(allocation != null
+					? allocation
+					: AllocationMethod.USE_DEFAULT);
 
-			// Read quantitative reference
-			readAmount(obj).ifPresent(binding::amount);
-			// TODO: Read unit, property, flow
-
-			// Read variable bindings
-			readVarBindings(obj).forEach(binding.varBindings()::add);
-
-			return java.util.Optional.of(binding);
+			Json.forEachObject(obj, "varBindings", o -> {
+				var vb = varBindingOf(o);
+				if (vb != null) {
+					binding.varBindings().add(vb);
+				}
+			});
+			return binding;
 		} catch (Exception e) {
-			// Log error if needed
-			return java.util.Optional.empty();
+			return null;
 		}
 	}
 
-	private java.util.Optional<ProductSystem> readProductSystem(JsonObject obj) {
-		var systemObj = obj.get("system");
-		if (systemObj == null || !systemObj.isJsonObject()) {
-			return java.util.Optional.empty();
-		}
-
-		// TODO: Map system by ID or name
-		// var id = systemObj.getAsJsonObject().get("id");
-		// var name = systemObj.getAsJsonObject().get("name");
-		// return findProductSystem(id, name);
-
-		return java.util.Optional.empty();
+	private ProductSystem systemOf(JsonObject obj) {
+		var refId = Json.getRefId(obj, "system");
+		return Strings.notEmpty(refId)
+				? db.get(ProductSystem.class, refId)
+				: null;
 	}
 
-	private java.util.Optional<Double> readAmount(JsonObject obj) {
-		var amountElement = obj.get("amount");
-		if (amountElement != null && amountElement.isJsonPrimitive()) {
-			try {
-				return java.util.Optional.of(amountElement.getAsDouble());
-			} catch (Exception ignored) {
-			}
-		}
-		return java.util.Optional.empty();
+	private VarBinding varBindingOf(JsonObject obj) {
+
+		var varObj = Json.getObject(obj, "var");
+		if (varObj == null)
+			return null;
+		var varId = Id.of(Json.getString(varObj, "value"));
+		if (varId.isNil())
+			return null;
+
+		var param = parameterOf(obj);
+		if (param == null)
+			return null;
+
+		return new VarBinding()
+				.varId(varId)
+				.parameter(param);
 	}
 
-	private java.util.List<VarBinding> readVarBindings(JsonObject obj) {
-		var bindings = new ArrayList<VarBinding>();
-		var bindingsArray = obj.get("varBindings");
+	private ParameterRedef parameterOf(JsonObject obj) {
+		var paramObj = Json.getObject(obj, "parameter");
+		if (paramObj == null)
+			return null;
+		var name = Json.getString(paramObj, "name");
+		if (Strings.nullOrEmpty(name))
+			return null;
+		var redef = new ParameterRedef();
+		redef.name = name;
+		redef.value = Json.getDouble(paramObj, "value", 0);
+		redef.description = Json.getString(paramObj, "description");
 
-		if (bindingsArray == null || !bindingsArray.isJsonArray()) {
-			return bindings;
+		var contextObj = Json.getObject(paramObj, "context");
+		if (contextObj == null)
+			return redef;
+		var type = Json.getString(contextObj, "@type");
+		var refId = Json.getString(contextObj, "@id");
+		if (Strings.nullOrEmpty(refId))
+			return redef;
+		var d = "ImpactCategory".equals(type)
+				? db.getDescriptor(ImpactCategory.class, refId)
+				: db.getDescriptor(Process.class, refId);
+		if (d != null) {
+			redef.contextId = d.id;
+			redef.contextType = d.type;
 		}
-
-		for (JsonElement element : bindingsArray.getAsJsonArray()) {
-			if (element.isJsonObject()) {
-				readVarBinding(element.getAsJsonObject())
-					.ifPresent(bindings::add);
-			}
-		}
-
-		return bindings;
+		return redef;
 	}
-
-	private java.util.Optional<VarBinding> readVarBinding(JsonObject obj) {
-		try {
-			var binding = new VarBinding();
-
-			// Read model variable
-			readModelVariable(obj).ifPresent(binding::varId);
-
-			// Read parameter
-			readParameter(obj).ifPresent(binding::parameter);
-
-			return java.util.Optional.of(binding);
-		} catch (Exception e) {
-			return java.util.Optional.empty();
-		}
-	}
-
-	private java.util.Optional<Id> readModelVariable(JsonObject obj) {
-		var varObj = obj.get("modelVariable");
-		if (varObj == null || !varObj.isJsonObject()) {
-			return java.util.Optional.empty();
-		}
-
-		var name = varObj.getAsJsonObject().get("name");
-		if (name != null && name.isJsonPrimitive()) {
-			var varName = name.getAsString();
-			if (Strings.notEmpty(varName)) {
-				// TODO: Create proper Id instance
-				// return Optional.of(Id.of(varName));
-			}
-		}
-
-		return java.util.Optional.empty();
-	}
-
-	private java.util.Optional<Parameter> readParameter(JsonObject obj) {
-		var paramObj = obj.get("parameter");
-		if (paramObj == null || !paramObj.isJsonObject()) {
-			return java.util.Optional.empty();
-		}
-
-		// TODO: Map parameter by ID or name
-		// var id = paramObj.getAsJsonObject().get("id");
-		// var name = paramObj.getAsJsonObject().get("name");
-		// return findParameter(id, name);
-
-		return java.util.Optional.empty();
-	}
-
-	// TODO: Implement database lookup methods
-	// private Optional<ImpactMethod> findImpactMethod(JsonElement id, JsonElement name) { ... }
-	// private Optional<ProductSystem> findProductSystem(JsonElement id, JsonElement name) { ... }
-	// private Optional<Parameter> findParameter(JsonElement id, JsonElement name) { ... }
 }
