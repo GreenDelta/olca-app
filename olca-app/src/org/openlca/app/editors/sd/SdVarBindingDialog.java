@@ -26,6 +26,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.sd.eqn.Id;
 import org.openlca.sd.eqn.Var;
 import org.openlca.sd.eqn.Vars;
 import org.openlca.sd.xmile.Xmile;
@@ -43,14 +44,21 @@ class SdVarBindingDialog extends FormDialog {
 
 	public static Optional<VarBinding> create(Xmile xmile, SystemBinding binding) {
 		try {
-			var vars = Vars.readFrom(xmile);
-			if (vars.hasError()) {
-				MsgBox.error("Failed to read variables from model", vars.error());
+			var varRes = Vars.readFrom(xmile);
+			if (varRes.hasError()) {
+				MsgBox.error("Failed to read variables from model", varRes.error());
 				return Optional.empty();
 			}
+			var vars = varRes.value();
+			vars.sort((vi, vj) -> {
+				var li = vi.name() != null ? vi.name().label() : "";
+				var lj = vj.name() != null ? vj.name().label() : "";
+				return Strings.compare(li, lj);
+			});
+
 			var params = ParameterRedefSets.allOf(Database.get(), binding.system())
 					.parameters;
-			var dialog = new SdVarBindingDialog(vars.value(), params);
+			var dialog = new SdVarBindingDialog(varRes.value(), params);
 			return dialog.open() == OK
 					? Optional.of(dialog.binding)
 					: Optional.empty();
@@ -98,6 +106,7 @@ class SdVarBindingDialog extends FormDialog {
 		var varsFilter = UI.text(comp, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		UI.gridData(varsFilter, true, false);
 		varsFilter.setMessage("Search");
+		varsFilter.addModifyListener(e -> filterVars(varsFilter.getText()));
 
 		varsTable = new TableViewer(comp, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
 		UI.gridData(varsTable.getControl(), true, true);
@@ -105,26 +114,34 @@ class SdVarBindingDialog extends FormDialog {
 		varsTable.setLabelProvider(new VarLabel());
 		varsTable.setInput(vars);
 
-		// handle selection
 		varsTable.addSelectionChangedListener(e -> {
 			var selected = Viewers.getFirstSelected(varsTable);
 			if (selected instanceof Var v) {
 				binding.varId(v.name());
+				checkOk();
 			}
 		});
+	}
 
-		// handle filter
-		varsFilter.addModifyListener(e -> {
-			var filterText = varsFilter.getText().toLowerCase();
-			if (Strings.nullOrEmpty(filterText)) {
-				varsTable.setInput(vars);
-			} else {
-				var filtered = vars.stream()
-						.filter(v -> v.name().label().toLowerCase().contains(filterText))
-						.toList();
-				varsTable.setInput(filtered);
-			}
-		});
+	private void filterVars(String text) {
+		if (Strings.nullOrEmpty(text)) {
+			varsTable.setInput(vars);
+			return;
+		}
+		var f = text.strip().toLowerCase();
+		Predicate<Id> matcher = (id) ->
+				id != null && id.label().toLowerCase().contains(f);
+
+		// remove the binding, if it does not match the filter
+		if (binding.varId() != null && !matcher.test(binding.varId())) {
+				binding.varId(null);
+				checkOk();
+		}
+
+		var filtered = vars.stream()
+				.filter(v -> matcher.test(v.name()))
+				.toList();
+		varsTable.setInput(filtered);
 	}
 
 	private void createParamsSection(Composite body, FormToolkit tk) {
@@ -205,7 +222,7 @@ class SdVarBindingDialog extends FormDialog {
 		public String getColumnText(Object obj, int col) {
 			if (!(obj instanceof Var v))
 				return null;
-			return v.name().value();
+			return v.name().label();
 		}
 	}
 

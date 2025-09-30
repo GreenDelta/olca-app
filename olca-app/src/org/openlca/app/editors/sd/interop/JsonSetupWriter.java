@@ -88,16 +88,11 @@ public class JsonSetupWriter {
 			return null;
 
 		var obj = new JsonObject();
-
-		var varObj = new JsonObject();
-		Json.put(varObj, "value", varBinding.varId().value());
-		obj.add("var", varObj);
-
+		Json.put(obj, "var", varBinding.varId().label());
 		var paramObj = paramObjOf(varBinding.parameter());
 		if (paramObj != null) {
 			obj.add("parameter", paramObj);
 		}
-
 		return obj;
 	}
 

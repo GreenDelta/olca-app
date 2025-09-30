@@ -109,18 +109,12 @@ public class JsonSetupReader {
 	}
 
 	private VarBinding varBindingOf(JsonObject obj) {
-
-		var varObj = Json.getObject(obj, "var");
-		if (varObj == null)
-			return null;
-		var varId = Id.of(Json.getString(varObj, "value"));
+		var varId = Id.of(Json.getString(obj, "var"));
 		if (varId.isNil())
 			return null;
-
 		var param = parameterOf(obj);
 		if (param == null)
 			return null;
-
 		return new VarBinding()
 				.varId(varId)
 				.parameter(param);
