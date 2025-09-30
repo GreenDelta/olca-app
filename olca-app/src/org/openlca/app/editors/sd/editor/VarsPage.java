@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd;
+package org.openlca.app.editors.sd.editor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +29,11 @@ import org.openlca.sd.eqn.Var.Stock;
 import org.openlca.sd.eqn.Vars;
 import org.openlca.util.Strings;
 
-public class SdModelParametersPage extends FormPage {
+public class VarsPage extends FormPage {
 
 	private final SdModelEditor editor;
 
-	public SdModelParametersPage(SdModelEditor editor) {
+	public VarsPage(SdModelEditor editor) {
 		super(editor, "SdModelParametersPage", "Variables");
 		this.editor = editor;
 	}

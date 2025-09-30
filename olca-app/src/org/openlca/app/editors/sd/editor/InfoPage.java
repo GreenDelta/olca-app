@@ -1,10 +1,11 @@
-package org.openlca.app.editors.sd;
+package org.openlca.app.editors.sd.editor;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
+import org.openlca.app.editors.sd.results.SdResultEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -12,11 +13,11 @@ import org.openlca.app.util.UI;
 import org.openlca.sd.eqn.Simulator;
 import org.openlca.sd.xmile.Xmile;
 
-class SdInfoPage extends FormPage {
+class InfoPage extends FormPage {
 
 	private final SdModelEditor editor;
 
-	SdInfoPage(SdModelEditor editor) {
+	InfoPage(SdModelEditor editor) {
 		super(editor, "SdModelInfoPage", M.GeneralInformation);
 		this.editor = editor;
 	}
@@ -27,7 +28,7 @@ class SdInfoPage extends FormPage {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		infoSection(body, tk);
-		new SdImageSection(editor).render(body, tk);
+		new ImageSection(editor).render(body, tk);
 	}
 
 	private void infoSection(Composite body, FormToolkit tk) {

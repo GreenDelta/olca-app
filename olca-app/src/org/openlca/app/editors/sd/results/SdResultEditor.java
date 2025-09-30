@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd;
+package org.openlca.app.editors.sd.results;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;

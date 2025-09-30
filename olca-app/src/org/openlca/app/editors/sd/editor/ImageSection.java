@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd;
+package org.openlca.app.editors.sd.editor;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -16,14 +16,14 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.SystemDynamics;
 import org.openlca.app.util.UI;
 
-class SdImageSection {
+class ImageSection {
 
 	private final SdModelEditor editor;
 
 	private Composite comp;
 	private Label label;
 
-	SdImageSection(SdModelEditor editor) {
+	ImageSection(SdModelEditor editor) {
 		this.editor = editor;
 	}
 

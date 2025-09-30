@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd;
+package org.openlca.app.editors.sd.results;
 
 import java.io.File;
 import java.io.FileOutputStream;

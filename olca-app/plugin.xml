@@ -277,14 +277,14 @@
 		</editor>
 
 		<editor
-				class="org.openlca.app.editors.sd.SdModelEditor"
+				class="org.openlca.app.editors.sd.editor.SdModelEditor"
 				default="false"
 				id="editors.SdModelEditor"
 				name="System Dynamics Model">
 		</editor>
 
 		<editor
-				class="org.openlca.app.editors.sd.SdResultEditor"
+				class="org.openlca.app.editors.sd.results.SdResultEditor"
 				default="false"
 				id="editors.SdResultEditor"
 				name="System Dynamics Result">

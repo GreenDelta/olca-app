@@ -29,7 +29,7 @@ import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.libraries.LibraryEditor;
-import org.openlca.app.editors.sd.SdModelEditor;
+import org.openlca.app.editors.sd.editor.SdModelEditor;
 import org.openlca.app.navigation.actions.OpenMappingAction;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;

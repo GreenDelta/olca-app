@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
-import org.openlca.app.editors.sd.SdModelEditor;
+import org.openlca.app.editors.sd.editor.SdModelEditor;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.SdModelElement;

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd;
+package org.openlca.app.editors.sd.editor;
 
 import java.io.File;
 
@@ -91,9 +91,9 @@ public class SdModelEditor extends FormEditor {
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new SdInfoPage(this));
-			addPage(new SdBindingsPage(this));
-			addPage(new SdModelParametersPage(this));
+			addPage(new InfoPage(this));
+			addPage(new BindingsPage(this));
+			addPage(new VarsPage(this));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create SD model editor pages", e);
 		}

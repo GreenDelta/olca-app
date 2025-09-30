@@ -1,6 +1,9 @@
-package org.openlca.app.editors.sd;
+package org.openlca.app.editors.sd.editor;
 
+import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -29,7 +32,7 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
-class SdBindingsPage extends FormPage {
+class BindingsPage extends FormPage {
 
 	private final IDatabase db;
 	private final SdModelEditor editor;
@@ -40,7 +43,7 @@ class SdBindingsPage extends FormPage {
 	private Composite body;
 	private AddButton addButton;
 
-	SdBindingsPage(SdModelEditor editor) {
+	BindingsPage(SdModelEditor editor) {
 		super(editor, "SdBindingsPage", "Bindings");
 		this.editor = editor;
 		this.setup = editor.setup();
@@ -173,11 +176,12 @@ class SdBindingsPage extends FormPage {
 
 			var table = Tables.createViewer(comp, "Model variable", "Parameter");
 			Tables.bindColumnWidths(table, 0.5, 0.5);
+			table.setLabelProvider(new VarBindingLabelProvider());
 
 			var onAdd = Actions.create(
 					"Add parameter binding",
 					Icon.ADD.descriptor(),
-					() -> SdVarBindingDialog.create(editor.xmile(), binding)
+					() -> VarBindingDialog.create(editor.xmile(), binding)
 							.ifPresent(vb -> {
 								binding.varBindings().add(vb);
 								table.setInput(binding.varBindings());
@@ -227,6 +231,30 @@ class SdBindingsPage extends FormPage {
 				var binding = new SystemBinding().system(sys);
 				addNew(binding);
 			});
+		}
+	}
+
+	private static class VarBindingLabelProvider extends BaseLabelProvider
+			implements ITableLabelProvider {
+
+		@Override
+		public String getColumnText(Object obj, int col) {
+			if (!(obj instanceof VarBinding vb))
+				return "";
+			return switch (col) {
+				case 0 -> vb.varId() != null
+						? vb.varId().label()
+						: "";
+				case 1 ->  vb.parameter() != null
+						? vb.parameter().name
+						: "";
+				default -> "";
+			};
+		}
+
+		@Override
+		public Image getColumnImage(Object obj, int col) {
+			return Icon.FORMULA.get();
 		}
 	}
 }

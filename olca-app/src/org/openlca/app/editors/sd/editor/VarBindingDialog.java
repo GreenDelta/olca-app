@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd;
+package org.openlca.app.editors.sd.editor;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +35,7 @@ import org.openlca.sd.xmile.Xmile;
 import org.openlca.util.ParameterRedefSets;
 import org.openlca.util.Strings;
 
-class SdVarBindingDialog extends FormDialog {
+class VarBindingDialog extends FormDialog {
 
 	private final VarBinding binding;
 	private final List<Var> vars;
@@ -59,7 +59,7 @@ class SdVarBindingDialog extends FormDialog {
 			});
 
 			var params = getFreeParamsOf(binding);
-			var dialog = new SdVarBindingDialog(vars, params);
+			var dialog = new VarBindingDialog(vars, params);
 			return dialog.open() == OK
 					? Optional.of(dialog.binding)
 					: Optional.empty();
@@ -93,7 +93,7 @@ class SdVarBindingDialog extends FormDialog {
 				.toList();
 	}
 
-	private SdVarBindingDialog(List<Var> vars, List<ParameterRedef> params) {
+	private VarBindingDialog(List<Var> vars, List<ParameterRedef> params) {
 		super(UI.shell());
 		this.vars = vars;
 		this.params = params;
