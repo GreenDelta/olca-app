@@ -8,7 +8,10 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.AppContext;
+import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.sd.interop.JsonSetupReader;
+import org.openlca.app.editors.sd.interop.JsonSetupWriter;
 import org.openlca.app.editors.sd.interop.SimulationSetup;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
@@ -48,6 +51,12 @@ public class SdModelEditor extends FormEditor {
 		xmile = AppContext.remove(inp.key(), Xmile.class);
 		setTitleImage(Icon.SD.get());
 		setPartName(inp.getName());
+
+		var setupFile = new File(modelDir, "setup.json");
+		setup = setupFile.exists()
+				? JsonSetupReader.read(setupFile, Database.get())
+				.orElse(SimulationSetup::new)
+				: new SimulationSetup();
 	}
 
 	public void setDirty() {
@@ -92,6 +101,14 @@ public class SdModelEditor extends FormEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		var setupFile = new File(modelDir, "setup.json");
+		var err = JsonSetupWriter.write(setup, setupFile);
+		if (err.hasError()) {
+			MsgBox.error("Failed to save setup", err.error());
+			return;
+		}
+		dirty = false;
+		editorDirtyStateChanged();
 	}
 
 	@Override
