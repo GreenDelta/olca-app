@@ -9,8 +9,8 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
-import org.openlca.sd.eqn.Cell.NumCell;
 import org.openlca.sd.eqn.Var;
+import org.openlca.sd.eqn.cells.NumCell;
 
 class SdResultChart {
 

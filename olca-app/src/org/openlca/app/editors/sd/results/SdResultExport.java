@@ -9,8 +9,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openlca.io.xls.Excel;
-import org.openlca.sd.eqn.Cell.NumCell;
 import org.openlca.sd.eqn.Var;
+import org.openlca.sd.eqn.cells.NumCell;
 import org.openlca.util.Res;
 
 class SdResultExport {

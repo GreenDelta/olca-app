@@ -1,7 +1,5 @@
 package org.openlca.app.editors.sd.editor;
 
-import java.util.List;
-
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -10,18 +8,19 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.sd.eqn.Cell;
-import org.openlca.sd.eqn.Cell.BoolCell;
-import org.openlca.sd.eqn.Cell.EmptyCell;
-import org.openlca.sd.eqn.Cell.EqnCell;
-import org.openlca.sd.eqn.Cell.LookupCell;
-import org.openlca.sd.eqn.Cell.NonNegativeCell;
-import org.openlca.sd.eqn.Cell.NumCell;
-import org.openlca.sd.eqn.Cell.TensorCell;
 import org.openlca.sd.eqn.LookupFunc;
-import org.openlca.sd.eqn.Subscript;
 import org.openlca.sd.eqn.Tensor;
 import org.openlca.sd.eqn.Var;
+import org.openlca.sd.eqn.cells.BoolCell;
+import org.openlca.sd.eqn.cells.Cell;
+import org.openlca.sd.eqn.cells.EmptyCell;
+import org.openlca.sd.eqn.cells.EqnCell;
+import org.openlca.sd.eqn.cells.LookupCell;
+import org.openlca.sd.eqn.cells.LookupEqnCell;
+import org.openlca.sd.eqn.cells.NonNegativeCell;
+import org.openlca.sd.eqn.cells.NumCell;
+import org.openlca.sd.eqn.cells.TensorCell;
+import org.openlca.sd.eqn.cells.TensorEqnCell;
 import org.openlca.util.Strings;
 
 public class VarsPage extends FormPage {
@@ -76,14 +75,15 @@ public class VarsPage extends FormPage {
 			return switch (cell) {
 				case NumCell(double value) -> Double.toString(value);
 				case TensorCell(Tensor t) -> toString(t);
-				case LookupCell(
-						String eqn, LookupFunc ignored, List<Subscript> ignore
-				) -> "Lookup(" + Strings.cut(eqn, 75) + ")";
+				case TensorEqnCell(Cell eqn, Tensor t) ->
+						value(eqn) + " | " + toString(t);
+				case LookupCell(LookupFunc ignored) -> "f(x) -> y";
+				case LookupEqnCell(String eqn, LookupFunc ignored) ->
+						"Lookup(" + Strings.cut(eqn, 75) + ")";
 				case EqnCell(String eqn) -> Strings.cut(eqn, 80);
 				case BoolCell(boolean b) -> Boolean.toString(b);
 				case EmptyCell() -> " - ";
 				case NonNegativeCell(Cell v) -> "NonNegative(" + value(v) + ")";
-				case null -> "nil";
 			};
 		}
 
