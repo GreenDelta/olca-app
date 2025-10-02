@@ -10,10 +10,10 @@ do
 done
 
 if [ ! -z "$upload" ]; then
-  ssh root@translate.openlca.org rm /opt/translator/data/previous/olca-app* -f
-  ssh root@translate.openlca.org rm /opt/translator/data/previous/olca-app-osgi* -f
-  ssh root@translate.openlca.org cp /opt/translator/data/original/olca-app/* /opt/translator/data/previous/olca-app
-  ssh root@translate.openlca.org cp /opt/translator/data/original/olca-app-osgi/* /opt/translator/data/previous/olca-app-osgi
+  ssh root@translate.openlca.org rm /opt/translator/data/previous/olca-app/* -rf
+  ssh root@translate.openlca.org rm /opt/translator/data/previous/olca-app-osgi/* -rf
+  ssh root@translate.openlca.org cp -r /opt/translator/data/original/olca-app/* /opt/translator/data/previous/olca-app
+  ssh root@translate.openlca.org cp -r /opt/translator/data/original/olca-app-osgi/* /opt/translator/data/previous/olca-app-osgi
   scp olca-app/src/org/openlca/app/messages* root@translate.openlca.org:/opt/translator/data/original/olca-app/
   scp olca-app/OSGI-INF/l10n/bundle* root@translate.openlca.org:/opt/translator/data/original/olca-app-osgi/
 fi
@@ -25,4 +25,6 @@ if [ ! -z "$download" ]; then
   rm -f olca-app/OSGI-INF/l10n/changed.txt
   ssh root@translate.openlca.org mv /opt/translator/data/olca-app /opt/translator/data/original/olca-app
   ssh root@translate.openlca.org mv /opt/translator/data/olca-app-osgi /opt/translator/data/original/olca-app-osgi
+  ssh root@translate.openlca.org mkdir /opt/translator/data/olca-app
+  ssh root@translate.openlca.org mkdir /opt/translator/data/olca-app-osgi
 fi
