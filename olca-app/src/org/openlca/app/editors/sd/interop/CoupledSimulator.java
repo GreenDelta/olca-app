@@ -2,7 +2,6 @@ package org.openlca.app.editors.sd.interop;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
@@ -10,18 +9,20 @@ import org.openlca.app.db.Libraries;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.results.LcaResult;
 import org.openlca.sd.eqn.SimulationState;
 import org.openlca.sd.eqn.Simulator;
 import org.openlca.sd.eqn.cells.NumCell;
 import org.openlca.sd.xmile.Xmile;
 import org.openlca.util.Res;
 
-public class CoupledSimulator {
+public class CoupledSimulator implements Runnable {
 
 	private final Simulator simulator;
 	private final SimulationSetup setup;
 	private final SystemCalculator calculator;
 	private final CoupledResult result;
+	private Res<?> error;
 
 	private CoupledSimulator(
 			Simulator simulator, SimulationSetup setup, SystemCalculator calculator
@@ -46,23 +47,26 @@ public class CoupledSimulator {
 		return Res.of(new CoupledSimulator(simulator.value(), setup, calculator));
 	}
 
-	public CoupledResult getResult() {
-		return result;
+	public Res<CoupledResult> getResult() {
+		return error != null
+				? error.castError()
+				: Res.of(result);
 	}
 
-	public void forEach(Consumer<Res<CoupledResult>> fn) {
+	@Override
+	public void run() {
 		simulator.forEach(res -> {
 			if (res.hasError()) {
-				fn.accept(res.wrapError("Simulation error"));
+				error = res.wrapError("Simulation error");
 				return;
 			}
-			var simState = res.value();
-			var lcaResults = new ArrayList<org.openlca.core.results.LcaResult>();
 
+			var simState = res.value();
+			var rs = new ArrayList<LcaResult>();
 			for (var b : setup.systemBindings()) {
 				var params = paramsOf(simState, b);
 				if (params.hasError()) {
-					fn.accept(params.wrapError("Variable binding error"));
+					error = params.wrapError("Variable binding error");
 					return;
 				}
 
@@ -74,17 +78,15 @@ public class CoupledSimulator {
 
 				try {
 					var lcaResult = calculator.calculate(calcSetup);
-					lcaResults.add(lcaResult);
+					rs.add(lcaResult);
 				} catch (Exception e) {
-					fn.accept(Res.error(
-							"Calculation of system failed: " + b.system().name, e));
+					error = Res.error(
+							"Calculation of system failed: " + b.system().name, e);
 					return;
 				}
 			}
 
-			// Update the coupled result with simulation state and LCA results
-			result.append(simState, lcaResults);
-			fn.accept(Res.of(result));
+			result.append(simState, rs);
 		});
 	}
 

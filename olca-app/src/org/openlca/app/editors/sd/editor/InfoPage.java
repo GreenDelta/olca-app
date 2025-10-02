@@ -4,13 +4,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.editors.sd.interop.CoupledSimulator;
 import org.openlca.app.editors.sd.results.SdResultEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.sd.eqn.Simulator;
 import org.openlca.sd.xmile.Xmile;
 
 class InfoPage extends FormPage {
@@ -69,12 +70,19 @@ class InfoPage extends FormPage {
 	}
 
 	private void runSimulation() {
-		var sim = Simulator.of(editor.xmile());
-		if (sim.hasError()) {
-			MsgBox.error("Failed to create simulator", sim.error());
+		var simRes = CoupledSimulator.of(editor.xmile(), editor.setup());
+		if (simRes.hasError()) {
+			MsgBox.error("Failed to create simulator", simRes.error());
 			return;
 		}
-		SdResultEditor.open(editor.modelName(), sim.value());
+		var sim = simRes.value();
+		App.run("Running coupled simulation...", sim, () -> {
+			var res = sim.getResult();
+			if (res.hasError()) {
+				MsgBox.error("Simulation failed", res.error());
+			}
+			SdResultEditor.open(editor.modelName(), res.value());
+		});
 	}
 
 	private record SimSpecs(
