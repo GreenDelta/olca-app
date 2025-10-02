@@ -49,9 +49,29 @@ class SdResultChart {
 			}
 		}
 
+		updateData(var.name().label(), xs, ys);
+	}
+
+	public void update(String name, double[] values) {
+		if (name == null || values == null || values.length == 0) {
+			clearData();
+			return;
+		}
+
+		double[] xs = new double[values.length];
+		for (int i = 0; i < values.length; i++) {
+			xs[i] = i + 1;
+		}
+
+		updateData(name, xs, values);
+	}
+
+	private void updateData(String title, double[] xs, double[] ys) {
+
 		buffer.setBufferSize(xs.length);
 		buffer.setCurrentXDataArray(xs);
 		buffer.setCurrentYDataArray(ys);
+		graph.setTitle(title != null ? title : "");
 		updateAxisRanges(xs, ys);
 	}
 
