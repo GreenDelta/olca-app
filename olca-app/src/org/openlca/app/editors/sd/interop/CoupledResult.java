@@ -38,6 +38,10 @@ public class CoupledResult {
 		return iis;
 	}
 
+	public List<Var> getVariables() {
+		return new ArrayList<>(vars.values());
+	}
+
 	public double[] impactResultsOf(ImpactDescriptor indicator) {
 		if (indicator == null || impactIdx == null)
 			return new double[time.size()];
@@ -45,6 +49,20 @@ public class CoupledResult {
 		if (i < 0 || i >= impactResults.length || impactResults[i] == null)
 			return new double[time.size()];
 		var list = impactResults[i];
+		var array = new double[list.size()];
+		for (int k = 0; k < list.size(); k++) {
+			var v = list.get(k);
+			array[k] = v == null ? 0 : v;
+		}
+		return array;
+	}
+
+	public double[] varResultsOf(Var variable) {
+		if (variable == null)
+			return new double[time.size()];
+		var list = varResults.get(variable.name());
+		if (list == null)
+			return new double[time.size()];
 		var array = new double[list.size()];
 		for (int k = 0; k < list.size(); k++) {
 			var v = list.get(k);

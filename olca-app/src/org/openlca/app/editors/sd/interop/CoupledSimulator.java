@@ -21,6 +21,7 @@ public class CoupledSimulator {
 	private final Simulator simulator;
 	private final SimulationSetup setup;
 	private final SystemCalculator calculator;
+	private final CoupledResult result;
 
 	private CoupledSimulator(
 			Simulator simulator, SimulationSetup setup, SystemCalculator calculator
@@ -28,6 +29,7 @@ public class CoupledSimulator {
 		this.simulator = simulator;
 		this.setup = setup;
 		this.calculator = calculator;
+		this.result = new CoupledResult();
 	}
 
 	public static Res<CoupledSimulator> of(
@@ -44,6 +46,10 @@ public class CoupledSimulator {
 		return Res.of(new CoupledSimulator(simulator.value(), setup, calculator));
 	}
 
+	public CoupledResult getResult() {
+		return result;
+	}
+
 	public void forEach(Consumer<Res<CoupledResult>> fn) {
 		simulator.forEach(res -> {
 			if (res.hasError()) {
@@ -51,6 +57,7 @@ public class CoupledSimulator {
 				return;
 			}
 			var simState = res.value();
+			var lcaResults = new ArrayList<org.openlca.core.results.LcaResult>();
 
 			for (var b : setup.systemBindings()) {
 				var params = paramsOf(simState, b);
@@ -66,13 +73,18 @@ public class CoupledSimulator {
 						.withAmount(b.amount()); // TODO: the amount can be bound to a var
 
 				try {
-					var result = calculator.calculate(calcSetup);
+					var lcaResult = calculator.calculate(calcSetup);
+					lcaResults.add(lcaResult);
 				} catch (Exception e) {
 					fn.accept(Res.error(
 							"Calculation of system failed: " + b.system().name, e));
 					return;
 				}
 			}
+
+			// Update the coupled result with simulation state and LCA results
+			result.append(simState, lcaResults);
+			fn.accept(Res.of(result));
 		});
 	}
 
