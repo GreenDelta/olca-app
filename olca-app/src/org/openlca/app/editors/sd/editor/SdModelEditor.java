@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.AppContext;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.sd.SdVars;
 import org.openlca.app.editors.sd.interop.JsonSetupReader;
 import org.openlca.app.editors.sd.interop.JsonSetupWriter;
 import org.openlca.app.editors.sd.interop.SimulationSetup;
@@ -73,7 +74,7 @@ public class SdModelEditor extends FormEditor {
 		} else {
 			vars = new ArrayList<>(varRes.value());
 			vars.sort((vi, vj) -> {
-				int c = Strings.compare(Util.typeOf(vj), Util.typeOf(vi));
+				int c = Strings.compare(SdVars.typeOf(vj), SdVars.typeOf(vi));
 				if (c != 0)
 					return c;
 				var li = vi.name() != null ? vi.name().label() : "";
