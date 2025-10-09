@@ -104,7 +104,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/slf4j-api-2.0.16.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/SparseBitSet-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/trove4j-3.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/util.concurrent.blockingMap-0.91.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/xmlbeans-3.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/zt-zip-1.15.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">

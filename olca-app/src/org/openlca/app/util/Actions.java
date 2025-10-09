@@ -39,7 +39,7 @@ public class Actions {
 	public static Action onAdd(Runnable runnable) {
 		return new Action() {
 			{
-				setText(M.CreateNew);
+				setText(M.Add);
 				setImageDescriptor(Icon.ADD.descriptor());
 				setDisabledImageDescriptor(Icon.ADD_DISABLED.descriptor());
 			}
