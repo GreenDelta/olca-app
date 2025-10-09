@@ -39,7 +39,7 @@ public class SdModelEditor extends FormEditor {
 		if (modelDir == null || !modelDir.exists() || !modelDir.isDirectory())
 			return;
 		var xmile = SystemDynamics.openModel(modelDir);
-		if (xmile.hasError()) {
+		if (xmile.isError()) {
 			MsgBox.error("Failed to read model",
 					"Failed to read the model from the model folder: " + xmile.error());
 			return;
@@ -68,7 +68,7 @@ public class SdModelEditor extends FormEditor {
 
 		// load the model variables
 		var varRes = Vars.readFrom(xmile);
-		if (varRes.hasError()) {
+		if (varRes.isError()) {
 			MsgBox.error("Failed to read variables from model", varRes.error());
 			vars = new ArrayList<>();
 		} else {

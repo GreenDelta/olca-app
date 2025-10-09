@@ -6,6 +6,7 @@ import java.util.List;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
+import org.openlca.commons.Res;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ParameterRedef;
@@ -14,7 +15,6 @@ import org.openlca.sd.eqn.SimulationState;
 import org.openlca.sd.eqn.Simulator;
 import org.openlca.sd.eqn.cells.NumCell;
 import org.openlca.sd.xmile.Xmile;
-import org.openlca.util.Res;
 
 public class CoupledSimulator implements Runnable {
 
@@ -25,8 +25,9 @@ public class CoupledSimulator implements Runnable {
 	private Res<?> error;
 
 	private CoupledSimulator(
-			Simulator simulator, SimulationSetup setup, SystemCalculator calculator
-	) {
+			Simulator simulator,
+			SimulationSetup setup,
+			SystemCalculator calculator) {
 		this.simulator = simulator;
 		this.setup = setup;
 		this.calculator = calculator;
@@ -34,40 +35,39 @@ public class CoupledSimulator implements Runnable {
 	}
 
 	public static Res<CoupledSimulator> of(
-			Xmile xmile, SimulationSetup setup
-	) {
+			Xmile xmile, SimulationSetup setup) {
 		var simulator = Simulator.of(xmile);
-		if (simulator.hasError())
-			return simulator.wrapError("failed to create simulator");
+		if (simulator.isError())
+			return simulator.wrapError("Failed to create simulator");
 
 		var calculator = new SystemCalculator(Database.get())
 				.withSolver(App.getSolver());
 		Libraries.readersForCalculation()
 				.ifPresent(calculator::withLibraries);
-		return Res.of(new CoupledSimulator(simulator.value(), setup, calculator));
+		return Res.ok(new CoupledSimulator(simulator.value(), setup, calculator));
 	}
 
 	public Res<CoupledResult> getResult() {
 		return error != null
 				? error.castError()
-				: Res.of(result);
+				: Res.ok(result);
 	}
 
 	@Override
 	public void run() {
-		simulator.forEach(res -> {
-			if (res.hasError()) {
+		for (var res : simulator) {
+			if (res.isError()) {
 				error = res.wrapError("Simulation error");
-				return;
+				break;
 			}
 
 			var simState = res.value();
 			var rs = new ArrayList<LcaResult>();
 			for (var b : setup.systemBindings()) {
 				var params = paramsOf(simState, b);
-				if (params.hasError()) {
+				if (params.isError()) {
 					error = params.wrapError("Variable binding error");
-					return;
+					break;
 				}
 
 				var calcSetup = CalculationSetup.of(b.system())
@@ -82,17 +82,18 @@ public class CoupledSimulator implements Runnable {
 				} catch (Exception e) {
 					error = Res.error(
 							"Calculation of system failed: " + b.system().name, e);
-					return;
+					break;
 				}
 			}
 
 			result.append(simState, rs);
-		});
+		}
+		;
 	}
 
 	private Res<List<ParameterRedef>> paramsOf(
-			SimulationState simState, SystemBinding binding
-	) {
+			SimulationState simState, SystemBinding binding) {
+
 		var params = new ArrayList<ParameterRedef>();
 		for (var vb : binding.varBindings()) {
 			if (vb.varId() == null || vb.parameter() == null)
@@ -101,14 +102,14 @@ public class CoupledSimulator implements Runnable {
 			if (cell == null)
 				return Res.error("Variable not found: " + vb.varId());
 			if (!(cell instanceof NumCell(double num))) {
-				return Res.error("Variable does not evaluate to a number: "
-						+ vb.varId());
+				return Res.error(
+						"Variable does not evaluate to a number: " + vb.varId());
 			}
 
 			var param = vb.parameter().copy();
 			param.value = num;
 			params.add(param);
 		}
-		return Res.of(params);
+		return Res.ok(params);
 	}
 }

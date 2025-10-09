@@ -71,14 +71,14 @@ class InfoPage extends FormPage {
 
 	private void runSimulation() {
 		var simRes = CoupledSimulator.of(editor.xmile(), editor.setup());
-		if (simRes.hasError()) {
+		if (simRes.isError()) {
 			MsgBox.error("Failed to create simulator", simRes.error());
 			return;
 		}
 		var sim = simRes.value();
-		App.run("Running coupled simulation...", sim, () -> {
+		App.runWithProgress("Running coupled simulation...", sim, () -> {
 			var res = sim.getResult();
-			if (res.hasError()) {
+			if (res.isError()) {
 				MsgBox.error("Simulation failed", res.error());
 			}
 			SdResultEditor.open(editor.modelName(), res.value());

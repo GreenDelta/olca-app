@@ -7,11 +7,11 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
+import org.openlca.commons.Res;
 import org.openlca.core.database.IDatabase;
 import org.openlca.sd.xmile.Xmile;
 import org.openlca.sd.xmile.img.ModelImage;
 import org.openlca.util.Dirs;
-import org.openlca.util.Res;
 import org.openlca.util.Strings;
 
 public class SystemDynamics {
@@ -54,7 +54,7 @@ public class SystemDynamics {
 			Dirs.createIfAbsent(modelRoot);
 			var modelDir = new File(modelRoot, name);
 			Dirs.createIfAbsent(modelDir);
-			return Res.of(modelDir);
+			return Res.ok(modelDir);
 		} catch (Exception e) {
 			return Res.error("failed to create model folder", e);
 		}
@@ -66,28 +66,26 @@ public class SystemDynamics {
 		var modelFile = new File(modelDir, "model.xml");
 		if (!modelFile.exists() || !modelFile.isFile())
 			return Res.error("model file does not exist: "
-					+ modelFile.getAbsolutePath());
-		try {
-			var xmile = Xmile.readFrom(modelFile);
-			return Res.of(xmile);
-		} catch (Exception e) {
-			return Res.error("failed to read model file", e);
-		}
+					+ modelFile.getAbsolutePath());		
+		var xmile = Xmile.readFrom(modelFile);
+		return xmile.isOk()
+				? Res.ok(xmile.value())
+				: Res.error(xmile.error());		
 	}
 
 	public static Res<File> getModelImage(File modelDir) {
 		var file = new File(modelDir, "model-image.png");
 		if (file.exists() && file.isFile())
-			return Res.of(file);
+			return Res.ok(file);
 		var model = openModel(modelDir);
-		if (model.hasError())
+		if (model.isError())
 			return model.wrapError("failed to load model");
 		try {
 			var image = ModelImage.createFrom(model.value());
-			if (image.hasError())
+			if (image.isError())
 				return Res.error(image.error());
 			ImageIO.write(image.value(), "png", file);
-			return Res.of(file);
+			return Res.ok(file);
 		} catch (Exception e) {
 			return Res.error("failed to create model image");
 		}

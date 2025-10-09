@@ -41,7 +41,7 @@ class ImageSection {
 
 	private void loadImage() {
 		var res = SystemDynamics.getModelImage(editor.modelDir());
-		if (res.hasError())
+		if (res.isError())
 			return;
 		if (label != null) {
 			label.dispose();
