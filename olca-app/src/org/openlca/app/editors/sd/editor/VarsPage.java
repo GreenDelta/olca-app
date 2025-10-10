@@ -55,6 +55,7 @@ public class VarsPage extends FormPage {
 				case 0 -> SdVars.typeOf(v);
 				case 1 -> v.name().label();
 				case 2 -> SdVars.cellTypeOf(v);
+				case 3 -> v.unit();
 				default -> null;
 			};
 		}
