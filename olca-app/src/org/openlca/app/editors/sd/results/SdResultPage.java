@@ -57,7 +57,7 @@ class SdResultPage extends FormPage {
 		nameText.setEditable(false);
 		nameText.setText(editor.modelName());
 
-		var varsCount = VarsCount.of(vars, coupledResult);
+		var varsCount = VarsCount.of(vars);
 		var varsText = UI.labeledText(comp, tk, "Variables");
 		varsText.setEditable(false);
 		varsText.setText(varsCount.toString());
@@ -79,9 +79,9 @@ class SdResultPage extends FormPage {
 			var file = FileChooser.forSavingFile("Export simulation results",
 					editor.modelName() + "_results.xlsx");
 			var res = App.exec("Export results...", () -> {
-					return SdResultExport.run(vars, file);
+					return XlsExport.run(vars, file);
 			});
-			if (res.hasError()) {
+			if (res.isError()) {
 				ErrorReporter.on("Failed to export simulation results", res.error());
 			}
 		});
@@ -114,7 +114,6 @@ class SdResultPage extends FormPage {
 			updateVariableChart(chart, firstVar);
 		}
 
-		// Handle variable selection changes
 		Controls.onSelect(combo, e -> {
 			int idx = combo.getSelectionIndex();
 			if (idx >= 0 && idx < numVars.size()) {
@@ -181,38 +180,18 @@ class SdResultPage extends FormPage {
 			int stocks, int rates, int auxs, int iterations
 	) {
 		static VarsCount of(Iterable<Var> vars) {
-			int stocks = 0, rates = 0, auxs = 0, iterations = 0;
+			int stocks = 0;
+			int rates = 0;
+			int auxs = 0;
+			int iterations = 0;
 			if (vars != null) {
 				for (var v : vars) {
-					if (v instanceof Stock) {
-						stocks++;
-					} else if (v instanceof Rate) {
-						rates++;
-					} else if (v instanceof Aux) {
-						auxs++;
+					switch (v) {
+						case Stock ignored -> stocks++;
+						case Rate ignored -> rates++;
+						case Aux ignored -> auxs++;
 					}
 					iterations = Math.max(iterations, v.values().size());
-				}
-			}
-			return new VarsCount(stocks, rates, auxs, iterations);
-		}
-
-		static VarsCount of(Iterable<Var> vars, CoupledResult result) {
-			int stocks = 0, rates = 0, auxs = 0, iterations = 0;
-			if (vars != null) {
-				for (var v : vars) {
-					if (v instanceof Stock) {
-						stocks++;
-					} else if (v instanceof Rate) {
-						rates++;
-					} else if (v instanceof Aux) {
-						auxs++;
-					}
-					if (result != null) {
-						iterations = Math.max(iterations, result.varResultsOf(v).length);
-					} else {
-						iterations = Math.max(iterations, v.values().size());
-					}
 				}
 			}
 			return new VarsCount(stocks, rates, auxs, iterations);
