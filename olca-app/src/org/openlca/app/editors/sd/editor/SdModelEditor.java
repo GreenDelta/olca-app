@@ -20,6 +20,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.SystemDynamics;
+import org.openlca.core.database.IDatabase;
 import org.openlca.sd.eqn.Var;
 import org.openlca.sd.eqn.Vars;
 import org.openlca.sd.xmile.Xmile;
@@ -29,6 +30,7 @@ public class SdModelEditor extends FormEditor {
 
 	public static final String ID = "editors.SdModelEditor";
 
+	private final IDatabase db = Database.get();
 	private File modelDir;
 	private Xmile xmile;
 	private SimulationSetup setup;
@@ -62,7 +64,7 @@ public class SdModelEditor extends FormEditor {
 		// load the setup
 		var setupFile = new File(modelDir, "setup.json");
 		setup = setupFile.exists()
-				? JsonSetupReader.read(setupFile, Database.get())
+				? JsonSetupReader.read(setupFile, db)
 				.orElse(SimulationSetup::new)
 				: new SimulationSetup();
 
@@ -117,10 +119,14 @@ public class SdModelEditor extends FormEditor {
 		return vars;
 	}
 
+	IDatabase db() {
+		return db;
+	}
+
 	@Override
 	protected void addPages() {
 		try {
-			addPage(new InfoPage(this));
+			addPage(new SetupPage(this));
 			addPage(new BindingsPage(this));
 			addPage(new VarsPage(this));
 		} catch (Exception e) {

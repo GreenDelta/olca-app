@@ -21,15 +21,11 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
-import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.database.IDatabase;
-import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.Flow;
-import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 
 class BindingsPage extends FormPage {
@@ -44,7 +40,7 @@ class BindingsPage extends FormPage {
 	private AddButton addButton;
 
 	BindingsPage(SdModelEditor editor) {
-		super(editor, "SdBindingsPage", "Bindings");
+		super(editor, "SdBindingsPage", "Product systems");
 		this.editor = editor;
 		this.setup = editor.setup();
 		this.db = Database.get();
@@ -55,45 +51,15 @@ class BindingsPage extends FormPage {
 		form = UI.header(mForm, "System bindings: " + editor.modelName());
 		tk = mForm.getToolkit();
 		body = UI.body(form, tk);
-		createSetupSection();
-		createBindingSections();
-		form.reflow(true);
-	}
-
-	private void createSetupSection() {
-		var comp = UI.formSection(body, tk, "Calculation setup");
-		UI.gridLayout(comp, 2);
-
-		// select impact method
-		UI.label(comp, tk, M.ImpactAssessmentMethod);
-		var combo = new ImpactMethodViewer(comp);
-		var methods = new ImpactMethodDao(Database.get())
-				.getDescriptors()
-				.stream()
-				.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
-				.toList();
-		combo.setInput(methods);
-
-		if (setup.method() != null) {
-			combo.select(Descriptor.of(setup.method()));
-		}
-		combo.addSelectionChangedListener(d -> {
-			if (d == null)
-				return;
-			setup.method(db.get(ImpactMethod.class, d.id));
-			editor.setDirty();
-		});
-	}
-
-	private void createBindingSections() {
 		var bindings = setup.systemBindings();
 		for (int i = 0; i < bindings.size(); i++) {
 			new BindingSection(i, bindings.get(i));
 		}
 		addButton = new AddButton();
+		form.reflow(true);
 	}
 
-	private void addNew(SystemBinding binding) {
+	private void addSectionOf(SystemBinding binding) {
 		if (binding == null)
 			return;
 		var pos = setup.systemBindings().size();
@@ -126,6 +92,7 @@ class BindingsPage extends FormPage {
 				setup.systemBindings().remove(binding);
 				section.dispose();
 				form.reflow(true);
+				editor.setDirty();
 			});
 			Actions.bind(section, onDelete);
 
@@ -172,7 +139,8 @@ class BindingsPage extends FormPage {
 
 		private void createParamTable(Composite parent) {
 
-			var comp = UI.formSection(parent, tk, "Parameter bindings");
+			var section = UI.section(parent, tk, "Parameter bindings");
+			var comp = UI.sectionClient(section, tk);
 
 			var table = Tables.createViewer(comp, "Model variable", "Parameter");
 			Tables.bindColumnWidths(table, 0.5, 0.5);
@@ -185,6 +153,7 @@ class BindingsPage extends FormPage {
 							.ifPresent(vb -> {
 								binding.varBindings().add(vb);
 								table.setInput(binding.varBindings());
+								editor.setDirty();
 							}));
 
 			var onDel = Actions.create(
@@ -193,10 +162,12 @@ class BindingsPage extends FormPage {
 						if (vb != null) {
 							binding.varBindings().remove(vb);
 							table.setInput(binding.varBindings());
+							editor.setDirty();
 						}
 					});
 
 			Actions.bind(table, onAdd, onDel);
+			Actions.bind(section, onAdd, onDel);
 			table.setInput(binding.varBindings());
 		}
 	}
@@ -214,6 +185,7 @@ class BindingsPage extends FormPage {
 				comp.dispose();
 			}
 			comp = UI.composite(body, tk);
+			UI.fillHorizontal(comp);
 			var grid = UI.gridLayout(comp, 1);
 			grid.marginLeft = 0;
 			grid.marginTop = 0;
@@ -229,7 +201,7 @@ class BindingsPage extends FormPage {
 				if (sys == null)
 					return;
 				var binding = new SystemBinding().system(sys);
-				addNew(binding);
+				addSectionOf(binding);
 			});
 		}
 	}
@@ -245,7 +217,7 @@ class BindingsPage extends FormPage {
 				case 0 -> vb.varId() != null
 						? vb.varId().label()
 						: "";
-				case 1 ->  vb.parameter() != null
+				case 1 -> vb.parameter() != null
 						? vb.parameter().name
 						: "";
 				default -> "";

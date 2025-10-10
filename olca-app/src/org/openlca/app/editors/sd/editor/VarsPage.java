@@ -16,7 +16,7 @@ public class VarsPage extends FormPage {
 	private final SdModelEditor editor;
 
 	public VarsPage(SdModelEditor editor) {
-		super(editor, "SdModelParametersPage", "Variables");
+		super(editor, "SdModelParametersPage", "Model variables");
 		this.editor = editor;
 	}
 
