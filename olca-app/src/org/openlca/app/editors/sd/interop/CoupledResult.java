@@ -1,6 +1,8 @@
 package org.openlca.app.editors.sd.interop;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,6 @@ import org.openlca.sd.eqn.cells.NumCell;
 public class CoupledResult {
 
 	private final Map<Id, Var> vars = new HashMap<>();
-	private Map<Id, List<Double>> varResults = new HashMap<>();
 	private final List<Double> time = new ArrayList<>();
 
 	private ImpactIndex impactIdx;
@@ -38,8 +39,8 @@ public class CoupledResult {
 		return iis;
 	}
 
-	public List<Var> getVariables() {
-		return new ArrayList<>(vars.values());
+	public Collection<Var> vars() {
+		return Collections.unmodifiableCollection(vars.values());
 	}
 
 	public double[] impactResultsOf(ImpactDescriptor indicator) {
@@ -60,13 +61,14 @@ public class CoupledResult {
 	public double[] varResultsOf(Var variable) {
 		if (variable == null)
 			return new double[time.size()];
-		var list = varResults.get(variable.name());
-		if (list == null)
-			return new double[time.size()];
-		var array = new double[list.size()];
-		for (int k = 0; k < list.size(); k++) {
-			var v = list.get(k);
-			array[k] = v == null ? 0 : v;
+		var values = variable.values();
+		int n = Math.min(values.size(), time.size());
+		var array = new double[n];
+		for (int k = 0; k < n; k++) {
+			var v = values.get(k);
+			if (v instanceof NumCell(double num)) {
+				array[k] = num;
+			}
 		}
 		return array;
 	}
@@ -75,20 +77,9 @@ public class CoupledResult {
 		if (state == null)
 			return;
 		time.add(state.time());
-		appendVarResults(state);
 		appendResults(rs);
-	}
-
-	private void appendVarResults(SimulationState state) {
-		var map = state.vars();
-		if (map == null)
-			return;
-		for (var v : map.values()) {
-			if (!(v.value() instanceof NumCell(double num)))
-				continue;
+		for (var v : state.vars().values()) {
 			vars.putIfAbsent(v.name(), v);
-			varResults.computeIfAbsent(v.name(), $ -> new ArrayList<>())
-					.add(num);
 		}
 	}
 

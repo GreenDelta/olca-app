@@ -1,5 +1,6 @@
 package org.openlca.app.editors.sd.results;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -11,9 +12,8 @@ import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.sd.interop.CoupledResult;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.FileType;
+import org.openlca.commons.Strings;
 import org.openlca.sd.eqn.Var;
 
 public class SdResultEditor extends FormEditor {
@@ -22,6 +22,7 @@ public class SdResultEditor extends FormEditor {
 
 	private String modelName;
 	private CoupledResult result;
+	private List<Var> vars;
 
 	public static void open(String modelName, CoupledResult result) {
 		if (modelName == null || result == null)
@@ -34,15 +35,17 @@ public class SdResultEditor extends FormEditor {
 
 	@Override
 	public void init(
-			IEditorSite site, IEditorInput input
-	) throws PartInitException {
+			IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(Images.get(FileType.MARKUP));
 		var inp = (SdResultInput) input;
-		modelName = inp.modelName();
-		result = AppContext.remove(inp.key());
-		setTitleImage(Icon.SD.get());
 		setPartName(inp.getName());
+		setTitleImage(Icon.SD.get());
+
+		this.modelName = inp.modelName();
+		this.result = AppContext.remove(inp.key());
+		this.vars = new ArrayList<>(result.vars());
+		this.vars.sort((vi, vj) -> Strings.compareIgnoreCase(
+				vi.name().label(), vj.name().label()));
 	}
 
 	String modelName() {
@@ -50,7 +53,7 @@ public class SdResultEditor extends FormEditor {
 	}
 
 	List<Var> vars() {
-		return result.getVariables();
+		return vars;
 	}
 
 	CoupledResult result() {
