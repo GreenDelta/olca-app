@@ -43,6 +43,23 @@ public class CoupledResult {
 		return Collections.unmodifiableCollection(vars.values());
 	}
 
+	/// Returns the number of result entries of this result. A result entry is
+	/// created for each successful simulation step.
+	public int size() {
+		return time.size();
+	}
+
+	public double[] timeLine() {
+		if (time.isEmpty())
+			return new double[0];
+		var t = new double[time.size()];
+		for (int i = 0; i < time.size(); i++) {
+			var ti = time.get(i);
+			t[i] = ti != null ? ti : 0;
+		}
+		return t;
+	}
+
 	public double[] impactResultsOf(ImpactDescriptor indicator) {
 		if (indicator == null || impactIdx == null)
 			return new double[time.size()];
