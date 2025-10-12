@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -14,8 +13,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.io.xls.Excel;
-import org.openlca.sd.eqn.Id;
-import org.openlca.sd.eqn.Subscript;
 import org.openlca.sd.eqn.Tensor;
 import org.openlca.sd.eqn.Var;
 import org.openlca.sd.eqn.cells.BoolCell;
@@ -23,6 +20,7 @@ import org.openlca.sd.eqn.cells.Cell;
 import org.openlca.sd.eqn.cells.EqnCell;
 import org.openlca.sd.eqn.cells.NumCell;
 import org.openlca.sd.eqn.cells.TensorCell;
+import org.openlca.sd.util.Tensors;
 
 class XlsExport {
 
@@ -73,9 +71,9 @@ class XlsExport {
 		for (var v : vars) {
 			var val = v.value();
 			if (val instanceof TensorCell(Tensor t)) {
-				var addresses = addressesOf(t);
+				var addresses = Tensors.addressesOf(t);
 				for (var address : addresses) {
-					var key = keyOf(v, address);
+					var key = Tensors.addressKeyOf(v, address);
 					headers.add(key);
 					columns.put(key, col++);
 				}
@@ -88,35 +86,7 @@ class XlsExport {
 		return headers.toArray(String[]::new);
 	}
 
-	private List<List<Id>> addressesOf(Tensor t) {
-		var addresses = new ArrayList<List<Id>>();
-		for (var dim : t.dimensions()) {
-			if (addresses.isEmpty()) {
-				for (var elem : dim.elements()) {
-					addresses.add(List.of(elem));
-				}
-				continue;
-			}
 
-			var next = new ArrayList<List<Id>>();
-			for (var elem : dim.elements()) {
-				for (var xs : addresses) {
-					var a = new ArrayList<>(xs);
-					a.add(elem);
-					next.add(a);
-				}
-			}
-			addresses = next;
-		}
-		return addresses;
-	}
-
-	private String keyOf(Var v, List<Id> subscripts) {
-		var idx = subscripts.stream()
-				.map(Id::value)
-				.collect(Collectors.joining(", "));
-		return v.name().value() + "[" + idx + "]";
-	}
 
 	private void writeValueRows(Sheet sheet) {
 
@@ -129,15 +99,12 @@ class XlsExport {
 
 				var value = values.get(i);
 				if (value instanceof TensorCell(Tensor t)) {
-					var addresses = addressesOf(t);
+					var addresses = Tensors.addressesOf(t);
 					for (var address : addresses) {
-						var subs = address.stream()
-								.map(Subscript::of)
-								.toList();
-						var key = keyOf(v, address);
+						var key = Tensors.addressKeyOf(v, address);
 						var col = columns.get(key);
 						if (col != null) {
-							put(sheet, i + 1, col + 1, t.get(subs));
+							put(sheet, i + 1, col + 1, t.get(address));
 						}
 					}
 				} else {
