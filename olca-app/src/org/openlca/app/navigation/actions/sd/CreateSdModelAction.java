@@ -7,15 +7,14 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.SdModelElement;
 import org.openlca.app.navigation.elements.SdRootElement;
-import org.openlca.app.rcp.images.Images;
-import org.openlca.app.util.FileType;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.wizards.SdModelWizard;
 
 public class CreateSdModelAction extends Action implements INavigationAction {
 
 	public CreateSdModelAction() {
 		setText("New system dynamics model");
-		setImageDescriptor(Images.descriptor(FileType.MARKUP));
+		setImageDescriptor(Icon.SD.descriptor());
 	}
 
 	@Override
