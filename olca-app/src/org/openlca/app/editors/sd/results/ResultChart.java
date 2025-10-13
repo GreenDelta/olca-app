@@ -3,6 +3,7 @@ package org.openlca.app.editors.sd.results;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.nebula.visualization.xygraph.dataprovider.CircularBufferDataProvider;
 import org.eclipse.nebula.visualization.xygraph.figures.Trace;
@@ -82,8 +83,6 @@ class ResultChart {
 		trace.setTraceType(Trace.TraceType.LINE_AREA);
 		trace.setAreaAlpha(50);
 		trace.setLineWidth(2);
-		graph.addTrace(trace);
-		traces.add(trace);
 	}
 
 	private Trace createTrace(String title, double[] nums) {
@@ -97,6 +96,7 @@ class ResultChart {
 		var y = graph.getPrimaryYAxis();
 
 		var trace = new Trace(title, x, y, buffer);
+		trace.setToolTip(new Label(title));
 		var defaultColor = Theme.isDark()
 			? Colors.getForChart(2)
 			: Colors.getForChart(1);
