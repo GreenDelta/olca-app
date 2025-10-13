@@ -3,7 +3,6 @@ package org.openlca.app.editors.sd.results;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.nebula.visualization.xygraph.dataprovider.CircularBufferDataProvider;
 import org.eclipse.nebula.visualization.xygraph.figures.Trace;
@@ -14,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.editors.sd.interop.CoupledResult;
 import org.openlca.app.preferences.Theme;
 import org.openlca.app.util.Colors;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.sd.eqn.Var;
@@ -48,7 +48,7 @@ class ResultChart {
 			trace.setTraceType(Trace.TraceType.SOLID_LINE);
 			var range = ChartRange.of(seq.values());
 			graph.getPrimaryYAxis()
-					.setRange(range.min(), range.max());
+				.setRange(range.min(), range.max());
 			return;
 		}
 
@@ -60,10 +60,10 @@ class ResultChart {
 			trace.setTraceColor(Colors.getForChart(i));
 			var r = ChartRange.of(seq.values());
 			range = range == null
-					? r
-					: new ChartRange(
-							Math.min(r.min(), range.min()),
-							Math.max(r.max(), range.max()));
+				? r
+				: new ChartRange(
+					Math.min(r.min(), range.min()),
+					Math.max(r.max(), range.max()));
 		}
 		if (range != null) {
 			graph.getPrimaryYAxis().setRange(range.min(), range.max());
@@ -76,7 +76,7 @@ class ResultChart {
 
 		var range = ChartRange.of(ys);
 		graph.getPrimaryYAxis()
-				.setRange(range.min(), range.max());
+			.setRange(range.min(), range.max());
 
 		var trace = createTrace(d.name, ys);
 		trace.setTraceType(Trace.TraceType.LINE_AREA);
@@ -97,10 +97,9 @@ class ResultChart {
 		var y = graph.getPrimaryYAxis();
 
 		var trace = new Trace(title, x, y, buffer);
-		trace.setToolTip(new Label(title));
 		var defaultColor = Theme.isDark()
-				? Colors.getForChart(2)
-				: Colors.getForChart(1);
+			? Colors.getForChart(2)
+			: Colors.getForChart(1);
 		trace.setTraceColor(defaultColor);
 		trace.setPointStyle(Trace.PointStyle.NONE);
 		trace.setLineWidth(2);
@@ -111,9 +110,14 @@ class ResultChart {
 
 	private void clear() {
 		for (var trace : traces) {
-			graph.removeTrace(trace);
-			trace.dispose();
+			try {
+				graph.removeTrace(trace);
+				trace.dispose();
+			} catch (Exception e) {
+				ErrorReporter.on("Failed to remove data traces", e);
+			}
 		}
+		traces.clear();
 	}
 
 	private XYGraph createGraph(LightweightSystem lws) {
@@ -126,9 +130,10 @@ class ResultChart {
 		g.getPlotArea().setBackgroundColor(Colors.background());
 
 		// configure x
-		var range = ChartRange.of(time);
+		var start = time.length > 1 ? time[0] : 0;
+		var end = time.length > 0 ? time[time.length - 1] : 1;
 		var x = g.getPrimaryXAxis();
-		x.setRange(range.min(), range.max());
+		x.setRange(start, end);
 		x.setMinorTicksVisible(false);
 		x.setTitle("");
 
