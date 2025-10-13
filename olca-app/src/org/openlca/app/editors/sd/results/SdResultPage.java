@@ -76,9 +76,9 @@ class SdResultPage extends FormPage {
 		exportBtn.setImage(Images.get(FileType.EXCEL));
 		Controls.onSelect(exportBtn, e -> {
 			var file = FileChooser.forSavingFile("Export simulation results",
-					editor.modelName() + "_results.xlsx");
+				editor.modelName() + "_results.xlsx");
 			var res = App.exec("Export results...", () -> {
-					return XlsExport.run(vars, file);
+				return XlsExport.run(result, file);
 			});
 			if (res.isError()) {
 				ErrorReporter.on("Failed to export simulation results", res.error());
@@ -99,8 +99,8 @@ class SdResultPage extends FormPage {
 		UI.fillHorizontal(combo);
 
 		var items = vars.stream()
-				.map(v -> v.name().label())
-				.toArray(String[]::new);
+			.map(v -> v.name().label())
+			.toArray(String[]::new);
 		combo.setItems(items);
 
 		var chart = new ResultChart(comp, result);
@@ -131,8 +131,8 @@ class SdResultPage extends FormPage {
 		UI.fillHorizontal(combo);
 
 		var items = impacts.stream()
-				.map(i -> i.name)
-				.toArray(String[]::new);
+			.map(i -> i.name)
+			.toArray(String[]::new);
 		combo.setItems(items);
 
 		var chart = new ResultChart(comp, result);
@@ -150,8 +150,7 @@ class SdResultPage extends FormPage {
 	}
 
 	private record VarsCount(
-			int stocks, int rates, int auxs, int iterations
-	) {
+		int stocks, int rates, int auxs, int iterations) {
 		static VarsCount of(Iterable<Var> vars) {
 			int stocks = 0;
 			int rates = 0;

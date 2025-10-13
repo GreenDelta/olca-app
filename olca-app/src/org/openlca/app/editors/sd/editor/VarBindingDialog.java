@@ -227,7 +227,7 @@ class VarBindingDialog extends FormDialog {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			return null;
+			return Icon.FORMULA.get();
 		}
 
 		@Override
