@@ -23,10 +23,10 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.SystemDynamics;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.WizFileSelector;
+import org.openlca.commons.Res;
 import org.openlca.sd.eqn.EvaluationOrder;
 import org.openlca.sd.eqn.Vars;
 import org.openlca.sd.xmile.Xmile;
-import org.openlca.util.Res;
 import org.openlca.util.Strings;
 
 public class SdModelWizard extends Wizard implements INewWizard {
@@ -54,7 +54,7 @@ public class SdModelWizard extends Wizard implements INewWizard {
 	@Override
 	public boolean performFinish() {
 		var modelName = checkName(page.nameText.getText());
-		if (modelName.hasError()) {
+		if (modelName.isError()) {
 			MsgBox.error("Invalid name", modelName.error());
 			return false;
 		}
@@ -79,7 +79,7 @@ public class SdModelWizard extends Wizard implements INewWizard {
 				return false;
 			}
 
-			if (res.hasError()) {
+			if (res.isError()) {
 				MsgBox.error("Invalid model file", res.error());
 				return false;
 			}
@@ -103,27 +103,31 @@ public class SdModelWizard extends Wizard implements INewWizard {
 			if (sanitized.equalsIgnoreCase(dir.getName()))
 				return Res.error("A model with this name already exists.");
 		}
-		return Res.of(sanitized);
+		return Res.ok(sanitized);
 	}
 
 	private Res<File> createModel(String name, File file) {
 		try {
 			var xmile = Xmile.readFrom(file);
-			var vars = Vars.readFrom(xmile);
-			if (vars.hasError())
-				return Res.error("Failed to read model file: " + vars.error());
+			if (xmile.isError())
+				return xmile.castError();
+			var vars = Vars.readFrom(xmile.value());
+			if (vars.isError())
+				return vars.wrapError("Failed to read model file: " + file);
 			var order = EvaluationOrder.of(vars.value());
-			if (order.hasError())
-				return Res.error("Failed to create evaluation order: " + order.error());
+			if (order.isError()) {
+				return order.wrapError(
+						"Failed to create evaluation order of vars in file: " + file);
+			}
 			var dir = SystemDynamics.createModelDir(name, Database.get());
-			if (dir.hasError())
+			if (dir.isError())
 				return dir;
 			var modelFile = new File(dir.value(), "model.xml");
 			Files.copy(
 					file.toPath(),
 					modelFile.toPath(),
 					StandardCopyOption.REPLACE_EXISTING);
-			return Res.of(dir.value());
+			return Res.ok(dir.value());
 		} catch (Exception e) {
 			return Res.error("Failed to create model folder", e);
 		}

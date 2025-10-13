@@ -7,20 +7,31 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.editors.sd.interop.CoupledSimulator;
+import org.openlca.app.editors.sd.interop.SimulationSetup;
 import org.openlca.app.editors.sd.results.SdResultEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.combo.ImpactMethodViewer;
+import org.openlca.core.database.IDatabase;
+import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.model.ImpactMethod;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.sd.xmile.Xmile;
+import org.openlca.util.Strings;
 
-class InfoPage extends FormPage {
+class SetupPage extends FormPage {
 
 	private final SdModelEditor editor;
+	private final SimulationSetup setup;
+	private final IDatabase db;
 
-	InfoPage(SdModelEditor editor) {
-		super(editor, "SdModelInfoPage", M.GeneralInformation);
+	SetupPage(SdModelEditor editor) {
+		super(editor, "SdSetupPage", M.CalculationSetup);
 		this.editor = editor;
+		this.setup = editor.setup();
+		this.db = editor.db();
 	}
 
 	@Override
@@ -63,22 +74,45 @@ class InfoPage extends FormPage {
 		dtText.setText(Double.toString(specs.dt));
 		UI.label(comp, tk, specs.timeUnit);
 
+		createMethodCombo(comp, tk);
+		UI.filler(comp, tk);
+
 		UI.filler(comp, tk);
 		var btn = UI.button(comp, tk, "Run simulation");
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> runSimulation());
 	}
 
+	private void createMethodCombo(Composite comp, FormToolkit tk) {
+		UI.label(comp, tk, M.ImpactAssessmentMethod);
+		var combo = new ImpactMethodViewer(comp);
+		var methods = new ImpactMethodDao(db)
+				.getDescriptors()
+				.stream()
+				.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
+				.toList();
+		combo.setInput(methods);
+		if (setup.method() != null) {
+			combo.select(Descriptor.of(setup.method()));
+		}
+		combo.addSelectionChangedListener(d -> {
+			if (d == null)
+				return;
+			setup.method(db.get(ImpactMethod.class, d.id));
+			editor.setDirty();
+		});
+	}
+
 	private void runSimulation() {
 		var simRes = CoupledSimulator.of(editor.xmile(), editor.setup());
-		if (simRes.hasError()) {
+		if (simRes.isError()) {
 			MsgBox.error("Failed to create simulator", simRes.error());
 			return;
 		}
 		var sim = simRes.value();
-		App.run("Running coupled simulation...", sim, () -> {
+		App.runWithProgress("Running coupled simulation...", sim, () -> {
 			var res = sim.getResult();
-			if (res.hasError()) {
+			if (res.isError()) {
 				MsgBox.error("Simulation failed", res.error());
 			}
 			SdResultEditor.open(editor.modelName(), res.value());
