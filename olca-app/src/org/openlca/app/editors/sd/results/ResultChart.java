@@ -17,7 +17,6 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.sd.eqn.Var;
-import org.openlca.sd.eqn.cells.NumCell;
 
 class ResultChart {
 
@@ -39,30 +38,36 @@ class ResultChart {
 	void show(Var var) {
 		clear();
 
-		// TODO: multiple traces for tensors
-
-		var values = var.values();
-		if (values.isEmpty())
+		var seqs = ChartSeq.of(result, var);
+		if (seqs.isEmpty())
 			return;
 
-		int n = Math.min(values.size(), result.size());
-		double[] ys = new double[n];
-		for (int i = 0; i < n; i++) {
-			var value = values.get(i);
-			if (value instanceof NumCell(double v)) {
-				ys[i] = v;
-			}
+		if (seqs.size() == 1) {
+			var seq = seqs.getFirst();
+			var trace = createTrace(seq.title(), seq.values());
+			trace.setTraceType(Trace.TraceType.SOLID_LINE);
+			var range = ChartRange.of(seq.values());
+			graph.getPrimaryYAxis()
+					.setRange(range.min(), range.max());
+			return;
 		}
 
-		var range = ChartRange.of(ys);
-		graph.getPrimaryYAxis()
-				.setRange(range.min(), range.max());
-
-		var trace = createTrace(var.name().label(), ys);
-		trace.setTraceType(Trace.TraceType.SOLID_LINE);
-		trace.setLineWidth(2);
-		graph.addTrace(trace);
-		traces.add(trace);
+		ChartRange range = null;
+		for (int i = 0; i < seqs.size(); i++) {
+			var seq = seqs.get(i);
+			var trace = createTrace(seq.title(), seq.values());
+			trace.setTraceType(Trace.TraceType.SOLID_LINE);
+			trace.setTraceColor(Colors.getForChart(i));
+			var r = ChartRange.of(seq.values());
+			range = range == null
+					? r
+					: new ChartRange(
+							Math.min(r.min(), range.min()),
+							Math.max(r.max(), range.max()));
+		}
+		if (range != null) {
+			graph.getPrimaryYAxis().setRange(range.min(), range.max());
+		}
 	}
 
 	void show(ImpactDescriptor d) {
@@ -98,6 +103,9 @@ class ResultChart {
 				: Colors.getForChart(1);
 		trace.setTraceColor(defaultColor);
 		trace.setPointStyle(Trace.PointStyle.NONE);
+		trace.setLineWidth(2);
+		traces.add(trace);
+		graph.addTrace(trace);
 		return trace;
 	}
 
