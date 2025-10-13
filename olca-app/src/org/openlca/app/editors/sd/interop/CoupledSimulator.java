@@ -3,6 +3,8 @@ package org.openlca.app.editors.sd.interop;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
@@ -16,7 +18,7 @@ import org.openlca.sd.eqn.Simulator;
 import org.openlca.sd.eqn.cells.NumCell;
 import org.openlca.sd.xmile.Xmile;
 
-public class CoupledSimulator implements Runnable {
+public class CoupledSimulator implements IRunnableWithProgress {
 
 	private final Simulator simulator;
 	private final SimulationSetup setup;
@@ -25,9 +27,9 @@ public class CoupledSimulator implements Runnable {
 	private Res<?> error;
 
 	private CoupledSimulator(
-			Simulator simulator,
-			SimulationSetup setup,
-			SystemCalculator calculator) {
+		Simulator simulator,
+		SimulationSetup setup,
+		SystemCalculator calculator) {
 		this.simulator = simulator;
 		this.setup = setup;
 		this.calculator = calculator;
@@ -35,15 +37,15 @@ public class CoupledSimulator implements Runnable {
 	}
 
 	public static Res<CoupledSimulator> of(
-			Xmile xmile, SimulationSetup setup) {
+		Xmile xmile, SimulationSetup setup) {
 		var simulator = Simulator.of(xmile);
 		if (simulator.isError())
 			return simulator.wrapError("Failed to create simulator");
 
 		var calculator = new SystemCalculator(Database.get())
-				.withSolver(App.getSolver());
+			.withSolver(App.getSolver());
 		Libraries.readersForCalculation()
-				.ifPresent(calculator::withLibraries);
+			.ifPresent(calculator::withLibraries);
 		return Res.ok(new CoupledSimulator(simulator.value(), setup, calculator));
 	}
 
@@ -54,8 +56,14 @@ public class CoupledSimulator implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public void run(IProgressMonitor monitor) {
+		int iteration = 0;
 		for (var res : simulator) {
+			if (monitor.isCanceled())
+				break;
+			iteration++;
+			monitor.subTask("Run iteration " + iteration);
+
 			if (res.isError()) {
 				error = res.wrapError("Simulation error");
 				break;
@@ -64,6 +72,9 @@ public class CoupledSimulator implements Runnable {
 			var simState = res.value();
 			var rs = new ArrayList<LcaResult>();
 			for (var b : setup.systemBindings()) {
+				if (monitor.isCanceled())
+					break;
+
 				var params = paramsOf(simState, b);
 				if (params.isError()) {
 					error = params.wrapError("Variable binding error");
@@ -86,9 +97,12 @@ public class CoupledSimulator implements Runnable {
 				}
 			}
 
+			if (error != null)
+				break;
+
 			result.append(simState, rs);
+			monitor.worked(1);
 		}
-		;
 	}
 
 	private Res<List<ParameterRedef>> paramsOf(
@@ -101,7 +115,9 @@ public class CoupledSimulator implements Runnable {
 			var cell = simState.valueOf(vb.varId()).orElse(null);
 			if (cell == null)
 				return Res.error("Variable not found: " + vb.varId());
-			if (!(cell instanceof NumCell(double num))) {
+			if (!(cell instanceof
+
+			NumCell(double num))) {
 				return Res.error(
 						"Variable does not evaluate to a number: " + vb.varId());
 			}

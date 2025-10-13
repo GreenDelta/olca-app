@@ -1,6 +1,8 @@
 package org.openlca.app.editors.sd.editor;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -11,6 +13,7 @@ import org.openlca.app.editors.sd.interop.SimulationSetup;
 import org.openlca.app.editors.sd.results.SdResultEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
@@ -18,6 +21,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.sd.eqn.TimeSeq;
 import org.openlca.sd.xmile.Xmile;
 import org.openlca.util.Strings;
 
@@ -87,10 +91,10 @@ class SetupPage extends FormPage {
 		UI.label(comp, tk, M.ImpactAssessmentMethod);
 		var combo = new ImpactMethodViewer(comp);
 		var methods = new ImpactMethodDao(db)
-				.getDescriptors()
-				.stream()
-				.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
-				.toList();
+			.getDescriptors()
+			.stream()
+			.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
+			.toList();
 		combo.setInput(methods);
 		if (setup.method() != null) {
 			combo.select(Descriptor.of(setup.method()));
@@ -110,22 +114,44 @@ class SetupPage extends FormPage {
 			return;
 		}
 		var sim = simRes.value();
-		App.runWithProgress("Running coupled simulation...", sim, () -> {
-			var res = sim.getResult();
-			if (res.isError()) {
-				MsgBox.error("Simulation failed", res.error());
-			}
-			SdResultEditor.open(editor.modelName(), res.value());
-		});
+
+		try {
+			var service = PlatformUI.getWorkbench().getProgressService();
+
+			service.run(true, true, monitor -> {
+				monitor.beginTask(
+					"Running simulation",
+					iterationCountOf(editor.xmile()));
+				sim.run(monitor);
+				monitor.done();
+				App.runInUI("Open simulation result", () -> {
+					var res = sim.getResult();
+					if (res.isError()) {
+						MsgBox.error("Simulation failed", res.error());
+					} else {
+						SdResultEditor.open(editor.modelName(), res.value());
+					}
+				});
+			});
+
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to run simulation", e);
+		}
+	}
+
+	private int iterationCountOf(Xmile xmile) {
+		var seq = TimeSeq.of(xmile);
+		return seq.isError()
+			? IProgressMonitor.UNKNOWN
+			: seq.value().iterationCount();
 	}
 
 	private record SimSpecs(
-			double start,
-			double stop,
-			double dt,
-			String timeUnit,
-			String method
-	) {
+		double start,
+		double stop,
+		double dt,
+		String timeUnit,
+		String method) {
 
 		static SimSpecs of(Xmile xmile) {
 			if (xmile == null || xmile.simSpecs() == null)
@@ -134,17 +160,16 @@ class SetupPage extends FormPage {
 			double dt = 1;
 			if (specs.dt() != null && specs.dt().value() != null) {
 				dt = specs.dt().reciprocal() != null && specs.dt().reciprocal()
-						? 1 / specs.dt().value()
-						: specs.dt().value();
+					? 1 / specs.dt().value()
+					: specs.dt().value();
 			}
 
 			return new SimSpecs(
-					specs.start() != null ? specs.start() : 0,
-					specs.stop() != null ? specs.stop() : 0,
-					dt,
-					specs.timeUnits() != null ? specs.timeUnits() : "",
-					specs.method() != null ? specs.method() : ""
-			);
+				specs.start() != null ? specs.start() : 0,
+				specs.stop() != null ? specs.stop() : 0,
+				dt,
+				specs.timeUnits() != null ? specs.timeUnits() : "",
+				specs.method() != null ? specs.method() : "");
 		}
 	}
 
