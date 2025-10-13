@@ -10,9 +10,9 @@ public enum FeatureFlag {
 
 	TAG_RESULTS("Enable contributions by tags in result views"),
 
-	MATRIX_IMAGE_EXPORT("Enable matrix image export"),
+	ADDITIONAL_PROPERTIES("Show additional properties of data sets"),
 
-	ADDITIONAL_PROPERTIES("Show additional properties of data sets");
+	SD_SIM("Support for system dynamics models");
 
 	private final String description;
 
