@@ -77,6 +77,8 @@ class SdResultPage extends FormPage {
 		Controls.onSelect(exportBtn, e -> {
 			var file = FileChooser.forSavingFile("Export simulation results",
 				editor.modelName() + "_results.xlsx");
+			if (file == null)
+				return;
 			var res = App.exec("Export results...", () -> {
 				return XlsExport.run(result, file);
 			});
