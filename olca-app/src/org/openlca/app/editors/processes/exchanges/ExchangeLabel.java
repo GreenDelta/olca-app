@@ -94,7 +94,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			}
 			case 8 -> {
 				// data quality entry
-				if (Strings.nullOrEmpty(e.dqEntry))
+				if (Strings.isBlank(e.dqEntry))
 					yield null;
 				Process p = editor.getModel();
 				yield p.exchangeDqSystem == null

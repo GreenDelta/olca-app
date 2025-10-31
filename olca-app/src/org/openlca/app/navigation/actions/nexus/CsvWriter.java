@@ -107,7 +107,7 @@ class CsvWriter {
 	}
 
 	private static String addCell(String line, String value) {
-		return Strings.nullOrEmpty(line) ? value : line + SEPARATOR + value;
+		return Strings.isBlank(line) ? value : line + SEPARATOR + value;
 	}
 
 	private static String enumValue(Enum<?> enumValue) {

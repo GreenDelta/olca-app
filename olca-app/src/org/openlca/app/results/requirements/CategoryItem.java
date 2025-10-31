@@ -76,7 +76,7 @@ class CategoryItem implements Item {
 	 */
 	private static void sort(List<CategoryItem> items) {
 		items.forEach(item -> sort(item.childs));
-		items.sort((i1, i2) -> Strings.compare(
+		items.sort((i1, i2) -> Strings.compareIgnoreCase(
 			i1.category.name, i2.category.name));
 	}
 

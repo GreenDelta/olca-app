@@ -23,7 +23,7 @@ record GroupValue(AnalysisGroup group, double value, double share) {
 		double max = 0;
 		var visited = new HashSet<String>();
 		for (var g : groups) {
-			if (Strings.nullOrEmpty(g.name))
+			if (Strings.isBlank(g.name))
 				continue;
 			visited.add(g.name);
 			var val = map.get(g.name);

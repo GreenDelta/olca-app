@@ -78,7 +78,8 @@ public class ParameterSection {
 		createCellModifiers();
 		support.afterEvaluation(this::setInput);
 		editor.onSaved(this::setInput);
-		entity().parameters.sort((o1, o2) -> Strings.compare(o1.name, o2.name));
+		entity().parameters.sort(
+			(pi, pj) -> Strings.compareIgnoreCase(pi.name, pj.name));
 		setInput();
 	}
 

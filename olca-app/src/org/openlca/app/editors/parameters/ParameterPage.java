@@ -115,7 +115,7 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 	void setGlobalTableInput() {
 		var dao = new ParameterDao(Database.get());
 		var params = dao.getGlobalParameters();
-		params.sort((p1, p2) -> Strings.compare(p1.name, p2.name));
+		params.sort((p1, p2) -> Strings.compareIgnoreCase(p1.name, p2.name));
 		globalTable.setInput(params);
 	}
 

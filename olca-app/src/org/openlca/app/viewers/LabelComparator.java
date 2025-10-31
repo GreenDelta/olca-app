@@ -18,7 +18,7 @@ class LabelComparator<T> extends Comparator<T> {
 		String text1 = provider.getColumnText(e1, column);
 		String text2 = provider.getColumnText(e2, column);
 		if (!asNumbers)
-			return Strings.compare(text1, text2);
+			return Strings.compareIgnoreCase(text1, text2);
 		Double d1 = safeParse(text1);
 		Double d2 = safeParse(text2);
 		if (d1 == null && d2 == null)

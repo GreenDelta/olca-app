@@ -185,7 +185,7 @@ public class MappingTool extends SimpleFormEditor {
 				M.SaveMappingInDatabaseInfo,
 				proposedName,
 				name -> {
-					if (Strings.nullOrEmpty(name))
+					if (Strings.isBlank(name))
 						return M.NameCannotBeEmpty;
 					if (existing.contains(name.toLowerCase().trim()))
 						return M.FlowMappingWithThisNameExists;

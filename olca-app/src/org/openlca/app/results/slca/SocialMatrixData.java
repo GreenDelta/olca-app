@@ -81,7 +81,7 @@ record SocialMatrixData(
 					int j = techIndex.of(techFlow);
 					activityData.set(i, j, activityValue);
 
-					if (Strings.notEmpty(rawValue)) {
+					if (Strings.isNotBlank(rawValue)) {
 						try {
 							double v = Double.parseDouble(rawValue);
 							rawData.set(i, j, v);

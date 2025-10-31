@@ -31,7 +31,7 @@ public class ImportLogDialog extends FormDialog {
 	public static void show(String title, ImportLog log) {
 		if (log == null)
 			return;
-		var t = Strings.nullOrEmpty(title)
+		var t = Strings.isBlank(title)
 				? M.ImportFinished
 				: title;
 		App.runInUI(title, () -> new ImportLogDialog(log, t).open());

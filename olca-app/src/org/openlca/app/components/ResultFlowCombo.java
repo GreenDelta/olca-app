@@ -63,7 +63,7 @@ public class ResultFlowCombo extends AbstractComboViewer<EnviFlow> {
 				for (int col = 0; col < 3; col++) {
 					String s1 = label.getColumnText(e1, col);
 					String s2 = label.getColumnText(e2, col);
-					int c = Strings.compare(s1, s2);
+					int c = Strings.compareIgnoreCase(s1, s2);
 					if (c != 0)
 						return c;
 				}

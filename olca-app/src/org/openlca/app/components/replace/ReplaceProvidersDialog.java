@@ -45,7 +45,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 			var replacer = ProviderReplacer.of(db);
 			var providers = replacer.getUsedProviders();
 			if (!providers.isEmpty()) {
-				providers.sort((p1, p2) -> Strings.compare(
+				providers.sort((p1, p2) -> Strings.compareIgnoreCase(
 						Labels.name(p1), Labels.name(p2)));
 			}
 			return new Cons(replacer, providers);

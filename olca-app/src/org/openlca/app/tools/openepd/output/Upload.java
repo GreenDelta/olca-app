@@ -103,7 +103,7 @@ public record Upload(Ec3Client client, EpdDoc epd) {
 
 			// extract the ID from the response
 			String id = Json.getString(json.getAsJsonObject(), "id");
-			return Strings.nullOrEmpty(id)
+			return Strings.isBlank(id)
 				? error(resp, M.NoIdReturnFromServer)
 				: ExportState.created(id);
 		} catch (Exception e) {

@@ -74,7 +74,7 @@ public class StartPage extends SimpleFormEditor {
 				var config = new HashMap<String, Object>();
 				config.put("version", getVersion());
 				var lang = AppArg.get("nl");
-				config.put("lang", Strings.nullOrEmpty(lang) ? "en" : lang);
+				config.put("lang", Strings.isBlank(lang) ? "en" : lang);
 				config.put("showLibHint",
 						!NativeLib.isLoaded(Module.UMFPACK) && !MKL.isLoaded());
 				var json = new Gson().toJson(config);
@@ -85,12 +85,12 @@ public class StartPage extends SimpleFormEditor {
 		private String getVersion() {
 			String v = App.getVersion();
 			String build = AppArg.BUILD_NUMBER.getValue();
-			if (Strings.notEmpty(build)) {
+			if (Strings.isNotBlank(build)) {
 				v += " " + build;
 			}
 			v += " (" + OS.get();
 			String osarch = System.getProperty("os.arch");
-			if (Strings.notEmpty(osarch)) {
+			if (Strings.isNotBlank(osarch)) {
 				v += " " + osarch;
 			}
 			return v + ")";

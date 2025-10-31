@@ -58,7 +58,7 @@ public class NodeFigure extends ComponentFigure {
 	}
 
 	protected Color borderColor() {
-		if (analysisGroup != null && Strings.notEmpty(analysisGroup.color))
+		if (analysisGroup != null && Strings.isNotBlank(analysisGroup.color))
 			return Colors.fromHex(analysisGroup.color);
 		var theme = node.getGraph().getEditor().getTheme();
 		var box = node.getThemeBox();
@@ -110,6 +110,7 @@ public class NodeFigure extends ComponentFigure {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return "Figure of " + node;
 	}

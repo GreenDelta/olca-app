@@ -59,8 +59,8 @@ class UnitCombo {
 		}
 
 		items.sort((i1, i2) -> isMultiProp
-			? Strings.compare(i1.fullLabel(), i2.fullLabel())
-			: Strings.compare(i1.shortLabel(), i2.shortLabel()));
+			? Strings.compareIgnoreCase(i1.fullLabel(), i2.fullLabel())
+			: Strings.compareIgnoreCase(i1.shortLabel(), i2.shortLabel()));
 		var comboItems = new String[items.size()];
 		int selected = -1;
 		for (int i = 0; i < items.size(); i++) {

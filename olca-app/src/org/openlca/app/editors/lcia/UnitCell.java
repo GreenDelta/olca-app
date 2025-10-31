@@ -99,9 +99,9 @@ class UnitCell extends ComboBoxCellModifier<ImpactFactor, UnitItem> {
 					|| this.property.flowProperty == null
 					|| other.property == null
 					|| other.property.flowProperty == null)
-				return Strings.compare(
+				return Strings.compareIgnoreCase(
 						this.toString(), other.toString());
-			return Strings.compare(
+			return Strings.compareIgnoreCase(
 					this.property.flowProperty.name,
 					other.property.flowProperty.name);
 		}

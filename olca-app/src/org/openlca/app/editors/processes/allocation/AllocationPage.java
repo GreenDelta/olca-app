@@ -76,9 +76,8 @@ public class AllocationPage extends ModelPage<Process> {
 	boolean update(AllocationFactor factor, String value) {
 		if (factor == null)
 			return false;
-		if (Strings.nullOrEmpty(value)) {
-			MsgBox.error(
-					M.InvalidAllocationFactor, M.EmptyValueNotAllowed);
+		if (Strings.isBlank(value)) {
+			MsgBox.error(M.InvalidAllocationFactor, M.EmptyValueNotAllowed);
 			return false;
 		}
 
@@ -88,7 +87,7 @@ public class AllocationPage extends ModelPage<Process> {
 			if (Double.compare(val, factor.value) == 0) {
 				// do nothing if the value is the same
 				// and no formula was set before
-				if (Strings.nullOrEmpty(factor.formula)) {
+				if (Strings.isBlank(factor.formula)) {
 					return false;
 				}
 			}
@@ -102,7 +101,7 @@ public class AllocationPage extends ModelPage<Process> {
 		try {
 			var scope = Formulas.createScope(Database.get(), process());
 			double val = scope.eval(value);
-			if (Strings.nullOrEqual(value, factor.formula)) {
+			if (Objects.equals(value, factor.formula)) {
 				// do nothing when the formula is the same as before
 				return false;
 			}
@@ -255,7 +254,7 @@ public class AllocationPage extends ModelPage<Process> {
 					return 1;
 				if (i2.isSum())
 					return -1;
-				return Strings.compare(i1.label(), i2.label());
+				return Strings.compareIgnoreCase(i1.label(), i2.label());
 			});
 			return rows;
 		}
@@ -291,7 +290,7 @@ public class AllocationPage extends ModelPage<Process> {
 			var factor = factorOf(method);
 			if (factor == null)
 				return "";
-			return Strings.nullOrEmpty(factor.formula)
+			return Strings.isBlank(factor.formula)
 				? Double.toString(factor.value)
 				: factor.formula + " = " + factor.value;
 		}
@@ -398,7 +397,7 @@ public class AllocationPage extends ModelPage<Process> {
 			var factor = row.factorOf(method);
 			if (factor == null)
 				return "";
-			return Strings.nullOrEmpty(factor.formula)
+			return Strings.isBlank(factor.formula)
 				? Double.toString(factor.value)
 				: factor.formula;
 		}

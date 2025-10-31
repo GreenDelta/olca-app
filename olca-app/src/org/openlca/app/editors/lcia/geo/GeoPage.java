@@ -116,7 +116,7 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		}
 		File file;
 		var path = fileText.getText();
-		if (Strings.notEmpty(path) && path.endsWith(".json")) {
+		if (Strings.isNotBlank(path) && path.endsWith(".json")) {
 			var temp = new File(path);
 			file = FileChooser.forSavingFile(M.Export, temp.getName());
 		} else {

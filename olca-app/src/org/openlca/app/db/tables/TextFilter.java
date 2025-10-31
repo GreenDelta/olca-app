@@ -34,7 +34,7 @@ class TextFilter extends ViewerFilter {
 
 	@Override
 	public boolean select(Viewer viewer, Object parent, Object elem) {
-		if (Strings.nullOrEmpty(filter))
+		if (Strings.isBlank(filter))
 			return true;
 		if (label == null) {
 			var tableLabel = table.getLabelProvider();

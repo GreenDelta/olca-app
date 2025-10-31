@@ -307,11 +307,11 @@ public class ImportLogView extends SimpleFormEditor {
 			var phrase = text == null
 					? null
 					: text.trim();
-			if (Strings.notEmpty(phrase)) {
+			if (Strings.isNotBlank(phrase)) {
 				var words = Arrays.stream(phrase.split(" "))
-						.map(s -> s.trim().toLowerCase())
-						.filter(Strings::notEmpty)
-						.toList();
+					.map(s -> s.trim().toLowerCase())
+					.filter(Strings::isNotBlank)
+					.toList();
 				stream = stream.filter(m -> matches(m, words));
 			}
 

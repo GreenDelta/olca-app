@@ -94,7 +94,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void initialInput() {
 		List<ProjectVariant> variants = project.variants;
-		variants.sort((v1, v2) -> Strings.compare(v1.name, v2.name));
+		variants.sort((v1, v2) -> Strings.compareIgnoreCase(v1.name, v2.name));
 		variantViewer.setInput(variants);
 	}
 
@@ -287,7 +287,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			Arrays.sort(units, (u1, u2) -> {
 				if (u1 == null || u2 == null)
 					return 0;
-				return Strings.compare(u1.name, u2.name);
+				return Strings.compareIgnoreCase(u1.name, u2.name);
 			});
 			return units;
 		}

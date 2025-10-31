@@ -106,7 +106,7 @@ public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 				candidates.add(e);
 			}
 		}
-		candidates.sort((e1, e2) -> Strings.compare(
+		candidates.sort((e1, e2) -> Strings.compareIgnoreCase(
 				Labels.name(e1.flow), Labels.name(e2.flow)));
 		return candidates;
 	}

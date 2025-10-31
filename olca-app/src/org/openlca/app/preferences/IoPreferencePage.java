@@ -90,7 +90,7 @@ public class IoPreferencePage extends PreferencePage implements
 			namesAndValues.add(nameAndValue);
 			added.add(lang);
 		}
-		namesAndValues.sort((o1, o2) -> Strings.compare(o1[0], o2[0]));
+		namesAndValues.sort((o1, o2) -> Strings.compareIgnoreCase(o1[0], o2[0]));
 		return namesAndValues.toArray(new String[namesAndValues.size()][]);
 	}
 

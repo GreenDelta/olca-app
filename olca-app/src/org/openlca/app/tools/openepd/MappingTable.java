@@ -194,7 +194,7 @@ public record MappingTable(
 							return 1;
 						return i1.type() != i2.type()
 							? i1.type().ordinal() - i2.type().ordinal()
-							: Strings.compare(i1.code(), i2.code());
+							: Strings.compareIgnoreCase(i1.code(), i2.code());
 					}
 				).toArray(Vocab.Indicator[]::new);
 		}

@@ -61,7 +61,7 @@ class DirectProcessResult {
 		interpreter = ParameterTable.interpreter(db, iCtx, Set.of());
 		var scope = interpreter.getOrCreate(process.id);
 		for (var param : process.parameters) {
-			if (param.isInputParameter || Strings.nullOrEmpty(param.formula)) {
+			if (param.isInputParameter || Strings.isBlank(param.formula)) {
 				scope.bind(param.name, param.value);
 			} else {
 				scope.bind(param.name, param.formula);
@@ -121,7 +121,7 @@ class DirectProcessResult {
 	private double amountOf(Exchange exchange) {
 		if (exchange == null)
 			return 0;
-		if (Strings.nullOrEmpty(exchange.formula))
+		if (Strings.isBlank(exchange.formula))
 			return ReferenceAmount.get(exchange);
 		try {
 			double amount = interpreter.getOrCreate(process.id)

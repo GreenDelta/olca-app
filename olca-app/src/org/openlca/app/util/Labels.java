@@ -166,7 +166,7 @@ public class Labels {
 	public static String code(Location loc) {
 		if (loc == null)
 			return "";
-		return Strings.notEmpty(loc.code)
+		return Strings.isNotBlank(loc.code)
 				? loc.code
 				: loc.name;
 	}
@@ -419,7 +419,7 @@ public class Labels {
 		}
 
 		static String append(String name, String code) {
-			return Strings.nullOrEmpty(code) || Objects.equals(name, code)
+			return Strings.isBlank(code) || Objects.equals(name, code)
 					? name
 					: name + " - " + code;
 		}

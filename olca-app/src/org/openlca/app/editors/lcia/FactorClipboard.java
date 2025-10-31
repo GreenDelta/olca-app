@@ -1,5 +1,10 @@
 package org.openlca.app.editors.lcia;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.core.database.FlowDao;
@@ -13,11 +18,6 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.Strings;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 class FactorClipboard {
 
@@ -34,7 +34,7 @@ class FactorClipboard {
 	}
 
 	private List<ImpactFactor> parse(String text) {
-		if (Strings.nullOrEmpty(text))
+		if (Strings.isBlank(text))
 			return Collections.emptyList();
 		String[] lines = text.split("\n");
 		List<ImpactFactor> factors = new ArrayList<>();
@@ -42,7 +42,7 @@ class FactorClipboard {
 			String[] row = line.split("\t");
 			if (row.length < 3)
 				continue;
-			if (Strings.nullOrEqual(M.Factor, row[2]))
+			if (Objects.equals(M.Factor, row[2]))
 				continue; // the header row
 			ImpactFactor factor = factor(row);
 			if (factor != null) {
@@ -62,13 +62,13 @@ class FactorClipboard {
 
 		// filter the flows by matching names and categories
 		List<Flow> candidates = flows.stream()
-				.filter(d -> Strings.nullOrEqual(d.name, name))
+			.filter(d -> Objects.equals(d.name, name))
 				.map(d -> new FlowDao(db).getForId(d.id))
 				.filter(flow -> {
 					if (flow.category == null)
-						return Strings.nullOrEmpty(category);
+					return Strings.isBlank(category);
 					String path = CategoryPath.getFull(flow.category);
-					return Strings.nullOrEqual(path, category);
+				return Objects.equals(path, category);
 				})
 				.toList();
 		if (candidates.isEmpty())
@@ -121,14 +121,14 @@ class FactorClipboard {
 		// location
 		if (row.length > 5) {
 			String code = row[5];
-			if (!Strings.nullOrEmpty(code)) {
+			if (Strings.isNotBlank(code)) {
 				LocationDao dao = new LocationDao(db);
 				factor.location = dao.getDescriptors()
-						.stream()
-						.filter(d -> Strings.nullOrEqual(code, d.code))
-						.map(d -> dao.getForId(d.id))
-						.findFirst()
-						.orElse(null);
+					.stream()
+					.filter(d -> Objects.equals(code, d.code))
+					.map(d -> dao.getForId(d.id))
+					.findFirst()
+					.orElse(null);
 			}
 		}
 

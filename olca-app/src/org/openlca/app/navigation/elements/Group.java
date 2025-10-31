@@ -29,7 +29,7 @@ public class Group {
 			return true;
 		if (!(obj instanceof Group other))
 			return false;
-		return Strings.nullOrEqual(this.label, other.label);
+		return Objects.equals(this.label, other.label);
 	}
 
 	@Override

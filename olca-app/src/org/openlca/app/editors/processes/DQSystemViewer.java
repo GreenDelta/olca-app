@@ -23,7 +23,7 @@ public class DQSystemViewer extends AbstractComboViewer<DQSystemDescriptor> {
 		Collections.sort(systems, (sys1, sys2) -> {
 			if (sys1 == null || sys2 == null)
 				return 0;
-			return Strings.compare(sys1.name, sys2.name);
+			return Strings.compareIgnoreCase(sys1.name, sys2.name);
 		});
 		super.setInput(systems);
 	}

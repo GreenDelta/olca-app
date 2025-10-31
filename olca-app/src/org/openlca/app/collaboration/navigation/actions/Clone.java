@@ -109,9 +109,9 @@ public class Clone {
 				name,
 				v -> v,
 				Database::validateNewName);
-		if (Strings.nullOrEmpty(name))
-			return null;
-		return getDbDir(name);
+		return Strings.isBlank(name)
+			? null
+			: getDbDir(name);
 	}
 
 }

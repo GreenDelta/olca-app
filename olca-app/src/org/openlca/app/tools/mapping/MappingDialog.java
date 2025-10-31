@@ -272,7 +272,7 @@ class MappingDialog extends FormDialog {
 				if (t == null) {
 					t = "?";
 				}
-				if (Strings.notEmpty(ref.flowLocation)) {
+				if (Strings.isNotBlank(ref.flowLocation)) {
 					t += " - " + ref.flowLocation;
 				}
 				flowLink.setText(Strings.cutEnd(t, maxLen));
@@ -280,7 +280,7 @@ class MappingDialog extends FormDialog {
 			}
 
 			// category path
-			if (Strings.nullOrEmpty(ref.flowCategory)) {
+			if (Strings.isBlank(ref.flowCategory)) {
 				categoryLabel.setText("");
 			} else {
 				categoryLabel.setText(
@@ -360,7 +360,7 @@ class MappingDialog extends FormDialog {
 					: fdao.getWhereOutput(flowID);
 				providers.addAll(new ProcessDao(db).getDescriptors(ids));
 				providers.sort(
-					(p1, p2) -> Strings.compare(Labels.name(p1), Labels.name(p2)));
+					(p1, p2) -> Strings.compareIgnoreCase(Labels.name(p1), Labels.name(p2)));
 			}
 
 			// fill the provider combo

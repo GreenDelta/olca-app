@@ -3,9 +3,9 @@ package org.openlca.app.editors.parameters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.openlca.app.M;
-import org.openlca.util.Strings;
 
 class ClipboardText {
 
@@ -59,11 +59,11 @@ class ClipboardText {
 		if (fields == null || fields.length < 3)
 			return new boolean[] { false, false };
 		// checking the first two words should be enough
-		if (Strings.nullOrEqual(fields[0], M.Name)
-				&& Strings.nullOrEqual(fields[1], M.Value))
+		if (Objects.equals(fields[0], M.Name)
+			&& Objects.equals(fields[1], M.Value))
 			return new boolean[] { true, true };
-		if (Strings.nullOrEqual(fields[0], M.Name)
-				&& Strings.nullOrEqual(fields[1], M.Formula))
+		if (Objects.equals(fields[0], M.Name)
+			&& Objects.equals(fields[1], M.Formula))
 			return new boolean[] { true, false };
 		return new boolean[] { false, false };
 	}

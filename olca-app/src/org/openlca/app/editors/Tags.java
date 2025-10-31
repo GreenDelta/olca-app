@@ -16,17 +16,17 @@ final class Tags {
 	}
 
 	public static String[] of(RootEntity model) {
-		if (model == null || Strings.nullOrEmpty(model.tags))
+		if (model == null || Strings.isBlank(model.tags))
 			return new String[0];
 		return Arrays.stream(model.tags.split(","))
-				.filter(tag -> !Strings.nullOrEmpty(tag))
-				.map(String::trim)
-				.toArray(String[]::new);
+			.filter(Strings::isNotBlank)
+			.map(String::trim)
+			.toArray(String[]::new);
 	}
 
 	public static String[] add(RootEntity model, String tag) {
 		var existing = of(model);
-		if (Strings.nullOrEmpty(tag))
+		if (Strings.isBlank(tag))
 			return existing;
 		var newTag = tag.trim();
 		for (var ex : existing) {
@@ -41,7 +41,7 @@ final class Tags {
 
 	public static String[] remove(RootEntity model, String tag) {
 		var existing = of(model);
-		if (Strings.nullOrEmpty(tag))
+		if (Strings.isBlank(tag))
 			return existing;
 		var next = Arrays.stream(existing)
 				.filter(other -> !tag.equalsIgnoreCase(other))
@@ -66,12 +66,12 @@ final class Tags {
 		var candidates = new HashSet<String>();
 		NativeSql.on(db).query(sql, r -> {
 			var tags = r.getString(1);
-			if (Strings.nullOrEmpty(tags))
+			if (Strings.isBlank(tags))
 				return true;
 			Arrays.stream(tags.split(","))
-					.filter(tag -> !Strings.nullOrEmpty(tag))
-					.map(String::trim)
-					.forEach(candidates::add);
+				.filter(Strings::isNotBlank)
+				.map(String::trim)
+				.forEach(candidates::add);
 			return true;
 		});
 

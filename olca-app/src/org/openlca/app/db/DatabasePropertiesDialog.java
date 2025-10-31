@@ -50,7 +50,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 		UI.labeledText(parent, tk, M.Port, style)
 				.setText(Integer.toString(conf.port()));
 		UI.labeledText(parent, tk, M.User, style).setText(conf.user());
-		boolean withPassword = Strings.notEmpty(conf.password());
+		boolean withPassword = Strings.isNotBlank(conf.password());
 		UI.labeledText(parent, tk, M.WithPassword, style)
 				.setText(withPassword ? M.Yes : M.No);
 	}

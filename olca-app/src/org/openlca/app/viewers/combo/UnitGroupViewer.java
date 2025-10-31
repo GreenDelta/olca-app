@@ -15,7 +15,7 @@ public class UnitGroupViewer extends AbstractComboViewer<UnitGroupDescriptor> {
 
 	public void setInput(IDatabase db) {
 		var groups = new UnitGroupDao(db).getDescriptors();
-		groups.sort((u1, u2) -> Strings.compare(u1.name, u2.name));
+		groups.sort((u1, u2) -> Strings.compareIgnoreCase(u1.name, u2.name));
 		setInput(groups.toArray(new UnitGroupDescriptor[0]));
 	}
 

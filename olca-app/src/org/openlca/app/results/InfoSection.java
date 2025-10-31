@@ -38,7 +38,7 @@ class InfoSection {
 		if (setup.nwSet() != null) {
 			text(comp, tk, M.NormalizationAndWeightingSet, setup.nwSet().name);
 		}
-		if (Strings.notEmpty(setup.parameterSetName())) {
+		if (Strings.isNotBlank(setup.parameterSetName())) {
 			text(comp, tk, M.ParameterSet, setup.parameterSetName());
 		}
 		buttons(comp, tk);

@@ -119,7 +119,7 @@ public class DbRestoreAction extends Action implements INavigationAction {
 
 			var conf = new DerbyConfig();
 			conf.name(dbName);
-			if (Strings.notEmpty(naviFolder)) {
+			if (Strings.isNotBlank(naviFolder)) {
 				conf.setCategory(naviFolder);
 			}
 			Database.register(conf);

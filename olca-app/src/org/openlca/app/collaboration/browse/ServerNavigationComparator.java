@@ -60,7 +60,7 @@ public class ServerNavigationComparator extends ViewerComparator {
 	private int compareLabels(Viewer viewer, Object e1, Object e2) {
 		String name1 = getLabel(viewer, e1);
 		String name2 = getLabel(viewer, e2);
-		return Strings.compare(name1, name2);
+		return Strings.compareIgnoreCase(name1, name2);
 	}
 
 	private String getLabel(Viewer viewer, Object obj) {

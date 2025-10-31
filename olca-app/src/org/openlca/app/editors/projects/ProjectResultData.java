@@ -25,7 +25,7 @@ public record ProjectResultData(
 	) {
 		var variants = result.getVariants()
 				.stream()
-				.sorted((v1, v2) -> Strings.compare(v1.name, v2.name))
+				.sorted((v1, v2) -> Strings.compareIgnoreCase(v1.name, v2.name))
 				.toArray(ProjectVariant[]::new);
 		var items = ResultItemOrder.of(result);
 		Sort.sort(items);

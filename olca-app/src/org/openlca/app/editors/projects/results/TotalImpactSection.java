@@ -70,7 +70,7 @@ class TotalImpactSection extends LabelProvider implements TableSection {
 		table.setInput(data.items()
 			.impacts()
 			.stream()
-			.sorted((i1, i2) -> Strings.compare(i1.name, i2.name))
+			.sorted((i1, i2) -> Strings.compareIgnoreCase(i1.name, i2.name))
 			.map(Row::new)
 			.collect(Collectors.toList()));
 	}

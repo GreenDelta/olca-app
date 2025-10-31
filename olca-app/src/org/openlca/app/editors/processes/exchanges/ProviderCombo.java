@@ -162,7 +162,7 @@ class ProviderCombo extends ComboBoxViewerCellEditor {
 			if (ti != to)
 				return ti - to;
 
-			return Strings.compare(
+			return Strings.compareIgnoreCase(
 				Labels.name(this.provider), Labels.name(other.provider));
 		}
 	}

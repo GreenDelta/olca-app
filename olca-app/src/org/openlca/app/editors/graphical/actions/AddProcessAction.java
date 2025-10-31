@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -95,7 +94,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 			text = UI.text(body, SWT.NONE);
 			text.addModifyListener(e -> {
 				var name = text.getText().trim();
-				getButton(_CREATE).setEnabled(Strings.notEmpty(name));
+				getButton(_CREATE).setEnabled(Strings.isNotBlank(name));
 			});
 
 			// tree
@@ -171,7 +170,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 			// create a new process
 			if (button == _CREATE) {
 				var name = text.getText().trim();
-				if (Strings.nullOrEmpty(name)) {
+				if (Strings.isBlank(name)) {
 					cancelPressed();
 					return;
 				}
@@ -195,10 +194,10 @@ public class AddProcessAction extends WorkbenchPartAction {
 				return;
 			}
 
-			var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
+			var viewer = getWorkbenchPart().getAdapter(
 				GraphicalViewer.class);
 			var registry = viewer.getEditPartRegistry();
-			var graphEditPart = (EditPart) registry.get(graph);
+			var graphEditPart = registry.get(graph);
 			if (graphEditPart == null)
 				return;
 

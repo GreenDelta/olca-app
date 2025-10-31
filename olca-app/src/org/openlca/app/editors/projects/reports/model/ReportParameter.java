@@ -77,7 +77,7 @@ class ReportParameter {
 
     var params = new ArrayList<>(created.values());
     params.sort((p1, p2) -> {
-      int c = Strings.compare(p1.redef.name, p2.redef.name);
+      int c = Strings.compareIgnoreCase(p1.redef.name, p2.redef.name);
       if (c != 0)
         return c;
       if (p1.context == null && p2.context == null)
@@ -86,7 +86,7 @@ class ReportParameter {
         return -1;
       if (p2.context == null)
         return 1;
-      return Strings.compare(p1.context.name, p2.context.name);
+      return Strings.compareIgnoreCase(p1.context.name, p2.context.name);
     });
     return params;
   }

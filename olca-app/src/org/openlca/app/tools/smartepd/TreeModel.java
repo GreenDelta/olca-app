@@ -31,9 +31,9 @@ record TreeModel(List<ProjectNode> projectNodes) {
 			for (var epd : epds) {
 				node.epdNodes().add(new EpdNode(node, epd));
 			}
-			node.epdNodes.sort((a, b) -> Strings.compare(a.name(), b.name()));
+			node.epdNodes.sort((a, b) -> Strings.compareIgnoreCase(a.name(), b.name()));
 		}
-		nodes.sort((a, b) -> Strings.compare(a.name(), b.name()));
+		nodes.sort((a, b) -> Strings.compareIgnoreCase(a.name(), b.name()));
 		return Res.of(new TreeModel(nodes));
 	}
 

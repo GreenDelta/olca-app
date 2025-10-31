@@ -28,7 +28,7 @@ public class AnalysisGroupsPage extends FormPage {
 		this.editor = editor;
 		this.system = system;
 		this.groups = system.analysisGroups;
-		this.groups.sort((g1, g2) -> Strings.compare(g1.name, g2.name));
+		this.groups.sort((g1, g2) -> Strings.compareIgnoreCase(g1.name, g2.name));
 	}
 
 	@Override

@@ -1,5 +1,10 @@
 package org.openlca.app.search;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.util.Labels;
 import org.openlca.core.database.Daos;
@@ -10,11 +15,6 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 class Search implements Runnable {
 
@@ -32,7 +32,7 @@ class Search implements Runnable {
 		this.rawTerm = term == null ? "" : term.toLowerCase().strip();
 		var parts = rawTerm.split("\\s+");
 		for (var part : parts) {
-			if (Strings.nullOrEmpty(part))
+			if (Strings.isBlank(part))
 				continue;
 			if (part.startsWith("#")) {
 				if (part.length() > 1) {
@@ -86,7 +86,7 @@ class Search implements Runnable {
 					c = Double.compare(m2.factor, m1.factor);
 					if (c != 0)
 						return c;
-					return Strings.compare(
+					return Strings.compareIgnoreCase(
 							Labels.name(m1.descriptor),
 							Labels.name(m2.descriptor));
 				})
@@ -116,13 +116,13 @@ class Search implements Runnable {
 
 			// filter by tags
 			if (!s.tags.isEmpty()) {
-				if (Strings.nullOrEmpty(d.tags))
+				if (Strings.isBlank(d.tags))
 					return _empty;
 
 				var tags = Arrays.stream(d.tags.split(","))
-						.map(tag -> tag.strip().toLowerCase())
-						.filter(Strings::notEmpty)
-						.collect(Collectors.toSet());
+					.map(tag -> tag.strip().toLowerCase())
+					.filter(Strings::isNotBlank)
+					.collect(Collectors.toSet());
 				for (var tag : s.tags) {
 					if (!tags.contains(tag))
 						return _empty;
@@ -142,7 +142,7 @@ class Search implements Runnable {
 		}
 
 		private static double wordMatch(String phrase, String word) {
-			if (Strings.nullOrEmpty(phrase))
+			if (Strings.isBlank(phrase))
 				return 0;
 			double pos = phrase.toLowerCase().indexOf(word);
 			return pos >= 0

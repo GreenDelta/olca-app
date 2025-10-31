@@ -71,7 +71,7 @@ public class ResultEditor extends FormEditor {
 				default -> "";
 			};
 		}
-		if (Strings.notEmpty(setup.parameterSetName())) {
+		if (Strings.isNotBlank(setup.parameterSetName())) {
 			name += "; " + setup.parameterSetName();
 		}
 		return name;

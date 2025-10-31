@@ -28,7 +28,7 @@ record UrnLink(EpdEditor editor) {
 		update(link);
 		Controls.onClick(link, $ -> {
 			var urn = epd().urn;
-			if (Strings.nullOrEmpty(urn))
+			if (Strings.isBlank(urn))
 				return;
 			if (urn.startsWith("openEPD:")) {
 				var extId = urn.substring(8);
@@ -55,7 +55,7 @@ record UrnLink(EpdEditor editor) {
 	private void update(ImageHyperlink link) {
 		if (link == null || link.isDisposed())
 			return;
-		link.setText(Strings.nullOrEmpty(epd().urn)
+		link.setText(Strings.isBlank(epd().urn)
 			? M.NoneHyphen
 			: epd().urn
 		);

@@ -50,7 +50,7 @@ public class DatabaseDirElement extends NavigationElement<String> {
 	}
 
 	public static String[] split(String path) {
-		if (Strings.nullOrEmpty(path))
+		if (Strings.isBlank(path))
 			return new String[0];
 		var parts = path.split("/");
 		var seg = new ArrayList<String>(parts.length);

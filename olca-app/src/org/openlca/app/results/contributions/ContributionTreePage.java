@@ -150,10 +150,10 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private void updateUnit(String unit) {
-			var totalLabel = Strings.notEmpty(unit)
+			var totalLabel = Strings.isNotBlank(unit)
 					? M.TotalResult + " [" + unit + "]"
 					: M.TotalResult;
-			var directLabel = Strings.notEmpty(unit)
+			var directLabel = Strings.isNotBlank(unit)
 					? M.DirectContribution + " [" + unit + "]"
 					: M.DirectContribution;
 			var t = tree.getTree();

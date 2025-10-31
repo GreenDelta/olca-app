@@ -76,7 +76,7 @@ public class PythonEditor extends ScriptingEditor {
 					browser.getDisplay();
 
 					// set the script content
-					if (Strings.notEmpty(script)) {
+					if (Strings.isNotBlank(script)) {
 						browser.execute("setContent(" + toJavaScript(script) + ")");
 					}
 
@@ -154,7 +154,7 @@ public class PythonEditor extends ScriptingEditor {
 		 * @return the JavaScript string of the script enclosed in single-quotes.
 		 */
 		private static String toJavaScript(String script) {
-			if (Strings.nullOrEmpty(script))
+			if (Strings.isBlank(script))
 				return "''";
 			var buffer = new StringBuilder("'");
 			for (int i = 0; i < script.length(); i++) {

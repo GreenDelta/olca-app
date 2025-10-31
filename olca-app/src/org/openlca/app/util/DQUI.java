@@ -17,7 +17,7 @@ public class DQUI {
 		for (int i = headers.length; i < newHeaders.length; i++) {
 			int pos = i - headers.length + 1;
 			var indicator = system.getIndicator(pos);
-			newHeaders[i] = Strings.nullOrEmpty(indicator.name)
+			newHeaders[i] = Strings.isBlank(indicator.name)
 					? Integer.toString(indicator.position)
 					: Character.toString(indicator.name.charAt(0));
 		}

@@ -100,9 +100,9 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 
 		private Integer getInitialGroup() {
 			var username = CredentialStore.getUsername(elem.getClient().url);
-			if (Strings.nullOrEmpty(username))
+			if (Strings.isBlank(username))
 				return null;
-			for (var i = 0; i < groups.size(); i++) 
+			for (var i = 0; i < groups.size(); i++)
 				if (username.equals(groups.get(i)))
 					return i;
 			return null;
@@ -124,9 +124,9 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 		}
 
 		private boolean isComplete() {
-			if (Strings.nullOrEmpty(group))
+			if (Strings.isBlank(group))
 				return false;
-			if (Strings.nullOrEmpty(name) || name.length() < 4 || !name.matches("^[a-zA-Z0-9_]+$"))
+			if (Strings.isBlank(name) || name.length() < 4 || !name.matches("^[a-zA-Z0-9_]+$"))
 				return false;
 			return true;
 		}

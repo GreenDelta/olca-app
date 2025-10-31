@@ -121,8 +121,9 @@ class SearchPage extends FormPage {
 		};
 		viewer.setNullable(true);
 		viewer.setInput(ModelType.values());
-		if (!Strings.nullOrEmpty(query.type))
+		if (Strings.isNotBlank(query.type)) {
 			viewer.select(ModelType.valueOf(query.type));
+		}
 		viewer.addSelectionChangedListener(type -> {
 			query.type = type != null ? type.name() : null;
 			runSearch(1);

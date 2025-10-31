@@ -73,7 +73,7 @@ public class DeleteMappingAction extends Action implements INavigationAction {
 				if (tool.mappingFile == null)
 					continue;
 				var name = tool.mappingFile.name;
-				if (Strings.nullOrEmpty(name))
+				if (Strings.isBlank(name))
 					continue;
 				if (deleted.contains(name.trim().toLowerCase())) {
 					Editors.close(ref);

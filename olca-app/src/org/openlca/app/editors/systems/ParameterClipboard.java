@@ -3,6 +3,7 @@ package org.openlca.app.editors.systems;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -31,7 +32,7 @@ class ParameterClipboard {
 			for (int k = 0; k < row.length; k++) {
 				row[k] = row[k].trim();
 			}
-			if (row.length > 2 && Strings.nullOrEqual(row[2], M.Amount))
+			if (row.length > 2 && Objects.equals(row[2], M.Amount))
 				continue; // the header row
 			ParameterRedef p = mapper.doIt(row);
 			if (p != null) {
@@ -66,13 +67,13 @@ class ParameterClipboard {
 			if (row == null || row.length < 2)
 				return null;
 			String cname = row[0];
-			if (Strings.nullOrEmpty(cname)) {
+			if (Strings.isBlank(cname)) {
 				log.warn("No parameter context given");
 				return null;
 			}
 			ParameterRedef p = new ParameterRedef();
 			p.name = row[1];
-			if (Strings.nullOrEqual(cname, "global"))
+			if (Objects.equals(cname, "global"))
 				return p;
 			ProcessDescriptor process = findProcess(cname);
 			if (process == null)
@@ -83,7 +84,7 @@ class ParameterClipboard {
 		}
 
 		private ProcessDescriptor findProcess(String fullName) {
-			if (Strings.nullOrEmpty(fullName))
+			if (Strings.isBlank(fullName))
 				return null;
 			ProcessDescriptor d = Processes.findForLabel(Database.get(), fullName);
 			if (d == null) {

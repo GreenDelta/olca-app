@@ -152,7 +152,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 				TableViewer table, List<T> list) {
 			table.setLabelProvider(new TableLabel());
 			Tables.bindColumnWidths(table, 1.0);
-			list.sort((d1, d2) -> Strings.compare(
+			list.sort((d1, d2) -> Strings.compareIgnoreCase(
 					Labels.name(d1),
 					Labels.name(d2)));
 			table.setInput(list);

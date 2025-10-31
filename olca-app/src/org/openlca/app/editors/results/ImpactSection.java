@@ -49,7 +49,7 @@ record ImpactSection(ResultEditor editor) {
 		result().impactResults.sort((i, j) -> {
 			var ni = Labels.name(i.indicator);
 			var nj = Labels.name(j.indicator);
-			return Strings.compare(ni, nj);
+			return Strings.compareIgnoreCase(ni, nj);
 		});
 		table.setInput(result().impactResults);
 		editor.onSaved(() -> table.setInput(result().impactResults));

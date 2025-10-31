@@ -48,7 +48,7 @@ public class DiffNodeBuilder {
 	}
 
 	private void createNode(TriDiff diff) {
-		var parent = !Strings.nullOrEmpty(diff.category)
+		var parent = Strings.isNotBlank(diff.category)
 				? getOrCreateCategoryNode(diff.type, diff.category)
 				: diff.isLibrary
 						? getOrCreateLibrariesNode()

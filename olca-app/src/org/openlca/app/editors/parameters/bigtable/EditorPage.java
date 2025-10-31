@@ -52,7 +52,7 @@ class EditorPage extends FormPage {
 
 		Runnable doFilter = () -> {
 			String t = filter.getText();
-			if (Strings.nullOrEmpty(t)
+			if (Strings.isBlank(t)
 				&& filterCombo.type != FilterCombo.ERRORS) {
 				table.setInput(params);
 			} else {

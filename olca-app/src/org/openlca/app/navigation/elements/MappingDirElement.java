@@ -26,8 +26,8 @@ public class MappingDirElement extends NavigationElement<Set<String>> {
 		if (names == null || names.isEmpty())
 			return Collections.emptyList();
 		return names.stream()
-				.sorted(Strings::compare)
-				.map(name -> new MappingFileElement(this, name))
-				.collect(Collectors.toList());
+			.sorted(Strings::compareIgnoreCase)
+			.map(name -> new MappingFileElement(this, name))
+			.collect(Collectors.toList());
 	}
 }

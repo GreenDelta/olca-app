@@ -192,7 +192,7 @@ public abstract class UnitMappingPage extends WizardPage {
 			try {
 				flowProperties = new FlowPropertyDao(database).getAll();
 				// flow properties are sorted for the combo cell editor
-				flowProperties.sort((o1, o2) -> Strings.compare(o1.name, o2.name));
+				flowProperties.sort((o1, o2) -> Strings.compareIgnoreCase(o1.name, o2.name));
 				update();
 				checkCompletion();
 			} catch (Exception e) {

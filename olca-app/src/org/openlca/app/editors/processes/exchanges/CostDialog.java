@@ -95,7 +95,7 @@ class CostDialog extends FormDialog {
 		combo.setContentProvider(ArrayContentProvider.getInstance());
 		CurrencyDao dao = new CurrencyDao(Database.get());
 		List<Currency> all = dao.getAll();
-		all.sort((c1, c2) -> Strings.compare(c1.name, c2.name));
+		all.sort((c1, c2) -> Strings.compareIgnoreCase(c1.name, c2.name));
 		combo.setInput(all);
 		currency = exchange.currency;
 		if (currency == null)
@@ -116,7 +116,7 @@ class CostDialog extends FormDialog {
 		priceText.addModifyListener(e -> {
 			try {
 				String s = priceText.getText();
-				if (Strings.nullOrEmpty(s))
+				if (Strings.isBlank(s))
 					exchange.costs = null;
 				else
 					exchange.costs = Double.parseDouble(s);

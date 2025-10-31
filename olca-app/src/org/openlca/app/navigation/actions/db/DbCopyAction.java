@@ -87,7 +87,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 
 			var newConf = new DerbyConfig();
 			newConf.name(newName);
-			if (Strings.notEmpty(config.category())) {
+			if (Strings.isNotBlank(config.category())) {
 				newConf.setCategory(config.category());
 			}
 			Database.register(newConf);

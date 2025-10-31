@@ -43,7 +43,7 @@ public class DbCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (Strings.notEmpty(folder)) {
+		if (Strings.isNotBlank(folder)) {
 			DatabaseWizard.open(folder);
 		} else {
 			DatabaseWizard.open();

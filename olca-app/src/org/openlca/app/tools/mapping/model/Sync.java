@@ -1,6 +1,7 @@
 package org.openlca.app.tools.mapping.model;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,9 +63,9 @@ final class Sync {
 
 				Descriptor packProp = packRef.property;
 				Descriptor mapProp = mapRef.property;
-				if (Strings.nullOrEqual(packProp.refId, mapProp.refId)
+				if (Objects.equals(packProp.refId, mapProp.refId)
 						&& packProp.name != null && mapProp.name != null
-						&& !Strings.nullOrEqual(packProp.name, mapProp.name)) {
+						&& !Objects.equals(packProp.name, mapProp.name)) {
 					mapRef.status = MappingStatus.error(
 							M.FlowPropertyInDataPackageHasDifferentName + " "
 							+ packProp.name + " != " + mapProp.name);
@@ -88,9 +89,9 @@ final class Sync {
 
 				Descriptor packUnit = packRef.unit;
 				Descriptor mapUnit = mapRef.unit;
-				if (Strings.nullOrEqual(packUnit.refId, mapUnit.refId)
+				if (Objects.equals(packUnit.refId, mapUnit.refId)
 						&& packUnit.name != null && mapUnit.name != null
-						&& !Strings.nullOrEqual(packUnit.name, mapUnit.name)) {
+						&& !Objects.equals(packUnit.name, mapUnit.name)) {
 					mapRef.status = MappingStatus.error(
 							M.FlowUnitInDataPackageHasDifferentName + " "
 							+ packUnit.name + " != " + mapUnit.name);
@@ -123,9 +124,9 @@ final class Sync {
 	static void checkFlowName(FlowRef ref, String name) {
 		if (ref == null || ref.flow == null)
 			return;
-		if (Strings.nullOrEmpty(ref.flow.name)) {
+		if (Strings.isBlank(ref.flow.name)) {
 			ref.flow.name = name;
-		} else if (!Strings.nullOrEqual(ref.flow.name, name)) {
+		} else if (!Objects.equals(ref.flow.name, name)) {
 			addWarning(ref, M.FlowInMappingDifferentName);
 		}
 	}
@@ -133,11 +134,11 @@ final class Sync {
 	static void checkFlowCategory(FlowRef ref, String path) {
 		if (ref == null)
 			return;
-		if (Strings.nullOrEmpty(ref.flowCategory)) {
+		if (Strings.isBlank(ref.flowCategory)) {
 			ref.flowCategory = path;
 			return;
 		}
-		if (Strings.nullOrEmpty(path)) {
+		if (Strings.isBlank(path)) {
 			addWarning(ref, M.FlowInMappingDifferentPath);
 			return;
 		}
@@ -167,9 +168,9 @@ final class Sync {
 	static void checkFlowLocation(FlowRef ref, String code) {
 		if (ref == null)
 			return;
-		if (Strings.nullOrEmpty(ref.flowLocation)) {
+		if (Strings.isBlank(ref.flowLocation)) {
 			ref.flowLocation = code;
-		} else if (!Strings.nullOrEqual(code, ref.flowLocation)) {
+		} else if (!Objects.equals(code, ref.flowLocation)) {
 			addWarning(ref, M.FlowInMappingDifferentLocation);
 		}
 	}
@@ -177,9 +178,9 @@ final class Sync {
 	static void checkProviderLocation(FlowRef ref, String code) {
 		if (ref == null)
 			return;
-		if (Strings.nullOrEmpty(ref.providerLocation)) {
+		if (Strings.isBlank(ref.providerLocation)) {
 			ref.providerLocation = code;
-		} else if (!Strings.nullOrEqual(code, ref.providerLocation)) {
+		} else if (!Objects.equals(code, ref.providerLocation)) {
 			addWarning(ref, M.ProviderInMappingDifferentLocation);
 		}
 	}

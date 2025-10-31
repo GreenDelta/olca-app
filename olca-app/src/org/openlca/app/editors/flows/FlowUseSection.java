@@ -87,7 +87,8 @@ class FlowUseSection {
 				break;
 		}
 		var list = dao.getDescriptors(firstIds);
-		list.sort((d1, d2) -> Strings.compare(Labels.name(d1), Labels.name(d2)));
+		list.sort(
+			(di, dj) -> Strings.compareIgnoreCase(Labels.name(di), Labels.name(dj)));
 		return list;
 	}
 

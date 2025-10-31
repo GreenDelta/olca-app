@@ -93,7 +93,7 @@ class ReportFiller {
       report.addedValues.add(ReportCostResult.of(v, currency, addedValue));
     }
     Comparator<ReportCostResult> c =
-      (r1, r2) -> Strings.compare(r1.variant, r2.variant);
+      (r1, r2) -> Strings.compareIgnoreCase(r1.variant, r2.variant);
     report.netCosts.sort(c);
     report.addedValues.sort(c);
   }

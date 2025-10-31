@@ -106,7 +106,7 @@ class CalculationDialog extends FormDialog {
 				var t2 = Objects.equals(p2.flowPropertyType, prefType);
 				return t1 != t2
 					? t1 ? -1 : 1
-					: Strings.compare(p1.name, p2.name);
+					: Strings.compareIgnoreCase(p1.name, p2.name);
 			});
 			var initial = AllocationRef.of(method, props.get(0));
 			return new Selector(method, props, new AtomicReference<>(initial));

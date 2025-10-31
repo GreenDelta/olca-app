@@ -81,7 +81,7 @@ public record EntityCombo<T>(Combo combo, List<T> entities,
 
 	private void fillItems() {
 		this.entities.sort(
-			(e1, e2) -> Strings.compare(labelOf(e1), labelOf(e2)));
+			(e1, e2) -> Strings.compareIgnoreCase(labelOf(e1), labelOf(e2)));
 		var items = new String[this.entities.size()];
 		for (int i = 0; i < this.entities.size(); i++) {
 			items[i] = labelOf(this.entities.get(i));

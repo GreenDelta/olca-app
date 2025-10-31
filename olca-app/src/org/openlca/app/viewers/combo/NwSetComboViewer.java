@@ -26,7 +26,7 @@ public class NwSetComboViewer extends AbstractComboViewer<NwSet> {
 			var nwSets = new NwSetDao(database)
 					.allOfMethod(method.id)
 					.stream()
-					.sorted((n1, n2) -> Strings.compare(n1.name, n2.name))
+					.sorted((n1, n2) -> Strings.compareIgnoreCase(n1.name, n2.name))
 					.toArray(NwSet[]::new);
 			setInput(nwSets);
 		}

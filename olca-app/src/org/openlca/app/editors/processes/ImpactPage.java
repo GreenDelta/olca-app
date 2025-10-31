@@ -64,7 +64,7 @@ class ImpactPage extends ModelPage<Process> {
 		combo = new ImpactMethodViewer(comp);
 		var methods = new ImpactMethodDao(Database.get())
 				.getDescriptors()
-				.stream().sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
+				.stream().sorted((m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name))
 				.collect(Collectors.toList());
 		combo.setInput(methods);
 		combo.addSelectionChangedListener(this::setTreeInput);
@@ -154,7 +154,7 @@ class ImpactPage extends ModelPage<Process> {
 		var contributions = new ImpactMethodDao(Database.get())
 				.getCategoryDescriptors(method.id)
 				.stream()
-				.sorted((d1, d2) -> Strings.compare(d1.name, d2.name))
+				.sorted((d1, d2) -> Strings.compareIgnoreCase(d1.name, d2.name))
 				.map(d -> {
 					var c = Contribution.of(d, result.getTotalImpactValueOf(d));
 					c.unit = d.referenceUnit;
@@ -196,7 +196,7 @@ class ImpactPage extends ModelPage<Process> {
 				if (!(c1.item instanceof EnviFlow flow1)
 						|| !(c2.item instanceof EnviFlow flow2))
 					return cc;
-				return Strings.compare(Labels.name(flow1), Labels.name(flow2));
+				return Strings.compareIgnoreCase(Labels.name(flow1), Labels.name(flow2));
 			});
 
 			c.childs = childs;
@@ -262,7 +262,7 @@ class ImpactPage extends ModelPage<Process> {
 					double a = result.getTotalFlowValueOf(flow);
 					return Numbers.format(a) + " " + Labels.refUnit(flow);
 				case 3:
-					return Strings.nullOrEmpty(c.unit)
+					return Strings.isBlank(c.unit)
 							? Numbers.format(c.amount)
 							: Numbers.format(c.amount) + " " + c.unit;
 				default:

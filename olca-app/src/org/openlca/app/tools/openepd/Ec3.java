@@ -15,7 +15,7 @@ public final class Ec3 {
 
 	public static String baseUrl() {
 		var url = credentials().ec3Url();
-		if (Strings.nullOrEmpty(url))
+		if (Strings.isBlank(url))
 			return "https://buildingtransparency.org";
 		try {
 			var uri = new URI(url);

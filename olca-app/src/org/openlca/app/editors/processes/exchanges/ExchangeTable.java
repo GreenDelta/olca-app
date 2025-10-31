@@ -306,7 +306,7 @@ class ExchangeTable {
 					return "";
 			case 2:
 				if (label.showFormulas
-						&& Strings.notEmpty(e.formula))
+						&& Strings.isNotBlank(e.formula))
 					return e.formula;
 				else
 					return Double.toString(e.amount);
@@ -314,7 +314,7 @@ class ExchangeTable {
 				if (e.costs == null || e.currency == null)
 					return "";
 				if (label.showFormulas
-						&& Strings.notEmpty(e.costFormula))
+						&& Strings.isNotBlank(e.costFormula))
 					return e.costFormula + " " + e.currency.code;
 				else
 					return e.costs + " " + e.currency.code;

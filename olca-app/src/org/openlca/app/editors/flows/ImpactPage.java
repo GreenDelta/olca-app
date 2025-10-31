@@ -92,14 +92,15 @@ class ImpactPage extends ModelPage<Flow> {
 			});
 
 			factors.sort((f1, f2) -> {
-				int c = Strings.compare(Labels.name(f1.impact), Labels.name(f2.impact));
+				int c = Strings.compareIgnoreCase(
+					Labels.name(f1.impact), Labels.name(f2.impact));
 				if (c != 0 || Objects.equals(f1.location, f2.location))
 					return c;
 				if (f1.location == null)
 					return -1;
 				if (f2.location == null)
 					return 1;
-				return Strings.compare(f1.location.code, f2.location.code);
+				return Strings.compareIgnoreCase(f1.location.code, f2.location.code);
 			});
 
 			return factors;

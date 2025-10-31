@@ -207,7 +207,7 @@ public class ParameterRedefDialog extends FormDialog {
 	private int compareNodes(Object e1, Object e2) {
 		if (e1 instanceof ParameterNode node1) {
 			if (e2 instanceof ParameterNode node2) {
-				return Strings.compare(
+				return Strings.compareIgnoreCase(
 						node1.parameter.name,
 						node2.parameter.name);
 			}
@@ -215,7 +215,7 @@ public class ParameterRedefDialog extends FormDialog {
 		}
 		if (e1 instanceof ModelNode node1) {
 			if (e2 instanceof ModelNode node2) {
-				return Strings.compare(
+				return Strings.compareIgnoreCase(
 						node1.model.name,
 						node2.model.name);
 			}

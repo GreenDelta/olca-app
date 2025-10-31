@@ -87,7 +87,7 @@ public class CategoryDialog extends FormDialog {
 			if (!(parent instanceof Ec3Category category))
 				return null;
 			var subs = category.subCategories.toArray(new Ec3Category[0]);
-			Arrays.sort(subs, (c1, c2) -> Strings.compare(c1.name, c2.name));
+			Arrays.sort(subs, (c1, c2) -> Strings.compareIgnoreCase(c1.name, c2.name));
 			return subs;
 		}
 

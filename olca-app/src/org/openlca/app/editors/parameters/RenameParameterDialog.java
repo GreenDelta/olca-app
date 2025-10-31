@@ -125,16 +125,16 @@ public class RenameParameterDialog extends FormDialog {
 	}
 
 	private String check(String name) {
-		if (Strings.nullOrEmpty(name))
+		if (Strings.isBlank(name))
 			return M.NameCannotBeEmpty;
 		if (!Parameters.isValidName(name))
 			return M.InvalidParameterName;
 		var _name = name.trim().toLowerCase();
 		for (var other : otherParams) {
-			if (Strings.nullOrEmpty(other.name))
+			if (Strings.isBlank(other.name))
 				continue;
 			var otherName = other.name.trim().toLowerCase();
-			if (Strings.nullOrEqual(_name, otherName))
+			if (Objects.equals(_name, otherName))
 				return M.ParameterWithSameNameExists;
 		}
 		return null;
@@ -144,9 +144,8 @@ public class RenameParameterDialog extends FormDialog {
 	protected void okPressed() {
 		var name = text.getText();
 		super.okPressed();
-		if (Strings.nullOrEqual(name, param.name)) {
+		if (Strings.equalsIgnoreCase(name, param.name))
 			return;
-		}
 		App.runWithProgress(
 				M.RenameParameterDots,
 				() -> Parameters.rename(Database.get(), param, name),

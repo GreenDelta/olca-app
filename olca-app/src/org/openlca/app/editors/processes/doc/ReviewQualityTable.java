@@ -94,9 +94,9 @@ class ReviewQualityTable {
 		static List<Item> readFrom(Review review) {
 			var a = review.assessment;
 			return Arrays.stream(QualityIndicator.values())
-					.map(qi -> new Item(a, qi.value()))
-					.sorted((i1, i2) -> Strings.compare(i1.aspect, i2.aspect))
-					.toList();
+				.map(qi -> new Item(a, qi.value()))
+				.sorted((i1, i2) -> Strings.compareIgnoreCase(i1.aspect, i2.aspect))
+				.toList();
 		}
 	}
 

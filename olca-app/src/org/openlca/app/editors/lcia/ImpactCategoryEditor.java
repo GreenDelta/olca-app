@@ -163,7 +163,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 			var methods = UsageSearch.find(Database.get(), getModel())
 				.stream()
 				.filter(m -> m.type == ModelType.IMPACT_METHOD)
-				.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
+				.sorted((m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name))
 				.collect(Collectors.toList());
 			table.setInput(methods);
 		}

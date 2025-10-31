@@ -58,7 +58,7 @@ class EpdModulesSection {
 
 		// fill the table
 		var modules = modules();
-		modules.sort((m1, m2) -> Strings.compare(m1.name, m2.name));
+		modules.sort((mi, mj) -> Strings.compareIgnoreCase(mi.name, mj.name));
 		table.setInput(modules);
 	}
 

@@ -66,16 +66,14 @@ class ExchangeDialog extends FormDialog {
 			var prop2 = p2.first.flowProperty;
 
 			if (!Objects.equals(prop1, prop2)) {
-				return Strings.compare(
-						Labels.name(prop1),
-						Labels.name(prop2));
+				return Strings.compareIgnoreCase(
+					Labels.name(prop1), Labels.name(prop2));
 			}
 
 			var unit1 = p1.second;
 			var unit2 = p2.second;
-			return Strings.compare(
-					Labels.name(unit1),
-					Labels.name(unit2));
+			return Strings.compareIgnoreCase(
+				Labels.name(unit1), Labels.name(unit2));
 		});
 
 		return list;

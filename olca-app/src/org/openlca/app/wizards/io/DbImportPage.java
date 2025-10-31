@@ -94,7 +94,7 @@ class DbImportPage extends WizardPage {
 				.stream()
 				.filter(c -> c != null && !Database.isActive(c))
 				.forEach(configs::add);
-		configs.sort((c1, c2) -> Strings.compare(c1.name(), c2.name()));
+		configs.sort((c1, c2) -> Strings.compareIgnoreCase(c1.name(), c2.name()));
 		return configs;
 	}
 

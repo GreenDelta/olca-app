@@ -67,7 +67,7 @@ class JsonImportDialog extends Dialog {
 		this.provider = provider;
 		this.flowMaps = flowMaps;
 		Collections.sort(this.flowMaps,
-				(m1, m2) -> Strings.compare(m1.name, m2.name));
+				(m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name));
 	}
 
 	@Override

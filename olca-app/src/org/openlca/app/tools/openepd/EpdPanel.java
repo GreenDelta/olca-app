@@ -153,7 +153,7 @@ public class EpdPanel extends SimpleFormEditor {
 		}
 
 		private void directDownload(Ec3Client client, String url) {
-			if (Strings.nullOrEmpty(url)) {
+			if (Strings.isBlank(url)) {
 				MsgBox.error(M.NoUrlOrIdProvided);
 				return;
 			}

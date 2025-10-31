@@ -158,7 +158,7 @@ class GeoFlowSection {
 		if (dialog.open() != Window.OK)
 			return;
 		var formula = dialog.getValue();
-		if (Strings.nullOrEmpty(formula)) {
+		if (Strings.isBlank(formula)) {
 			formula = "1";
 		}
 

@@ -55,7 +55,7 @@ public class RepositoryLabel {
 		var behind = repo.localHistory.getBehindOf(Constants.REMOTE_REF);
 		var user = repo.user();
 		var text = " [";
-		if (!Strings.nullOrEmpty(user)) {
+		if (Strings.isNotBlank(user)) {
 			text += user + "@";
 		}
 		text += repo.url;

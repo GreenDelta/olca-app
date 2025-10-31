@@ -69,7 +69,7 @@ public final class Preferences extends AbstractPreferenceInitializer {
 
 	public static int getInt(String key, int defaultValue) {
 		var str = get(key);
-		if (Strings.nullOrEmpty(str))
+		if (Strings.isBlank(str))
 			return defaultValue;
 		try {
 			return Integer.parseInt(str);

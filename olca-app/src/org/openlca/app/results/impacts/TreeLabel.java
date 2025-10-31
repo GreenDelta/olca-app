@@ -88,14 +88,14 @@ class TreeLabel extends DQLabelProvider {
 			return null;
 		var flowUnit = Labels.refUnit(item.enviFlow());
 		var impactUnit = item.impact().referenceUnit;
-		var unit = Strings.notEmpty(impactUnit)
+		var unit = Strings.isNotBlank(impactUnit)
 				? impactUnit + "/" + flowUnit
 				: "1/" + flowUnit;
 		return format(item.impactFactor(), unit);
 	}
 
 	private String format(double amount, String unit) {
-		return Strings.notEmpty(unit)
+		return Strings.isNotBlank(unit)
 				? Numbers.format(amount) + " " + unit
 				: Numbers.format(amount);
 	}

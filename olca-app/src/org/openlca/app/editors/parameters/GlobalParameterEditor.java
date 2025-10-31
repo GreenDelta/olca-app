@@ -94,7 +94,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 		if (param.id == 0)
 			return Optional.empty();
 		var old = new ParameterDao(Database.get()).getForId(param.id);
-		return old == null || Strings.nullOrEmpty(old.name)
+		return old == null || Strings.isBlank(old.name)
 				? Optional.empty()
 				: Optional.of(old.name);
 	}

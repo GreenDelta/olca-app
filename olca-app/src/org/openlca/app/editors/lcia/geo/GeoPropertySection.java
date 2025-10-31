@@ -139,7 +139,7 @@ class GeoPropertySection {
 
 			@Override
 			protected void setText(GeoProperty param, String s) {
-				if (param == null || Strings.nullOrEmpty(s))
+				if (param == null || Strings.isBlank(s))
 					return;
 				try {
 					param.defaultValue = Double.parseDouble(s);

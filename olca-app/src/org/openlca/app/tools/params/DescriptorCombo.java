@@ -39,7 +39,7 @@ class DescriptorCombo {
 					return super.compare(viewer, o1, o2);
 				var n1 = Labels.name(d1);
 				var n2 = Labels.name(d2);
-				return Strings.compare(n1, n2);
+				return Strings.compareIgnoreCase(n1, n2);
 			}
 		});
 		viewer.setInput(descriptors);

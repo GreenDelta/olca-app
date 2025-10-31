@@ -2,8 +2,8 @@ package org.openlca.app;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.Objects;
 
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +67,7 @@ public enum AppArg {
 				if (line.startsWith("-")) {
 					param = line.substring(1).trim();
 				} else if (param != null) {
-					if (Strings.nullOrEqual(param, arg))
+					if (Objects.equals(param, arg))
 						return line.trim();
 					param = null;
 				}

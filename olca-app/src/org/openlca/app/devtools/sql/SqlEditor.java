@@ -154,7 +154,7 @@ public class SqlEditor extends ScriptingEditor {
 
 			private List<String> getStatements() {
 				var text = queryText.getText();
-				if (Strings.nullOrEmpty(text))
+				if (Strings.isBlank(text))
 					return Collections.emptyList();
 				var statements = new ArrayList<String>();
 				boolean inQuote = false;

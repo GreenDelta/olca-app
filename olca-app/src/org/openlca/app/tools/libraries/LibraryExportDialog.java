@@ -203,14 +203,14 @@ public class LibraryExportDialog extends FormDialog {
 			boolean hasInventory = false;
 			for (var d : db.getDescriptors(Process.class)) {
 				hasInventory = true;
-				if (Strings.notEmpty(d.library)) {
+				if (Strings.isNotBlank(d.library)) {
 					hasLibraryProcesses = true;
 					break;
 				}
 			}
 			boolean hasImpacts = false;
 			for (var d : db.getDescriptors(ImpactCategory.class)) {
-				if (Strings.nullOrEmpty(d.library)) {
+				if (Strings.isBlank(d.library)) {
 					hasImpacts = true;
 					break;
 				}

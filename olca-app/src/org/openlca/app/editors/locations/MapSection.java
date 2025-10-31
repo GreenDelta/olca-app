@@ -134,7 +134,7 @@ class MapSection {
 		protected void okPressed() {
 			var json = text.getText();
 			try {
-				if (Strings.nullOrEmpty(json)) {
+				if (Strings.isBlank(json)) {
 					if (feature == null)
 						return;
 					feature = null;

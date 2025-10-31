@@ -95,10 +95,10 @@ public class ConnectDialog extends FormDialog {
 		if (button == null)
 			return;
 		var enabled = fromServer
-				? !Strings.nullOrEmpty(repository.url())
-				: !Strings.nullOrEmpty(location.url())
-						&& !Strings.nullOrEmpty(auth.user())
-						&& !Strings.nullOrEmpty(auth.password());
+			? Strings.isNotBlank(repository.url())
+			: Strings.isNotBlank(location.url())
+				&& Strings.isNotBlank(auth.user())
+				&& Strings.isNotBlank(auth.password());
 		button.setEnabled(enabled);
 	}
 

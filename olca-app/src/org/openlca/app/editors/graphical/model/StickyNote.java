@@ -34,6 +34,7 @@ public class StickyNote extends MinMaxComponent {
 	public void addChildren() {
 	}
 
+	@Override
 	public Graph getGraph() {
 		return (Graph) getParent();
 	}
@@ -41,9 +42,10 @@ public class StickyNote extends MinMaxComponent {
 	@Override
 	public int compareTo(Component other) {
 		if (other instanceof StickyNote note) {
-			return Strings.compare(getComparisonLabel(), note.getComparisonLabel());
+			return Strings.compareIgnoreCase(
+				getComparisonLabel(), note.getComparisonLabel());
 		}
-		else return 0;
+		return 0;
 	}
 
 	@Override

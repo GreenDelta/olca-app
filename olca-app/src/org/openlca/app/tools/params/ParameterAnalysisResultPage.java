@@ -219,7 +219,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 		bars.setYSeries(data);
 		bars.setBarColor(Colors.get(178, 223, 219));
 
-		var unit = Strings.notEmpty(d.referenceUnit)
+		var unit = Strings.isNotBlank(d.referenceUnit)
 				? d.referenceUnit
 				: "-";
 		chart.getAxisSet().getYAxis(0)
@@ -255,7 +255,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 			if (!(o instanceof ImpactDescriptor i))
 				return null;
 			if (col == 0) {
-				var unit = Strings.notEmpty(i.referenceUnit)
+				var unit = Strings.isNotBlank(i.referenceUnit)
 						? " (" + i.referenceUnit + ")"
 						: "";
 				return i.name + unit;

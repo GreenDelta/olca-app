@@ -156,7 +156,7 @@ class PinBoard {
 		String f = null;
 		if (filter != null) {
 			String text = filter.getText();
-			if (!Strings.nullOrEmpty(text)) {
+			if (Strings.isNotBlank(text)) {
 				f = text.trim().toLowerCase(Locale.US);
 			}
 		}
@@ -205,7 +205,7 @@ class PinBoard {
 				return 1;
 			String s1 = Labels.name(pp1.provider());
 			String s2 = Labels.name(pp2.provider());
-			return Strings.compare(s1, s2);
+			return Strings.compareIgnoreCase(s1, s2);
 		});
 
 		return input;

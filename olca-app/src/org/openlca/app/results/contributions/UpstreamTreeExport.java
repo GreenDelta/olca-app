@@ -86,10 +86,10 @@ class UpstreamTreeExport implements Runnable {
 
 			// write the result values
 			var unit = unit();
-			var resultHeader = Strings.nullOrEmpty(unit)
+			var resultHeader = Strings.isBlank(unit)
 					? "Result"
 					: "Result [" + unit + "]";
-			var directHeader = Strings.notEmpty(unit)
+			var directHeader = Strings.isNotBlank(unit)
 					? "Direct contribution [" + unit + "]"
 					: "Direct contribution";
 			Excel.cell(sheet, 1, maxColumn + 1, resultHeader)

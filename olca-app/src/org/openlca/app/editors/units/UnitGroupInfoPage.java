@@ -47,7 +47,7 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 		UnitViewer unitViewer = new UnitViewer(client, editor);
 		CommentAction.bindTo(section, unitViewer, "units", getComments());
 		List<Unit> units = getModel().units;
-		units.sort((u1, u2) -> Strings.compare(u1.name, u2.name));
+		units.sort((u1, u2) -> Strings.compareIgnoreCase(u1.name, u2.name));
 		unitViewer.setInput(units);
 		editor.onSaved(() -> unitViewer.setInput(getModel().units));
 	}

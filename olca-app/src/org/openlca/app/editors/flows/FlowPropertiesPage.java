@@ -42,8 +42,8 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 			var prop1 = f1.flowProperty;
 			var prop2 = f2.flowProperty;
 			return prop1 != null && prop2 != null
-					? Strings.compare(prop1.name, prop2.name)
-					: 0;
+				? Strings.compareIgnoreCase(prop1.name, prop2.name)
+				: 0;
 		});
 		viewer.setInput(factors);
 	}

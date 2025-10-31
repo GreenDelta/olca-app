@@ -88,10 +88,10 @@ public class ImpactCategoryViewer extends AbstractComboViewer<ImpactDescriptor> 
 			}
 			if (!(e2 instanceof ImpactDescriptor i2))
 				return 1;
-			int c = Strings.compare(i1.name, i2.name);
+			int c = Strings.compareIgnoreCase(i1.name, i2.name);
 			if (c != 0)
 				return c;
-			return Strings.compare(i1.referenceUnit, i2.referenceUnit);
+			return Strings.compareIgnoreCase(i1.referenceUnit, i2.referenceUnit);
 		}
 
 	}

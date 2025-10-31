@@ -210,9 +210,9 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 	public void doSaveAs() {
 		var diag = new InputDialog(UI.shell(), M.SaveAsDots, M.SaveAsDots,
 				model.name + " - Copy", (name) -> {
-					if (Strings.nullOrEmpty(name))
+					if (Strings.isBlank(name))
 						return M.NameCannotBeEmpty;
-					if (Strings.nullOrEqual(name, model.name))
+					if (Objects.equals(name, model.name))
 						return M.NameShouldBeDifferent;
 					return null;
 				});

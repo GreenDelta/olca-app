@@ -103,7 +103,7 @@ class ComplianceSection {
 			var h = M.ComplianceSystem + " #" + (pos + 1);
 			if (_dec.system != null) {
 				var name = Labels.name(_dec.system);
-				if (Strings.notEmpty(name)) {
+				if (Strings.isNotBlank(name)) {
 					h += " - " + name;
 				}
 			}

@@ -44,7 +44,7 @@ class ConnectionText {
 
 	private void initConnectionText() {
 		String txt = IoPreference.getIlcdUrl();
-		if (!Strings.nullOrEmpty(IoPreference.getIlcdUser()))
+		if (Strings.isNotBlank(IoPreference.getIlcdUser()))
 			txt = IoPreference.getIlcdUser() + "@" + txt;
 		text.setText(txt);
 	}

@@ -29,8 +29,8 @@ public class AuthenticationDialog extends FormDialog {
 		var dialog = new AuthenticationDialog(library);
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
-		if (Strings.nullOrEmpty(dialog.auth.user())
-				|| Strings.nullOrEmpty(dialog.auth.password()))
+		if (Strings.isBlank(dialog.auth.user())
+				|| Strings.isBlank(dialog.auth.password()))
 			return null;
 		return new Credentials(dialog.auth.user(), dialog.auth.password().toCharArray());
 	}

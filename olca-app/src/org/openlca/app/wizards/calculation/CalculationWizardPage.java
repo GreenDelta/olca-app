@@ -98,7 +98,7 @@ class CalculationWizardPage extends WizardPage {
 				return -1;
 			if (s2.isBaseline)
 				return 1;
-			return Strings.compare(s1.name, s2.name);
+			return Strings.compareIgnoreCase(s1.name, s2.name);
 		});
 
 		UI.label(comp, M.ParameterSet);

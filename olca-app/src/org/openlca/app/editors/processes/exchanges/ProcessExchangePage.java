@@ -86,12 +86,12 @@ public class ProcessExchangePage extends ModelPage<Process> {
 			}
 
 			// name or category
-			int c = Strings.compare(e1.flow.name, e2.flow.name);
+			int c = Strings.compareIgnoreCase(e1.flow.name, e2.flow.name);
 			if (c != 0)
 				return c;
 			var c1 = CategoryPath.getShort(e1.flow.category);
 			var c2 = CategoryPath.getShort(e2.flow.category);
-			return Strings.compare(c1, c2);
+			return Strings.compareIgnoreCase(c1, c2);
 		});
 	}
 

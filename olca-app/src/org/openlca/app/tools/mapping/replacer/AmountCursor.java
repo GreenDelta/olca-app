@@ -77,7 +77,7 @@ class AmountCursor extends UpdatableCursor {
 
 			// resulting_amount_formula
 			String formula = cursor.getString(6);
-			if (Strings.nullOrEmpty(formula)) {
+			if (Strings.isBlank(formula)) {
 				update.setString(5, null);
 			} else if (factor == 1) {
 				update.setString(5, formula);

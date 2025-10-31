@@ -65,7 +65,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 				return -1;
 			if (s2.isBaseline)
 				return 1;
-			return Strings.compare(s1.name, s2.name);
+			return Strings.compareIgnoreCase(s1.name, s2.name);
 		});
 		for (int i = 0; i < sets.size(); i++) {
 			var s = sets.get(i);

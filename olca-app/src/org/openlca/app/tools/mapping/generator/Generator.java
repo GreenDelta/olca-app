@@ -83,9 +83,9 @@ public class Generator implements Runnable {
 			return true;
 		var s = source.unit;
 		var t = target.unit;
-		boolean equal = Strings.notEmpty(s.refId) && Strings.notEmpty(t.refId)
-			? Strings.nullOrEqual(s.refId, t.refId)
-			: Strings.nullOrEqual(s.name, t.name);
+		boolean equal = Strings.isNotBlank(s.refId) && Strings.isNotBlank(t.refId)
+			? Objects.equals(s.refId, t.refId)
+			: Objects.equals(s.name, t.name);
 		return !equal;
 	}
 

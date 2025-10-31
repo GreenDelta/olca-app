@@ -215,9 +215,9 @@ class TreeModel implements ITreeContentProvider {
 					? indicator.activityUnit.name
 					: null;
 			var v = indicator.activityVariable;
-			if (Strings.nullOrEmpty(u))
+			if (Strings.isBlank(u))
 				return v;
-			if (Strings.nullOrEmpty(v))
+			if (Strings.isBlank(v))
 				return u;
 			return v + " [" + u + "]";
 		}

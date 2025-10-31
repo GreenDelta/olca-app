@@ -152,7 +152,7 @@ public class UnitTable extends SimpleFormEditor {
 
 			// first by group name
 			if (!Objects.equals(this.group, other.group)) {
-				var c = Strings.compare(
+				var c = Strings.compareIgnoreCase(
 					Labels.name(this.group), Labels.name(other.group));
 				return c == 0 // compare by ID when names are the same
 					? Long.compare(this.group.id, other.group.id)
@@ -166,7 +166,7 @@ public class UnitTable extends SimpleFormEditor {
 				return 1;
 
 			// finally, by unit names
-			return Strings.compare(
+			return Strings.compareIgnoreCase(
 				Labels.name(this.unit), Labels.name(other.unit));
 		}
 	}

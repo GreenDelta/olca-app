@@ -50,7 +50,7 @@ class Contribution {
 		List<Contribution> results, int count, String query) {
 		if (results == null || results.isEmpty())
 			return Collections.emptyList();
-		return Strings.nullOrEmpty(query)
+		return Strings.isBlank(query)
 			? selectByAmount(results, count)
 			: selectByQuery(results, count, query);
 	}
@@ -79,7 +79,7 @@ class Contribution {
 		// the higher a result will be ranked. 0 means no match.
 		var terms = Arrays.stream(query.split(" "))
 			.map(s -> s.trim().toLowerCase())
-			.filter(t -> !Strings.nullOrEmpty(t))
+			.filter(Strings::isNotBlank)
 			.collect(Collectors.toSet());
 		ToDoubleFunction<String> matcher = s -> {
 			if (s == null)

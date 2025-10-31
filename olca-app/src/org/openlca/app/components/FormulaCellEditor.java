@@ -89,27 +89,18 @@ public class FormulaCellEditor extends TextCellEditor {
 	@Override
 	protected void doSetValue(Object value) {
 		selectedElement = value;
-		String formula = null;
-		if (value instanceof Parameter) {
-			formula = ((Parameter) value).formula;
-		} else if (value instanceof Exchange) {
-			Exchange e = (Exchange) value;
-			if (Strings.notEmpty(e.formula)) {
-				formula = e.formula;
-			} else {
-				formula = Double.toString(e.amount);
-			}
-		} else if (value instanceof ImpactFactor) {
-			ImpactFactor f = (ImpactFactor) value;
-			if (Strings.notEmpty(f.formula)) {
-				formula = f.formula;
-			} else {
-				formula = Double.toString(f.value);
-			}
-		}
+		var formula = switch (value) {
+			case Parameter p -> p.formula;
+			case Exchange e -> Strings.isNotBlank(e.formula)
+				? e.formula
+				: Double.toString(e.amount);
+			case ImpactFactor f -> Strings.isNotBlank(f.formula)
+				? f.formula
+				: Double.toString(f.value);
+			case null, default -> null;
+		};
 		formula = formula == null ? "" : formula;
 		super.doSetValue(formula);
 		oldValue = formula;
 	}
-
 }

@@ -43,7 +43,7 @@ class SearchFilter extends ViewerFilter {
 	}
 
 	private List<String> parseQuery(String s) {
-		if (Strings.nullOrEmpty(s) || s.isBlank())
+		if (Strings.isBlank(s) || s.isBlank())
 			return Collections.emptyList();
 		var feed = s.trim().toLowerCase();
 		var buffer = new StringBuilder();
@@ -135,7 +135,7 @@ class SearchFilter extends ViewerFilter {
 	}
 
 	private boolean matches(String term, List<String> query) {
-		if (Strings.nullOrEmpty(term))
+		if (Strings.isBlank(term))
 			return false;
 		var feed = term.toLowerCase();
 		for (var part : query) {

@@ -159,7 +159,7 @@ class InfoPage extends ModelPage<Process> {
 		UI.label(parent, tk, M.DataQualityEntry);
 		Supplier<String> dqLabel = () -> {
 			Process p = getModel();
-			return p.dqSystem == null || Strings.nullOrEmpty(p.dqEntry)
+			return p.dqSystem == null || Strings.isBlank(p.dqEntry)
 				? "(not specified)"
 				: p.dqSystem.applyScoreLabels(p.dqEntry);
 		};

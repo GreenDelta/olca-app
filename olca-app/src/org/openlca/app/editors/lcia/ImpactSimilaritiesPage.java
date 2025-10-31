@@ -156,8 +156,8 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 			items.sort((i1, i2) -> {
 				int c = -Double.compare(i1.similarity, i2.similarity);
 				return c != 0
-						? c
-						: Strings.compare(
+					? c
+					: Strings.compareIgnoreCase(
 						Labels.name(i1.impact), Labels.name(i2.impact));
 			});
 

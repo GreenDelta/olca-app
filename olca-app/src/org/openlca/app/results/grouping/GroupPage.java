@@ -297,7 +297,7 @@ public class GroupPage extends FormPage {
 		public int compare(ProcessGrouping o1, ProcessGrouping o2) {
 			if (o1 == null || o2 == null)
 				return 0;
-			return Strings.compare(o1.name, o2.name);
+			return Strings.compareIgnoreCase(o1.name, o2.name);
 		}
 	}
 

@@ -234,7 +234,7 @@ class CausalFactorTable {
 							var f = c.factorOf(exchange);
 							if (f == null)
 								yield "";
-							yield Strings.nullOrEmpty(f.formula)
+							yield Strings.isBlank(f.formula)
 								? Double.toString(f.value)
 								: f.formula + " = " + f.value;
 						}
@@ -319,7 +319,7 @@ class CausalFactorTable {
 			var factor = factorOf(exchange);
 			if (factor == null)
 				return "";
-			return Strings.nullOrEmpty(factor.formula)
+			return Strings.isBlank(factor.formula)
 				? Double.toString(factor.value)
 				: factor.formula;
 		}

@@ -137,7 +137,7 @@ public class FileImport {
 				M.SaveMappingInDatabaseInfo,
 				proposed,
 				name -> {
-					if (Strings.nullOrEmpty(name))
+					if (Strings.isBlank(name))
 						return M.NameCannotBeEmpty;
 					if (existing.contains(name.toLowerCase().trim()))
 						return M.FlowMappingWithThisNameExists;

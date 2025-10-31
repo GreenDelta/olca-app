@@ -68,7 +68,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		urlButton.setImage(Icon.MAP.get());
 		Controls.onSelect(urlButton, e -> {
 			String url = getModel().url;
-			if (Strings.nullOrEmpty(url))
+			if (Strings.isBlank(url))
 				return;
 			Desktop.browse(url);
 		});

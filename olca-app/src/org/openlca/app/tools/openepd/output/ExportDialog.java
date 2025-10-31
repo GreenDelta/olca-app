@@ -189,10 +189,10 @@ public class ExportDialog extends FormDialog {
 				var category = CategoryDialog.selectFrom(categories);
 				if (category == null)
 					return;
-				var path = Strings.notEmpty(category.openEpd)
+				var path = Strings.isNotBlank(category.openEpd)
 					? category.openEpd
 					: categories.pathOf(category);
-				if (Strings.nullOrEmpty(path))
+				if (Strings.isBlank(path))
 					return;
 				setPath(path);
 				updateLink(link, path);
@@ -228,13 +228,13 @@ public class ExportDialog extends FormDialog {
 		void setPath(String path) {
 			var classes = dialog.doc.productClasses;
 			classes.clear();
-			if (Strings.nullOrEmpty(path))
+			if (Strings.isBlank(path))
 				return;
 			classes.add(Pair.of("io.cqd.ec3", path));
 		}
 
 		void updateLink(ImageHyperlink link, String path) {
-			if (Strings.nullOrEmpty(path)) {
+			if (Strings.isBlank(path)) {
 				link.setText(M.NoneHyphen);
 			} else {
 				link.setText(path);
@@ -266,7 +266,7 @@ public class ExportDialog extends FormDialog {
 			var mass = OptionalDouble.empty();
 			try {
 				var s = text.getText();
-				if (Strings.notEmpty(s)) {
+				if (Strings.isNotBlank(s)) {
 					var d = Double.parseDouble(s);
 					mass = OptionalDouble.of(d);
 				}

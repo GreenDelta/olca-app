@@ -44,7 +44,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 		if (editor.result.hasImpacts()) {
 			selection = editor.items.impacts()
 					.stream()
-					.min((i1, i2) -> Strings.compare(i1.name, i2.name))
+					.min((i1, i2) -> Strings.compareIgnoreCase(i1.name, i2.name))
 					.orElse(null);
 		}
 
@@ -54,7 +54,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 					.min((f1, f2) -> {
 						if (f1.flow() == null || f2.flow() == null)
 							return 0;
-						return Strings.compare(f1.flow().name, f2.flow().name);
+						return Strings.compareIgnoreCase(f1.flow().name, f2.flow().name);
 					})
 					.orElse(null);
 		// TODO costs...

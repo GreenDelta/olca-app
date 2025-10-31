@@ -49,7 +49,7 @@ public class LibraryDialog extends FormDialog {
 	private void createContent(Composite parent, FormToolkit tk) {
 		urlCheck = createCheckboxSection(parent, tk, M.FromUrl, Mode.URL, (composite, check) -> {
 			var text = UI.text(composite, tk);
-			if (!Strings.nullOrEmpty(link.url())) {
+			if (Strings.isNotBlank(link.url())) {
 				location = link.url();
 				text.setText(link.url());
 			}
@@ -105,7 +105,7 @@ public class LibraryDialog extends FormDialog {
 	}
 
 	private boolean isComplete() {
-		return !Strings.nullOrEmpty(location);
+		return Strings.isNotBlank(location);
 	}
 
 	private void updateButtons() {

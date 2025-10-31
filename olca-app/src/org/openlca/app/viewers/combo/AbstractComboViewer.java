@@ -70,7 +70,7 @@ public abstract class AbstractComboViewer<T> extends
 					} else if (label instanceof ColumnLabelProvider cLabel) {
 						text = cLabel.getText(obj);
 					}
-					if (Strings.nullOrEmpty(text))
+					if (Strings.isBlank(text))
 						continue;
 
 					var first = Character.toLowerCase(text.charAt(0));

@@ -51,7 +51,7 @@ class FlowUsePopup extends FormDialog {
 		var dao = new ProcessDao(Database.get());
 		var processes = dao.getDescriptors(processIds);
 		processes.sort((p1, p2)
-				-> Strings.compare(Labels.name(p1), Labels.name(p2)));
+		-> Strings.compareIgnoreCase(Labels.name(p1), Labels.name(p2)));
 		return processes;
 	}
 
@@ -123,18 +123,18 @@ class FlowUsePopup extends FormDialog {
 			return processes;
 		var terms = q.split("\\s+");
 		return processes.stream()
-				.filter(p -> {
-					var label = Labels.name(p);
-					if (Strings.nullOrEmpty(label))
+			.filter(p -> {
+				var label = Labels.name(p);
+				if (Strings.isBlank(label))
+					return false;
+				label = label.toLowerCase();
+				for (var term : terms) {
+					if (!label.contains(term))
 						return false;
-					label = label.toLowerCase();
-					for (var term : terms) {
-						if (!label.contains(term))
-							return false;
-					}
-					return true;
-				})
-				.toList();
+				}
+				return true;
+			})
+			.toList();
 	}
 
 	private static class ProcessLabel

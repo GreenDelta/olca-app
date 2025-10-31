@@ -1,5 +1,6 @@
 package org.openlca.app.wizards;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -86,8 +87,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		// the current name can be replaced if it is empty or if it is
 		// equal to the name of the previously selected process
 		var currentName = nameText.getText();
-		boolean replaceName = Strings.nullOrEmpty(currentName)
-				|| Strings.nullOrEqual(currentName, Labels.name(refProcess));
+		boolean replaceName = Strings.isBlank(currentName)
+				|| Objects.equals(currentName, Labels.name(refProcess));
 
 		Object obj = Selections.firstOf(e);
 		if (!(obj instanceof ModelElement elem)) {
@@ -141,7 +142,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		} else {
 			// create an empty reference process
 			var processName = filterText.getText().trim();
-			if (Strings.nullOrEmpty(processName)) {
+			if (Strings.isBlank(processName)) {
 				processName = nameText.getText().trim();
 			}
 			var process = new Process();

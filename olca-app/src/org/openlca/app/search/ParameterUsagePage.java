@@ -32,7 +32,7 @@ public class ParameterUsagePage extends SimpleFormEditor {
 	}
 
 	public static void show(Parameter param, RootDescriptor owner) {
-		if (param == null || Strings.nullOrEmpty(param.name))
+		if (param == null || Strings.isBlank(param.name))
 			return;
 		var ref = new AtomicReference<>();
 		App.runWithProgress(M.SearchForUsageDots,

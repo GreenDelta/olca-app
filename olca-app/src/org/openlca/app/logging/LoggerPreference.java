@@ -28,7 +28,7 @@ public class LoggerPreference extends AbstractPreferenceInitializer {
 
 	static Level getLogLevel() {
 		var levelId = store().getString(LOG_LEVEL);
-		if (Strings.nullOrEmpty(levelId))
+		if (Strings.isBlank(levelId))
 			return Level.INFO;
 		return switch (levelId) {
 			case LEVEL_ALL -> Level.TRACE;

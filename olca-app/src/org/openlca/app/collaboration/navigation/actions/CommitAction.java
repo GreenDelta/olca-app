@@ -54,7 +54,7 @@ class CommitAction extends Action implements INavigationAction {
 					.changes(input.datasets())
 					.withMessage(input.message())
 					.as(user));
-			if (Strings.nullOrEmpty(commitId))
+			if (Strings.isBlank(commitId))
 				return;
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
 				return;

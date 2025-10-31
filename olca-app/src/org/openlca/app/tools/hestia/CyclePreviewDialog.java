@@ -120,7 +120,7 @@ class CyclePreviewDialog extends FormDialog {
 					return 0;
 				if (t1 == null || t2 == null)
 					return t1 == null ? -1 : 1;
-				return Strings.compare(t1.name(), t2.name());
+				return Strings.compareIgnoreCase(t1.name(), t2.name());
 			});
 		}
 

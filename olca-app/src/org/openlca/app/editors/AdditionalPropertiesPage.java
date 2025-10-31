@@ -106,7 +106,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 			var json = text.getText();
 			var model = getModel();
 			try {
-				var obj = Strings.notEmpty(json)
+				var obj = Strings.isNotBlank(json)
 						? new Gson().fromJson(json, JsonObject.class)
 						: new JsonObject();
 				model.writeOtherProperties(obj);

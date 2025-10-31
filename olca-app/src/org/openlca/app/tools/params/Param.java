@@ -37,7 +37,7 @@ class Param {
 	boolean hasRedef(ParameterRedef r) {
 		if (redef == null || r == null)
 			return false;
-		return Strings.nullOrEqual(redef.name, r.name)
+		return Objects.equals(redef.name, r.name)
 				&& Objects.equals(redef.contextId, r.contextId);
 	}
 

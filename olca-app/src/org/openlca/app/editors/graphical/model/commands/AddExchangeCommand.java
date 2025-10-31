@@ -144,7 +144,7 @@ public class AddExchangeCommand extends Command {
 			text = UI.text(body, SWT.NONE);
 			text.addModifyListener(e -> {
 				var name = text.getText().trim();
-				getButton(_CREATE).setEnabled(Strings.notEmpty(name));
+				getButton(_CREATE).setEnabled(Strings.isNotBlank(name));
 			});
 
 			// flow type selection
@@ -282,7 +282,7 @@ public class AddExchangeCommand extends Command {
 				return null;
 			}
 			var name = this.text.getText().trim();
-			if (Strings.nullOrEmpty(name)) {
+			if (Strings.isBlank(name)) {
 				MsgBox.error(M.ANameIsRequired);
 				return null;
 			}

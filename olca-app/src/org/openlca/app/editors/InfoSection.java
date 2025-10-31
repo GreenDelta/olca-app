@@ -400,7 +400,7 @@ public class InfoSection {
 		protected void okPressed() {
 			var tag = text.getText();
 			super.okPressed(); // will dispose the text!
-			if (Strings.nullOrEmpty(tag))
+			if (Strings.isBlank(tag))
 				return;
 			if (onOk == null)
 				return;

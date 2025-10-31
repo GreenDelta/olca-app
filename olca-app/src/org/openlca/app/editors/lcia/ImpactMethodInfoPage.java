@@ -69,7 +69,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		indicatorTable.setLabelProvider(new ImpactLabel());
 		var method = editor.getModel();
 		var impacts = method.impactCategories;
-		impacts.sort((c1, c2) -> Strings.compare(c1.name, c2.name));
+		impacts.sort((c1, c2) -> Strings.compareIgnoreCase(c1.name, c2.name));
 		indicatorTable.setInput(impacts);
 		Tables.bindColumnWidths(indicatorTable, 0.5, 0.25, 0.22);
 

@@ -180,7 +180,7 @@ public class LocationPage extends FormPage {
 				.sorted((c1, c2) -> {
 					int c = Double.compare(c2.amount, c1.amount);
 					return c == 0
-							? Strings.compare(Labels.name(c1.item), Labels.name(c2.item))
+							? Strings.compareIgnoreCase(Labels.name(c1.item), Labels.name(c2.item))
 							: c;
 				})
 				.collect(Collectors.toList());

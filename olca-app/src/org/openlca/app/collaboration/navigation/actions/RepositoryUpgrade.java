@@ -111,10 +111,10 @@ public class RepositoryUpgrade {
 				var repositoryId = Json.getString(json, "repositoryId");
 				var username = Json.getString(json, "username");
 				if (!Json.getBool(json, "active", false)
-						|| Strings.nullOrEmpty(baseUrl)
-						|| Strings.nullOrEmpty(repositoryId)
-						|| Strings.nullOrEmpty(username)
-						|| !baseUrl.endsWith("/ws"))
+					|| Strings.isBlank(baseUrl)
+					|| Strings.isBlank(repositoryId)
+					|| Strings.isBlank(username)
+					|| !baseUrl.endsWith("/ws"))
 					continue;
 				var url = baseUrl.substring(0, baseUrl.length() - 3) + "/" + repositoryId;
 				return new Config(url, username);

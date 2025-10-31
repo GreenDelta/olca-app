@@ -141,8 +141,8 @@ public class ApiKeyAuth<T> extends FormDialog {
 	public record ApiKey(String endpoint, String value) {
 
 		boolean isEmpty() {
-			return Strings.nullOrEmpty(endpoint)
-					|| Strings.nullOrEmpty(value);
+			return Strings.isBlank(endpoint)
+					|| Strings.isBlank(value);
 		}
 
 		static Optional<ApiKey> readFromWorkspace(String fileName) {

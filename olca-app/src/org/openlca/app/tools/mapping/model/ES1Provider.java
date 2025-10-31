@@ -81,14 +81,14 @@ public class ES1Provider implements FlowProvider {
 				? FlowType.ELEMENTARY_FLOW
 				: FlowType.PRODUCT_FLOW;
 		ref.flowCategory = e.getCategory();
-		if (Strings.notEmpty(e.getSubCategory())) {
+		if (Strings.isNotBlank(e.getSubCategory())) {
 			ref.flowCategory += "/" + e.getSubCategory();
 		}
 		ref.flow = flow;
 
 		ref.unit = new UnitDescriptor();
 		ref.unit.name = e.getUnit();
-		if (Strings.notEmpty(e.getLocation())) {
+		if (Strings.isNotBlank(e.getLocation())) {
 			ref.flowLocation = e.getLocation();
 		}
 		return ref;

@@ -64,7 +64,7 @@ public class ServerWizard extends Wizard {
 
 		private void updateButtons() {
 			var url = location.url();
-			if (Strings.nullOrEmpty(url)) {
+			if (Strings.isBlank(url)) {
 				setErrorMessage(null);
 				setPageComplete(false);
 				return;

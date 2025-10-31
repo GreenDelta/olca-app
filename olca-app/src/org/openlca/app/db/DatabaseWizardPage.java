@@ -42,7 +42,7 @@ class DatabaseWizardPage extends WizardPage {
 		nameText = createText(body, M.DatabaseName);
 		nameText.addModifyListener(e -> validateInput());
 		folderText = createText(body, M.Folder);
-		if (Strings.notEmpty(folder)) {
+		if (Strings.isNotBlank(folder)) {
 			folderText.setText(folder);
 		}
 		createDatabaseContent(body);
@@ -110,7 +110,7 @@ class DatabaseWizardPage extends WizardPage {
 		var config = new DerbyConfig();
 		config.name(getText(nameText));
 		var path = folderText.getText();
-		if (Strings.notEmpty(path)) {
+		if (Strings.isNotBlank(path)) {
 			// normalize the path
 			var parts = DatabaseDirElement.split(path);
 			config.setCategory(String.join("/", parts));

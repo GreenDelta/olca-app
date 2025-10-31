@@ -76,7 +76,7 @@ public class ImpactMethodViewer extends
 		try {
 			var dao = new ImpactMethodDao(db);
 			var descriptors = dao.getDescriptors();
-			descriptors.sort((m1, m2) -> Strings.compare(m1.name, m2.name));
+			descriptors.sort((m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name));
 			setInput(descriptors.toArray(new ImpactMethodDescriptor[0]));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to load impact method descriptors", e);

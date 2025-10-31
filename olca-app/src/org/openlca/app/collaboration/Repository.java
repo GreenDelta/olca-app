@@ -153,13 +153,13 @@ public class Repository extends ClientRepository {
 			var repoConfig = new FileBasedConfig(repoConfigFile, getFS());
 			if (repoConfig != null) {
 				var name = repoConfig.getString("user", null, "name");
-				if (!Strings.nullOrEmpty(name))
+				if (Strings.isNotBlank(name))
 					return name;
 			}
 		}
 		// from server config
 		var username = CredentialStore.getUsername(serverUrl);
-		if (!Strings.nullOrEmpty(username))
+		if (Strings.isNotBlank(username))
 			return username;
 		// from global config
 		return getConfig().getString("user", null, "email");

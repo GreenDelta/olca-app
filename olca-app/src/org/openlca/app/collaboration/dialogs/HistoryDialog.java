@@ -59,12 +59,12 @@ public class HistoryDialog extends FormDialog {
 			return;
 		Commit element = Selections.firstOf(event);
 		var repoUrl = repo.url;
-		if (Strings.nullOrEmpty(repoUrl))
+		if (Strings.isBlank(repoUrl))
 			return;
 		var url = repoUrl + "/" + "commit" + "/" + element.id;
 		Desktop.browse(url);
 	}
-	
+
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);

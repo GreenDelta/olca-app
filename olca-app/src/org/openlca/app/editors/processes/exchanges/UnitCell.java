@@ -99,13 +99,13 @@ class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 			FlowProperty exchFp = exchange.flowPropertyFactor.flowProperty;
 
 			if (Objects.equals(thisFp, otherFp))
-				return Strings.compare(this.toString(), other.toString());
+				return Strings.compareIgnoreCase(this.toString(), other.toString());
 			if (Objects.equals(thisFp, exchFp))
 				return -1;
 			if (Objects.equals(otherFp, exchFp))
 				return 1;
 			else
-				return Strings.compare(thisFp.name, otherFp.name);
+				return Strings.compareIgnoreCase(thisFp.name, otherFp.name);
 		}
 
 		@Override

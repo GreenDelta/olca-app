@@ -117,7 +117,7 @@ class ReviewSection {
 
 		private String header() {
 			var buff = new StringBuilder(M.Review + " #" + (pos + 1));
-			if (Strings.notEmpty(_rev.type)) {
+			if (Strings.isNotBlank(_rev.type)) {
 				buff.append(" - ").append(_rev.type);
 			}
 			if (_rev.reviewers.isEmpty())
@@ -127,7 +127,7 @@ class ReviewSection {
 				var r = _rev.reviewers.get(i);
 				buff.append(i == 0 ? ": " : "; ");
 				var name = Labels.name(r);
-				buff.append(Strings.notEmpty(name) ? name : "?");
+				buff.append(Strings.isNotBlank(name) ? name : "?");
 			}
 			return Strings.cutEnd(buff.toString(), 100);
 		}
@@ -172,7 +172,7 @@ class ReviewSection {
 					selected = i + 1;
 				}
 			}
-			if (Strings.notEmpty(_rev.type) && !items.contains(_rev.type)) {
+			if (Strings.isNotBlank(_rev.type) && !items.contains(_rev.type)) {
 				selected = items.size();
 				items.add(_rev.type);
 			}

@@ -176,7 +176,7 @@ public class ImpactTreePage extends FormPage {
 				inventoryValue = Double.toString(item.inventoryResult());
 				inventoryUnit = Labels.refUnit(item.enviFlow());
 				var impactUnit = item.impact().referenceUnit;
-				impactFactorUnit = Strings.notEmpty(impactUnit)
+				impactFactorUnit = Strings.isNotBlank(impactUnit)
 						? impactUnit + "/" + inventoryUnit
 						: "1/" + inventoryUnit;
 			} else if (item.isTechItem() && item.isLeaf()) {

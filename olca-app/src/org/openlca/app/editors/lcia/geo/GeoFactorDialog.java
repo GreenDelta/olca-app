@@ -164,7 +164,7 @@ class GeoFactorDialog extends FormDialog {
 		private String unitOf(ImpactFactor f) {
 			if (f.unit == null)
 				return null;
-			return Strings.notEmpty(impact.referenceUnit)
+			return Strings.isNotBlank(impact.referenceUnit)
 					? impact.referenceUnit + "/" + f.unit.name
 					: "1/" + f.unit.name;
 		}

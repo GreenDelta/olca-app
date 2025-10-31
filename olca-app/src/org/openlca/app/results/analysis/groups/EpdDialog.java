@@ -57,14 +57,14 @@ class EpdDialog extends FormDialog {
 		this.system = system;
 		this.results = results;
 
-		if (Strings.nullOrEmpty(system.name)) {
+		if (Strings.isBlank(system.name)) {
 			name = "New EPD";
 		} else {
 			name = system.name;
 			var p = system.referenceProcess;
 			if (p != null
 					&& p.location != null
-					&& Strings.notEmpty(p.location.code)) {
+					&& Strings.isNotBlank(p.location.code)) {
 				name += " - " + p.location.code;
 			}
 		}
@@ -140,7 +140,7 @@ class EpdDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		if (Strings.nullOrEmpty(name)) {
+		if (Strings.isBlank(name)) {
 			MsgBox.error(
 					"Name is empty",
 					"The name of the EPD cannot be empty.");
@@ -148,14 +148,14 @@ class EpdDialog extends FormDialog {
 		}
 
 		List<String> path;
-		if (Strings.nullOrEmpty(category)) {
+		if (Strings.isBlank(category)) {
 			path = List.of();
 		} else {
 			var parts = category.split("/");
 			path = new ArrayList<>(parts.length);
 			for (var p : parts) {
 				var part = p.strip();
-				if (Strings.notEmpty(part)) {
+				if (Strings.isNotBlank(part)) {
 					path.add(part);
 				}
 			}

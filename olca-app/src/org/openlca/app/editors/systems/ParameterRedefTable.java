@@ -157,7 +157,7 @@ class ParameterRedefTable {
 				new ParameterDao(db)
 						.getGlobalDescriptors()
 						.stream()
-						.filter(g -> Strings.nullOrEqual(g.name, redef.name))
+						.filter(g -> Objects.equals(g.name, redef.name))
 						.findAny()
 						.ifPresent(App::open);
 			}
@@ -202,7 +202,7 @@ class ParameterRedefTable {
 
 	private boolean contains(ParameterRedef redef, List<ParameterRedef> redefs) {
 		for (ParameterRedef contained : redefs) {
-			if (Strings.nullOrEqual(contained.name, redef.name)
+			if (Objects.equals(contained.name, redef.name)
 					&& Objects.equals(contained.contextId, redef.contextId))
 				return true;
 		}
@@ -285,7 +285,7 @@ class ParameterRedefTable {
 		}
 
 		private int byName(ParameterRedef o1, ParameterRedef o2) {
-			return Strings.compare(o1.name, o2.name);
+			return Strings.compareIgnoreCase(o1.name, o2.name);
 		}
 
 		private int compareProcesses(Long processId1, Long processId2) {
@@ -295,7 +295,7 @@ class ParameterRedefTable {
 			String name1 = Labels.name(d1);
 			var d2 = cache.get(ProcessDescriptor.class, processId2);
 			String name2 = Labels.name(d2);
-			return Strings.compare(name1, name2);
+			return Strings.compareIgnoreCase(name1, name2);
 		}
 
 	}
