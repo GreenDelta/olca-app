@@ -201,8 +201,8 @@ public class ExportDialog extends FormDialog {
 
 		String getPath() {
 			for (var c : dialog.doc.productClasses) {
-				if (Objects.equals(c.first, "io.cqd.ec3")) {
-					return c.second;
+				if (Objects.equals(c.first(), "io.cqd.ec3")) {
+					return c.second();
 				}
 			}
 			return null;

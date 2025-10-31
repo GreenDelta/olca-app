@@ -102,10 +102,10 @@ class Contribution {
 				return Pair.of(c, factor);
 			})
 			.sorted((p1, p2) -> {
-				var c = Double.compare(p1.second, p2.second);
+				var c = Double.compare(p1.second(), p2.second());
 				if (c != 0)
 					return c;
-				return Double.compare(p2.first.amount, p1.first.amount);
+				return Double.compare(p2.first().amount, p1.first().amount);
 			})
 			.collect(Collectors.toList());
 
@@ -114,10 +114,10 @@ class Contribution {
 			Math.min(sorted.size(), count + 1));
 		for (int i = 0; i < sorted.size(); i++) {
 			var next = sorted.get(i);
-			if (i >= count || next.second == 0) {
-				rest += next.first.amount;
+			if (i >= count || next.second() == 0) {
+				rest += next.first().amount;
 			} else {
-				selected.add(next.first);
+				selected.add(next.first());
 			}
 		}
 		if (rest != 0) {

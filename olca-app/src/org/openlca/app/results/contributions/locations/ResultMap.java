@@ -96,7 +96,7 @@ class ResultMap {
 			return;
 		pairs.stream().sorted((p1, p2) -> {
 			return Double.compare(bsize(p2), bsize(p1));
-		}).forEach(p -> coll.features.add(p.second));
+		}).forEach(p -> coll.features.add(p.second()));
 
 		layer = map.addLayer(coll)
 				.fillScale("result")
@@ -132,8 +132,8 @@ class ResultMap {
 	}
 
 	private double bsize(Pair<Location, Feature> pair) {
-		return bsize.computeIfAbsent(pair.first, loc -> {
-			Feature f = pair.second;
+		return bsize.computeIfAbsent(pair.first(), loc -> {
+			Feature f = pair.second();
 			Bounds bounds = Bounds.of(f);
 			return Math.abs(bounds.maxX - bounds.minX)
 					* Math.abs(bounds.maxY - bounds.minY);
