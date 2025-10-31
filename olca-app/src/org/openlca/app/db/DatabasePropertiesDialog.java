@@ -70,7 +70,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 		var folder = DatabaseDir.getRootFolder(conf.name());
 		var path = folder.toURI().toString();
 		var link = UI.hyperlink(parent, tk);
-		link.setText(Strings.cut(path, 75));
+		link.setText(Strings.cutEnd(path, 75));
 		link.setToolTipText(path);
 		Controls.onClick(link, e -> {
 			try {

@@ -52,7 +52,7 @@ public class SimulationEditor extends SimpleFormEditor {
 		setTitleImage(Icon.SIMULATE.get());
 		var input = (SimulationInput) editorInput;
 		setup = AppContext.remove(input.setupKey, CalculationSetup.class);
-		setPartName(Strings.cut(Labels.name(setup.target()), 75));
+		setPartName(Strings.cutEnd(Labels.name(setup.target()), 75));
 		simulator = AppContext.remove(input.solverKey, Simulator.class);
 	}
 

@@ -192,7 +192,7 @@ class SodaPage extends FormPage {
 				case 1 -> d.getUUID();
 				case 2 -> d.getVersion();
 				case 3 ->
-						Strings.cut(LangString.getOrDefault(d.getComment(), lang), 75);
+					Strings.cutEnd(LangString.getOrDefault(d.getComment(), lang), 75);
 				default -> null;
 			};
 		}

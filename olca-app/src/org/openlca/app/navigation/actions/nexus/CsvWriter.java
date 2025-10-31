@@ -13,8 +13,8 @@ import org.openlca.util.Strings;
 class CsvWriter {
 
 	private static final char DELIMITER = '"';
-	private static final char SEPARATOR = ';';
-	private static final char ARRAY_DELIMITER = ',';
+	private static final String SEPARATOR = ";";
+	private static final String ARRAY_DELIMITER = ",";
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final String[] HEADERS = { "type", "refId", "name", "description", "version", "validFrom",
 			"validUntil", "supportedNomenclatures", "lciaMethods", "modelingType", "multifunctionalModeling",
@@ -28,7 +28,7 @@ class CsvWriter {
 
 	static void write(File file, List<IndexEntry> entries) throws IOException {
 		try (var writer = new BufferedWriter(new FileWriter(file))) {
-			writer.write(Strings.join(HEADERS, SEPARATOR));
+			writer.write(String.join(SEPARATOR, HEADERS));
 			writer.newLine();
 			for (var entry : entries) {
 				var line = general(entry);
@@ -146,7 +146,7 @@ class CsvWriter {
 
 	private static String array(List<String> values) {
 		return values != null
-				? Strings.join(values, ARRAY_DELIMITER)
+			? String.join(ARRAY_DELIMITER, values)
 				: "";
 	}
 

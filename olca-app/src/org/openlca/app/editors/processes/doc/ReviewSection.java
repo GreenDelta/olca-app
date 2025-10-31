@@ -129,7 +129,7 @@ class ReviewSection {
 				var name = Labels.name(r);
 				buff.append(Strings.notEmpty(name) ? name : "?");
 			}
-			return Strings.cut(buff.toString(), 100);
+			return Strings.cutEnd(buff.toString(), 100);
 		}
 
 		private void renderTop(Composite root) {

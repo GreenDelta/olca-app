@@ -21,7 +21,7 @@ public class SodaClientTool extends SimpleFormEditor {
 		if (con == null || con.hasError())
 			return;
 		var id = AppContext.put(con);
-		var input = new SimpleEditorInput(id, Strings.cut(con.toString(), 25));
+		var input = new SimpleEditorInput(id, Strings.cutEnd(con.toString(), 25));
 		Editors.open(input, "SodaClientTool");
 	}
 

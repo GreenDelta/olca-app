@@ -145,7 +145,7 @@ public class ModelLink<T extends RootEntity> {
 		var text = model == null
 			? M.NoneHyphen
 			: Labels.name(model);
-		link.setText(Strings.cut(text, 120));
+		link.setText(Strings.cutEnd(text, 120));
 		link.setToolTipText(text);
 		link.getParent().pack();
 	}

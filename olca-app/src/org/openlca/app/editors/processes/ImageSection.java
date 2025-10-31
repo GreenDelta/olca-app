@@ -79,7 +79,7 @@ class ImageSection {
 	}
 
 	private void createControls(File f) {
-		Label header = tk.createLabel(comp, Strings.cut(f.getName(), 40));
+		Label header = tk.createLabel(comp, Strings.cutEnd(f.getName(), 40));
 		header.setToolTipText(f.getName());
 		UI.gridData(header, false, false).verticalAlignment = SWT.BEGINNING;
 		controls.add(header);

@@ -56,7 +56,7 @@ public final class ModelEditorInput implements IEditorInput {
 	public String getName() {
 		if (descriptor == null)
 			return "no content";
-		return Strings.cut(Labels.name(descriptor), 75);
+		return Strings.cutEnd(Labels.name(descriptor), 75);
 	}
 
 	@Override

@@ -25,7 +25,6 @@ import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Categories;
-import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -96,7 +95,7 @@ public class CommentsPage extends FormPage {
 		var categories = Categories.path(category);
 		if (categories == null || categories.size() == 0)
 			return descriptor.name;
-		return Strings.join(categories, '/') + "/" + descriptor.name;
+		return String.join("/", categories) + "/" + descriptor.name;
 	}
 
 	private RootDescriptor getDescriptor(String type, String refId) {

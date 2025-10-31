@@ -18,7 +18,6 @@ import org.openlca.collaboration.model.LibraryInfo;
 import org.openlca.collaboration.model.WebRequestException;
 import org.openlca.core.library.LibraryPackage;
 import org.openlca.jsonld.LibraryLink;
-import org.openlca.util.Strings;
 
 class Libraries {
 
@@ -41,7 +40,7 @@ class Libraries {
 		var libraryDir = Workspace.getLibraryDir();
 		if (toUpload.isEmpty())
 			return;
-		if (!Question.ask(M.UploadLibrariesTitle, M.UploadLibrariesMessage + "\n\n" + Strings.join(toUpload, '\n')))
+		if (!Question.ask(M.UploadLibrariesTitle, M.UploadLibrariesMessage + "\n\n" + String.join("\n", toUpload)))
 			return;
 		App.runWithProgress(M.UploadingLibraries, () -> {
 			toUpload.forEach(id -> {

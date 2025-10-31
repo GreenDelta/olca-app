@@ -17,7 +17,6 @@ import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.git.RepositoryInfo;
 import org.openlca.util.Categories;
-import org.openlca.util.Strings;
 
 public class PathFilters {
 
@@ -48,7 +47,7 @@ public class PathFilters {
 		if (element instanceof ModelTypeElement e)
 			return e.getContent().name();
 		if (element instanceof CategoryElement e) {
-			var path = e.getContent().modelType.name() + "/" + Strings.join(Categories.path(e.getContent()), '/');
+			var path = e.getContent().modelType.name() + "/" + String.join("/", Categories.path(e.getContent()));
 			return path;
 		}
 		if (element instanceof ModelElement e)

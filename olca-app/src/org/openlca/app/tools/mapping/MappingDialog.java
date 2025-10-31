@@ -275,7 +275,7 @@ class MappingDialog extends FormDialog {
 				if (Strings.notEmpty(ref.flowLocation)) {
 					t += " - " + ref.flowLocation;
 				}
-				flowLink.setText(Strings.cut(t, maxLen));
+				flowLink.setText(Strings.cutEnd(t, maxLen));
 				flowLink.setToolTipText(t);
 			}
 
@@ -284,7 +284,7 @@ class MappingDialog extends FormDialog {
 				categoryLabel.setText("");
 			} else {
 				categoryLabel.setText(
-					Strings.cutLeft(ref.flowCategory, maxLen));
+					Strings.cutStart(ref.flowCategory, maxLen));
 				categoryLabel.setToolTipText(ref.flowCategory);
 			}
 

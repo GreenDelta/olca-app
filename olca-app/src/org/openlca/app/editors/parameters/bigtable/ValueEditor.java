@@ -233,7 +233,8 @@ class ValueEditor {
 						formula = textVal;
 						onError.accept(null);
 					} catch (Exception e) {
-						onError.accept(M.FormulaError + " - " + Strings.cut(e.getMessage(), 80));
+						onError.accept(
+							M.FormulaError + " - " + Strings.cutEnd(e.getMessage(), 80));
 					}
 				}
 			});

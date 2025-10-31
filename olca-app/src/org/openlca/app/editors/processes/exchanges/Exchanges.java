@@ -152,8 +152,8 @@ public class Exchanges {
 				continue;
 
 			MsgBox.error(M.FlowUsedAsDefaultProvider, M.FlowUsedAsDefaultProviderErr
-					+ "\r\n " + Strings.cut(Labels.name(provider.flow), 75)
-					+ "\r\n " + Strings.cut(Labels.name(ref.get()), 75));
+				+ "\r\n " + Strings.cutEnd(Labels.name(provider.flow), 75)
+				+ "\r\n " + Strings.cutEnd(Labels.name(ref.get()), 75));
 			return false;
 		}
 		return true;

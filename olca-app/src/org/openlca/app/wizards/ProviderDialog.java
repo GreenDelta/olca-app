@@ -72,13 +72,13 @@ class ProviderDialog extends Dialog {
 		UI.label(c, M.Process);
 		String processLabel = getLabel(
 				ProcessDescriptor.class, exchange.processId());
-		UI.label(c, Strings.cut(processLabel, 120))
+		UI.label(c, Strings.cutEnd(processLabel, 120))
 				.setToolTipText(processLabel);
 
 		UI.label(c, M.Flow);
 		String flowLabel = getLabel(
 				FlowDescriptor.class, exchange.flowId());
-		UI.label(c, Strings.cut(flowLabel, 120))
+		UI.label(c, Strings.cutEnd(flowLabel, 120))
 				.setToolTipText(flowLabel);
 
 		Combo combo = UI.labeledCombo(c, M.Provider);
