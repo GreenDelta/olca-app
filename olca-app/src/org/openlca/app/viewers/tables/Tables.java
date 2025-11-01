@@ -96,7 +96,7 @@ public class Tables {
 			var label = labels[i];
 			labelProvider = labelProviders != null ? labelProviders.apply(i) : null;
 			var c = new TableViewerColumn(viewer, SWT.NULL);
-			c.getColumn().setText(Strings.orEmpty(label));
+			c.getColumn().setText(Strings.notNull(label));
 			if (labelProvider instanceof CellLabelProvider) {
 				c.setLabelProvider((CellLabelProvider) labelProvider);
 			}

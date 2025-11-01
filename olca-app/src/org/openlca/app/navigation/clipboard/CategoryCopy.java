@@ -90,7 +90,7 @@ class CategoryCopy {
 		// the name of the new root in the copy target
 		// should be unique; we append a `copy` prefix
 		// if this is not the case
-		var base = Strings.orEmpty(source.getContent().name).strip();
+		var base = Strings.notNull(source.getContent().name).strip();
 		var name = base;
 		int count = 0;
 		while (existingChilds.contains(name.toLowerCase(Locale.US))) {

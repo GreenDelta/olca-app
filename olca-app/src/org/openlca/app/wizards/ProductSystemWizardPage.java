@@ -62,7 +62,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		createProcessTree(comp);
 		createOptions(comp);
 		if (refProcess != null) {
-			nameText.setText(Strings.orEmpty(Labels.name(refProcess)));
+			nameText.setText(Strings.notNull(Labels.name(refProcess)));
 			var d = Descriptor.of(refProcess);
 			var elem = Navigator.find(processTree, d);
 			if (elem != null) {
@@ -104,7 +104,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 			var dao = new ProcessDao(Database.get());
 			refProcess = dao.getForId(elem.getContent().id);
 			if (replaceName) {
-				nameText.setText(Strings.orEmpty(Labels.name(refProcess)));
+				nameText.setText(Strings.notNull(Labels.name(refProcess)));
 			}
 			checkInput();
 		} catch (Exception ex) {

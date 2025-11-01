@@ -30,6 +30,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Names;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
@@ -179,7 +180,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private ProjectVariant createVariant(ProductSystem system) {
 		var v = new ProjectVariant();
 		v.productSystem = system;
-		v.name = Strings.uniqueNameOf(
+		v.name = Names.uniqueOf(
 				system.name, project.variants, vi -> vi.name);
 		v.allocationMethod = AllocationMethod.USE_DEFAULT;
 		v.amount = system.targetAmount;

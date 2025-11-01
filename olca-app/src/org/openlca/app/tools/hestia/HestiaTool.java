@@ -151,7 +151,7 @@ public class HestiaTool extends SimpleFormEditor {
 		}
 
 		private void runSearch() {
-			var query = Strings.nullIfEmpty(searchText.getText());
+			var query = Strings.nullIfBlank(searchText.getText());
 			if (query == null) {
 				table.setInput(new ArrayList<>());
 				return;

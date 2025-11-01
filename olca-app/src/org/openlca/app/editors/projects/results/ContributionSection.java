@@ -100,7 +100,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		var widths = new double[variants.length];
 		var n = variants.length == 0 ? 1 : variants.length;
 		for (int i = 0; i < variants.length; i++) {
-			headers[i] = Strings.orEmpty(variants[i].name);
+			headers[i] = Strings.notNull(variants[i].name);
 			widths[i] = 0.98 / n;
 		}
 		table = Tables.createViewer(comp, headers);

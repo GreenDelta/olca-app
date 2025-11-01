@@ -117,7 +117,7 @@ class UnitCombo {
 	record Item(Unit unit, FlowPropertyFactor factor, boolean isRef) {
 
 		String shortLabel() {
-			return Strings.orEmpty(unit.name);
+			return Strings.notNull(unit.name);
 		}
 
 		String fullLabel() {

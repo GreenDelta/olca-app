@@ -25,7 +25,7 @@ public abstract class NavigationElement<T> implements INavigationElement<T> {
 		if (content instanceof Library lib) {
 			library = lib.name();
 		} else if (content instanceof RootDescriptor d) {
-			library = Strings.nullIfEmpty(d.library);
+			library = Strings.nullIfBlank(d.library);
 		} else {
 			library = parent.getLibrary().orElse(null);
 		}

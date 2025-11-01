@@ -198,12 +198,12 @@ public class SimaProCsvProvider implements FlowProvider {
 		}
 
 		FlowInfo name(String name) {
-			this.name = Strings.orEmpty(name).trim();
+			this.name = Strings.notNull(name).trim();
 			return this;
 		}
 
 		FlowInfo unit(String unit) {
-			this.unit = Strings.orEmpty(unit).trim();
+			this.unit = Strings.notNull(unit).trim();
 			return this;
 		}
 

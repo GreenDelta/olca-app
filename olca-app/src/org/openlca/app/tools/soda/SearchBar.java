@@ -73,7 +73,7 @@ class SearchBar {
 		var clazz = Util.classOf(type);
 		if (clazz == null)
 			return;
-		var name = Strings.nullIfEmpty(searchText.getText());
+		var name = Strings.nullIfBlank(searchText.getText());
 		var page = pageSpin.getSelection() - 1;
 		var size = sizeSpin.getSelection();
 		var q = new SodaQuery()
