@@ -15,11 +15,11 @@ import org.openlca.app.db.DbTemplate;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Input;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.upgrades.Upgrades;
 import org.openlca.git.actions.GitInit;
 import org.openlca.util.Dirs;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

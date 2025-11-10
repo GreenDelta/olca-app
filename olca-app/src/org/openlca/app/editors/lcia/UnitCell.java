@@ -7,13 +7,13 @@ import java.util.Objects;
 
 import org.openlca.app.editors.lcia.UnitCell.UnitItem;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.util.Strings;
 
 /**
  * A cell editor for setting units and flow properties of an LCIA factor.

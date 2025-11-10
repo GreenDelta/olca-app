@@ -6,8 +6,8 @@ import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.ui.actions.ActionFactory;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.components.graphics.actions.ActionIds;
+import org.openlca.app.rcp.images.Icon;
 
 public class BasicContextMenuProvider extends ContextMenuProvider {
 

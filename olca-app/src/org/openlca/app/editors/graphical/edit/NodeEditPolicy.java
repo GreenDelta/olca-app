@@ -1,6 +1,9 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_COLLAPSE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EXPAND;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EXPAND_OR_COLLAPSE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_SET_PROCESS_GROUP;
 
 import java.util.Arrays;
 import java.util.Objects;

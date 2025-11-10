@@ -10,7 +10,7 @@ import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class ServerWizard extends Wizard {
 

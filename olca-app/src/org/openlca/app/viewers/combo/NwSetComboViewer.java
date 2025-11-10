@@ -1,11 +1,11 @@
 package org.openlca.app.viewers.combo;
 
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NwSetDao;
 import org.openlca.core.model.NwSet;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.util.Strings;
 
 public class NwSetComboViewer extends AbstractComboViewer<NwSet> {
 

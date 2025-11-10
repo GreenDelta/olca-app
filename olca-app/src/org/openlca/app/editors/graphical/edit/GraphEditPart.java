@@ -1,10 +1,10 @@
 package org.openlca.app.editors.graphical.edit;
 
 import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
-import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
-import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
 import static org.openlca.app.components.graphics.figures.Connection.ROUTER_MANHATTAN;
 import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
+import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;

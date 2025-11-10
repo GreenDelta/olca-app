@@ -1,13 +1,13 @@
 package org.openlca.app.editors.graphical.requests;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.openlca.core.model.descriptors.RootDescriptor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GraphRequest extends Request implements DropRequest {
 

@@ -9,13 +9,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 

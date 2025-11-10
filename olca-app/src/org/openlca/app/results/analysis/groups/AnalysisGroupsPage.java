@@ -11,10 +11,10 @@ import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.agroups.AnalysisGroupResult;
-import org.openlca.util.Strings;
 
 public class AnalysisGroupsPage extends FormPage {
 

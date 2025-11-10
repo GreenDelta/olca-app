@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.util.Strings;
 
 public class ImpactCategoryViewer extends AbstractComboViewer<ImpactDescriptor> {
 

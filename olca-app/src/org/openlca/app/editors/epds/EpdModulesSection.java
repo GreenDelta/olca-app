@@ -19,10 +19,10 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 class EpdModulesSection {
 

@@ -17,9 +17,9 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.io.openepd.Ec3Client;
 import org.openlca.io.openepd.Ec3Credentials;
-import org.openlca.util.Strings;
 
 public class LoginPanel {
 

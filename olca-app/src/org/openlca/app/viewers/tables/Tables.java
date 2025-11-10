@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Comparator;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 /**
  * A helper class for creating tables, table viewers and related resources.

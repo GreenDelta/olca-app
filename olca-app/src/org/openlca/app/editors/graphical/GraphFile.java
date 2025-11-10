@@ -1,12 +1,13 @@
 package org.openlca.app.editors.graphical;
 
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
+
 import java.io.File;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.editors.graphical.layouts.NodeLayoutInfo;
 import org.openlca.app.editors.graphical.layouts.StickyNoteLayoutInfo;
@@ -14,13 +15,13 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.StickyNote;
-import org.openlca.app.components.graphics.model.Side;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 
 /**

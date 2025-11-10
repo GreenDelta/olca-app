@@ -9,7 +9,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 
 public class SodaClientTool extends SimpleFormEditor {

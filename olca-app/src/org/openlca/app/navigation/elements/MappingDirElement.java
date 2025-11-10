@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 /**
  * A navigation element that bundles a set of mapping files of a database.

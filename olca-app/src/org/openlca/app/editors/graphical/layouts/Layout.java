@@ -3,13 +3,13 @@ package org.openlca.app.editors.graphical.layouts;
 import java.util.Objects;
 
 import org.eclipse.gef.GraphicalViewer;
-import org.openlca.app.editors.graphical.edit.NodeEditPart;
-import org.openlca.app.editors.graphical.figures.NodeFigure;
-import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.components.graphics.BasicGraphicalEditor;
 import org.openlca.app.components.graphics.figures.ComponentFigure;
 import org.openlca.app.components.graphics.layouts.GraphLayout;
 import org.openlca.app.components.graphics.model.Component;
+import org.openlca.app.editors.graphical.edit.NodeEditPart;
+import org.openlca.app.editors.graphical.figures.NodeFigure;
+import org.openlca.app.editors.graphical.model.Graph;
 
 
 public class Layout extends GraphLayout {

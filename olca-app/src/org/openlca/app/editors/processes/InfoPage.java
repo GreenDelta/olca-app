@@ -25,10 +25,10 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.util.Strings;
 
 class InfoPage extends ModelPage<Process> {
 

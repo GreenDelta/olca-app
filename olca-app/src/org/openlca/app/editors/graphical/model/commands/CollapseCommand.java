@@ -1,16 +1,16 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import org.eclipse.gef.commands.Command;
-import org.openlca.app.M;
-import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.GraphLink;
-import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.components.graphics.model.Link;
-import org.openlca.app.components.graphics.model.Side;
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 
 import java.util.Objects;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import org.eclipse.gef.commands.Command;
+import org.openlca.app.M;
+import org.openlca.app.components.graphics.model.Link;
+import org.openlca.app.components.graphics.model.Side;
+import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.GraphLink;
+import org.openlca.app.editors.graphical.model.Node;
 
 public class CollapseCommand extends Command {
 

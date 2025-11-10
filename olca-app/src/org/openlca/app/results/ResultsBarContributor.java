@@ -2,10 +2,10 @@ package org.openlca.app.results;
 
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.IEditorPart;
-import org.openlca.app.results.analysis.sankey.SankeyEditor;
-import org.openlca.app.results.analysis.sankey.actions.SankeyBarContributor;
 import org.openlca.app.components.graphics.EditorActionBarContributor;
 import org.openlca.app.components.graphics.MultiPageSubActionBars;
+import org.openlca.app.results.analysis.sankey.SankeyEditor;
+import org.openlca.app.results.analysis.sankey.actions.SankeyBarContributor;
 
 /**
  * A special implementation of a

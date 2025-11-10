@@ -28,7 +28,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class SqlEditor extends ScriptingEditor {
 

@@ -18,9 +18,9 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.commons.Strings;
 import org.openlca.io.openepd.Ec3Category;
 import org.openlca.io.openepd.Ec3CategoryTree;
-import org.openlca.util.Strings;
 
 public class CategoryDialog extends FormDialog {
 

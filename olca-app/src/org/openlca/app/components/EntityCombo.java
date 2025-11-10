@@ -10,10 +10,10 @@ import java.util.function.Function;
 import org.eclipse.swt.widgets.Combo;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.RefEntity;
-import org.openlca.util.Strings;
 
 /**
  * A simple wrapper for a plain combo box that maps a list of

@@ -16,11 +16,11 @@ import org.openlca.app.M;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Unit;
 import org.openlca.util.Pair;
-import org.openlca.util.Strings;
 
 class ExchangeDialog extends FormDialog {
 

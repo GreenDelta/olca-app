@@ -1,5 +1,16 @@
 package org.openlca.app.components.graphics.layouts;
 
+import static org.eclipse.draw2d.PositionConstants.EAST;
+import static org.eclipse.draw2d.PositionConstants.SOUTH;
+import static org.eclipse.draw2d.PositionConstants.WEST;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.IFigure;
@@ -10,10 +21,6 @@ import org.eclipse.swt.SWT;
 import org.openlca.app.components.graphics.BasicGraphicalEditor;
 import org.openlca.app.components.graphics.figures.ComponentFigure;
 import org.openlca.app.components.graphics.model.Component;
-
-import java.util.*;
-
-import static org.eclipse.draw2d.PositionConstants.*;
 
 public abstract class GraphLayout extends FreeformLayout implements
 		LayoutInterface {

@@ -16,8 +16,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 class DescriptorCombo {
 

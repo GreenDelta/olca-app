@@ -6,11 +6,11 @@ import java.util.function.Consumer;
 
 import org.eclipse.swt.widgets.Combo;
 import org.openlca.app.util.Controls;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Unit;
-import org.openlca.util.Strings;
 
 class UnitCombo {
 

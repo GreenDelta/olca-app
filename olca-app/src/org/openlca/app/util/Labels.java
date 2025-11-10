@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.NAHandling;
@@ -38,7 +39,6 @@ import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

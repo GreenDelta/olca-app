@@ -18,12 +18,12 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.MsgBox;
 import org.openlca.collaboration.client.CSClient;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
 import org.openlca.jsonld.LibraryLink;
 import org.openlca.util.Dirs;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

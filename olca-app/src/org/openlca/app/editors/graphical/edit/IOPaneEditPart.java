@@ -1,5 +1,11 @@
 package org.openlca.app.editors.graphical.edit;
 
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
+import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
+
 import java.beans.PropertyChangeEvent;
 
 import org.eclipse.draw2d.IFigure;
@@ -8,16 +14,10 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.openlca.app.components.graphics.figures.GridPos;
+import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.editors.graphical.figures.IOPaneFigure;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
-import org.openlca.app.components.graphics.model.Component;
-
-import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
-import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
 
 public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 

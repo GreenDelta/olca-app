@@ -18,10 +18,10 @@ import org.openlca.app.results.ResultEditor;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Epd;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.util.Strings;
 
 class EpdDialog extends FormDialog {
 

@@ -6,10 +6,10 @@ import java.util.Map;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.FlowProperty;
-import org.openlca.util.Strings;
 
 public class FlowPropertyCombo extends AbstractComboViewer<FlowProperty> {
 

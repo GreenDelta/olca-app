@@ -1,6 +1,17 @@
 package org.openlca.app.editors.graphical.actions;
 
-import org.eclipse.jface.action.*;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.openlca.app.components.graphics.BasicActionBarContributor;
+import org.openlca.app.components.graphics.actions.ActionIds;
+import org.openlca.app.components.graphics.actions.retarget.EditConfigRetargetAction;
+import org.openlca.app.components.graphics.actions.retarget.OpenEditorRetargetAction;
+import org.openlca.app.components.graphics.frame.GraphicalEditorWithFrame;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.actions.retarget.AddExchangeRetargetAction;
@@ -8,21 +19,11 @@ import org.openlca.app.editors.graphical.actions.retarget.AddProcessRetargetActi
 import org.openlca.app.editors.graphical.actions.retarget.AddStickyNoteRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.EditExchangeRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.EditModeRetargetAction;
-import org.openlca.app.editors.graphical.actions.retarget.ShowElementaryFlowsRetargetAction;
-import org.openlca.app.components.graphics.actions.retarget.EditConfigRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.EditStickyNoteRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.MassExpansionRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.MinMaxAllRetargetAction;
-import org.openlca.app.components.graphics.actions.retarget.OpenEditorRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.SetReferenceRetargetAction;
-import org.openlca.app.components.graphics.BasicActionBarContributor;
-import org.openlca.app.components.graphics.actions.ActionIds;
-import org.openlca.app.components.graphics.frame.GraphicalEditorWithFrame;
-
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+import org.openlca.app.editors.graphical.actions.retarget.ShowElementaryFlowsRetargetAction;
 
 public class GraphBarContributor extends BasicActionBarContributor {
 

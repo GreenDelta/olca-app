@@ -13,10 +13,10 @@ import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 public class ProcessExchangePage extends ModelPage<Process> {
 

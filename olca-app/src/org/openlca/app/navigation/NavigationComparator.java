@@ -16,7 +16,7 @@ import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.ScriptElement;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class NavigationComparator extends ViewerComparator {
 

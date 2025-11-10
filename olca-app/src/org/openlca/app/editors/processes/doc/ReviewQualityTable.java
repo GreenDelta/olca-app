@@ -17,11 +17,11 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.doc.AspectMap;
 import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.commons.Quality;
 import org.openlca.ilcd.commons.QualityIndicator;
-import org.openlca.util.Strings;
 
 class ReviewQualityTable {
 

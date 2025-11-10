@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.LocationDao;
@@ -22,7 +23,6 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Processes;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

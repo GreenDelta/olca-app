@@ -8,8 +8,8 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.components.AuthenticationGroup;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.license.access.Credentials;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

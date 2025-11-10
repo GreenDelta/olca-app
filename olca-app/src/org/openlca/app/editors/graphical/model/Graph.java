@@ -1,22 +1,22 @@
 package org.openlca.app.editors.graphical.model;
 
+import static org.eclipse.draw2d.PositionConstants.EAST;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openlca.app.components.graphics.model.BaseComponent;
+import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.search.LinkSearchMap;
-import org.openlca.app.components.graphics.model.BaseComponent;
-import org.openlca.app.components.graphics.model.Component;
 import org.openlca.core.matrix.cache.FlowTable;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
-
-import static org.eclipse.draw2d.PositionConstants.EAST;
 
 
 /**

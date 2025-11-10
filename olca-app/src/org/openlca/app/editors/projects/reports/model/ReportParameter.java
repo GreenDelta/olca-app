@@ -1,11 +1,13 @@
 package org.openlca.app.editors.projects.reports.model;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
@@ -14,8 +16,11 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.jsonld.Json;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 class ReportParameter {
 

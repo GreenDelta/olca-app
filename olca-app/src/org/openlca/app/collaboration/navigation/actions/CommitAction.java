@@ -14,8 +14,8 @@ import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.commons.Strings;
 import org.openlca.git.actions.GitCommit;
-import org.openlca.util.Strings;
 
 class CommitAction extends Action implements INavigationAction {
 

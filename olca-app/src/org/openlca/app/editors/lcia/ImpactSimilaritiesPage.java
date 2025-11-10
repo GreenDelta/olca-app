@@ -22,12 +22,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.matrix.cache.ConversionTable;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.util.Strings;
 
 class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 

@@ -17,11 +17,11 @@ import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.matrix.solvers.mkl.MKL;
 import org.openlca.nativelib.Module;
 import org.openlca.nativelib.NativeLib;
 import org.openlca.util.OS;
-import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 

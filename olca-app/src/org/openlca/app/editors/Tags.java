@@ -3,10 +3,10 @@ package org.openlca.app.editors;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.RootEntity;
-import org.openlca.util.Strings;
 
 import jakarta.persistence.Table;
 

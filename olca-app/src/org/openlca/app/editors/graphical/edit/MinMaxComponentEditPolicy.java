@@ -1,22 +1,22 @@
 package org.openlca.app.editors.graphical.edit;
 
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MAX;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MIN;
+
+import java.util.Arrays;
+
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.openlca.app.M;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.CollapseCommand;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.editors.graphical.model.commands.MinMaxCommand;
-import org.openlca.app.components.graphics.model.Side;
-
-import java.util.Arrays;
-
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MAX;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MIN;
 
 public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
 

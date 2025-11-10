@@ -1,12 +1,15 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
+import static org.eclipse.draw2d.PositionConstants.EAST;
+import static org.eclipse.draw2d.PositionConstants.NORTH;
+import static org.eclipse.draw2d.PositionConstants.SOUTH;
+import static org.eclipse.draw2d.PositionConstants.WEST;
+
 import org.eclipse.draw2d.AbstractConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.results.analysis.sankey.figures.SankeyNodeFigure;
-
-import static org.eclipse.draw2d.PositionConstants.*;
 
 public class LinkAnchor extends AbstractConnectionAnchor {
 

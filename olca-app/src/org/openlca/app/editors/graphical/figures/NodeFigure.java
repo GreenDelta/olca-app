@@ -17,8 +17,8 @@ import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
-import org.openlca.util.Strings;
 
 
 public class NodeFigure extends ComponentFigure {

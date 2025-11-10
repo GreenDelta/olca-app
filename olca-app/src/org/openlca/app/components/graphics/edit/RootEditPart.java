@@ -1,6 +1,14 @@
 package org.openlca.app.components.graphics.edit;
 
-import org.eclipse.draw2d.*;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.FreeformLayer;
+import org.eclipse.draw2d.FreeformLayeredPane;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.LayeredPane;
+import org.eclipse.draw2d.MarginBorder;
+import org.eclipse.draw2d.ScalableFigure;
+import org.eclipse.draw2d.ScalableFreeformLayeredPane;
+import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.gef.AutoexposeHelper;
 import org.eclipse.gef.EditPartViewer;

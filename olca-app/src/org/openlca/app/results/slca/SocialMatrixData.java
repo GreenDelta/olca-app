@@ -1,14 +1,14 @@
 package org.openlca.app.results.slca;
 
+import java.util.Optional;
+
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.matrix.format.Matrix;
 import org.openlca.core.matrix.format.MatrixBuilder;
 import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.model.RiskLevel;
-import org.openlca.util.Strings;
-
-import java.util.Optional;
 
 record SocialMatrixData(
 		TechIndex techIndex,

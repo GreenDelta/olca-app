@@ -23,13 +23,13 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.commons.ReviewType;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 class ReviewSection {

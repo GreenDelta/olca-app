@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.search;
 
-import static org.openlca.app.editors.graphical.search.ConnectionDialog.LABELS.*;
+import static org.openlca.app.editors.graphical.search.ConnectionDialog.LABELS.CONNECT;
+import static org.openlca.app.editors.graphical.search.ConnectionDialog.LABELS.CREATE;
 
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.swt.widgets.TableItem;

@@ -16,9 +16,9 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Res;
+import org.openlca.commons.Strings;
 import org.openlca.jsonld.Json;
-import org.openlca.util.Res;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
@@ -55,7 +55,7 @@ public class ApiKeyAuth<T> extends FormDialog {
 			var client = App.exec(
 					"Connecting to API with cached API key...",
 					() -> login.apply(key));
-			if (!client.hasError())
+			if (!client.isError())
 				return Optional.of(client.value());
 			LoggerFactory.getLogger(ApiKeyAuth.class)
 					.info("invalid API key in file {}: {}", fileName, client.error());
@@ -128,7 +128,7 @@ public class ApiKeyAuth<T> extends FormDialog {
 				apiKeyText.getText().strip());
 
 		var res = App.exec("Connecting to API ...", () -> login.apply(key));
-		if (res.hasError()) {
+		if (res.isError()) {
 			MsgBox.error("Connection to API failed", res.error());
 			return;
 		}

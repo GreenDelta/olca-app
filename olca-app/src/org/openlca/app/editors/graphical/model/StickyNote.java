@@ -3,7 +3,7 @@ package org.openlca.app.editors.graphical.model;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.components.graphics.model.Component;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class StickyNote extends MinMaxComponent {
 

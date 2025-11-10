@@ -18,8 +18,8 @@ import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
+import org.openlca.commons.Strings;
 import org.openlca.git.model.Commit;
-import org.openlca.util.Strings;
 
 public class HistoryDialog extends FormDialog {
 

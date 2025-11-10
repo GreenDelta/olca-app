@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

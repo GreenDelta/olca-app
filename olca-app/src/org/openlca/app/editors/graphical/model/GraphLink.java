@@ -1,11 +1,11 @@
 package org.openlca.app.editors.graphical.model;
 
+import static org.openlca.app.components.graphics.model.Side.INPUT;
+import static org.openlca.app.components.graphics.model.Side.OUTPUT;
+
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.components.graphics.model.Link;
 import org.openlca.core.model.ProcessLink;
-
-import static org.openlca.app.components.graphics.model.Side.INPUT;
-import static org.openlca.app.components.graphics.model.Side.OUTPUT;
 
 /**
  * A model of the connection between two Node objects. The output and the input

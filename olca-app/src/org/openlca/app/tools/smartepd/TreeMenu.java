@@ -60,7 +60,7 @@ class TreeMenu {
 		if (node == null)
 			return null;
 		var res = App.exec("Get EPD...", () -> client.getEpd(node.id()));
-		if (res.hasError()) {
+		if (res.isError()) {
 			MsgBox.error("Failed to get EPD from server", res.error());
 			return null;
 		}
@@ -113,7 +113,7 @@ class TreeMenu {
 			}
 
 			var res = client.postEpd(smartEpd);
-			if (res.hasError()) {
+			if (res.isError()) {
 				MsgBox.error("Failed to upload EPD", res.error());
 				return;
 			}
@@ -157,7 +157,7 @@ class TreeMenu {
 			}
 
 			var res = client.putEpd(smartEpd);
-			if (res.hasError()) {
+			if (res.isError()) {
 				MsgBox.error("Failed to update EPD", res.error());
 			} else {
 				Popup.info("EPD updated", "The EPD was successfully updated.");
@@ -184,7 +184,7 @@ class TreeMenu {
 			log.info("deleting EPD: name='{}' id='{}'",
 					node.name(), node.id());
 			var res = client.deleteEpd(node.id());
-			if (res.hasError()) {
+			if (res.isError()) {
 				MsgBox.error("Failed to delete EPD", res.error());
 				return;
 			}

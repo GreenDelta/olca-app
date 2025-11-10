@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.openlca.app.M;
+import org.openlca.commons.Strings;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.io.maps.MappingStatus;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 final class Sync {
 

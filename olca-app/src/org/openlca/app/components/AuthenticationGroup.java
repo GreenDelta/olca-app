@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class AuthenticationGroup extends Composite {
 

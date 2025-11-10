@@ -10,10 +10,10 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.window.Window;
 import org.openlca.app.M;
+import org.openlca.app.components.graphics.actions.ActionIds;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
-import org.openlca.app.components.graphics.actions.ActionIds;
 import org.openlca.app.util.Popup;
 
 public class EditSankeyConfigAction extends WorkbenchPartAction {

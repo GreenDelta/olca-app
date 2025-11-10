@@ -23,6 +23,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.linking.LinkingConfig;
 import org.openlca.core.model.FlowType;
@@ -30,7 +31,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {

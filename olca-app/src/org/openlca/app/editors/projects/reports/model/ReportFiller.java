@@ -5,13 +5,13 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import org.openlca.app.editors.projects.ProjectResultData;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.core.results.ResultItemOrder;
-import org.openlca.util.Strings;
 
 class ReportFiller {
 

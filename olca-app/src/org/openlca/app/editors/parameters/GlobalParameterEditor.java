@@ -10,11 +10,11 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.database.usage.ParameterUsageTree;
 import org.openlca.core.model.Parameter;
 import org.openlca.util.Parameters;
-import org.openlca.util.Strings;
 
 public class GlobalParameterEditor extends ModelEditor<Parameter> {
 

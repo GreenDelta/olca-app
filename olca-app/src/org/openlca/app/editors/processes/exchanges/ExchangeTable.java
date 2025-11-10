@@ -31,6 +31,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
@@ -39,7 +40,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProviderType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 /**
  * The table for the display and editing of inputs or outputs of process

@@ -19,9 +19,9 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.geo.lcia.GeoFactorSetup;
-import org.openlca.util.Strings;
 
 public class GeoPage extends ModelPage<ImpactCategory> {
 

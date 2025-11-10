@@ -20,11 +20,11 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.TreeClipboard.Provider;
 import org.openlca.app.viewers.trees.Trees;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
-import org.openlca.util.Strings;
 
 public class ImpactTreePage extends FormPage {
 

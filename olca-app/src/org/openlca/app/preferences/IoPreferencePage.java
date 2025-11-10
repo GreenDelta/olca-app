@@ -23,11 +23,11 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.ilcd.descriptors.DataStock;
 import org.openlca.ilcd.io.AuthInfo;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.ilcd.io.SodaConnection;
-import org.openlca.util.Strings;
 
 public class IoPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {

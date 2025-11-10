@@ -20,7 +20,7 @@ import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class PythonEditor extends ScriptingEditor {
 

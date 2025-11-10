@@ -10,7 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 class LocationGroup extends Composite {
 

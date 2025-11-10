@@ -9,9 +9,9 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.io.ImportLog;
 import org.openlca.io.Import;
-import org.openlca.util.Strings;
 
 public class ImportLogDialog extends FormDialog {
 

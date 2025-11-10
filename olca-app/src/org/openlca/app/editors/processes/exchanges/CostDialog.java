@@ -24,11 +24,11 @@ import org.openlca.app.editors.parameters.Formulas;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
-import org.openlca.util.Strings;
 
 class CostDialog extends FormDialog {
 

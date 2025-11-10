@@ -12,7 +12,7 @@ import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfi
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.util.UI;
 import org.openlca.collaboration.model.Repository;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class RepositorySelect extends Composite {
 

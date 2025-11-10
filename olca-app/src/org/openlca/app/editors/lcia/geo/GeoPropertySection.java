@@ -22,6 +22,7 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.geo.calc.IntersectionCalculator;
@@ -30,7 +31,6 @@ import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.geo.lcia.GeoAggregation;
 import org.openlca.geo.lcia.GeoProperty;
-import org.openlca.util.Strings;
 
 class GeoPropertySection {
 

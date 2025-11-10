@@ -1,10 +1,10 @@
 package org.openlca.app.viewers.combo;
 
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.UnitGroupDao;
 import org.openlca.core.model.descriptors.UnitGroupDescriptor;
-import org.openlca.util.Strings;
 
 public class UnitGroupViewer extends AbstractComboViewer<UnitGroupDescriptor> {
 

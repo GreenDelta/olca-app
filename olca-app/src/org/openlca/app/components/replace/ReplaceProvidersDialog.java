@@ -16,10 +16,10 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ProcessCombo;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.ProviderReplacer;
-import org.openlca.util.Strings;
 
 public class ReplaceProvidersDialog extends FormDialog {
 

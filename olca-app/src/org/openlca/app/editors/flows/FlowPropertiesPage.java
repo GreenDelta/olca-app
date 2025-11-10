@@ -6,8 +6,8 @@ import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Flow;
-import org.openlca.util.Strings;
 
 class FlowPropertiesPage extends ModelPage<Flow> {
 

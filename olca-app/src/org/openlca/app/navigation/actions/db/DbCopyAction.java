@@ -21,8 +21,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DerbyConfig;
-import org.openlca.util.Strings;
 
 public class DbCopyAction extends Action implements INavigationAction {
 

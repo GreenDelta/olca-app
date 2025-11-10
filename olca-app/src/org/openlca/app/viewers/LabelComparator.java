@@ -1,7 +1,7 @@
 package org.openlca.app.viewers;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 class LabelComparator<T> extends Comparator<T> {
 

@@ -1,5 +1,8 @@
 package org.openlca.app.editors.graphical.edit;
 
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_SET_REFERENCE;
+
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.ComponentEditPolicy;
@@ -15,8 +18,6 @@ import org.openlca.app.editors.graphical.model.commands.DeleteStickyNoteCommand;
 import org.openlca.app.editors.graphical.model.commands.EditExchangeCommand;
 import org.openlca.app.editors.graphical.model.commands.EditStickyNoteCommand;
 import org.openlca.app.editors.graphical.model.commands.SetReferenceCommand;
-
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 public class GraphComponentEditPolicy extends ComponentEditPolicy {
 

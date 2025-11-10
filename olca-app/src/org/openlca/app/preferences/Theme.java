@@ -1,8 +1,8 @@
 package org.openlca.app.preferences;
 
-import org.eclipse.swt.widgets.Display;
-
 import java.util.Objects;
+
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Enumeration of supported themes.

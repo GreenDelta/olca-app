@@ -32,10 +32,10 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.util.Strings;
 
 public class SetProcessGroupCommand extends Command {
 

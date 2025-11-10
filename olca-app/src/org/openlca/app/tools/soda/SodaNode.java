@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.commons.Strings;
 import org.openlca.jsonld.Json;
-import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

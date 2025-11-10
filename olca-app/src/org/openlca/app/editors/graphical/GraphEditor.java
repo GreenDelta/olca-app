@@ -1,10 +1,14 @@
 package org.openlca.app.editors.graphical;
 
 import static org.openlca.app.components.graphics.themes.Themes.CONTEXT_MODEL;
-import static org.openlca.app.editors.graphical.GraphFile.*;
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.*;
-import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.*;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.*;
+import static org.openlca.app.editors.graphical.GraphFile.KEY_NODES;
+import static org.openlca.app.editors.graphical.GraphFile.KEY_STICKY_NOTES;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
+import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.PROVIDER;
+import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.RECIPIENTS;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
 
 import java.util.Calendar;
 import java.util.HashMap;

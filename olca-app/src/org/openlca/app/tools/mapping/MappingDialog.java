@@ -25,6 +25,7 @@ import org.openlca.app.util.Fn;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
@@ -37,7 +38,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Categories;
-import org.openlca.util.Strings;
 
 class MappingDialog extends FormDialog {
 

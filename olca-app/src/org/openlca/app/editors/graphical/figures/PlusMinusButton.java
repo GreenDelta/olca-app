@@ -8,8 +8,8 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.components.graphics.model.Side;
+import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Colors;
 
 public class PlusMinusButton extends Clickable {

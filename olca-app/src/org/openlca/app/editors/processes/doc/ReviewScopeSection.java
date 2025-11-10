@@ -24,10 +24,10 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.processes.ReviewMethod;
 import org.openlca.ilcd.processes.ReviewScope;
-import org.openlca.util.Strings;
 
 class ReviewScopeSection {
 

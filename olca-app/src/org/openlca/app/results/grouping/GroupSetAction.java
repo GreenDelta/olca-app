@@ -19,9 +19,9 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ProcessGroupSetDao;
 import org.openlca.core.model.ProcessGroupSet;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

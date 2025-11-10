@@ -18,10 +18,10 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.usage.ParameterUsageTree;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 
 public class ParameterUsagePage extends SimpleFormEditor {
 

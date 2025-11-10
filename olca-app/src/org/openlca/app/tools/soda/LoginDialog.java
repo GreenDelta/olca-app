@@ -17,8 +17,8 @@ import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.ilcd.io.SodaClient;
-import org.openlca.util.Strings;
 
 class LoginDialog extends FormDialog {
 

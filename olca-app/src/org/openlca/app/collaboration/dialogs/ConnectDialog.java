@@ -15,7 +15,7 @@ import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.components.AuthenticationGroup;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class ConnectDialog extends FormDialog {
 

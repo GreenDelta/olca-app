@@ -1,6 +1,6 @@
 package org.openlca.app.results;
 
-import static org.openlca.app.components.graphics.EditorActionBarContributor.*;
+import static org.openlca.app.components.graphics.EditorActionBarContributor.refreshActionBar;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,12 +30,12 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MemoryError;
 import org.openlca.app.util.Numbers;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
-import org.openlca.util.Strings;
 
 /**
  * View for the analysis results of a product system.

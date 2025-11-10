@@ -34,10 +34,10 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
 import org.openlca.util.Categories;
-import org.openlca.util.Strings;
 
 /**
  * This is the general info section that each editor has: name, description,

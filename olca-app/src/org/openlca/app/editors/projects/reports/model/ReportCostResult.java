@@ -3,11 +3,12 @@ package org.openlca.app.editors.projects.reports.model;
 import java.util.Arrays;
 import java.util.Objects;
 
-import com.google.gson.JsonObject;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.jsonld.Json;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 
 class ReportCostResult {

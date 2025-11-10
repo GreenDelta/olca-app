@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ImpactCategory;
@@ -12,7 +13,6 @@ import org.openlca.core.model.ParameterizedEntity;
 import org.openlca.core.model.Process;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.Scope;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

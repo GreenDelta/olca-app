@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
-import static org.openlca.app.components.graphics.layouts.GraphLayout.*;
+import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

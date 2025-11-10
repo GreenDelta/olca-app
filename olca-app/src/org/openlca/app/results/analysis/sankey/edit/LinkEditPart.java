@@ -12,8 +12,8 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
-import org.openlca.app.results.analysis.sankey.model.SankeyLink;
 import org.openlca.app.components.graphics.figures.Connection;
+import org.openlca.app.results.analysis.sankey.model.SankeyLink;
 
 public class LinkEditPart extends AbstractConnectionEditPart
 		implements PropertyChangeListener {

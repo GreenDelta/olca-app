@@ -30,9 +30,9 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.util.Strings;
 
 /**
  * A section for selecting processes or sub-systems (in general "providers") of

@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
@@ -17,7 +18,6 @@ import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 class FactorClipboard {
 

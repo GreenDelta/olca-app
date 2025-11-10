@@ -3,7 +3,6 @@ package org.openlca.app.navigation.elements;
 import java.util.Objects;
 
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 public class Group {
 

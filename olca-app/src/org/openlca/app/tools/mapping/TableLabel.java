@@ -12,6 +12,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.commons.Strings;
 import org.openlca.core.io.maps.FlowMapEntry;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.io.maps.MappingStatus;
@@ -19,7 +20,6 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 class TableLabel extends LabelProvider
 	implements ITableLabelProvider {

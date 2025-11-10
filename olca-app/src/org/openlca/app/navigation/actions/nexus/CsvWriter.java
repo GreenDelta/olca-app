@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 class CsvWriter {
 

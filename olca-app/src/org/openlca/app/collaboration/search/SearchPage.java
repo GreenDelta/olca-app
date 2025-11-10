@@ -20,8 +20,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.collaboration.model.Dataset;
 import org.openlca.collaboration.model.SearchResult;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 class SearchPage extends FormPage {
 

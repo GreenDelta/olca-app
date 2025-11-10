@@ -1,12 +1,12 @@
 package org.openlca.app.results;
 
+import java.util.Objects;
+
 import org.openlca.app.results.slca.SocialResult;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
-
-import java.util.Objects;
 
 public class ResultBundle {
 

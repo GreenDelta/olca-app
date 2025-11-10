@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.library.Library;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 
 /**
  * Basic implementation of a navigation element which manages an internal cache

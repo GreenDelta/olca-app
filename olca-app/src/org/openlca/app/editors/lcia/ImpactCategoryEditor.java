@@ -33,6 +33,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.usage.UsageSearch;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Direction;
@@ -40,7 +41,6 @@ import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 

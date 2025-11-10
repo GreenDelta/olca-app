@@ -7,10 +7,10 @@ import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.openlca.app.editors.graphical.model.StickyNote;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.components.graphics.figures.ComponentFigure;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.graphical.model.StickyNote;
+import org.openlca.app.rcp.images.Icon;
 
 
 public class StickyNoteFigure extends ComponentFigure {

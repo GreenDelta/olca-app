@@ -6,8 +6,8 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.openlca.app.M;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.components.graphics.BasicGraphicalEditor;
+import org.openlca.app.rcp.images.Icon;
 
 public class FocusAction extends WorkbenchPartAction {
 

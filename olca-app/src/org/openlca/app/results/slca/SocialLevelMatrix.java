@@ -1,9 +1,10 @@
 package org.openlca.app.results.slca;
 
-import gnu.trove.map.hash.TLongObjectHashMap;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.RiskLevel;
 import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
+
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 class SocialLevelMatrix {
 

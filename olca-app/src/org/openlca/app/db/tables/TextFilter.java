@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 
 class TextFilter extends ViewerFilter {

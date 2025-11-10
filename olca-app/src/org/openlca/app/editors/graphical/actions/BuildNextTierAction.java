@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
+import java.util.ArrayList;
+
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.commands.MassCreationCommand;
@@ -8,8 +10,6 @@ import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.ProductSystems;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
 
 
 public class BuildNextTierAction extends BuildAction {

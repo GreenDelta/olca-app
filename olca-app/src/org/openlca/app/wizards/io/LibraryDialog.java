@@ -13,8 +13,8 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.jsonld.LibraryLink;
-import org.openlca.util.Strings;
 
 public class LibraryDialog extends FormDialog {
 

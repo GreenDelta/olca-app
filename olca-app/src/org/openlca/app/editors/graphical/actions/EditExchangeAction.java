@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT;
+
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -8,8 +10,6 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.rcp.images.Icon;
-
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT;
 
 public class EditExchangeAction extends SelectionAction {
 

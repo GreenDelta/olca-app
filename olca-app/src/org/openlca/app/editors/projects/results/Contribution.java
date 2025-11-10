@@ -9,9 +9,9 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Pair;
-import org.openlca.util.Strings;
 
 /**
  * Contains the data of a cell entry in the contribution table.

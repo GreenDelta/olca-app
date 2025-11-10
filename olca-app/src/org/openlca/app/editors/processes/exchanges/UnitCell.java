@@ -8,12 +8,12 @@ import java.util.Objects;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.editors.processes.exchanges.UnitCell.UnitItem;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Unit;
-import org.openlca.util.Strings;
 
 class UnitCell extends ComboBoxCellModifier<Exchange, UnitItem> {
 

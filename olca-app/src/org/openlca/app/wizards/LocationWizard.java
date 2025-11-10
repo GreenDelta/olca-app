@@ -6,10 +6,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.KeyGen;
-import org.openlca.util.Strings;
 
 public class LocationWizard extends AbstractWizard<Location> {
 

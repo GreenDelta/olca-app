@@ -26,6 +26,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Epd;
 import org.openlca.io.openepd.Api;
 import org.openlca.io.openepd.Ec3CategoryTree;
@@ -37,7 +38,6 @@ import org.openlca.io.openepd.io.MappingModel;
 import org.openlca.io.openepd.io.MethodMapping;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
-import org.openlca.util.Strings;
 
 public class ExportDialog extends FormDialog {
 

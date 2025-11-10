@@ -1,10 +1,10 @@
 package org.openlca.app.editors.graphical.layouts;
 
+import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
+
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.editors.graphical.model.Node;
-
-import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
 
 public class StickyNoteLayoutInfo {
 

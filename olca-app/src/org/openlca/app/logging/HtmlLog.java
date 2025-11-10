@@ -1,5 +1,7 @@
 package org.openlca.app.logging;
 
+import static ch.qos.logback.core.CoreConstants.LINE_SEPARATOR;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,8 +17,6 @@ import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
-
-import static ch.qos.logback.core.CoreConstants.LINE_SEPARATOR;
 
 class HtmlLog {
 

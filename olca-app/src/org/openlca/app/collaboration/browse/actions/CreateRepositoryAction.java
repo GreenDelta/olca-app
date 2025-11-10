@@ -18,7 +18,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 class CreateRepositoryAction extends Action implements IServerNavigationAction {
 

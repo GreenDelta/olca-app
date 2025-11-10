@@ -13,6 +13,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NativeSql;
@@ -20,7 +21,6 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 public class ImpactMethodViewer extends
 		AbstractComboViewer<ImpactMethodDescriptor> {

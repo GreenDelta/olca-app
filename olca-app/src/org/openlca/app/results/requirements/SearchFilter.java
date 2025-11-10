@@ -13,7 +13,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.util.Labels;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 class SearchFilter extends ViewerFilter {
 

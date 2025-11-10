@@ -1,8 +1,8 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_COLLAPSE;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EXPAND;
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
@@ -10,10 +10,10 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.StackAction;
 import org.openlca.app.M;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.util.Question;
 
 /**

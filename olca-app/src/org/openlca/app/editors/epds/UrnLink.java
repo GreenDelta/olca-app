@@ -10,8 +10,8 @@ import org.openlca.app.tools.openepd.Ec3;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Epd;
-import org.openlca.util.Strings;
 
 record UrnLink(EpdEditor editor) {
 

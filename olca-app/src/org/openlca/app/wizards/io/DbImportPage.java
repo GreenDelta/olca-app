@@ -19,8 +19,8 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DatabaseConfig;
-import org.openlca.util.Strings;
 
 class DbImportPage extends WizardPage {
 

@@ -13,9 +13,9 @@ import org.openlca.app.M;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
-import org.openlca.util.Strings;
 
 class DatabaseWizardPage extends WizardPage {
 

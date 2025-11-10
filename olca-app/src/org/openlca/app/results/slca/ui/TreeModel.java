@@ -14,6 +14,7 @@ import org.openlca.app.results.slca.SocialResult;
 import org.openlca.app.results.slca.SocialRiskValue;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.index.TechFlow;
@@ -21,7 +22,6 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
-import org.openlca.util.Strings;
 
 class TreeModel implements ITreeContentProvider {
 

@@ -1,5 +1,12 @@
 package org.openlca.app.components.graphics.layouts;
 
+import static org.eclipse.draw2d.PositionConstants.EAST;
+import static org.eclipse.draw2d.PositionConstants.NORTH;
+import static org.eclipse.draw2d.PositionConstants.NORTH_WEST;
+import static org.eclipse.draw2d.PositionConstants.SOUTH;
+import static org.eclipse.draw2d.PositionConstants.SOUTH_EAST;
+import static org.eclipse.draw2d.PositionConstants.WEST;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,8 +16,6 @@ import java.util.Objects;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.components.graphics.model.Component;
-
-import static org.eclipse.draw2d.PositionConstants.*;
 
 
 /**

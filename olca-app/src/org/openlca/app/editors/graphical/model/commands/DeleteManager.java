@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Objects;
 
 import org.openlca.app.M;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.components.graphics.model.Side;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.util.ProviderChainRemoval;
 

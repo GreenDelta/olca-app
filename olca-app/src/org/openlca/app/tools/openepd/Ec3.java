@@ -4,8 +4,8 @@ import java.io.File;
 import java.net.URI;
 
 import org.openlca.app.rcp.Workspace;
+import org.openlca.commons.Strings;
 import org.openlca.io.openepd.Ec3Credentials;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 public final class Ec3 {

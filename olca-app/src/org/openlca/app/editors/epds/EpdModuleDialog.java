@@ -19,11 +19,11 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Epd;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
-import org.openlca.util.Strings;
 
 /**
  * Edit an EPD module. Note that this dialog always works on a new module or

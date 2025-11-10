@@ -1,5 +1,9 @@
 package org.openlca.app.editors.graphical.edit;
 
+import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
+
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.PrecisionRectangle;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -15,6 +19,8 @@ import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.swt.SWT;
+import org.openlca.app.components.graphics.model.Component;
+import org.openlca.app.components.graphics.model.commands.ComponentSetConstraintCommand;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.commands.CreateNodeCommand;
@@ -22,13 +28,7 @@ import org.openlca.app.editors.graphical.model.commands.CreateStickyNoteCommand;
 import org.openlca.app.editors.graphical.model.commands.EditConfigCommand;
 import org.openlca.app.editors.graphical.model.commands.GraphLayoutCommand;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
-import org.openlca.app.components.graphics.model.Component;
-import org.openlca.app.components.graphics.model.commands.ComponentSetConstraintCommand;
 import org.openlca.core.model.descriptors.RootDescriptor;
-
-import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
 
 public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
 

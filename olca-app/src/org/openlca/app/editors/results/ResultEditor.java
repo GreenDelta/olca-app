@@ -13,9 +13,9 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.Result;
-import org.openlca.util.Strings;
 
 public class ResultEditor extends ModelEditor<Result> {
 

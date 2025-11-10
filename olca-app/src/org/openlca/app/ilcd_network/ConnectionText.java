@@ -10,7 +10,7 @@ import org.openlca.app.preferences.IoPreference;
 import org.openlca.app.preferences.IoPreferencePage;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 /**
  * A text with label and change button which shows the ILCD connection

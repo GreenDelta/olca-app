@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.openlca.app.db.Database;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.AnalysisGroup;
@@ -18,7 +19,6 @@ import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Result;
-import org.openlca.util.Strings;
 
 class EpdBuilder {
 

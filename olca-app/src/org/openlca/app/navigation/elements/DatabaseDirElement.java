@@ -1,11 +1,11 @@
 package org.openlca.app.navigation.elements;
 
-import org.openlca.app.db.Database;
-import org.openlca.util.Strings;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.openlca.app.db.Database;
+import org.openlca.commons.Strings;
 
 public class DatabaseDirElement extends NavigationElement<String> {
 

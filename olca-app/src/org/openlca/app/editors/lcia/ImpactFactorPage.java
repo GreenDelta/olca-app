@@ -33,6 +33,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
@@ -43,7 +44,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 class ImpactFactorPage extends ModelPage<ImpactCategory> {
 

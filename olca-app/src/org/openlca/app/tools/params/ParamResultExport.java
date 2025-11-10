@@ -8,9 +8,9 @@ import java.util.HashMap;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.io.xls.Excel;
-import org.openlca.util.Strings;
 
 class ParamResultExport implements Runnable {
 

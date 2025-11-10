@@ -45,9 +45,9 @@ import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.util.Strings;
 
 public class ParameterAnalysisResultPage extends SimpleFormEditor {
 

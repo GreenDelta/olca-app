@@ -10,18 +10,16 @@
  *******************************************************************************/
 package org.openlca.app.components.graphics.tools;
 
+import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Handle;
+import org.eclipse.gef.SharedCursors;
 import org.eclipse.gef.tools.SelectionTool;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Cursor;
-
-import org.eclipse.draw2d.FigureCanvas;
-import org.eclipse.draw2d.geometry.Point;
-
-import org.eclipse.gef.SharedCursors;
 import org.openlca.app.components.graphics.edit.RootEditPart;
 
 

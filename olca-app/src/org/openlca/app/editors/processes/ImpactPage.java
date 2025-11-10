@@ -30,6 +30,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.FlowType;
@@ -38,7 +39,6 @@ import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.LcaResult;
-import org.openlca.util.Strings;
 
 class ImpactPage extends ModelPage<Process> {
 
@@ -63,9 +63,9 @@ class ImpactPage extends ModelPage<Process> {
 		UI.label(comp, tk, M.ImpactAssessmentMethod);
 		combo = new ImpactMethodViewer(comp);
 		var methods = new ImpactMethodDao(Database.get())
-				.getDescriptors()
-				.stream().sorted((m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name))
-				.collect(Collectors.toList());
+			.getDescriptors()
+			.stream().sorted((m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name))
+			.collect(Collectors.toList());
 		combo.setInput(methods);
 		combo.addSelectionChangedListener(this::setTreeInput);
 		UI.label(comp, tk, "|");
@@ -91,12 +91,12 @@ class ImpactPage extends ModelPage<Process> {
 		});
 
 		tree = Trees.createViewer(body,
-				M.Name, M.Category, M.Amount, M.Result);
+			M.Name, M.Category, M.Amount, M.Result);
 		UI.gridData(tree.getControl(), true, true);
 		tree.setContentProvider(new Content());
 		tree.setLabelProvider(new Label());
 		Trees.bindColumnWidths(tree.getTree(),
-				0.35, 0.35, 0.15, 0.15);
+			0.35, 0.35, 0.15, 0.15);
 		tree.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		tree.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
 
@@ -133,10 +133,9 @@ class ImpactPage extends ModelPage<Process> {
 
 		if (result == null) {
 			var regionalized = regioCheck.getSelection();
-			App.runInUI(M.ComputeLciaResultsDots,
-					() -> {
+			App.runInUI(M.ComputeLciaResultsDots, () -> {
 				var res = DirectProcessResult.calculate(getModel(), regionalized);
-				if (res.hasError()) {
+				if (res.isError()) {
 					MsgBox.error("Calculation failed", res.error());
 				} else {
 					result = res.value();
@@ -152,20 +151,20 @@ class ImpactPage extends ModelPage<Process> {
 		}
 
 		var contributions = new ImpactMethodDao(Database.get())
-				.getCategoryDescriptors(method.id)
-				.stream()
-				.sorted((d1, d2) -> Strings.compareIgnoreCase(d1.name, d2.name))
-				.map(d -> {
-					var c = Contribution.of(d, result.getTotalImpactValueOf(d));
-					c.unit = d.referenceUnit;
-					return c;
-				})
-				.collect(Collectors.toList());
+			.getCategoryDescriptors(method.id)
+			.stream()
+			.sorted((d1, d2) -> Strings.compareIgnoreCase(d1.name, d2.name))
+			.map(d -> {
+				var c = Contribution.of(d, result.getTotalImpactValueOf(d));
+				c.unit = d.referenceUnit;
+				return c;
+			})
+			.collect(Collectors.toList());
 		tree.setInput(contributions);
 	}
 
 	private class Content extends ArrayContentProvider
-			implements ITreeContentProvider {
+		implements ITreeContentProvider {
 
 		@Override
 		public Object[] getChildren(Object obj) {
@@ -194,7 +193,7 @@ class ImpactPage extends ModelPage<Process> {
 				if (cc != 0)
 					return cc;
 				if (!(c1.item instanceof EnviFlow flow1)
-						|| !(c2.item instanceof EnviFlow flow2))
+					|| !(c2.item instanceof EnviFlow flow2))
 					return cc;
 				return Strings.compareIgnoreCase(Labels.name(flow1), Labels.name(flow2));
 			});
@@ -217,7 +216,7 @@ class ImpactPage extends ModelPage<Process> {
 	}
 
 	private class Label extends ColumnLabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		private final ContributionImage img = new ContributionImage();
 
@@ -233,12 +232,12 @@ class ImpactPage extends ModelPage<Process> {
 				return null;
 			if (col == 0) {
 				return c.item instanceof ImpactDescriptor d
-						? Images.get(d)
-						: Images.get(FlowType.ELEMENTARY_FLOW);
+					? Images.get(d)
+					: Images.get(FlowType.ELEMENTARY_FLOW);
 			}
 			return col == 3 && c.item instanceof EnviFlow
-					? img.get(c.share)
-					: null;
+				? img.get(c.share)
+				: null;
 		}
 
 		@Override
@@ -254,8 +253,8 @@ class ImpactPage extends ModelPage<Process> {
 					return null;
 				case 1:
 					return c.item instanceof EnviFlow flow
-							? Labels.category(flow)
-							: null;
+						? Labels.category(flow)
+						: null;
 				case 2:
 					if (!(c.item instanceof EnviFlow flow))
 						return null;
@@ -263,8 +262,8 @@ class ImpactPage extends ModelPage<Process> {
 					return Numbers.format(a) + " " + Labels.refUnit(flow);
 				case 3:
 					return Strings.isBlank(c.unit)
-							? Numbers.format(c.amount)
-							: Numbers.format(c.amount) + " " + c.unit;
+						? Numbers.format(c.amount)
+						: Numbers.format(c.amount) + " " + c.unit;
 				default:
 					return null;
 			}

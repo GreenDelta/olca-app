@@ -2,14 +2,15 @@ package org.openlca.app.logging;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.AppenderBase;
 import org.eclipse.ui.PlatformUI;
 import org.openlca.app.util.Popup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.AppenderBase;
 
 /**
  * An appender for log-messages in the user interface as pop-ups.

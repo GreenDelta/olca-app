@@ -29,6 +29,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.Demand;
 import org.openlca.core.matrix.MatrixData;
@@ -44,7 +45,6 @@ import org.openlca.core.model.Result;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.providers.ResultModelProvider;
 import org.openlca.io.xls.MatrixExcelExport;
-import org.openlca.util.Strings;
 
 public class MatrixExportDialog extends FormDialog {
 

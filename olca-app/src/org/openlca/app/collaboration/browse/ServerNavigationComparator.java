@@ -10,7 +10,7 @@ import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.browse.elements.GroupElement;
 import org.openlca.app.collaboration.browse.elements.LibrariesElement;
 import org.openlca.app.navigation.ModelTypeOrder;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class ServerNavigationComparator extends ViewerComparator {
 

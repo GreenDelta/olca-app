@@ -1,11 +1,5 @@
 package org.openlca.app.components.graphics.themes;
 
-import org.openlca.app.App;
-import org.openlca.app.rcp.Workspace;
-import org.openlca.app.util.ErrorReporter;
-import org.openlca.util.Dirs;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -14,10 +8,14 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.openlca.app.preferences.Preferences;
-
 import java.util.Set;
+
+import org.openlca.app.App;
+import org.openlca.app.preferences.Preferences;
+import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.ErrorReporter;
+import org.openlca.util.Dirs;
+import org.slf4j.LoggerFactory;
 
 public final class Themes {
 

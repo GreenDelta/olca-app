@@ -1,8 +1,8 @@
 package org.openlca.app.editors.graphical.figures;
 
 import org.eclipse.draw2d.GridLayout;
-import org.openlca.app.editors.graphical.model.StickyNote;
 import org.openlca.app.components.graphics.figures.GridPos;
+import org.openlca.app.editors.graphical.model.StickyNote;
 
 public class MinimizedStickyNoteFigure extends StickyNoteFigure {
 

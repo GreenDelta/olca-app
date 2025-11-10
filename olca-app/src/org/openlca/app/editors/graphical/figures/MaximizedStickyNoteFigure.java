@@ -10,9 +10,9 @@ import org.eclipse.draw2d.text.FlowPage;
 import org.eclipse.draw2d.text.ParagraphTextLayout;
 import org.eclipse.draw2d.text.TextFlow;
 import org.eclipse.swt.SWT;
-import org.openlca.app.editors.graphical.model.StickyNote;
 import org.openlca.app.components.graphics.figures.GridPos;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.graphical.model.StickyNote;
 
 public class MaximizedStickyNoteFigure extends StickyNoteFigure {
 

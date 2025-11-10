@@ -40,6 +40,7 @@ import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -51,7 +52,6 @@ import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 class ProjectSetupPage extends ModelPage<Project> {
 

@@ -13,10 +13,10 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 
 class InfoSection {
 

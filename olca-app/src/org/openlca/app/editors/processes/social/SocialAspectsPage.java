@@ -1,5 +1,8 @@
 package org.openlca.app.editors.processes.social;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
@@ -25,9 +28,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.SocialIndicator;
 import org.openlca.core.model.descriptors.Descriptor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SocialAspectsPage extends ModelPage<Process> {
 

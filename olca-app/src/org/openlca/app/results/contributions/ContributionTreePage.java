@@ -30,6 +30,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
+import org.openlca.commons.Strings;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
@@ -38,7 +39,6 @@ import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
-import org.openlca.util.Strings;
 
 public class ContributionTreePage extends FormPage {
 

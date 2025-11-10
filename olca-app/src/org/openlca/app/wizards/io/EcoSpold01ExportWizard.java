@@ -1,5 +1,7 @@
 package org.openlca.app.wizards.io;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -14,8 +16,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.ecospold1.output.EcoSpold1Export;
 import org.openlca.io.ecospold1.output.ExportConfig;
-
-import java.util.List;
 
 /**
  * Wizard for exporting processes and impact methods to the EcoSpold01 format

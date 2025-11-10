@@ -19,12 +19,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.FlowPropertyFactorViewer;
 import org.openlca.app.viewers.combo.UnitCombo;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.util.Strings;
 
 public class ProductSystemInfoPage extends ModelPage<ProductSystem> {
 

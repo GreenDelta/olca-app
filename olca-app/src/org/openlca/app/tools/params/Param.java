@@ -8,7 +8,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 class Param {
 

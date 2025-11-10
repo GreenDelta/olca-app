@@ -1,5 +1,8 @@
 package org.openlca.app.editors.graphical.edit;
 
+import static org.openlca.app.components.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
+import static org.openlca.app.components.graphics.model.Component.TARGET_CONNECTIONS_PROP;
+
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
@@ -10,13 +13,12 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.openlca.app.editors.graphical.model.*;
-import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.components.graphics.model.Link;
-
-import static org.openlca.app.components.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
-import static org.openlca.app.components.graphics.model.Component.TARGET_CONNECTIONS_PROP;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.editors.graphical.model.GraphLink;
+import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
 
 /**
  * This class abstract the creation of a graph component that can be linked with

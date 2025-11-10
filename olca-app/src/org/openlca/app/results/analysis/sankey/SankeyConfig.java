@@ -6,8 +6,8 @@ import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURV
 import java.util.Objects;
 
 import org.openlca.app.components.graphics.model.Element;
-import org.openlca.core.model.Copyable;
-import org.openlca.util.Strings;
+import org.openlca.commons.Copyable;
+import org.openlca.commons.Strings;
 
 public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 

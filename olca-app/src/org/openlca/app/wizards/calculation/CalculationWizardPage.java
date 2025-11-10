@@ -19,9 +19,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 /**
  * Page for setting the calculation properties of a product system. Class must

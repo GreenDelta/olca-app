@@ -7,10 +7,10 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.openlca.app.M;
+import org.openlca.app.components.graphics.actions.ActionIds;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.analysis.sankey.edit.DiagramEditPart;
-import org.openlca.app.components.graphics.actions.ActionIds;
 
 public class LayoutAction extends WorkbenchPartAction {
 

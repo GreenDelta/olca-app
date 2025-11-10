@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class CredentialStore {
 

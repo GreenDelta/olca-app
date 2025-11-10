@@ -2,13 +2,13 @@ package org.openlca.app.editors.projects;
 
 import org.openlca.app.editors.projects.reports.model.Report;
 import org.openlca.app.results.Sort;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.NwSetTable;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.core.results.ResultItemOrder;
-import org.openlca.util.Strings;
 
 public record ProjectResultData(
 		IDatabase db,

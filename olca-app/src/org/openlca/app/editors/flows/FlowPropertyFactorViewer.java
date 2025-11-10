@@ -1,5 +1,7 @@
 package org.openlca.app.editors.flows;
 
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -32,8 +34,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
-
-import java.util.Objects;
 
 class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 

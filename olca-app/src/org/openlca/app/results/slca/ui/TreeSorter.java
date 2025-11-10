@@ -6,7 +6,7 @@ import org.openlca.app.results.slca.ui.TreeModel.CategoryNode;
 import org.openlca.app.results.slca.ui.TreeModel.IndicatorNode;
 import org.openlca.app.results.slca.ui.TreeModel.Node;
 import org.openlca.app.results.slca.ui.TreeModel.TechFlowNode;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class TreeSorter extends ViewerComparator {
 

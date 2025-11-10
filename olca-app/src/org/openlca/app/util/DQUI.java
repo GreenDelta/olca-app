@@ -2,10 +2,10 @@ package org.openlca.app.util;
 
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.preferences.Theme;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQSystem;
-import org.openlca.util.Strings;
 
 public class DQUI {
 

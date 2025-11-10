@@ -29,11 +29,11 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.wizards.io.ImportLogDialog;
+import org.openlca.commons.Strings;
 import org.openlca.ilcd.commons.LangString;
 import org.openlca.ilcd.descriptors.Descriptor;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.io.ilcd.input.Import;
-import org.openlca.util.Strings;
 
 class SodaPage extends FormPage {
 

@@ -1,5 +1,8 @@
 package org.openlca.app.db.tables;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -11,9 +14,6 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 class Actions {
 

@@ -27,12 +27,12 @@ import org.openlca.app.util.Categories;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.BaseDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 public abstract class ModelEditor<T extends RootEntity> extends FormEditor {

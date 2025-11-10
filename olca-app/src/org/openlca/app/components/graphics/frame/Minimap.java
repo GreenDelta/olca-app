@@ -1,5 +1,8 @@
 package org.openlca.app.components.graphics.frame;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.Viewport;
@@ -17,9 +20,6 @@ import org.openlca.app.components.graphics.BasicGraphicalEditor;
 import org.openlca.app.components.graphics.edit.RootEditPart;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-
-import java.util.Arrays;
-import java.util.Comparator;
 
 public class Minimap extends Composite {
 

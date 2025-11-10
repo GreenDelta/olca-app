@@ -1,20 +1,20 @@
 package org.openlca.app.results.analysis.sankey.model;
 
-import static org.openlca.app.results.analysis.sankey.layouts.SankeyLayout.DEFAULT_LOCATION;
+import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
-import org.openlca.app.db.Database;
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.db.Database;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Sankey;
-import org.openlca.util.Strings;
 
 public class SankeyNode extends Component {
 

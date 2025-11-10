@@ -1,13 +1,13 @@
 package org.openlca.app.results.analysis.sankey.layouts;
 
 import org.eclipse.gef.GraphicalViewer;
-import org.openlca.app.results.analysis.sankey.edit.SankeyNodeEditPart;
-import org.openlca.app.results.analysis.sankey.figures.SankeyNodeFigure;
-import org.openlca.app.results.analysis.sankey.model.Diagram;
 import org.openlca.app.components.graphics.BasicGraphicalEditor;
 import org.openlca.app.components.graphics.figures.ComponentFigure;
 import org.openlca.app.components.graphics.layouts.GraphLayout;
 import org.openlca.app.components.graphics.model.Component;
+import org.openlca.app.results.analysis.sankey.edit.SankeyNodeEditPart;
+import org.openlca.app.results.analysis.sankey.figures.SankeyNodeFigure;
+import org.openlca.app.results.analysis.sankey.model.Diagram;
 
 /**
  * A layout for {@link org.eclipse.draw2d.FreeformFigure FreeformFigures} of

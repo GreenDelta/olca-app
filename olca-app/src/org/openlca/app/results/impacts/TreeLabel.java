@@ -6,8 +6,8 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.DQLabelProvider;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.util.Strings;
 
 class TreeLabel extends DQLabelProvider {
 

@@ -21,8 +21,8 @@ import org.openlca.collaboration.model.Dataset;
 import org.openlca.collaboration.model.Dataset.Repo;
 import org.openlca.collaboration.model.Dataset.Version;
 import org.openlca.collaboration.model.SearchResult;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 class SearchResults {
 

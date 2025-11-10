@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
+import org.openlca.commons.Res;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.matrix.Demand;
@@ -31,8 +33,6 @@ import org.openlca.core.results.providers.InversionResult;
 import org.openlca.core.results.providers.LibImpactMatrix;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.util.Exchanges;
-import org.openlca.util.Res;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 class DirectProcessResult {
@@ -96,7 +96,7 @@ class DirectProcessResult {
 			enviData.setTo(data);
 
 			var cfs = impactMatrixOf(enviData.index);
-			if (cfs.hasError())
+			if (cfs.isError())
 				return cfs.castError();
 			data.impactIndex = impactIdx;
 			data.impactMatrix = cfs.value();
@@ -186,7 +186,7 @@ class DirectProcessResult {
 			if (readers == null)
 				return Res.error("Failed to load LCIA libraries");
 			var matrix = LibImpactMatrix.of(impactIdx, enviIdx).build(db, readers);
-			return Res.of(matrix);
+			return Res.ok(matrix);
 		}
 
 		var matrix = ImpactBuilder.of(db, enviIdx)
@@ -194,7 +194,7 @@ class DirectProcessResult {
 				.withInterpreter(interpreter)
 				.build()
 				.impactMatrix;
-		return Res.of(matrix);
+		return Res.ok(matrix);
 	}
 
 	private Res<LcaResult> solve(MatrixData data) {
@@ -202,7 +202,7 @@ class DirectProcessResult {
 			var p = InversionResult.of(new JavaSolver(), data)
 					.calculate()
 					.provider();
-			return Res.of(new LcaResult(p));
+			return Res.ok(new LcaResult(p));
 		} catch (Exception e) {
 			return Res.error("Calculation failed", e);
 		}

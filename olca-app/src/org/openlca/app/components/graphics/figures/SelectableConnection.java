@@ -1,10 +1,10 @@
 package org.openlca.app.components.graphics.figures;
 
+import static org.eclipse.swt.SWT.ON;
+
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.swt.graphics.Color;
-
-import static org.eclipse.swt.SWT.ON;
 
 public class SelectableConnection extends PolylineConnection {
 

@@ -1,11 +1,12 @@
 package org.openlca.app.editors.projects.reports.model;
 
-import com.google.gson.JsonObject;
+import java.util.Arrays;
+
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.jsonld.Json;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import com.google.gson.JsonObject;
 
 /**
  * The information of a project variant for a report. The name of the report

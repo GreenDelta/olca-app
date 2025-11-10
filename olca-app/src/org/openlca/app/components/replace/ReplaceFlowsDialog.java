@@ -18,11 +18,11 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowViewer;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.util.FlowReplacer;
-import org.openlca.util.Strings;
 
 public class ReplaceFlowsDialog extends FormDialog {
 

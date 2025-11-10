@@ -1,12 +1,12 @@
 package org.openlca.app.components.graphics.frame;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Layout;
-
-import java.util.Arrays;
 
 public class MinimapLayout extends Layout {
 

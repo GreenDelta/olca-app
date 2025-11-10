@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.agroups.AnalysisGroupResult;
-import org.openlca.util.Strings;
 
 record ImpactGroupResult(
 		ImpactDescriptor impact,

@@ -1,10 +1,5 @@
 package org.openlca.app.results.slca;
 
-import org.openlca.core.matrix.index.IndexConsumer;
-import org.openlca.core.matrix.index.MatrixIndex;
-import org.openlca.core.model.RiskLevel;
-import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -14,6 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.openlca.core.matrix.index.IndexConsumer;
+import org.openlca.core.matrix.index.MatrixIndex;
+import org.openlca.core.model.RiskLevel;
+import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
 
 public class SocialRiskIndex implements MatrixIndex<SocialRiskEntry> {
 

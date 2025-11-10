@@ -35,6 +35,7 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
@@ -44,7 +45,6 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 
 class ProjectParameterTable {
 

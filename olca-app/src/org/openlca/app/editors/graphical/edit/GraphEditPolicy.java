@@ -1,17 +1,17 @@
 package org.openlca.app.editors.graphical.edit;
 
+import static org.openlca.app.editors.graphical.actions.RemoveSupplyChainAction.KEY_LINKS;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_REMOVE_CHAIN;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.commands.RemoveSupplyChainCommand;
 import org.openlca.core.model.ProcessLink;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static org.openlca.app.editors.graphical.actions.RemoveSupplyChainAction.KEY_LINKS;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_REMOVE_CHAIN;
 
 public class GraphEditPolicy extends RootComponentEditPolicy {
 

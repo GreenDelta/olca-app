@@ -18,6 +18,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Input;
 import org.openlca.app.util.Question;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
@@ -37,7 +38,6 @@ import org.openlca.git.util.Constants;
 import org.openlca.git.util.ModelRefMap;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Dirs;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

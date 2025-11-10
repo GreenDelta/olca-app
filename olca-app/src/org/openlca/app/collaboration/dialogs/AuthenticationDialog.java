@@ -13,7 +13,7 @@ import org.openlca.app.components.AuthenticationGroup;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.collaboration.model.Credentials;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class AuthenticationDialog extends FormDialog {
 

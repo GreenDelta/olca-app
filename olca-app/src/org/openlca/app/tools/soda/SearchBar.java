@@ -15,10 +15,10 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.ilcd.descriptors.Descriptor;
 import org.openlca.ilcd.io.SodaClient;
 import org.openlca.ilcd.io.SodaQuery;
-import org.openlca.util.Strings;
 
 class SearchBar {
 

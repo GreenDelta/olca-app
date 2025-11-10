@@ -8,13 +8,13 @@ import org.openlca.app.M;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.io.openepd.Ec3Client;
 import org.openlca.io.openepd.Ec3Response;
 import org.openlca.io.openepd.EpdDoc;
 import org.openlca.io.openepd.EpdImpactResult;
 import org.openlca.io.openepd.EpdIndicatorResult;
 import org.openlca.jsonld.Json;
-import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

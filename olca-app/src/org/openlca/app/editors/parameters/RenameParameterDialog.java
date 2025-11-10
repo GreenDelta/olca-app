@@ -18,11 +18,11 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.database.usage.ParameterUsageTree;
 import org.openlca.core.model.Parameter;
 import org.openlca.util.Parameters;
-import org.openlca.util.Strings;
 
 public class RenameParameterDialog extends FormDialog {
 

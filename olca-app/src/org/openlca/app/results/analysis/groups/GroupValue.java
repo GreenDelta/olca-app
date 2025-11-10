@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
-import org.openlca.util.Strings;
 
 record GroupValue(AnalysisGroup group, double value, double share) {
 

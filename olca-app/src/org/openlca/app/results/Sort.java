@@ -1,8 +1,8 @@
 package org.openlca.app.results;
 
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.results.ResultItemOrder;
-import org.openlca.util.Strings;
 
 public final class Sort {
 
