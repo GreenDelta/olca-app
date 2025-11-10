@@ -1382,6 +1382,7 @@ public class M extends NLS {
 	public static String Report;
 	public static String Repository;
 	public static String RepositoryNameHint;
+	public static String RepositoryNotDeleted;
 	public static String RepositoryId;
 	public static String RepresentativeDataset;
 	public static String RepresentativenessType;
