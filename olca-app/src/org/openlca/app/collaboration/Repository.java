@@ -103,7 +103,7 @@ public class Repository extends ClientRepository {
 	}
 
 	public static void delete(String databaseName) {
-		var gitDir = Repository.gitDir(Database.get().getName());
+		var gitDir = Repository.gitDir(databaseName);
 		try {
 			Dirs.delete(gitDir);
 		} finally {
