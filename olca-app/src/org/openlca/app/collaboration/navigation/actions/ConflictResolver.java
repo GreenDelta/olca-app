@@ -46,6 +46,8 @@ class ConflictResolver {
 		var localConflicts = App.exec(M.CheckingForLocalConflicts,
 				() -> SplitConflicts.of(conflicts.withLocal()));
 		var resolved = solveLocalConflicts(localConflicts);
+		if (resolved == null)
+			return null;
 		workspaceConflicts.equal.forEach(c -> resolved.put(c, ConflictResolution.isEqual()));
 		return new ConflictResult(new ConflictResolutionMap(resolved), solution);
 	}
