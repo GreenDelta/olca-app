@@ -8,11 +8,11 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.openlca.commons.Res;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.sd.xmile.Xmile;
 import org.openlca.sd.xmile.img.ModelImage;
 import org.openlca.util.Dirs;
-import org.openlca.util.Strings;
 
 public class SystemDynamics {
 
@@ -42,7 +42,7 @@ public class SystemDynamics {
 	}
 
 	public static Res<File> createModelDir(String name, IDatabase db) {
-		if (Strings.nullOrEmpty(name))
+		if (Strings.isBlank(name))
 			return Res.error("no name defined");
 		if (db == null)
 			return Res.error("no database provided");
@@ -66,11 +66,11 @@ public class SystemDynamics {
 		var modelFile = new File(modelDir, "model.xml");
 		if (!modelFile.exists() || !modelFile.isFile())
 			return Res.error("model file does not exist: "
-					+ modelFile.getAbsolutePath());		
+					+ modelFile.getAbsolutePath());
 		var xmile = Xmile.readFrom(modelFile);
 		return xmile.isOk()
 				? Res.ok(xmile.value())
-				: Res.error(xmile.error());		
+				: Res.error(xmile.error());
 	}
 
 	public static Res<File> getModelImage(File modelDir) {

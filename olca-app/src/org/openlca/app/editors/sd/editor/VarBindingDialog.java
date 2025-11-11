@@ -26,11 +26,11 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.sd.eqn.Id;
 import org.openlca.sd.eqn.Var;
 import org.openlca.util.ParameterRedefSets;
-import org.openlca.util.Strings;
 
 class VarBindingDialog extends FormDialog {
 
@@ -61,7 +61,7 @@ class VarBindingDialog extends FormDialog {
 				Database.get(), binding.system()).parameters;
 
 		Function<ParameterRedef, String> keyFn = p -> {
-			if (Strings.nullOrEmpty(p.name))
+			if (Strings.isBlank(p.name))
 				return "--";
 			var name = p.name.strip().toLowerCase();
 			return p.contextId == null
@@ -75,9 +75,9 @@ class VarBindingDialog extends FormDialog {
 				.collect(Collectors.toSet());
 
 		return all.stream()
-				.filter(p -> !bound.contains(keyFn.apply(p)))
-				.sorted((pi, pj) -> Strings.compare(pi.name, pj.name))
-				.toList();
+			.filter(p -> !bound.contains(keyFn.apply(p)))
+			.sorted((pi, pj) -> Strings.compareIgnoreCase(pi.name, pj.name))
+			.toList();
 	}
 
 	private VarBindingDialog(List<Var> vars, List<ParameterRedef> params) {
@@ -136,7 +136,7 @@ class VarBindingDialog extends FormDialog {
 	}
 
 	private void filterVars(String text) {
-		if (Strings.nullOrEmpty(text)) {
+		if (Strings.isBlank(text)) {
 			varsTable.setInput(vars);
 			return;
 		}
@@ -187,13 +187,13 @@ class VarBindingDialog extends FormDialog {
 	}
 
 	private void filterParameters(String text) {
-		if (Strings.nullOrEmpty(text)) {
+		if (Strings.isBlank(text)) {
 			paramsTable.setInput(params);
 			return;
 		}
 		var f = text.strip().toLowerCase();
-		Predicate<ParameterRedef> matcher = (p) ->
-				!Strings.nullOrEmpty(p.name) && p.name.toLowerCase().contains(f);
+		Predicate<ParameterRedef> matcher = (p) -> !Strings.isBlank(p.name)
+			&& p.name.toLowerCase().contains(f);
 
 		// remove the binding, if it does not match the filter
 		if (binding.parameter() != null && !matcher.test(binding.parameter())) {

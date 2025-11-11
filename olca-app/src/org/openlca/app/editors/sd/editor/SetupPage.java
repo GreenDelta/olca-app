@@ -17,13 +17,13 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.sd.eqn.TimeSeq;
 import org.openlca.sd.xmile.Xmile;
-import org.openlca.util.Strings;
 
 class SetupPage extends FormPage {
 
@@ -93,7 +93,7 @@ class SetupPage extends FormPage {
 		var methods = new ImpactMethodDao(db)
 			.getDescriptors()
 			.stream()
-			.sorted((m1, m2) -> Strings.compare(m1.name, m2.name))
+			.sorted((m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name))
 			.toList();
 		combo.setInput(methods);
 		if (setup.method() != null) {

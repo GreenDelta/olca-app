@@ -1,5 +1,6 @@
 package org.openlca.app.editors.sd;
 
+import org.openlca.commons.Strings;
 import org.openlca.sd.eqn.LookupFunc;
 import org.openlca.sd.eqn.Tensor;
 import org.openlca.sd.eqn.Var;
@@ -16,7 +17,6 @@ import org.openlca.sd.eqn.cells.NonNegativeCell;
 import org.openlca.sd.eqn.cells.NumCell;
 import org.openlca.sd.eqn.cells.TensorCell;
 import org.openlca.sd.eqn.cells.TensorEqnCell;
-import org.openlca.util.Strings;
 
 public class SdVars {
 
@@ -34,8 +34,8 @@ public class SdVars {
 
 	public static String cellTypeOf(Var var) {
 		return var != null
-				? typeOf(var.def())
-				: "None";
+			? typeOf(var.def())
+			: "None";
 	}
 
 	private static String typeOf(Cell cell) {
@@ -44,12 +44,12 @@ public class SdVars {
 			case NumCell(double num) -> "Number: " + num;
 			case BoolCell(boolean b) -> "Boolean: " + b;
 			case LookupCell(LookupFunc ignore) -> "Lookup function";
-			case EqnCell(String eqn) -> "Equation: " + Strings.cut(eqn, 50);
+			case EqnCell(String eqn) -> "Equation: " + Strings.cutEnd(eqn, 50);
 			case TensorCell(Tensor t) -> "Tensor: " + t.dimensions().size() + "d";
 			case TensorEqnCell(Cell eqn, Tensor t) ->
-					"Tensor equation: " + t.dimensions().size() + "d; " + typeOf(eqn);
+				"Tensor equation: " + t.dimensions().size() + "d; " + typeOf(eqn);
 			case LookupEqnCell(String eqn, LookupFunc ignore) ->
-					"Lookup equation: " + Strings.cut(eqn, 50);
+				"Lookup equation: " + Strings.cutEnd(eqn, 50);
 			case NonNegativeCell(Cell inner) -> "Non-negative: " + typeOf(inner);
 			case null -> "None";
 		};

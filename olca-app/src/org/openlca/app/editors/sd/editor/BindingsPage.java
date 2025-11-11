@@ -22,11 +22,11 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.util.Strings;
 
 class BindingsPage extends FormPage {
 
@@ -121,7 +121,7 @@ class BindingsPage extends FormPage {
 			UI.filler(comp, tk);
 
 			var unit = binding.unit();
-			var unitSymbol = unit != null && Strings.notEmpty(unit.name)
+			var unitSymbol = unit != null && Strings.isNotBlank(unit.name)
 					? unit.name
 					: "?";
 			var amountText = UI.labeledText(comp, tk, M.Amount);

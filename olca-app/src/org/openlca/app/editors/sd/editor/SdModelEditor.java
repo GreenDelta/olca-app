@@ -20,11 +20,11 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.SystemDynamics;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.sd.eqn.Var;
 import org.openlca.sd.eqn.Vars;
 import org.openlca.sd.xmile.Xmile;
-import org.openlca.util.Strings;
 
 public class SdModelEditor extends FormEditor {
 
@@ -76,12 +76,12 @@ public class SdModelEditor extends FormEditor {
 		} else {
 			vars = new ArrayList<>(varRes.value());
 			vars.sort((vi, vj) -> {
-				int c = Strings.compare(SdVars.typeOf(vj), SdVars.typeOf(vi));
+				int c = Strings.compareIgnoreCase(SdVars.typeOf(vj), SdVars.typeOf(vi));
 				if (c != 0)
 					return c;
 				var li = vi.name() != null ? vi.name().label() : "";
 				var lj = vj.name() != null ? vj.name().label() : "";
-				return Strings.compare(li, lj);
+				return Strings.compareIgnoreCase(li, lj);
 			});
 		}
 	}
@@ -138,7 +138,7 @@ public class SdModelEditor extends FormEditor {
 	public void doSave(IProgressMonitor monitor) {
 		var setupFile = new File(modelDir, "setup.json");
 		var err = JsonSetupWriter.write(setup, setupFile);
-		if (err.hasError()) {
+		if (err.isError()) {
 			MsgBox.error("Failed to save setup", err.error());
 			return;
 		}

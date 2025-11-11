@@ -2,11 +2,11 @@ package org.openlca.app.editors.sd.interop;
 
 import java.io.File;
 
+import org.openlca.commons.Res;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.jsonld.Json;
-import org.openlca.util.Res;
-import org.openlca.util.Strings;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -28,7 +28,7 @@ public class JsonSetupWriter {
 			var writer = new JsonSetupWriter(setup);
 			var json = writer.write();
 			Json.write(json, file);
-			return Res.VOID;
+			return Res.ok();
 		} catch (Exception e) {
 			return Res.error("failed to write setup", e);
 		}
@@ -97,7 +97,7 @@ public class JsonSetupWriter {
 	}
 
 	private JsonObject paramObjOf(ParameterRedef param) {
-		if (param == null || Strings.nullOrEmpty(param.name))
+		if (param == null || Strings.isBlank(param.name))
 			return null;
 
 		var obj = new JsonObject();

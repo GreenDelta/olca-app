@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.commons.Res;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.ImpactCategory;
@@ -13,8 +15,6 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
 import org.openlca.sd.eqn.Id;
-import org.openlca.util.Res;
-import org.openlca.util.Strings;
 
 import com.google.gson.JsonObject;
 
@@ -46,7 +46,7 @@ public class JsonSetupReader {
 			for (var sb : readSystemBindings()) {
 				setup.systemBindings().add(sb);
 			}
-			return Res.of(setup);
+			return Res.ok(setup);
 		} catch (Exception e) {
 			return Res.error("Failed to parse setup", e);
 		}
@@ -54,7 +54,7 @@ public class JsonSetupReader {
 
 	private ImpactMethod readImpactMethod() {
 		var refId = Json.getRefId(json, "impactMethod");
-		if (Strings.nullOrEmpty(refId))
+		if (Strings.isBlank(refId))
 			return null;
 		return db.get(ImpactMethod.class, refId);
 	}
@@ -103,7 +103,7 @@ public class JsonSetupReader {
 
 	private ProductSystem systemOf(JsonObject obj) {
 		var refId = Json.getRefId(obj, "system");
-		return Strings.notEmpty(refId)
+		return Strings.isNotBlank(refId)
 				? db.get(ProductSystem.class, refId)
 				: null;
 	}
@@ -125,7 +125,7 @@ public class JsonSetupReader {
 		if (paramObj == null)
 			return null;
 		var name = Json.getString(paramObj, "name");
-		if (Strings.nullOrEmpty(name))
+		if (Strings.isBlank(name))
 			return null;
 		var redef = new ParameterRedef();
 		redef.name = name;
@@ -137,7 +137,7 @@ public class JsonSetupReader {
 			return redef;
 		var type = Json.getString(contextObj, "@type");
 		var refId = Json.getString(contextObj, "@id");
-		if (Strings.nullOrEmpty(refId))
+		if (Strings.isBlank(refId))
 			return redef;
 		var d = "ImpactCategory".equals(type)
 				? db.getDescriptor(ImpactCategory.class, refId)

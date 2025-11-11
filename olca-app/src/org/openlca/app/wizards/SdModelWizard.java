@@ -24,10 +24,10 @@ import org.openlca.app.util.SystemDynamics;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.WizFileSelector;
 import org.openlca.commons.Res;
+import org.openlca.commons.Strings;
 import org.openlca.sd.eqn.EvaluationOrder;
 import org.openlca.sd.eqn.Vars;
 import org.openlca.sd.xmile.Xmile;
-import org.openlca.util.Strings;
 
 public class SdModelWizard extends Wizard implements INewWizard {
 
@@ -96,7 +96,7 @@ public class SdModelWizard extends Wizard implements INewWizard {
 	}
 
 	private Res<String> checkName(String name) {
-		if (Strings.nullOrEmpty(name))
+		if (Strings.isBlank(name))
 			return Res.error("The name cannot be empty.");
 		var sanitized = name.strip().replaceAll("[<>:\"/\\\\|?*]", "_");
 		for (var dir : SystemDynamics.getModelDirsOf(Database.get())) {
