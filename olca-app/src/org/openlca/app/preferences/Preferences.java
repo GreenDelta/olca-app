@@ -1,15 +1,15 @@
 package org.openlca.app.preferences;
 
+import static org.openlca.app.components.graphics.themes.Themes.DARK;
+import static org.openlca.app.components.graphics.themes.Themes.LIGHT;
+
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.util.Numbers;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openlca.app.components.graphics.themes.Themes.DARK;
-import static org.openlca.app.components.graphics.themes.Themes.LIGHT;
 
 public final class Preferences extends AbstractPreferenceInitializer {
 
@@ -69,7 +69,7 @@ public final class Preferences extends AbstractPreferenceInitializer {
 
 	public static int getInt(String key, int defaultValue) {
 		var str = get(key);
-		if (Strings.nullOrEmpty(str))
+		if (Strings.isBlank(str))
 			return defaultValue;
 		try {
 			return Integer.parseInt(str);

@@ -1,5 +1,7 @@
 package org.openlca.app.components.graphics.model.commands;
 
+import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,8 +11,6 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.components.graphics.layouts.GraphLayout;
 import org.openlca.app.components.graphics.model.Component;
-
-import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
 
 
 public class LayoutCommand extends Command {

@@ -12,13 +12,13 @@ import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 public class ResultFlowCombo extends AbstractComboViewer<EnviFlow> {
 
@@ -63,7 +63,7 @@ public class ResultFlowCombo extends AbstractComboViewer<EnviFlow> {
 				for (int col = 0; col < 3; col++) {
 					String s1 = label.getColumnText(e1, col);
 					String s2 = label.getColumnText(e2, col);
-					int c = Strings.compare(s1, s2);
+					int c = Strings.compareIgnoreCase(s1, s2);
 					if (c != 0)
 						return c;
 				}

@@ -1,12 +1,12 @@
 package org.openlca.app.editors.graphical.actions.retarget;
 
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
+
 import org.eclipse.ui.actions.RetargetAction;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.actions.GraphActionIds;
 import org.openlca.app.rcp.images.Icon;
-
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
 
 public class MassExpansionRetargetAction extends RetargetAction {
 

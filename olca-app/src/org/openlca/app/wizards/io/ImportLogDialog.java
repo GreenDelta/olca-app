@@ -9,9 +9,9 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.io.ImportLog;
 import org.openlca.io.Import;
-import org.openlca.util.Strings;
 
 public class ImportLogDialog extends FormDialog {
 
@@ -31,7 +31,7 @@ public class ImportLogDialog extends FormDialog {
 	public static void show(String title, ImportLog log) {
 		if (log == null)
 			return;
-		var t = Strings.nullOrEmpty(title)
+		var t = Strings.isBlank(title)
 				? M.ImportFinished
 				: title;
 		App.runInUI(title, () -> new ImportLogDialog(log, t).open());

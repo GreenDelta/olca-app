@@ -45,8 +45,8 @@ public class MountLibraryDialog extends FormDialog {
 		// create the dialog sections for the states in the check-result
 		var stateMap = new EnumMap<PreMountState, List<Library>>(PreMountState.class);
 		for (var libState : checkResult.getStates()) {
-			var lib = libState.first;
-			var state = libState.second;
+			var lib = libState.first();
+			var state = libState.second();
 			stateMap.computeIfAbsent(state, s -> new ArrayList<>()).add(lib);
 		}
 		var stateOrder = new PreMountState[]{

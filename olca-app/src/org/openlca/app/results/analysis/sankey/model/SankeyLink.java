@@ -1,14 +1,14 @@
 package org.openlca.app.results.analysis.sankey.model;
 
+import static org.eclipse.draw2d.PositionConstants.EAST;
+import static org.eclipse.draw2d.PositionConstants.WEST;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.components.graphics.model.Link;
-
-import static org.eclipse.draw2d.PositionConstants.EAST;
-import static org.eclipse.draw2d.PositionConstants.WEST;
 
 
 public class SankeyLink extends Link {

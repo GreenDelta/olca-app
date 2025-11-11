@@ -3,9 +3,11 @@ package org.openlca.app.editors.processes.exchanges;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.LocationDao;
@@ -21,7 +23,6 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Processes;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,7 @@ class Clipboard {
 			for (int k = 0; k < row.length; k++) {
 				row[k] = row[k].trim();
 			}
-			if (row.length > 2 && Strings.nullOrEqual(row[2], M.Amount))
+			if (row.length > 2 && Objects.equals(row[2], M.Amount))
 				continue; // the header row
 			Exchange e = mapper.doIt(row, forInputs);
 			if (e != null) {
@@ -93,7 +94,7 @@ class Clipboard {
 			mapIsAvoided(e, row);
 			mapProvider(e, row);
 
-			if (row.length > 8 && !Strings.nullOrEmpty(row[8])) {
+			if (row.length > 8 && Strings.isNotBlank(row[8])) {
 				e.dqEntry = row[8];
 			}
 
@@ -150,14 +151,14 @@ class Clipboard {
 		private boolean matchCategory(Flow flow, String[] row) {
 			if (flow == null)
 				return false;
-			if (row.length < 2 || Strings.nullOrEmpty(row[1]))
+			if (row.length < 2 || Strings.isBlank(row[1]))
 				return flow.category == null;
 			String[] names = row[1].split("/");
 			Category category = flow.category;
 			for (int i = names.length - 1; i >= 0; i--) {
 				if (category == null)
 					return false;
-				if (!Strings.nullOrEqual(names[i], category.name))
+				if (!Objects.equals(names[i], category.name))
 					return false;
 				category = category.category;
 			}
@@ -171,7 +172,7 @@ class Clipboard {
 				return code == null;
 			if (code == null)
 				return flow.location == null;
-			return Strings.nullOrEqual(flow.location.code, code);
+			return Objects.equals(flow.location.code, code);
 		}
 
 		private void mapAmount(Exchange e, String[] row) {
@@ -239,7 +240,7 @@ class Clipboard {
 			if (e == null || e.flow == null || row.length < 7)
 				return;
 			String s = row[6];
-			if (Strings.nullOrEmpty(s))
+			if (Strings.isBlank(s))
 				return;
 			if ((e.isInput && e.flow.flowType != FlowType.WASTE_FLOW)
 					|| (!e.isInput && e.flow.flowType != FlowType.PRODUCT_FLOW))
@@ -257,7 +258,7 @@ class Clipboard {
 			if (e == null || row.length < 5)
 				return;
 			String s = row[4];
-			if (Strings.nullOrEmpty(s))
+			if (Strings.isBlank(s))
 				return;
 			s = s.trim();
 			int splitIdx = s.lastIndexOf(' ');
@@ -268,7 +269,7 @@ class Clipboard {
 			Currency currency = null;
 			CurrencyDao dao = new CurrencyDao(Database.get());
 			for (Currency cu : dao.getAll()) {
-				if (Strings.nullOrEqual(currencySymbol, cu.code)) {
+				if (Objects.equals(currencySymbol, cu.code)) {
 					currency = cu;
 					break;
 				}
@@ -293,7 +294,7 @@ class Clipboard {
 					|| (!e.isInput && e.flow.flowType != FlowType.WASTE_FLOW))
 				return;
 			String fullName = row[7];
-			if (Strings.nullOrEmpty(fullName))
+			if (Strings.isBlank(fullName))
 				return;
 			ProcessDescriptor d = Processes.findForLabel(Database.get(), fullName);
 			if (d == null) {
@@ -310,12 +311,12 @@ class Clipboard {
 			if (row.length < 10)
 				return;
 			String code = row[9];
-			if (Strings.nullOrEmpty(code))
+			if (Strings.isBlank(code))
 				return;
 			LocationDao dao = new LocationDao(Database.get());
 			e.location = dao.getDescriptors()
 					.stream()
-					.filter(d -> Strings.nullOrEqual(code, d.code))
+					.filter(d -> Objects.equals(code, d.code))
 					.map(d -> dao.getForId(d.id))
 					.findFirst()
 					.orElse(null);

@@ -6,11 +6,11 @@ import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.tools.mapping.model.FlowProvider;
+import org.openlca.commons.Strings;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.io.maps.FlowMapEntry;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.io.maps.MappingStatus;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,9 +83,9 @@ public class Generator implements Runnable {
 			return true;
 		var s = source.unit;
 		var t = target.unit;
-		boolean equal = Strings.notEmpty(s.refId) && Strings.notEmpty(t.refId)
-			? Strings.nullOrEqual(s.refId, t.refId)
-			: Strings.nullOrEqual(s.name, t.name);
+		boolean equal = Strings.isNotBlank(s.refId) && Strings.isNotBlank(t.refId)
+			? Objects.equals(s.refId, t.refId)
+			: Objects.equals(s.name, t.name);
 		return !equal;
 	}
 

@@ -33,6 +33,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
@@ -43,7 +44,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 class ImpactFactorPage extends ModelPage<ImpactCategory> {
 
@@ -155,21 +155,21 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 				return 0;
 
 			// by name
-			int c = Strings.compare(f1.name, f2.name);
+			int c = Strings.compareIgnoreCase(f1.name, f2.name);
 			if (c != 0)
 				return c;
 
 			// by category
 			var cat1 = CategoryPath.getShort(f1.category);
 			var cat2 = CategoryPath.getShort(f2.category);
-			c =  Strings.compare(cat1, cat2);
+			c = Strings.compareIgnoreCase(cat1, cat2);
 			if (c != 0)
 				return c;
 
 			// by location
 			var loc1 = o1.location != null ? o1.location.code : null;
 			var loc2 = o2.location != null ? o2.location.code : null;
-			return Strings.compare(loc1, loc2);
+			return Strings.compareIgnoreCase(loc1, loc2);
 		});
 	}
 
@@ -276,7 +276,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 			if (factor.unit == null)
 				return null;
 			String impactUnit = impact().referenceUnit;
-			if (Strings.notEmpty(impactUnit))
+			if (Strings.isNotBlank(impactUnit))
 				return impactUnit + "/" + factor.unit.name;
 			else
 				return "1/" + factor.unit.name;

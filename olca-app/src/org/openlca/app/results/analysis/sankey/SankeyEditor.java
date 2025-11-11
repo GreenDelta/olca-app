@@ -1,7 +1,7 @@
 package org.openlca.app.results.analysis.sankey;
 
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 import static org.openlca.app.components.graphics.themes.Themes.CONTEXT_SANKEY;
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.ContextMenuProvider;
@@ -13,6 +13,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.components.graphics.actions.SaveImageAction;
+import org.openlca.app.components.graphics.frame.GraphicalEditorWithFrame;
+import org.openlca.app.components.graphics.frame.Splitter;
+import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.analysis.sankey.actions.EditSankeyConfigAction;
 import org.openlca.app.results.analysis.sankey.actions.LayoutAction;
@@ -20,11 +25,6 @@ import org.openlca.app.results.analysis.sankey.actions.OpenEditorAction;
 import org.openlca.app.results.analysis.sankey.edit.SankeyEditPartFactory;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
 import org.openlca.app.results.analysis.sankey.model.SankeyFactory;
-import org.openlca.app.components.graphics.actions.SaveImageAction;
-import org.openlca.app.components.graphics.frame.GraphicalEditorWithFrame;
-import org.openlca.app.components.graphics.frame.Splitter;
-import org.openlca.app.components.graphics.themes.Theme;
-import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.results.LcaResult;

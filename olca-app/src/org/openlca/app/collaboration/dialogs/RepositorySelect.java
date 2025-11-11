@@ -12,7 +12,7 @@ import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfi
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.util.UI;
 import org.openlca.collaboration.model.Repository;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class RepositorySelect extends Composite {
 
@@ -55,9 +55,9 @@ public class RepositorySelect extends Composite {
 					server.createClient()::listRepositories,
 					new ArrayList<Repository>());
 			repositoryCombo.setItems(repositories.stream()
-					.map(repo -> repo.group() + "/" + repo.name())
-					.sorted((r1, r2) -> Strings.compare(r1.toLowerCase(), r2.toLowerCase()))
-					.toArray(size -> new String[size]));
+				.map(repo -> repo.group() + "/" + repo.name())
+				.sorted(Strings::compareIgnoreCase)
+				.toArray(size -> new String[size]));
 			if (onChange != null) {
 				onChange.run();
 			}

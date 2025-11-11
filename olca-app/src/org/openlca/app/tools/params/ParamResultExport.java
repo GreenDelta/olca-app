@@ -8,9 +8,9 @@ import java.util.HashMap;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.io.xls.Excel;
-import org.openlca.util.Strings;
 
 class ParamResultExport implements Runnable {
 
@@ -116,7 +116,7 @@ class ParamResultExport implements Runnable {
 
 		var impacts = new ArrayList<>(result.impacts());
 		impacts.sort(
-				(i1, i2) -> Strings.compare(Labels.name(i1), Labels.name(i2)));
+				(i1, i2) -> Strings.compareIgnoreCase(Labels.name(i1), Labels.name(i2)));
 		for (var impact : impacts) {
 			Excel.cell(sheet, row, 0, Labels.name(impact));
 			Excel.cell(sheet, row, 1, impact.referenceUnit);

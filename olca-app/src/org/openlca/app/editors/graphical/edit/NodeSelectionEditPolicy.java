@@ -1,10 +1,10 @@
 package org.openlca.app.editors.graphical.edit;
 
+import java.util.stream.Stream;
+
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.editpolicies.SelectionEditPolicy;
 import org.openlca.app.components.graphics.figures.SelectableConnection;
-
-import java.util.stream.Stream;
 
 public class NodeSelectionEditPolicy extends SelectionEditPolicy {
 

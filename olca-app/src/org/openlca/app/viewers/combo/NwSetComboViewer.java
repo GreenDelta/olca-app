@@ -1,11 +1,11 @@
 package org.openlca.app.viewers.combo;
 
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NwSetDao;
 import org.openlca.core.model.NwSet;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
-import org.openlca.util.Strings;
 
 public class NwSetComboViewer extends AbstractComboViewer<NwSet> {
 
@@ -26,7 +26,7 @@ public class NwSetComboViewer extends AbstractComboViewer<NwSet> {
 			var nwSets = new NwSetDao(database)
 					.allOfMethod(method.id)
 					.stream()
-					.sorted((n1, n2) -> Strings.compare(n1.name, n2.name))
+					.sorted((n1, n2) -> Strings.compareIgnoreCase(n1.name, n2.name))
 					.toArray(NwSet[]::new);
 			setInput(nwSets);
 		}

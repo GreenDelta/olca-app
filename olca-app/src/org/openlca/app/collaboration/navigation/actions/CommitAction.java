@@ -14,8 +14,8 @@ import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.commons.Strings;
 import org.openlca.git.actions.GitCommit;
-import org.openlca.util.Strings;
 
 class CommitAction extends Action implements INavigationAction {
 
@@ -54,7 +54,7 @@ class CommitAction extends Action implements INavigationAction {
 					.changes(input.datasets())
 					.withMessage(input.message())
 					.as(user));
-			if (Strings.nullOrEmpty(commitId))
+			if (Strings.isBlank(commitId))
 				return;
 			if (input.action() != CommitDialog.COMMIT_AND_PUSH)
 				return;

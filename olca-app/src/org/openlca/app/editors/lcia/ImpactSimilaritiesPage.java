@@ -22,12 +22,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.matrix.cache.ConversionTable;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.util.Strings;
 
 class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 
@@ -156,8 +156,8 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 			items.sort((i1, i2) -> {
 				int c = -Double.compare(i1.similarity, i2.similarity);
 				return c != 0
-						? c
-						: Strings.compare(
+					? c
+					: Strings.compareIgnoreCase(
 						Labels.name(i1.impact), Labels.name(i2.impact));
 			});
 

@@ -1,5 +1,8 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
+import static org.openlca.app.components.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
+import static org.openlca.app.components.graphics.model.Component.TARGET_CONNECTIONS_PROP;
+
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
@@ -7,12 +10,9 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
-import org.openlca.app.results.analysis.sankey.model.SankeyLink;
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.components.graphics.model.Link;
-
-import static org.openlca.app.components.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
-import static org.openlca.app.components.graphics.model.Component.TARGET_CONNECTIONS_PROP;
+import org.openlca.app.results.analysis.sankey.model.SankeyLink;
 
 
 /**

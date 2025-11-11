@@ -16,9 +16,9 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.util.Strings;
 
 class ParameterPage extends ModelPage<ProductSystem> {
 
@@ -65,7 +65,7 @@ class ParameterPage extends ModelPage<ProductSystem> {
 				return -1;
 			if (s2.isBaseline)
 				return 1;
-			return Strings.compare(s1.name, s2.name);
+			return Strings.compareIgnoreCase(s1.name, s2.name);
 		});
 		for (int i = 0; i < sets.size(); i++) {
 			var s = sets.get(i);

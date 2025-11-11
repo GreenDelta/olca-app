@@ -19,13 +19,13 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 
 class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 		ITableColorProvider, ITableFontProvider {
@@ -94,7 +94,7 @@ class ExchangeLabel extends LabelProvider implements ITableLabelProvider,
 			}
 			case 8 -> {
 				// data quality entry
-				if (Strings.nullOrEmpty(e.dqEntry))
+				if (Strings.isBlank(e.dqEntry))
 					yield null;
 				Process p = editor.getModel();
 				yield p.exchangeDqSystem == null

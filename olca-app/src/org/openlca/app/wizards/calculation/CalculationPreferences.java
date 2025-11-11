@@ -1,6 +1,7 @@
 package org.openlca.app.wizards.calculation;
 
-import com.google.gson.JsonObject;
+import java.io.File;
+
 import org.openlca.app.db.DatabaseDir;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.IDatabase;
@@ -13,7 +14,7 @@ import org.openlca.core.model.ImpactMethod;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Dirs;
 
-import java.io.File;
+import com.google.gson.JsonObject;
 
 class CalculationPreferences {
 

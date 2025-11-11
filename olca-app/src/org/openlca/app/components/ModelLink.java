@@ -15,11 +15,11 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 public class ModelLink<T extends RootEntity> {
 
@@ -145,7 +145,7 @@ public class ModelLink<T extends RootEntity> {
 		var text = model == null
 			? M.NoneHyphen
 			: Labels.name(model);
-		link.setText(Strings.cut(text, 120));
+		link.setText(Strings.cutEnd(text, 120));
 		link.setToolTipText(text);
 		link.getParent().pack();
 	}

@@ -15,8 +15,8 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Question;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.MappingFileDao;
-import org.openlca.util.Strings;
 
 public class DeleteMappingAction extends Action implements INavigationAction {
 
@@ -73,7 +73,7 @@ public class DeleteMappingAction extends Action implements INavigationAction {
 				if (tool.mappingFile == null)
 					continue;
 				var name = tool.mappingFile.name;
-				if (Strings.nullOrEmpty(name))
+				if (Strings.isBlank(name))
 					continue;
 				if (deleted.contains(name.trim().toLowerCase())) {
 					Editors.close(ref);

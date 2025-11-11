@@ -25,10 +25,10 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.util.Strings;
 
 class InfoPage extends ModelPage<Process> {
 
@@ -159,7 +159,7 @@ class InfoPage extends ModelPage<Process> {
 		UI.label(parent, tk, M.DataQualityEntry);
 		Supplier<String> dqLabel = () -> {
 			Process p = getModel();
-			return p.dqSystem == null || Strings.nullOrEmpty(p.dqEntry)
+			return p.dqSystem == null || Strings.isBlank(p.dqEntry)
 				? "(not specified)"
 				: p.dqSystem.applyScoreLabels(p.dqEntry);
 		};

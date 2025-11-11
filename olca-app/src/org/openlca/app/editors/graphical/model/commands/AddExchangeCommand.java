@@ -26,6 +26,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.combo.FlowPropertyCombo;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Flow;
@@ -34,7 +35,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 
 public class AddExchangeCommand extends Command {
 
@@ -144,7 +144,7 @@ public class AddExchangeCommand extends Command {
 			text = UI.text(body, SWT.NONE);
 			text.addModifyListener(e -> {
 				var name = text.getText().trim();
-				getButton(_CREATE).setEnabled(Strings.notEmpty(name));
+				getButton(_CREATE).setEnabled(Strings.isNotBlank(name));
 			});
 
 			// flow type selection
@@ -282,7 +282,7 @@ public class AddExchangeCommand extends Command {
 				return null;
 			}
 			var name = this.text.getText().trim();
-			if (Strings.nullOrEmpty(name)) {
+			if (Strings.isBlank(name)) {
 				MsgBox.error(M.ANameIsRequired);
 				return null;
 			}

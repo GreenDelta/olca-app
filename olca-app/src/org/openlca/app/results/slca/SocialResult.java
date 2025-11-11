@@ -1,5 +1,7 @@
 package org.openlca.app.results.slca;
 
+import java.util.Optional;
+
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.SocialIndicatorDao;
 import org.openlca.core.matrix.format.MatrixReader;
@@ -9,8 +11,6 @@ import org.openlca.core.matrix.solvers.MatrixSolver;
 import org.openlca.core.model.RiskLevel;
 import org.openlca.core.model.descriptors.SocialIndicatorDescriptor;
 import org.openlca.core.results.providers.ResultProvider;
-
-import java.util.Optional;
 
 public class SocialResult {
 

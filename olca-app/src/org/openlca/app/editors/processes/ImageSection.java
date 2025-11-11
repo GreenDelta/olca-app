@@ -16,10 +16,10 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Source;
-import org.openlca.util.Strings;
 
 
 class ImageSection {
@@ -79,7 +79,7 @@ class ImageSection {
 	}
 
 	private void createControls(File f) {
-		Label header = tk.createLabel(comp, Strings.cut(f.getName(), 40));
+		Label header = tk.createLabel(comp, Strings.cutEnd(f.getName(), 40));
 		header.setToolTipText(f.getName());
 		UI.gridData(header, false, false).verticalAlignment = SWT.BEGINNING;
 		controls.add(header);

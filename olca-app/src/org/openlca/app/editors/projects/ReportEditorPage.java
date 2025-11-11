@@ -22,10 +22,10 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.util.Strings;
 
 class ReportEditorPage extends FormPage {
 
@@ -111,7 +111,7 @@ class ReportEditorPage extends FormPage {
 		var dao = new ProcessDao(db);
 		var input = current.stream()
 			.map(d -> dao.getDescriptorForRefId(d.refId))
-			.sorted((d1, d2) -> Strings.compare(Labels.name(d1), Labels.name(d2)))
+			.sorted((d1, d2) -> Strings.compareIgnoreCase(Labels.name(d1), Labels.name(d2)))
 			.collect(Collectors.toList());
 		table.setInput(input);
 	}

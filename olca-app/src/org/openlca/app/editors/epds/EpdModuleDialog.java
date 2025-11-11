@@ -19,11 +19,11 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Epd;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
-import org.openlca.util.Strings;
 
 /**
  * Edit an EPD module. Note that this dialog always works on a new module or
@@ -124,7 +124,7 @@ class EpdModuleDialog extends FormDialog {
 	@Override
 	protected void okPressed() {
 		// check that the module name is not empty
-		if (Strings.nullOrEmpty(module.name)) {
+		if (Strings.isBlank(module.name)) {
 			MsgBox.error(M.EmptyName, M.EmptyNameEpdErr);
 			return;
 		}
@@ -134,7 +134,7 @@ class EpdModuleDialog extends FormDialog {
 			if (Objects.equals(other, module)
 				|| Objects.equals(other, origin))
 				continue;
-			if (Strings.nullOrEqual(other.name, module.name)
+			if (Strings.equalsIgnoreCase(other.name, module.name)
 				&& Objects.equals(other.result, module.result)) {
 				MsgBox.error(M.DuplicateModule,
 					M.ThisModuleAlreadyExists + " - " + module.name);
@@ -148,10 +148,10 @@ class EpdModuleDialog extends FormDialog {
 	private String[] proposeNames() {
 		var used = epd.modules.stream()
 			.map(mod -> mod.name)
-			.filter(Strings::notEmpty)
+			.filter(Strings::isNotBlank)
 			.collect(Collectors.toSet());
 		var filtered = new ArrayList<String>();
-		if (origin != null && Strings.notEmpty(origin.name)) {
+		if (origin != null && Strings.isNotBlank(origin.name)) {
 			filtered.add(origin.name);
 		}
 		for (var name : names) {

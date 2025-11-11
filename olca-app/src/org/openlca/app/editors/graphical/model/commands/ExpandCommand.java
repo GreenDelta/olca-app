@@ -1,21 +1,21 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.editors.graphical.model.Node.isInput;
+import static org.openlca.app.editors.graphical.model.Node.isOutput;
+
+import java.util.List;
+
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
+import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphFactory;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
-import org.openlca.app.components.graphics.model.Side;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-
-import java.util.List;
-
-import static org.openlca.app.editors.graphical.model.Node.isInput;
-import static org.openlca.app.editors.graphical.model.Node.isOutput;
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 
 public class ExpandCommand extends Command {
 

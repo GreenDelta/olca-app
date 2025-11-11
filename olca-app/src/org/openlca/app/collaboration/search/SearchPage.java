@@ -20,8 +20,8 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.collaboration.model.Dataset;
 import org.openlca.collaboration.model.SearchResult;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 class SearchPage extends FormPage {
 
@@ -121,8 +121,9 @@ class SearchPage extends FormPage {
 		};
 		viewer.setNullable(true);
 		viewer.setInput(ModelType.values());
-		if (!Strings.nullOrEmpty(query.type))
+		if (Strings.isNotBlank(query.type)) {
 			viewer.select(ModelType.valueOf(query.type));
+		}
 		viewer.addSelectionChangedListener(type -> {
 			query.type = type != null ? type.name() : null;
 			runSearch(1);

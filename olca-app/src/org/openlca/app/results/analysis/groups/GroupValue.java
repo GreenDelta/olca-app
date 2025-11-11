@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
-import org.openlca.util.Strings;
 
 record GroupValue(AnalysisGroup group, double value, double share) {
 
@@ -23,7 +23,7 @@ record GroupValue(AnalysisGroup group, double value, double share) {
 		double max = 0;
 		var visited = new HashSet<String>();
 		for (var g : groups) {
-			if (Strings.nullOrEmpty(g.name))
+			if (Strings.isBlank(g.name))
 				continue;
 			visited.add(g.name);
 			var val = map.get(g.name);

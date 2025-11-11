@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class AuthenticationGroup extends Composite {
 
@@ -92,20 +92,20 @@ public class AuthenticationGroup extends Composite {
 		UI.gridData(container, true, false);
 		if (withUser) {
 			userText = createText(container, toolkit, SWT.NONE, M.EmailOrUsername, user, text -> this.user = text);
-			if (autoFocus && Strings.nullOrEmpty(user)) {
+			if (autoFocus && Strings.isBlank(user)) {
 				userText.setFocus();
 			}
 		}
 		if (withPassword) {
 			passwordText = createText(container, toolkit, SWT.PASSWORD, M.Password, password,
 					text -> this.password = text);
-			if (autoFocus && !Strings.nullOrEmpty(user) && Strings.nullOrEmpty(password)) {
+			if (autoFocus && Strings.isNotBlank(user) && Strings.isBlank(password)) {
 				passwordText.setFocus();
 			}
 		}
 		if (withToken) {
 			tokenText = createText(container, toolkit, SWT.NONE, M.Token, token, text -> this.token = text);
-			if (autoFocus && !Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password)) {
+			if (autoFocus && Strings.isNotBlank(user) && Strings.isNotBlank(password)) {
 				tokenText.setFocus();
 			}
 		}
@@ -165,9 +165,9 @@ public class AuthenticationGroup extends Composite {
 	}
 
 	public boolean isComplete() {
-		if (withUser && Strings.nullOrEmpty(user))
+		if (withUser && Strings.isBlank(user))
 			return false;
-		if (withPassword && Strings.nullOrEmpty(password))
+		if (withPassword && Strings.isBlank(password))
 			return false;
 		return true;
 	}

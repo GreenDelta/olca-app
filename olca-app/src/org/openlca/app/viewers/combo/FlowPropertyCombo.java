@@ -6,10 +6,10 @@ import java.util.Map;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.model.FlowProperty;
-import org.openlca.util.Strings;
 
 public class FlowPropertyCombo extends AbstractComboViewer<FlowProperty> {
 
@@ -37,12 +37,12 @@ public class FlowPropertyCombo extends AbstractComboViewer<FlowProperty> {
 				int c1 = count.getOrDefault(p1.id, 0);
 				int c2 = count.getOrDefault(p2.id, 0);
 				if (c1 == c2)
-					return Strings.compare(p1.name, p2.name);
+					return Strings.compareIgnoreCase(p1.name, p2.name);
 				return c2 - c1;
 			});
 			if (props.size() > 10) {
 				props.subList(10, props.size()).sort(
-						(p1, p2) -> Strings.compare(p1.name, p2.name));
+						(p1, p2) -> Strings.compareIgnoreCase(p1.name, p2.name));
 			}
 			setInput(props.toArray(new FlowProperty[0]));
 		} catch (Exception e) {

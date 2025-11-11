@@ -35,13 +35,13 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.wizards.io.ImportLogDialog;
+import org.openlca.commons.Res;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.hestia.HestiaClient;
 import org.openlca.io.hestia.HestiaImport;
 import org.openlca.io.hestia.SearchQuery;
 import org.openlca.io.hestia.SearchResult;
-import org.openlca.util.Res;
-import org.openlca.util.Strings;
 
 public class HestiaTool extends SimpleFormEditor {
 
@@ -50,12 +50,11 @@ public class HestiaTool extends SimpleFormEditor {
 	public static void open() {
 
 		var client = ApiKeyAuth.fromCacheOrDialog(
-				".hestia.json", "https://api.hestia.earth", key -> {
-					var c = HestiaClient.of(key.endpoint(), key.value());
-					// TODO: check /users/me
-					return Res.of(c);
-				}
-		);
+			".hestia.json", "https://api.hestia.earth", key -> {
+				var c = HestiaClient.of(key.endpoint(), key.value());
+				// TODO: check /users/me
+				return Res.ok(c);
+			});
 
 		if (client.isEmpty())
 			return;
@@ -139,19 +138,19 @@ public class HestiaTool extends SimpleFormEditor {
 			table.setLabelProvider(new SearchResultLabel());
 
 			var importAction = Actions.create(
-					M.ImportSelected, Icon.IMPORT.descriptor(), this::runImport);
+				M.ImportSelected, Icon.IMPORT.descriptor(), this::runImport);
 			var previewAction = Actions.create(
-					"Show cycle", Icon.HESTIA.descriptor(), () -> {
-						SearchResult r = Viewers.getFirstSelected(table);
-						if (r != null) {
-							CyclePreviewDialog.show(client, r.id());
-						}
-					});
+				"Show cycle", Icon.HESTIA.descriptor(), () -> {
+					SearchResult r = Viewers.getFirstSelected(table);
+					if (r != null) {
+						CyclePreviewDialog.show(client, r.id());
+					}
+				});
 			Actions.bind(table, previewAction, importAction);
 		}
 
 		private void runSearch() {
-			var query = Strings.nullIfEmpty(searchText.getText());
+			var query = Strings.nullIfBlank(searchText.getText());
 			if (query == null) {
 				table.setInput(new ArrayList<>());
 				return;
@@ -165,7 +164,7 @@ public class HestiaTool extends SimpleFormEditor {
 				ref.set(res);
 			}, () -> {
 				var res = ref.get();
-				if (res.hasError()) {
+				if (res.isError()) {
 					MsgBox.error("Search failed", res.error());
 				} else {
 					table.setInput(res.value());
@@ -187,27 +186,27 @@ public class HestiaTool extends SimpleFormEditor {
 			var imp = new HestiaImport(client, db, settings.flowMap());
 			var log = imp.log();
 			App.runWithProgress(
-					"Importing data sets...",
-					() -> {
-						for (var r : selected) {
-							var res = imp.importCycle(r.id());
-							if (res.hasError()) {
-								log.error("failed to import " + r.name() + ": " + res.error());
-							} else {
-								log.imported(res.value());
-							}
+				"Importing data sets...",
+				() -> {
+					for (var r : selected) {
+						var res = imp.importCycle(r.id());
+						if (res.isError()) {
+							log.error("failed to import " + r.name() + ": " + res.error());
+						} else {
+							log.imported(res.value());
 						}
-					},
-					() -> {
-						ImportLogDialog.show("Import finished", log);
-						Navigator.refresh();
-						AppContext.evictAll();
-					});
+					}
+				},
+				() -> {
+					ImportLogDialog.show("Import finished", log);
+					Navigator.refresh();
+					AppContext.evictAll();
+				});
 		}
 	}
 
 	private static class SearchResultLabel extends BaseLabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -217,8 +216,8 @@ public class HestiaTool extends SimpleFormEditor {
 		@Override
 		public String getColumnText(Object obj, int col) {
 			return obj instanceof SearchResult r
-					? col == 0 ? r.name() : r.id()
-					: null;
+				? col == 0 ? r.name() : r.id()
+				: null;
 		}
 	}
 }

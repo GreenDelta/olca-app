@@ -20,7 +20,7 @@ import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class PythonEditor extends ScriptingEditor {
 
@@ -76,7 +76,7 @@ public class PythonEditor extends ScriptingEditor {
 					browser.getDisplay();
 
 					// set the script content
-					if (Strings.notEmpty(script)) {
+					if (Strings.isNotBlank(script)) {
 						browser.execute("setContent(" + toJavaScript(script) + ")");
 					}
 
@@ -154,7 +154,7 @@ public class PythonEditor extends ScriptingEditor {
 		 * @return the JavaScript string of the script enclosed in single-quotes.
 		 */
 		private static String toJavaScript(String script) {
-			if (Strings.nullOrEmpty(script))
+			if (Strings.isBlank(script))
 				return "''";
 			var buffer = new StringBuilder("'");
 			for (int i = 0; i < script.length(); i++) {

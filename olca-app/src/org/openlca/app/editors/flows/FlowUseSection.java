@@ -16,13 +16,13 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-import org.openlca.util.Strings;
 
 /// Renders the section with links to providers and recipients of a given flow.
 class FlowUseSection {
@@ -87,7 +87,8 @@ class FlowUseSection {
 				break;
 		}
 		var list = dao.getDescriptors(firstIds);
-		list.sort((d1, d2) -> Strings.compare(Labels.name(d1), Labels.name(d2)));
+		list.sort(
+			(di, dj) -> Strings.compareIgnoreCase(Labels.name(di), Labels.name(dj)));
 		return list;
 	}
 

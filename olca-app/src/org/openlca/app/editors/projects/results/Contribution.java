@@ -9,9 +9,9 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Pair;
-import org.openlca.util.Strings;
 
 /**
  * Contains the data of a cell entry in the contribution table.
@@ -50,7 +50,7 @@ class Contribution {
 		List<Contribution> results, int count, String query) {
 		if (results == null || results.isEmpty())
 			return Collections.emptyList();
-		return Strings.nullOrEmpty(query)
+		return Strings.isBlank(query)
 			? selectByAmount(results, count)
 			: selectByQuery(results, count, query);
 	}
@@ -79,7 +79,7 @@ class Contribution {
 		// the higher a result will be ranked. 0 means no match.
 		var terms = Arrays.stream(query.split(" "))
 			.map(s -> s.trim().toLowerCase())
-			.filter(t -> !Strings.nullOrEmpty(t))
+			.filter(Strings::isNotBlank)
 			.collect(Collectors.toSet());
 		ToDoubleFunction<String> matcher = s -> {
 			if (s == null)
@@ -102,10 +102,10 @@ class Contribution {
 				return Pair.of(c, factor);
 			})
 			.sorted((p1, p2) -> {
-				var c = Double.compare(p1.second, p2.second);
+				var c = Double.compare(p1.second(), p2.second());
 				if (c != 0)
 					return c;
-				return Double.compare(p2.first.amount, p1.first.amount);
+				return Double.compare(p2.first().amount, p1.first().amount);
 			})
 			.collect(Collectors.toList());
 
@@ -114,10 +114,10 @@ class Contribution {
 			Math.min(sorted.size(), count + 1));
 		for (int i = 0; i < sorted.size(); i++) {
 			var next = sorted.get(i);
-			if (i >= count || next.second == 0) {
-				rest += next.first.amount;
+			if (i >= count || next.second() == 0) {
+				rest += next.first().amount;
 			} else {
-				selected.add(next.first);
+				selected.add(next.first());
 			}
 		}
 		if (rest != 0) {

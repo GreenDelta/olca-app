@@ -13,6 +13,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.database.NativeSql;
@@ -20,7 +21,6 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ImpactMethodDescriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 public class ImpactMethodViewer extends
 		AbstractComboViewer<ImpactMethodDescriptor> {
@@ -76,7 +76,7 @@ public class ImpactMethodViewer extends
 		try {
 			var dao = new ImpactMethodDao(db);
 			var descriptors = dao.getDescriptors();
-			descriptors.sort((m1, m2) -> Strings.compare(m1.name, m2.name));
+			descriptors.sort((m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name));
 			setInput(descriptors.toArray(new ImpactMethodDescriptor[0]));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to load impact method descriptors", e);

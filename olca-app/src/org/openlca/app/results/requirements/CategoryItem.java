@@ -9,8 +9,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.openlca.app.db.Database;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Category;
-import org.openlca.util.Strings;
 
 class CategoryItem implements Item {
 
@@ -76,7 +76,7 @@ class CategoryItem implements Item {
 	 */
 	private static void sort(List<CategoryItem> items) {
 		items.forEach(item -> sort(item.childs));
-		items.sort((i1, i2) -> Strings.compare(
+		items.sort((i1, i2) -> Strings.compareIgnoreCase(
 			i1.category.name, i2.category.name));
 	}
 

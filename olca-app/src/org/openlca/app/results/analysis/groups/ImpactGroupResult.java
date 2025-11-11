@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.agroups.AnalysisGroupResult;
-import org.openlca.util.Strings;
 
 record ImpactGroupResult(
 		ImpactDescriptor impact,
@@ -40,7 +40,7 @@ record ImpactGroupResult(
 			return 0;
 		var visited = new HashSet<String>();
 		for (var g : groups) {
-			if (Strings.nullOrEmpty(g.name))
+			if (Strings.isBlank(g.name))
 				continue;
 			visited.add(g.name);
 		}

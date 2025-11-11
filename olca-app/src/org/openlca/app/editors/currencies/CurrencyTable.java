@@ -17,10 +17,10 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 class CurrencyTable {
 
@@ -55,7 +55,7 @@ class CurrencyTable {
 				continue;
 			others.add(c);
 		}
-		others.sort((c1, c2) -> Strings.compare(c1.name, c2.name));
+		others.sort((c1, c2) -> Strings.compareIgnoreCase(c1.name, c2.name));
 		return others;
 	}
 

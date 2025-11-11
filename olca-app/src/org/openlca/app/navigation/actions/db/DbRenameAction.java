@@ -22,6 +22,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.config.DerbyConfig;
+import org.openlca.util.Dirs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +93,9 @@ public class DbRenameAction extends Action implements INavigationAction {
 				success = oldGitFolder.renameTo(newGitFolder);
 				if (!success) {
 					log.error("failed to rename repository folder");
+					if (oldGitFolder.exists() && !Dirs.isEmpty(oldGitFolder)) {
+						MsgBox.warning(M.RepositoryNotDeleted + "\r\n\r\n" + oldGitFolder.getAbsolutePath());
+					}
 				}
 			}
 			Database.remove(config);

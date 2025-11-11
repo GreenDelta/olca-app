@@ -1,5 +1,6 @@
 package org.openlca.app.wizards;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -22,6 +23,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.matrix.linking.LinkingConfig;
 import org.openlca.core.model.FlowType;
@@ -29,7 +31,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
@@ -61,7 +62,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		createProcessTree(comp);
 		createOptions(comp);
 		if (refProcess != null) {
-			nameText.setText(Strings.orEmpty(Labels.name(refProcess)));
+			nameText.setText(Strings.notNull(Labels.name(refProcess)));
 			var d = Descriptor.of(refProcess);
 			var elem = Navigator.find(processTree, d);
 			if (elem != null) {
@@ -86,8 +87,8 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		// the current name can be replaced if it is empty or if it is
 		// equal to the name of the previously selected process
 		var currentName = nameText.getText();
-		boolean replaceName = Strings.nullOrEmpty(currentName)
-				|| Strings.nullOrEqual(currentName, Labels.name(refProcess));
+		boolean replaceName = Strings.isBlank(currentName)
+				|| Objects.equals(currentName, Labels.name(refProcess));
 
 		Object obj = Selections.firstOf(e);
 		if (!(obj instanceof ModelElement elem)) {
@@ -103,7 +104,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 			var dao = new ProcessDao(Database.get());
 			refProcess = dao.getForId(elem.getContent().id);
 			if (replaceName) {
-				nameText.setText(Strings.orEmpty(Labels.name(refProcess)));
+				nameText.setText(Strings.notNull(Labels.name(refProcess)));
 			}
 			checkInput();
 		} catch (Exception ex) {
@@ -141,7 +142,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		} else {
 			// create an empty reference process
 			var processName = filterText.getText().trim();
-			if (Strings.nullOrEmpty(processName)) {
+			if (Strings.isBlank(processName)) {
 				processName = nameText.getText().trim();
 			}
 			var process = new Process();

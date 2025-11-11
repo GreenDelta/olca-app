@@ -6,10 +6,10 @@ import java.util.List;
 import org.eclipse.nebula.jface.tablecomboviewer.TableComboViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.DQSystemDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.descriptors.DQSystemDescriptor;
-import org.openlca.util.Strings;
 
 public class DQSystemViewer extends AbstractComboViewer<DQSystemDescriptor> {
 
@@ -23,7 +23,7 @@ public class DQSystemViewer extends AbstractComboViewer<DQSystemDescriptor> {
 		Collections.sort(systems, (sys1, sys2) -> {
 			if (sys1 == null || sys2 == null)
 				return 0;
-			return Strings.compare(sys1.name, sys2.name);
+			return Strings.compareIgnoreCase(sys1.name, sys2.name);
 		});
 		super.setInput(systems);
 	}

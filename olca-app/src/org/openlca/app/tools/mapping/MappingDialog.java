@@ -25,6 +25,7 @@ import org.openlca.app.util.Fn;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.LocationDao;
@@ -37,7 +38,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.Categories;
-import org.openlca.util.Strings;
 
 class MappingDialog extends FormDialog {
 
@@ -272,19 +272,19 @@ class MappingDialog extends FormDialog {
 				if (t == null) {
 					t = "?";
 				}
-				if (Strings.notEmpty(ref.flowLocation)) {
+				if (Strings.isNotBlank(ref.flowLocation)) {
 					t += " - " + ref.flowLocation;
 				}
-				flowLink.setText(Strings.cut(t, maxLen));
+				flowLink.setText(Strings.cutEnd(t, maxLen));
 				flowLink.setToolTipText(t);
 			}
 
 			// category path
-			if (Strings.nullOrEmpty(ref.flowCategory)) {
+			if (Strings.isBlank(ref.flowCategory)) {
 				categoryLabel.setText("");
 			} else {
 				categoryLabel.setText(
-					Strings.cutLeft(ref.flowCategory, maxLen));
+					Strings.cutStart(ref.flowCategory, maxLen));
 				categoryLabel.setToolTipText(ref.flowCategory);
 			}
 
@@ -360,7 +360,7 @@ class MappingDialog extends FormDialog {
 					: fdao.getWhereOutput(flowID);
 				providers.addAll(new ProcessDao(db).getDescriptors(ids));
 				providers.sort(
-					(p1, p2) -> Strings.compare(Labels.name(p1), Labels.name(p2)));
+					(p1, p2) -> Strings.compareIgnoreCase(Labels.name(p1), Labels.name(p2)));
 			}
 
 			// fill the provider combo

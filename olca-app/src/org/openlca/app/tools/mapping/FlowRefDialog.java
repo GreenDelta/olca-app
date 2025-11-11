@@ -31,9 +31,9 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
+import org.openlca.commons.Strings;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 class FlowRefDialog extends FormDialog {
 
@@ -163,13 +163,13 @@ class FlowRefDialog extends FormDialog {
 		}
 
 		private Node getNode(String path) {
-			if (Strings.nullOrEmpty(path))
+			if (Strings.isBlank(path))
 				return root;
 			String[] segs = path.split("/");
 			Node parent = root;
 			for (String seg : segs) {
 				String s = seg.trim();
-				if (Strings.nullOrEmpty(s))
+				if (Strings.isBlank(s))
 					continue;
 				Node node = parent.childs.stream()
 						.filter(n -> s.equalsIgnoreCase(n.category))
@@ -240,8 +240,8 @@ class FlowRefDialog extends FormDialog {
 
 		void sort() {
 			childs.forEach(Node::sort);
-			childs.sort((n1, n2) -> Strings.compare(n1.category, n2.category));
-			refs.sort((r1, r2) -> Strings.compare(label(r1), label(r2)));
+			childs.sort((n1, n2) -> Strings.compareIgnoreCase(n1.category, n2.category));
+			refs.sort((r1, r2) -> Strings.compareIgnoreCase(label(r1), label(r2)));
 		}
 	}
 
@@ -286,7 +286,7 @@ class FlowRefDialog extends FormDialog {
 
 		@Override
 		public boolean select(Viewer viewer, Object parent, Object obj) {
-			if (Strings.nullOrEmpty(term))
+			if (Strings.isBlank(term))
 				return true;
 			return matches(obj);
 		}

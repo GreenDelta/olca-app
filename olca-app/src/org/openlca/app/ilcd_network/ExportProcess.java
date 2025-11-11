@@ -1,5 +1,8 @@
 package org.openlca.app.ilcd_network;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.M;
@@ -14,9 +17,6 @@ import org.openlca.io.ilcd.output.ProcessExport;
 import org.openlca.io.ilcd.output.SystemExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 public class ExportProcess implements IRunnableWithProgress {
 

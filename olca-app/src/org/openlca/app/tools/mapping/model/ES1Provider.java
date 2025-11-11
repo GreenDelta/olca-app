@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.FlowType;
@@ -21,7 +22,6 @@ import org.openlca.ecospold.IExchange;
 import org.openlca.ecospold.io.DataSetType;
 import org.openlca.ecospold.io.EcoSpold;
 import org.openlca.io.ecospold1.input.ES1KeyGen;
-import org.openlca.util.Strings;
 import org.openlca.util.ZipFiles;
 import org.slf4j.LoggerFactory;
 
@@ -81,14 +81,14 @@ public class ES1Provider implements FlowProvider {
 				? FlowType.ELEMENTARY_FLOW
 				: FlowType.PRODUCT_FLOW;
 		ref.flowCategory = e.getCategory();
-		if (Strings.notEmpty(e.getSubCategory())) {
+		if (Strings.isNotBlank(e.getSubCategory())) {
 			ref.flowCategory += "/" + e.getSubCategory();
 		}
 		ref.flow = flow;
 
 		ref.unit = new UnitDescriptor();
 		ref.unit.name = e.getUnit();
-		if (Strings.notEmpty(e.getLocation())) {
+		if (Strings.isNotBlank(e.getLocation())) {
 			ref.flowLocation = e.getLocation();
 		}
 		return ref;
@@ -106,7 +106,9 @@ public class ES1Provider implements FlowProvider {
 						continue;
 					try (var stream = zip.getInputStream(entry)) {
 						var spold = EcoSpold.read(stream, type);
-						fn.accept(spold);
+						if (spold.isOk()) {
+							fn.accept(spold.value());
+						}
 					}
 				}
 			}
@@ -115,7 +117,9 @@ public class ES1Provider implements FlowProvider {
 			if (type == null)
 				return;
 			var spold = EcoSpold.read(file, type);
-			fn.accept(spold);
+			if (spold.isOk()) {
+				fn.accept(spold.value());
+			}
 		}
 	}
 

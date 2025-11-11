@@ -7,8 +7,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 /**
  * The basic editor input which contains a model descriptor.
@@ -56,7 +56,7 @@ public final class ModelEditorInput implements IEditorInput {
 	public String getName() {
 		if (descriptor == null)
 			return "no content";
-		return Strings.cut(Labels.name(descriptor), 75);
+		return Strings.cutEnd(Labels.name(descriptor), 75);
 	}
 
 	@Override

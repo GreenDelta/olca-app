@@ -1,8 +1,9 @@
 package org.openlca.app.tools.mapping.generator;
 
+import java.util.Objects;
+
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.FlowType;
-import org.openlca.util.Strings;
 
 record Score(
 	double nameScore,
@@ -42,7 +43,7 @@ record Score(
 		boolean sameType = s.flow.flowType == t.flow.flowType;
 		boolean sameUnit = s.unit != null
 			&& t.unit != null
-			&& Strings.nullOrEqual(s.unit.name, t.unit.name);
+			&& Objects.equals(s.unit.name, t.unit.name);
 
 		return new Score(nameScore, categoryScore, locationScore, sameType, sameUnit);
 	}

@@ -1,5 +1,7 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
+import java.beans.PropertyChangeEvent;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
@@ -7,11 +9,9 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.openlca.app.App;
+import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.results.analysis.sankey.figures.SankeyNodeFigure;
 import org.openlca.app.results.analysis.sankey.model.SankeyNode;
-import org.openlca.app.components.graphics.model.Component;
-
-import java.beans.PropertyChangeEvent;
 
 public class SankeyNodeEditPart extends AbstractVertexEditPart<SankeyNode> {
 

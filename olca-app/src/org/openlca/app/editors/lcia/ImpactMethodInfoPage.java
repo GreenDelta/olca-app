@@ -27,12 +27,12 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 
@@ -69,7 +69,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		indicatorTable.setLabelProvider(new ImpactLabel());
 		var method = editor.getModel();
 		var impacts = method.impactCategories;
-		impacts.sort((c1, c2) -> Strings.compare(c1.name, c2.name));
+		impacts.sort((c1, c2) -> Strings.compareIgnoreCase(c1.name, c2.name));
 		indicatorTable.setInput(impacts);
 		Tables.bindColumnWidths(indicatorTable, 0.5, 0.25, 0.22);
 

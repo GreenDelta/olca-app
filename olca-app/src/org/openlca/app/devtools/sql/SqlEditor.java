@@ -28,7 +28,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.python.google.common.base.Strings;
+import org.openlca.commons.Strings;
 
 public class SqlEditor extends ScriptingEditor {
 
@@ -142,10 +142,10 @@ public class SqlEditor extends ScriptingEditor {
 					int i = 1;
 					for (String result : results) {
 						buff.append('\n')
-								.append(i)
-								.append(". result: \n")
-								.append(org.openlca.util.Strings.cut(result, 1500))
-								.append('\n');
+							.append(i)
+							.append(". result: \n")
+							.append(Strings.cutEnd(result, 1500))
+							.append('\n');
 						i++;
 					}
 					resultText.setText(buff.toString());
@@ -154,7 +154,7 @@ public class SqlEditor extends ScriptingEditor {
 
 			private List<String> getStatements() {
 				var text = queryText.getText();
-				if (Strings.isNullOrEmpty(text))
+				if (Strings.isBlank(text))
 					return Collections.emptyList();
 				var statements = new ArrayList<String>();
 				boolean inQuote = false;

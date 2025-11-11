@@ -16,7 +16,7 @@ import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.ScriptElement;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class NavigationComparator extends ViewerComparator {
 
@@ -44,7 +44,7 @@ public class NavigationComparator extends ViewerComparator {
 				return -1;
 			if (!f1.isDirectory() && f2.isDirectory())
 				return 1;
-			return Strings.compare(f1.getName(), f2.getName());
+			return Strings.compareIgnoreCase(f1.getName(), f2.getName());
 		}
 
 		return compareLabels(viewer, e1, e2);
@@ -75,7 +75,7 @@ public class NavigationComparator extends ViewerComparator {
 	private int compareLabels(Viewer viewer, Object e1, Object e2) {
 		String name1 = getLabel(viewer, e1);
 		String name2 = getLabel(viewer, e2);
-		return Strings.compare(name1, name2);
+		return Strings.compareIgnoreCase(name1, name2);
 	}
 	
 	private String getLabel(Viewer viewer, Object obj) {

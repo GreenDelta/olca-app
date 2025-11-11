@@ -9,18 +9,21 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.storage.file.FileBasedConfig;
+import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.CredentialStore;
 import org.openlca.app.collaboration.util.WebRequests;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.MsgBox;
 import org.openlca.collaboration.client.CSClient;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.git.repo.ClientRepository;
 import org.openlca.git.util.Constants;
 import org.openlca.jsonld.LibraryLink;
-import org.openlca.util.Strings;
+import org.openlca.util.Dirs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +102,17 @@ public class Repository extends ClientRepository {
 		return new File(repos, databaseName);
 	}
 
+	public static void delete(String databaseName) {
+		var gitDir = Repository.gitDir(databaseName);
+		try {
+			Dirs.delete(gitDir);
+		} finally {
+			if (gitDir.exists() && !Dirs.isEmpty(gitDir)) {
+				MsgBox.warning(M.RepositoryNotDeleted + "\r\n\r\n" + gitDir.getAbsolutePath());
+			}
+		}
+	}
+
 	public static boolean isConnected() {
 		return CURRENT != null;
 	}
@@ -153,13 +167,13 @@ public class Repository extends ClientRepository {
 			var repoConfig = new FileBasedConfig(repoConfigFile, getFS());
 			if (repoConfig != null) {
 				var name = repoConfig.getString("user", null, "name");
-				if (!Strings.nullOrEmpty(name))
+				if (Strings.isNotBlank(name))
 					return name;
 			}
 		}
 		// from server config
 		var username = CredentialStore.getUsername(serverUrl);
-		if (!Strings.nullOrEmpty(username))
+		if (Strings.isNotBlank(username))
 			return username;
 		// from global config
 		return getConfig().getString("user", null, "email");

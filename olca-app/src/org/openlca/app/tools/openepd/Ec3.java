@@ -4,8 +4,8 @@ import java.io.File;
 import java.net.URI;
 
 import org.openlca.app.rcp.Workspace;
+import org.openlca.commons.Strings;
 import org.openlca.io.openepd.Ec3Credentials;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 public final class Ec3 {
@@ -15,7 +15,7 @@ public final class Ec3 {
 
 	public static String baseUrl() {
 		var url = credentials().ec3Url();
-		if (Strings.nullOrEmpty(url))
+		if (Strings.isBlank(url))
 			return "https://buildingtransparency.org";
 		try {
 			var uri = new URI(url);

@@ -35,6 +35,7 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
@@ -44,7 +45,6 @@ import org.openlca.core.model.Project;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 
 class ProjectParameterTable {
 
@@ -69,7 +69,7 @@ class ProjectParameterTable {
 		// the project variants. A redefinition is
 		// identified by name and context
 		redefs = new TreeSet<>((redef1, redef2) -> {
-			int c = Strings.compare(redef1.name, redef2.name);
+			int c = Strings.compareIgnoreCase(redef1.name, redef2.name);
 			if (c != 0)
 				return c;
 			long c1 = redef1.contextId != null
@@ -428,7 +428,7 @@ class ProjectParameterTable {
 			if (project == null)
 				return new Column[0];
 			var variants = new ArrayList<>(project.variants);
-			variants.sort((v1, v2) -> Strings.compare(v1.name, v2.name));
+			variants.sort((v1, v2) -> Strings.compareIgnoreCase(v1.name, v2.name));
 			var columns = new Column[variants.size()];
 			for (int i = 0; i < variants.size(); i++) {
 				columns[i] = new Column(i, variants.get(i));
@@ -481,7 +481,7 @@ class ProjectParameterTable {
 		@Override
 		public int compareTo(Column other) {
 			return this.variant != null && other.variant != null
-				? Strings.compare(this.variant.name, other.variant.name)
+				? Strings.compareIgnoreCase(this.variant.name, other.variant.name)
 				: 0;
 		}
 	}

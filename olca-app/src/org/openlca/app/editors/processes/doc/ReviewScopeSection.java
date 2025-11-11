@@ -3,6 +3,7 @@ package org.openlca.app.editors.processes.doc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -23,10 +24,10 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.processes.ReviewMethod;
 import org.openlca.ilcd.processes.ReviewScope;
-import org.openlca.util.Strings;
 
 class ReviewScopeSection {
 
@@ -91,16 +92,16 @@ class ReviewScopeSection {
 				}
 			}
 			list.sort((i1, i2) -> {
-				int c = Strings.compare(i1.scope, i2.scope);
+				int c = Strings.compareIgnoreCase(i1.scope, i2.scope);
 				return c == 0
-						? Strings.compare(i1.method, i2.method)
-						: c;
+					? Strings.compareIgnoreCase(i1.method, i2.method)
+					: c;
 			});
 
 			String last = null;
 			int idx = 0;
 			for (var i : list) {
-				if (!Strings.nullOrEqual(last, i.scope)) {
+				if (!Objects.equals(last, i.scope)) {
 					idx = 0;
 					last = i.scope;
 				}
@@ -113,7 +114,7 @@ class ReviewScopeSection {
 
 		boolean addTo(Review rev) {
 			for (var scope : rev.scopes.values()) {
-				if (!Strings.nullOrEqual(this.scope, scope.name))
+				if (!Objects.equals(this.scope, scope.name))
 					continue;
 				if (scope.methods.contains(method))
 					return false;

@@ -1,10 +1,15 @@
 package org.openlca.app.results.contributions;
 
-import gnu.trove.list.array.TDoubleArrayList;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Objects;
+
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -13,14 +18,10 @@ import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 import org.openlca.io.xls.Excel;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Objects;
+import gnu.trove.list.array.TDoubleArrayList;
 
 class UpstreamTreeExport implements Runnable {
 
@@ -86,10 +87,10 @@ class UpstreamTreeExport implements Runnable {
 
 			// write the result values
 			var unit = unit();
-			var resultHeader = Strings.nullOrEmpty(unit)
+			var resultHeader = Strings.isBlank(unit)
 					? "Result"
 					: "Result [" + unit + "]";
-			var directHeader = Strings.notEmpty(unit)
+			var directHeader = Strings.isNotBlank(unit)
 					? "Direct contribution [" + unit + "]"
 					: "Direct contribution";
 			Excel.cell(sheet, 1, maxColumn + 1, resultHeader)

@@ -13,10 +13,10 @@ import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.doc.ComplianceDeclaration;
 import org.openlca.core.model.doc.ProcessDoc;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 class ComplianceSection {
@@ -103,7 +103,7 @@ class ComplianceSection {
 			var h = M.ComplianceSystem + " #" + (pos + 1);
 			if (_dec.system != null) {
 				var name = Labels.name(_dec.system);
-				if (Strings.notEmpty(name)) {
+				if (Strings.isNotBlank(name)) {
 					h += " - " + name;
 				}
 			}

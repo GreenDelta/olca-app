@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 /**
  * A helper class for selecting a file for an import or export via a file
@@ -52,7 +52,7 @@ public class FileChooser {
 
 		if (defaultName != null) {
 			var ext = FilenameUtils.getExtension(defaultName);
-			if (!Strings.nullOrEmpty(ext)) {
+			if (Strings.isNotBlank(ext)) {
 				dialog.setFileName(FilenameUtils.getBaseName(defaultName));
 				dialog.setFilterExtensions(new String[]{"*." + ext});
 			} else {
@@ -108,7 +108,7 @@ public class FileChooser {
 			dialog.setText(this.title == null ? M.Open : this.title);
 			applyExtensionFilter(dialog);
 			var path = dialog.open();
-			if (Strings.nullOrEmpty(path))
+			if (Strings.isBlank(path))
 				return Optional.empty();
 			var file = new File(path);
 			return file.exists()
@@ -143,7 +143,7 @@ public class FileChooser {
 				return;
 			var extFilter = "";
 			for (var ext : extensions) {
-				if (Strings.nullOrEmpty(ext))
+				if (Strings.isBlank(ext))
 					continue;
 				var e = ext.startsWith("*.")
 						? ext

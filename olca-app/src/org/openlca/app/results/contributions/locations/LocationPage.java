@@ -24,6 +24,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
+import org.openlca.commons.Strings;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.RootEntity;
@@ -32,7 +33,6 @@ import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.Contribution;
 import org.openlca.core.results.LocationResult;
-import org.openlca.util.Strings;
 
 /**
  * Shows the contributions of the locations in the product system to an analysis
@@ -180,7 +180,7 @@ public class LocationPage extends FormPage {
 				.sorted((c1, c2) -> {
 					int c = Double.compare(c2.amount, c1.amount);
 					return c == 0
-							? Strings.compare(Labels.name(c1.item), Labels.name(c2.item))
+							? Strings.compareIgnoreCase(Labels.name(c1.item), Labels.name(c2.item))
 							: c;
 				})
 				.collect(Collectors.toList());

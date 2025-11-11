@@ -21,8 +21,8 @@ import org.openlca.collaboration.model.Dataset;
 import org.openlca.collaboration.model.Dataset.Repo;
 import org.openlca.collaboration.model.Dataset.Version;
 import org.openlca.collaboration.model.SearchResult;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 class SearchResults {
 
@@ -64,9 +64,9 @@ class SearchResults {
 	}
 
 	private void renderCategoryLabel(Composite parent, Version version) {
-		var category = !Strings.nullOrEmpty(version.category()) ? version.category() : "Uncategorized";
+		var category = Strings.isNotBlank(version.category()) ? version.category() : "Uncategorized";
 		var label = tk.createLabel(parent, category);
-		if (Strings.nullOrEmpty(version.category())) {
+		if (Strings.isBlank(version.category())) {
 			label.setFont(UI.italicFont());
 		}
 		label.setForeground(Colors.get(0, 128, 42));

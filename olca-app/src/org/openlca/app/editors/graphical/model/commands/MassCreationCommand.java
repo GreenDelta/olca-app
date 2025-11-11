@@ -1,5 +1,13 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.editors.graphical.model.GraphFactory.createGraphLink;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
@@ -9,14 +17,6 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.RootDescriptor;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.openlca.app.editors.graphical.model.GraphFactory.createGraphLink;
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 
 public class MassCreationCommand extends Command {
 

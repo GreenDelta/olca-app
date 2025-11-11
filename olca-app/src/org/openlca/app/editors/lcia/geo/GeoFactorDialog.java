@@ -24,12 +24,12 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactFactor;
 import org.openlca.geo.geojson.FeatureCollection;
 import org.openlca.geo.geojson.GeoJSON;
 import org.openlca.geo.lcia.GeoFactorMerge;
-import org.openlca.util.Strings;
 
 class GeoFactorDialog extends FormDialog {
 
@@ -164,7 +164,7 @@ class GeoFactorDialog extends FormDialog {
 		private String unitOf(ImpactFactor f) {
 			if (f.unit == null)
 				return null;
-			return Strings.notEmpty(impact.referenceUnit)
+			return Strings.isNotBlank(impact.referenceUnit)
 					? impact.referenceUnit + "/" + f.unit.name
 					: "1/" + f.unit.name;
 		}

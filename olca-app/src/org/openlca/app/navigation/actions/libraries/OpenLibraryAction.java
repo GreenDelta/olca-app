@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.openlca.app.M;
+import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryElement;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.editors.libraries.LibraryEditor;
 import org.openlca.core.library.Library;
 
 public class OpenLibraryAction extends Action implements INavigationAction {

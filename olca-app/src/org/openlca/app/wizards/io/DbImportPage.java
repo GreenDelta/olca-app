@@ -19,8 +19,8 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DatabaseConfig;
-import org.openlca.util.Strings;
 
 class DbImportPage extends WizardPage {
 
@@ -94,7 +94,7 @@ class DbImportPage extends WizardPage {
 				.stream()
 				.filter(c -> c != null && !Database.isActive(c))
 				.forEach(configs::add);
-		configs.sort((c1, c2) -> Strings.compare(c1.name(), c2.name()));
+		configs.sort((c1, c2) -> Strings.compareIgnoreCase(c1.name(), c2.name()));
 		return configs;
 	}
 

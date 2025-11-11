@@ -1,5 +1,7 @@
 package org.openlca.app.results.contributions.locations;
 
+import java.util.Objects;
+
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -18,7 +20,6 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.Contribution;
-import org.openlca.util.Strings;
 
 class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 
@@ -76,7 +77,7 @@ class TreeLabel extends ColumnLabelProvider implements ITableLabelProvider {
 		return switch (c.item) {
 			case Location loc -> {
 				var label = loc.name;
-				if (loc.code != null && !Strings.nullOrEqual(loc.code, label)) {
+				if (loc.code != null && !Objects.equals(loc.code, label)) {
 					label += " - " + loc.code;
 				}
 				yield label;

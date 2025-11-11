@@ -17,8 +17,8 @@ import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.ilcd.io.SodaClient;
-import org.openlca.util.Strings;
 
 class LoginDialog extends FormDialog {
 
@@ -123,7 +123,7 @@ class LoginDialog extends FormDialog {
 		}
 
 		String validate() {
-			if (Strings.nullOrEmpty(url))
+			if (Strings.isBlank(url))
 				return M.NoUrlProvided;
 			if (!url.startsWith("http://") && !url.startsWith("https://"))
 				return M.UrlShouldStartWithHttp;
@@ -136,9 +136,9 @@ class LoginDialog extends FormDialog {
 			if (anonymous)
 				return null;
 
-			if (Strings.nullOrEmpty(user))
+			if (Strings.isBlank(user))
 				return M.NoUserNameProvided;
-			if (Strings.nullOrEmpty(password))
+			if (Strings.isBlank(password))
 				return M.NoPasswordProvided;
 
 			return null;

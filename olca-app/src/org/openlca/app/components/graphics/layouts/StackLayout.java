@@ -1,13 +1,15 @@
 package org.openlca.app.components.graphics.layouts;
 
+import static org.eclipse.draw2d.PositionConstants.NORTH;
+import static org.eclipse.draw2d.PositionConstants.SOUTH;
+import static org.eclipse.draw2d.PositionConstants.SOUTH_EAST;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.components.graphics.figures.ComponentFigure;
-
-import static org.eclipse.draw2d.PositionConstants.*;
 
 public class StackLayout {
 

@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Text;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 
 class TextFilter extends ViewerFilter {
@@ -34,7 +34,7 @@ class TextFilter extends ViewerFilter {
 
 	@Override
 	public boolean select(Viewer viewer, Object parent, Object elem) {
-		if (Strings.nullOrEmpty(filter))
+		if (Strings.isBlank(filter))
 			return true;
 		if (label == null) {
 			var tableLabel = table.getLabelProvider();

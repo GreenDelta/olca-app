@@ -1,6 +1,11 @@
 package org.openlca.app.components.graphics.actions;
 
-import org.eclipse.draw2d.*;
+import java.io.File;
+
+import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.SWTGraphics;
+import org.eclipse.draw2d.ScalableFreeformLayeredPane;
+import org.eclipse.draw2d.Viewport;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
@@ -13,11 +18,9 @@ import org.eclipse.swt.widgets.Display;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.components.graphics.edit.RootEditPart;
 import org.openlca.app.components.graphics.zoom.ZoomManager;
-
-import java.io.File;
+import org.openlca.app.rcp.images.Icon;
 
 
 public class SaveImageAction extends WorkbenchPartAction {

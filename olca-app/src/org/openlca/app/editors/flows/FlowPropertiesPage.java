@@ -6,8 +6,8 @@ import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Flow;
-import org.openlca.util.Strings;
 
 class FlowPropertiesPage extends ModelPage<Flow> {
 
@@ -42,8 +42,8 @@ class FlowPropertiesPage extends ModelPage<Flow> {
 			var prop1 = f1.flowProperty;
 			var prop2 = f2.flowProperty;
 			return prop1 != null && prop2 != null
-					? Strings.compare(prop1.name, prop2.name)
-					: 0;
+				? Strings.compareIgnoreCase(prop1.name, prop2.name)
+				: 0;
 		});
 		viewer.setInput(factors);
 	}

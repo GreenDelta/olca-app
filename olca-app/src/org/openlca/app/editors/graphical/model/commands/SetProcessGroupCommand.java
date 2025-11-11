@@ -32,10 +32,10 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.util.Strings;
 
 public class SetProcessGroupCommand extends Command {
 
@@ -84,7 +84,7 @@ public class SetProcessGroupCommand extends Command {
 			c.id = g.id;
 			copy.add(c);
 		}
-		copy.sort((g1, g2) -> Strings.compare(g1.name, g2.name));
+		copy.sort((g1, g2) -> Strings.compareIgnoreCase(g1.name, g2.name));
 
 		// edit the copy and check if something changed
 		var dialog = new Dialog(editor, copy, getCurrent(copy));
@@ -269,7 +269,7 @@ public class SetProcessGroupCommand extends Command {
 
 		private Color colorOf(AnalysisGroup group) {
 			var c = group != null ? group.color : null;
-			if (Strings.notEmpty(c))
+			if (Strings.isNotBlank(c))
 				return Colors.fromHex(c);
 			return editor.getTheme() != null && editor.getTheme().isDark()
 					? Colors.fromHex("#FFFDE7")
@@ -414,10 +414,10 @@ public class SetProcessGroupCommand extends Command {
 		}
 
 		private void sync(AnalysisGroup next) {
-			if (next == null || Strings.nullOrEmpty(next.name))
+			if (next == null || Strings.isBlank(next.name))
 				return;
 			for (var g : groups) {
-				if (Strings.nullOrEqual(g.name, next.name)) {
+				if (Objects.equals(g.name, next.name)) {
 					copyAttributes(next, g);
 					return;
 				}
@@ -430,7 +430,7 @@ public class SetProcessGroupCommand extends Command {
 		}
 
 		private void copyAttributes(AnalysisGroup source, AnalysisGroup target) {
-			if (Strings.nullOrEmpty(target.color)) {
+			if (Strings.isBlank(target.color)) {
 				target.color = source.color;
 			}
 			for (var p : source.processes) {

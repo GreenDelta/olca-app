@@ -22,10 +22,10 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.Scope;
-import org.openlca.util.Strings;
 
 class EditorPage extends FormPage {
 
@@ -52,7 +52,7 @@ class EditorPage extends FormPage {
 
 		Runnable doFilter = () -> {
 			String t = filter.getText();
-			if (Strings.nullOrEmpty(t)
+			if (Strings.isBlank(t)
 				&& filterCombo.type != FilterCombo.ERRORS) {
 				table.setInput(params);
 			} else {

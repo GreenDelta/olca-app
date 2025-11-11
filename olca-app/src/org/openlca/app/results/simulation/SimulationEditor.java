@@ -14,9 +14,9 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.model.CalculationSetup;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class SimulationEditor extends SimpleFormEditor {
 		setTitleImage(Icon.SIMULATE.get());
 		var input = (SimulationInput) editorInput;
 		setup = AppContext.remove(input.setupKey, CalculationSetup.class);
-		setPartName(Strings.cut(Labels.name(setup.target()), 75));
+		setPartName(Strings.cutEnd(Labels.name(setup.target()), 75));
 		simulator = AppContext.remove(input.solverKey, Simulator.class);
 	}
 

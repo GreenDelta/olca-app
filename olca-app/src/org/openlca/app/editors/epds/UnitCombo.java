@@ -6,11 +6,11 @@ import java.util.function.Consumer;
 
 import org.eclipse.swt.widgets.Combo;
 import org.openlca.app.util.Controls;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Unit;
-import org.openlca.util.Strings;
 
 class UnitCombo {
 
@@ -59,8 +59,8 @@ class UnitCombo {
 		}
 
 		items.sort((i1, i2) -> isMultiProp
-			? Strings.compare(i1.fullLabel(), i2.fullLabel())
-			: Strings.compare(i1.shortLabel(), i2.shortLabel()));
+			? Strings.compareIgnoreCase(i1.fullLabel(), i2.fullLabel())
+			: Strings.compareIgnoreCase(i1.shortLabel(), i2.shortLabel()));
 		var comboItems = new String[items.size()];
 		int selected = -1;
 		for (int i = 0; i < items.size(); i++) {
@@ -117,7 +117,7 @@ class UnitCombo {
 	record Item(Unit unit, FlowPropertyFactor factor, boolean isRef) {
 
 		String shortLabel() {
-			return Strings.orEmpty(unit.name);
+			return Strings.notNull(unit.name);
 		}
 
 		String fullLabel() {

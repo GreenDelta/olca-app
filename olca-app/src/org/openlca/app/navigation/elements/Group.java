@@ -3,7 +3,6 @@ package org.openlca.app.navigation.elements;
 import java.util.Objects;
 
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 public class Group {
 
@@ -29,7 +28,7 @@ public class Group {
 			return true;
 		if (!(obj instanceof Group other))
 			return false;
-		return Strings.nullOrEqual(this.label, other.label);
+		return Objects.equals(this.label, other.label);
 	}
 
 	@Override

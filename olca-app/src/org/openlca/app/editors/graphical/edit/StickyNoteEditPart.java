@@ -1,5 +1,9 @@
 package org.openlca.app.editors.graphical.edit;
 
+import java.beans.PropertyChangeEvent;
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
@@ -8,15 +12,11 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.gef.requests.GroupRequest;
+import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.editors.graphical.figures.MaximizedStickyNoteFigure;
 import org.openlca.app.editors.graphical.figures.MinimizedStickyNoteFigure;
 import org.openlca.app.editors.graphical.figures.StickyNoteFigure;
 import org.openlca.app.editors.graphical.model.StickyNote;
-import org.openlca.app.components.graphics.model.Component;
-
-import java.beans.PropertyChangeEvent;
-import java.util.Collections;
-import java.util.List;
 
 public abstract class StickyNoteEditPart extends
 		AbstractVertexEditPart<StickyNote> {

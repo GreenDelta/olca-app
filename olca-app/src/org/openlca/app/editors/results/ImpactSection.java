@@ -20,10 +20,10 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
-import org.openlca.util.Strings;
 
 record ImpactSection(ResultEditor editor) {
 
@@ -49,7 +49,7 @@ record ImpactSection(ResultEditor editor) {
 		result().impactResults.sort((i, j) -> {
 			var ni = Labels.name(i.indicator);
 			var nj = Labels.name(j.indicator);
-			return Strings.compare(ni, nj);
+			return Strings.compareIgnoreCase(ni, nj);
 		});
 		table.setInput(result().impactResults);
 		editor.onSaved(() -> table.setInput(result().impactResults));

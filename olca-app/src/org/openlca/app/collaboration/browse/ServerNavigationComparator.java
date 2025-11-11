@@ -10,7 +10,7 @@ import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.browse.elements.GroupElement;
 import org.openlca.app.collaboration.browse.elements.LibrariesElement;
 import org.openlca.app.navigation.ModelTypeOrder;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class ServerNavigationComparator extends ViewerComparator {
 
@@ -60,7 +60,7 @@ public class ServerNavigationComparator extends ViewerComparator {
 	private int compareLabels(Viewer viewer, Object e1, Object e2) {
 		String name1 = getLabel(viewer, e1);
 		String name2 = getLabel(viewer, e2);
-		return Strings.compare(name1, name2);
+		return Strings.compareIgnoreCase(name1, name2);
 	}
 
 	private String getLabel(Viewer viewer, Object obj) {

@@ -1,10 +1,11 @@
 package org.openlca.app.logging;
 
-import ch.qos.logback.classic.Level;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.openlca.app.rcp.RcpActivator;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
+
+import ch.qos.logback.classic.Level;
 
 /**
  * The preferences of the application logging.
@@ -28,7 +29,7 @@ public class LoggerPreference extends AbstractPreferenceInitializer {
 
 	static Level getLogLevel() {
 		var levelId = store().getString(LOG_LEVEL);
-		if (Strings.nullOrEmpty(levelId))
+		if (Strings.isBlank(levelId))
 			return Level.INFO;
 		return switch (levelId) {
 			case LEVEL_ALL -> Level.TRACE;

@@ -1,11 +1,11 @@
 package org.openlca.app.navigation.elements;
 
-import org.openlca.app.db.Database;
-import org.openlca.util.Strings;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.openlca.app.db.Database;
+import org.openlca.commons.Strings;
 
 public class DatabaseDirElement extends NavigationElement<String> {
 
@@ -50,7 +50,7 @@ public class DatabaseDirElement extends NavigationElement<String> {
 	}
 
 	public static String[] split(String path) {
-		if (Strings.nullOrEmpty(path))
+		if (Strings.isBlank(path))
 			return new String[0];
 		var parts = path.split("/");
 		var seg = new ArrayList<String>(parts.length);

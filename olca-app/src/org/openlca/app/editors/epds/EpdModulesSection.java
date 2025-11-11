@@ -19,10 +19,10 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.ReferenceAmount;
 import org.openlca.core.model.EpdModule;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 class EpdModulesSection {
 
@@ -58,7 +58,7 @@ class EpdModulesSection {
 
 		// fill the table
 		var modules = modules();
-		modules.sort((m1, m2) -> Strings.compare(m1.name, m2.name));
+		modules.sort((mi, mj) -> Strings.compareIgnoreCase(mi.name, mj.name));
 		table.setInput(modules);
 	}
 

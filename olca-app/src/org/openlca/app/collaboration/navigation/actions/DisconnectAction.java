@@ -11,7 +11,6 @@ import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.util.Dirs;
 
 class DisconnectAction extends Action implements INavigationAction {
 
@@ -28,9 +27,11 @@ class DisconnectAction extends Action implements INavigationAction {
 	@Override
 	public void run() {
 		Repository.CURRENT.close();
-		var gitDir = Repository.gitDir(Database.get().getName());
-		Dirs.delete(gitDir);
-		Actions.refresh();
+		try {
+			Repository.delete(Database.get().getName());
+		} finally {
+			Actions.refresh();
+		}
 	}
 
 	@Override

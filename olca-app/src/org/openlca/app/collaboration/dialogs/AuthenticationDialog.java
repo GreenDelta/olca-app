@@ -13,7 +13,7 @@ import org.openlca.app.components.AuthenticationGroup;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.collaboration.model.Credentials;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class AuthenticationDialog extends FormDialog {
 
@@ -42,7 +42,7 @@ public class AuthenticationDialog extends FormDialog {
 	}
 
 	public static PersonIdent promptUser(String url, String user) {
-		if (!Strings.nullOrEmpty(user))
+		if (Strings.isNotBlank(user))
 			return new PersonIdent(user, "");
 		var dialog = new AuthenticationDialog(url);
 		dialog.userPrompt = true;
@@ -56,11 +56,11 @@ public class AuthenticationDialog extends FormDialog {
 	}
 
 	public static GitCredentialsProvider promptCredentials(String url, String user) {
-		if (Strings.nullOrEmpty(user)) {
+		if (Strings.isBlank(user)) {
 			user = CredentialStore.getUsername(url);
 		}
 		var password = CredentialStore.getPassword(url, user);
-		if (!Strings.nullOrEmpty(user) && !Strings.nullOrEmpty(password))
+		if (Strings.isNotBlank(user) && Strings.isNotBlank(password))
 			return new GitCredentialsProvider(url, user, password, null);
 		var dialog = new AuthenticationDialog(url, user, password);
 		dialog.passwordPrompt = true;
@@ -78,10 +78,10 @@ public class AuthenticationDialog extends FormDialog {
 		dialog.tokenPrompt = true;
 		if (dialog.open() == AuthenticationDialog.CANCEL)
 			return null;
-		if (Strings.nullOrEmpty(user)) {
+		if (Strings.isBlank(user)) {
 			user = dialog.auth.user();
 		}
-		if (Strings.nullOrEmpty(password)) {
+		if (Strings.isBlank(password)) {
 			password = dialog.auth.password();
 		}
 		CredentialStore.put(url, user, password);
@@ -91,7 +91,7 @@ public class AuthenticationDialog extends FormDialog {
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var message = M.EnterGitCredentials + " - ";
-		if (!Strings.nullOrEmpty(user)) {
+		if (Strings.isNotBlank(user)) {
 			message += user + "@";
 		}
 		message += url;
@@ -106,7 +106,7 @@ public class AuthenticationDialog extends FormDialog {
 		} else if (passwordPrompt) {
 			auth.withUser(user).withPassword();
 		} else if (tokenPrompt) {
-			if (Strings.nullOrEmpty(user) || Strings.nullOrEmpty(password)) {
+			if (Strings.isBlank(user) || Strings.isBlank(password)) {
 				auth.withUser(user).withPassword();
 			}
 			auth.withToken();
@@ -143,7 +143,7 @@ public class AuthenticationDialog extends FormDialog {
 		public final String token;
 
 		private GitCredentialsProvider(String url, String user, String password, String token) {
-			super(user, Strings.nullOrEmpty(token) ? password : password + "&token=" + token);
+			super(user, Strings.isBlank(token) ? password : password + "&token=" + token);
 			this.url = url;
 			this.user = user;
 			this.ident = new PersonIdent(user, "");
@@ -173,7 +173,7 @@ public class AuthenticationDialog extends FormDialog {
 					? auth.token
 					: null;
 		}
-		
+
 		@Override
 		public boolean onUnauthenticated() {
 			CredentialStore.clearPassword(url, user);

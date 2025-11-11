@@ -1,13 +1,13 @@
 package org.openlca.app.components.graphics.frame;
 
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.components.graphics.edit.RootEditPart;
 import org.openlca.app.components.graphics.model.Element;
-
-import java.beans.PropertyChangeListener;
 
 public abstract class Header extends Composite implements
 		PropertyChangeListener {

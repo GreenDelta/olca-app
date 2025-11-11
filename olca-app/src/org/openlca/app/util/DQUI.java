@@ -2,10 +2,10 @@ package org.openlca.app.util;
 
 import org.eclipse.swt.graphics.Color;
 import org.openlca.app.preferences.Theme;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.data_quality.AggregationType;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.DQSystem;
-import org.openlca.util.Strings;
 
 public class DQUI {
 
@@ -17,7 +17,7 @@ public class DQUI {
 		for (int i = headers.length; i < newHeaders.length; i++) {
 			int pos = i - headers.length + 1;
 			var indicator = system.getIndicator(pos);
-			newHeaders[i] = Strings.nullOrEmpty(indicator.name)
+			newHeaders[i] = Strings.isBlank(indicator.name)
 					? Integer.toString(indicator.position)
 					: Character.toString(indicator.name.charAt(0));
 		}

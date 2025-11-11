@@ -1,14 +1,14 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.openlca.app.components.graphics.model.Component;
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.openlca.app.components.graphics.model.Component;
 
 public abstract class AbstractComponentEditPart<N extends Component> extends
 		AbstractGraphicalEditPart implements PropertyChangeListener {

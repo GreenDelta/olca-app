@@ -25,6 +25,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FlowPropertyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.FlowProperty;
@@ -33,7 +34,6 @@ import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.io.UnitMapping;
 import org.openlca.io.UnitMappingEntry;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -192,7 +192,7 @@ public abstract class UnitMappingPage extends WizardPage {
 			try {
 				flowProperties = new FlowPropertyDao(database).getAll();
 				// flow properties are sorted for the combo cell editor
-				flowProperties.sort((o1, o2) -> Strings.compare(o1.name, o2.name));
+				flowProperties.sort((o1, o2) -> Strings.compareIgnoreCase(o1.name, o2.name));
 				update();
 				checkCompletion();
 			} catch (Exception e) {

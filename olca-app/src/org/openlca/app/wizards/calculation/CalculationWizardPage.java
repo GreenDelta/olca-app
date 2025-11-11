@@ -19,9 +19,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.app.viewers.combo.NwSetComboViewer;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 /**
  * Page for setting the calculation properties of a product system. Class must
@@ -98,7 +98,7 @@ class CalculationWizardPage extends WizardPage {
 				return -1;
 			if (s2.isBaseline)
 				return 1;
-			return Strings.compare(s1.name, s2.name);
+			return Strings.compareIgnoreCase(s1.name, s2.name);
 		});
 
 		UI.label(comp, M.ParameterSet);

@@ -1,7 +1,7 @@
 package org.openlca.app.logging;
 
 import org.openlca.app.AppArg;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
@@ -51,7 +51,7 @@ public class LoggerConfig {
 	}
 
 	private static Level levelOf(String arg) {
-		if (Strings.nullOrEmpty(arg))
+		if (Strings.isBlank(arg))
 			return Level.INFO;
 		return switch (arg.toLowerCase()) {
 			case "all", "trace" -> Level.ALL;

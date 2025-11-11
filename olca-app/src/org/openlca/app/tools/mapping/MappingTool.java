@@ -24,12 +24,12 @@ import org.openlca.app.tools.mapping.model.FlowProvider;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.MappingFile;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.Format;
-import org.openlca.util.Strings;
 
 public class MappingTool extends SimpleFormEditor {
 
@@ -185,7 +185,7 @@ public class MappingTool extends SimpleFormEditor {
 				M.SaveMappingInDatabaseInfo,
 				proposedName,
 				name -> {
-					if (Strings.nullOrEmpty(name))
+					if (Strings.isBlank(name))
 						return M.NameCannotBeEmpty;
 					if (existing.contains(name.toLowerCase().trim()))
 						return M.FlowMappingWithThisNameExists;

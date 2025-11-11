@@ -9,7 +9,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 
 public class SodaClientTool extends SimpleFormEditor {
@@ -21,7 +21,7 @@ public class SodaClientTool extends SimpleFormEditor {
 		if (con == null || con.hasError())
 			return;
 		var id = AppContext.put(con);
-		var input = new SimpleEditorInput(id, Strings.cut(con.toString(), 25));
+		var input = new SimpleEditorInput(id, Strings.cutEnd(con.toString(), 25));
 		Editors.open(input, "SodaClientTool");
 	}
 

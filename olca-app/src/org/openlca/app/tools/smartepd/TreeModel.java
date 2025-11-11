@@ -3,11 +3,11 @@ package org.openlca.app.tools.smartepd;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openlca.commons.Res;
+import org.openlca.commons.Strings;
 import org.openlca.io.smartepd.SmartEpd;
 import org.openlca.io.smartepd.SmartEpdClient;
 import org.openlca.io.smartepd.SmartProject;
-import org.openlca.util.Res;
-import org.openlca.util.Strings;
 
 record TreeModel(List<ProjectNode> projectNodes) {
 
@@ -15,7 +15,7 @@ record TreeModel(List<ProjectNode> projectNodes) {
 		if (client == null)
 			return Res.error("no client provided");
 		var res = client.getProjects();
-		if (res.hasError())
+		if (res.isError())
 			return res.wrapError("failed to fetch projects");
 
 		var projects = res.value();
@@ -25,16 +25,16 @@ record TreeModel(List<ProjectNode> projectNodes) {
 			var node = new ProjectNode(project, new ArrayList<>());
 			nodes.add(node);
 			var epdRes = client.getEpds(project.id());
-			if (epdRes.hasError())
+			if (epdRes.isError())
 				continue;
 			var epds = epdRes.value();
 			for (var epd : epds) {
 				node.epdNodes().add(new EpdNode(node, epd));
 			}
-			node.epdNodes.sort((a, b) -> Strings.compare(a.name(), b.name()));
+			node.epdNodes.sort((a, b) -> Strings.compareIgnoreCase(a.name(), b.name()));
 		}
-		nodes.sort((a, b) -> Strings.compare(a.name(), b.name()));
-		return Res.of(new TreeModel(nodes));
+		nodes.sort((a, b) -> Strings.compareIgnoreCase(a.name(), b.name()));
+		return Res.ok(new TreeModel(nodes));
 	}
 
 	interface Node {

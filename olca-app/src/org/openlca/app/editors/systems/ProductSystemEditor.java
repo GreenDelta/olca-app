@@ -1,5 +1,7 @@
 package org.openlca.app.editors.systems;
 
+import static org.openlca.app.components.graphics.EditorActionBarContributor.refreshActionBar;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -10,13 +12,11 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditor;
+import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.GraphFile;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
-import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.model.ProductSystem;
-
-import static org.openlca.app.components.graphics.EditorActionBarContributor.refreshActionBar;
 
 public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 

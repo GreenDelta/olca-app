@@ -6,10 +6,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.util.KeyGen;
-import org.openlca.util.Strings;
 
 public class LocationWizard extends AbstractWizard<Location> {
 
@@ -52,7 +52,7 @@ public class LocationWizard extends AbstractWizard<Location> {
 		public Location createModel() {
 			Location location = new Location();
 			String code = codeText.getText();
-			if (Strings.nullOrEmpty(code)) {
+			if (Strings.isBlank(code)) {
 				location.refId = UUID.randomUUID().toString();
 			} else {
 				location.code = code;
@@ -68,7 +68,7 @@ public class LocationWizard extends AbstractWizard<Location> {
 			super.checkInput();
 			if (getErrorMessage() != null)
 				return;
-			if (Strings.nullOrEmpty(codeText.getText())) {
+			if (Strings.isBlank(codeText.getText())) {
 				setErrorMessage(M.ALocationCodeIsRequired);
 				setPageComplete(false);
 			}

@@ -18,11 +18,11 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ProjectResult;
-import org.openlca.util.Strings;
 
 class TotalImpactSection extends LabelProvider implements TableSection {
 
@@ -70,7 +70,7 @@ class TotalImpactSection extends LabelProvider implements TableSection {
 		table.setInput(data.items()
 			.impacts()
 			.stream()
-			.sorted((i1, i2) -> Strings.compare(i1.name, i2.name))
+			.sorted((i1, i2) -> Strings.compareIgnoreCase(i1.name, i2.name))
 			.map(Row::new)
 			.collect(Collectors.toList()));
 	}

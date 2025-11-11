@@ -34,13 +34,13 @@ import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 import org.openlca.io.CategoryPath;
 import org.openlca.util.AllocationUtils;
-import org.openlca.util.Strings;
 
 /**
  * A table for the display and editing of the causal allocation factors of a
@@ -234,7 +234,7 @@ class CausalFactorTable {
 							var f = c.factorOf(exchange);
 							if (f == null)
 								yield "";
-							yield Strings.nullOrEmpty(f.formula)
+							yield Strings.isBlank(f.formula)
 								? Double.toString(f.value)
 								: f.formula + " = " + f.value;
 						}
@@ -319,7 +319,7 @@ class CausalFactorTable {
 			var factor = factorOf(exchange);
 			if (factor == null)
 				return "";
-			return Strings.nullOrEmpty(factor.formula)
+			return Strings.isBlank(factor.formula)
 				? Double.toString(factor.value)
 				: factor.formula;
 		}

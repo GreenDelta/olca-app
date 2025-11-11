@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.openlca.app.components.graphics.model.Element;
-import org.openlca.core.model.Copyable;
+import org.openlca.commons.Copyable;
 import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonObject;

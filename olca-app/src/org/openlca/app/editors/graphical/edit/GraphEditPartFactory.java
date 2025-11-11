@@ -2,7 +2,12 @@ package org.openlca.app.editors.graphical.edit;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
-import org.openlca.app.editors.graphical.model.*;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.GraphLink;
+import org.openlca.app.editors.graphical.model.IOPane;
+import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.editors.graphical.model.StickyNote;
 
 /**
  * A class that handles appropriate object creation (the {@link EditPart}s)

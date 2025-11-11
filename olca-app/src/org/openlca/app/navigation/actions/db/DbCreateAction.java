@@ -12,7 +12,7 @@ import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 /**
  * Opens the wizard for creating a new database.
@@ -43,7 +43,7 @@ public class DbCreateAction extends Action implements INavigationAction {
 
 	@Override
 	public void run() {
-		if (Strings.notEmpty(folder)) {
+		if (Strings.isNotBlank(folder)) {
 			DatabaseWizard.open(folder);
 		} else {
 			DatabaseWizard.open();

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.openlca.app.db.Database;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.AnalysisGroup;
@@ -18,7 +19,6 @@ import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Result;
-import org.openlca.util.Strings;
 
 class EpdBuilder {
 
@@ -62,7 +62,7 @@ class EpdBuilder {
 				|| system.referenceExchange == null
 				|| system.referenceExchange.flow == null
 				|| results.isEmpty()
-				|| Strings.nullOrEmpty(name))
+				|| Strings.isBlank(name))
 			return Optional.empty();
 		return new EpdBuilder(
 				db, system, setup.impactMethod(), results, name, category
@@ -100,7 +100,7 @@ class EpdBuilder {
 	}
 
 	private Result resultOf(AnalysisGroup group, Category category) {
-		if (group == null || Strings.nullOrEmpty(group.name))
+		if (group == null || Strings.isBlank(group.name))
 			return null;
 
 		var r = Result.of(name + " - " + group.name);
@@ -154,10 +154,10 @@ class EpdBuilder {
 		if (categoryPath == null || categoryPath.isEmpty() || type == null)
 			return null;
 		var path = categoryPath.stream()
-				.filter(Strings::notEmpty)
-				.toArray(String[]::new);
+			.filter(Strings::isNotBlank)
+			.toArray(String[]::new);
 		return path.length > 0
-				? CategoryDao.sync(db, type, path)
-				: null;
+			? CategoryDao.sync(db, type, path)
+			: null;
 	}
 }

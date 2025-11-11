@@ -1,5 +1,6 @@
 package org.openlca.app.tools.mapping;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -11,6 +12,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.commons.Strings;
 import org.openlca.core.io.maps.FlowMapEntry;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.io.maps.MappingStatus;
@@ -18,7 +20,6 @@ import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 class TableLabel extends LabelProvider
 	implements ITableLabelProvider {
@@ -121,10 +122,10 @@ class TableLabel extends LabelProvider
 		// when the status is the same => merge it
 		if (s.type() == t.type()) {
 			String sm = s.message();
-			if (Strings.nullOrEmpty(sm))
+			if (Strings.isBlank(sm))
 				return t;
 			String tm = e.targetFlow().status.message();
-			if (Strings.nullOrEmpty(tm) || Strings.nullOrEqual(sm, tm))
+			if (Strings.isBlank(tm) || Objects.equals(sm, tm))
 				return s;
 			return new MappingStatus(s.type(),
 				M.SourceFlow + " - " + sm + " ; " +  M.TargetFlow + " - " + tm);
@@ -197,7 +198,7 @@ class TableLabel extends LabelProvider
 			? e.targetFlow().property
 			: null);
 
-		if (!Strings.nullOrEqual(sprop, tprop)
+		if (!Objects.equals(sprop, tprop)
 			&& !("?".equals(sprop) || "?".equals(tprop))) {
 			sunit += " (" + sprop + ")";
 			tunit += " (" + tprop + ")";
@@ -215,7 +216,7 @@ class TableLabel extends LabelProvider
 		if (t == null) {
 			t = "?";
 		}
-		if (!Strings.nullOrEmpty(ref.providerLocation)) {
+		if (Strings.isNotBlank(ref.providerLocation)) {
 			t += " - " + ref.providerLocation;
 		}
 		return t;

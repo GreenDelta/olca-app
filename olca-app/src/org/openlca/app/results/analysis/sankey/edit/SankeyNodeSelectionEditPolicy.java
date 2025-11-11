@@ -1,9 +1,9 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
+import java.util.stream.Stream;
+
 import org.eclipse.gef.editpolicies.SelectionEditPolicy;
 import org.openlca.app.components.graphics.figures.SelectableConnection;
-
-import java.util.stream.Stream;
 
 public class SankeyNodeSelectionEditPolicy extends SelectionEditPolicy {
 

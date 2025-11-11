@@ -2,6 +2,7 @@ package org.openlca.app.editors.processes.doc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -17,13 +18,13 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.doc.AspectMap;
 import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.ilcd.commons.FlowCompleteness;
 import org.openlca.ilcd.commons.ImpactCategory;
-import org.openlca.util.Strings;
 
 class CompletenessTable {
 
@@ -124,7 +125,7 @@ class CompletenessTable {
 			}
 			var c = process.documentation.flowCompleteness;
 			for (var item : items) {
-				if (Strings.nullOrEmpty(item.aspect) || item.value == null)
+				if (Strings.isBlank(item.aspect) || item.value == null)
 					continue;
 				c.put(item.aspect, item.value.value());
 			}
@@ -139,7 +140,7 @@ class CompletenessTable {
 			if (!(obj instanceof Item item))
 				return null;
 			if (col == 0)
-				return Strings.nullOrEqual("Product model", item.aspect)
+				return Objects.equals("Product model", item.aspect)
 						? Images.get(FlowType.PRODUCT_FLOW)
 						: Images.get(FlowType.ELEMENTARY_FLOW);
 			return columnOf(item.value) == col

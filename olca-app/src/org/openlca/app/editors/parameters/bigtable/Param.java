@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.openlca.app.M;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactCategoryDao;
 import org.openlca.core.database.NativeSql;
@@ -14,7 +15,6 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 import gnu.trove.map.hash.TLongLongHashMap;
@@ -92,7 +92,7 @@ class Param implements Comparable<Param> {
 
 	@Override
 	public int compareTo(Param other) {
-		int c = Strings.compare(
+		int c = Strings.compareIgnoreCase(
 			this.parameter.name,
 			other.parameter.name);
 		if (c != 0)
@@ -105,7 +105,7 @@ class Param implements Comparable<Param> {
 		if (other.owner == null)
 			return 1;
 
-		return Strings.compare(
+		return Strings.compareIgnoreCase(
 			Labels.name(this.owner),
 			Labels.name(other.owner));
 	}
@@ -118,7 +118,7 @@ class Param implements Comparable<Param> {
 		if (filter == null)
 			return true;
 		String f = filter.trim().toLowerCase();
-		if (Strings.nullOrEmpty(f))
+		if (Strings.isBlank(f))
 			return true;
 
 		if (type == FilterCombo.ALL || type == FilterCombo.NAMES) {

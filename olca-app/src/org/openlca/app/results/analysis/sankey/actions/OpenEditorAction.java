@@ -3,10 +3,10 @@ package org.openlca.app.results.analysis.sankey.actions;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.graphics.actions.ActionIds;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.results.analysis.sankey.SankeyEditor;
 import org.openlca.app.results.analysis.sankey.edit.SankeyNodeEditPart;
-import org.openlca.app.components.graphics.actions.ActionIds;
 
 public class OpenEditorAction extends SelectionAction {
 

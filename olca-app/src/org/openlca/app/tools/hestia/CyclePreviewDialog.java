@@ -20,11 +20,11 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.io.hestia.Cycle;
 import org.openlca.io.hestia.HestiaClient;
 import org.openlca.io.hestia.HestiaExchange;
 import org.openlca.jsonld.Json;
-import org.openlca.util.Strings;
 
 class CyclePreviewDialog extends FormDialog {
 
@@ -34,7 +34,7 @@ class CyclePreviewDialog extends FormDialog {
 		if (client == null || id == null)
 			return;
 		var res = App.exec("Fetch cycle from API ...", () -> client.getCycle(id));
-		if (res.hasError()) {
+		if (res.isError()) {
 			MsgBox.error("Failed to fetch cycle",
 					"Failed to fetch cycle " + id + ": " + res.error());
 			return;
@@ -120,7 +120,7 @@ class CyclePreviewDialog extends FormDialog {
 					return 0;
 				if (t1 == null || t2 == null)
 					return t1 == null ? -1 : 1;
-				return Strings.compare(t1.name(), t2.name());
+				return Strings.compareIgnoreCase(t1.name(), t2.name());
 			});
 		}
 

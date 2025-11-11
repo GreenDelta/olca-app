@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.model.commands;
 
+import static org.openlca.app.editors.graphical.model.GraphFactory.updateExchangeItem;
+
 import java.util.Objects;
 
 import org.eclipse.gef.commands.Command;
@@ -9,8 +11,6 @@ import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
-
-import static org.openlca.app.editors.graphical.model.GraphFactory.updateExchangeItem;
 
 public class EditExchangeCommand extends Command {
 

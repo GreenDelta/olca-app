@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.library.Library;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.util.Strings;
 
 /**
  * Basic implementation of a navigation element which manages an internal cache
@@ -25,7 +25,7 @@ public abstract class NavigationElement<T> implements INavigationElement<T> {
 		if (content instanceof Library lib) {
 			library = lib.name();
 		} else if (content instanceof RootDescriptor d) {
-			library = Strings.nullIfEmpty(d.library);
+			library = Strings.nullIfBlank(d.library);
 		} else {
 			library = parent.getLibrary().orElse(null);
 		}

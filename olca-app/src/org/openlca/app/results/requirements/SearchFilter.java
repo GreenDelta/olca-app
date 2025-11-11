@@ -13,7 +13,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.util.Labels;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 class SearchFilter extends ViewerFilter {
 
@@ -43,7 +43,7 @@ class SearchFilter extends ViewerFilter {
 	}
 
 	private List<String> parseQuery(String s) {
-		if (Strings.nullOrEmpty(s) || s.isBlank())
+		if (Strings.isBlank(s) || s.isBlank())
 			return Collections.emptyList();
 		var feed = s.trim().toLowerCase();
 		var buffer = new StringBuilder();
@@ -135,7 +135,7 @@ class SearchFilter extends ViewerFilter {
 	}
 
 	private boolean matches(String term, List<String> query) {
-		if (Strings.nullOrEmpty(term))
+		if (Strings.isBlank(term))
 			return false;
 		var feed = term.toLowerCase();
 		for (var part : query) {

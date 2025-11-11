@@ -25,12 +25,12 @@ import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.io.openepd.Api;
 import org.openlca.io.openepd.Ec3Client;
 import org.openlca.io.openepd.Ec3EpdInfo;
 import org.openlca.io.openepd.EpdDoc;
 import org.openlca.jsonld.Json;
-import org.openlca.util.Strings;
 
 import com.google.gson.JsonObject;
 
@@ -153,7 +153,7 @@ public class EpdPanel extends SimpleFormEditor {
 		}
 
 		private void directDownload(Ec3Client client, String url) {
-			if (Strings.nullOrEmpty(url)) {
+			if (Strings.isBlank(url)) {
 				MsgBox.error(M.NoUrlOrIdProvided);
 				return;
 			}

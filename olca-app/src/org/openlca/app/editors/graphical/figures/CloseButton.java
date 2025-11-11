@@ -6,8 +6,8 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
-import org.openlca.app.editors.graphical.model.StickyNote;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.graphical.model.StickyNote;
 import org.openlca.app.util.Colors;
 
 public class CloseButton extends Clickable {

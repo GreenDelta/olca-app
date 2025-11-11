@@ -1,9 +1,10 @@
 package org.openlca.app.editors.projects.reports.model;
 
-import com.google.gson.JsonObject;
-import org.openlca.core.model.Copyable;
+import org.openlca.commons.Copyable;
 import org.openlca.jsonld.Json;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 
 public class ReportSection implements Copyable<ReportSection> {

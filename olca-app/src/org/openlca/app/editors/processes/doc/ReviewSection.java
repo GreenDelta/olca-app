@@ -23,13 +23,13 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Actor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Source;
 import org.openlca.core.model.doc.ProcessDoc;
 import org.openlca.core.model.doc.Review;
 import org.openlca.ilcd.commons.ReviewType;
-import org.openlca.util.Strings;
 import org.slf4j.LoggerFactory;
 
 class ReviewSection {
@@ -117,7 +117,7 @@ class ReviewSection {
 
 		private String header() {
 			var buff = new StringBuilder(M.Review + " #" + (pos + 1));
-			if (Strings.notEmpty(_rev.type)) {
+			if (Strings.isNotBlank(_rev.type)) {
 				buff.append(" - ").append(_rev.type);
 			}
 			if (_rev.reviewers.isEmpty())
@@ -127,9 +127,9 @@ class ReviewSection {
 				var r = _rev.reviewers.get(i);
 				buff.append(i == 0 ? ": " : "; ");
 				var name = Labels.name(r);
-				buff.append(Strings.notEmpty(name) ? name : "?");
+				buff.append(Strings.isNotBlank(name) ? name : "?");
 			}
-			return Strings.cut(buff.toString(), 100);
+			return Strings.cutEnd(buff.toString(), 100);
 		}
 
 		private void renderTop(Composite root) {
@@ -172,7 +172,7 @@ class ReviewSection {
 					selected = i + 1;
 				}
 			}
-			if (Strings.notEmpty(_rev.type) && !items.contains(_rev.type)) {
+			if (Strings.isNotBlank(_rev.type) && !items.contains(_rev.type)) {
 				selected = items.size();
 				items.add(_rev.type);
 			}

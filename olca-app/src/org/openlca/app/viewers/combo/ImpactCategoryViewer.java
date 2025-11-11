@@ -12,8 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.util.Strings;
 
 public class ImpactCategoryViewer extends AbstractComboViewer<ImpactDescriptor> {
 
@@ -88,10 +88,10 @@ public class ImpactCategoryViewer extends AbstractComboViewer<ImpactDescriptor> 
 			}
 			if (!(e2 instanceof ImpactDescriptor i2))
 				return 1;
-			int c = Strings.compare(i1.name, i2.name);
+			int c = Strings.compareIgnoreCase(i1.name, i2.name);
 			if (c != 0)
 				return c;
-			return Strings.compare(i1.referenceUnit, i2.referenceUnit);
+			return Strings.compareIgnoreCase(i1.referenceUnit, i2.referenceUnit);
 		}
 
 	}

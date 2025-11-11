@@ -2,9 +2,9 @@ package org.openlca.app.results.analysis.sankey.edit;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
+import org.openlca.app.components.graphics.model.Link;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
 import org.openlca.app.results.analysis.sankey.model.SankeyNode;
-import org.openlca.app.components.graphics.model.Link;
 
 public class SankeyEditPartFactory implements EditPartFactory {
 

@@ -10,7 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 class LocationGroup extends Composite {
 
@@ -135,13 +135,13 @@ class LocationGroup extends Composite {
 					port = "443";
 				}
 				var path = url.getPath();
-				while (!Strings.nullOrEmpty(path) && path.startsWith("/")) {
+				while (Strings.isNotBlank(path) && path.startsWith("/")) {
 					path = path.substring(1);
 				}
-				while (!Strings.nullOrEmpty(path) && path.endsWith("/")) {
+				while (Strings.isNotBlank(path) && path.endsWith("/")) {
 					path = path.substring(0, path.length() - 1);
 				}
-				if (!Strings.nullOrEmpty(path)) {
+				if (Strings.isNotBlank(path)) {
 					if (!withRepository) {
 						context = path;
 					} else {
@@ -171,15 +171,15 @@ class LocationGroup extends Composite {
 		}
 
 		private boolean isValid() {
-			if (Strings.nullOrEmpty(protocol))
+			if (Strings.isBlank(protocol))
 				return false;
-			if (Strings.nullOrEmpty(host))
+			if (Strings.isBlank(host))
 				return false;
-			if (Strings.nullOrEmpty(port))
+			if (Strings.isBlank(port))
 				return false;
 			if (!withRepository)
 				return true;
-			return !Strings.nullOrEmpty(repositoryId)
+			return Strings.isNotBlank(repositoryId)
 					&& repositoryId.contains("/")
 					&& !repositoryId.startsWith("/")
 					&& !repositoryId.endsWith("/");
@@ -192,10 +192,10 @@ class LocationGroup extends Composite {
 			if (!port.equals("80") && !port.equals("443")) {
 				url += ":" + port;
 			}
-			if (!Strings.nullOrEmpty(context)) {
+			if (Strings.isNotBlank(context)) {
 				url += "/" + context;
 			}
-			if (withRepository && !Strings.nullOrEmpty(repositoryId)) {
+			if (withRepository && Strings.isNotBlank(repositoryId)) {
 				url += "/" + repositoryId;
 			}
 			return url;

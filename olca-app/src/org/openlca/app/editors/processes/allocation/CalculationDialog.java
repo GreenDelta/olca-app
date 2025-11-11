@@ -20,13 +20,13 @@ import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyType;
 import org.openlca.core.model.Process;
 import org.openlca.util.AllocationRef;
 import org.openlca.util.AllocationUtils;
-import org.openlca.util.Strings;
 
 /**
  * A dialog for calculating default allocation factors.
@@ -106,7 +106,7 @@ class CalculationDialog extends FormDialog {
 				var t2 = Objects.equals(p2.flowPropertyType, prefType);
 				return t1 != t2
 					? t1 ? -1 : 1
-					: Strings.compare(p1.name, p2.name);
+					: Strings.compareIgnoreCase(p1.name, p2.name);
 			});
 			var initial = AllocationRef.of(method, props.get(0));
 			return new Selector(method, props, new AtomicReference<>(initial));

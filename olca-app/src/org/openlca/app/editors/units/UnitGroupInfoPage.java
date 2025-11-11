@@ -12,9 +12,9 @@ import org.openlca.app.editors.InfoSection;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.util.Strings;
 
 class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 
@@ -47,7 +47,7 @@ class UnitGroupInfoPage extends ModelPage<UnitGroup> {
 		UnitViewer unitViewer = new UnitViewer(client, editor);
 		CommentAction.bindTo(section, unitViewer, "units", getComments());
 		List<Unit> units = getModel().units;
-		units.sort((u1, u2) -> Strings.compare(u1.name, u2.name));
+		units.sort((u1, u2) -> Strings.compareIgnoreCase(u1.name, u2.name));
 		unitViewer.setInput(units);
 		editor.onSaved(() -> unitViewer.setInput(getModel().units));
 	}

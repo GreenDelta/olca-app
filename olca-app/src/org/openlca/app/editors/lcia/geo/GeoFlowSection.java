@@ -33,6 +33,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Flow;
@@ -43,7 +44,6 @@ import org.openlca.core.model.Parameter;
 import org.openlca.geo.lcia.GeoFactorCalculator;
 import org.openlca.geo.lcia.GeoFlowBinding;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 class GeoFlowSection {
 
@@ -158,7 +158,7 @@ class GeoFlowSection {
 		if (dialog.open() != Window.OK)
 			return;
 		var formula = dialog.getValue();
-		if (Strings.nullOrEmpty(formula)) {
+		if (Strings.isBlank(formula)) {
 			formula = "1";
 		}
 

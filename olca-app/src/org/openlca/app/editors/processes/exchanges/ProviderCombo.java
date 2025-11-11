@@ -16,12 +16,12 @@ import org.openlca.app.M;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProviderType;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Exchanges;
-import org.openlca.util.Strings;
 
 class ProviderCombo extends ComboBoxViewerCellEditor {
 
@@ -162,7 +162,7 @@ class ProviderCombo extends ComboBoxViewerCellEditor {
 			if (ti != to)
 				return ti - to;
 
-			return Strings.compare(
+			return Strings.compareIgnoreCase(
 				Labels.name(this.provider), Labels.name(other.provider));
 		}
 	}

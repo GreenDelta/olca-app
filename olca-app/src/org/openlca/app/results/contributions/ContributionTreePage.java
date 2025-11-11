@@ -30,6 +30,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.trees.TreeClipboard;
 import org.openlca.app.viewers.trees.Trees;
+import org.openlca.commons.Strings;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
@@ -38,7 +39,6 @@ import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
-import org.openlca.util.Strings;
 
 public class ContributionTreePage extends FormPage {
 
@@ -150,10 +150,10 @@ public class ContributionTreePage extends FormPage {
 		}
 
 		private void updateUnit(String unit) {
-			var totalLabel = Strings.notEmpty(unit)
+			var totalLabel = Strings.isNotBlank(unit)
 					? M.TotalResult + " [" + unit + "]"
 					: M.TotalResult;
-			var directLabel = Strings.notEmpty(unit)
+			var directLabel = Strings.isNotBlank(unit)
 					? M.DirectContribution + " [" + unit + "]"
 					: M.DirectContribution;
 			var t = tree.getTree();

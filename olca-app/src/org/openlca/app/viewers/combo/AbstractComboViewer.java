@@ -15,7 +15,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.AbstractViewer;
 import org.openlca.app.viewers.BaseNameComparator;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public abstract class AbstractComboViewer<T> extends
 		AbstractViewer<T, TableComboViewer> {
@@ -70,7 +70,7 @@ public abstract class AbstractComboViewer<T> extends
 					} else if (label instanceof ColumnLabelProvider cLabel) {
 						text = cLabel.getText(obj);
 					}
-					if (Strings.nullOrEmpty(text))
+					if (Strings.isBlank(text))
 						continue;
 
 					var first = Character.toLowerCase(text.charAt(0));

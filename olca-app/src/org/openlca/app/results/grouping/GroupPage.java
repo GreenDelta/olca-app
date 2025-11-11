@@ -40,13 +40,13 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ProcessGroupSetDao;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessGroup;
 import org.openlca.core.model.ProcessGroupSet;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ProcessGrouping;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -297,7 +297,7 @@ public class GroupPage extends FormPage {
 		public int compare(ProcessGrouping o1, ProcessGrouping o2) {
 			if (o1 == null || o2 == null)
 				return 0;
-			return Strings.compare(o1.name, o2.name);
+			return Strings.compareIgnoreCase(o1.name, o2.name);
 		}
 	}
 

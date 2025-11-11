@@ -16,11 +16,11 @@ import org.openlca.app.M;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.Unit;
 import org.openlca.util.Pair;
-import org.openlca.util.Strings;
 
 class ExchangeDialog extends FormDialog {
 
@@ -62,20 +62,18 @@ class ExchangeDialog extends FormDialog {
 		}
 
 		list.sort((p1, p2) -> {
-			var prop1 = p1.first.flowProperty;
-			var prop2 = p2.first.flowProperty;
+			var prop1 = p1.first().flowProperty;
+			var prop2 = p2.first().flowProperty;
 
 			if (!Objects.equals(prop1, prop2)) {
-				return Strings.compare(
-						Labels.name(prop1),
-						Labels.name(prop2));
+				return Strings.compareIgnoreCase(
+					Labels.name(prop1), Labels.name(prop2));
 			}
 
-			var unit1 = p1.second;
-			var unit2 = p2.second;
-			return Strings.compare(
-					Labels.name(unit1),
-					Labels.name(unit2));
+			var unit1 = p1.second();
+			var unit2 = p2.second();
+			return Strings.compareIgnoreCase(
+				Labels.name(unit1), Labels.name(unit2));
 		});
 
 		return list;
@@ -105,11 +103,11 @@ class ExchangeDialog extends FormDialog {
 
 		// returns true if the given pair contains the reference unit
 		Function<Pair<FlowPropertyFactor, Unit>, Boolean> isRef = pair -> {
-			var prop = pair.first.flowProperty;
+			var prop = pair.first().flowProperty;
 			var refProp = exchange.flow.referenceFlowProperty;
 			if (!Objects.equals(prop, refProp))
 				return false;
-			var unit = pair.second;
+			var unit = pair.second();
 			var refUnit = prop.unitGroup.referenceUnit;
 			return Objects.equals(unit, refUnit);
 		};
@@ -118,12 +116,12 @@ class ExchangeDialog extends FormDialog {
 		int selection = -1;
 		for (int i = 0; i < units.size(); i++) {
 			var pair = units.get(i);
-			items[i] = Labels.name(pair.first.flowProperty)
-					+ " - " + Labels.name(pair.second);
+			items[i] = Labels.name(pair.first().flowProperty)
+				+ " - " + Labels.name(pair.second());
 
 			// check if pair matches exchange unit
-			if (Objects.equals(pair.first, exchange.flowPropertyFactor)
-					&& Objects.equals(pair.second, exchange.unit)) {
+			if (Objects.equals(pair.first(), exchange.flowPropertyFactor)
+				&& Objects.equals(pair.second(), exchange.unit)) {
 				selection = i;
 				continue;
 			}
@@ -156,8 +154,8 @@ class ExchangeDialog extends FormDialog {
 			return;
 		}
 
-		exchange.flowPropertyFactor = unit.first;
-		exchange.unit = unit.second;
+		exchange.flowPropertyFactor = unit.first();
+		exchange.unit = unit.second();
 		super.okPressed();
 	}
 

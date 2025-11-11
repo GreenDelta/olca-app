@@ -14,11 +14,11 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.io.openepd.io.IndicatorMapping;
 import org.openlca.io.openepd.io.MethodMapping;
 import org.openlca.io.openepd.io.Vocab;
-import org.openlca.util.Strings;
 
 public record MappingTable(
 	MethodMapping mapping,
@@ -194,7 +194,7 @@ public record MappingTable(
 							return 1;
 						return i1.type() != i2.type()
 							? i1.type().ordinal() - i2.type().ordinal()
-							: Strings.compare(i1.code(), i2.code());
+							: Strings.compareIgnoreCase(i1.code(), i2.code());
 					}
 				).toArray(Vocab.Indicator[]::new);
 		}

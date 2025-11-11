@@ -13,9 +13,9 @@ import org.openlca.app.M;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
-import org.openlca.util.Strings;
 
 class DatabaseWizardPage extends WizardPage {
 
@@ -42,7 +42,7 @@ class DatabaseWizardPage extends WizardPage {
 		nameText = createText(body, M.DatabaseName);
 		nameText.addModifyListener(e -> validateInput());
 		folderText = createText(body, M.Folder);
-		if (Strings.notEmpty(folder)) {
+		if (Strings.isNotBlank(folder)) {
 			folderText.setText(folder);
 		}
 		createDatabaseContent(body);
@@ -110,7 +110,7 @@ class DatabaseWizardPage extends WizardPage {
 		var config = new DerbyConfig();
 		config.name(getText(nameText));
 		var path = folderText.getText();
-		if (Strings.notEmpty(path)) {
+		if (Strings.isNotBlank(path)) {
 			// normalize the path
 			var parts = DatabaseDirElement.split(path);
 			config.setCategory(String.join("/", parts));

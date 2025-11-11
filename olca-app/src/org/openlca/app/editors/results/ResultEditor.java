@@ -13,9 +13,9 @@ import org.openlca.app.editors.ModelPage;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.Result;
-import org.openlca.util.Strings;
 
 public class ResultEditor extends ModelEditor<Result> {
 
@@ -90,7 +90,7 @@ public class ResultEditor extends ModelEditor<Result> {
 			// check the flow name
 			var ni = Labels.name(ri.flow);
 			var nj = Labels.name(rj.flow);
-			var c =  Strings.compare(ni, nj);
+			var c =  Strings.compareIgnoreCase(ni, nj);
 			if (c != 0)
 				return c;
 
@@ -101,7 +101,7 @@ public class ResultEditor extends ModelEditor<Result> {
 			var pj = rj.flow != null && rj.flow.category != null
 					? rj.flow.category.toPath()
 					: null;
-			return Strings.compare(pi, pj);
+			return Strings.compareIgnoreCase(pi, pj);
 		}
 
 		private int typeOf(FlowResult r) {

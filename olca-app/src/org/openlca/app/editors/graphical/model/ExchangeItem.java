@@ -4,10 +4,10 @@ import java.util.Objects;
 
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.util.Labels;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.util.Strings;
 
 public class ExchangeItem extends Component {
 
@@ -162,7 +162,7 @@ public class ExchangeItem extends Component {
 			return t1 - t2;
 		var name1 = Labels.name(e1.exchange.flow);
 		var name2 = Labels.name(e2.exchange.flow);
-		return Strings.compare(name1, name2);
+		return Strings.compareIgnoreCase(name1, name2);
 	}
 
 	@Override
@@ -172,6 +172,7 @@ public class ExchangeItem extends Component {
 		else return 0;
 	}
 
+	@Override
 	public String toString() {
 		var name = Labels.name(exchange.flow);
 		var amount = exchange.formula != null

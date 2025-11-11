@@ -30,6 +30,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Names;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
@@ -39,6 +40,7 @@ import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.FlowPropertyFactor;
@@ -50,7 +52,6 @@ import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 class ProjectSetupPage extends ModelPage<Project> {
 
@@ -94,7 +95,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 
 	private void initialInput() {
 		List<ProjectVariant> variants = project.variants;
-		variants.sort((v1, v2) -> Strings.compare(v1.name, v2.name));
+		variants.sort((v1, v2) -> Strings.compareIgnoreCase(v1.name, v2.name));
 		variantViewer.setInput(variants);
 	}
 
@@ -179,7 +180,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	private ProjectVariant createVariant(ProductSystem system) {
 		var v = new ProjectVariant();
 		v.productSystem = system;
-		v.name = Strings.uniqueNameOf(
+		v.name = Names.uniqueOf(
 				system.name, project.variants, vi -> vi.name);
 		v.allocationMethod = AllocationMethod.USE_DEFAULT;
 		v.amount = system.targetAmount;
@@ -287,7 +288,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 			Arrays.sort(units, (u1, u2) -> {
 				if (u1 == null || u2 == null)
 					return 0;
-				return Strings.compare(u1.name, u2.name);
+				return Strings.compareIgnoreCase(u1.name, u2.name);
 			});
 			return units;
 		}

@@ -26,6 +26,7 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Epd;
 import org.openlca.io.openepd.Api;
 import org.openlca.io.openepd.Ec3CategoryTree;
@@ -37,7 +38,6 @@ import org.openlca.io.openepd.io.MappingModel;
 import org.openlca.io.openepd.io.MethodMapping;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Pair;
-import org.openlca.util.Strings;
 
 public class ExportDialog extends FormDialog {
 
@@ -189,10 +189,10 @@ public class ExportDialog extends FormDialog {
 				var category = CategoryDialog.selectFrom(categories);
 				if (category == null)
 					return;
-				var path = Strings.notEmpty(category.openEpd)
+				var path = Strings.isNotBlank(category.openEpd)
 					? category.openEpd
 					: categories.pathOf(category);
-				if (Strings.nullOrEmpty(path))
+				if (Strings.isBlank(path))
 					return;
 				setPath(path);
 				updateLink(link, path);
@@ -201,8 +201,8 @@ public class ExportDialog extends FormDialog {
 
 		String getPath() {
 			for (var c : dialog.doc.productClasses) {
-				if (Objects.equals(c.first, "io.cqd.ec3")) {
-					return c.second;
+				if (Objects.equals(c.first(), "io.cqd.ec3")) {
+					return c.second();
 				}
 			}
 			return null;
@@ -228,13 +228,13 @@ public class ExportDialog extends FormDialog {
 		void setPath(String path) {
 			var classes = dialog.doc.productClasses;
 			classes.clear();
-			if (Strings.nullOrEmpty(path))
+			if (Strings.isBlank(path))
 				return;
 			classes.add(Pair.of("io.cqd.ec3", path));
 		}
 
 		void updateLink(ImageHyperlink link, String path) {
-			if (Strings.nullOrEmpty(path)) {
+			if (Strings.isBlank(path)) {
 				link.setText(M.NoneHyphen);
 			} else {
 				link.setText(path);
@@ -266,7 +266,7 @@ public class ExportDialog extends FormDialog {
 			var mass = OptionalDouble.empty();
 			try {
 				var s = text.getText();
-				if (Strings.notEmpty(s)) {
+				if (Strings.isNotBlank(s)) {
 					var d = Double.parseDouble(s);
 					mass = OptionalDouble.of(d);
 				}

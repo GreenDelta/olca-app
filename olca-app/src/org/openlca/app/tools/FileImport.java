@@ -33,13 +33,13 @@ import org.openlca.app.wizards.io.ILCDImportWizard;
 import org.openlca.app.wizards.io.ImportLibraryDialog;
 import org.openlca.app.wizards.io.JsonImportWizard;
 import org.openlca.app.wizards.io.SimaProCsvImportWizard;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.io.Format;
 import org.openlca.io.openepd.EpdDoc;
 import org.openlca.jsonld.Json;
-import org.openlca.util.Strings;
 
 public class FileImport {
 
@@ -137,7 +137,7 @@ public class FileImport {
 				M.SaveMappingInDatabaseInfo,
 				proposed,
 				name -> {
-					if (Strings.nullOrEmpty(name))
+					if (Strings.isBlank(name))
 						return M.NameCannotBeEmpty;
 					if (existing.contains(name.toLowerCase().trim()))
 						return M.FlowMappingWithThisNameExists;

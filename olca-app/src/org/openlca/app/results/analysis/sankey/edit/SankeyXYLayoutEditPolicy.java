@@ -1,5 +1,9 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+import static org.openlca.app.results.analysis.sankey.requests.SankeyRequestConstants.REQ_EDIT_CONFIG;
+
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
@@ -10,16 +14,12 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.openlca.app.components.graphics.model.commands.ComponentSetConstraintCommand;
+import org.openlca.app.components.graphics.model.commands.LayoutCommand;
 import org.openlca.app.results.analysis.sankey.SankeyConfig;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
 import org.openlca.app.results.analysis.sankey.model.SankeyNode;
 import org.openlca.app.results.analysis.sankey.model.commands.EditConfigCommand;
-import org.openlca.app.components.graphics.model.commands.ComponentSetConstraintCommand;
-import org.openlca.app.components.graphics.model.commands.LayoutCommand;
-
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
-import static org.openlca.app.results.analysis.sankey.requests.SankeyRequestConstants.REQ_EDIT_CONFIG;
 
 public class SankeyXYLayoutEditPolicy extends XYLayoutEditPolicy {
 

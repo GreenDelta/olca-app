@@ -17,9 +17,9 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.io.openepd.Ec3Client;
 import org.openlca.io.openepd.Ec3Credentials;
-import org.openlca.util.Strings;
 
 public class LoginPanel {
 
@@ -48,7 +48,7 @@ public class LoginPanel {
 
 		// EC3 URL
 		var ec3UrlText = UI.labeledText(comp, tk, "EC3 Endpoint");
-		if (Strings.notEmpty(credentials.ec3Url())) {
+		if (Strings.isNotBlank(credentials.ec3Url())) {
 			ec3UrlText.setText(credentials.ec3Url());
 		}
 		ec3UrlText.addModifyListener($ -> {
@@ -58,7 +58,7 @@ public class LoginPanel {
 
 		// EPD URL
 		var epdUrlText = UI.labeledText(comp, tk, "openEPD Endpoint");
-		if (Strings.notEmpty(credentials.epdUrl())) {
+		if (Strings.isNotBlank(credentials.epdUrl())) {
 			epdUrlText.setText(credentials.epdUrl());
 		}
 		epdUrlText.addModifyListener($ -> {
@@ -68,7 +68,7 @@ public class LoginPanel {
 
 		// user
 		var userText = UI.labeledText(comp, tk, M.User);
-		if (Strings.notEmpty(credentials.user())) {
+		if (Strings.isNotBlank(credentials.user())) {
 			userText.setText(credentials.user());
 		}
 		userText.addModifyListener($ -> {
@@ -82,14 +82,14 @@ public class LoginPanel {
 		updateButton();
 		button.setImage(Icon.CONNECT.get());
 		Controls.onSelect(button, $ -> {
-			if (Strings.notEmpty(credentials.token())) {
+			if (Strings.isNotBlank(credentials.token())) {
 				logout();
 			} else {
 				login();
 			}
 		});
 
-		section.setExpanded(Strings.nullOrEmpty(credentials.token()));
+		section.setExpanded(Strings.isBlank(credentials.token()));
 	}
 
 	public Optional<Ec3Client> login() {
@@ -151,10 +151,10 @@ public class LoginPanel {
 	private void updateButton() {
 		if (button == null || button.isDisposed())
 			return;
-		var label = Strings.notEmpty(credentials.token())
+		var label = Strings.isNotBlank(credentials.token())
 				? M.Logout
 				: M.Login;
-		var tooltip = Strings.notEmpty(credentials.token())
+		var tooltip = Strings.isNotBlank(credentials.token())
 				? M.DeleteCurrentAccessToken
 				: M.GetANewAccessToken;
 		button.setText(label);

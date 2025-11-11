@@ -26,11 +26,11 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.util.Strings;
 
 public class UnitTable extends SimpleFormEditor {
 
@@ -152,7 +152,7 @@ public class UnitTable extends SimpleFormEditor {
 
 			// first by group name
 			if (!Objects.equals(this.group, other.group)) {
-				var c = Strings.compare(
+				var c = Strings.compareIgnoreCase(
 					Labels.name(this.group), Labels.name(other.group));
 				return c == 0 // compare by ID when names are the same
 					? Long.compare(this.group.id, other.group.id)
@@ -166,7 +166,7 @@ public class UnitTable extends SimpleFormEditor {
 				return 1;
 
 			// finally, by unit names
-			return Strings.compare(
+			return Strings.compareIgnoreCase(
 				Labels.name(this.unit), Labels.name(other.unit));
 		}
 	}

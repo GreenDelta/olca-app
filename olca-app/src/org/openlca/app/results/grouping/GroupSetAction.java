@@ -19,9 +19,9 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ProcessGroupSetDao;
 import org.openlca.core.model.ProcessGroupSet;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ class GroupSetAction extends Action {
 				List<ProcessGroupSet> list = new ProcessGroupSetDao(Database.get()).getAll();
 				ProcessGroupSet[] groups = list
 						.toArray(new ProcessGroupSet[list.size()]);
-				Arrays.sort(groups, (s1, s2) -> Strings.compare(s1.name, s1.name));
+				Arrays.sort(groups, (s1, s2) -> Strings.compareIgnoreCase(s1.name, s1.name));
 				return groups;
 			} catch (Exception e) {
 				log.error("Failed to load the grouping sets", e);

@@ -30,10 +30,10 @@ import org.openlca.app.util.FileType;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.FileStore;
 import org.openlca.core.model.Source;
 import org.openlca.util.Dirs;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ class SourceInfoPage extends ModelPage<Source> {
 		urlButton.setImage(Icon.MAP.get());
 		Controls.onSelect(urlButton, e -> {
 			String url = getModel().url;
-			if (Strings.nullOrEmpty(url))
+			if (Strings.isBlank(url))
 				return;
 			Desktop.browse(url);
 		});

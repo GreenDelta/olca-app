@@ -18,6 +18,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Input;
 import org.openlca.app.util.Question;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CategoryDao;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
@@ -37,7 +38,6 @@ import org.openlca.git.util.Constants;
 import org.openlca.git.util.ModelRefMap;
 import org.openlca.jsonld.Json;
 import org.openlca.util.Dirs;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,10 +111,10 @@ public class RepositoryUpgrade {
 				var repositoryId = Json.getString(json, "repositoryId");
 				var username = Json.getString(json, "username");
 				if (!Json.getBool(json, "active", false)
-						|| Strings.nullOrEmpty(baseUrl)
-						|| Strings.nullOrEmpty(repositoryId)
-						|| Strings.nullOrEmpty(username)
-						|| !baseUrl.endsWith("/ws"))
+					|| Strings.isBlank(baseUrl)
+					|| Strings.isBlank(repositoryId)
+					|| Strings.isBlank(username)
+					|| !baseUrl.endsWith("/ws"))
 					continue;
 				var url = baseUrl.substring(0, baseUrl.length() - 3) + "/" + repositoryId;
 				return new Config(url, username);

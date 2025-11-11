@@ -45,9 +45,9 @@ import org.openlca.app.util.Popup;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.util.Strings;
 
 public class ParameterAnalysisResultPage extends SimpleFormEditor {
 
@@ -219,7 +219,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 		bars.setYSeries(data);
 		bars.setBarColor(Colors.get(178, 223, 219));
 
-		var unit = Strings.notEmpty(d.referenceUnit)
+		var unit = Strings.isNotBlank(d.referenceUnit)
 				? d.referenceUnit
 				: "-";
 		chart.getAxisSet().getYAxis(0)
@@ -255,7 +255,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 			if (!(o instanceof ImpactDescriptor i))
 				return null;
 			if (col == 0) {
-				var unit = Strings.notEmpty(i.referenceUnit)
+				var unit = Strings.isNotBlank(i.referenceUnit)
 						? " (" + i.referenceUnit + ")"
 						: "";
 				return i.name + unit;

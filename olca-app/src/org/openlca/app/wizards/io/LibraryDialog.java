@@ -13,8 +13,8 @@ import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.jsonld.LibraryLink;
-import org.openlca.util.Strings;
 
 public class LibraryDialog extends FormDialog {
 
@@ -49,7 +49,7 @@ public class LibraryDialog extends FormDialog {
 	private void createContent(Composite parent, FormToolkit tk) {
 		urlCheck = createCheckboxSection(parent, tk, M.FromUrl, Mode.URL, (composite, check) -> {
 			var text = UI.text(composite, tk);
-			if (!Strings.nullOrEmpty(link.url())) {
+			if (Strings.isNotBlank(link.url())) {
 				location = link.url();
 				text.setText(link.url());
 			}
@@ -105,7 +105,7 @@ public class LibraryDialog extends FormDialog {
 	}
 
 	private boolean isComplete() {
-		return !Strings.nullOrEmpty(location);
+		return Strings.isNotBlank(location);
 	}
 
 	private void updateButtons() {

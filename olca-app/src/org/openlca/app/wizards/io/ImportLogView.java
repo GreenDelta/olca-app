@@ -44,11 +44,11 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.io.ImportLog;
 import org.openlca.core.io.ImportLog.Message;
 import org.openlca.core.io.ImportLog.State;
 import org.openlca.core.model.ModelType;
-import org.openlca.util.Strings;
 
 public class ImportLogView extends SimpleFormEditor {
 
@@ -307,11 +307,11 @@ public class ImportLogView extends SimpleFormEditor {
 			var phrase = text == null
 					? null
 					: text.trim();
-			if (Strings.notEmpty(phrase)) {
+			if (Strings.isNotBlank(phrase)) {
 				var words = Arrays.stream(phrase.split(" "))
-						.map(s -> s.trim().toLowerCase())
-						.filter(Strings::notEmpty)
-						.toList();
+					.map(s -> s.trim().toLowerCase())
+					.filter(Strings::isNotBlank)
+					.toList();
 				stream = stream.filter(m -> matches(m, words));
 			}
 

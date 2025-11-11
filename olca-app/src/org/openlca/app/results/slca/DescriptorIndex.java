@@ -9,6 +9,7 @@ import java.util.Set;
 import org.openlca.core.matrix.index.IndexConsumer;
 import org.openlca.core.matrix.index.MatrixIndex;
 import org.openlca.core.model.descriptors.Descriptor;
+
 import gnu.trove.impl.Constants;
 import gnu.trove.map.hash.TLongIntHashMap;
 

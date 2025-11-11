@@ -22,13 +22,13 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterizedEntity;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.Uncertainty;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +115,7 @@ public class ParameterPage<T extends ParameterizedEntity> extends ModelPage<T> {
 	void setGlobalTableInput() {
 		var dao = new ParameterDao(Database.get());
 		var params = dao.getGlobalParameters();
-		params.sort((p1, p2) -> Strings.compare(p1.name, p2.name));
+		params.sort((p1, p2) -> Strings.compareIgnoreCase(p1.name, p2.name));
 		globalTable.setInput(params);
 	}
 

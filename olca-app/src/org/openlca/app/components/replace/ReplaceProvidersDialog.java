@@ -16,10 +16,10 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowViewer;
 import org.openlca.app.viewers.combo.ProcessCombo;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.util.ProviderReplacer;
-import org.openlca.util.Strings;
 
 public class ReplaceProvidersDialog extends FormDialog {
 
@@ -45,7 +45,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 			var replacer = ProviderReplacer.of(db);
 			var providers = replacer.getUsedProviders();
 			if (!providers.isEmpty()) {
-				providers.sort((p1, p2) -> Strings.compare(
+				providers.sort((p1, p2) -> Strings.compareIgnoreCase(
 						Labels.name(p1), Labels.name(p2)));
 			}
 			return new Cons(replacer, providers);

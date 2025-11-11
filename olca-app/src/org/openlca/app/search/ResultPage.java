@@ -26,12 +26,12 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.descriptors.CategoryDescriptor;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Categories;
-import org.openlca.util.Strings;
 
 class ResultPage extends FormPage {
 
@@ -86,7 +86,7 @@ class ResultPage extends FormPage {
 	}
 
 	private void filterResults(String filter) {
-		if (Strings.nullOrEmpty(filter)) {
+		if (Strings.isBlank(filter)) {
 			results = rawResults;
 		} else {
 			String term = filter.trim().toLowerCase();
@@ -168,7 +168,7 @@ class ResultPage extends FormPage {
 	}
 
 	private void renderTags(FormToolkit tk, Composite parent, Descriptor d) {
-		if (Strings.nullOrEmpty(d.tags))
+		if (Strings.isBlank(d.tags))
 			return;
 		var tags = d.tags.split(",");
 		if (tags.length == 0)

@@ -1,12 +1,12 @@
 package org.openlca.app.components.graphics.frame;
 
+import java.util.Arrays;
+
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Layout;
-
-import java.util.Arrays;
 
 public class SplitterLayout extends Layout {
 

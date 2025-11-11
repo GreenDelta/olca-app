@@ -38,6 +38,7 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.app.viewers.tables.modify.TextCellModifier;
 import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.field.StringModifier;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
@@ -45,7 +46,6 @@ import org.openlca.core.model.ParameterizedEntity;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.formula.Formulas;
 import org.openlca.util.Parameters;
-import org.openlca.util.Strings;
 
 /**
  * A section with a table for parameters in processes, impact categories, and global
@@ -78,7 +78,8 @@ public class ParameterSection {
 		createCellModifiers();
 		support.afterEvaluation(this::setInput);
 		editor.onSaved(this::setInput);
-		entity().parameters.sort((o1, o2) -> Strings.compare(o1.name, o2.name));
+		entity().parameters.sort(
+			(pi, pj) -> Strings.compareIgnoreCase(pi.name, pj.name));
 		setInput();
 	}
 

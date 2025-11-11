@@ -5,13 +5,13 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import org.openlca.app.editors.projects.ProjectResultData;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.openlca.core.results.ProjectResult;
 import org.openlca.core.results.ResultItemOrder;
-import org.openlca.util.Strings;
 
 class ReportFiller {
 
@@ -93,7 +93,7 @@ class ReportFiller {
       report.addedValues.add(ReportCostResult.of(v, currency, addedValue));
     }
     Comparator<ReportCostResult> c =
-      (r1, r2) -> Strings.compare(r1.variant, r2.variant);
+      (r1, r2) -> Strings.compareIgnoreCase(r1.variant, r2.variant);
     report.netCosts.sort(c);
     report.addedValues.sort(c);
   }

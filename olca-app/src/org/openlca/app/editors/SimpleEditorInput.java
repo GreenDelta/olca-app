@@ -1,9 +1,10 @@
 package org.openlca.app.editors;
 
+import java.util.Objects;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
-import org.openlca.util.Strings;
 
 public class SimpleEditorInput implements IEditorInput {
 
@@ -50,6 +51,6 @@ public class SimpleEditorInput implements IEditorInput {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof SimpleEditorInput input))
 			return false;
-		return Strings.nullOrEqual(id, input.id);
+		return Objects.equals(id, input.id);
 	}
 }

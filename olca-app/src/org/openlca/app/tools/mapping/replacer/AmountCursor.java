@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Set;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.io.maps.FlowMapEntry;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.Flow;
@@ -13,7 +14,6 @@ import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
-import org.openlca.util.Strings;
 
 /**
  * Replaces flows and updates the amounts in exchanges and characterization
@@ -77,7 +77,7 @@ class AmountCursor extends UpdatableCursor {
 
 			// resulting_amount_formula
 			String formula = cursor.getString(6);
-			if (Strings.nullOrEmpty(formula)) {
+			if (Strings.isBlank(formula)) {
 				update.setString(5, null);
 			} else if (factor == 1) {
 				update.setString(5, formula);

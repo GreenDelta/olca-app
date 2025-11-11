@@ -6,8 +6,8 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.results.DQLabelProvider;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Numbers;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.data_quality.DQResult;
-import org.openlca.util.Strings;
 
 class TreeLabel extends DQLabelProvider {
 
@@ -88,14 +88,14 @@ class TreeLabel extends DQLabelProvider {
 			return null;
 		var flowUnit = Labels.refUnit(item.enviFlow());
 		var impactUnit = item.impact().referenceUnit;
-		var unit = Strings.notEmpty(impactUnit)
+		var unit = Strings.isNotBlank(impactUnit)
 				? impactUnit + "/" + flowUnit
 				: "1/" + flowUnit;
 		return format(item.impactFactor(), unit);
 	}
 
 	private String format(double amount, String unit) {
-		return Strings.notEmpty(unit)
+		return Strings.isNotBlank(unit)
 				? Numbers.format(amount) + " " + unit
 				: Numbers.format(amount);
 	}

@@ -10,10 +10,10 @@ import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 		UI.labeledText(parent, tk, M.Port, style)
 				.setText(Integer.toString(conf.port()));
 		UI.labeledText(parent, tk, M.User, style).setText(conf.user());
-		boolean withPassword = Strings.notEmpty(conf.password());
+		boolean withPassword = Strings.isNotBlank(conf.password());
 		UI.labeledText(parent, tk, M.WithPassword, style)
 				.setText(withPassword ? M.Yes : M.No);
 	}
@@ -70,7 +70,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 		var folder = DatabaseDir.getRootFolder(conf.name());
 		var path = folder.toURI().toString();
 		var link = UI.hyperlink(parent, tk);
-		link.setText(Strings.cut(path, 75));
+		link.setText(Strings.cutEnd(path, 75));
 		link.setToolTipText(path);
 		Controls.onClick(link, e -> {
 			try {

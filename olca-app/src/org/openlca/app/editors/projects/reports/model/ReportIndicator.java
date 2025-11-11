@@ -3,12 +3,13 @@ package org.openlca.app.editors.projects.reports.model;
 import java.util.Arrays;
 import java.util.Objects;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import org.openlca.core.model.Project;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.jsonld.Json;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 class ReportIndicator {
 

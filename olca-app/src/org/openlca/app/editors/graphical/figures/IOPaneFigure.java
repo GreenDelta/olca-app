@@ -15,10 +15,10 @@ import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.SWT;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.model.ExchangeItem;
-import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.components.graphics.figures.ComponentFigure;
 import org.openlca.app.components.graphics.figures.GridPos;
+import org.openlca.app.editors.graphical.model.ExchangeItem;
+import org.openlca.app.editors.graphical.model.IOPane;
 
 public class IOPaneFigure extends ComponentFigure {
 

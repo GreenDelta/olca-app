@@ -1,12 +1,12 @@
 package org.openlca.app.components.graphics.figures;
 
-import org.eclipse.draw2d.ArrowLocator;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.PolygonDecoration;
+import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
 
 import java.util.Objects;
 
-import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
+import org.eclipse.draw2d.ArrowLocator;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.PolygonDecoration;
 
 public class TangentialArrowLocator extends ArrowLocator {
 

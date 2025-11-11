@@ -25,8 +25,8 @@ import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DerbyConfig;
-import org.openlca.util.Strings;
 import org.zeroturnaround.zip.ZipUtil;
 
 public class DbRestoreAction extends Action implements INavigationAction {
@@ -119,7 +119,7 @@ public class DbRestoreAction extends Action implements INavigationAction {
 
 			var conf = new DerbyConfig();
 			conf.name(dbName);
-			if (Strings.notEmpty(naviFolder)) {
+			if (Strings.isNotBlank(naviFolder)) {
 				conf.setCategory(naviFolder);
 			}
 			Database.register(conf);

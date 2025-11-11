@@ -25,13 +25,13 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.matrix.index.EnviFlow;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.model.ProjectVariant;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.core.results.LcaResult;
-import org.openlca.util.Strings;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 
@@ -100,7 +100,7 @@ class ContributionSection extends LabelProvider implements TableSection,
 		var widths = new double[variants.length];
 		var n = variants.length == 0 ? 1 : variants.length;
 		for (int i = 0; i < variants.length; i++) {
-			headers[i] = Strings.orEmpty(variants[i].name);
+			headers[i] = Strings.notNull(variants[i].name);
 			widths[i] = 0.98 / n;
 		}
 		table = Tables.createViewer(comp, headers);

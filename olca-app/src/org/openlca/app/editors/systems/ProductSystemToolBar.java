@@ -3,6 +3,10 @@ package org.openlca.app.editors.systems;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.IEditorPart;
 import org.openlca.app.M;
+<<<<<<< HEAD
+=======
+import org.openlca.app.components.FileChooser;
+>>>>>>> master
 import org.openlca.app.components.graphics.EditorActionBarContributor;
 import org.openlca.app.components.graphics.MultiPageSubActionBars;
 import org.openlca.app.db.Database;
@@ -13,6 +17,13 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
+<<<<<<< HEAD
+=======
+import org.openlca.core.math.MatrixRowSorter;
+import org.openlca.core.matrix.MatrixData;
+import org.openlca.core.matrix.index.TechIndex;
+import org.openlca.core.model.CalculationSetup;
+>>>>>>> master
 import org.openlca.core.model.ProductSystem;
 
 /**

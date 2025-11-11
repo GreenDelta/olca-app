@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.openlca.app.collaboration.navigation.ServerConfigurations;
 import org.openlca.app.collaboration.navigation.ServerConfigurations.ServerConfig;
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 public class CredentialStore {
 
@@ -21,7 +21,7 @@ public class CredentialStore {
 	}
 
 	public static void put(String url, String username, String password) {
-		if (Strings.nullOrEmpty(username))
+		if (Strings.isBlank(username))
 			return;
 		usernames.put(url, username);
 		passwords.computeIfAbsent(url, u -> new HashMap<>()).put(username, password);
@@ -29,14 +29,14 @@ public class CredentialStore {
 	}
 
 	public static void clearUsername(String url) {
-		if (Strings.nullOrEmpty(url))
+		if (Strings.isBlank(url))
 			return;
 		usernames.remove(url);
 		passwords.remove(url);
 	}
 
 	public static void clearPassword(String url, String username) {
-		if (Strings.nullOrEmpty(username))
+		if (Strings.isBlank(username))
 			return;
 		var list = passwords.get(url);
 		if (list == null)

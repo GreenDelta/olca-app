@@ -1,5 +1,7 @@
 package org.openlca.app.editors.graphical.edit;
 
+import java.beans.PropertyChangeEvent;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.DragTracker;
 import org.eclipse.gef.EditPolicy;
@@ -8,8 +10,6 @@ import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.tools.ConnectionDragCreationTool;
 import org.openlca.app.editors.graphical.figures.ExchangeFigure;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
-
-import java.beans.PropertyChangeEvent;
 
 public class ExchangeEditPart extends AbstractVertexEditPart<ExchangeItem> {
 

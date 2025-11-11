@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.FlowType;
@@ -22,7 +23,6 @@ import org.openlca.simapro.csv.enums.ProductType;
 import org.openlca.simapro.csv.enums.SubCompartment;
 import org.openlca.simapro.csv.process.ProcessBlock;
 import org.openlca.util.KeyGen;
-import org.openlca.util.Strings;
 
 public class SimaProCsvProvider implements FlowProvider {
 
@@ -198,12 +198,12 @@ public class SimaProCsvProvider implements FlowProvider {
 		}
 
 		FlowInfo name(String name) {
-			this.name = Strings.orEmpty(name).trim();
+			this.name = Strings.notNull(name).trim();
 			return this;
 		}
 
 		FlowInfo unit(String unit) {
-			this.unit = Strings.orEmpty(unit).trim();
+			this.unit = Strings.notNull(unit).trim();
 			return this;
 		}
 

@@ -18,6 +18,7 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ModelType;
@@ -27,7 +28,6 @@ import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.UncertaintyType;
 import org.openlca.core.model.Version;
 import org.openlca.expressions.FormulaInterpreter;
-import org.openlca.util.Strings;
 
 class ValueEditor {
 
@@ -233,7 +233,8 @@ class ValueEditor {
 						formula = textVal;
 						onError.accept(null);
 					} catch (Exception e) {
-						onError.accept(M.FormulaError + " - " + Strings.cut(e.getMessage(), 80));
+						onError.accept(
+							M.FormulaError + " - " + Strings.cutEnd(e.getMessage(), 80));
 					}
 				}
 			});

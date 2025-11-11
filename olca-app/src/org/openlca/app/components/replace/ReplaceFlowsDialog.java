@@ -18,11 +18,11 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.FlowViewer;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.util.FlowReplacer;
-import org.openlca.util.Strings;
 
 public class ReplaceFlowsDialog extends FormDialog {
 
@@ -43,7 +43,8 @@ public class ReplaceFlowsDialog extends FormDialog {
 		}
 		var flows = App.exec("Collect used flows...", () -> {
 			var all = FlowReplacer.getUsedFlowsOf(db);
-			all.sort((f1, f2) -> Strings.compare(Labels.name(f1), Labels.name(f2)));
+			all.sort(
+				(f1, f2) -> Strings.compareIgnoreCase(Labels.name(f1), Labels.name(f2)));
 			return all;
 		});
 		if (flows.size() < 2) {
@@ -100,7 +101,8 @@ public class ReplaceFlowsDialog extends FormDialog {
 	private void updateReplacementCandidates(FlowDescriptor selected) {
 		var candidates = App.exec(
 				"Find candidates...", () -> FlowReplacer.getCandidatesOf(db, selected));
-		candidates.sort((f1, f2) -> Strings.compare(Labels.name(f1), Labels.name(f2)));
+		candidates.sort(
+			(f1, f2) -> Strings.compareIgnoreCase(Labels.name(f1), Labels.name(f2)));
 		targetCombo.setInput(candidates);
 		if (candidates.size() == 1) {
 			targetCombo.select(candidates.getFirst());

@@ -13,10 +13,10 @@ import org.openlca.app.M;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 import org.openlca.io.CategoryPath;
-import org.openlca.util.Strings;
 
 public class ProcessExchangePage extends ModelPage<Process> {
 
@@ -86,12 +86,12 @@ public class ProcessExchangePage extends ModelPage<Process> {
 			}
 
 			// name or category
-			int c = Strings.compare(e1.flow.name, e2.flow.name);
+			int c = Strings.compareIgnoreCase(e1.flow.name, e2.flow.name);
 			if (c != 0)
 				return c;
 			var c1 = CategoryPath.getShort(e1.flow.category);
 			var c2 = CategoryPath.getShort(e2.flow.category);
-			return Strings.compare(c1, c2);
+			return Strings.compareIgnoreCase(c1, c2);
 		});
 	}
 

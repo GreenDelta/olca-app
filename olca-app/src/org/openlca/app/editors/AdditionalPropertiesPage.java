@@ -21,8 +21,8 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.Trees;
+import org.openlca.commons.Strings;
 import org.openlca.core.model.RootEntity;
-import org.openlca.util.Strings;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -106,7 +106,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 			var json = text.getText();
 			var model = getModel();
 			try {
-				var obj = Strings.notEmpty(json)
+				var obj = Strings.isNotBlank(json)
 						? new Gson().fromJson(json, JsonObject.class)
 						: new JsonObject();
 				model.writeOtherProperties(obj);

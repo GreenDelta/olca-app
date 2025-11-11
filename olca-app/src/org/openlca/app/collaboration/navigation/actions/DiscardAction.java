@@ -51,13 +51,14 @@ class DiscardAction extends Action implements INavigationAction {
 			return;
 		try {
 			var repo = Repository.CURRENT;
+			var head = repo.commits.head();
 			var selected = PathFilters.of(selection).stream()
 					.map(filter -> repo.diffs.find()
 							.filter(filter)
+							.commit(head)
 							.withDatabase())
 					.flatMap(List::stream)
 					.collect(Collectors.toList());
-			var head = repo.commits.head();
 			Actions.run(GitReset.on(repo)
 					.to(head)
 					.changes(selected)

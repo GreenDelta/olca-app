@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.git.RepositoryInfo;
 import org.openlca.git.model.TriDiff;
-import org.openlca.util.Strings;
 
 public class DiffNodeBuilder {
 
@@ -48,7 +48,7 @@ public class DiffNodeBuilder {
 	}
 
 	private void createNode(TriDiff diff) {
-		var parent = !Strings.nullOrEmpty(diff.category)
+		var parent = Strings.isNotBlank(diff.category)
 				? getOrCreateCategoryNode(diff.type, diff.category)
 				: diff.isLibrary
 						? getOrCreateLibrariesNode()

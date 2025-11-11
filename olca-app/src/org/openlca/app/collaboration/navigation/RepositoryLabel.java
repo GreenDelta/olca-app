@@ -16,6 +16,7 @@ import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
@@ -23,7 +24,6 @@ import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.git.util.Constants;
 import org.openlca.git.util.Path;
 import org.openlca.jsonld.LibraryLink;
-import org.openlca.util.Strings;
 
 public class RepositoryLabel {
 
@@ -55,7 +55,7 @@ public class RepositoryLabel {
 		var behind = repo.localHistory.getBehindOf(Constants.REMOTE_REF);
 		var user = repo.user();
 		var text = " [";
-		if (!Strings.nullOrEmpty(user)) {
+		if (Strings.isNotBlank(user)) {
 			text += user + "@";
 		}
 		text += repo.url;

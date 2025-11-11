@@ -20,6 +20,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.LibraryInfo;
 import org.openlca.core.library.export.LibraryExport;
@@ -28,7 +29,6 @@ import org.openlca.core.model.DQSystem;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.Process;
 import org.openlca.util.Databases;
-import org.openlca.util.Strings;
 
 public class LibraryExportDialog extends FormDialog {
 
@@ -203,14 +203,14 @@ public class LibraryExportDialog extends FormDialog {
 			boolean hasInventory = false;
 			for (var d : db.getDescriptors(Process.class)) {
 				hasInventory = true;
-				if (Strings.notEmpty(d.library)) {
+				if (Strings.isNotBlank(d.library)) {
 					hasLibraryProcesses = true;
 					break;
 				}
 			}
 			boolean hasImpacts = false;
 			for (var d : db.getDescriptors(ImpactCategory.class)) {
-				if (Strings.nullOrEmpty(d.library)) {
+				if (Strings.isBlank(d.library)) {
 					hasImpacts = true;
 					break;
 				}

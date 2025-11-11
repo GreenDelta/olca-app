@@ -6,8 +6,8 @@ import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURV
 import java.util.Objects;
 
 import org.openlca.app.components.graphics.model.Element;
-import org.openlca.core.model.Copyable;
-import org.openlca.util.Strings;
+import org.openlca.commons.Copyable;
+import org.openlca.commons.Strings;
 
 public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 
@@ -44,7 +44,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 		if (editor.result.hasImpacts()) {
 			selection = editor.items.impacts()
 					.stream()
-					.min((i1, i2) -> Strings.compare(i1.name, i2.name))
+					.min((i1, i2) -> Strings.compareIgnoreCase(i1.name, i2.name))
 					.orElse(null);
 		}
 
@@ -54,7 +54,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 					.min((f1, f2) -> {
 						if (f1.flow() == null || f2.flow() == null)
 							return 0;
-						return Strings.compare(f1.flow().name, f2.flow().name);
+						return Strings.compareIgnoreCase(f1.flow().name, f2.flow().name);
 					})
 					.orElse(null);
 		// TODO costs...

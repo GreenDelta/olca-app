@@ -30,9 +30,9 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.util.Strings;
 
 /**
  * A section for selecting processes or sub-systems (in general "providers") of
@@ -156,7 +156,7 @@ class PinBoard {
 		String f = null;
 		if (filter != null) {
 			String text = filter.getText();
-			if (!Strings.nullOrEmpty(text)) {
+			if (Strings.isNotBlank(text)) {
 				f = text.trim().toLowerCase(Locale.US);
 			}
 		}
@@ -205,7 +205,7 @@ class PinBoard {
 				return 1;
 			String s1 = Labels.name(pp1.provider());
 			String s2 = Labels.name(pp2.provider());
-			return Strings.compare(s1, s2);
+			return Strings.compareIgnoreCase(s1, s2);
 		});
 
 		return input;

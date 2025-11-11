@@ -1,5 +1,11 @@
 package org.openlca.app.editors.graphical.actions;
 
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_REMOVE_CHAIN;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
@@ -13,10 +19,6 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-
-import java.util.*;
-
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_REMOVE_CHAIN;
 
 public class RemoveSupplyChainAction extends SelectionAction {
 

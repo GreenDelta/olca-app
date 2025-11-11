@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ParameterDao;
 import org.openlca.core.model.ImpactCategory;
@@ -12,7 +13,6 @@ import org.openlca.core.model.ParameterizedEntity;
 import org.openlca.core.model.Process;
 import org.openlca.expressions.FormulaInterpreter;
 import org.openlca.expressions.Scope;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,15 +66,15 @@ public class Formulas {
 			var scope = createScope(db, p);
 			evalParams(p.parameters, scope);
 			for (var e : p.exchanges) {
-				if (Strings.notEmpty(e.formula)) {
+				if (Strings.isNotBlank(e.formula)) {
 					e.amount = eval(e.formula, scope);
 				}
-				if (Strings.notEmpty(e.costFormula)) {
+				if (Strings.isNotBlank(e.costFormula)) {
 					e.costs = eval(e.costFormula, scope);
 				}
 			}
 			for (var af : p.allocationFactors) {
-				if (Strings.notEmpty(af.formula)) {
+				if (Strings.isNotBlank(af.formula)) {
 					af.value = eval(af.formula, scope);
 				}
 			}
@@ -89,7 +89,7 @@ public class Formulas {
 			var scope = createScope(db, impact);
 			evalParams(impact.parameters, scope);
 			for (var factor : impact.impactFactors) {
-				if (Strings.notEmpty(factor.formula)) {
+				if (Strings.isNotBlank(factor.formula)) {
 					factor.value = eval(factor.formula, scope);
 				}
 			}
@@ -108,7 +108,7 @@ public class Formulas {
 	}
 
 	private double eval(String formula, Scope s) {
-		if (Strings.nullOrEmpty(formula) || s == null)
+		if (Strings.isBlank(formula) || s == null)
 			return 0;
 		try {
 			double val = s.eval(formula);
@@ -144,7 +144,7 @@ public class Formulas {
 	private static void bind(Parameter param, Scope scope) {
 		if (param == null || scope == null)
 			return;
-		if (param.isInputParameter || Strings.nullOrEmpty(param.formula)) {
+		if (param.isInputParameter || Strings.isBlank(param.formula)) {
 			scope.bind(param.name, param.value);
 		} else {
 			scope.bind(param.name, param.formula);

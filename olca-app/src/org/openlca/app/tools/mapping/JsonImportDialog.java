@@ -19,8 +19,8 @@ import org.openlca.app.util.Colors;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.core.io.maps.FlowMap;
-import org.openlca.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +67,7 @@ class JsonImportDialog extends Dialog {
 		this.provider = provider;
 		this.flowMaps = flowMaps;
 		Collections.sort(this.flowMaps,
-				(m1, m2) -> Strings.compare(m1.name, m2.name));
+				(m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name));
 	}
 
 	@Override
@@ -85,9 +85,9 @@ class JsonImportDialog extends Dialog {
 		Composite comp = UI.composite(root);
 		UI.gridLayout(comp, 2, 10, 0);
 		UI.label(comp, M.File);
-		String fileText = Strings.cut(provider.file().getParent(), 50)
-				+ File.separator
-				+ Strings.cut(provider.file().getName(), 50);
+		var fileText = Strings.cutEnd(provider.file().getParent(), 50)
+			+ File.separator
+			+ Strings.cutEnd(provider.file().getName(), 50);
 		Label label = UI.label(comp, fileText);
 		label.setForeground(Colors.linkBlue());
 

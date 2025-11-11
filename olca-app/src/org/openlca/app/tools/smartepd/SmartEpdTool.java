@@ -25,9 +25,9 @@ import org.openlca.app.tools.smartepd.TreeModel.ProjectNode;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.Trees;
+import org.openlca.commons.Res;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.smartepd.SmartEpdClient;
-import org.openlca.util.Res;
 
 public class SmartEpdTool extends SimpleFormEditor {
 
@@ -36,13 +36,13 @@ public class SmartEpdTool extends SimpleFormEditor {
 	public static void open() {
 
 		var client = ApiKeyAuth.fromCacheOrDialog(
-				".smartepd.json", "https://smart-epd.herokuapp.com/api", key -> {
-					var c = SmartEpdClient.of(key.endpoint(), key.value());
-					var err = c.getProjects();
-					return err.hasError()
-							? err.wrapError("Failed to connect to API; projects query failed")
-							: Res.of(c);
-				});
+			".smartepd.json", "https://smart-epd.herokuapp.com/api", key -> {
+				var c = SmartEpdClient.of(key.endpoint(), key.value());
+				var err = c.getProjects();
+				return err.isError()
+					? err.wrapError("Failed to connect to API; projects query failed")
+					: Res.ok(c);
+			});
 		if (client.isEmpty())
 			return;
 
@@ -89,10 +89,10 @@ public class SmartEpdTool extends SimpleFormEditor {
 
 			App.runInUI("Fetching data ...", () -> {
 				var res = TreeModel.fetch(client);
-				if (res.hasError()) {
+				if (res.isError()) {
 					ErrorReporter.on(
-							"Failed to fetch data from SmartEPD",
-							res.error());
+						"Failed to fetch data from SmartEPD",
+						res.error());
 				} else {
 					tree.setInput(res.value());
 					tree.expandAll();
@@ -105,33 +105,33 @@ public class SmartEpdTool extends SimpleFormEditor {
 			@Override
 			public Object[] getElements(Object root) {
 				return root instanceof TreeModel(List<ProjectNode> projectNodes)
-						? projectNodes.toArray()
-						: new Object[0];
+					? projectNodes.toArray()
+					: new Object[0];
 			}
 
 			@Override
 			public Object[] getChildren(Object parent) {
 				return parent instanceof ProjectNode node
-						? node.epdNodes().toArray()
-						: new Object[0];
+					? node.epdNodes().toArray()
+					: new Object[0];
 			}
 
 			@Override
 			public Object getParent(Object obj) {
 				return obj instanceof EpdNode node
-						? node.parent()
-						: null;
+					? node.parent()
+					: null;
 			}
 
 			@Override
 			public boolean hasChildren(Object obj) {
 				return obj instanceof ProjectNode node
-						&& !node.epdNodes().isEmpty();
+					&& !node.epdNodes().isEmpty();
 			}
 		}
 
 		private static class TreeLabel extends BaseLabelProvider
-				implements ITableLabelProvider {
+			implements ITableLabelProvider {
 
 			@Override
 			public Image getColumnImage(Object obj, int col) {

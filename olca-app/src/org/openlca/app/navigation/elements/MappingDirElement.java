@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.openlca.util.Strings;
+import org.openlca.commons.Strings;
 
 /**
  * A navigation element that bundles a set of mapping files of a database.
@@ -26,8 +26,8 @@ public class MappingDirElement extends NavigationElement<Set<String>> {
 		if (names == null || names.isEmpty())
 			return Collections.emptyList();
 		return names.stream()
-				.sorted(Strings::compare)
-				.map(name -> new MappingFileElement(this, name))
-				.collect(Collectors.toList());
+			.sorted(Strings::compareIgnoreCase)
+			.map(name -> new MappingFileElement(this, name))
+			.collect(Collectors.toList());
 	}
 }
