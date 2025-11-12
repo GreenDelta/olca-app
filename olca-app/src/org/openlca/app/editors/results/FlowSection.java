@@ -134,6 +134,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 			TableClipboard.onCopySelected(table), refFlowAction);
 	}
 
+
 	private boolean isProviderFlow(FlowResult flow) {
 		if (flow == null
 			|| flow.amount == 0
