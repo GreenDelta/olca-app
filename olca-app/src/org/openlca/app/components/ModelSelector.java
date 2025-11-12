@@ -89,20 +89,30 @@ public class ModelSelector extends FormDialog {
 				: Collections.emptyList();
 	}
 
-	/**
-	 * Returns the first element from the selection or null when the selection is
-	 * empty.
-	 */
+	/// Returns the first element from the selection if available, otherwise, it
+	/// returns `null`.
 	public RootDescriptor first() {
-		if (selection == null || selection.isEmpty())
-			return null;
-		return selection.getFirst();
+		return selection != null || !selection.isEmpty()
+			? selection.getFirst()
+			: null;
+	}
+
+	/// Returns all selected elements as list.
+	public List<RootDescriptor> all() {
+		return selection != null || !selection.isEmpty()
+			? new ArrayList<>(selection)
+			: List.of();
 	}
 
 	public ModelSelector withFilter(Predicate<RootDescriptor> p) {
 		this.modelFilter = p != null
 				? new ModelFilter(p)
 				: null;
+		return this;
+	}
+
+	public ModelSelector withMultiSelect() {
+		this.forMultiple = true;
 		return this;
 	}
 

@@ -5,6 +5,7 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.ImpactResult;
+import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
@@ -36,15 +37,15 @@ class Util {
 
 	static boolean addImpact(Result result, RootDescriptor d) {
 		var db = Database.get();
-		if (db == null || result == null || d == null)
+		if (db == null
+			|| result == null
+			|| d == null
+			|| d.type != ModelType.IMPACT_CATEGORY)
 			return false;
-		var impact = db.get(ImpactCategory.class, d.id);
-		if (impact == null)
-			return false;
-		var ri = new ImpactResult();
-		ri.indicator = impact;
-		ri.amount = 1.0;
-		return result.impactResults.add(ri);
+		var indicator = db.get(ImpactCategory.class, d.id);
+		return indicator != null
+			? result.impactResults.add(ImpactResult.of(indicator, 1.0))
+			: false;
 	}
 
 	static boolean addFlow(Result r, RootDescriptor d, boolean input) {

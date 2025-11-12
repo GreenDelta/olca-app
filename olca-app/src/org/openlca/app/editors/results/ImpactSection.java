@@ -1,5 +1,7 @@
 package org.openlca.app.editors.results;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -10,6 +12,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelector;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
@@ -24,6 +27,8 @@ import org.openlca.commons.Strings;
 import org.openlca.core.model.ImpactResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
+import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 
 record ImpactSection(ResultEditor editor) {
 
@@ -36,13 +41,13 @@ record ImpactSection(ResultEditor editor) {
 		UI.gridData(section, true, false);
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(
-				comp, M.ImpactCategory, M.Amount, M.Unit);
+			comp, M.ImpactCategory, M.Amount, M.Unit);
 		table.setLabelProvider(new ImpactLabel());
 		Tables.bindColumnWidths(table, 0.35, 0.35, 0.3);
 
 		if (editor.isEditable()) {
 			new ModifySupport<ImpactResult>(table)
-					.bind(M.Amount, new AmountModifier(editor));
+				.bind(M.Amount, new AmountModifier(editor));
 			bindActions(section, table);
 		}
 
@@ -60,22 +65,18 @@ record ImpactSection(ResultEditor editor) {
 		var onAdd = Actions.onAdd(() -> {
 			var result = result();
 			new ModelSelector(ModelType.IMPACT_CATEGORY)
-					.withFilter(d -> Util.canAddImpact(result, d))
-					.onOk(ModelSelector::first)
-					.ifPresent(d -> {
-						if (Util.addImpact(result, d)) {
-							table.setInput(result.impactResults);
-							editor.setDirty();
-						}
-					});
+				.withMultiSelect()
+				.withFilter(d -> Util.canAddImpact(result, d))
+				.onOk(ModelSelector::all)
+				.ifPresent(ds -> addImpacts(table, ds));
 		});
 
 		var onRemove = Actions.onRemove(() -> {
-			ImpactResult impact = Viewers.getFirstSelected(table);
-			if (impact == null)
-				return;
+			List<ImpactResult> selected = Viewers.getAllSelected(table);
 			var impacts = result().impactResults;
-			impacts.remove(impact);
+			for (var i : selected) {
+				impacts.remove(i);
+			}
 			table.setInput(impacts);
 			editor.setDirty();
 		});
@@ -90,17 +91,33 @@ record ImpactSection(ResultEditor editor) {
 
 		Actions.bind(section, onAdd, onRemove);
 		Actions.bind(table,
-				onAdd, onRemove, onOpen, TableClipboard.onCopySelected(table));
+			onAdd, onRemove, onOpen, TableClipboard.onCopySelected(table));
+
+		ModelTransfer.onDrop(table.getTable(), ds -> addImpacts(table, ds));
+	}
+
+	private void addImpacts(TableViewer table, List<? extends Descriptor> ds) {
+		var result = result();
+		var added = false;
+		for (var d : ds) {
+			if (d instanceof RootDescriptor rd && Util.addImpact(result, rd)) {
+				added = true;
+			}
+		}
+		if (added) {
+			table.setInput(result.impactResults);
+			editor.setDirty();
+		}
 	}
 
 	private static class ImpactLabel extends LabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
 			return col == 0 && obj instanceof ImpactResult r
-					? Images.get(r.indicator)
-					: null;
+				? Images.get(r.indicator)
+				: null;
 		}
 
 		@Override
@@ -111,8 +128,8 @@ record ImpactSection(ResultEditor editor) {
 				case 0 -> Labels.name(impact.indicator);
 				case 1 -> Numbers.format(impact.amount);
 				case 2 -> impact.indicator == null
-						? null
-						: impact.indicator.referenceUnit;
+					? null
+					: impact.indicator.referenceUnit;
 				default -> null;
 			};
 		}
@@ -129,8 +146,8 @@ record ImpactSection(ResultEditor editor) {
 		@Override
 		public Double getDouble(ImpactResult impact) {
 			return impact == null
-					? null
-					: impact.amount;
+				? null
+				: impact.amount;
 		}
 
 		@Override
