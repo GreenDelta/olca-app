@@ -24,8 +24,12 @@ import org.openlca.git.actions.GitProgressAction;
 import org.openlca.git.actions.GitRemoteAction;
 import org.openlca.git.actions.GitStashApply;
 import org.openlca.git.util.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class Actions {
+
+	private static final Logger log = LoggerFactory.getLogger(Actions.class);
 
 	static void refresh() {
 		Navigator.refresh();
@@ -62,6 +66,7 @@ class Actions {
 		if (!(runner.exception instanceof TransportException))
 			throw runner.exception;
 		var m = runner.exception.getMessage();
+		log.warn("Could not authorize git remote action", runner.exception);
 		var notAuthorized = m.endsWith("not authorized");
 		var tokenRequired = m.endsWith("400 null");
 		var passwordMissing = m.endsWith("424 null");
