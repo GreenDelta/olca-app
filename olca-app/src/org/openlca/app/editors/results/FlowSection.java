@@ -1,5 +1,6 @@
 package org.openlca.app.editors.results;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jface.viewers.ITableFontProvider;
@@ -14,6 +15,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelSelector;
+import org.openlca.app.components.ModelTransfer;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
@@ -29,6 +31,8 @@ import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Result;
+import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.util.Categories;
 
 record FlowSection(ResultEditor editor, boolean forInputs) {
@@ -74,25 +78,22 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 
 	private void bindActions(Section section, TableViewer table) {
 
-		var onAdd = Actions.onAdd(
-			() -> new ModelSelector(ModelType.FLOW)
-				.onOk(ModelSelector::first)
-				.ifPresent(d -> {
-					if (Util.addFlow(result(), d, forInputs)) {
-						setInput(table);
-						editor.setDirty();
-					}
-				}));
+		var onAdd = Actions.onAdd(() -> {
+			new ModelSelector(ModelType.FLOW)
+				.withMultiSelect()
+				.onOk(ModelSelector::all)
+				.ifPresent(ds -> addFlows(table, ds));
+		});
 
 		var onRemove = Actions.onRemove(() -> {
-			FlowResult flow = Viewers.getFirstSelected(table);
-			if (flow == null)
-				return;
+			List<FlowResult> selected = Viewers.getAllSelected(table);
 			var flows = result().flowResults;
-			// TODO: check that this is not a linked flow in a system!
-			flows.remove(flow);
-			if (Objects.equals(result().referenceFlow, flow)) {
-				result().referenceFlow = null;
+			for (var flow : selected) {
+				// TODO: check that this is not a linked flow in a system!
+				flows.remove(flow);
+				if (Objects.equals(result().referenceFlow, flow)) {
+					result().referenceFlow = null;
+				}
 			}
 			setInput(table);
 			editor.setDirty();
@@ -132,8 +133,24 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		Actions.bind(section, onAdd, onRemove);
 		Actions.bind(table, onAdd, onRemove, onOpen,
 			TableClipboard.onCopySelected(table), refFlowAction);
+
+		ModelTransfer.onDrop(table.getTable(), ds -> addFlows(table, ds));
 	}
 
+	private void addFlows(TableViewer table, List<? extends Descriptor> ds) {
+		var result = result();
+		var added = false;
+		for (var d : ds) {
+			if (d instanceof RootDescriptor rd
+				&& Util.addFlow(result, rd, forInputs)) {
+				added = true;
+			}
+		}
+		if (added) {
+			setInput(table);
+			editor.setDirty();
+		}
+	}
 
 	private boolean isProviderFlow(FlowResult flow) {
 		if (flow == null

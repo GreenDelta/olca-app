@@ -38,6 +38,7 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProviderType;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.io.CategoryPath;
 
@@ -170,16 +171,18 @@ class ExchangeTable {
 				});
 
 		var openProvider = Actions.create(
-				M.OpenProvider, Images.descriptor(ModelType.PROCESS), () -> {
-					Exchange e = Viewers.getFirstSelected(viewer);
-					if (e == null || e.defaultProviderId == 0L)
-						return;
-					var d = Database.get().getDescriptor(
-							Process.class, e.defaultProviderId);
-					if (d != null) {
-						App.open(d);
-					}
-				});
+			M.OpenProvider, Images.descriptor(ModelType.PROCESS), () -> {
+				Exchange e = Viewers.getFirstSelected(viewer);
+				if (e == null || e.defaultProviderId == 0L)
+					return;
+				var type = e.defaultProviderType == ProviderType.RESULT
+					? Result.class
+					: Process.class;
+				var d = Database.get().getDescriptor(type, e.defaultProviderId);
+				if (d != null) {
+					App.open(d);
+				}
+			});
 
 		if (!editor.isEditable()) {
 			Actions.bind(viewer, openFlow, openProvider);
