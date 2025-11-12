@@ -14,10 +14,12 @@ import org.openlca.commons.Strings;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.usage.ExchangeUseSearch;
+import org.openlca.core.model.AbstractExchange;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProcessDescriptor;
 import org.slf4j.Logger;
@@ -38,33 +40,60 @@ public class Exchanges {
 
 		var sql = switch (d.type) {
 			case ModelType.PROCESS -> "select e.f_flow from"
-					+ " tbl_processes p inner join tbl_exchanges e on"
-					+ " p.f_quantitative_reference = e.id"
-					+ " where p.id = " + d.id;
+				+ " tbl_processes p inner join tbl_exchanges e on"
+				+ " p.f_quantitative_reference = e.id"
+				+ " where p.id = " + d.id;
 			case ModelType.PRODUCT_SYSTEM -> "select e.f_flow from"
-					+ " tbl_product_systems s inner join tbl_exchanges e on "
-					+ " s.f_reference_exchange = e.id"
-					+ " where s.id = " + d.id;
+				+ " tbl_product_systems s inner join tbl_exchanges e on "
+				+ " s.f_reference_exchange = e.id"
+				+ " where s.id = " + d.id;
 			case ModelType.RESULT -> "select e.f_flow from"
-					+ " tbl_results r inner join tbl_flow_results e on "
-					+ " r.f_reference_flow = e.id"
-					+ " where r.id = " + d.id;
+				+ " tbl_results r inner join tbl_flow_results e on "
+				+ " r.f_reference_flow = e.id"
+				+ " where r.id = " + d.id;
 			case null, default -> null;
 		};
 		if (sql == null)
-			return -1L;
+			return -1;
 
 		try {
-			var id = new AtomicLong(-1L);
-			NativeSql.on(Database.get()).query(sql, r -> {
-				id.set(r.getLong(1));
+			var db = Database.get();
+			var idRef = new AtomicLong(-1L);
+			NativeSql.on(db).query(sql, r -> {
+				idRef.set(r.getLong(1));
 				return false;
 			});
-			return id.get();
+
+			long id = idRef.get();
+			if (id > 0 || d.type != ModelType.RESULT)
+				return id;
+
+			// in case of results, we load the full result and search for
+			// the first product or waste input as the provider flow
+			var r = db.get(Result.class, d.id);
+			if (r == null)
+				return -1;
+			var refFlow = r.flowResults.stream()
+				.filter(Exchanges::isProviderFlow)
+				.findAny()
+				.orElse(null);
+			return refFlow != null && refFlow.flow != null
+				? refFlow.flow.id
+				: -1;
+
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to query ref. flow: " + sql, e);
-			return -1L;
+			return -1;
 		}
+	}
+
+	private static boolean isProviderFlow(AbstractExchange e) {
+		if (e == null || e.flow == null)
+			return false;
+		if (e instanceof Exchange ex && ex.isAvoided)
+			return false;
+		return (!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW)
+			|| (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW);
 	}
 
 	static boolean canHaveProvider(Exchange e, Descriptor d) {
