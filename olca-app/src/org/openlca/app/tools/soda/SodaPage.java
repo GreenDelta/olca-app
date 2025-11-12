@@ -22,8 +22,6 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.FileType;
-import org.openlca.app.util.MsgBox;
-import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
@@ -140,17 +138,8 @@ class SodaPage extends FormPage {
 
 	private void runImport() {
 		List<Descriptor<?>> selection = Viewers.getAllSelected(table);
-		if (selection.isEmpty())
-			return;
-
 		var db = Database.get();
-		if (db == null) {
-			MsgBox.info(M.NoDatabaseOpened, M.NoDatabaseOpenedImportInfo);
-			return;
-		}
-
-		var b = Question.ask(M.ImportSelectedDataSetQ,
-				M.ImportSelectedDataSetQuestion);
+		var b = ImportQuestion.isOk(db, selection, con.hasEpds());
 		if (!b)
 			return;
 
