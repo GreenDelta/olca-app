@@ -2,6 +2,7 @@ package org.openlca.app.navigation.actions.libraries;
 
 import static org.openlca.app.licence.LibrarySession.removeSession;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,7 +22,11 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
+import org.openlca.core.database.Derby;
+import org.openlca.core.database.MySQL;
 import org.openlca.core.database.config.DatabaseConfig;
+import org.openlca.core.database.config.DerbyConfig;
+import org.openlca.core.database.config.MySqlConfig;
 import org.openlca.core.library.Library;
 import org.openlca.util.Dirs;
 
@@ -149,15 +154,19 @@ public class DeleteLibraryAction extends Action implements INavigationAction {
 						? Optional.of(Usage.db(config))
 						: Optional.empty();
 			}
-			try (var db = config.connect(Workspace.dbDir())) {
-				return db.getVersion() >= 10 && db.getLibraries().contains(lib.name())
+			if (config instanceof DerbyConfig) {
+				return Derby.containsLibrary(new File(Workspace.dbDir(), config.name()), lib.name())
 						? Optional.of(Usage.db(config))
 						: Optional.empty();
-			} catch (Exception e) {
-				var usage = new Usage(
-						config.name(), UsageType.DATABASE, e.getMessage());
-				return Optional.of(usage);
+			} else if (config instanceof MySqlConfig conf) {
+				return MySQL.containsLibrary(conf.config(), lib.name())
+						? Optional.of(Usage.db(config))
+						: Optional.empty();
 			}
+			var usage = new Usage(
+					config.name(), UsageType.DATABASE,
+					"Unknown database config type: " + config.getClass().getName());
+			return Optional.of(usage);
 		}
 
 		static Optional<Usage> of(Library other, Library lib) {
