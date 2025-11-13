@@ -1,15 +1,11 @@
 package org.openlca.app.navigation.actions.libraries;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -19,11 +15,11 @@ import org.openlca.app.db.Database;
 import org.openlca.app.navigation.actions.INavigationAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.combo.LibraryCombo;
 import org.openlca.app.wizards.io.ImportLibraryDialog;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.Library;
@@ -50,12 +46,9 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			return null;
 		}
 		var dialog = new Dialog(db);
-		if (dialog.open() != Window.OK
-				|| dialog.combo == null
-				|| dialog.combo.selected == null)
+		if (dialog.open() != Window.OK || dialog.selected == null)
 			return null;
-
-		var lib = dialog.combo.selected;
+		var lib = dialog.selected;
 		if (db.getLibraries().contains(lib.name())) {
 			MsgBox.error(M.TheLibraryIsAlreadyPresent + " - " + lib.name());
 			return null;
@@ -74,9 +67,9 @@ public class AddLibraryAction extends Action implements INavigationAction {
 	private static class Dialog extends FormDialog {
 
 		private final IDatabase db;
-		private LibCombo combo;
+		private Library selected;
 
-		Dialog(IDatabase db) {
+		private Dialog(IDatabase db) {
 			super(UI.shell());
 			this.db = db;
 		}
@@ -102,7 +95,12 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			UI.fillHorizontal(comp);
 			UI.gridLayout(comp, 2);
 
-			combo = new LibCombo(UI.labeledCombo(comp, tk, M.Library));
+			var dbLibraries = db.getLibraries();
+			UI.label(comp, tk, M.Library);
+			var combo = new LibraryCombo(comp, tk,
+					lib -> !dbLibraries.contains(lib.name()),
+					lib -> selected = lib);
+			combo.selectFirst();
 			UI.filler(comp, tk);
 			var importButton = tk.createButton(
 					comp, M.ImportFromFileDots, SWT.NONE);
@@ -115,64 +113,11 @@ public class AddLibraryAction extends Action implements INavigationAction {
 				if (file == null)
 					return;
 				ImportLibraryDialog.open(file)
-						.ifPresent(combo::updateWith);
+						.ifPresent(lib -> {
+							combo.update();
+							combo.select(lib);
+						});
 			});
-		}
-	}
-
-	static class LibCombo {
-
-		private final List<Library> libraries = new ArrayList<>();
-		private final Combo combo;
-		private Library selected;
-
-		LibCombo(Combo combo) {
-			this.combo = combo;
-			fill();
-			if (!libraries.isEmpty()) {
-				select(libraries.get(0));
-			}
-			Controls.onSelect(combo, $ -> {
-				var idx = combo.getSelectionIndex();
-				if (idx >= 0) {
-					selected = libraries.get(idx);
-				}
-			});
-		}
-
-		void updateWith(Library newLib) {
-			fill();
-			select(newLib);
-		}
-
-		private void fill() {
-			var db = Database.get();
-			var dbLibs = db != null
-					? db.getLibraries()
-					: Collections.emptySet();
-			libraries.clear();
-			Workspace.getLibraryDir()
-					.getLibraries()
-					.stream()
-					.filter(lib -> !dbLibs.contains(lib.name()))
-					.forEach(libraries::add);
-			libraries.sort(Comparator.comparing(Library::name));
-			var items = libraries.stream()
-					.map(Library::name)
-					.toArray(String[]::new);
-			combo.setItems(items);
-		}
-
-		private void select(Library lib) {
-			if (lib == null) {
-				selected = null;
-				return;
-			}
-			int idx = libraries.indexOf(lib);
-			if (idx < 0)
-				return;
-			combo.select(idx);
-			selected = lib;
 		}
 
 	}

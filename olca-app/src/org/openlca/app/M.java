@@ -171,6 +171,7 @@ public class M extends NLS {
 	public static String CategoriesContainASlash;
 	public static String Category;
 	public static String CategoryNotEmpty;
+	public static String CertificateDirectory;
 	public static String Causal;
 	public static String CausalAllocation;
 	public static String Change;
@@ -556,6 +557,7 @@ public class M extends NLS {
 	public static String ExportDone;
 	public static String ExportEcoSpold;
 	public static String ExportEcoinventNexusJsonIndex;
+	public static String ExportExperimental;
 	public static String ExportFolderNotEmpty;
 	public static String ExportFolderNotEmptyQuestion;
 	public static String ExportILCD;
@@ -894,7 +896,6 @@ public class M extends NLS {
 	public static String LibraryCannotBeOpened;
 	public static String LibraryDependencies;
 	public static String LibraryDownloadErr;
-	public static String LibraryExportExperimental;
 	public static String LibraryExported;
 	public static String LicenseCorrupted;
 	public static String LicenseExpired;
@@ -1537,6 +1538,8 @@ public class M extends NLS {
 	public static String ShowValidationStatistics;
 	public static String ShowValues;
 	public static String ShowViews;
+	public static String SignALibrary;
+	public static String SignExperimental;
 	public static String SimaProCSVImport;
 	public static String Similarities;
 	public static String Similarity;
@@ -1612,6 +1615,7 @@ public class M extends NLS {
 	public static String Tags;
 	public static String TargetAmount;
 	public static String TargetCategory;
+	public static String TargetFile;
 	public static String TargetFlow;
 	public static String TargetSystem;
 	public static String Technology;
@@ -1756,6 +1760,7 @@ public class M extends NLS {
 	// V
 	public static String Valid;
 	public static String ValidFeatures;
+	public static String ValidFrom;
 	public static String ValidUntil;
 	public static String Validate;
 	public static String ValidateDatabase;

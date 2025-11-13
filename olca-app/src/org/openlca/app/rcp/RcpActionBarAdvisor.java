@@ -41,6 +41,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.hestia.HestiaTool;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
+import org.openlca.app.tools.libraries.LibrarySigningDialog;
 import org.openlca.app.tools.mapping.MappingTool;
 import org.openlca.app.tools.openepd.EpdPanel;
 import org.openlca.app.tools.params.ParameterAnalysisDialog;
@@ -170,8 +171,12 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		mappings.add(Actions.create(M.OpenFile, MappingTool::openFile));
 
 		// library export
-		menu.add(Actions.create(
-				M.LibraryExportExperimental, LibraryExportDialog::show));
+		var libraries = new MenuManager(M.Libraries);
+		menu.add(libraries);
+		libraries.add(Actions.create(
+				M.ExportExperimental, LibraryExportDialog::show));
+		libraries.add(Actions.create(
+				M.SignExperimental, LibrarySigningDialog::show));
 
 		menu.add(Actions.create(
 				"Parameter analysis (experimental)", ParameterAnalysisDialog::show));

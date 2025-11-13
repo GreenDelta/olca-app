@@ -1,13 +1,8 @@
 package org.openlca.app.editors.epds;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.function.Consumer;
+import java.util.Objects;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
@@ -41,34 +36,21 @@ class DocPage extends ModelPage<Epd> {
 
 	private void timeSection(Composite body, FormToolkit tk) {
 		var comp = UI.formSection(body, tk, M.TimeAndLocation, 3);
-		UI.label(comp, tk, M.PublicationDate);
-		dateBox(comp, getModel().validFrom, d -> getModel().validFrom = d);
-		UI.filler(comp, tk);
-
-		UI.label(comp, tk, M.ValidUntil);
-		dateBox(comp, getModel().validUntil, d -> getModel().validUntil = d);
-		UI.filler(comp, tk);
-
-		modelLink(comp, M.Location, "location");
-	}
-
-	private void dateBox(Composite comp, Date date, Consumer<Date> fn) {
-		var box = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
-		if (date != null) {
-			var cal = new GregorianCalendar();
-			cal.setTime(date);
-			box.setDate(
-					cal.get(Calendar.YEAR),
-					cal.get(Calendar.MONTH),
-					cal.get(Calendar.DAY_OF_MONTH));
-		}
-		box.setEnabled(isEditable());
-		box.addSelectionListener(Controls.onSelect($ -> {
-			var next = new GregorianCalendar(
-					box.getYear(), box.getMonth(), box.getDay()).getTime();
-			fn.accept(next);
+		UI.date(comp, tk, M.PublicationDate, getModel().validFrom, selected -> {
+			if (Objects.equals(getModel().validFrom, selected))
+				return;
+			getModel().validFrom = selected;
 			editor.setDirty();
-		}));
+		});
+		UI.filler(comp, tk);
+		UI.date(comp, tk, M.ValidUntil, getModel().validUntil, selected -> {
+			if (Objects.equals(getModel().validUntil, selected))
+				return;
+			getModel().validUntil = selected;
+			editor.setDirty();
+		});
+		UI.filler(comp, tk);
+		modelLink(comp, M.Location, "location");
 	}
 
 	private void technologySection(Composite body, FormToolkit tk) {
