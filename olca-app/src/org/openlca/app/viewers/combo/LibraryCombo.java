@@ -1,6 +1,5 @@
 package org.openlca.app.viewers.combo;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -19,17 +18,20 @@ import org.openlca.core.library.Library;
 public class LibraryCombo {
 
 	private final Combo combo;
-	private List<Library> libraries = new ArrayList<>();
-	private Predicate<Library> filter;
+	private final Predicate<Library> filter;
+	private final Consumer<Library> onSelect;
+	private List<Library> libraries;
 
-	public LibraryCombo(Composite parent, FormToolkit tk, Consumer<Library> onSelect) {
-		this(parent, tk, null, onSelect);
-	}
+	public LibraryCombo(
+		Composite parent,
+		FormToolkit tk,
+		Predicate<Library> filter,
+		Consumer<Library> onSelect) {
 
-	public LibraryCombo(Composite parent, FormToolkit tk, Predicate<Library> filter, Consumer<Library> onSelect) {
 		this.combo = new Combo(parent, SWT.READ_ONLY);
 		UI.gridData(combo, true, false);
 		this.filter = filter;
+		this.onSelect = onSelect;
 		update();
 		Controls.onSelect(combo, $ -> {
 			if (onSelect == null)
@@ -57,18 +59,21 @@ public class LibraryCombo {
 	}
 
 	public void selectFirst() {
-		if (libraries.isEmpty())
+		if (libraries == null || libraries.isEmpty())
 			return;
-		select(libraries.get(0));
+		select(libraries.getFirst());
 	}
 
 	public void select(Library lib) {
-		if (lib == null)
+		if (lib == null || libraries == null)
 			return;
 		int idx = libraries.indexOf(lib);
 		if (idx < 0)
 			return;
 		combo.select(idx);
+		if (onSelect != null) {
+			onSelect.accept(lib);
+		}
 	}
 
 }
