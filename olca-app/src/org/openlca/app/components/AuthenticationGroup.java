@@ -97,7 +97,7 @@ public class AuthenticationGroup extends Composite {
 			}
 		}
 		if (withPassword) {
-			passwordText = createText(container, toolkit, SWT.PASSWORD, M.Password, password,
+			passwordText = createText(container, toolkit, SWT.PASSWORD | SWT.BORDER, M.Password, password,
 					text -> this.password = text);
 			if (autoFocus && Strings.isNotBlank(user) && Strings.isBlank(password)) {
 				passwordText.setFocus();
