@@ -115,7 +115,7 @@ public class DeleteExchangeCommand extends Command {
 						&& e.flow.flowType != FlowType.ELEMENTARY_FLOW)
 				.toList();
 
-		if (!techFlows.isEmpty() && !checkUsage(exchanges, techFlows)) {
+		if (!techFlows.isEmpty() && !checkUsage(techFlows)) {
 			return;
 		}
 
@@ -132,8 +132,7 @@ public class DeleteExchangeCommand extends Command {
 		editor.setDirty(process);
 	}
 
-	private boolean checkUsage(List<Exchange> exchanges,
-			List<Exchange> techFlows) {
+	private boolean checkUsage(List<Exchange> techFlows) {
 		var usages = new ExchangeUseSearch(Database.get(), process)
 				.findUses(exchange);
 		// The exchange cannot be removed if it is used in another product system.
@@ -146,7 +145,7 @@ public class DeleteExchangeCommand extends Command {
 
 		// Check if the flow is used as a default provider (MsgBox.error is
 		// managed by the method).
-		if (!checkProviderLinks(process, exchanges, techFlows))
+		if (!checkProviderLinks(process, techFlows))
 			return false;
 
 		return Question.ask(M.RemoveExchangeQ, Labels.name(exchange.flow) + "\r\n"

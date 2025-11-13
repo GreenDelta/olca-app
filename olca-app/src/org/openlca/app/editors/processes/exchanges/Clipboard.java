@@ -18,10 +18,12 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.FlowType;
+import org.openlca.core.model.ProviderType;
+import org.openlca.core.model.Result;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.UnitGroup;
-import org.openlca.core.model.descriptors.ProcessDescriptor;
+import org.openlca.util.Exchanges;
 import org.openlca.util.Processes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -288,19 +290,26 @@ class Clipboard {
 		}
 
 		private void mapProvider(Exchange e, String[] row) {
-			if (e == null || e.flow == null || row.length < 8)
+			if (row.length < 8 || !Exchanges.isLinkable(e))
 				return;
-			if ((e.isInput && e.flow.flowType != FlowType.PRODUCT_FLOW)
-					|| (!e.isInput && e.flow.flowType != FlowType.WASTE_FLOW))
-				return;
-			String fullName = row[7];
+			var fullName = row[7];
 			if (Strings.isBlank(fullName))
 				return;
-			ProcessDescriptor d = Processes.findForLabel(Database.get(), fullName);
-			if (d == null) {
-				log.warn("Could not find provider '{}' in database", fullName);
-			} else {
+
+			var db = Database.get();
+			var d = Processes.findForLabel(db, fullName);
+			if (d != null) {
 				e.defaultProviderId = d.id;
+				e.defaultProviderType = ProviderType.PROCESS;
+				return;
+			}
+
+			var r = db.getForName(Result.class, fullName);
+			var hasResultLink = r != null && r.flowResults.stream().anyMatch(
+				pi -> Exchanges.isProviderFlow(pi) && Objects.equals(e.flow, pi.flow));
+			if (hasResultLink) {
+				e.defaultProviderId = r.id;
+				e.defaultProviderType = ProviderType.RESULT;
 			}
 		}
 

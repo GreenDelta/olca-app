@@ -14,7 +14,6 @@ import org.openlca.commons.Strings;
 import org.openlca.core.database.NativeSql;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.usage.ExchangeUseSearch;
-import org.openlca.core.model.AbstractExchange;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
@@ -74,7 +73,7 @@ public class Exchanges {
 			if (r == null)
 				return -1;
 			var refFlow = r.flowResults.stream()
-				.filter(Exchanges::isProviderFlow)
+				.filter(org.openlca.util.Exchanges::isProviderFlow)
 				.findAny()
 				.orElse(null);
 			return refFlow != null && refFlow.flow != null
@@ -85,15 +84,6 @@ public class Exchanges {
 			ErrorReporter.on("Failed to query ref. flow: " + sql, e);
 			return -1;
 		}
-	}
-
-	private static boolean isProviderFlow(AbstractExchange e) {
-		if (e == null || e.flow == null)
-			return false;
-		if (e instanceof Exchange ex && ex.isAvoided)
-			return false;
-		return (!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW)
-			|| (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW);
 	}
 
 	static boolean canHaveProvider(Exchange e, Descriptor d) {
@@ -131,16 +121,13 @@ public class Exchanges {
 		if (!checkSystemUsage(p, techFlows))
 			return false;
 
-		return checkProviderLinks(p, exchanges, techFlows);
+		return checkProviderLinks(p, techFlows);
 	}
 
-	public static boolean checkProviderLinks(
-			Process p, List<Exchange> exchanges, List<Exchange> techFlows
-	) {
+	public static boolean checkProviderLinks(Process p, List<Exchange> techFlows) {
 		List<Exchange> providers = techFlows.stream()
-				.filter(e -> (e.isInput && e.flow.flowType == FlowType.WASTE_FLOW)
-						|| (!e.isInput && e.flow.flowType == FlowType.PRODUCT_FLOW))
-				.toList();
+			.filter(org.openlca.util.Exchanges::isProviderFlow)
+			.toList();
 		if (providers.isEmpty())
 			return true;
 		for (Exchange provider : providers) {
@@ -176,7 +163,7 @@ public class Exchanges {
 							&& e.isInput == provider.isInput
 							&& e.flow != null
 							&& e.flow.id == provider.flow.id
-							&& !exchanges.contains(e));
+						&& !techFlows.contains(e));
 			if (ok)
 				continue;
 
