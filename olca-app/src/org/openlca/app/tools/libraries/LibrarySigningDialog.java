@@ -61,12 +61,10 @@ public class LibrarySigningDialog extends FormDialog {
 	protected void createFormContent(IManagedForm form) {
 		var tk = form.getToolkit();
 		var body = UI.dialogBody(form.getForm(), tk);
-		UI.gridLayout(body, 1);
-		var comp = UI.composite(body, tk);
-		UI.gridLayout(comp, 2, 10, 0);
-		UI.gridData(comp, true, false);
-		UI.label(comp, tk, M.Library);
-		new LibraryCombo(comp, tk, lib -> !License.of(lib.folder()).isPresent(), lib -> {
+		UI.gridLayout(body, 2);
+		UI.gridData(body, true, false);
+		UI.label(body, tk, M.Library);
+		new LibraryCombo(body, tk, lib -> !License.of(lib.folder()).isPresent(), lib -> {
 			config.library = lib;
 			updateOkButton();
 		});
@@ -78,22 +76,19 @@ public class LibrarySigningDialog extends FormDialog {
 			config.certificateDir = dir;
 			updateOkButton();
 		});
-		var comp2 = UI.composite(body, tk);
-		UI.gridLayout(comp2, 2, 10, 0);
-		UI.gridData(comp2, true, false);
-		Controls.set(UI.labeledText(comp2, tk, M.Email), "", s -> {
+		Controls.set(UI.labeledText(body, tk, M.Email), "", s -> {
 			config.email = s;
 			updateOkButton();
 		});
-		Controls.set(UI.labeledText(comp2, tk, M.Password, SWT.PASSWORD), "", s -> {
+		Controls.set(UI.labeledText(body, tk, M.Password, SWT.PASSWORD | SWT.BORDER), "", s -> {
 			config.password = s.toCharArray();
 			updateOkButton();
 		});
-		UI.date(comp2, tk, M.ValidFrom, config.notBefore, date -> {
+		UI.date(body, tk, M.StartDate, config.notBefore, date -> {
 			config.notBefore = date;
 			updateOkButton();
 		});
-		UI.date(comp2, tk, M.ValidUntil, config.notAfter, date -> {
+		UI.date(body, tk, M.EndDate, config.notAfter, date -> {
 			config.notAfter = date;
 			updateOkButton();
 		});

@@ -800,7 +800,7 @@ public class UI {
 		UI.label(comp, tk, label);
 		var inner = UI.composite(comp, tk);
 		UI.gridData(inner, true, false);
-		UI.gridLayout(inner, 2, 5, 0);
+		UI.gridLayout(inner, 2, 10, 0);
 		var fileText = UI.emptyText(inner, tk);
 		UI.gridData(fileText, true, false);
 		fileText.setEditable(false);
@@ -816,7 +816,7 @@ public class UI {
 	}
 
 	public static DateTime date(Composite comp, FormToolkit tk, String label, Date value, Consumer<Date> onSelect) {
-		UI.label(comp, tk, M.StartDate);
+		UI.label(comp, tk, label);
 		var date = new DateTime(comp, SWT.DATE | SWT.DROP_DOWN);
 		UI.gridData(date, false, false).minimumWidth = 150;
 		date.addSelectionListener(Controls.onSelect(_e -> {

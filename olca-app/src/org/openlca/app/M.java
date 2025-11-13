@@ -1760,7 +1760,6 @@ public class M extends NLS {
 	// V
 	public static String Valid;
 	public static String ValidFeatures;
-	public static String ValidFrom;
 	public static String ValidUntil;
 	public static String Validate;
 	public static String ValidateDatabase;
