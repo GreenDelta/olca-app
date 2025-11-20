@@ -1,15 +1,15 @@
 package org.openlca.app.tools.hestia;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
@@ -21,34 +21,44 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.wizards.io.ImportLogDialog;
-import org.openlca.core.io.maps.FlowMap;
+import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
+import org.openlca.core.model.ProcessType;
 import org.openlca.io.hestia.HestiaClient;
 import org.openlca.io.hestia.HestiaImport;
 import org.openlca.io.hestia.SearchResult;
 
 public class ImportDialog extends FormDialog {
 
+	private final IDatabase db;
 	private final HestiaClient client;
 	private final List<SearchResult> cycles;
-	private SettingsPanel settingsPanel;
-	private Button unitProcessRadio;
-	private Button lciResultRadio;
-	private Button linkProvidersCheck;
 
-	public static boolean show(HestiaClient client, List<SearchResult> cycles) {
+	private MappingCombo mappingCombo;
+	private ProcessType processType = ProcessType.UNIT_PROCESS;
+	private boolean linkProviders = true;
+
+	public static void show(HestiaClient client, List<SearchResult> cycles) {
 		if (client == null || cycles == null || cycles.isEmpty())
-			return false;
-		var dialog = new ImportDialog(client, cycles);
-		return dialog.open() == IDialogConstants.OK_ID;
+			return;
+		var db = Database.get();
+		if (db == null) {
+			MsgBox.error(M.NoDatabaseOpened, M.NoDatabaseOpenedImportInfo);
+			return;
+		}
+		var dialog = new ImportDialog(db, client, cycles);
+		dialog.open();
 	}
 
-	private ImportDialog(HestiaClient client, List<SearchResult> cycles) {
+	private ImportDialog(
+		IDatabase db, HestiaClient client, List<SearchResult> cycles) {
 		super(UI.shell());
+		this.db = db;
 		this.client = client;
 		this.cycles = cycles;
 	}
@@ -61,26 +71,19 @@ public class ImportDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(800, 600);
+		return new Point(800, 400);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
-
-		createCyclesSection(body, tk);
-		createSettingsSection(body, tk);
-		createImportOptionsSection(body, tk);
-
+		createCyclesTable(body, tk);
+		createImportSettings(body, tk);
 		mForm.reflow(true);
 	}
 
-	private void createCyclesSection(Composite parent, FormToolkit tk) {
-		var section = UI.section(parent, tk, "Cycles to import (" + cycles.size() + ")");
-		UI.gridData(section, true, true);
-		var comp = UI.sectionClient(section, tk, 1);
-
+	private void createCyclesTable(Composite comp, FormToolkit tk) {
 		var table = Tables.createViewer(comp, "Name", "ID");
 		UI.gridData(table.getControl(), true, true);
 		Tables.bindColumnWidths(table, 0.7, 0.3);
@@ -88,35 +91,49 @@ public class ImportDialog extends FormDialog {
 		table.setInput(cycles);
 	}
 
-	private void createSettingsSection(Composite parent, FormToolkit tk) {
-		var section = UI.section(parent, tk, "Import Settings");
-		var comp = UI.sectionClient(section, tk, 1);
+	private void createImportSettings(Composite parent, FormToolkit tk) {
+		var comp = tk.createComposite(parent);
+		UI.gridLayout(comp, 2, 10, 5);
+		UI.gridData(comp, true, false);
 
-		var db = Database.get();
-		if (db != null) {
-			settingsPanel = new SettingsPanel(comp, tk);
-		} else {
-			UI.label(comp, tk, "No database opened - mapping options not available");
-		}
-	}
+		var combo = UI.labeledCombo(comp, tk, "Flow mapping:");
+		mappingCombo = new MappingCombo(db, combo);
 
-	private void createImportOptionsSection(Composite parent, FormToolkit tk) {
-		var section = UI.section(parent, tk, "Import Options");
-		var comp = UI.sectionClient(section, tk, 1);
+		UI.label(comp, tk, "Import as:");
+		var radioComp = tk.createComposite(comp);
+		UI.gridLayout(radioComp, 2, 10, 0);
 
-		// Import as options
-		var typeGroup = UI.composite(comp, tk);
-		UI.gridLayout(typeGroup, 1, 10, 0);
-		UI.label(typeGroup, tk, "Import as:");
+		var uRadio = tk.createButton(radioComp, M.UnitProcess, SWT.RADIO);
+		uRadio.setSelection(processType == ProcessType.UNIT_PROCESS);
 
-		unitProcessRadio = tk.createButton(typeGroup, "Unit process", SWT.RADIO);
-		unitProcessRadio.setSelection(true);
+		var sRadio = tk.createButton(radioComp, M.SystemProcess, SWT.RADIO);
+		sRadio.setSelection(processType == ProcessType.LCI_RESULT);
 
-		lciResultRadio = tk.createButton(typeGroup, "LCI result", SWT.RADIO);
+		UI.filler(comp, tk);
+		var providerCheck = tk.createButton(
+			comp, "Try to link providers", SWT.CHECK);
+		providerCheck.setSelection(linkProviders);
 
-		// Link providers option
-		linkProvidersCheck = tk.createButton(comp, "Try to link providers", SWT.CHECK);
-		linkProvidersCheck.setSelection(true);
+		Consumer<SelectionEvent> onSelect = e -> {
+			if (e.widget == uRadio) {
+				processType = uRadio.getSelection()
+					? ProcessType.UNIT_PROCESS
+					: ProcessType.LCI_RESULT;
+				providerCheck.setEnabled(uRadio.getSelection());
+
+			} else if (e.widget == sRadio) {
+				processType = sRadio.getSelection()
+					? ProcessType.LCI_RESULT
+					: ProcessType.UNIT_PROCESS;
+				providerCheck.setEnabled(!sRadio.getSelection());
+			}
+		};
+
+		Controls.onSelect(uRadio, onSelect);
+		Controls.onSelect(sRadio, onSelect);
+		Controls.onSelect(providerCheck, e -> {
+			linkProviders = providerCheck.getSelection();
+		});
 	}
 
 	@Override
@@ -133,17 +150,11 @@ public class ImportDialog extends FormDialog {
 			return;
 		}
 
-		// Configure import settings
-		var flowMap = settingsPanel != null ? settingsPanel.flowMap() : FlowMap.empty();
-		var imp = new HestiaImport(client, db, flowMap);
+		var flowMap = mappingCombo.getFlowMap();
+		var imp = new HestiaImport(client, db, flowMap)
+			.withProcessType(processType)
+			.withProviderLinks(linkProviders);
 		var log = imp.log();
-
-		// Configure import options based on dialog selections
-		// Note: These methods may not exist yet in HestiaImport, but this shows the intended API
-		var importAsUnitProcess = unitProcessRadio.getSelection();
-		var tryLinkProviders = linkProvidersCheck.getSelection();
-
-		var success = new AtomicReference<Boolean>(false);
 
 		App.runWithProgress(
 			"Importing " + cycles.size() + " cycle(s)...",
@@ -157,24 +168,20 @@ public class ImportDialog extends FormDialog {
 							log.imported(res.value());
 						}
 					}
-					success.set(true);
 				} catch (Exception e) {
 					log.error("Import failed: " + e.getMessage());
-					success.set(false);
 				}
 			},
 			() -> {
-				if (success.get()) {
-					Navigator.refresh();
-					AppContext.evictAll();
-				}
-				ImportLogDialog.show("Import finished", log);
+				Navigator.refresh();
+				AppContext.evictAll();
+				ImportLogDialog.show(M.ImportFinished, log);
 				super.okPressed();
 			});
 	}
 
 	private static class CycleTableLabel extends LabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
