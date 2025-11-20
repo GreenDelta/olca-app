@@ -20,11 +20,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.AppContext;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.ApiKeyAuth;
@@ -34,12 +32,10 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.wizards.io.ImportLogDialog;
 import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.hestia.HestiaClient;
-import org.openlca.io.hestia.HestiaImport;
 import org.openlca.io.hestia.SearchQuery;
 import org.openlca.io.hestia.SearchResult;
 
@@ -177,31 +173,7 @@ public class HestiaTool extends SimpleFormEditor {
 			if (selected.isEmpty())
 				return;
 
-			var db = Database.get();
-			if (db == null) {
-				MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
-				return;
-			}
-
-			var imp = new HestiaImport(client, db, settings.flowMap());
-			var log = imp.log();
-			App.runWithProgress(
-				"Importing data sets...",
-				() -> {
-					for (var r : selected) {
-						var res = imp.importCycle(r.id());
-						if (res.isError()) {
-							log.error("failed to import " + r.name() + ": " + res.error());
-						} else {
-							log.imported(res.value());
-						}
-					}
-				},
-				() -> {
-					ImportLogDialog.show("Import finished", log);
-					Navigator.refresh();
-					AppContext.evictAll();
-				});
+			ImportDialog.show(client, selected);
 		}
 	}
 
