@@ -9,4 +9,4 @@ trim_trailing_whitespace = true
 indent_style = tab
 indent_size = 2
 tab_width = 2
-ij_continuation_indent_size = 4
+ij_continuation_indent_size = 2

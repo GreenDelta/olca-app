@@ -37,7 +37,9 @@ import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.core.io.maps.FlowMap;
+import org.openlca.core.model.MappingFile;
 import org.openlca.io.Format;
+import org.openlca.io.maps.GladFlowMap;
 import org.openlca.io.openepd.EpdDoc;
 import org.openlca.jsonld.Json;
 
@@ -93,10 +95,10 @@ public class FileImport {
 	private void handleFormat(File file, Format format) {
 		switch (format) {
 			case ES1_XML, ES1_ZIP -> EcoSpold01ImportWizard.of(file);
-			case ES2_XML, ES2_ZIP -> MsgBox.info(
-					M.EcoSpoldV2, M.EcoSpoldV2Info);
+			case ES2_XML, ES2_ZIP -> MsgBox.info(M.EcoSpoldV2, M.EcoSpoldV2Info);
 			case EXCEL -> ExcelImportWizard.of(file);
 			case GEO_JSON -> GeoJsonImportWizard.of(file);
+			case GLAD_FLOW_MAP -> importGladMapping(file);
 			case ILCD_ZIP -> ILCDImportWizard.of(file);
 			case JSON_LD_ZIP -> JsonImportWizard.of(file);
 			case LIBRARY_PACKAGE -> ImportLibraryDialog.open(file);
@@ -105,6 +107,23 @@ public class FileImport {
 			case ZOLCA -> importZOLCA(file);
 			default -> MsgBox.info(M.NoImportFound, M.NoImportFoundInfo);
 		}
+	}
+
+	private void importGladMapping(File file) {
+		var db = Database.get();
+		if (db == null) {
+			MsgBox.info(M.NoDatabaseOpened, M.NeedOpenDatabase);
+			return;
+		}
+		var gladMap = GladFlowMap.readFrom(file);
+		if (gladMap.isError()) {
+			MsgBox.info("Failed to read as GLAD flow mapping", gladMap.error());
+			return;
+		}
+		var flowMap = gladMap.value().asFlowMap();
+		var mapping = flowMap.toMappingFile();
+		mapping.name = Objects.requireNonNullElse(flowMap.name, file.getName());
+		save(mapping, db);
 	}
 
 	private void importMappingFile(File file) {
@@ -116,18 +135,26 @@ public class FileImport {
 		try {
 			var flowMap = FlowMap.fromCsv(file);
 			var mapping = flowMap.toMappingFile();
+			mapping.name = file.getName();
+			save(mapping, db);
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to read as mapping file: " + file, e);
+		}
+	}
 
-			// guess a new mapping name
+	private void save(MappingFile mapping, IDatabase db) {
+		try {
 			var dao = new MappingFileDao(db);
 			var existing = dao.getNames()
 				.stream()
 				.map(String::toLowerCase)
 				.collect(Collectors.toSet());
-			var proposed = file.getName();
+
+			var proposed = mapping.name;
 			var i = 1;
 			while (existing.contains(proposed.toLowerCase())) {
 				i++;
-				proposed = file.getName() + i + ".csv";
+				proposed = mapping.name + " (" + i + ")";
 			}
 
 			// open a friendly dialog
@@ -152,8 +179,7 @@ public class FileImport {
 			Navigator.refresh();
 
 		} catch (Exception e) {
-			ErrorReporter.on("Failed to save as " +
-				"mapping file: " + file, e);
+			ErrorReporter.on("Failed to save mapping file: " + mapping.name, e);
 		}
 	}
 
@@ -206,8 +232,8 @@ public class FileImport {
 				_e -> intoActiveDB = !opt1.getSelection());
 
 			var opt2 = tk.createButton(body,
-					NLS.bind(M.IntoActiveDb, activeDB.getName()),
-					SWT.RADIO);
+				NLS.bind(M.IntoActiveDb, activeDB.getName()),
+				SWT.RADIO);
 			opt2.setSelection(intoActiveDB);
 			Controls.onSelect(opt2,
 				_e -> intoActiveDB = opt2.getSelection());
