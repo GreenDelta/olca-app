@@ -30,6 +30,7 @@ import org.openlca.core.io.maps.FlowMap;
 import org.openlca.core.model.MappingFile;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.Format;
+import org.openlca.io.maps.GladFlowMap;
 
 public class MappingTool extends SimpleFormEditor {
 
@@ -60,12 +61,18 @@ public class MappingTool extends SimpleFormEditor {
 			return;
 		try {
 			var format = Format.detect(file).orElse(null);
-			if (format == Format.JSON_LD_ZIP) {
-				open(JsonImportDialog.open(file));
-			} else if (format == Format.MAPPING_CSV) {
-				open(FlowMap.fromCsv(file));
-			} else {
-				MsgBox.info(M.UnsupportedFileFormatInfo);
+			switch (format) {
+				case JSON_LD_ZIP -> open(JsonImportDialog.open(file));
+				case MAPPING_CSV -> open(FlowMap.fromCsv(file));
+				case GLAD_FLOW_MAP -> {
+					var gladMap = GladFlowMap.readFrom(file);
+					if (gladMap.isError()) {
+						MsgBox.error(M.CouldNotOpenFile, gladMap.error());
+						return;
+					}
+					open(gladMap.value().asFlowMap());
+				}
+				case null, default -> MsgBox.info(M.UnsupportedFileFormatInfo);
 			}
 		} catch (Exception e) {
 			MsgBox.error(M.CouldNotOpenFile, e);
@@ -76,13 +83,13 @@ public class MappingTool extends SimpleFormEditor {
 	 * Open an existing mapping from the database.
 	 */
 	public static void open(MappingFile mapping) {
-		if(mapping == null)
+		if (mapping == null)
 			return;
 		var uid = "db:mapping/" + mapping.id;
 		AppContext.put(uid, mapping);
 		Editors.open(
-				new SimpleEditorInput(uid, mapping.name),
-				"MappingTool");
+			new SimpleEditorInput(uid, mapping.name),
+			"MappingTool");
 	}
 
 	public static void open(FlowMap mapping) {
@@ -92,17 +99,17 @@ public class MappingTool extends SimpleFormEditor {
 		if (uid == null) {
 			uid = UUID.randomUUID().toString();
 			mapping.refId = uid;
-		}		
+		}
 		var cacheID = uid + " /mapping";
 		AppContext.put(cacheID, mapping);
 		Editors.open(
-				new SimpleEditorInput(cacheID, M.FlowMapping),
-				"MappingTool");
+			new SimpleEditorInput(cacheID, M.FlowMapping),
+			"MappingTool");
 	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+		throws PartInitException {
 		super.init(site, input);
 		setTitleImage(Images.get(ModelType.FLOW));
 		try {
@@ -150,7 +157,7 @@ public class MappingTool extends SimpleFormEditor {
 			editorDirtyStateChanged();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to save mapping file "
-					+ mappingFile.name, e);
+				+ mappingFile.name, e);
 		}
 	}
 
@@ -168,9 +175,9 @@ public class MappingTool extends SimpleFormEditor {
 		// guess a new mapping name
 		var dao = new MappingFileDao(db);
 		var existing = dao.getNames()
-				.stream()
-				.map(String::toLowerCase)
-				.collect(Collectors.toSet());
+			.stream()
+			.map(String::toLowerCase)
+			.collect(Collectors.toSet());
 		String proposedName;
 		var i = existing.size();
 		do {
@@ -180,17 +187,17 @@ public class MappingTool extends SimpleFormEditor {
 
 		// open a friendly dialog
 		var dialog = new InputDialog(
-				UI.shell(),
-				M.SaveMappingInDatabase,
-				M.SaveMappingInDatabaseInfo,
-				proposedName,
-				name -> {
-					if (Strings.isBlank(name))
-						return M.NameCannotBeEmpty;
-					if (existing.contains(name.toLowerCase().trim()))
-						return M.FlowMappingWithThisNameExists;
-					return null;
-				});
+			UI.shell(),
+			M.SaveMappingInDatabase,
+			M.SaveMappingInDatabaseInfo,
+			proposedName,
+			name -> {
+				if (Strings.isBlank(name))
+					return M.NameCannotBeEmpty;
+				if (existing.contains(name.toLowerCase().trim()))
+					return M.FlowMappingWithThisNameExists;
+				return null;
+			});
 		if (dialog.open() != Window.OK)
 			return;
 

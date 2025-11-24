@@ -28,25 +28,21 @@ class TableLabel extends LabelProvider
 	public Image getColumnImage(Object obj, int col) {
 		if (!(obj instanceof FlowMapEntry e))
 			return null;
-
-		if (col == 0)
-			return stateIcon(e);
-		if (col == 1) {
-			if (e.sourceFlow() != null)
-				return Images.get(e.sourceFlow().flow);
-		}
-		if (col == 3 && e.targetFlow() != null) {
-			return Images.get(e.targetFlow().flow);
-		}
-		if (col == 2 || col == 4)
-			return Images.getForCategory(ModelType.FLOW);
-		if (col == 5)
-			return Icon.FORMULA.get();
-		if (col == 6 && e.targetFlow() != null
-			&& e.targetFlow().provider != null) {
-			return Images.get(e.targetFlow().provider);
-		}
-		return null;
+		return switch (col) {
+			case 0 -> stateIcon(e);
+			case 1 -> e.sourceFlow() != null
+				? Images.get(e.sourceFlow().flow)
+				: null;
+			case 2, 4 -> Images.getForCategory(ModelType.FLOW);
+			case 3 -> e.targetFlow() != null
+				? Images.get(e.targetFlow().flow)
+				: null;
+			case 5 -> Icon.FORMULA.get();
+			case 6 -> e.targetFlow() != null && e.targetFlow().provider != null
+				? Images.get(e.targetFlow().provider)
+				: null;
+			default -> null;
+		};
 	}
 
 	@Override
@@ -152,7 +148,7 @@ class TableLabel extends LabelProvider
 		if (s == null) {
 			s = ref.flow.refId;
 		}
-		if (ref.flowLocation != null) {
+		if (Strings.isNotBlank(ref.flowLocation)) {
 			s += " - " + ref.flowLocation;
 		}
 		return s;

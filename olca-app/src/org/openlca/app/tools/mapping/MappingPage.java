@@ -166,8 +166,8 @@ class MappingPage extends FormPage {
 		}
 		if (st == null && tt == null)
 			return;
-		try {
-			var exec = Executors.newFixedThreadPool(2);
+
+		try (	var exec = Executors.newFixedThreadPool(2)) {
 			if (st != null) {
 				exec.execute(st);
 			}
@@ -175,7 +175,12 @@ class MappingPage extends FormPage {
 				exec.execute(tt);
 			}
 			exec.shutdown();
-			exec.awaitTermination(1, TimeUnit.DAYS);
+			if (!exec.awaitTermination(1, TimeUnit.DAYS)) {
+				exec.shutdownNow();
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			ErrorReporter.on("Flow mapping sync was interrupted", e);
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to sync flow mappings", e);
 		}
