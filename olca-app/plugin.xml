@@ -188,6 +188,12 @@
 				name="Graphical editor">
 		</editor>
 		<editor
+				class="org.openlca.app.editors.sd.editor.graph.SdGraphEditor"
+				default="false"
+				id="editors.sd.graph"
+				name="SD Graph editor">
+		</editor>
+		<editor
 				id="SearchPage"
 				class="org.openlca.app.search.SearchPage"
 				default="false"

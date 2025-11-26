@@ -3,8 +3,10 @@ package org.openlca.app.editors.sd.editor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -13,6 +15,8 @@ import org.openlca.app.AppContext;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.sd.SdVars;
+import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
+import org.openlca.app.editors.sd.editor.graph.SdGraphEditorInput;
 import org.openlca.app.editors.sd.interop.JsonSetupReader;
 import org.openlca.app.editors.sd.interop.JsonSetupWriter;
 import org.openlca.app.editors.sd.interop.SimulationSetup;
@@ -36,6 +40,7 @@ public class SdModelEditor extends FormEditor {
 	private SimulationSetup setup;
 	private List<Var> vars;
 	private boolean dirty;
+	private SdGraphEditor graphEditor;
 
 	public static void open(File modelDir) {
 		if (modelDir == null || !modelDir.exists() || !modelDir.isDirectory())
@@ -129,9 +134,36 @@ public class SdModelEditor extends FormEditor {
 			addPage(new SetupPage(this));
 			addPage(new BindingsPage(this));
 			addPage(new VarsPage(this));
+			addGraphPage();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create SD model editor pages", e);
 		}
+	}
+
+	private void addGraphPage() throws PartInitException {
+		var gInput = new SdGraphEditorInput(this);
+		graphEditor = new SdGraphEditor(this);
+		int gIdx = addPage(graphEditor, gInput);
+		setPageText(gIdx, "Model Graph");
+		setGraphPageListener(graphEditor);
+	}
+
+	private void setGraphPageListener(SdGraphEditor graphEditor) {
+		var graphInit = new AtomicReference<IPageChangedListener>();
+		IPageChangedListener fn = e -> {
+			if (e.getSelectedPage() != graphEditor)
+				return;
+			var listener = graphInit.get();
+			if (listener == null)
+				return;
+
+			graphEditor.onFirstActivation();
+
+			removePageChangedListener(listener);
+			graphInit.set(null);
+		};
+		graphInit.set(fn);
+		addPageChangedListener(fn);
 	}
 
 	@Override
