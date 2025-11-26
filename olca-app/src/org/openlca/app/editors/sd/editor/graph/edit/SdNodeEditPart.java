@@ -2,7 +2,6 @@ package org.openlca.app.editors.sd.editor.graph.edit;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.ChopboxAnchor;
@@ -16,10 +15,10 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.openlca.app.components.graphics.model.Component;
+import org.openlca.app.components.graphics.model.Link;
 import org.openlca.app.editors.sd.editor.graph.figures.AuxiliaryFigure;
 import org.openlca.app.editors.sd.editor.graph.figures.RateFigure;
 import org.openlca.app.editors.sd.editor.graph.figures.StockFigure;
-import org.openlca.app.editors.sd.editor.graph.model.SdLink;
 import org.openlca.app.editors.sd.editor.graph.model.SdNode;
 
 /**
@@ -106,25 +105,13 @@ public class SdNodeEditPart extends AbstractGraphicalEditPart
 	}
 
 	@Override
-	protected List<SdLink> getModelSourceConnections() {
-		var links = new ArrayList<SdLink>();
-		for (var link : getModel().getSourceConnections()) {
-			if (link instanceof SdLink sdLink) {
-				links.add(sdLink);
-			}
-		}
-		return links;
+	protected List<Link> getModelSourceConnections() {
+		return getModel().getSourceConnections();
 	}
 
 	@Override
-	protected List<SdLink> getModelTargetConnections() {
-		var links = new ArrayList<SdLink>();
-		for (var link : getModel().getTargetConnections()) {
-			if (link instanceof SdLink sdLink) {
-				links.add(sdLink);
-			}
-		}
-		return links;
+	protected List<Link> getModelTargetConnections() {
+		return getModel().getTargetConnections();
 	}
 
 	protected ConnectionAnchor getConnectionAnchor() {

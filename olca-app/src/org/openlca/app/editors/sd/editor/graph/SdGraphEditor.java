@@ -1,10 +1,12 @@
 package org.openlca.app.editors.sd.editor.graph;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.ViewportAwareConnectionLayerClippingStrategy;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
@@ -32,7 +34,14 @@ import org.openlca.app.editors.sd.editor.graph.actions.AddAuxiliaryAction;
 import org.openlca.app.editors.sd.editor.graph.actions.AddRateAction;
 import org.openlca.app.editors.sd.editor.graph.actions.AddStockAction;
 import org.openlca.app.editors.sd.editor.graph.edit.SdEditPartFactory;
+import org.openlca.app.editors.sd.editor.graph.edit.SdNodeEditPart;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
+import org.openlca.app.editors.sd.editor.graph.model.SdLink;
+import org.openlca.app.editors.sd.editor.graph.model.SdNode;
+import org.openlca.app.editors.sd.editor.graph.model.SdNodeType;
+import org.openlca.sd.eqn.Id;
+import org.openlca.sd.eqn.Var;
+import org.openlca.sd.eqn.Var.Stock;
 
 /**
  * Graphical editor for system dynamics models.
@@ -195,18 +204,109 @@ public class SdGraphEditor extends GraphicalEditor {
 	 * Loads the graph from the model.
 	 */
 	public void onFirstActivation() {
-		// TODO: Initialize the graph from the actual SD model (XMILE)
-		// For now, create an empty graph
 		graph = new SdGraph(this);
+
+		// Create nodes from model variables
+		var vars = modelEditor.vars();
+		int stockX = 50, stockY = 50;
+		int rateX = 200, rateY = 50;
+		int auxX = 350, auxY = 50;
+
+		for (var v : vars) {
+			var nodeType = nodeTypeOf(v);
+			if (nodeType == null)
+				continue;
+
+			var name = v.name() != null ? v.name().label() : "unknown";
+			var node = new SdNode(nodeType, name);
+			// TODO: node.bindVariable(v);
+
+			// Position nodes in columns by type
+			switch (nodeType) {
+				case STOCK -> {
+					node.setLocation(new Point(stockX, stockY));
+					stockY += 100;
+				}
+				case RATE -> {
+					node.setLocation(new Point(rateX, rateY));
+					rateY += 80;
+				}
+				case AUXILIARY -> {
+					node.setLocation(new Point(auxX, auxY));
+					auxY += 60;
+				}
+			}
+
+			graph.addNode(node);
+		}
+
+		var nodeIndex = new HashMap<Id, SdNode>();
+		for (var node : graph.getNodes()) {
+			for (var v : vars) {
+				if (v.name() != null && v.name().label().equals(node.getVariableName())) {
+					nodeIndex.put(v.name(), node);
+					break;
+				}
+			}
+		}
+
+		// Create flow links between rates and stocks
+		// Links must be created BEFORE setContents so EditParts get them
+		for (var v : vars) {
+			if (v instanceof Stock s) {
+				var stockNode = nodeIndex.get(s.name());
+				if (stockNode == null)
+					continue;
+
+				// Inflows: rate -> stock
+				for (var id : s.inFlows()) {
+					var rateNode = nodeIndex.get(id);
+					if (rateNode != null) {
+						var link = new SdLink(rateNode, stockNode, true);
+						link.connect();
+					}
+				}
+
+				// Outflows: stock -> rate
+				for (var id : s.outFlows()) {
+					var rateNode = nodeIndex.get(id);
+					if (rateNode != null) {
+						var link = new SdLink(stockNode, rateNode, true);
+						link.connect();
+					}
+				}
+			}
+		}
+
+		// Set contents after all nodes and links are created
 		getGraphicalViewer().setContents(graph);
 
-		// TODO: Load nodes from model variables
-		// var vars = modelEditor.vars();
-		// for (var v : vars) {
-		//     var nodeType = determineNodeType(v);
-		//     var node = new SdNode(nodeType, v.name().label());
-		//     graph.addNode(node);
-		// }
+		// Use asyncExec to ensure layout is complete before refreshing connections
+		var display = getGraphicalViewer().getControl().getDisplay();
+		display.asyncExec(() -> {
+			var contents = (RootEditPart) getGraphicalViewer().getContents();
+			if (contents != null) {
+				// Force layout validation so figures have proper bounds
+				contents.getFigure().invalidate();
+				contents.getFigure().validate();
+
+				// Refresh all node EditParts to create/update connection EditParts
+				for (var child : contents.getChildren()) {
+					if (child instanceof SdNodeEditPart nodeEditPart) {
+						nodeEditPart.refresh();
+					}
+				}
+			}
+		});
+	}
+
+	private SdNodeType nodeTypeOf(Var v) {
+		return switch (v) {
+			case Var.Stock ignored -> SdNodeType.STOCK;
+			case Var.Rate ignored -> SdNodeType.RATE;
+			case Var.Aux ignored -> SdNodeType.AUXILIARY;
+			case null -> null;
+		};
 	}
 
 	@Override

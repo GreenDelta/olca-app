@@ -38,7 +38,10 @@ public class SdLinkEditPart extends AbstractConnectionEditPart
 
 	@Override
 	protected IFigure createFigure() {
-		return new SdLinkFigure(getModel());
+		var figure = new SdLinkFigure(getModel());
+		// Ensure the figure is visible with a minimum line width
+		figure.setLineWidth(2);
+		return figure;
 	}
 
 	@Override
