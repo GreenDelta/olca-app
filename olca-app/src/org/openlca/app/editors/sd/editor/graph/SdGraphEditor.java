@@ -1,19 +1,32 @@
 package org.openlca.app.editors.sd.editor.graph;
 
-import org.eclipse.gef.ContextMenuProvider;
+import java.util.List;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.ConnectionLayer;
+import org.eclipse.draw2d.ViewportAwareConnectionLayerClippingStrategy;
 import org.eclipse.gef.DefaultEditDomain;
+import org.eclipse.gef.KeyHandler;
+import org.eclipse.gef.KeyStroke;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.ui.actions.ActionRegistry;
+import org.eclipse.gef.ui.actions.GEFActionConstants;
+import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
-import org.openlca.app.components.graphics.BasicGraphicalEditor;
-import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.components.graphics.actions.ZoomInAction;
+import org.openlca.app.components.graphics.actions.ZoomOutAction;
+import org.openlca.app.components.graphics.edit.RootEditPart;
+import org.openlca.app.components.graphics.tools.PanningSelectionTool;
+import org.openlca.app.components.graphics.zoom.MouseWheelZoomHandler;
+import org.openlca.app.components.graphics.zoom.ZoomManager;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
 import org.openlca.app.editors.sd.editor.graph.actions.AddAuxiliaryAction;
 import org.openlca.app.editors.sd.editor.graph.actions.AddRateAction;
@@ -25,12 +38,13 @@ import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
  * Graphical editor for system dynamics models.
  * Allows editing stocks, rates, auxiliaries and their connections.
  */
-public class SdGraphEditor extends BasicGraphicalEditor {
+public class SdGraphEditor extends GraphicalEditor {
 
 	public static final String ID = "SdGraphEditor";
 
-	private SdModelEditor modelEditor;
+	private final SdModelEditor modelEditor;
 	private SdGraph graph;
+	private KeyHandler keyHandler;
 
 	public SdGraphEditor(SdModelEditor modelEditor) {
 		this.modelEditor = modelEditor;
@@ -46,24 +60,10 @@ public class SdGraphEditor extends BasicGraphicalEditor {
 	}
 
 	@Override
-	public Theme getTheme() {
-		if (theme == null) {
-			// TODO: load theme
-			// theme = Themes.get(ID).getDefault();
-		}
-		return theme;
-	}
-
-	@Override
-	protected void loadConfig() {
-		// TODO: Load graph configuration from file if needed
-	}
-
-	@Override
 	protected void initializeGraphicalViewer() {
-		super.initializeGraphicalViewer();
 		var viewer = getGraphicalViewer();
-		viewer.setContents(getModel());
+		viewer.getEditDomain().setActiveTool(new PanningSelectionTool());
+		viewer.setContents(graph);
 	}
 
 	@Override
@@ -71,15 +71,52 @@ public class SdGraphEditor extends BasicGraphicalEditor {
 		super.configureGraphicalViewer();
 		var viewer = getGraphicalViewer();
 
+		var root = new RootEditPart(viewer);
+
+		// Set clipping strategy for connection layer
+		var connectionLayer = (ConnectionLayer) root
+				.getLayer(LayerConstants.CONNECTION_LAYER);
+		connectionLayer.setClippingStrategy(
+				new ViewportAwareConnectionLayerClippingStrategy(connectionLayer));
+
+		// Register zoom actions
+		var zoom = createZoom(root);
+		var zoomIn = new ZoomInAction(zoom);
+		var zoomOut = new ZoomOutAction(zoom);
+		getActionRegistry().registerAction(zoomIn);
+		getActionRegistry().registerAction(zoomOut);
+
+		viewer.setRootEditPart(root);
+		viewer.setKeyHandler(createKeyHandler());
 		viewer.setEditPartFactory(new SdEditPartFactory());
 
+		// Configure mouse wheel zoom
+		viewer.setProperty(
+			MouseWheelHandler.KeyGenerator.getKey(SWT.NONE),
+			MouseWheelZoomHandler.SINGLETON);
+
 		// Set up context menu
-		var menuProvider = new SdContextMenuProvider(viewer, getActionRegistry());
+		var menuProvider = new ContextMenu(viewer, getActionRegistry());
 		viewer.setContextMenu(menuProvider);
 	}
 
+	private ZoomManager createZoom(RootEditPart root) {
+		int len = (int) Math.ceil(Math.log(3.0 / 0.1) / Math.log(1.05));
+		var levels = new double[len];
+		for (int i = 0; i < len; i++) {
+			levels[i] = Math.pow(1.05, i) * 0.1;
+		}
+		var zoom = root.getZoomManager();
+		zoom.setZoomLevels(levels);
+		zoom.setZoomLevelContributions(List.of(
+			ZoomManager.FIT_ALL,
+			ZoomManager.FIT_HEIGHT,
+			ZoomManager.FIT_WIDTH));
+		zoom.setZoomAnimationStyle(ZoomManager.ANIMATE_ZOOM_IN_OUT);
+		return zoom;
+	}
+
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void createActions() {
 		super.createActions();
 		var registry = getActionRegistry();
@@ -96,31 +133,58 @@ public class SdGraphEditor extends BasicGraphicalEditor {
 		registry.registerAction(action);
 	}
 
+	private KeyHandler createKeyHandler() {
+		var keyHandler = new DefaultKeyHandler(getGraphicalViewer());
+		keyHandler.setParent(getCommonKeyHandler());
+		var registry = getActionRegistry();
+		keyHandler.put(
+				KeyStroke.getPressed('+', SWT.KEYPAD_ADD, 0),
+				registry.getAction(GEFActionConstants.ZOOM_IN));
+		keyHandler.put(
+				KeyStroke.getPressed('-', SWT.KEYPAD_SUBTRACT, 0),
+				registry.getAction(GEFActionConstants.ZOOM_OUT));
+		keyHandler.put(
+				KeyStroke.getPressed('+', 43, SWT.MOD1),
+				registry.getAction(GEFActionConstants.ZOOM_IN));
+		keyHandler.put(
+				KeyStroke.getPressed('-', 45, SWT.MOD1),
+				registry.getAction(GEFActionConstants.ZOOM_OUT));
+		return keyHandler;
+	}
+
+	private KeyHandler getCommonKeyHandler() {
+		if (keyHandler == null) {
+			keyHandler = new KeyHandler();
+			var registry = getActionRegistry();
+			keyHandler.put(
+					KeyStroke.getPressed(SWT.DEL, 127, 0),
+					registry.getAction(ActionFactory.DELETE.getId()));
+		}
+		return keyHandler;
+	}
+
 	@Override
 	protected void setInput(IEditorInput input) {
 		super.setInput(input);
-		// Create an empty graph - will be populated when activated
 		graph = new SdGraph(this);
-		setModel(graph);
 	}
 
-	@Override
 	public SdGraph getModel() {
 		return graph;
-	}
-
-	public void setModel(SdGraph graph) {
-		this.graph = graph;
-		super.setModel(graph);
 	}
 
 	public SdModelEditor getModelEditor() {
 		return modelEditor;
 	}
 
-	/**
-	 * Make super.getActionRegistry() public.
-	 */
+	public RootEditPart getRootEditPart() {
+		return (RootEditPart) getGraphicalViewer().getRootEditPart();
+	}
+
+	public ZoomManager getZoomManager() {
+		return getRootEditPart().getZoomManager();
+	}
+
 	@Override
 	public ActionRegistry getActionRegistry() {
 		return super.getActionRegistry();
@@ -134,7 +198,6 @@ public class SdGraphEditor extends BasicGraphicalEditor {
 		// TODO: Initialize the graph from the actual SD model (XMILE)
 		// For now, create an empty graph
 		graph = new SdGraph(this);
-		setModel(graph);
 		getGraphicalViewer().setContents(graph);
 
 		// TODO: Load nodes from model variables
@@ -148,7 +211,6 @@ public class SdGraphEditor extends BasicGraphicalEditor {
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		// Handle selection changes
 		updateActions(getSelectionActions());
 	}
 
@@ -161,33 +223,16 @@ public class SdGraphEditor extends BasicGraphicalEditor {
 		modelEditor.setDirty();
 	}
 
-	/**
-	 * Context menu provider for the SD graph editor.
-	 */
-	private static class SdContextMenuProvider extends ContextMenuProvider {
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		// Saving is handled by the parent SdModelEditor
+	}
 
-		private final ActionRegistry registry;
-
-		public SdContextMenuProvider(org.eclipse.gef.EditPartViewer viewer,
-				ActionRegistry registry) {
-			super(viewer);
-			this.registry = registry;
-		}
-
-		@Override
-		public void buildContextMenu(IMenuManager menu) {
-			// Add node creation actions
-			menu.add(registry.getAction(AddStockAction.ID));
-			menu.add(registry.getAction(AddRateAction.ID));
-			menu.add(registry.getAction(AddAuxiliaryAction.ID));
-
-			menu.add(new Separator());
-
-			// Add standard edit actions
-			var deleteAction = registry.getAction(ActionFactory.DELETE.getId());
-			if (deleteAction != null) {
-				menu.add(deleteAction);
-			}
-		}
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Object getAdapter(Class type) {
+		if (type == ZoomManager.class)
+			return getZoomManager();
+		return super.getAdapter(type);
 	}
 }
