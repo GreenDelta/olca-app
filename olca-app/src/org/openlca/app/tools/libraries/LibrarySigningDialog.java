@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.logging.log4j.util.Strings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -24,6 +23,7 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LibraryCombo;
+import org.openlca.commons.Strings;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryPackage;
 import org.openlca.license.License;
