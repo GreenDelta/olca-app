@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -168,9 +169,32 @@ public class LibrarySigningDialog extends FormDialog {
 		private Date notAfter = Calendar.getInstance().getTime();
 
 		private Person subject() {
-			return new Person(email, null, null, email, null);
+			return new Person(
+				name(), 
+				name(), 
+				country(), 
+				email, 
+				"");
+		}
+		
+		private String name() {
+			if (Strings.isBlank(email))
+				return "";
+			if (!email.contains("@"))
+				return email;
+			return email.substring(0, email.indexOf("@"));
 		}
 
+		private String country() {
+			var locale = Locale.getDefault();
+			if (locale == null)
+				return "";
+			var country = locale.getCountry();
+			if (country == null)
+				return "";
+			return country;
+		}
+		
 		private String getDefaultName() {
 			return library != null ? library.name() + "-signed.zip" : null;
 
