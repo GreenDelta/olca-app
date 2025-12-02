@@ -129,12 +129,22 @@ public class SocialAspectsPage extends ModelPage<Process> {
 	}
 
 	private void deleteAspect() {
-		var o = Viewers.getFirstSelected(tree);
-		if (!(o instanceof SocialAspect aspect))
-			return;
-		Aspects.remove(getModel(), aspect);
-		treeModel.remove(aspect);
-		tree.refresh();
-		editor.setDirty(true);
-	}
+        List<Object> selected = Viewers.getAllSelected(tree);
+        if (selected.isEmpty())
+            return;
+        List<SocialAspect> aspects = new ArrayList<>();
+        for (Object obj : selected) {
+            if (obj instanceof SocialAspect aspect) {
+                aspects.add(aspect);
+            }
+        }
+        if (aspects.isEmpty())
+            return;
+        for (var aspect : aspects) {
+            Aspects.remove(getModel(), aspect);
+            treeModel.remove(aspect);
+        }
+        tree.refresh();
+        editor.setDirty(true);
+    }
 }
