@@ -18,6 +18,7 @@ import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.database.config.DatabaseConfigList;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Database {
 
+	private static final Logger log = LoggerFactory.getLogger(Database.class);
 	private static IDatabase database;
 	private static DatabaseConfig config;
 	private static final DatabaseConfigList configurations = readConfigs();
@@ -41,22 +43,40 @@ public class Database {
 	}
 
 	public static IDatabase activate(DatabaseConfig config) {
+		long startTime = System.nanoTime();
+		log.info("PERF: Starting database activation for: {}", config.name());
+		
 		try {
+			// Measure time for database connection (likely where EclipseLink scanning happens)
+			long connectStart = System.nanoTime();
 			var db = config.connect(Workspace.dbDir());
+			long connectTime = System.nanoTime() - connectStart;
+			log.info("PERF: Database connection completed in {} ms", 
+					connectTime / 1_000_000.0);
+			
+			// Measure time for setActive
+			long setActiveStart = System.nanoTime();
 			setActive(config, db);
-			LoggerFactory.getLogger(Database.class)
-					.info("activated database {} with version{}",
-							db.getName(), db.getVersion());
+			long setActiveTime = System.nanoTime() - setActiveStart;
+			log.info("PERF: setActive() completed in {} ms", 
+					setActiveTime / 1_000_000.0);
+			
+			long totalTime = System.nanoTime() - startTime;
+			log.info("PERF: Database activation completed in {} ms (total) for database {} with version {}",
+					totalTime / 1_000_000.0, db.getName(), db.getVersion());
+			
 			// setting the active database may fail, the global
 			// database variable is then null and this is what we
 			// return here
 			return database;
 		} catch (Exception e) {
+			long totalTime = System.nanoTime() - startTime;
+			log.error("PERF: Database activation failed after {} ms", 
+					totalTime / 1_000_000.0, e);
 			try {
 				close();
 			} catch (Exception ce) {
-				LoggerFactory.getLogger(Database.class)
-						.error("failed to close database resources", ce);
+				log.error("failed to close database resources", ce);
 			}
 			ErrorReporter.on("failed to activate database: " + config, e);
 			return null;
@@ -64,13 +84,41 @@ public class Database {
 	}
 
 	public static void setActive(DatabaseConfig config, IDatabase db) {
+		long startTime = System.nanoTime();
+		log.debug("PERF: setActive() started");
+		
 		try {
 			database = db;
 			Database.config = config;
+			
+			// Measure AppContext.change()
+			long appContextStart = System.nanoTime();
 			AppContext.change(database);
+			long appContextTime = System.nanoTime() - appContextStart;
+			log.debug("PERF: AppContext.change() completed in {} ms", 
+					appContextTime / 1_000_000.0);
+			
+			// Measure Repository.open()
+			long repoStart = System.nanoTime();
 			Repository.open(Repository.gitDir(database.getName()), database);
+			long repoTime = System.nanoTime() - repoStart;
+			log.debug("PERF: Repository.open() completed in {} ms", 
+					repoTime / 1_000_000.0);
+			
+			// Measure RcpWindowAdvisor.updateWindowTitle()
+			long titleStart = System.nanoTime();
 			RcpWindowAdvisor.updateWindowTitle();
+			long titleTime = System.nanoTime() - titleStart;
+			log.debug("PERF: RcpWindowAdvisor.updateWindowTitle() completed in {} ms", 
+					titleTime / 1_000_000.0);
+			
+			long totalTime = System.nanoTime() - startTime;
+			log.debug("PERF: setActive() total time: {} ms", 
+					totalTime / 1_000_000.0);
 		} catch (RuntimeException e) {
+			long totalTime = System.nanoTime() - startTime;
+			log.error("PERF: setActive() failed after {} ms", 
+					totalTime / 1_000_000.0, e);
 			if (Repository.CURRENT != null) {
 				Repository.CURRENT.close();
 			}
