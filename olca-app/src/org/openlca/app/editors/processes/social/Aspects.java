@@ -24,16 +24,6 @@ class Aspects {
 		return null;
 	}
 
-	static SocialAspect find(Process p, SocialIndicator i) {
-		if (p == null || i == null)
-			return null;
-		for (SocialAspect a : p.socialAspects) {
-			if (Objects.equals(a.indicator, i))
-				return a;
-		}
-		return null;
-	}
-
 	static void update(Process p, SocialAspect a) {
 		if (p == null || a == null)
 			return;
@@ -50,6 +40,16 @@ class Aspects {
 		if (pa == null)
 			return;
 		p.socialAspects.remove(pa);
+	}
+
+	private static SocialAspect find(Process p, SocialIndicator i) {
+		if (p == null || i == null)
+			return null;
+		for (SocialAspect a : p.socialAspects) {
+			if (Objects.equals(a.indicator, i))
+				return a;
+		}
+		return null;
 	}
 
 	static void copyValues(SocialAspect from, SocialAspect to) {

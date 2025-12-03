@@ -9,15 +9,33 @@ import org.openlca.core.model.SocialAspect;
 
 class CategoryNode {
 
-	Category category;
-	List<CategoryNode> childs = new ArrayList<>();
-	List<SocialAspect> aspects = new ArrayList<>();
+	final Category category;
+	final List<CategoryNode> childs = new ArrayList<>();
+	final List<SocialAspect> aspects = new ArrayList<>();
 
 	CategoryNode() {
+		category = null;
 	}
 
 	CategoryNode(Category c) {
 		category = c;
+	}
+
+	String name() {
+		return category != null
+			? category.name
+			: null;
+	}
+
+	/// A category node is empty when it is a tree without social aspects.
+	boolean isEmpty() {
+		if (!aspects.isEmpty())
+			return false;
+		for (var c : childs) {
+			if (!c.isEmpty())
+				return false;
+		}
+		return true;
 	}
 
 	CategoryNode findChild(Category c) {
@@ -26,5 +44,13 @@ class CategoryNode {
 				return child;
 		}
 		return null;
+	}
+
+	List<SocialAspect> getAllAscpectsRecursively() {
+		var all = new ArrayList<>(aspects);
+		for (var c : childs) {
+			all.addAll(c.getAllAscpectsRecursively());
+		}
+		return all;
 	}
 }

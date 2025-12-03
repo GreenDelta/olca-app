@@ -1,14 +1,30 @@
 package org.openlca.app.editors.processes.social;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.openlca.core.model.Category;
+import org.openlca.core.model.Process;
 import org.openlca.core.model.SocialAspect;
 import org.openlca.core.model.SocialIndicator;
 
 class TreeModel {
 
-	CategoryNode root = new CategoryNode();
+	final CategoryNode root = new CategoryNode();
+
+	private TreeModel() {
+	}
+
+	static TreeModel of(Process p) {
+		var model = new TreeModel();
+		if (p == null)
+			return model;
+		for (var a : p.socialAspects) {
+			model.addAspect(a);
+		}
+		return model;
+	}
 
 	void addAspect(SocialAspect a) {
 		if (a == null || a.indicator == null)
@@ -51,6 +67,18 @@ class TreeModel {
 		if (n == null)
 			return;
 		n.aspects.remove(a);
+	}
+
+	void dropEmptyCategories() {
+		var level = List.of(root);
+		while (!level.isEmpty()) {
+			var next = new ArrayList<CategoryNode>();
+			for (var n : level) {
+				n.childs.removeIf(CategoryNode::isEmpty);
+				next.addAll(n.childs);
+			}
+			level = next;
+		}
 	}
 
 }
