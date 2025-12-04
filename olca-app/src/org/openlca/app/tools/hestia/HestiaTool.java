@@ -1,5 +1,7 @@
 package org.openlca.app.tools.hestia;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,11 +25,13 @@ import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.ApiKeyAuth;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -89,11 +93,28 @@ public class HestiaTool extends SimpleFormEditor {
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
 			var form = UI.header(mForm, "Hestia");
+			var toolbar = form.getToolBarManager();
+			toolbar.add(Actions.create(
+				"Logout", Icon.LOGOUT.descriptor(), this::onLogout));
+			toolbar.update(true);
+
 			var tk = mForm.getToolkit();
 			var body = UI.body(form, tk);
 
 			createConfigSection(body, tk);
 			createTableSection(body, tk);
+		}
+
+		private void onLogout() {
+			var file = new File(Workspace.root(), ".hestia.json");
+			if (file.exists()) {
+				try {
+					Files.delete(file.toPath());
+				} catch (Exception e) {
+					ErrorReporter.on("Failed to delete API key", e);
+				}
+			}
+			getEditor().close(false);
 		}
 
 		private void createConfigSection(Composite body, FormToolkit tk) {

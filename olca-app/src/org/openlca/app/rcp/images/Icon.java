@@ -102,6 +102,7 @@ public enum Icon {
 	LINK("link.png"),
 	LOCK("lock.png"),
 	LOGO("plugin/logo_32_32bit.png"),
+	LOGOUT("logout.png"),
 
 	MANAGE_PLUGINS("manage_plugins.png"),
 	MAP("map.png"),
