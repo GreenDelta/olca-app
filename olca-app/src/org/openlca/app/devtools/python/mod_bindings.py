@@ -59,6 +59,7 @@ import org.openlca.core.results.Contribution as Contribution
 import org.openlca.core.results.Contributions as Contributions
 import org.openlca.core.matrix.cache.ConversionTable as ConversionTable
 import org.openlca.util.Copy as Copy
+import org.openlca.io.maps.CountryInfo as CountryInfo
 import org.openlca.core.matrix.io.Csv as Csv
 import org.openlca.core.matrix.io.CsvExport as CsvExport
 import org.openlca.core.model.Currency as Currency
@@ -68,6 +69,7 @@ import org.openlca.core.database.descriptors.CurrencyDescriptors as CurrencyDesc
 import org.openlca.jsonld.input.CurrencyReader as CurrencyReader
 import org.openlca.core.database.usage.CurrencyUseSearch as CurrencyUseSearch
 import org.openlca.jsonld.output.CurrencyWriter as CurrencyWriter
+import org.openlca.io.hestia.Cycle as Cycle
 import org.openlca.core.math.data_quality.DQData as DQData
 import org.openlca.core.model.DQIndicator as DQIndicator
 import org.openlca.core.math.data_quality.DQResult as DQResult
@@ -125,6 +127,7 @@ import org.openlca.io.ecospold1.output.EcoSpold1Export as EcoSpold1Export
 import org.openlca.io.ecospold2.output.EcoSpold2Export as EcoSpold2Export
 import org.openlca.io.ecospold2.output.EcoSpold2ExportConfig as EcoSpold2ExportConfig
 import org.openlca.io.ecospold2.input.EcoSpold2Import as EcoSpold2Import
+import org.openlca.io.hestia.EcoinventFlowMap as EcoinventFlowMap
 import org.openlca.core.database.EntityCache as EntityCache
 import org.openlca.jsonld.Enums as Enums
 import org.openlca.core.matrix.index.EnviFlow as EnviFlow
@@ -163,6 +166,7 @@ import org.openlca.util.Exchanges as Exchanges
 import org.openlca.io.ilcd.output.Export as Export
 import org.openlca.io.ecospold1.output.ExportConfig as ExportConfig
 import org.openlca.ipc.handlers.ExportHandler as ExportHandler
+import org.openlca.io.ilcd.Ext as Ext
 import org.openlca.core.results.providers.FactorizationSolver as FactorizationSolver
 import org.openlca.geo.geojson.Feature as Feature
 import org.openlca.geo.geojson.FeatureCollection as FeatureCollection
@@ -215,11 +219,19 @@ import org.openlca.geo.lcia.GeoProperty as GeoProperty
 import org.openlca.util.Geometries as Geometries
 import org.openlca.geo.geojson.Geometry as Geometry
 import org.openlca.geo.geojson.GeometryCollection as GeometryCollection
+import org.openlca.io.maps.GladFlowMap as GladFlowMap
+import org.openlca.io.hestia.GlossaryFetch as GlossaryFetch
+import org.openlca.io.hestia.GlossaryFile as GlossaryFile
+import org.openlca.io.hestia.GlossaryFileInfo as GlossaryFileInfo
 import org.openlca.core.results.GroupingContribution as GroupingContribution
 import org.openlca.io.HSCSim as HSCSim
 import org.openlca.ipc.handlers.HandlerContext as HandlerContext
 import org.openlca.core.matrix.format.HashPointByteMatrix as HashPointByteMatrix
 import org.openlca.core.matrix.format.HashPointMatrix as HashPointMatrix
+import org.openlca.io.hestia.HestiaClient as HestiaClient
+import org.openlca.io.hestia.HestiaImport as HestiaImport
+import org.openlca.io.hestia.HestiaRef as HestiaRef
+import org.openlca.io.hestia.HestiaSource as HestiaSource
 import org.openlca.core.matrix.ImpactBuilder as ImpactBuilder
 import org.openlca.core.model.ImpactCategory as ImpactCategory
 import org.openlca.core.database.ImpactCategoryDao as ImpactCategoryDao
@@ -251,6 +263,7 @@ import org.openlca.proto.io.input.In as In
 import org.openlca.core.results.providers.InMemLibrarySolver as InMemLibrarySolver
 import org.openlca.proto.io.InMemoryProtoStore as InMemoryProtoStore
 import org.openlca.core.model.store.InMemoryStore as InMemoryStore
+import org.openlca.io.xls.process.InSourceSync as InSourceSync
 import org.openlca.core.matrix.IndexedMatrix as IndexedMatrix
 import org.openlca.io.openepd.io.IndicatorMapping as IndicatorMapping
 import org.openlca.io.xls.results.InfoSheet as InfoSheet
@@ -305,6 +318,7 @@ import org.openlca.core.library.LibraryInfo as LibraryInfo
 import org.openlca.core.results.providers.libblocks.LibraryInversionSolver as LibraryInversionSolver
 import org.openlca.jsonld.LibraryLink as LibraryLink
 import org.openlca.core.library.LibraryPackage as LibraryPackage
+import org.openlca.core.database.LibraryUsage as LibraryUsage
 import org.openlca.geo.geojson.LineString as LineString
 import org.openlca.core.matrix.linking.LinkingConfig as LinkingConfig
 import org.openlca.core.matrix.linking.LinkingInfo as LinkingInfo
@@ -342,6 +356,7 @@ import org.openlca.jsonld.MemStore as MemStore
 import org.openlca.proto.io.Messages as Messages
 import org.openlca.io.ecospold2.input.MethodImport as MethodImport
 import org.openlca.io.openepd.io.MethodMapping as MethodMapping
+import org.openlca.io.hestia.MethodTier as MethodTier
 import org.openlca.io.simapro.csv.output.MethodWriter as MethodWriter
 import org.openlca.io.ilcd.input.models.ModelImport as ModelImport
 import org.openlca.jsonld.ModelPath as ModelPath
@@ -446,7 +461,6 @@ import org.openlca.core.database.RefEntityDao as RefEntityDao
 import org.openlca.util.RefIdMap as RefIdMap
 import org.openlca.core.math.ReferenceAmount as ReferenceAmount
 import org.openlca.proto.io.output.Refs as Refs
-import org.openlca.util.Res as Res
 import org.openlca.core.database.internal.Resource as Resource
 import org.openlca.core.services.Response as Response
 import org.openlca.ipc.Responses as Responses
@@ -481,6 +495,8 @@ import org.openlca.core.results.Sankey as Sankey
 import org.openlca.core.library.export.Scaler as Scaler
 import org.openlca.jsonld.SchemaVersion as SchemaVersion
 import org.openlca.core.database.internal.ScriptRunner as ScriptRunner
+import org.openlca.io.hestia.SearchQuery as SearchQuery
+import org.openlca.io.hestia.SearchResult as SearchResult
 import org.openlca.core.matrix.solvers.SeqAgg as SeqAgg
 import org.openlca.core.matrix.solvers.SequentialSolver as SequentialSolver
 import org.openlca.proto.io.server.Server as Server
@@ -494,6 +510,7 @@ import org.openlca.core.results.providers.SimpleResultProvider as SimpleResultPr
 import org.openlca.core.results.SimulationResult as SimulationResult
 import org.openlca.io.xls.results.SimulationResultExport as SimulationResultExport
 import org.openlca.core.math.Simulator as Simulator
+import org.openlca.io.hestia.Site as Site
 import org.openlca.io.smartepd.SmartEpd as SmartEpd
 import org.openlca.io.smartepd.SmartEpdClient as SmartEpdClient
 import org.openlca.io.smartepd.SmartEpdReader as SmartEpdReader
@@ -537,7 +554,6 @@ import org.openlca.core.matrix.solvers.SparseFactorization as SparseFactorizatio
 import org.openlca.core.matrix.format.SparseMatrixData as SparseMatrixData
 import org.openlca.io.ecospold2.input.Spold2Files as Spold2Files
 import org.openlca.core.results.Statistics as Statistics
-import org.openlca.util.Strings as Strings
 import org.openlca.core.matrix.linking.SubSystemLinker as SubSystemLinker
 import org.openlca.io.maps.SyncFlow as SyncFlow
 import org.openlca.core.math.SystemCalculator as SystemCalculator
@@ -551,9 +567,9 @@ import org.openlca.core.results.TechFlowValue as TechFlowValue
 import org.openlca.core.matrix.index.TechIndex as TechIndex
 import org.openlca.core.matrix.linking.TechIndexBuilder as TechIndexBuilder
 import org.openlca.core.matrix.linking.TechIndexCutoffBuilder as TechIndexCutoffBuilder
+import org.openlca.io.hestia.Term as Term
 import org.openlca.util.TopoSort as TopoSort
 import org.openlca.core.database.TransDeps as TransDeps
-import org.openlca.util.Triple as Triple
 import org.openlca.core.model.TypedRefId as TypedRefId
 import org.openlca.util.TypedRefIdMap as TypedRefIdMap
 import org.openlca.util.TypedRefIdSet as TypedRefIdSet
@@ -587,6 +603,7 @@ import org.openlca.core.database.upgrades.Upgrade15 as Upgrade15
 import org.openlca.core.database.upgrades.Upgrades as Upgrades
 import org.openlca.core.results.UpstreamNode as UpstreamNode
 import org.openlca.core.results.UpstreamTree as UpstreamTree
+import org.openlca.io.hestia.User as User
 import org.openlca.validation.Validation as Validation
 import org.openlca.core.model.Version as Version
 import org.openlca.core.database.upgrades.VersionState as VersionState
@@ -597,6 +614,8 @@ import org.openlca.geo.calc.WebMercator as WebMercator
 import org.openlca.core.results.providers.WeightedMeanProvider as WeightedMeanProvider
 import org.openlca.text.WordBuffer as WordBuffer
 import org.openlca.proto.io.output.WriterConfig as WriterConfig
+import org.openlca.io.xls.process.XlsProcessReader as XlsProcessReader
+import org.openlca.io.xls.process.XlsProcessWriter as XlsProcessWriter
 import org.openlca.io.Xml as Xml
 import org.openlca.util.ZipFiles as ZipFiles
 import org.openlca.jsonld.ZipReader as ZipReader
