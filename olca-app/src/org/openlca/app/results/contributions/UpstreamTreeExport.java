@@ -3,19 +3,11 @@ package org.openlca.app.results.contributions;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Objects;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openlca.app.util.CostResultDescriptor;
 import org.openlca.app.util.Labels;
 import org.openlca.commons.Strings;
-import org.openlca.core.matrix.index.EnviFlow;
-import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.core.model.descriptors.FlowDescriptor;
-import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.core.results.UpstreamNode;
 import org.openlca.core.results.UpstreamTree;
 import org.openlca.io.xls.Excel;
 import org.slf4j.Logger;
@@ -23,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import gnu.trove.list.array.TDoubleArrayList;
 
-class UpstreamTreeExport implements Runnable {
+class UpstreamTreeExport extends UpstreamTreeTraversal implements Runnable {
 
 	/**
 	 * The maximum number of levels that should be exported. A value < 0 means
@@ -47,18 +39,16 @@ class UpstreamTreeExport implements Runnable {
 	public int maxRecursionDepth = 10;
 
 	private final File file;
-	private final UpstreamTree tree;
 
 	private Sheet sheet;
 	private int row;
 	private int maxColumn;
-	private double totalResult;
 	private final TDoubleArrayList results = new TDoubleArrayList(100);
 	private final TDoubleArrayList direct = new TDoubleArrayList(100);
 
 	UpstreamTreeExport(File file, UpstreamTree tree) {
+		super(tree);
 		this.file = file;
-		this.tree = tree;
 	}
 
 	@Override
@@ -81,7 +71,6 @@ class UpstreamTreeExport implements Runnable {
 			// write the tree
 			row = 1;
 			maxColumn = 0;
-			totalResult = tree.root.result();
 			Path path = new Path(tree.root);
 			traverse(path);
 
@@ -124,68 +113,18 @@ class UpstreamTreeExport implements Runnable {
 		}
 	}
 
-	private String refName() {
-		var ref = tree.ref;
-		if (ref == null)
-			return "";
-		if (ref instanceof EnviFlow enviFlow)
-			return Labels.name(enviFlow);
-		return ref instanceof Descriptor
-				? ((Descriptor) ref).name
-				: "";
-	}
-
-	private String unit() {
-		var ref = tree.ref;
-		if (ref == null)
-			return "";
-
-		if (ref instanceof EnviFlow)
-			return Labels.refUnit((EnviFlow) ref);
-
-		if (ref instanceof FlowDescriptor)
-			return Labels.refUnit((FlowDescriptor) ref);
-
-		if (ref instanceof ImpactDescriptor)
-			return ((ImpactDescriptor) ref).referenceUnit;
-
-		if (ref instanceof CostResultDescriptor)
-			return Labels.getReferenceCurrencyCode();
-
-		return "";
-	}
-
 	private void traverse(Path path) {
-
 		if (row >= 1048574) {
-			// 1048575 is the maximum row number of an
-			// Excel sheet.
+			// 1048575 is the maximum row number of an Excel sheet.
 			return;
 		}
 
-		var node = path.node;
-		double result = path.node.result();
-
-		// first check if we need to cut the path here
-		if (result == 0)
+		if (!shouldInclude(path))
 			return;
-		if (maxDepth > 0 && path.length > maxDepth)
-			return;
-		if (minContribution > 0 && totalResult != 0) {
-			double c = Math.abs(result / totalResult);
-			if (c < minContribution)
-				return;
-		}
-		if (maxDepth < 0) {
-			int count = path.count(node.provider());
-			if (count > maxRecursionDepth) {
-				return;
-			}
-		}
 
 		// write the node and expand the child nodes
 		write(path);
-		for (var child : tree.childs(node)) {
+		for (var child : tree.childs(path.node)) {
 			traverse(path.append(child));
 		}
 	}
@@ -204,31 +143,5 @@ class UpstreamTreeExport implements Runnable {
 		Excel.cell(sheet, row, col, label);
 	}
 
-	private static class Path {
-		final Path prefix;
-		final UpstreamNode node;
-		final int length;
-
-		Path(UpstreamNode node) {
-			this.prefix = null;
-			this.node = node;
-			this.length = 0;
-		}
-
-		Path(UpstreamNode node, Path prefix) {
-			this.prefix = prefix;
-			this.node = node;
-			this.length = 1 + prefix.length;
-		}
-
-		Path append(UpstreamNode node) {
-			return new Path(node, this);
-		}
-
-		int count(TechFlow techFlow) {
-			int c = Objects.equals(techFlow, node.provider()) ? 1 : 0;
-			return prefix != null ? c + prefix.count(techFlow) : c;
-		}
-	}
 
 }

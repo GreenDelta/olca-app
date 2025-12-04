@@ -1,6 +1,8 @@
 package org.openlca.app.results.contributions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -129,13 +131,27 @@ public class ContributionTreePage extends FormPage {
 		var action = Actions.create(M.Copy, Icon.COPY.descriptor(), () -> {
 			var input = tree.getInput();
 			if (input instanceof UpstreamTree uTree) {
-				// Use Excel-like export format with default options
-				var text = UpstreamTreeClipboard.generate(uTree);
-				var clipboard = new Clipboard(UI.shell().getDisplay());
-				clipboard.setContents(
-						new String[]{text},
-						new Transfer[]{TextTransfer.getInstance()});
-				clipboard.dispose();
+				// Get selected nodes
+				var allSelected = Viewers.getAllSelected(tree);
+				List<UpstreamNode> selectedNodes = new ArrayList<>();
+				for (var obj : allSelected) {
+					if (obj instanceof UpstreamNode node) {
+						selectedNodes.add(node);
+					}
+				}
+				
+				if (selectedNodes.isEmpty()) {
+					// If nothing selected, fallback to standard behavior
+					TreeClipboard.onCopy(tree, new ClipboardLabel(label)).run();
+				} else {
+					// Generate Excel-like format for selected nodes
+					var text = UpstreamTreeFormatter.generateForNodes(uTree, selectedNodes);
+					var clipboard = new Clipboard(UI.shell().getDisplay());
+					clipboard.setContents(
+							new String[]{text},
+							new Transfer[]{TextTransfer.getInstance()});
+					clipboard.dispose();
+				}
 			} else {
 				// Fallback to standard tree clipboard behavior
 				TreeClipboard.onCopy(tree, new ClipboardLabel(label)).run();
