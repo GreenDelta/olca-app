@@ -8,6 +8,9 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
@@ -48,6 +51,7 @@ public class ContributionTreePage extends FormPage {
 
 	private TreeViewer tree;
 	private Object selection;
+	private Label label;
 
 
 	public ContributionTreePage(ResultEditor editor) {
@@ -86,7 +90,7 @@ public class ContributionTreePage extends FormPage {
 				M.TotalResult,
 				M.DirectContribution
 		};
-		var label = new Label();
+		label = new Label();
 		tree = Trees.createViewer(comp, headers, label);
 
 		tree.setAutoExpandLevel(2);
@@ -116,9 +120,34 @@ public class ContributionTreePage extends FormPage {
 					}
 				});
 
-		var onCopy = TreeClipboard.onCopy(tree, new ClipboardLabel(label));
+		var onCopy = createCopyAction();
 		Actions.bind(tree, onOpen, onCopy, onExport);
 		Trees.onDoubleClick(tree, e -> onOpen.run());
+	}
+
+	private org.eclipse.jface.action.Action createCopyAction() {
+		var action = Actions.create(M.Copy, Icon.COPY.descriptor(), () -> {
+			var input = tree.getInput();
+			if (input instanceof UpstreamTree uTree) {
+				// Use Excel-like export format with default options
+				var text = UpstreamTreeClipboard.generate(uTree);
+				var clipboard = new Clipboard(UI.shell().getDisplay());
+				clipboard.setContents(
+						new String[]{text},
+						new Transfer[]{TextTransfer.getInstance()});
+				clipboard.dispose();
+			} else {
+				// Fallback to standard tree clipboard behavior
+				TreeClipboard.onCopy(tree, new ClipboardLabel(label)).run();
+			}
+		});
+		// Also register Ctrl+C
+		tree.getTree().addListener(SWT.KeyUp, (event) -> {
+			if (event.stateMask == SWT.CTRL && event.keyCode == 'c') {
+				action.run();
+			}
+		});
+		return action;
 	}
 
 	private class SelectionHandler implements ResultItemSelector.SelectionHandler {
