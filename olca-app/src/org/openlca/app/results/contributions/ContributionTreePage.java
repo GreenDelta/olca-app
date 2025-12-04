@@ -122,13 +122,7 @@ public class ContributionTreePage extends FormPage {
 					}
 				});
 
-		var onCopy = createCopyAction();
-		Actions.bind(tree, onOpen, onCopy, onExport);
-		Trees.onDoubleClick(tree, e -> onOpen.run());
-	}
-
-	private org.eclipse.jface.action.Action createCopyAction() {
-		var action = Actions.create(M.Copy, Icon.COPY.descriptor(), () -> {
+		var onCopy = Actions.create(M.Copy, Icon.COPY.descriptor(), () -> {
 			var input = tree.getInput();
 			if (input instanceof UpstreamTree uTree) {
 				// Get selected nodes
@@ -157,13 +151,14 @@ public class ContributionTreePage extends FormPage {
 				TreeClipboard.onCopy(tree, new ClipboardLabel(label)).run();
 			}
 		});
-		// Also register Ctrl+C
+		// Register Ctrl+C (Windows/Linux) and Command+C (Mac) for the copy action
 		tree.getTree().addListener(SWT.KeyUp, (event) -> {
-			if (event.stateMask == SWT.CTRL && event.keyCode == 'c') {
-				action.run();
+			if ((event.stateMask & (SWT.CTRL | SWT.MOD1)) != 0 && event.keyCode == 'c') {
+				onCopy.run();
 			}
 		});
-		return action;
+		Actions.bind(tree, onOpen, onCopy, onExport);
+		Trees.onDoubleClick(tree, e -> onOpen.run());
 	}
 
 	private class SelectionHandler implements ResultItemSelector.SelectionHandler {
