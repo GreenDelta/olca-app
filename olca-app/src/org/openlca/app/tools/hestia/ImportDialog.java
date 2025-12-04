@@ -71,7 +71,7 @@ public class ImportDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(800, 400);
+		return new Point(800, 450);
 	}
 
 	@Override
@@ -85,7 +85,8 @@ public class ImportDialog extends FormDialog {
 
 	private void createCyclesTable(Composite comp, FormToolkit tk) {
 		var table = Tables.createViewer(comp, "Name", "ID");
-		UI.gridData(table.getControl(), true, true);
+		var gd = UI.gridData(table.getControl(), true, false);
+		gd.heightHint = 200;
 		Tables.bindColumnWidths(table, 0.7, 0.3);
 		table.setLabelProvider(new CycleTableLabel());
 		table.setInput(cycles);
