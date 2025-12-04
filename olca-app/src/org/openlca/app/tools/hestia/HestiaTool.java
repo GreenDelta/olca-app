@@ -33,6 +33,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
@@ -42,34 +43,41 @@ import org.openlca.core.model.ModelType;
 import org.openlca.io.hestia.HestiaClient;
 import org.openlca.io.hestia.SearchQuery;
 import org.openlca.io.hestia.SearchResult;
+import org.openlca.io.hestia.User;
 
 public class HestiaTool extends SimpleFormEditor {
 
 	private HestiaClient client;
+	private User user;
 
 	public static void open() {
 
-		var client = ApiKeyAuth.fromCacheOrDialog(
+		var user = ApiKeyAuth.fromCacheOrDialog(
 			".hestia.json", "https://api.hestia.earth", key -> {
 				var c = HestiaClient.of(key.endpoint(), key.value());
-				// TODO: check /users/me
-				return Res.ok(c);
+				var u = c.getCurrentUser();
+				return u.isError()
+					? u.wrapError("Failed to get user information")
+					: Res.ok(new ApiUser(c, u.value()));
 			});
 
-		if (client.isEmpty())
+		if (user.isEmpty())
 			return;
-		var id = AppContext.put(client.get());
+		var id = AppContext.put(user.get());
 		var input = new SimpleEditorInput(id, "Hestia");
 		Editors.open(input, "HestiaTool");
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	public void init(
+		IEditorSite site, IEditorInput input) throws PartInitException {
 		var inp = (SimpleEditorInput) input;
-		client = AppContext.remove(inp.id, HestiaClient.class);
-		if (client == null)
-			throw new PartInitException("failed to get the Hestia client");
+		var u = AppContext.remove(inp.id, ApiUser.class);
+		if (u == null)
+			throw new PartInitException("Failed to get tool data");
 		setTitleImage(Icon.HESTIA.get());
+		client = u.client;
+		user = u.user;
 		super.init(site, input);
 	}
 
@@ -78,9 +86,13 @@ public class HestiaTool extends SimpleFormEditor {
 		return new Page(this);
 	}
 
+	record ApiUser(HestiaClient client, User user) {
+	}
+
 	private static class Page extends FormPage {
 
 		private final HestiaClient client;
+		private final User user;
 		private TableViewer table;
 		private Text searchText;
 		private SettingsPanel settings;
@@ -88,24 +100,42 @@ public class HestiaTool extends SimpleFormEditor {
 		Page(HestiaTool editor) {
 			super(editor, "Hestia", "Hestia");
 			this.client = editor.client;
+			this.user = editor.user;
 		}
 
 		@Override
 		protected void createFormContent(IManagedForm mForm) {
-			var form = UI.header(mForm, "Hestia");
-			var toolbar = form.getToolBarManager();
-			toolbar.add(Actions.create(
-				"Logout", Icon.LOGOUT.descriptor(), this::onLogout));
-			toolbar.update(true);
-
+			var form = UI.header(mForm, "HESTIA API Client");
 			var tk = mForm.getToolkit();
 			var body = UI.body(form, tk);
-
+			userSection(tk, body);
 			createConfigSection(body, tk);
 			createTableSection(body, tk);
+			form.addDisposeListener(e -> client.close());
+		}
+
+		private void userSection(FormToolkit tk, Composite body) {
+			var section = UI.section(body, tk, "User");
+			var comp = UI.sectionClient(section, tk);
+			var name = UI.labeledText(comp, tk, "Name");
+			Controls.set(name, user.name());
+			name.setEditable(false);
+			var email = UI.labeledText(comp, tk, "Email");
+			Controls.set(email, user.email());
+			email.setEditable(false);
+			section.setExpanded(false);
+			var logout = Actions.create(
+				"Logout", Icon.LOGOUT.descriptor(), this::onLogout);
+			Actions.bind(section, logout);
 		}
 
 		private void onLogout() {
+			var q = Question.ask("Logout from HESTIA?",
+				"This will delete your cached API key and close this tab."
+					+ " If you want to keep it, just close the tab instead."
+					+ " Do you want to logout?");
+			if (!q)
+				return;
 			var file = new File(Workspace.root(), ".hestia.json");
 			if (file.exists()) {
 				try {
@@ -141,7 +171,6 @@ public class HestiaTool extends SimpleFormEditor {
 			});
 
 			settings = new SettingsPanel(searchComp, tk);
-
 		}
 
 		private void createTableSection(Composite body, FormToolkit tk) {
