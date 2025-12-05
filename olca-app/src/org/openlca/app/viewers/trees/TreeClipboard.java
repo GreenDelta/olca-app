@@ -61,8 +61,9 @@ public final class TreeClipboard {
 		if (tree == null)
 			return;
 		var text = new StringBuilder();
-		copyHeaders(label, text);
-		copyItems(tree, label, text);
+		int maxLevel = getMaxLevelOfTreeSelection(tree);
+		copyHeaders(label, text, maxLevel);
+		copyItems(tree, label, text, maxLevel);
 		var clipboard = new Clipboard(UI.shell().getDisplay());
 		clipboard.setContents(
 				new String[]{text.toString()},
@@ -70,7 +71,7 @@ public final class TreeClipboard {
 		clipboard.dispose();
 	}
 
-	private static void copyHeaders(Provider provider, StringBuilder text) {
+	private static void copyHeaders(Provider provider, StringBuilder text, int maxLevel) {
 		int cols = provider.columns();
 		for (int col = 0; col < cols; col++) {
 			if (col > 0) {
@@ -78,24 +79,30 @@ public final class TreeClipboard {
 			}
 			var s = provider.getHeader(col);
 			text.append(s == null ? "" : s);
+			if (col == 0 && maxLevel > 0) {
+				text.append("\t".repeat(maxLevel));
+			}
 		}
 		text.append('\n');
 	}
 
 	private static void copyItems(
-			Tree tree, Provider provider, StringBuilder text) {
+			Tree tree, Provider provider, StringBuilder text, int maxLevel) {
 		for (var item : tree.getSelection()) {
 			for (int col = 0; col < provider.columns(); col++) {
+				int level = levelOf(item);
 				if (col > 0) {
 					text.append('\t');
 				} else {
-					int level = levelOf(item);
 					if (level > 0) {
-						text.append("  ".repeat(level));
+						text.append("\t".repeat(level));
 					}
 				}
 				var s = provider.getLabel(item, col);
 				text.append(s == null ? "" : s);
+				if (level < maxLevel && col == 0) {
+					text.append("\t".repeat(maxLevel - level));
+				}
 			}
 			text.append('\n');
 		}
@@ -111,6 +118,17 @@ public final class TreeClipboard {
 			parent = parent.getParentItem();
 		}
 		return level;
+	}
+
+	private static int getMaxLevelOfTreeSelection(Tree tree) {
+		int maxLevel = 0;
+		for (var item : tree.getSelection()) {
+			int level = levelOf(item);
+			if (level > maxLevel) {
+				maxLevel = level;
+			}
+		}
+		return maxLevel;
 	}
 
 	public interface Provider {
