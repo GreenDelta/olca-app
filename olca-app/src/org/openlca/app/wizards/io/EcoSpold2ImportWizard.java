@@ -126,7 +126,7 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 						this._files = files;
 						setPageComplete(!files.isEmpty());
 					})
-					.withExtensions("*.xml", "*.zip", "*.spold")
+					.withExtensions("*.xml", "*.zip", "*.7z", "*.spold")
 					.withFiles(_files)
 					.render(body);
 

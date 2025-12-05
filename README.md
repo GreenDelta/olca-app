@@ -1,11 +1,25 @@
-# openLCA
+# openLCA - EcoSpold2 Import Enabled
+
+> **Note:** This is a fork of the official [openLCA](http://openlca.org) repository with **EcoSpold2 import functionality re-enabled**.
+> 
+> See [ECOSPOLD2_IMPORT_GUIDE.md](./ECOSPOLD2_IMPORT_GUIDE.md) for usage instructions.
+
 This repository contains the source code of [openLCA](http://openlca.org).
 openLCA is a Java application that runs on the Eclipse Rich Client Platform
 ([Eclipse RCP](http://wiki.eclipse.org/index.php/Rich_Client_Platform)). This
 project depends on the [olca-modules](https://github.com/GreenDelta/olca-modules)
 project which is a plain [Maven](http://maven.apache.org/) project that contains
 the core functionalities of openLCA (e.g. the model, database access,
-calculations, data exchange, and database updates). 
+calculations, data exchange, and database updates).
+
+## What's Different in This Fork
+
+- ✅ **EcoSpold2 import wizard re-enabled** (File → Import → Other → EcoSpold 2)
+- ✅ **Direct .spold file import** via drag-drop or double-click
+- ✅ **Flow mapping support** for ecoinvent MasterData
+- ✅ **Python script included** to generate flow mapping CSV from your ecoinvent dataset
+
+The official openLCA disabled EcoSpold2 import to promote sales of pre-converted databases. This fork restores the original functionality for users with legitimate ecoinvent licenses. 
 
 This repository has the following sub-projects:
 

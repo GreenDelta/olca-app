@@ -778,21 +778,19 @@
 				icon="icons/immutable/javascript.png"
 				id="wizard.import.hsc"
 				name="HSC Sim Flow Sheet"/>
-		<!--
-		<wizard
-					category="import.category.otherLCA"
-					class="org.openlca.app.wizards.io.EcoSpold2ImportWizard"
-					icon="icons/immutable/xml_es2.png"
-					id="wizard.import.ecospold2"
-					name="EcoSpold 2">
-			 <description>
-					Import EcoSpold 2 files
-			 </description>
-		</wizard>
-		-->
-		<wizard
+	<wizard
 				category="import.category.otherLCA"
-				class="org.openlca.app.wizards.io.ILCDImportWizard"
+				class="org.openlca.app.wizards.io.EcoSpold2ImportWizard"
+				icon="icons/immutable/xml_es2.png"
+				id="wizard.import.ecospold2"
+				name="EcoSpold 2">
+		 <description>
+				Import EcoSpold 2 files
+		 </description>
+	</wizard>
+	<wizard
+			category="import.category.otherLCA"
+			class="org.openlca.app.wizards.io.ILCDImportWizard"
 				icon="icons/immutable/ilcd.png"
 				id="wizard.import.ilcd"
 				name="ILCD">
@@ -957,3 +955,4 @@
 	</extension>
 
 </plugin>
+

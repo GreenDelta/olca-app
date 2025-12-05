@@ -27,6 +27,7 @@ import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.DbImportWizard;
 import org.openlca.app.wizards.io.EcoSpold01ImportWizard;
+import org.openlca.app.wizards.io.EcoSpold2ImportWizard;
 import org.openlca.app.wizards.io.ExcelImportWizard;
 import org.openlca.app.wizards.io.GeoJsonImportWizard;
 import org.openlca.app.wizards.io.ILCDImportWizard;
@@ -63,6 +64,12 @@ public class FileImport {
 			return;
 		}
 
+		// TODO: handle .7z files as EcoSpold2 archives
+		// if (name.endsWith(".7z")) {
+		// 	EcoSpold2ImportWizard.of(file);
+		// 	return;
+		// }
+
 		// check if it is a known import format
 		var format = Format.detect(file).orElse(null);
 		if (format != null) {
@@ -95,7 +102,7 @@ public class FileImport {
 	private void handleFormat(File file, Format format) {
 		switch (format) {
 			case ES1_XML, ES1_ZIP -> EcoSpold01ImportWizard.of(file);
-			case ES2_XML, ES2_ZIP -> MsgBox.info(M.EcoSpoldV2, M.EcoSpoldV2Info);
+			case ES2_XML, ES2_ZIP -> EcoSpold2ImportWizard.of(file);
 			case EXCEL -> ExcelImportWizard.of(file);
 			case GEO_JSON -> GeoJsonImportWizard.of(file);
 			case GLAD_FLOW_MAP -> importGladMapping(file);
