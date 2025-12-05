@@ -1,5 +1,7 @@
 package org.openlca.app.tools.smartepd;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -16,13 +18,16 @@ import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.ApiKeyAuth;
 import org.openlca.app.tools.smartepd.TreeModel.EpdNode;
 import org.openlca.app.tools.smartepd.TreeModel.Node;
 import org.openlca.app.tools.smartepd.TreeModel.ProjectNode;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.trees.Trees;
 import org.openlca.commons.Res;
@@ -80,6 +85,15 @@ public class SmartEpdTool extends SimpleFormEditor {
 			var form = UI.header(mForm, "SmartEPD");
 			var tk = mForm.getToolkit();
 			var body = UI.body(form, tk);
+			form.addDisposeListener(e -> client.close());
+
+			// bind the logout action
+			var toolbar = form.getToolBarManager();
+			toolbar.add(Actions.create(
+				"Logout", Icon.LOGOUT.descriptor(), this::onLogout));
+			toolbar.update(true);
+
+			// create the tree
 			var tree = Trees.createViewer(body, "Project/EPD");
 			tree.getTree().setLinesVisible(false);
 			Trees.bindColumnWidths(tree.getTree(), 1.0);
@@ -87,6 +101,7 @@ public class SmartEpdTool extends SimpleFormEditor {
 			tree.setContentProvider(new TreeContent());
 			TreeMenu.mountOn(client, tree);
 
+			// fetch and fill the tree model
 			App.runInUI("Fetching data ...", () -> {
 				var res = TreeModel.fetch(client);
 				if (res.isError()) {
@@ -98,6 +113,24 @@ public class SmartEpdTool extends SimpleFormEditor {
 					tree.expandAll();
 				}
 			});
+		}
+
+		private void onLogout() {
+			var q = Question.ask("Logout from SmartEPD?",
+				"This will delete your cached API key and close this tab."
+					+ " If you want to keep it, just close the tab instead."
+					+ " Do you want to logout?");
+			if (!q)
+				return;
+			var file = new File(Workspace.root(), ".smartepd.json");
+			if (file.exists()) {
+				try {
+					Files.delete(file.toPath());
+				} catch (Exception e) {
+					ErrorReporter.on("Failed to delete API key", e);
+				}
+			}
+			getEditor().close(false);
 		}
 
 		private static class TreeContent implements ITreeContentProvider {
