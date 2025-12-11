@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.swing.SwingUtilities;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -39,11 +42,14 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
+import org.openlca.compose.ComposeBridge;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.hestia.HestiaClient;
 import org.openlca.io.hestia.SearchQuery;
 import org.openlca.io.hestia.SearchResult;
 import org.openlca.io.hestia.User;
+
+import androidx.compose.ui.awt.ComposePanel;
 
 public class HestiaTool extends SimpleFormEditor {
 
@@ -108,6 +114,17 @@ public class HestiaTool extends SimpleFormEditor {
 			var form = UI.header(mForm, "HESTIA API Client");
 			var tk = mForm.getToolkit();
 			var body = UI.body(form, tk);
+
+			var composeRoot = UI.composite(body, tk, SWT.EMBEDDED);
+			var frame = SWT_AWT.new_Frame(composeRoot);
+			UI.gridData(composeRoot, true, false).heightHint = 150;
+			SwingUtilities.invokeLater(() -> {
+				var panel = new ComposePanel();
+				frame.add(panel);
+				ComposeBridge.attach(panel);
+				frame.validate();
+			});
+
 			userSection(tk, body);
 			createConfigSection(body, tk);
 			createTableSection(body, tk);
