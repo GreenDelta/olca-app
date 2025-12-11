@@ -14,6 +14,7 @@
 	<location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/eclipse/updates/4.36/R-4.36-202505281830"/>
 		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.23.1700.v20250526-2018"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="0.0.0"/>
 		<unit id="org.eclipse.rcp.feature.group" version="4.36.0.v20250528-1830"/>
 		<unit id="org.eclipse.platform.ide" version="4.36.0.I20250528-1830"/>
 	</location>
@@ -29,5 +30,6 @@
 		<repository location="https://download.eclipse.org/swtchart/releases/1.0.0/repository/"/>
 		<unit id="org.eclipse.swtchart.feature.feature.group" version="1.0.0.202412021530"/>
 	</location>
+	<location path="/Users/tomasbaronas/Documents/libs" type="Directory"/>
 </locations>
 </target>

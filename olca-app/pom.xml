@@ -3,112 +3,182 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.openlca</groupId>
-	<artifactId>olca-deps</artifactId>
+	<parent>
+		<groupId>org.openlca</groupId>
+		<artifactId>olca-app-build</artifactId>
+		<version>2.5.1-SNAPSHOT</version>
+		<relativePath>../olca-app-build/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>olca-app</artifactId>
+	<packaging>eclipse-plugin</packaging>
 	<version>2.5.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
 
 	<dependencies>
-
+		<!-- These dependencies are only for copying to libs folder, not for Tycho resolution -->
+		<!-- Use runtime scope so maven-dependency-plugin can copy them, but Tycho will ignore them -->
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-core</artifactId>
-			<version>${project.version}</version>
+			<version>2.5.1-SNAPSHOT</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-io</artifactId>
-			<version>${project.version}</version>
+			<version>2.5.1-SNAPSHOT</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-ipc</artifactId>
-			<version>${project.version}</version>
+			<version>2.5.1-SNAPSHOT</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-license</artifactId>
 			<version>0.0.1</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-proto-io</artifactId>
-			<version>${project.version}</version>
+			<version>2.5.1-SNAPSHOT</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-git</artifactId>
-			<version>${project.version}</version>
+			<version>2.5.1-SNAPSHOT</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>cs-client</artifactId>
 			<version>2.4.1</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-standalone</artifactId>
 			<version>2.7.4</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.zeroturnaround</groupId>
 			<artifactId>zt-zip</artifactId>
 			<version>1.17</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.5.20</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>1.19.4</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.11.0</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>2.0.17</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.helger</groupId>
 			<artifactId>ph-css</artifactId>
 			<version>8.0.1</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openlca</groupId>
 			<artifactId>olca-sd</artifactId>
 			<version>0.0.2</version>
+			<scope>runtime</scope>
 		</dependency>
 
 	</dependencies>
 
 	<build>
 		<plugins>
-
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<strictBinIncludes>false</strictBinIncludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<target>
+						<file>${project.basedir}/platform.target</file>
+					</target>
+					<executionEnvironment>JavaSE-21</executionEnvironment>
+					<environments>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>aarch64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+			<!-- Keep dependency copying for libs folder -->
+			<!-- Note: Dependencies must be installed in local Maven repo first (mvn install) -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.6.0</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
@@ -118,15 +188,17 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${basedir}/libs</outputDirectory>
+							<includeScope>runtime</includeScope>
+							<skipIfMissing>true</skipIfMissing>
+							<silent>true</silent>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.5</version>
+				<version>3.3.2</version>
 				<configuration>
 					<filesets>
 						<fileset>
