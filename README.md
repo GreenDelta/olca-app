@@ -5,11 +5,11 @@ openLCA is a Java application that runs on the Eclipse Rich Client Platform
 project depends on the [olca-modules](https://github.com/GreenDelta/olca-modules)
 project which is a plain [Maven](http://maven.apache.org/) project that contains
 the core functionalities of openLCA (e.g. the model, database access,
-calculations, data exchange, and database updates). 
+calculations, data exchange, and database updates).
 
 This repository has the following sub-projects:
 
-* [olca-app](./olca-app): contains the source code of the openLCA RCP 
+* [olca-app](./olca-app): contains the source code of the openLCA RCP
   application.
 * [olca-app-build](./olca-app-build): contains the build scripts for compiling
   openLCA and creating the installers for Windows, Linux, and macOS.
@@ -26,10 +26,10 @@ in HTML5 and JavaScript. To compile it from source you need to have the
 following tools installed:
 
 * [Git](https://git-scm.com/) (optional)
-* a [Java Development Kit >= v17](https://adoptium.net)
+* a [Java Development Kit >= v21](https://adoptium.net)
 * [Maven](http://maven.apache.org/)
 * the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/packages/)
-* [Node.js](https://nodejs.org/) 
+* [Node.js](https://nodejs.org/)
 
 When you have these tools installed you can build the application from source
 via the following steps:
@@ -115,10 +115,10 @@ olca-app
 
 After this, open Eclipse and select the created workspace directory. Import the
 projects into Eclipse via `Import > General > Existing Projects into Workspace`
-(select the `olca/olca-app` directory). You should now see the `olca-app`, 
+(select the `olca/olca-app` directory). You should now see the `olca-app`,
 `olca-app-build`, projects in your Eclipse workspace.
 
-#### Loading the target platform 
+#### Loading the target platform
 The file `platform.target` in the `olca-app` project contains the definition of
 the [target platform](https://help.eclipse.org/oxygen/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Fconcepts%2Ftarget.htm)
 of the openLCA RCP application. Just open the file with the `Target Editor`
@@ -129,17 +129,17 @@ workspace and, thus, may take a while. Unfortunately, setting up and
 configuring Eclipse can be quite challenging. If you get errors like
 `Unable locate installable unit in target definition`,
 [this discussion](https://stackoverflow.com/questions/10547007/unable-locate-installable-unit-in-target-definition)
-may help. 
+may help.
 
 #### Copy the Maven modules
-Go back to the command line and navigate to the 
+Go back to the command line and navigate to the
 `olca-app/olca-app` folder:
 
 ```bash
 cd olca-app/olca-app
 ```
 
-and run 
+and run
 
 ```bash
 mvn package
@@ -153,9 +153,9 @@ Refresh your Eclipse workspace (select all and press `F5`). Open the file
 [olca-app/openLCA.product](./olca-app/openLCA.product) within  Eclipse and click
 on the run icon inside the `openLCA.product` tab. openLCA should now start.
 
-If you want to build an installable product, see the description in the 
+If you want to build an installable product, see the description in the
 [olca-app-build](./olca-app-build) sub-project or simply use the Eclipse export
-wizard (Export/Eclipse product).     
+wizard (Export/Eclipse product).
 
 #### Build the database templates
 The openLCA application contains database templates that are used when the user
