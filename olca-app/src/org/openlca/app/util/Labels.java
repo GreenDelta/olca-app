@@ -15,6 +15,7 @@ import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.linking.LinkingConfig.PreferredType;
 import org.openlca.core.matrix.linking.ProviderLinking;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.Currency;
 import org.openlca.core.model.EpdType;
@@ -99,6 +100,37 @@ public class Labels {
 		return flow.location() != null
 				? LocationCode.append(flow.flow().name, flow.location().code)
 				: flow.flow().name;
+	}
+
+	/// At some places in the UI, we want to see the location code before the
+	/// name of a process because otherwise it is not visible but important,
+	/// especially when it is used as a provider.
+	public static String asProviderName(Descriptor provider) {
+		return asProviderName(provider, null);
+	}
+
+	public static String asProviderName(Descriptor provider, AnalysisGroup group) {
+		if (!(provider instanceof ProcessDescriptor p)) {
+			return group != null
+				? group.name + " :: " + Labels.name(provider)
+				: Labels.name(provider);
+		}
+
+		String location = null;
+		if (p.location != null) {
+			var loc = AppContext.getEntityCache()
+				.get(LocationDescriptor.class, p.location);
+			if (loc != null) {
+				location = loc.code;
+			}
+		}
+
+		var name = location != null
+			? location + " - " + p.name
+			: p.name;
+		return group != null
+			? group.name + " :: " + name
+			: name;
 	}
 
 	public static String refUnit(EnviFlow flow) {

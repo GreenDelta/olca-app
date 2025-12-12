@@ -25,7 +25,6 @@ public class SankeyNodeFigure extends ComponentFigure {
 	public final static Dimension HEADER_ARC_SIZE = new Dimension(15, 15);
 
 	public final SankeyNode node;
-	private final Figure contentPane = new Figure();
 	private final Theme theme;
 	private final Theme.Box box;
 
@@ -70,6 +69,7 @@ public class SankeyNodeFigure extends ComponentFigure {
 		contentPaneLayout.marginWidth = 4;
 		contentPaneLayout.horizontalSpacing = 0;
 		contentPaneLayout.verticalSpacing = 0;
+		Figure contentPane = new Figure();
 		contentPane.setLayoutManager(contentPaneLayout);
 		add(contentPane, GridPos.fill());
 

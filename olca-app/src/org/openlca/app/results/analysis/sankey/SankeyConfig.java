@@ -17,7 +17,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 
 	private Object selection;
 	private double cutoff = 0.0;
-	private int maxCount = 25;
+	private int maxCount;
 	private int orientation = NORTH;
 	private String connectionRouter = ROUTER_CURVE;
 
