@@ -120,22 +120,27 @@ public class SankeyNodeFigure extends ComponentFigure {
 			var theme = node.getDiagram().getEditor().getTheme();
 			var box = node.getThemeBox();
 
-			GridLayout layout = new GridLayout(2, false);
+			var layout = new GridLayout(2, false);
 			layout.marginHeight = 2;
 			layout.marginWidth = 3;
 			setLayoutManager(layout);
 
-			add(new ImageFigure(Images.get(node.product.provider())),
+			var provider = node.product.provider();
+			add(new ImageFigure(Images.get(provider)),
 					new GridData(SWT.LEAD, SWT.CENTER, false, true));
 
-			var label = new Label(Labels.name(node.product));
+			var editor = node.getDiagram().getEditor();
+			var name = Labels.asProviderName(
+				provider, editor.analysisGroupOf(provider));
+			var label = new Label(name);
 			label.setForegroundColor(theme.boxFontColor(box));
 			add(label, new GridData(SWT.LEAD, SWT.CENTER, true, true));
 
 			setBackgroundColor(theme.boxBackgroundColor(box));
 			setOpaque(true);
+
+			var toolTipLabel = new Label(name);
+			setToolTip(toolTipLabel);
 		}
-
 	}
-
 }

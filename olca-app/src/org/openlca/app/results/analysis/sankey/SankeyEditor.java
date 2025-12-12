@@ -3,6 +3,9 @@ package org.openlca.app.results.analysis.sankey;
 import static org.openlca.app.components.graphics.themes.Themes.CONTEXT_SANKEY;
 import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
@@ -26,7 +29,10 @@ import org.openlca.app.results.analysis.sankey.edit.SankeyEditPartFactory;
 import org.openlca.app.results.analysis.sankey.model.Diagram;
 import org.openlca.app.results.analysis.sankey.model.SankeyFactory;
 import org.openlca.core.math.data_quality.DQResult;
+import org.openlca.core.model.AnalysisGroup;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.Sankey;
@@ -42,6 +48,7 @@ public class SankeyEditor extends GraphicalEditorWithFrame {
 	public final RootEntity calculationTarget;
 
 	private final SankeyFactory sankeyFactory = new SankeyFactory(this);
+	private final Map<Long, AnalysisGroup> analysisGroups;
 	public final SankeyConfig config;
 	private Sankey<?> sankey;
 
@@ -52,6 +59,26 @@ public class SankeyEditor extends GraphicalEditorWithFrame {
 		this.items = parent.items();
 		this.calculationTarget = parent.setup().target();
 		this.config = new SankeyConfig(this);
+
+		Map<Long, AnalysisGroup> groups = null;
+		if (calculationTarget instanceof ProductSystem sys
+				&& !sys.analysisGroups.isEmpty()) {
+			groups = new HashMap<>();
+			for (var g : sys.analysisGroups) {
+				for (var pid : g.processes) {
+					groups.put(pid, g);
+				}
+			}
+		}
+		this.analysisGroups = groups != null && !groups.isEmpty()
+				? groups
+				: null;
+	}
+
+	public AnalysisGroup analysisGroupOf(Descriptor provider) {
+		return provider != null && analysisGroups != null
+				? analysisGroups.get(provider.id)
+				: null;
 	}
 
 	@Override
