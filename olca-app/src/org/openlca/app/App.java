@@ -23,9 +23,12 @@ import org.openlca.app.editors.ModelEditorInput;
 import org.openlca.app.rcp.RcpActivator;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.core.matrix.solvers.accelerate.AccelerateSolver;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.matrix.solvers.MatrixSolver;
 import org.openlca.core.matrix.solvers.NativeSolver;
+import org.openlca.core.matrix.solvers.accelerate.AccelerateJulia;
+import org.openlca.core.matrix.solvers.accelerate.AcceleratePlatform;
 import org.openlca.core.matrix.solvers.mkl.MKL;
 import org.openlca.core.matrix.solvers.mkl.MKLSolver;
 import org.openlca.core.model.RootEntity;
@@ -75,7 +78,14 @@ public class App {
 			// then the installation location
 			var dirs = List.of(Workspace.root(), getInstallLocation());
 			try {
-				// check for MKL first
+				// check for Accelerate on ARM64 macOS first (no library loading needed)
+				if (AcceleratePlatform.isArm64MacOS() && AccelerateJulia.isAvailable()) {
+					log.info("using Accelerate framework on ARM64 macOS");
+					solver = new AccelerateSolver();
+					return solver;
+				}
+				
+				// check for MKL
 				for (var dir : dirs) {
 					if (MKL.isLibraryDir(dir) && MKL.loadFrom(dir)) {
 						log.info("loaded MKL libraries from {}", dir);
