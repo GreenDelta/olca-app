@@ -132,6 +132,7 @@ public enum Icon {
 	PROCESS_BG_LIB("graphical/process_bg_lib.jpg"),
 	PULL("collaboration/pull.png"),
 	PUSH("collaboration/push.png"),
+	PUBCHEM("pubchem.png"),
 	PYTHON("python.png"),
 
 	QUICK_RESULT("quick_calculation.png"),
