@@ -6,9 +6,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.InfoSection;
+import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
@@ -57,19 +59,25 @@ class FlowInfoPage extends ModelPage<Flow> {
 		var synText = text(comp, M.Synonyms, "synonyms");
 		modelLink(comp, M.Location, "location");
 
+		Runnable pubChemFetch = () -> {
+			var pub = App.exec(
+				"Call PubChem API ...",
+				() -> PubChemInfo.getFor(getModel())).orElse(null);
+			if (pub == null)
+				return;
+			var update = pub.applyCasNumber(casText::setText)
+				| pub.applyMolecularFormula(formulaText::setText)
+				| pub.applySynonyms(synText::setText)
+				| pub.applySmiles(
+				() -> getEditor().emitEvent(ModelEditor.ON_ADDITIONAL_PROPS_CHANGED));
+			if (update) {
+				getEditor().setDirty();
+			}
+		};
+
 		if (getEditor().isEditable()) {
 			var pubChem = Actions.create(
-				"Get from PubChem", Icon.PUBCHEM.descriptor(), () -> {
-					var pub = PubChemInfo.getFor(getModel()).orElse(null);
-					if (pub == null)
-						return;
-					var update = pub.applyCasNumber(casText::setText)
-						|| pub.applyMolecularFormula(formulaText::setText)
-						|| pub.applySynonyms(synText::setText);
-					if (update) {
-						getEditor().setDirty();
-					}
-				});
+				"Get from PubChem", Icon.PUBCHEM.descriptor(), pubChemFetch);
 			Actions.bind(section, pubChem);
 		}
 	}

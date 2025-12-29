@@ -37,11 +37,11 @@ import org.slf4j.LoggerFactory;
 
 public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 
-	/**
-	 * An event that is emitted by the model editor by default after the model
-	 * of this editor was saved.
-	 */
+	/// An event that is emitted by the model editor by default after the model
+	/// of this editor was saved.
 	public static final String ON_SAVED = "event.on.saved";
+
+	public static final String ON_ADDITIONAL_PROPS_CHANGED = "event.on.addtional.props.changed";
 
 	private final Class<T> modelClass;
 	private final List<EventHandler> eventHandlers = new ArrayList<>();

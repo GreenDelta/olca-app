@@ -51,9 +51,13 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 		Trees.bindColumnWidths(tree.getTree(), .25, .75);
 		if (isEditable()) {
 			var onEdit = Actions.onEdit(
-					() -> new JsonDialog(tree).open());
+				() -> new JsonDialog(tree).open());
 			Actions.bind(tree, onEdit);
 		}
+
+		getEditor().onEvent(ModelEditor.ON_ADDITIONAL_PROPS_CHANGED, () -> {
+			tree.setInput(getModel().readOtherProperties());
+		});
 	}
 
 	private class JsonDialog extends Dialog {
@@ -73,7 +77,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 			UI.gridLayout(comp, 1);
 			new Label(comp, SWT.NONE).setText(M.ContentMustBeValidJsonInfo);
 			text = new StyledText(comp,
-					SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+				SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 			text.setAlwaysShowScrollBars(false);
 			UI.gridData(text, true, true);
 			text.setText(getJsonText());
@@ -86,9 +90,9 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 			if (props == null)
 				return "{}";
 			return new GsonBuilder()
-					.setPrettyPrinting()
-					.create()
-					.toJson(props);
+				.setPrettyPrinting()
+				.create()
+				.toJson(props);
 		}
 
 		@Override
@@ -107,8 +111,8 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 			var model = getModel();
 			try {
 				var obj = Strings.isNotBlank(json)
-						? new Gson().fromJson(json, JsonObject.class)
-						: new JsonObject();
+					? new Gson().fromJson(json, JsonObject.class)
+					: new JsonObject();
 				model.writeOtherProperties(obj);
 				getEditor().setDirty(true);
 				tree.setInput(obj);
@@ -154,8 +158,8 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 		@Override
 		public Object[] getChildren(Object parent) {
 			return parent instanceof Entry e
-					? getElements(e.value())
-					: null;
+				? getElements(e.value())
+				: null;
 		}
 
 		@Override
@@ -185,7 +189,7 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 	}
 
 	private static class JsonLabel extends BaseLabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -194,13 +198,13 @@ public class AdditionalPropertiesPage<T extends RootEntity> extends ModelPage<T>
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Entry e))
+			if (!(obj instanceof Entry(String key, JsonElement value)))
 				return null;
 			if (col == 0)
-				return e.key();
+				return key;
 			if (col != 1)
 				return null;
-			if (!(e.value() instanceof JsonPrimitive p))
+			if (!(value instanceof JsonPrimitive p))
 				return null;
 			if (p.isBoolean())
 				return Boolean.toString(p.getAsBoolean());

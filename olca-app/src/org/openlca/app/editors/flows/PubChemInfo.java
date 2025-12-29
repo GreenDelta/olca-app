@@ -13,28 +13,23 @@ import org.openlca.core.model.Flow;
 import org.openlca.io.pubchem.PubChemClient;
 import org.openlca.io.pubchem.PugCompound;
 import org.openlca.io.pubchem.PugView;
+import org.openlca.jsonld.Json;
 
 record PubChemInfo(
 	Flow flow, PugCompound compound, PugView view) {
 
 	boolean applyMolecularFormula(Consumer<String> fn) {
-		var f = compound.molecularFormula();
-		if (Strings.isBlank(f))
+		var formula = compound.molecularFormula();
+		if (!isBetter(formula, flow.formula))
 			return false;
-		if (Strings.isNotBlank(flow.formula)
-			&& flow.formula.length() >= f.length())
-			return false;
-		flow.formula = f;
-		fn.accept(f);
+		flow.formula = formula;
+		fn.accept(formula);
 		return true;
 	}
 
 	boolean applyCasNumber(Consumer<String> fn) {
 		var cas = view.cas();
-		if (Strings.isBlank(cas))
-			return false;
-		if (Strings.isNotBlank(flow.casNumber)
-			&& flow.casNumber.length() >= cas.length())
+		if (!isBetter(cas, flow.casNumber))
 			return false;
 		flow.casNumber = cas;
 		fn.accept(cas);
@@ -83,6 +78,32 @@ record PubChemInfo(
 		return true;
 	}
 
+	boolean applySmiles(Runnable fn) {
+		boolean updated = false;
+		var props = flow.readOtherProperties();
+		var smiles = compound.connectivitySmiles();
+		if (isBetter(smiles, Json.getString(props, "SMILES"))) {
+			updated = true;
+			Json.put(props, "SMILES", smiles);
+		}
+		var absoluteSmiles = compound.absoluteSmiles();
+		if (isBetter(absoluteSmiles, Json.getString(props, "SMILES - Absolute"))) {
+			updated = true;
+			Json.put(props, "SMILES - Absolute", absoluteSmiles);
+		}
+		if (updated) {
+			flow.writeOtherProperties(props);
+			fn.run();
+		}
+		return updated;
+	}
+
+	private boolean isBetter(String newVal, String oldVal) {
+		if (Strings.isBlank(newVal))
+			return true;
+		return Strings.isBlank(oldVal) || newVal.length() > oldVal.length();
+	}
+
 	static Optional<PubChemInfo> getFor(Flow flow) {
 		try (var client = new PubChemClient()) {
 
@@ -107,7 +128,7 @@ record PubChemInfo(
 	}
 
 	private static Optional<PubChemInfo> err(String message) {
-		MsgBox.error("PubChem request failed", message);
+		MsgBox.info("PubChem request failed", message);
 		return Optional.empty();
 	}
 
