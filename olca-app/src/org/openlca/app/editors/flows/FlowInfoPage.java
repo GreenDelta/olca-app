@@ -68,7 +68,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 			var update = pub.applyCasNumber(casText::setText)
 				| pub.applyMolecularFormula(formulaText::setText)
 				| pub.applySynonyms(synText::setText)
-				| pub.applySmiles(
+				| pub.applyProperties(
 				() -> getEditor().emitEvent(ModelEditor.ON_ADDITIONAL_PROPS_CHANGED));
 			if (update) {
 				getEditor().setDirty();

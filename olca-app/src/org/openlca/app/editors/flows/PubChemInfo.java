@@ -15,6 +15,8 @@ import org.openlca.io.pubchem.PugCompound;
 import org.openlca.io.pubchem.PugView;
 import org.openlca.jsonld.Json;
 
+import com.google.gson.JsonObject;
+
 record PubChemInfo(
 	Flow flow, PugCompound compound, PugView view) {
 
@@ -78,21 +80,29 @@ record PubChemInfo(
 		return true;
 	}
 
-	boolean applySmiles(Runnable fn) {
-		boolean updated = false;
-		var props = flow.readOtherProperties();
-		var smiles = compound.connectivitySmiles();
-		if (isBetter(smiles, Json.getString(props, "SMILES"))) {
-			updated = true;
-			Json.put(props, "SMILES", smiles);
+	boolean applyProperties(Runnable fn) {
+		record Prop(String key, String newVal, String oldVal) {
+			static Prop of(String key, String newVal, JsonObject obj) {
+				return new Prop(key, newVal, Json.getString(obj, key));
+			}
 		}
-		var absoluteSmiles = compound.absoluteSmiles();
-		if (isBetter(absoluteSmiles, Json.getString(props, "SMILES - Absolute"))) {
-			updated = true;
-			Json.put(props, "SMILES - Absolute", absoluteSmiles);
+
+		var json = flow.readOtherProperties();
+		var props = List.of(
+			Prop.of("Connectivity-SMILES", compound.connectivitySmiles(), json),
+			Prop.of("Absolute-SMILES", compound.absoluteSmiles(), json),
+			Prop.of("InChI-String", compound.inchiString(), json),
+			Prop.of("InChI-Key", compound.inchiKey(), json));
+
+		boolean updated = false;
+		for (var prop : props) {
+			if (isBetter(prop.newVal, prop.oldVal)) {
+				Json.put(json, prop.key, prop.newVal);
+				updated = true;
+			}
 		}
 		if (updated) {
-			flow.writeOtherProperties(props);
+			flow.writeOtherProperties(json);
 			fn.run();
 		}
 		return updated;
@@ -100,7 +110,7 @@ record PubChemInfo(
 
 	private boolean isBetter(String newVal, String oldVal) {
 		if (Strings.isBlank(newVal))
-			return true;
+			return false;
 		return Strings.isBlank(oldVal) || newVal.length() > oldVal.length();
 	}
 
@@ -109,15 +119,15 @@ record PubChemInfo(
 
 			var res = client.getCompoundsByName(flow.name);
 			if (res.isError())
-				return err(res.error());
+				return err(flow, res.error());
 			var compounds = res.value();
 			if (compounds.isEmpty())
-				return err("No results for '" + flow.name + "' available.");
+				return err(flow, "No results for '" + flow.name + "' available.");
 
 			var compound = compounds.getFirst();
 			var viewRes = client.getCompoundView(compound.id());
 			if (viewRes.isError())
-				return err(viewRes.error());
+				return err(flow, viewRes.error());
 			var view = viewRes.value();
 			var info = new PubChemInfo(flow, compound, view);
 			return Optional.of(info);
@@ -127,8 +137,10 @@ record PubChemInfo(
 		}
 	}
 
-	private static Optional<PubChemInfo> err(String message) {
-		MsgBox.info("PubChem request failed", message);
+	private static Optional<PubChemInfo> err(Flow flow, String details) {
+		MsgBox.info("No compound found", "A compound with the name '"
+			+ flow.name + "' could not be found via the PubChem PUG API.\n\n"
+			+	"API response details:\n\n" + details);
 		return Optional.empty();
 	}
 
