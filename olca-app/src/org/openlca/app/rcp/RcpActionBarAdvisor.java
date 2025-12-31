@@ -38,6 +38,7 @@ import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.ExportAction;
 import org.openlca.app.navigation.actions.NavigationMenu;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.search.SearchText;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.hestia.HestiaTool;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
@@ -84,6 +85,12 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		toolbar.add(saveAsAction);
 		toolbar.add(saveAllAction);
 		coolBar.add(toolbar);
+		
+		// Add search toolbar
+		var searchToolbar = new ToolBarManager(SWT.FLAT | SWT.LEFT);
+		coolBar.add(new ToolBarContributionItem(searchToolbar, "search"));
+		searchToolbar.add(new SearchText());
+		coolBar.add(searchToolbar);
 	}
 
 	@Override

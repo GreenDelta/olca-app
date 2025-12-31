@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
+import org.eclipse.jface.action.ControlContribution;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.search.SearchQuery;
@@ -29,15 +29,21 @@ import org.openlca.core.model.ModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SearchText extends WorkbenchWindowControlContribution {
+public class SearchText extends ControlContribution {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private Text text;
 	private DropDownAction action;
 
+	public SearchText() {
+		super("org.openlca.app.SearchText");
+	}
+
 	@Override
 	protected Control createControl(Composite parent) {
-		parent.getParent().setRedraw(true); // fix tool-bar size on Windows
+		if (parent.getParent() != null) {
+			parent.getParent().setRedraw(true); // fix tool-bar size on Windows
+		}
 		parent.setLayout(new FillLayout());
 		log.trace("create search text control");
 		Composite composite = UI.composite(parent);
@@ -55,14 +61,19 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		layout.marginHeight = 0;
 		layout.marginWidth = 5;
 		layout.verticalSpacing = 0;
+		layout.marginLeft = 200;
 		composite.setLayout(layout);
 		text = new Text(composite, SWT.BORDER | SWT.SEARCH);
 		text.addTraverseListener(e -> {
 			if (e.detail == SWT.TRAVERSE_RETURN) {
-				if (action.searchOnline) {
-					doSearchOnline();
+				if (action != null) {
+					if (action.searchOnline) {
+						doSearchOnline();
+					} else {
+						doSearch(action.typeFilter);
+					}
 				} else {
-					doSearch(action.typeFilter);
+					doSearch(null);
 				}
 			}
 		});
