@@ -4,7 +4,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -39,6 +41,14 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		parent.setLayout(new FillLayout());
 		log.trace("create search text control");
 		Composite composite = UI.composite(parent);
+		
+		composite.addListener(SWT.Resize, e -> {
+			Point size = composite.getSize();
+			if (size.y > 24) {
+				composite.setSize(size.x, 24);
+			}
+		});
+		
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		layout.horizontalSpacing = 5;
@@ -56,7 +66,10 @@ public class SearchText extends WorkbenchWindowControlContribution {
 				}
 			}
 		});
-		UI.gridData(text, true, false).minimumWidth = 180;
+		GridData textData = UI.gridData(text,  true,  false);
+		textData.minimumWidth = 180;
+		textData.minimumHeight = 22;
+		textData.verticalAlignment = SWT.CENTER;
 		createActionMenu(composite);
 		return composite;
 	}
@@ -68,6 +81,8 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		manager.add(action);
 		manager.update(true);
 		toolBar.pack();
+		GridData toolbarData = UI.gridData(toolBar, false, false);
+		toolbarData.verticalAlignment = SWT.CENTER;
 	}
 
 	private void doSearch(ModelType typeFilter) {
