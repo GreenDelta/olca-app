@@ -500,14 +500,6 @@
 	</extension>
 
 	<extension
-			point="org.eclipse.ui.handlers">
-		<handler
-				class="org.openlca.app.search.ToolbarSpacerHandler"
-				commandId="org.openlca.app.search.toolbar.spacer">
-		</handler>
-	</extension>
-
-	<extension
 			point="org.eclipse.ui.menus">
 		<menuContribution
 				locationURI="toolbar:org.eclipse.ui.trim.command2">
