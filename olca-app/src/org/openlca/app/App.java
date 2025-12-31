@@ -27,7 +27,7 @@ import org.openlca.core.matrix.solvers.accelerate.AccelerateSolver;
 import org.openlca.core.matrix.solvers.JavaSolver;
 import org.openlca.core.matrix.solvers.MatrixSolver;
 import org.openlca.core.matrix.solvers.NativeSolver;
-import org.openlca.core.matrix.solvers.accelerate.AccelerateJulia;
+import org.openlca.core.matrix.solvers.accelerate.AccelerateFFI;
 import org.openlca.core.matrix.solvers.accelerate.AcceleratePlatform;
 import org.openlca.core.matrix.solvers.mkl.MKL;
 import org.openlca.core.matrix.solvers.mkl.MKLSolver;
@@ -79,8 +79,17 @@ public class App {
 			var dirs = List.of(Workspace.root(), getInstallLocation());
 			try {
 				// check for Accelerate on ARM64 macOS first (no library loading needed)
-				if (AcceleratePlatform.isArm64MacOS() && AccelerateJulia.isAvailable()) {
+				if (AcceleratePlatform.isArm64MacOS() && AccelerateFFI.isAvailable()) {
+					// Load the sparse wrapper library if needed
+					for (var dir : dirs) {
+						if (AccelerateFFI.loadSparseWrapperFrom(dir)) {
+							log.info("loaded Accelerate sparse wrapper from {}", dir);
+							break;
+						}
+					}
+					
 					log.info("using Accelerate framework on ARM64 macOS");
+					log.info("macOS version is {}", System.getProperty("os.version"));
 					solver = new AccelerateSolver();
 					return solver;
 				}

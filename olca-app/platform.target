@@ -29,5 +29,6 @@
 		<repository location="https://download.eclipse.org/swtchart/releases/1.0.0/repository/"/>
 		<unit id="org.eclipse.swtchart.feature.feature.group" version="1.0.0.202412021530"/>
 	</location>
+	<location path="/Users/tomasbaronas/Documents/libs" type="Directory"/>
 </locations>
 </target>

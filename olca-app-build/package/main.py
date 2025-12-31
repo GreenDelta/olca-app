@@ -1,5 +1,6 @@
 import argparse
 import shutil
+import zipfile
 
 from package import PROJECT_DIR
 from package.dir import DistDir, BuildDir, delete
@@ -32,7 +33,81 @@ def package(
     # JRE and native libraries
     JRE.extract_to(build_dir)
     lib = Lib.MKL if mkl else Lib.BLAS
-    NativeLib.extract_to(build_dir, lib)
+    # Skip native library bundling for macOS ARM64 (uses Accelerate Framework)
+    if osa != OsArch.MACOS_ARM:
+        NativeLib.extract_to(build_dir, lib)
+
+    # Copy Accelerate sparse wrapper dylib for macOS ARM64
+    if osa == OsArch.MACOS_ARM:
+        print("  Copying Accelerate sparse wrapper library...")
+        dylib_target_dir = build_dir.app / "native" / "osx-aarch64"
+        dylib_target_dir.mkdir(parents=True, exist_ok=True)
+        dylib_target = dylib_target_dir / "libaccelerate_sparse_wrapper.dylib"
+        resource_path = "native/osx-aarch64/libaccelerate_sparse_wrapper.dylib"
+        
+        dylib_found = False
+        
+        # Try known locations first (from Maven build output)
+        # 1. Workspace root (where pom.xml copies it for development)
+        workspace_root = PROJECT_DIR.parent.parent / "native" / "osx-aarch64" / "libaccelerate_sparse_wrapper.dylib"
+        if workspace_root.exists():
+            shutil.copy2(workspace_root, dylib_target)
+            dylib_target.chmod(0o755)
+            print(f"  Copied Accelerate dylib from workspace root to {dylib_target}")
+            dylib_found = True
+        
+        # 2. Maven build output (olca-core target/classes)
+        if not dylib_found:
+            maven_build = PROJECT_DIR.parent.parent / "olca-modules" / "olca-core" / "target" / "classes" / "native" / "osx-aarch64" / "libaccelerate_sparse_wrapper.dylib"
+            if maven_build.exists():
+                shutil.copy2(maven_build, dylib_target)
+                dylib_target.chmod(0o755)
+                print(f"  Copied Accelerate dylib from Maven build output to {dylib_target}")
+                dylib_found = True
+        
+        # 3. Try extracting from olca-core JAR in plugins directory
+        if not dylib_found:
+            mac_plugins_dir = build_dir.app / "plugins"
+            if mac_plugins_dir.exists():
+                for item in mac_plugins_dir.iterdir():
+                    if item.is_file() and item.suffix == ".jar" and "olca-core" in item.name.lower():
+                        try:
+                            with zipfile.ZipFile(item, 'r') as z:
+                                if resource_path in z.namelist():
+                                    dylib_target.write_bytes(z.read(resource_path))
+                                    dylib_target.chmod(0o755)
+                                    print(f"  Extracted Accelerate dylib from {item.name} to {dylib_target}")
+                                    dylib_found = True
+                                    break
+                        except Exception as e:
+                            print(f"  Warning: Failed to read JAR {item.name}: {e}")
+        
+        # 4. Try searching in olca-core directory in plugins
+        if not dylib_found:
+            mac_plugins_dir = build_dir.app / "plugins"
+            if mac_plugins_dir.exists():
+                for item in mac_plugins_dir.iterdir():
+                    if item.is_dir() and "olca-core" in item.name.lower():
+                        dylib_source = item / resource_path
+                        if dylib_source.exists():
+                            shutil.copy2(dylib_source, dylib_target)
+                            dylib_target.chmod(0o755)
+                            print(f"  Copied Accelerate dylib from {item.name} to {dylib_target}")
+                            dylib_found = True
+                            break
+                        # Try recursive search
+                        for dylib_file in item.rglob("libaccelerate_sparse_wrapper.dylib"):
+                            shutil.copy2(dylib_file, dylib_target)
+                            dylib_target.chmod(0o755)
+                            print(f"  Copied Accelerate dylib from {dylib_file} to {dylib_target}")
+                            dylib_found = True
+                            break
+                    if dylib_found:
+                        break
+        
+        if not dylib_found:
+            print(f"  Warning: Could not find Accelerate dylib")
+            print(f"  Warning: Tried workspace root, Maven build output, and plugins directory")
 
     # edit the JRE Info.plist
     if osa.is_mac():

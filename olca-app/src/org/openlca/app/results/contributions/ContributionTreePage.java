@@ -191,7 +191,7 @@ public class ContributionTreePage extends FormPage {
 		public boolean hasChildren(Object elem) {
 			if (!(elem instanceof UpstreamNode node))
 				return false;
-			return !tree.childs(node).isEmpty();
+			return tree.hasChildren(node);
 		}
 
 		@Override
