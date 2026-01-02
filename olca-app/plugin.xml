@@ -492,11 +492,33 @@
 	</extension>
 
 	<extension
+			point="org.eclipse.ui.commands">
+		<command
+				id="org.openlca.app.search.toolbar.spacer"
+				name="&#8203;">
+		</command>
+	</extension>
+
+	<extension
 			point="org.eclipse.ui.menus">
 		<menuContribution
 				locationURI="toolbar:org.eclipse.ui.trim.command2">
 			<toolbar
 					id="olca-app.search.toolbar">
+				<!--
+					Workaround for search toolbar spacing issue on Windows at high zoom levels (>200%).
+					See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=465732#c5
+					
+					The fix is to add a HandledToolItem (via command) as the first element in the toolbar
+					before the ControlContribution. We use a zero-width space character (U+200B) as the
+					label to make it invisible while still fixing the alignment issue.
+				-->
+				<command
+						commandId="org.openlca.app.search.toolbar.spacer"
+						label="&#8203;"
+						style="push"
+						tooltip="">
+				</command>
 				<control
 						class="org.openlca.app.search.SearchText"
 						id="org.openlca.app.SearchText">
