@@ -8,6 +8,9 @@ ColorDefinition#org-eclipse-ui-workbench-DARK_BACKGROUND {
 .MPart Form Button,
 .MPart Form Group,
 .MPart Form Label,
+.MPart Form Section,
+.MPart Form FormText,
+.MPart Form Text,
 .MPart Form ScrolledPageBook,
 .MPart Form DependenciesComposite,
 .MPart Form ListEditorComposite,
@@ -18,6 +21,9 @@ ColorDefinition#org-eclipse-ui-workbench-DARK_BACKGROUND {
 .MPartStack.active .MPart Form Button,
 .MPartStack.active .MPart Form Group,
 .MPartStack.active .MPart Form Label,
+.MPartStack.active .MPart Form Section,
+.MPartStack.active .MPart Form FormText,
+.MPartStack.active .MPart Form Text,
 .MPartStack.active .MPart Form ScrolledPageBook,
 .MPartStack.active .MPart Form DependenciesComposite,
 .MPartStack.active .MPart Form ListEditorComposite,
@@ -43,4 +49,19 @@ Composite > Text[style~='SWT.BORDER'][style~='SWT.READ_ONLY'],
     color: #AAAAAA !important;
     border-color: transparent !important;
     border-width: 0px !important;
+}
+
+/* Override FormHeading to have transparent background and correct title color */
+.MPart FormHeading,
+.MPart FormHeading > TitleRegion,
+.MPart FormHeading > TitleRegion > Label,
+.MPart FormHeading > TitleRegion > StyledText,
+.MPart FormHeading > CLabel,
+.MPartStack.active .MPart FormHeading,
+.MPartStack.active .MPart FormHeading > TitleRegion,
+.MPartStack.active .MPart FormHeading > TitleRegion > Label,
+.MPartStack.active .MPart FormHeading > TitleRegion > StyledText,
+.MPartStack.active .MPart FormHeading > CLabel {
+    background-color: transparent !important;
+    color: #9AC9D8 !important;
 }
