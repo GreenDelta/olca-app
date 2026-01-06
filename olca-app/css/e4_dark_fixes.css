@@ -7,8 +7,6 @@ ColorDefinition#org-eclipse-ui-workbench-DARK_BACKGROUND {
 .MPart Form Link,
 .MPart Form Button,
 .MPart Form Group,
-.MPart Form Label,
-.MPart Form Section,
 .MPart Form FormText,
 .MPart Form Text,
 .MPart Form ScrolledPageBook,
@@ -16,18 +14,24 @@ ColorDefinition#org-eclipse-ui-workbench-DARK_BACKGROUND {
 .MPart Form ListEditorComposite,
 .MPart Form Text[style~='SWT.READ_ONLY'],
 .MPart Form DependenciesComposite > SashForm > Section > *,
+/* Text widgets inside Composite elements within Forms - for editable fields */
+.MPart Form Composite > Text,
+.MPart Form Section > Composite > Text,
+.MPart Form Section > Composite > Composite > Text,
+/* Active part rules */
 .MPartStack.active .MPart Form,
 .MPartStack.active .MPart Form Link,
 .MPartStack.active .MPart Form Button,
 .MPartStack.active .MPart Form Group,
-.MPartStack.active .MPart Form Label,
-.MPartStack.active .MPart Form Section,
 .MPartStack.active .MPart Form FormText,
 .MPartStack.active .MPart Form Text,
 .MPartStack.active .MPart Form ScrolledPageBook,
 .MPartStack.active .MPart Form DependenciesComposite,
 .MPartStack.active .MPart Form ListEditorComposite,
 .MPartStack.active .MPart Form Text[style~='SWT.READ_ONLY'],
+.MPartStack.active .MPart Form Composite > Text,
+.MPartStack.active .MPart Form Section > Composite > Text,
+.MPartStack.active .MPart Form Section > Composite > Composite > Text,
 .MPartStack.active .MPart Form DependenciesComposite > SashForm > Section > * {
     background-color: #2F2F2F !important;
     color: #AAAAAA !important;
@@ -41,10 +45,9 @@ ColorDefinition#org-eclipse-ui-workbench-DARK_BACKGROUND {
 }
 
 /* Fix TableCombo internal Text control - use transparent background to avoid offset/overlay issues */
+/* IMPORTANT: Only target Text widgets that are BOTH READ_ONLY AND BORDER (TableCombo pattern) */
 Composite > Text[style~='SWT.READ_ONLY'][style~='SWT.BORDER'],
-Composite > Text[style~='SWT.BORDER'][style~='SWT.READ_ONLY'],
-.MPart Form Composite > Text[style~='SWT.READ_ONLY'],
-.MPart Form Composite > Text[style~='SWT.BORDER'] {
+Composite > Text[style~='SWT.BORDER'][style~='SWT.READ_ONLY'] {
     background-color: transparent !important;
     color: #AAAAAA !important;
     border-color: transparent !important;
@@ -62,6 +65,6 @@ Composite > Text[style~='SWT.BORDER'][style~='SWT.READ_ONLY'],
 .MPartStack.active .MPart FormHeading > TitleRegion > Label,
 .MPartStack.active .MPart FormHeading > TitleRegion > StyledText,
 .MPartStack.active .MPart FormHeading > CLabel {
-    background-color: transparent !important;
+    background-color: #505F70 !important;
     color: #9AC9D8 !important;
 }
