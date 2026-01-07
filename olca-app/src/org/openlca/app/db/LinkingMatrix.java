@@ -1,6 +1,8 @@
 package org.openlca.app.db;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -53,60 +55,62 @@ class LinkingMatrix {
 
 		filler(body);
 		filler(body);
-		cell(body, M.ProductFlowWithMultipleProviders);
-		cell(body, M.IgnoreDefaultProviders, black, darkGrey);
-		cell(body, M.PreferDefaultProviders, black, darkGrey);
-		cell(body, M.OnlyDefaultProviders, black, darkGrey);
+		cell(body, M.ProductFlowWithMultipleProviders, black, lightGrey);
+		cell(body, M.IgnoreDefaultProviders, getForegroundForBackground(darkGrey), darkGrey);
+		cell(body, M.PreferDefaultProviders, getForegroundForBackground(darkGrey), darkGrey);
+		cell(body, M.OnlyDefaultProviders, getForegroundForBackground(darkGrey), darkGrey);
 
-		cell(body, M.ProcessesWithoutDefaultProvider, 4);
-		cell(body, M.Yes, 2, black, missingProviders ? darkGrey : lightGrey);
+		cell(body, M.ProcessesWithoutDefaultProvider, 4, black, lightGrey);
+		Color yesBg = missingProviders ? darkGrey : lightGrey;
+		cell(body, M.Yes, 2, getForegroundForBackground(yesBg), yesBg);
 		if (missingProviders & multiProviders) {
-			cell(body, M.Yes, black, darkGrey);
-			cell(body, M.Ambiguous, white, darkRed);
-			cell(body, M.Ambiguous, white, darkRed);
-			cell(body, M.Incomplete, white, darkOrange);
+			cell(body, M.Yes, getForegroundForBackground(darkGrey), darkGrey);
+			cell(body, M.Ambiguous, getForegroundForBackground(darkRed), darkRed);
+			cell(body, M.Ambiguous, getForegroundForBackground(darkRed), darkRed);
+			cell(body, M.Incomplete, getForegroundForBackground(darkOrange), darkOrange);
 		} else {
-			cell(body, M.Yes, black, lightGrey);
-			cell(body, "", black, lightRed);
-			cell(body, "", black, lightRed);
-			cell(body, "", black, lightOrange);
+			cell(body, M.Yes, getForegroundForBackground(lightGrey), lightGrey);
+			cell(body, "", getForegroundForBackground(lightRed), lightRed);
+			cell(body, "", getForegroundForBackground(lightRed), lightRed);
+			cell(body, "", getForegroundForBackground(lightOrange), lightOrange);
 		}
 
 		if (missingProviders && !multiProviders) {
-			cell(body, M.No, black, darkGrey);
-			cell(body, M.OK, white, darkGreen);
-			cell(body, M.OK, white, darkGreen);
-			cell(body, M.Incomplete, white, darkOrange);
+			cell(body, M.No, getForegroundForBackground(darkGrey), darkGrey);
+			cell(body, M.OK, getForegroundForBackground(darkGreen), darkGreen);
+			cell(body, M.OK, getForegroundForBackground(darkGreen), darkGreen);
+			cell(body, M.Incomplete, getForegroundForBackground(darkOrange), darkOrange);
 		} else {
-			cell(body, M.No, black, lightGrey);
-			cell(body, "", black, lightGreen);
-			cell(body, "", black, lightGreen);
-			cell(body, "", black, lightOrange);
+			cell(body, M.No, getForegroundForBackground(lightGrey), lightGrey);
+			cell(body, "", getForegroundForBackground(lightGreen), lightGreen);
+			cell(body, "", getForegroundForBackground(lightGreen), lightGreen);
+			cell(body, "", getForegroundForBackground(lightOrange), lightOrange);
 		}
 
-		cell(body, M.No, 2, black, missingProviders ? lightGrey : darkGrey);
+		Color noBg = missingProviders ? lightGrey : darkGrey;
+		cell(body, M.No, 2, getForegroundForBackground(noBg), noBg);
 		if (!missingProviders && multiProviders) {
-			cell(body, M.Yes, black, darkGrey);
-			cell(body, M.Ambiguous, white, darkRed);
-			cell(body, M.OK, white, darkGreen);
-			cell(body, M.OK, white, darkGreen);
+			cell(body, M.Yes, getForegroundForBackground(darkGrey), darkGrey);
+			cell(body, M.Ambiguous, getForegroundForBackground(darkRed), darkRed);
+			cell(body, M.OK, getForegroundForBackground(darkGreen), darkGreen);
+			cell(body, M.OK, getForegroundForBackground(darkGreen), darkGreen);
 		} else {
-			cell(body, M.Yes, black, lightGrey);
-			cell(body, "", black, lightRed);
-			cell(body, "", black, lightGreen);
-			cell(body, "", black, lightGreen);
+			cell(body, M.Yes, getForegroundForBackground(lightGrey), lightGrey);
+			cell(body, "", getForegroundForBackground(lightRed), lightRed);
+			cell(body, "", getForegroundForBackground(lightGreen), lightGreen);
+			cell(body, "", getForegroundForBackground(lightGreen), lightGreen);
 		}
 
 		if (!missingProviders && !multiProviders) {
-			cell(body, M.No, black, darkGrey);
-			cell(body, M.OK, white, darkGreen);
-			cell(body, M.OK, white, darkGreen);
-			cell(body, M.OK, white, darkGreen);
+			cell(body, M.No, getForegroundForBackground(darkGrey), darkGrey);
+			cell(body, M.OK, getForegroundForBackground(darkGreen), darkGreen);
+			cell(body, M.OK, getForegroundForBackground(darkGreen), darkGreen);
+			cell(body, M.OK, getForegroundForBackground(darkGreen), darkGreen);
 		} else {
-			cell(body, M.No, black, lightGrey);
-			cell(body, "", black, lightGreen);
-			cell(body, "", black, lightGreen);
-			cell(body, "", black, lightGreen);
+			cell(body, M.No, getForegroundForBackground(lightGrey), lightGrey);
+			cell(body, "", getForegroundForBackground(lightGreen), lightGreen);
+			cell(body, "", getForegroundForBackground(lightGreen), lightGreen);
+			cell(body, "", getForegroundForBackground(lightGreen), lightGreen);
 		}
 	}
 
@@ -124,18 +128,23 @@ class LinkingMatrix {
 		return UI.label(parent);
 	}
 
-	private Label cell(Composite parent, String text) {
-		return cell(parent, text, 1, black, lightGrey);
+	/**
+	 * Determines the appropriate foreground color based on the background color.
+	 * - Grey backgrounds (darkGrey, lightGrey) -> black font
+	 * - Dark red/green/orange backgrounds -> white font
+	 * - Light backgrounds -> black font
+	 */
+	private Color getForegroundForBackground(Color background) {
+		if (background == darkRed || background == darkGreen || background == darkOrange) {
+			return white;
+		}
+		// For grey backgrounds and light backgrounds, use black
+		return black;
 	}
 
 	private Label cell(Composite parent, String text,
 			Color foreground, Color background) {
 		return cell(parent, text, 1, foreground, background);
-	}
-
-	private Label cell(Composite parent, String text,
-			int vspan) {
-		return cell(parent, text, vspan, black, lightGrey);
 	}
 
 	private Label cell(
@@ -164,6 +173,22 @@ class LinkingMatrix {
 		if (text != null) {
 			label.setText(text);
 		}
+		
+		// With the app in dark mode, it is necessary to re-set the background color
+		// when painting. Otherwise, the background stays dark due to CSS overrides.
+		PaintListener paintListener = new PaintListener() {
+			@Override
+			public void paintControl(PaintEvent e) {
+				if (!comp.isDisposed() && !label.isDisposed()) {
+					label.setBackground(background);
+					comp.setBackground(background);
+					label.setForeground(foreground);
+				}
+			}
+		};
+		comp.addPaintListener(paintListener);
+		label.addPaintListener(paintListener);
+		
 		return label;
 	}
 
