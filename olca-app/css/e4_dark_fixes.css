@@ -67,4 +67,15 @@ Composite > Text[style~='SWT.BORDER'][style~='SWT.READ_ONLY'] {
 .MPartStack.active .MPart FormHeading > CLabel {
     background-color: #505F70 !important;
     color: #9AC9D8 !important;
+    swt-background-mode: 'force';
+}
+
+/* Fix toolbar buttons in FormHeading (e.g., refresh button from Editors.addRefresh) */
+/* Windows-specific: Override native active state styling that sets background to #E5F3FF */
+.MPart FormHeading Composite > ToolBar,
+.MPart FormHeading Composite > ToolBar > ToolItem,
+.MPartStack.active .MPart FormHeading Composite > ToolBar,
+.MPartStack.active .MPart FormHeading Composite > ToolBar > ToolItem {
+    background-color: #505F70 !important;
+    swt-background-mode: 'force';
 }
