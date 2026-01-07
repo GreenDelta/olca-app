@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.util.MsgBox;
-import org.openlca.util.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,10 +93,9 @@ class ConfigIniFile {
 					"-nl", language.getCode(),
 					"-theme", theme().getCode()
 			));
-			if (theme() == Theme.DARK) {
-				newLines.add("-applicationCSS");
-				newLines.add("platform:/plugin/olca-app/css/" + osDarkCss());
-			}
+			// Note: Platform-specific dark CSS files are now loaded via the 
+			// org.eclipse.e4.ui.css.swt.theme extension point in plugin.xml
+			// instead of using -applicationCSS, which ensures proper loading order and OS-specific application
 
 			for (int i = 0; i < oldLines.size(); i++) {
 
@@ -134,17 +132,6 @@ class ConfigIniFile {
 			Logger log = LoggerFactory.getLogger(ConfigIniFile.class);
 			log.error("failed to write openLCA.ini file", e);
 		}
-	}
-
-	private String osDarkCss() {
-		var os = OS.get();
-		if (os == null)
-			return "win-dark.css";
-		return switch (os) {
-			case LINUX -> "linux-dark.css";
-			case MAC -> "macos-dark.css";
-			default -> "win-dark.css";
-		};
 	}
 
 	private static File getIniFile() {
