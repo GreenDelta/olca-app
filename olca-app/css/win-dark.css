@@ -51,27 +51,3 @@ Composite > Text[style~='SWT.BORDER'][style~='SWT.READ_ONLY'] {
     border-color: transparent !important;
     border-width: 0px !important;
 }
-
-/* Override FormHeading to have transparent background and correct title color */
-.MPart FormHeading,
-.MPart FormHeading > TitleRegion,
-.MPart FormHeading > TitleRegion > Label,
-.MPart FormHeading > TitleRegion > StyledText,
-.MPart FormHeading > CLabel,
-.MPartStack.active .MPart FormHeading,
-.MPartStack.active .MPart FormHeading > TitleRegion,
-.MPartStack.active .MPart FormHeading > TitleRegion > Label,
-.MPartStack.active .MPart FormHeading > TitleRegion > StyledText,
-.MPartStack.active .MPart FormHeading > CLabel {
-    background-color: #505F70 !important;
-    color: #9AC9D8 !important;
-}
-
-/* Fix toolbar buttons in FormHeading (e.g., refresh button from Editors.addRefresh) */
-/* Windows-specific: Override native active state styling that sets background to #E5F3FF */
-.MPart FormHeading Composite > ToolBar,
-.MPart FormHeading Composite > ToolBar > ToolItem,
-.MPartStack.active .MPart FormHeading Composite > ToolBar,
-.MPartStack.active .MPart FormHeading Composite > ToolBar > ToolItem {
-    background-color: #505F70 !important;
-}

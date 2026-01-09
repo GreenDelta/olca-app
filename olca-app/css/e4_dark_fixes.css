@@ -1,3 +1,76 @@
 ColorDefinition#org-eclipse-ui-workbench-DARK_BACKGROUND {
 	color: #2F2F2F;
 }
+
+/* Also override if the title is rendered as a Hyperlink */
+.MPart SashForm > Section > Hyperlink,
+.MPart SashForm Section > Hyperlink,
+.MPart Form SashForm > Section > Hyperlink,
+.MPart Form SashForm Section > Hyperlink,
+.MPartStack.active .MPart SashForm > Section > Hyperlink,
+.MPartStack.active .MPart SashForm Section > Hyperlink,
+.MPartStack.active .MPart Form SashForm > Section > Hyperlink,
+.MPartStack.active .MPart Form SashForm Section > Hyperlink {
+    color: #AAAAAA !important;
+    /* OR: color: #cccccc !important; */
+}
+
+/* Target Hyperlink (if FOCUS_TITLE makes it a hyperlink) */
+.MPart Section > Hyperlink,
+.MPart Form Section > Hyperlink,
+.MPartStack.active .MPart Section > Hyperlink,
+.MPartStack.active .MPart Form Section > Hyperlink {
+    background-color: #1E1F22 !important;
+}
+
+/* Target all direct children of Section (title bar widgets) */
+.MPart Section > *,
+.MPart Form Section > *,
+.MPartStack.active .MPart Section > *,
+.MPartStack.active .MPart Form Section > * {
+    background-color: #1E1F22 !important;
+}
+
+/* Override Form element to disable gradient and set custom colors */
+.MPart Form,
+.MPartStack.active .MPart Form {
+    text-background-color: #3E3E3E !important;
+    background-color: #3E3E3E !important;
+    color: #E8E8E8 !important;
+    
+    /* Disable gradient by setting all gradient colors to the same value */
+    tb-toggle-hover-color: #3E3E3E !important;
+    tb-toggle-color: #3E3E3E !important;
+    h-hover-full-color: #3E3E3E !important;
+    h-hover-light-color: #3E3E3E !important;
+    h-bottom-keyline-2-color: #3E3E3E !important;
+    h-bottom-keyline-1-color: #3E3E3E !important;
+    
+    swt-background-mode: force !important;
+}
+
+/* Override FormHeading with custom colors */
+FormHeading,
+.MPart FormHeading,
+.MPart FormHeading > TitleRegion,
+.MPart FormHeading > TitleRegion > Label,
+.MPart FormHeading > TitleRegion > StyledText,
+.MPart FormHeading > CLabel,
+.MPartStack.active .MPart FormHeading,
+.MPartStack.active .MPart FormHeading > TitleRegion,
+.MPartStack.active .MPart FormHeading > TitleRegion > Label,
+.MPartStack.active .MPart FormHeading > TitleRegion > StyledText,
+.MPartStack.active .MPart FormHeading > CLabel {
+    background-color: #3E3E3E !important;
+    color: #E8E8E8 !important;
+    swt-background-mode: force !important;
+}
+
+/* Fix toolbar buttons in FormHeading to match */
+.MPart FormHeading Composite > ToolBar,
+.MPart FormHeading Composite > ToolBar > ToolItem,
+.MPartStack.active .MPart FormHeading Composite > ToolBar,
+.MPartStack.active .MPart FormHeading Composite > ToolBar > ToolItem {
+    background-color: #3E3E3E !important;
+    swt-background-mode: force !important;
+}
