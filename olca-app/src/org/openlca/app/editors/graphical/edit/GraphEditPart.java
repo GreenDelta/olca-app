@@ -15,6 +15,9 @@ import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.openlca.app.editors.graphical.layouts.Layout;
 import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.model.Graph;
@@ -70,7 +73,22 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 	@Override
 	protected IFigure createFigure() {
 		var theme = getModel().getEditor().getTheme();
-		getViewer().getControl().setBackground(theme.backgroundColor());
+		var control = getViewer().getControl();
+
+		// Set background immediately
+		control.setBackground(theme.backgroundColor());
+		
+		if (control instanceof Canvas canvas) {
+			canvas.addPaintListener(new PaintListener() {
+				@Override
+				public void paintControl(PaintEvent e) {
+					if (!canvas.isDisposed()) {
+						var currentTheme = getModel().getEditor().getTheme();
+						canvas.setBackground(currentTheme.backgroundColor());
+					}
+				}
+			});
+		}
 
 		var f = new FreeformLayer();
 		f.setLayoutManager(new Layout(getModel().getEditor(), ORIENTATION));

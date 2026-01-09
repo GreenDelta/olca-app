@@ -1,1 +1,53 @@
-@import url("platform:/plugin/org.eclipse.ui.themes/css/e4-dark_win.css");
+/* Windows-specific overrides for e4-dark_win.css */
+/* Note: Base theme (e4-dark_win.css) is loaded automatically by the theme system */
+/* Override Windows-specific bright Form background (#4f5355) to match base dark theme (#2F2F2F) */
+.MPart Form,
+.MPart Form Link,
+.MPart Form Button,
+.MPart Form Group,
+.MPart Form FormText,
+.MPart Form Text,
+.MPart Form ScrolledPageBook,
+.MPart Form DependenciesComposite,
+.MPart Form ListEditorComposite,
+.MPart Form Text[style~='SWT.READ_ONLY'],
+.MPart Form DependenciesComposite > SashForm > Section > *,
+/* Text widgets inside Composite elements within Forms - for editable fields */
+.MPart Form Composite > Text,
+.MPart Form Section > Composite > Text,
+.MPart Form Section > Composite > Composite > Text,
+/* Active part rules */
+.MPartStack.active .MPart Form,
+.MPartStack.active .MPart Form Link,
+.MPartStack.active .MPart Form Button,
+.MPartStack.active .MPart Form Group,
+.MPartStack.active .MPart Form FormText,
+.MPartStack.active .MPart Form Text,
+.MPartStack.active .MPart Form ScrolledPageBook,
+.MPartStack.active .MPart Form DependenciesComposite,
+.MPartStack.active .MPart Form ListEditorComposite,
+.MPartStack.active .MPart Form Text[style~='SWT.READ_ONLY'],
+.MPartStack.active .MPart Form Composite > Text,
+.MPartStack.active .MPart Form Section > Composite > Text,
+.MPartStack.active .MPart Form Section > Composite > Composite > Text,
+.MPartStack.active .MPart Form DependenciesComposite > SashForm > Section > * {
+    background-color: #2F2F2F !important;
+    color: #AAAAAA !important;
+}
+
+/* Remove white border outline from read-only text fields */
+.MPart Form Text[style~='SWT.READ_ONLY'],
+.MPartStack.active .MPart Form Text[style~='SWT.READ_ONLY'] {
+    border-color: #2F2F2F !important;
+    border-width: 1px !important;
+}
+
+/* Fix TableCombo internal Text control - use transparent background to avoid offset/overlay issues */
+/* IMPORTANT: Only target Text widgets that are BOTH READ_ONLY AND BORDER (TableCombo pattern) */
+Composite > Text[style~='SWT.READ_ONLY'][style~='SWT.BORDER'],
+Composite > Text[style~='SWT.BORDER'][style~='SWT.READ_ONLY'] {
+    background-color: transparent !important;
+    color: #AAAAAA !important;
+    border-color: transparent !important;
+    border-width: 0px !important;
+}
