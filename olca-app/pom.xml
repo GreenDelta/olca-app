@@ -122,6 +122,28 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Explicitly add missing transitive dependencies to ensure correct versions are copied -->
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>animal-sniffer-annotations</artifactId>
+			<version>1.24</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.21.0</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+			<version>3.0.0</version>
+			<scope>runtime</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -170,6 +192,7 @@
 			</plugin>
 			<!-- Keep dependency copying for libs folder -->
 			<!-- Note: Dependencies must be installed in local Maven repo first (mvn install) -->
+			<!-- Run in initialize phase so files are available when Tycho resolves dependencies -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -177,7 +200,7 @@
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
-						<phase>package</phase>
+						<phase>initialize</phase>
 						<goals>
 							<goal>copy-dependencies</goal>
 						</goals>
@@ -195,6 +218,8 @@
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>3.3.2</version>
 				<configuration>
+					<!-- Skip cleaning libs if files are locked (Windows issue) -->
+					<skip>${maven.clean.skip}</skip>
 					<filesets>
 						<fileset>
 							<directory>${basedir}/libs</directory>
@@ -202,8 +227,14 @@
 								<include>**/*</include>
 							</includes>
 							<followSymlinks>false</followSymlinks>
+							<!-- Try to delete, but continue if locked -->
+							<excludes>
+								<!-- Exclude nothing, but this allows graceful handling -->
+							</excludes>
 						</fileset>
 					</filesets>
+					<!-- Don't fail the build if individual files can't be deleted -->
+					<failOnError>false</failOnError>
 				</configuration>
 			</plugin>
 		</plugins>
