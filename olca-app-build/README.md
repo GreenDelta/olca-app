@@ -40,7 +40,7 @@ As an alternative to the Eclipse PDE Export wizard, you can build the distributi
 #### Prerequisites
 
 1. **Java 21** installed and `JAVA_HOME` set
-2. **Maven 3.6+** installed
+2. **Maven 3.9+** installed
 3. **olca-modules** built and installed:
    cd olca-modules
    mvn clean install
@@ -49,7 +49,11 @@ As an alternative to the Eclipse PDE Export wizard, you can build the distributi
 To build the product for all platforms:
 
 cd olca-app-build
-mvn clean verifyThis command builds the `olca-app` plugin and creates distributable products for all platforms (Linux, macOS Intel, macOS ARM, Windows) in the `olca-app-build/build/` directory.
+mvn clean verify
+
+This command builds the `olca-app` plugin and creates distributable products for all platforms (Linux, macOS Intel, macOS ARM, Windows) in the `olca-app-build/build/` directory.
+
+**Note:** For release builds without the SNAPSHOT qualifier, add `-Prelease` to the build command.
 
 The Tycho build outputs to the same directory structure as the PDE Export, so the Python packaging script works unchanged.
 

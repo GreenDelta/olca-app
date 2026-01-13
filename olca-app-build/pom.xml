@@ -15,7 +15,8 @@
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 		<java.home>${env.JAVA_HOME}</java.home>
-        <build.qualifier>SNAPSHOT</build.qualifier>
+		<!-- Default qualifier for SNAPSHOT builds -->
+		<forceContextQualifier>SNAPSHOT</forceContextQualifier>
 	</properties>
 
 	<modules>
@@ -37,6 +38,9 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-packaging-plugin</artifactId>
 					<version>${tycho.version}</version>
+					<configuration>
+						<forceContextQualifier>${forceContextQualifier}</forceContextQualifier>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -84,6 +88,17 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<profiles>
+		<!-- Release profile: removes qualifier for clean version numbers -->
+		<!-- Activate with: mvn clean install -Prelease -->
+		<profile>
+			<id>release</id>
+			<properties>
+				<forceContextQualifier></forceContextQualifier>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
 
