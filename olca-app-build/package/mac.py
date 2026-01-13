@@ -32,18 +32,6 @@ class MacDir:
             if source.exists():
                 shutil.move(str(source), str(target))
 
-        # Create Resources directory and copy icon if not present
-        resources_dir = bundle_dir / "Contents/Resources"
-        if not resources_dir.exists():
-            resources_dir.mkdir(parents=True, exist_ok=True)
-            # Find and copy the app icon
-            icon_source = next(
-                build_dir.app.glob("plugins/olca-app_*/icons/logo/logo.icns"),
-                None
-            )
-            if icon_source:
-                shutil.copy2(icon_source, resources_dir / "logo.icns")
-
         MacDir.add_app_info(bundle_dir / "Contents/Info.plist")
 
         # create the ini file

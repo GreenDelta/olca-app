@@ -46,6 +46,25 @@
 							</resources>
 						</configuration>
 					</execution>
+					<!-- Copy icons for Tycho branding -->
+					<execution>
+						<id>copy-icons</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/olca-app</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/../../olca-app</directory>
+									<includes>
+										<include>icons/logo/**</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 					<!-- Copy Linux build for Python packaging -->
 					<execution>
 						<id>copy-linux-build</id>
