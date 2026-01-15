@@ -33,6 +33,41 @@ and native libraries if these are missing.
 
 -------------
 
+### Tycho Maven Build
+
+As an alternative to the Eclipse PDE Export wizard, you can build the distribution packages using **Maven with Tycho**.
+
+#### Prerequisites
+
+1. **Java 21** installed and `JAVA_HOME` set
+2. **Maven 3.9+** installed
+3. **olca-modules** built and installed:
+   cd olca-modules
+   mvn clean install
+   #### Build Command
+
+To build the product for all platforms:
+
+cd olca-app-build
+mvn clean verify
+
+This command builds the `olca-app` plugin and creates distributable products for all platforms (Linux, macOS Intel, macOS ARM, Windows) in the `olca-app-build/build/` directory.
+
+**Note:** For release builds without the SNAPSHOT qualifier, add `-Prelease` to the build command.
+
+The Tycho build outputs to the same directory structure as the PDE Export, so the Python packaging script works unchanged.
+
+#### Multi-module Structure
+
+The Tycho build uses three Maven POMs:
+- `olca-app-build/pom.xml` - Parent aggregator with shared configuration
+- `olca-app/pom.xml` - Builds the OSGi plugin bundle  
+- `olca-app-build/product/pom.xml` - Creates distributable products
+
+**Note**: You can use either the PDE Export wizard or `mvn clean verify` to create the distribution packages.
+
+-------------
+
 ### Steps when building a release package
 
 #### Export and package the release (Win, Linux, macOS)
@@ -56,7 +91,7 @@ and native libraries if these are missing.
    python prepare-release.py
    ```
 
-5. Run the PDE export as described above ([PDE Export](#pde-export)).
+5. Run the PDE export as described above ([PDE Export](#pde-export)) or use the Tycho Maven build ([Tycho Maven](#tycho-maven-build)).
 
 6. Run the packaging module `package`.
 

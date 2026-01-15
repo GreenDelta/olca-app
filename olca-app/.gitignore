@@ -2,6 +2,7 @@
 bin
 libs
 platform
+target
 
 # IDE settings
 /.idea

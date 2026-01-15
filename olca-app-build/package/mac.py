@@ -49,6 +49,10 @@ class MacDir:
         delete(app_root / "MacOS")
         delete(app_root / "Info.plist")
         delete(macos_dir / "openLCA.ini")
+        
+        # Remove any code signature from PDE export as it will be invalid
+        # after rearranging the bundle structure
+        delete(bundle_dir / "Contents/_CodeSignature")
 
     @staticmethod
     def add_app_info(path: Path):
