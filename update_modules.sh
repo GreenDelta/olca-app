@@ -6,13 +6,13 @@ current_path=$(pwd)
 app_path=$(pwd)/olca-app
 modules_path=$(pwd)/../olca-modules
 
-echo "install olca-modules from $modules_path" 
+echo "install olca-modules from $modules_path"
 cd $modules_path
 mvn install -DskipTests=true
 
 echo "update packages in $app_path/libs"
 cd $app_path
-mvn package
+mvn -f pom_libs.xml package
 
 cd $current_path
 echo "all done"

@@ -11,7 +11,7 @@ from subprocess import call
 
 def main():
     if os.name == "posix":
-        call(["mvn", "clean"], cwd="./olca-app")
+        call(["mvn", "-f", "pom_libs.xml", "clean"], cwd="./olca-app")
         call("./update_modules.sh")
         call(["mvn", "package"], cwd="./olca-refdata")
         call(["npm", "install"], cwd="./olca-app-html")
@@ -20,7 +20,7 @@ def main():
         call(["npm", "install"], cwd="./olca-app-build/credits")
         call(["node", "credits-gen.js"], cwd="./olca-app-build/credits")
     else:
-        call("mvn.cmd clean", cwd="./olca-app")
+        call("mvn.cmd -f pom_libs.xml clean", cwd="./olca-app")
         call("update_modules.bat")
         call("mvn.cmd package", cwd="./olca-refdata")
         call("npm.cmd install", cwd="./olca-app-html")
