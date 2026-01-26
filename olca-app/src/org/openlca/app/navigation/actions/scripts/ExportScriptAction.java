@@ -27,14 +27,10 @@ public class ExportScriptAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
-		if (!(first instanceof ScriptElement))
+		if (!(selection.getFirst() instanceof ScriptElement e))
 			return false;
-		var scriptElem = (ScriptElement) first;
-		var file = scriptElem.getContent();
-		if (file == null
-				|| file.isDirectory()
-				|| !file.exists())
+		var file = e.getContent();
+		if (file == null || file.isDirectory() || !file.exists())
 			return false;
 		this.file = file;
 		return true;
@@ -49,10 +45,10 @@ public class ExportScriptAction extends Action implements INavigationAction {
 			return;
 		try {
 			Files.copy(
-					file.toPath(),
-					target.toPath(),
-					StandardCopyOption.REPLACE_EXISTING,
-					StandardCopyOption.COPY_ATTRIBUTES);
+				file.toPath(),
+				target.toPath(),
+				StandardCopyOption.REPLACE_EXISTING,
+				StandardCopyOption.COPY_ATTRIBUTES);
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to export script", e);
 		}

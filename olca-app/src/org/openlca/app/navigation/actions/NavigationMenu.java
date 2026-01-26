@@ -40,6 +40,7 @@ import org.openlca.app.navigation.actions.nexus.XNexusIndexExportAction;
 import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
+import org.openlca.app.navigation.actions.scripts.RenameScriptAction;
 import org.openlca.app.navigation.actions.sd.CreateSdModelAction;
 import org.openlca.app.navigation.actions.sd.DeleteSdModelAction;
 import org.openlca.app.navigation.actions.sd.OpenSdModelAction;
@@ -131,6 +132,7 @@ public class NavigationMenu extends CommonActionProvider {
 				new OpenScriptAction(),
 				new OpenMappingAction(),
 				new OpenLibraryAction(),
+				new RenameScriptAction(),
 				new DeleteScriptAction(),
 				new DeleteMappingAction(),
 				new DeleteLibraryAction(),
@@ -173,7 +175,7 @@ public class NavigationMenu extends CommonActionProvider {
 			IMenuManager menu) {
 		menu.add(new Separator());
 		if (selection.size() == 1
-				&& selection.get(0) instanceof DatabaseElement dbElem
+				&& selection.getFirst() instanceof DatabaseElement dbElem
 				&& Database.isActive(dbElem.getContent())) {
 			var subMenu = createImportMenu();
 			menu.add(subMenu);
