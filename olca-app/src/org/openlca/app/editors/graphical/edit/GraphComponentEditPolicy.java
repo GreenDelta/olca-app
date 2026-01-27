@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_SET_REFERENCE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -13,10 +12,10 @@ import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.StickyNote;
 import org.openlca.app.editors.graphical.model.commands.DeleteExchangeCommand;
-import org.openlca.app.editors.graphical.model.commands.DeleteNodeCommand;
 import org.openlca.app.editors.graphical.model.commands.DeleteStickyNoteCommand;
 import org.openlca.app.editors.graphical.model.commands.EditExchangeCommand;
 import org.openlca.app.editors.graphical.model.commands.EditStickyNoteCommand;
+import org.openlca.app.editors.graphical.model.commands.RemoveNodeCommand;
 import org.openlca.app.editors.graphical.model.commands.SetReferenceCommand;
 
 public class GraphComponentEditPolicy extends ComponentEditPolicy {
@@ -42,7 +41,7 @@ public class GraphComponentEditPolicy extends ComponentEditPolicy {
 		var parent = getHost().getParent().getModel();
 		var child = getHost().getModel();
 		if (parent instanceof Graph graph && child instanceof Node node)
-			return new DeleteNodeCommand(graph, node);
+			return new RemoveNodeCommand(node, graph);
 		if (parent instanceof Graph graph && child instanceof StickyNote note)
 			return new DeleteStickyNoteCommand(graph, note);
 		if (parent instanceof IOPane pane

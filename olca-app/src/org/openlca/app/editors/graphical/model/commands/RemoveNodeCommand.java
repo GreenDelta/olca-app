@@ -13,36 +13,23 @@ import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Question;
 import org.openlca.core.model.ProcessLink;
 
-public class DeleteNodeCommand extends Command {
+public class RemoveNodeCommand extends Command {
 
+	private final Node node;
 	private final Graph graph;
 	private final GraphEditor editor;
-	/**
-	 * Node to remove.
-	 */
-	private final Node node;
 	private int answer;
 
-	/**
-	 * Create a command that will remove the node from its parent.
-	 *
-	 * @param graph the parent containing the child
-	 * @param node  the component to remove
-	 * @throws IllegalArgumentException if any parameter is null
-	 */
-	public DeleteNodeCommand(Graph graph, Node node) {
+	public RemoveNodeCommand(Node node, Graph graph) {
+		this.node = node;
 		this.graph = graph;
 		editor = graph.getEditor();
-		setLabel(M.Delete);
-		this.node = node;
+		setLabel(M.Remove);
 	}
 
 	@Override
 	public boolean canExecute() {
-		if (node == null)
-			return false;
-		long refID = node.getGraph().getProductSystem().referenceProcess.id;
-		return node.descriptor.id != refID;
+		return graph != null && !graph.isReferenceProcess(node);
 	}
 
 	@Override

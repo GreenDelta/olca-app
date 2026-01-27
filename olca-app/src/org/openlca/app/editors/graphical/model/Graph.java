@@ -91,7 +91,12 @@ public class Graph extends BaseComponent {
 	}
 
 	public boolean isReferenceProcess(Node node) {
-		return node != null && node.equals(getReferenceNode());
+		if (node == null
+			|| node.descriptor == null
+			|| referenceProcess == null) {
+			return false;
+		}
+		return node.descriptor.id == referenceProcess.id;
 	}
 
 	public GraphEditor getEditor() {
@@ -112,9 +117,9 @@ public class Graph extends BaseComponent {
 	 */
 	public List<Node> getNodes() {
 		return getChildren().stream()
-				.filter(child -> child instanceof Node)
-				.map(child -> (Node) child)
-				.toList();
+			.filter(child -> child instanceof Node)
+			.map(child -> (Node) child)
+			.toList();
 	}
 
 	/**
@@ -122,9 +127,9 @@ public class Graph extends BaseComponent {
 	 */
 	public List<StickyNote> getStickyNotes() {
 		return getChildren().stream()
-				.filter(child -> child instanceof StickyNote)
-				.map(child -> (StickyNote) child)
-				.toList();
+			.filter(child -> child instanceof StickyNote)
+			.map(child -> (StickyNote) child)
+			.toList();
 	}
 
 	/**
@@ -132,9 +137,9 @@ public class Graph extends BaseComponent {
 	 */
 	public List<MinMaxComponent> getMinMaxComponents() {
 		return getChildren().stream()
-				.filter(child -> child instanceof MinMaxComponent)
-				.map(child -> (MinMaxComponent) child)
-				.toList();
+			.filter(child -> child instanceof MinMaxComponent)
+			.map(child -> (MinMaxComponent) child)
+			.toList();
 	}
 
 	@Override

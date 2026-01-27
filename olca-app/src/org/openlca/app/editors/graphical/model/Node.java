@@ -52,7 +52,7 @@ public class Node extends MinMaxComponent {
 			new Dimension(250, SWT.DEFAULT);
 
 	private final IDatabase db = Database.get();
-	public RootDescriptor descriptor;
+	public final RootDescriptor descriptor;
 	private RootEntity entity;
 
 	/// Defines the expansion state of the input and output side:
@@ -473,12 +473,6 @@ public class Node extends MinMaxComponent {
 			}
 		}
 		return false;
-	}
-
-	public void setDescriptor(RootDescriptor d) {
-		if (d == null)
-			return;
-		descriptor = d;
 	}
 
 	public ExchangeItem getRefExchangeItem() {
