@@ -41,6 +41,21 @@ public class LinkSearchMap {
 		}
 	}
 
+	public void rebuild(Collection<ProcessLink> links) {
+		long start = System.nanoTime();
+		data.clear();
+		providerIdx.clear();
+		consumerIdx.clear();
+		data.addAll(links);
+		for (int i = 0; i < data.size(); i++) {
+			var link = data.get(i);
+			index(link.providerId, i, providerIdx);
+			index(link.processId, i, consumerIdx);
+		}
+		double ms = (System.nanoTime() - start) / 1_000_000.0;
+		System.out.printf("LinkSearchMap rebuilt in %.2f ms%n", ms);
+	}
+
 	private void index(long key, int val, TLongObjectHashMap<TIntArrayList> map) {
 		var list = map.get(key);
 		if (list == null) {
@@ -121,49 +136,4 @@ public class LinkSearchMap {
 		}
 		return links;
 	}
-
-	public void put(ProcessLink link) {
-		int index = remove(link);
-		if (index == -1)
-			index = getAvailableIndex();
-		if (index < data.size())
-			data.set(index, link);
-		else
-			data.add(link);
-		index(link.providerId, index, providerIdx);
-		index(link.processId, index, consumerIdx);
-	}
-
-	private int getAvailableIndex() {
-		for (int index = 0; index < data.size(); index++)
-			if (data.get(index) == null) // previously removed link
-				return index;
-		return data.size();
-	}
-
-	public void removeAll(Collection<ProcessLink> links) {
-		for (ProcessLink link : links)
-			remove(link);
-	}
-
-	public int remove(ProcessLink link) {
-		int index = data.indexOf(link);
-		if (index < 0)
-			return -1;
-		data.set(index, null);
-		remove(link.providerId, index, providerIdx);
-		remove(link.processId, index, consumerIdx);
-		return index;
-	}
-
-	private void remove(long id, int index,
-			TLongObjectHashMap<TIntArrayList> map) {
-		TIntArrayList list = map.get(id);
-		if (list == null)
-			return;
-		list.remove(index);
-		if (list.isEmpty())
-			map.remove(id);
-	}
-
 }

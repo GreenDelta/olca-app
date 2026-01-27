@@ -69,7 +69,7 @@ public class Graph extends BaseComponent {
 	 */
 	public void removeProcessLink(ProcessLink link) {
 		getProductSystem().processLinks.remove(link);
-		linkSearch.remove(link);
+		linkSearch.rebuild(getProductSystem().processLinks);
 	}
 
 	/**

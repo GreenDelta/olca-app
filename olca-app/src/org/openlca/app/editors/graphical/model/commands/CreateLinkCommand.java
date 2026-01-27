@@ -7,7 +7,6 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.ProviderType;
 
 
@@ -31,13 +30,12 @@ public class CreateLinkCommand extends Command {
 	@Override
 	public void execute() {
 		var graph = source.getGraph();
-		ProductSystem system = graph.getProductSystem();
+		var system = graph.getProductSystem();
 		processLink = getProcessLink();
 		system.processLinks.add(processLink);
-		graph.linkSearch.put(processLink);
+		graph.linkSearch.rebuild(system.processLinks);
 		link = new GraphLink(processLink, source, target);
 		graph.mapProcessLinkToGraphLink.put(processLink, link);
-
 		graph.editor.setDirty();
 	}
 

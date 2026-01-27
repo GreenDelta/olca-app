@@ -13,7 +13,6 @@ import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -27,7 +26,6 @@ public class MassCreationCommand extends Command {
 	// for undoing
 	private final Map<Node, Rectangle> oldConstraints = new HashMap<>();
 	private final List<Node> createdNodes = new ArrayList<>();
-	private final List<GraphLink> createdLinks = new ArrayList<>();
 
 	public static MassCreationCommand nextTier(List<RootDescriptor> toCreate,
 			List<ProcessLink> newConnections, Graph graph) {
@@ -73,8 +71,9 @@ public class MassCreationCommand extends Command {
 	}
 
 	private void addLink(ProcessLink link) {
-		graph.getProductSystem().processLinks.add(link);
-		graph.linkSearch.put(link);
+		var system = graph.getProductSystem();
+		system.processLinks.add(link);
+		graph.linkSearch.rebuild(system.processLinks);
 
 		var graphLink = graph.getLink(link);
 		if (graphLink != null) {
@@ -101,8 +100,6 @@ public class MassCreationCommand extends Command {
 
 	@Override
 	public void undo() {
-		for (GraphLink link : createdLinks)
-			graph.removeLink(link.processLink);
 		for (Node node : createdNodes)
 			removeNodeQuietly(node);
 		graph.firePropertyChange(CHILDREN_PROP, null, null);
@@ -112,8 +109,6 @@ public class MassCreationCommand extends Command {
 		}
 
 		editor.setDirty();
-
-		createdLinks.clear();
 		createdNodes.clear();
 		oldConstraints.clear();
 	}

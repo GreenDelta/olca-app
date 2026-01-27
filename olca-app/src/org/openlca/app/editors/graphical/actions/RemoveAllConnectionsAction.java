@@ -5,7 +5,6 @@ import static org.eclipse.gef.RequestConstants.REQ_DELETE;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -15,10 +14,8 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.GraphLink;
-import org.openlca.app.editors.graphical.search.LinkSearchMap;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
-import org.openlca.core.model.ProcessLink;
 
 public class RemoveAllConnectionsAction extends SelectionAction {
 
@@ -77,18 +74,11 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 
 			var node = nodeEditPart.getModel();
 
-			// create new link search to avoid problems with missing entries before
-			// ConnectionLink.unlink is called
-			List<ProcessLink> pLinks = editor.getProductSystem().processLinks;
-			var linkSearch = new LinkSearchMap(pLinks);
-			List<ProcessLink> processLinks = linkSearch.getAllLinks(node.descriptor.id);
-			for (ProcessLink link : processLinks)
-				linkSearch.remove(link);
 			for (var l : node.getAllLinks()) {
 				if (l instanceof GraphLink link) {
 					if (!links.contains(link)) {
 						links.add(link);
-						var linkEditPart = (EditPart) viewer.getEditPartRegistry().get(link);
+						var linkEditPart = viewer.getEditPartRegistry().get(link);
 						cc.add(linkEditPart.getCommand(new GroupRequest(REQ_DELETE)));
 					}
 				}

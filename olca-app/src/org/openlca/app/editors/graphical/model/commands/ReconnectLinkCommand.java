@@ -47,8 +47,8 @@ public class ReconnectLinkCommand extends Command {
 		pLink.processId = targetItem.getNode().descriptor.id;
 		pLink.exchangeId = targetItem.exchange.id;
 
-		graph.getProductSystem().processLinks.add(pLink);
-		graph.linkSearch.put(pLink);
+		system.processLinks.add(pLink);
+		graph.linkSearch.rebuild(system.processLinks);
 		link = new GraphLink(pLink, sourceNode, targetItem);
 		graph.mapProcessLinkToGraphLink.put(pLink, link);
 
@@ -63,24 +63,20 @@ public class ReconnectLinkCommand extends Command {
 	@Override
 	public void redo() {
 		graph.removeLink(oldLink.processLink);
-
 		system.processLinks.add(link.processLink);
-		graph.linkSearch.put(link.processLink);
+		graph.linkSearch.rebuild(system.processLinks);
 		graph.mapProcessLinkToGraphLink.put(link.processLink, link);
 		link.reconnect();
-
 		graph.editor.setDirty();
 	}
 
 	@Override
 	public void undo() {
 		graph.removeLink(link.processLink);
-
 		system.processLinks.add(oldLink.processLink);
-		graph.linkSearch.put(oldLink.processLink);
+		graph.linkSearch.rebuild(system.processLinks);
 		graph.mapProcessLinkToGraphLink.put(oldLink.processLink, oldLink);
 		oldLink.reconnect();
-
 		graph.editor.setDirty();
 	}
 

@@ -95,8 +95,8 @@ public class DeleteManager {
 			}
 			case Delete -> {
 				var r = ProviderChainRemoval.on(graph.getProductSystem());
-				var links = r.remove(link);
-				graph.linkSearch.removeAll(links);
+				r.remove(link);
+				graph.linkSearch.rebuild(graph.getProductSystem().processLinks);
 				return provider;
 			}
 			case Cancel -> {
