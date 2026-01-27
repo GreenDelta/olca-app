@@ -17,7 +17,7 @@ import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.components.graphics.figures.Connection;
 import org.openlca.app.editors.graphical.model.GraphLink;
-import org.openlca.app.editors.graphical.model.commands.DeleteLinkCommand;
+import org.openlca.app.editors.graphical.model.commands.RemoveLinkCommand;
 
 public class LinkEditPart extends AbstractConnectionEditPart
 	implements PropertyChangeListener {
@@ -82,7 +82,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 				@Override
 				protected Command getDeleteCommand(GroupRequest req) {
 					var graph = getModel().getSourceNode().getGraph();
-					return new DeleteLinkCommand(getModel(), graph);
+					return new RemoveLinkCommand(getModel(), graph);
 				}
 			});
 	}

@@ -19,9 +19,9 @@ public class DeleteManager {
 
 	private final Graph graph;
 	private final GraphEditor editor;
-	public static final String QUESTION = "* " + M.DeleteLinkKeep
-			+ "* " + M.DeleteLinkHide
-			+ "* " + M.DeleteLinkDelete
+	public static final String QUESTION = "* " + M.DeleteLinkKeep + "\n"
+			+ "* " + M.DeleteLinkHide + "\n"
+			+ "* " + M.DeleteLinkDelete + "\n"
 			+ "* " + M.DeleteWontDeleteProviders;
 
 	private DeleteManager(Graph graph) {
