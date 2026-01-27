@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import static org.openlca.app.editors.processes.exchanges.Exchanges.checkProviderLinks;
-import static org.openlca.app.editors.processes.exchanges.Exchanges.checkRefFlow;
+import static org.openlca.app.editors.processes.exchanges.Exchanges.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -121,7 +120,7 @@ public class DeleteExchangeCommand extends Command {
 
 		// Removing the exchange and the eventual links
 		process.exchanges.remove(exchange);
-		var processLinks = graph.linkSearch.getLinks(process.id);
+		var processLinks = graph.linkSearch.getAllLinks(process.id);
 		for (var link : processLinks) {
 			if (link.exchangeId == exchange.id) {
 				graph.removeLink(link);

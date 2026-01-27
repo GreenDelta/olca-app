@@ -259,7 +259,7 @@ public class Node extends MinMaxComponent {
 				.map(c -> c.getTargetNode().descriptor.id)
 				.toList();
 
-		for (var pLink : getGraph().linkSearch.getLinks(descriptor.id)) {
+		for (var pLink : getGraph().linkSearch.getAllLinks(descriptor.id)) {
 			FlowType type = getGraph().flows.type(pLink.flowId);
 			if (type == null || type == FlowType.ELEMENTARY_FLOW)
 				continue;
@@ -295,7 +295,7 @@ public class Node extends MinMaxComponent {
 		var linkSearch = getGraph().linkSearch;
 		long processId = descriptor.id;
 
-		for (ProcessLink link : linkSearch.getLinks(processId)) {
+		for (ProcessLink link : linkSearch.getAllLinks(processId)) {
 			FlowType type = getGraph().flows.type(link.flowId);
 			boolean isProvider = link.providerId == processId;
 
@@ -314,7 +314,7 @@ public class Node extends MinMaxComponent {
 		var linkSearch = getGraph().linkSearch;
 		long processId = descriptor.id;
 
-		for (ProcessLink link : linkSearch.getLinks(processId)) {
+		for (ProcessLink link : linkSearch.getAllLinks(processId)) {
 			FlowType type = getGraph().flows.type(link.flowId);
 			boolean isProvider = link.providerId == processId;
 

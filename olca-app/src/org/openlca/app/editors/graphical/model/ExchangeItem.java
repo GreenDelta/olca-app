@@ -96,7 +96,7 @@ public class ExchangeItem extends Component {
 		var links = ((isInput && flowType() == FlowType.WASTE_FLOW)
 				|| (!isInput && flowType() == FlowType.PRODUCT_FLOW))
 				? linkSearch.getProviderLinks(node.descriptor.id)
-				: linkSearch.getConnectionLinks(node.descriptor.id);
+				: linkSearch.getConsumerLinks(node.descriptor.id);
 		return links.stream()
 				.anyMatch(this::matchesLink);
 	}

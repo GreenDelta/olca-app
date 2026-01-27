@@ -44,7 +44,7 @@ class LinkCandidate implements Comparable<LinkCandidate> {
 		var linkSearch = exchange.graph.linkSearch;
 		if (exchange.isProvider) {
 			// check if the candidate exchange is linked to the provider
-			this.isConnected = linkSearch.getConnectionLinks(process.id)
+			this.isConnected = linkSearch.getConsumerLinks(process.id)
 					.stream()
 					.anyMatch(link -> link.exchangeId == exchangeId
 							&& link.providerId == exchange.process.id);

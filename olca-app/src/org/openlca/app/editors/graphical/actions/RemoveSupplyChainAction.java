@@ -75,7 +75,7 @@ public class RemoveSupplyChainAction extends SelectionAction {
 		if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
 			setText(M.RemoveSupplyChain);
 			var nodeId = ((NodeEditPart) object).getModel().descriptor.id;
-			links.addAll(linkSearch.getConnectionLinks(nodeId));
+			links.addAll(linkSearch.getConsumerLinks(nodeId));
 		}
 		else if (object instanceof ExchangeEditPart part) {
 			setText(M.RemoveFlowSupplyChain);

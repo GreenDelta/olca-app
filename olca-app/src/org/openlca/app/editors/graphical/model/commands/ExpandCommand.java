@@ -1,8 +1,7 @@
 package org.openlca.app.editors.graphical.model.commands;
 
 import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.editors.graphical.model.Node.isInput;
-import static org.openlca.app.editors.graphical.model.Node.isOutput;
+import static org.openlca.app.editors.graphical.model.Node.*;
 
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class ExpandCommand extends Command {
 	@Override
 	public void redo() {
 		long processID = host.descriptor.id;
-		List<ProcessLink> links = graph.linkSearch.getLinks(processID);
+		List<ProcessLink> links = graph.linkSearch.getAllLinks(processID);
 
 		var oldLinks = side == Side.INPUT
 			? host.getAllTargetConnections()

@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.search;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.openlca.core.model.ProcessLink;
@@ -14,94 +13,87 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TIntHashSet;
 
 
-/**
- * This is a data structure for searching a set of existing links by
- * provider and recipient processes.
- */
+/// A data structure for searching process links
 public class LinkSearchMap {
 
-	/**
-	 * A map process-ID -> process links, where the process is a provider means
-	 * it has the product output or waste input that is described by the link.
-	 */
-	private final TLongObjectHashMap<TIntArrayList> providerIndex;
+	/// `provider ID -> process links`; all links indexed by their
+	/// providers (product outputs or waste inputs)
+	private final TLongObjectHashMap<TIntArrayList> providerIdx;
 
-	/**
-	 * A map process-ID -> process links, where the process is connected by a
-	 * product input or waste output to another process.
-	 */
-	private final TLongObjectHashMap<TIntArrayList> connectionIndex;
+	/// `process ID -> process links`; all links indexed by their
+	///  connected processes (product inputs or waste outputs)
+	private final TLongObjectHashMap<TIntArrayList> consumerIdx;
 
+	/// All links stored in a linear list; the indices point to
+	/// positions of that list.
 	private final ArrayList<ProcessLink> data;
 
 	public LinkSearchMap(Collection<ProcessLink> links) {
-		providerIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
+		providerIdx = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
 				Constants.DEFAULT_LOAD_FACTOR, -1L);
-		connectionIndex = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
+		consumerIdx = new TLongObjectHashMap<>(Constants.DEFAULT_CAPACITY,
 				Constants.DEFAULT_LOAD_FACTOR, -1L);
 		data = new ArrayList<>(links);
 		for (int i = 0; i < data.size(); i++) {
-			ProcessLink link = data.get(i);
-			index(link.providerId, i, providerIndex);
-			index(link.processId, i, connectionIndex);
+			var link = data.get(i);
+			index(link.providerId, i, providerIdx);
+			index(link.processId, i, consumerIdx);
 		}
 	}
 
 	private void index(long key, int val, TLongObjectHashMap<TIntArrayList> map) {
-		TIntArrayList list = map.get(key);
+		var list = map.get(key);
 		if (list == null) {
 			list = new TIntArrayList(Constants.DEFAULT_CAPACITY, -1);
 			map.put(key, list);
 		}
-		if (list.contains(val))
-			return;
-		list.add(val);
+		if (!list.contains(val)) {
+			list.add(val);
+		}
 	}
 
-	/**
-	 * Returns all the links where the process with the given ID is either
-	 * provider or connected with a provider.
-	 */
-	public List<ProcessLink> getLinks(long processId) {
+	/// Returns all links where the process (or result, or sub-system) with the
+	/// given ID is used (as a provider or linked process).
+	public List<ProcessLink> getAllLinks(long processId) {
 		// because this method could be called quite often in graphical
 		// presentations of product systems and there can be a lot of links
 		// in some kind of product systems (e.g. from IO-databases) we do
 		// not just merge the incoming and outgoing links here
-		TIntHashSet intSet = new TIntHashSet(Constants.DEFAULT_CAPACITY,
+		var intSet = new TIntHashSet(Constants.DEFAULT_CAPACITY,
 				Constants.DEFAULT_LOAD_FACTOR, -1);
-		TIntArrayList list = providerIndex.get(processId);
-		if (list != null)
+		var list = providerIdx.get(processId);
+		if (list != null) {
 			intSet.addAll(list);
-		list = connectionIndex.get(processId);
-		if (list != null)
+		}
+		list = consumerIdx.get(processId);
+		if (list != null) {
 			intSet.addAll(list);
-		return getLinks(intSet.iterator());
+		}
+		return fetchLinks(intSet.iterator());
 	}
 
-	/**
-	 * Returns all the links where the processes with the given IDs are either
-	 * provider or connected with a provider.
-	 */
-	public List<ProcessLink> getLinks(List<Long> processIds) {
-		TIntHashSet intSet = new TIntHashSet(
+	/// Returns all links where the processes (or results, or sub-systems) with
+	/// the given IDs are used (as providers or linked processes).
+	public List<ProcessLink> getAllLinks(List<Long> processIds) {
+		var intSet = new TIntHashSet(
 				Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
 		for (long processId : processIds) {
-			TIntArrayList list = providerIndex.get(processId);
-			if (list != null)
+			var list = providerIdx.get(processId);
+			if (list != null) {
 				intSet.addAll(list);
-			list = connectionIndex.get(processId);
-			if (list != null)
+			}
+			list = consumerIdx.get(processId);
+			if (list != null) {
 				intSet.addAll(list);
+			}
 		}
-		return getLinks(intSet.iterator());
+		return fetchLinks(intSet.iterator());
 	}
 
-	/**
-	 * Returns all links where the process with the given ID is connected (has
-	 * a product input or waste output).
-	 */
-	public List<ProcessLink> getConnectionLinks(long processId) {
-		return getLinks(processId, connectionIndex);
+	/// Returns all links where the process with the given ID is a consumer of
+	/// a product input or waste service (has a waste output).
+	public List<ProcessLink> getConsumerLinks(long processId) {
+		return fetchLinks(processId, consumerIdx);
 	}
 
 	/**
@@ -109,21 +101,21 @@ public class LinkSearchMap {
 	 * a product output or waste input).
 	 */
 	public List<ProcessLink> getProviderLinks(long processId) {
-		return getLinks(processId, providerIndex);
+		return fetchLinks(processId, providerIdx);
 	}
 
-	private List<ProcessLink> getLinks(long processId,
-			TLongObjectHashMap<TIntArrayList> map) {
-		TIntArrayList list = map.get(processId);
-		if (list == null)
-			return Collections.emptyList();
-		return getLinks(list.iterator());
+	private List<ProcessLink> fetchLinks(
+		long id, TLongObjectHashMap<TIntArrayList> map) {
+		var list = map.get(id);
+		return list != null
+			? fetchLinks(list.iterator())
+			: List.of();
 	}
 
-	private List<ProcessLink> getLinks(TIntIterator iterator) {
-		List<ProcessLink> links = new ArrayList<>();
-		while (iterator.hasNext()) {
-			ProcessLink next = data.get(iterator.next());
+	private List<ProcessLink> fetchLinks(TIntIterator it) {
+	  var links = new ArrayList<ProcessLink>();
+		while (it.hasNext()) {
+			var next = data.get(it.next());
 			if (next != null)
 				links.add(next);
 		}
@@ -138,8 +130,8 @@ public class LinkSearchMap {
 			data.set(index, link);
 		else
 			data.add(link);
-		index(link.providerId, index, providerIndex);
-		index(link.processId, index, connectionIndex);
+		index(link.providerId, index, providerIdx);
+		index(link.processId, index, consumerIdx);
 	}
 
 	private int getAvailableIndex() {
@@ -159,8 +151,8 @@ public class LinkSearchMap {
 		if (index < 0)
 			return -1;
 		data.set(index, null);
-		remove(link.providerId, index, providerIndex);
-		remove(link.processId, index, connectionIndex);
+		remove(link.providerId, index, providerIdx);
+		remove(link.processId, index, consumerIdx);
 		return index;
 	}
 

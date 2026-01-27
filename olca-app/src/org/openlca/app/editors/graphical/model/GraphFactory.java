@@ -1,9 +1,7 @@
 package org.openlca.app.editors.graphical.model;
 
-import static org.openlca.app.components.graphics.model.Side.INPUT;
-import static org.openlca.app.components.graphics.model.Side.OUTPUT;
-import static org.openlca.app.editors.graphical.model.Node.INPUT_PROP;
-import static org.openlca.app.editors.graphical.model.Node.OUTPUT_PROP;
+import static org.openlca.app.components.graphics.model.Side.*;
+import static org.openlca.app.editors.graphical.model.Node.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -233,7 +231,7 @@ public class GraphFactory {
 			graph.addChild(node);
 		}
 
-		var pLinks = graph.linkSearch.getLinks(graph.getChildrenIds());
+		var pLinks = graph.linkSearch.getAllLinks(graph.getChildrenIds());
 		for (var pLink : pLinks) {
 			createGraphLink(graph, pLink);
 		}

@@ -56,7 +56,7 @@ class ModelExchange {
 
 		isConnected = !isProvider &&
 				graph.linkSearch
-						.getConnectionLinks(process.id)
+						.getConsumerLinks(process.id)
 						.stream()
 						.anyMatch(link -> link.exchangeId == exchange.id);
 	}

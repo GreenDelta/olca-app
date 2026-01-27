@@ -81,7 +81,7 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 			// ConnectionLink.unlink is called
 			List<ProcessLink> pLinks = editor.getProductSystem().processLinks;
 			var linkSearch = new LinkSearchMap(pLinks);
-			List<ProcessLink> processLinks = linkSearch.getLinks(node.descriptor.id);
+			List<ProcessLink> processLinks = linkSearch.getAllLinks(node.descriptor.id);
 			for (ProcessLink link : processLinks)
 				linkSearch.remove(link);
 			for (var l : node.getAllLinks()) {

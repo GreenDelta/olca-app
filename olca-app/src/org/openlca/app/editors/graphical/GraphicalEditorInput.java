@@ -15,8 +15,8 @@ public record GraphicalEditorInput(Descriptor descriptor)
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof GraphicalEditorInput other) {
-			return Objects.equals(this.descriptor, other.descriptor);
+		if (obj instanceof GraphicalEditorInput(Descriptor d)) {
+			return Objects.equals(this.descriptor, d);
 		}
 		return false;
 	}

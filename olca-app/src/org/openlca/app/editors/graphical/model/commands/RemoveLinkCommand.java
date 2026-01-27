@@ -47,8 +47,7 @@ public class RemoveLinkCommand extends Command {
 
 	@Override
 	public void redo() {
-		graph.removeGraphLink(link.processLink);
-		graph.removeProcessLink(link.processLink);
+		graph.removeLink(link.processLink);
 		graph.firePropertyChange(CHILDREN_PROP, link, null);
 		graph.getEditor().setDirty();
 	}
