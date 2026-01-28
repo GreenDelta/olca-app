@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -40,10 +40,12 @@ public class GraphComponentEditPolicy extends ComponentEditPolicy {
 	protected Command createDeleteCommand(GroupRequest req) {
 		var parent = getHost().getParent().getModel();
 		var child = getHost().getModel();
+
 		if (parent instanceof Graph graph && child instanceof Node node)
 			return new RemoveNodeCommand(node, graph);
 		if (parent instanceof Graph graph && child instanceof StickyNote note)
 			return new DeleteStickyNoteCommand(graph, note);
+
 		if (parent instanceof IOPane pane
 			&& child instanceof ExchangeItem exchangeItem
 			&& pane.getNode().isEditable())

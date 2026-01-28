@@ -26,7 +26,7 @@ import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 import org.openlca.core.model.AnalysisGroup;
 
 
-public abstract class NodeEditPart extends AbstractVertexEditPart<Node> {
+public abstract class NodeEditPart extends VertexEditPart<Node> {
 
 	@Override
 	public DragTracker getDragTracker(Request request) {

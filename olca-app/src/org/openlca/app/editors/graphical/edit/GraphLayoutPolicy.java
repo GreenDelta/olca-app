@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.edit;
 
 import static org.openlca.app.editors.graphical.GraphConfig.*;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.PrecisionRectangle;
@@ -32,14 +32,16 @@ import org.openlca.core.model.descriptors.RootDescriptor;
 public class GraphLayoutPolicy extends XYLayoutEditPolicy {
 
 	@Override
-	public Command getCommand(Request request) {
-		if (REQ_LAYOUT.equals(request.getType()))
-			return new GraphLayoutCommand(getHost());
-		if (REQ_CREATE.equals(request.getType()))
-			return getCreateCommand((GraphRequest) request);
-		if (REQ_EDIT_CONFIG.equals(request.getType()))
-			return getEditConfigCommand(request);
-		return super.getCommand(request);
+	public Command getCommand(Request req) {
+		if (req == null || !(req.getType() instanceof String type)) {
+			return super.getCommand(req);
+		}
+		return switch (type) {
+			case REQ_LAYOUT -> new GraphLayoutCommand(getHost());
+			case REQ_CREATE -> getCreateCommand((GraphRequest) req);
+			case REQ_EDIT_CONFIG -> getEditConfigCommand(req);
+			default -> super.getCommand(req);
+		};
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class GraphLayoutPolicy extends XYLayoutEditPolicy {
 
 		if (descriptors == null)
 			command.add(createCreateStickyNoteCommand(
-					(Rectangle) getConstraintFor(request)));
+				(Rectangle) getConstraintFor(request)));
 		else for (var descriptor : descriptors)
 			command.add(createCreateNodeCommand(descriptor,
 				(Rectangle) getConstraintFor(request)));
@@ -64,7 +66,7 @@ public class GraphLayoutPolicy extends XYLayoutEditPolicy {
 	}
 
 	protected Command createCreateNodeCommand(RootDescriptor descriptor,
-																						Rectangle constraint) {
+		Rectangle constraint) {
 		var graph = (Graph) getHost().getModel();
 		return new CreateNodeCommand(graph, descriptor, constraint);
 	}
@@ -77,15 +79,14 @@ public class GraphLayoutPolicy extends XYLayoutEditPolicy {
 	@Override
 	protected Command createChangeConstraintCommand(
 		ChangeBoundsRequest request, EditPart child, Object constraint) {
-		if (child instanceof AbstractVertexEditPart
-				&& constraint instanceof Rectangle rect) {
+		if (child instanceof VertexEditPart
+			&& constraint instanceof Rectangle rect) {
 			if (child instanceof NodeEditPart) {
 				var nodeConstraint = new Rectangle(rect.x, rect.y, rect.width, SWT.DEFAULT);
 				return new ComponentSetConstraintCommand(
-						(Component) child.getModel(), request, nodeConstraint);
-			}
-			else return new ComponentSetConstraintCommand(
-					(Component) child.getModel(), request, rect);
+					(Component) child.getModel(), request, nodeConstraint);
+			} else return new ComponentSetConstraintCommand(
+				(Component) child.getModel(), request, rect);
 		}
 		return super.createChangeConstraintCommand(request, child,
 			constraint);
@@ -96,25 +97,24 @@ public class GraphLayoutPolicy extends XYLayoutEditPolicy {
 		var policy = new ResizableEditPolicy();
 		if (child instanceof NodeEditPart)
 			policy.setResizeDirections(
-					PositionConstants.EAST | PositionConstants.WEST);
+				PositionConstants.EAST | PositionConstants.WEST);
 		return policy;
 	}
 
 	/**
 	 * Generates a draw2d constraint for the given <code>GraphRequest</code>.
-	 *
+	 * <p>
 	 * If the GraphRequest has a size, is used during size-on-drop creation, a
 	 * Rectangle of the request's location and size is passed with the
 	 * delegation. Otherwise, a rectangle with the request's location and an
 	 * empty size (0,0) is passed over.
-	 * <P>
+	 * <p>
 	 * The GraphRequest's location is relative to the Viewer. The location is
 	 * made layout-relative by using
 	 * {@link #translateFromAbsoluteToLayoutRelative(Translatable)} before
 	 * calling {@link #getConstraintFor(Request, GraphicalEditPart, Rectangle)}.
 	 *
-	 * @param request
-	 *            the GraphRequest
+	 * @param request the GraphRequest
 	 * @return a draw2d constraint
 	 */
 	protected Object getConstraintFor(GraphRequest request) {

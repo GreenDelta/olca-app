@@ -19,7 +19,7 @@ import org.openlca.app.editors.graphical.figures.StickyNoteFigure;
 import org.openlca.app.editors.graphical.model.StickyNote;
 
 public abstract class StickyNoteEditPart extends
-		AbstractVertexEditPart<StickyNote> {
+	VertexEditPart<StickyNote> {
 
 	@Override
 	protected void createEditPolicies() {

@@ -1,6 +1,6 @@
 package org.openlca.app.results.analysis.sankey.actions;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;

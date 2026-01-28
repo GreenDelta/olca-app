@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;

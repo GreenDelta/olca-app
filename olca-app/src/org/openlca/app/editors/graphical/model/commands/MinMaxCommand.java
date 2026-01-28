@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.edit.AbstractComponentEditPart;
+import org.openlca.app.editors.graphical.edit.ComponentEditPart;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
 
 public class MinMaxCommand extends Command {
@@ -57,7 +57,7 @@ public class MinMaxCommand extends Command {
 		var editor = child.getGraph().getEditor();
 		var childPart = editor.getEditPartOf(child);
 		if (childPart == null) return;
-		if (childPart.getParent() instanceof AbstractComponentEditPart<?> parent) {
+		if (childPart.getParent() instanceof ComponentEditPart<?> parent) {
 			parent.resetChildEditPart(childPart);
 		}
 	}

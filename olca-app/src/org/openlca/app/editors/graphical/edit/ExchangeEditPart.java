@@ -11,7 +11,7 @@ import org.eclipse.gef.tools.ConnectionDragCreationTool;
 import org.openlca.app.editors.graphical.figures.ExchangeFigure;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 
-public class ExchangeEditPart extends AbstractVertexEditPart<ExchangeItem> {
+public class ExchangeEditPart extends VertexEditPart<ExchangeItem> {
 
 	@Override
 	protected IFigure createFigure() {
@@ -22,11 +22,12 @@ public class ExchangeEditPart extends AbstractVertexEditPart<ExchangeItem> {
 
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE,
-			new GraphComponentEditPolicy());
-		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-			new ExchangeEditPolicy());
-		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new ExchangeSelectionPolicy());
+		installEditPolicy(
+			EditPolicy.COMPONENT_ROLE, new GraphComponentEditPolicy());
+		installEditPolicy(
+			EditPolicy.GRAPHICAL_NODE_ROLE, new ExchangeEditPolicy());
+		installEditPolicy(
+			EditPolicy.SELECTION_FEEDBACK_ROLE, new ExchangeSelectionPolicy());
 	}
 
 	@Override

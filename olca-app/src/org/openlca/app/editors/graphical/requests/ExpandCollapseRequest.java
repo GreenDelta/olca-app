@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.requests;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EXPAND_OR_COLLAPSE;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import org.eclipse.gef.Request;
 import org.openlca.app.components.graphics.model.Side;

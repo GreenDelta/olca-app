@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.ConnectionRouter;
+import org.eclipse.draw2d.ManhattanConnectionRouter;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gef.EditPart;
@@ -41,7 +42,7 @@ public class ExchangeEditPolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected ConnectionRouter getDummyConnectionRouter(CreateConnectionRequest req) {
-		return ConnectionRouter.NULL;
+		return new ManhattanConnectionRouter();
 	}
 
 	@Override

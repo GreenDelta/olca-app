@@ -15,8 +15,6 @@ import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Canvas;
 import org.openlca.app.editors.graphical.layouts.Layout;
 import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
@@ -35,7 +33,7 @@ import org.openlca.app.editors.graphical.model.Graph;
  * be notified of property changes in the corresponding model element.
  * </p>
  */
-public class GraphEditPart extends AbstractComponentEditPart<Graph> {
+public class GraphEditPart extends ComponentEditPart<Graph> {
 
 	/**
 	 * Upon activation, attach to the GraphConfig element as a property change
@@ -79,13 +77,10 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 		control.setBackground(theme.backgroundColor());
 
 		if (control instanceof Canvas canvas) {
-			canvas.addPaintListener(new PaintListener() {
-				@Override
-				public void paintControl(PaintEvent e) {
-					if (!canvas.isDisposed()) {
-						var currentTheme = getModel().getEditor().getTheme();
-						canvas.setBackground(currentTheme.backgroundColor());
-					}
+			canvas.addPaintListener(e -> {
+				if (!canvas.isDisposed()) {
+					var currentTheme = getModel().getEditor().getTheme();
+					canvas.setBackground(currentTheme.backgroundColor());
 				}
 			});
 		}

@@ -1,8 +1,5 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.*;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
-
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
@@ -13,6 +10,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
+import org.openlca.app.editors.graphical.requests.GraphRequests;
 import org.openlca.app.rcp.images.Icon;
 
 public class MinMaxAllAction extends StackAction {
@@ -66,8 +64,8 @@ public class MinMaxAllAction extends StackAction {
 			if (componentEditPart == null)
 				return null;
 			var request_type = type == MINIMIZE
-				? REQ_MIN
-				: REQ_MAX;
+				? GraphRequests.REQ_MINIMIZE
+				: GraphRequests.REQ_MAXIMIZE;
 			cc.add(componentEditPart.getCommand(new Request(request_type)));
 		}
 

@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,8 +16,8 @@ import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
+import org.openlca.util.Exchanges;
 
 public class RemoveChainAction extends SelectionAction {
 
@@ -65,15 +65,16 @@ public class RemoveChainAction extends SelectionAction {
 
 	private void addContributor(Object object, List<ProcessLink> links) {
 		var linkSearch = editor.getModel().linkSearch;
-		if (NodeEditPart.class.isAssignableFrom(object.getClass())) {
+
+		if (object instanceof NodeEditPart part) {
 			setText(M.RemoveSupplyChain);
-			var nodeId = ((NodeEditPart) object).getModel().descriptor.id;
+			var nodeId = part.getModel().descriptor.id;
 			links.addAll(linkSearch.getConsumerLinks(nodeId));
+
 		} else if (object instanceof ExchangeEditPart part) {
 			setText(M.RemoveFlowSupplyChain);
 			var e = part.getModel().exchange;
-			if ((e.flow.flowType == FlowType.WASTE_FLOW && !e.isInput)
-				|| (e.flow.flowType == FlowType.PRODUCT_FLOW && e.isInput)) {
+			if (Exchanges.isLinkable(e)) {
 				var connection = part.getModel().getAllConnections();
 				// there should only one link to a waste output or product input.
 				if (connection.size() != 1)

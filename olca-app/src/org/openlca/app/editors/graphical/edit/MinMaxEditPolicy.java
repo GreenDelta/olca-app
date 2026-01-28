@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.edit;
 
 import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.*;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import java.util.Arrays;
 
@@ -20,18 +20,16 @@ public class MinMaxEditPolicy extends GraphComponentEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {
+		var node = (MinMaxComponent) getHost().getModel();
 		if (REQ_OPEN.equals(request.getType())) {
-			var child = (MinMaxComponent) getHost().getModel();
-			return getOpenCommand(child.isMinimized() ? MAXIMIZE : MINIMIZE);
+			return getOpenCommand(node.isMinimized() ? MAXIMIZE : MINIMIZE);
 		}
-		if (REQ_MIN.equals(request.getType())) {
-			var child = (MinMaxComponent) getHost().getModel();
-			if (!child.isMinimized())
+		if (REQ_MINIMIZE.equals(request.getType())) {
+			if (!node.isMinimized())
 				return getMinMaxCommand(MINIMIZE);
 		}
-		if (REQ_MAX.equals(request.getType())) {
-			var child = (MinMaxComponent) getHost().getModel();
-			if (child.isMinimized())
+		if (REQ_MAXIMIZE.equals(request.getType())) {
+			if (node.isMinimized())
 				return getMinMaxCommand(MAXIMIZE);
 		}
 		return super.getCommand(request);

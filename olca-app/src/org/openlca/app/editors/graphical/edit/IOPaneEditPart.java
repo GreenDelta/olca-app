@@ -2,7 +2,7 @@ package org.openlca.app.editors.graphical.edit;
 
 import static org.openlca.app.components.graphics.model.Component.*;
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.*;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import java.beans.PropertyChangeEvent;
 
@@ -17,7 +17,7 @@ import org.openlca.app.editors.graphical.figures.IOPaneFigure;
 import org.openlca.app.editors.graphical.model.ExchangeItem;
 import org.openlca.app.editors.graphical.model.IOPane;
 
-public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
+public class IOPaneEditPart extends ComponentEditPart<IOPane> {
 
 	@Override
 	protected IFigure createFigure() {
@@ -28,8 +28,7 @@ public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 
 	@Override
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.CONTAINER_ROLE,
-			new IOPaneEditPolicy());
+		installEditPolicy(EditPolicy.CONTAINER_ROLE, new IOPaneEditPolicy());
 	}
 
 	@Override
@@ -90,8 +89,8 @@ public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 	protected void addButtonActionListener(IOPaneFigure figure) {
 		figure.addExchangeButton.addActionListener($ -> {
 			var request = getModel().isForInputs()
-				? new Request(REQ_ADD_INPUT_EXCHANGE)
-				: new Request(REQ_ADD_OUTPUT_EXCHANGE);
+				? new Request(REQ_ADD_INPUT)
+				: new Request(REQ_ADD_OUTPUT);
 			var command = getCommand(request);
 			getViewer().getEditDomain().getCommandStack().execute(command);
 		});

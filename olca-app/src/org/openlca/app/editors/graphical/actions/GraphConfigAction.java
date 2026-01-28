@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
+import static org.openlca.app.editors.graphical.GraphConfig.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

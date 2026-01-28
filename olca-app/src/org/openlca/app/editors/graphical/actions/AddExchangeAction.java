@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
@@ -25,8 +25,8 @@ public class AddExchangeAction extends SelectionAction {
 		super(part);
 		this.forInput = forInput;
 		request = new Request(forInput
-			? REQ_ADD_INPUT_EXCHANGE
-			: REQ_ADD_OUTPUT_EXCHANGE);
+			? REQ_ADD_INPUT
+			: REQ_ADD_OUTPUT);
 		setId(forInput
 			?	GraphActionIds.ADD_INPUT
 			: GraphActionIds.ADD_OUTPUT);

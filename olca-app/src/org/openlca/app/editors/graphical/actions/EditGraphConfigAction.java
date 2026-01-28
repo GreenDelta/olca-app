@@ -1,10 +1,8 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
-import static org.openlca.app.components.graphics.figures.Connection.ROUTER_MANHATTAN;
-import static org.openlca.app.components.graphics.figures.Connection.ROUTER_NULL;
-import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
+import static org.openlca.app.components.graphics.figures.Connection.*;
+import static org.openlca.app.editors.graphical.GraphConfig.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
 import java.util.HashMap;
 
@@ -51,18 +49,21 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			return;
 
 		if (!config.equals(editor.config)) {
-			if (getCommand().canExecute()) getCommand().execute();
-			else Popup.info(M.FailedToApplyTheNewSettings);
+			if (getCommand().canExecute()) {
+				getCommand().execute();
+			} else {
+				Popup.info(M.FailedToApplyTheNewSettings);
+			}
 		}
 	}
 
 	private Command getCommand() {
-		var graphEditPart = editor.getRootEditPart().getContents();
+		var part = editor.getRootEditPart().getContents();
 		var request = new Request(REQ_EDIT_CONFIG);
 		var data = new HashMap<String, Object>();
 		data.put(CONFIG_PROP, config);
 		request.setExtendedData(data);
-		return graphEditPart.getCommand(request);
+		return part.getCommand(request);
 	}
 
 	@Override

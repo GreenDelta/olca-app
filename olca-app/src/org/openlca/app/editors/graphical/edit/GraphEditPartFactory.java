@@ -9,10 +9,6 @@ import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.StickyNote;
 
-/**
- * A class that handles appropriate object creation (the {@link EditPart}s)
- * depending on what is to be obtained, no matter what is the object class.
- */
 public class GraphEditPartFactory implements EditPartFactory {
 
 	@Override
@@ -26,23 +22,22 @@ public class GraphEditPartFactory implements EditPartFactory {
 	}
 
 	private EditPart editPartOf(Object model) {
-		if (model instanceof Graph)
-			return new GraphEditPart();
-		else if (model instanceof Node node)
-			if (node.isMinimized())
-				return new NodeEditPart.Minimized();
-			else return new NodeEditPart.Maximized();
-		else if (model instanceof StickyNote note)
-			if (note.isMinimized())
-				return new StickyNoteEditPart.Minimized();
-			else return new StickyNoteEditPart.Maximized();
-		else if (model instanceof IOPane)
-			return new IOPaneEditPart();
-		else if (model instanceof ExchangeItem)
-			return new ExchangeEditPart();
-		else if (model instanceof GraphLink)
-			return new LinkEditPart();
-		else return null;
+		return switch (model) {
+			case Graph ignore -> new GraphEditPart();
+
+			case Node node -> node.isMinimized()
+				? new NodeEditPart.Minimized()
+				: new NodeEditPart.Maximized();
+
+			case StickyNote note -> note.isMinimized()
+				? new StickyNoteEditPart.Minimized()
+				: new StickyNoteEditPart.Maximized();
+
+			case IOPane ignore -> new IOPaneEditPart();
+			case ExchangeItem ignore -> new ExchangeEditPart();
+			case GraphLink ignore -> new LinkEditPart();
+			case null, default ->  null;
+		};
 	}
 
 }

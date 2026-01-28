@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.components.graphics.model.Component.SOURCE_CONNECTIONS_PROP;
-import static org.openlca.app.components.graphics.model.Component.TARGET_CONNECTIONS_PROP;
+import static org.openlca.app.components.graphics.model.Component.*;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -27,8 +26,8 @@ import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
  *
  * @param <N> The type of the model element.
  */
-public abstract class AbstractVertexEditPart<N extends Component> extends
-	AbstractComponentEditPart<N> implements NodeEditPart {
+public abstract class VertexEditPart<N extends Component> extends
+		ComponentEditPart<N> implements NodeEditPart {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {

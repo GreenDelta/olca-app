@@ -1,7 +1,7 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.*;
 import static org.openlca.app.results.analysis.sankey.requests.SankeyRequestConstants.REQ_EDIT_CONFIG;
 
 import org.eclipse.draw2d.PositionConstants;
