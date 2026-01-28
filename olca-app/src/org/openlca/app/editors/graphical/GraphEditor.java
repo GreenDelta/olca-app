@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical;
 
-import static org.openlca.app.components.graphics.themes.Themes.CONTEXT_MODEL;
+import static org.openlca.app.components.graphics.themes.Themes.*;
 import static org.openlca.app.editors.graphical.GraphFile.*;
 import static org.openlca.app.editors.graphical.actions.MassExpansionAction.*;
 import static org.openlca.app.editors.graphical.actions.SearchConnectorsAction.*;
@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
@@ -44,8 +43,7 @@ import org.openlca.app.editors.graphical.actions.MassExpansionAction;
 import org.openlca.app.editors.graphical.actions.MinMaxAction;
 import org.openlca.app.editors.graphical.actions.MinMaxAllAction;
 import org.openlca.app.editors.graphical.actions.OpenEditorAction;
-import org.openlca.app.editors.graphical.actions.RemoveAllConnectionsAction;
-import org.openlca.app.editors.graphical.actions.RemoveSupplyChainAction;
+import org.openlca.app.editors.graphical.actions.RemoveProcessChainAction;
 import org.openlca.app.editors.graphical.actions.SearchConnectorsAction;
 import org.openlca.app.editors.graphical.actions.SetProcessGroupAction;
 import org.openlca.app.editors.graphical.actions.SetReferenceAction;
@@ -63,6 +61,7 @@ import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.Version;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonArray;
@@ -93,9 +92,9 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		setEditDomain(new DefaultEditDomain(this));
-		if (input instanceof GraphicalEditorInput graphInput) {
-			if (graphInput.descriptor() != null) {
-				setPartName(Labels.name(graphInput.descriptor()));
+		if (input instanceof GraphicalEditorInput(Descriptor d)) {
+			if (d != null) {
+				setPartName(Labels.name(d));
 			}
 		}
 		super.init(site, input);
@@ -118,13 +117,9 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	@Override
 	protected void configureGraphicalViewer() {
 		super.configureGraphicalViewer();
-
 		var viewer = getGraphicalViewer();
-
-		ContextMenuProvider provider = new GraphContextMenuProvider(viewer,
-				getActionRegistry());
-		viewer.setContextMenu(provider);
-
+		var menu = new GraphContextMenu(viewer,getActionRegistry());
+		viewer.setContextMenu(menu);
 		viewer.setEditPartFactory(new GraphEditPartFactory());
 	}
 
@@ -202,10 +197,6 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		registry.registerAction(action);
 		stackActions.add(action.getId());
 
-		action = new RemoveAllConnectionsAction(this);
-		registry.registerAction(action);
-		selectionActions.add(action.getId());
-
 		action = new BuildSupplyChainMenuAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
@@ -216,7 +207,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		action = new BuildSupplyChainAction(this);
 		registry.registerAction(action);
 
-		action = new RemoveSupplyChainAction(this);
+		action = new RemoveProcessChainAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 

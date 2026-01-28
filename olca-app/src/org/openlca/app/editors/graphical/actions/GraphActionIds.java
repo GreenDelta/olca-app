@@ -24,7 +24,6 @@ public interface GraphActionIds {
 	String MAXIMIZE = "graph.actions.MinMaxAction.MAXIMIZE";
 	String MAXIMIZE_ALL = "graph.actions.MinMaxAllAction.MAXIMIZE";
 
-	String REMOVE_ALL_CONNECTIONS = "graph.actions.RemoveAllConnectionsAction";
 	String REMOVE_SUPPLY_CHAIN = "graph.actions.RemoveSupplyChainAction";
 	String SEARCH_PROVIDERS = "graph.actions.SearchConnectorsAction.PROVIDERS";
 	String SEARCH_RECIPIENTS = "graph.actions.SearchConnectorsAction.RECIPIENTS";

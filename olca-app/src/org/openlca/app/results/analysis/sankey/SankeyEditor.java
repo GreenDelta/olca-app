@@ -1,7 +1,7 @@
 package org.openlca.app.results.analysis.sankey;
 
-import static org.openlca.app.components.graphics.themes.Themes.CONTEXT_SANKEY;
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+import static org.openlca.app.components.graphics.themes.Themes.*;
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -105,7 +105,7 @@ public class SankeyEditor extends GraphicalEditorWithFrame {
 
 		var viewer = getGraphicalViewer();
 
-		ContextMenuProvider provider = new SankeyContextMenuProvider(viewer,
+		ContextMenuProvider provider = new SankeyContextMenu(viewer,
 				getActionRegistry());
 		viewer.setContextMenu(provider);
 

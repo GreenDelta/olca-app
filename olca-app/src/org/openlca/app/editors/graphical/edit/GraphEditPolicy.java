@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.actions.RemoveSupplyChainAction.KEY_LINKS;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_REMOVE_CHAIN;
+import static org.openlca.app.editors.graphical.actions.RemoveProcessChainAction.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;

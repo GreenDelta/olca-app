@@ -4,13 +4,13 @@ import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.jface.action.IMenuManager;
-import org.openlca.app.components.graphics.BasicContextMenuProvider;
+import org.openlca.app.components.graphics.BaseContextMenu;
 import org.openlca.app.components.graphics.actions.ActionIds;
 
-public class SankeyContextMenuProvider extends BasicContextMenuProvider {
+public class SankeyContextMenu extends BaseContextMenu {
 
 
-	public SankeyContextMenuProvider(EditPartViewer viewer,
+	public SankeyContextMenu(EditPartViewer viewer,
 																	 ActionRegistry registry) {
 		super(viewer, registry);
 	}
@@ -18,7 +18,7 @@ public class SankeyContextMenuProvider extends BasicContextMenuProvider {
 	@Override
 	public void addViewActions(IMenuManager menu) {
 		super.addViewActions(menu);
-		var layout = getActionRegistry().getAction(ActionIds.LAYOUT_TREE);
+		var layout = getActions().getAction(ActionIds.LAYOUT_TREE);
 		menu.appendToGroup(GEFActionConstants.GROUP_VIEW, layout);
 	}
 
