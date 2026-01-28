@@ -1,12 +1,10 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.eclipse.gef.RequestConstants.REQ_DELETE;
+import static org.eclipse.gef.RequestConstants.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.IdentityHashMap;
 
 import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.gef.ui.actions.SelectionAction;
@@ -16,6 +14,7 @@ import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.MsgBox;
+import org.openlca.util.Lists;
 
 public class RemoveAllConnectionsAction extends SelectionAction {
 
@@ -31,60 +30,68 @@ public class RemoveAllConnectionsAction extends SelectionAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		if (getSelectedObjects().isEmpty())
-			return false;
-
-		for (Object o : getSelectedObjects()) {
-			if (!(o instanceof NodeEditPart part))
-				return false;
-			if (part.getModel().getAllLinks().isEmpty())
-				return false;
+		// we can enable it, when we find a node with at least one link
+		var parts = getSelectedObjects();
+		if (Lists.isEmpty(parts)) return false;
+		for (var o : parts) {
+			if (!(o instanceof NodeEditPart part)) continue;
+			var model = part.getModel();
+			if (model != null && !model.getAllLinks().isEmpty()) {
+				return true;
+			}
 		}
-		return true;
+		return false;
 	}
 
 	@Override
 	public void run() {
-		var command = getCommand();
-		if (command != null) {
-			if (command.canExecute())
-				execute(getCommand());
-			else MsgBox.info(M.ConnectionsCannotBeRemoved);
+		var cmd = getCommand();
+		if (cmd == null) return;
+		if (!cmd.canExecute()) {
+			MsgBox.info(M.ConnectionsCannotBeRemoved);
+			return;
 		}
+		execute(cmd);
 	}
 
-	private Command getCommand() {
-		if (getSelectedObjects().isEmpty())
-			return null;
-
-		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
-		if (viewer == null)
-			return null;
-
-		CompoundCommand cc = new CompoundCommand();
-		cc.setDebugLabel("Remove links");
-		cc.setLabel(M.RemoveConnections);
-
+	private CompoundCommand getCommand() {
 		var parts = getSelectedObjects();
-		List<GraphLink> links = new ArrayList<>();
+		if (Lists.isEmpty(parts))
+			return null;
+		if (!(editor.getAdapter(GraphicalViewer.class) instanceof GraphicalViewer g))
+			return null;
 
-		for (Object o : parts) {
-			if (!(o instanceof NodeEditPart nodeEditPart))
-				return null;
+		// create a command that contains a list of delete commands
+		// for each selected link
+		var cmd = new CompoundCommand();
+		cmd.setDebugLabel("Remove links");
+		cmd.setLabel(M.RemoveConnections);
 
-			var node = nodeEditPart.getModel();
+		var handled = new IdentityHashMap<GraphLink, Boolean>();
+
+		for (var o : parts) {
+			if (!(o instanceof NodeEditPart part)) continue;
+			var node = part.getModel();
+			if (node == null) continue;
 
 			for (var l : node.getAllLinks()) {
-				if (l instanceof GraphLink link) {
-					if (!links.contains(link)) {
-						links.add(link);
-						var linkEditPart = viewer.getEditPartRegistry().get(link);
-						cc.add(linkEditPart.getCommand(new GroupRequest(REQ_DELETE)));
-					}
+
+				// check if it is a new graph link
+				if (!(l instanceof GraphLink link)) continue;
+				var exists = handled.get(link);
+				if (exists != null && exists) continue;
+				handled.put(link, Boolean.TRUE);
+
+				// request the delete-link command
+				var linkPart = g.getEditPartRegistry().get(link);
+				if (linkPart == null) continue;
+				var req = new GroupRequest(REQ_DELETE);
+				var command = linkPart.getCommand(req);
+				if (command != null) {
+					cmd.add(command);
 				}
 			}
 		}
-		return cc;
+		return cmd.isEmpty() ? null : cmd;
 	}
-
 }
