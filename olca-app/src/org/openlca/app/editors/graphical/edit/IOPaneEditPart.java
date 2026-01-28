@@ -1,10 +1,8 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredAmountLabelSize;
-import static org.openlca.app.editors.graphical.figures.ExchangeFigure.getPreferredUnitLabelSize;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
+import static org.openlca.app.components.graphics.model.Component.*;
+import static org.openlca.app.editors.graphical.figures.ExchangeFigure.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import java.beans.PropertyChangeEvent;
 
@@ -31,7 +29,7 @@ public class IOPaneEditPart extends AbstractComponentEditPart<IOPane> {
 	@Override
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.CONTAINER_ROLE,
-			new IOPaneContainerEditPolicy());
+			new IOPaneEditPolicy());
 	}
 
 	@Override

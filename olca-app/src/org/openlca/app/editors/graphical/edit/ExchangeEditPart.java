@@ -25,8 +25,8 @@ public class ExchangeEditPart extends AbstractVertexEditPart<ExchangeItem> {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
 			new GraphComponentEditPolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-			new ExchangeItemEditPolicy());
-		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new ExchangeSelectionEditPolicy());
+			new ExchangeEditPolicy());
+		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, new ExchangeSelectionPolicy());
 	}
 
 	@Override

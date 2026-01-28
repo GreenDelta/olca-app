@@ -1,8 +1,7 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EDIT_CONFIG;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_LAYOUT;
+import static org.openlca.app.editors.graphical.GraphConfig.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.PrecisionRectangle;
@@ -30,12 +29,12 @@ import org.openlca.app.editors.graphical.model.commands.GraphLayoutCommand;
 import org.openlca.app.editors.graphical.requests.GraphRequest;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-public class GraphXYLayoutEditPolicy extends XYLayoutEditPolicy {
+public class GraphLayoutPolicy extends XYLayoutEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {
 		if (REQ_LAYOUT.equals(request.getType()))
-			return new GraphLayoutCommand((GraphEditPart) getHost());
+			return new GraphLayoutCommand(getHost());
 		if (REQ_CREATE.equals(request.getType()))
 			return getCreateCommand((GraphRequest) request);
 		if (REQ_EDIT_CONFIG.equals(request.getType()))

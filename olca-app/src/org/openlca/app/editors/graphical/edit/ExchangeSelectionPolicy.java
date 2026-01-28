@@ -3,10 +3,10 @@ package org.openlca.app.editors.graphical.edit;
 import org.eclipse.gef.editpolicies.SelectionEditPolicy;
 import org.openlca.app.editors.graphical.figures.ExchangeFigure;
 
-public class ExchangeSelectionEditPolicy extends SelectionEditPolicy {
+public class ExchangeSelectionPolicy extends SelectionEditPolicy {
 
 	private ExchangeFigure getFigure() {
-		var figure = ((ExchangeEditPart) getHost()).getFigure();
+		var figure = getHost().getFigure();
 		return (ExchangeFigure) figure;
 	}
 

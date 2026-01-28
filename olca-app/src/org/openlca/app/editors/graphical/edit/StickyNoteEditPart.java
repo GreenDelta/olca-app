@@ -24,7 +24,7 @@ public abstract class StickyNoteEditPart extends
 	@Override
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
-				new MinMaxComponentEditPolicy());
+				new MinMaxEditPolicy());
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -11,7 +10,7 @@ import org.openlca.app.editors.graphical.model.IOPane;
 import org.openlca.app.editors.graphical.model.commands.AddExchangeCommand;
 
 
-public class IOPaneContainerEditPolicy extends ContainerEditPolicy {
+public class IOPaneEditPolicy extends ContainerEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {

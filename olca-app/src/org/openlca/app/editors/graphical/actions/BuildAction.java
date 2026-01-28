@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.db.Database;
@@ -112,19 +111,22 @@ public abstract class BuildAction extends WorkbenchPartAction {
 	}
 
 	protected void expandInputs() {
-		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
-		var registry = viewer.getEditPartRegistry();
+		var viewer =  editor.getGraphicalViewer();
 
 		for (var process : new HashSet<>(mapExchangeToProcess.values())) {
-			var part = (NodeEditPart) registry.get(graph.getNode(process.id));
-			if (part == null)
+			var node = graph.getNode(process.id);
+			if (!(editor.getEditPartOf(node) instanceof NodeEditPart part)) {
 				continue;
+			}
 
+			// TODO: expanded is set to false, so that it is expanded in the command?
+			// maybe it would be better to have 2 separate commands
 			part.getModel().setExpanded(Side.INPUT, false);
 			var request = new ExpandCollapseRequest(part.getModel(), Side.INPUT, true);
 			var command = part.getCommand(request);
-			if (command.canExecute())
+			if (command.canExecute()) {
 				viewer.getEditDomain().getCommandStack().execute(command);
+			}
 		}
 		graph.firePropertyChange(CHILDREN_PROP, null, null);
 	}

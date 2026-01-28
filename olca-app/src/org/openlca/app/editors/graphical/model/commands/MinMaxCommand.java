@@ -1,7 +1,5 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.edit.AbstractComponentEditPart;
@@ -26,13 +24,13 @@ public class MinMaxCommand extends Command {
 	@Override
 	public boolean canExecute() {
 		var childType = child.isMinimized() ? MINIMIZE : MAXIMIZE;
-		return  child != null && type != childType;
+		return child != null && type != childType;
 	}
 
 	@Override
 	public boolean canUndo() {
 		var childType = child.isMinimized() ? MINIMIZE : MAXIMIZE;
-		return  child != null && type == childType;
+		return child != null && type == childType;
 	}
 
 	@Override
@@ -44,29 +42,27 @@ public class MinMaxCommand extends Command {
 	public void redo() {
 		// Update model
 		child.setMinimized(!child.isMinimized());
-
-		if (!child.isMinimized())
+		if (!child.isMinimized()) {
 			child.addChildren();
+		}
 
 		// Note that links are reconnected AFTER creating the children if the
 		// command is maximizing and BEFORE if the command is minimizing.
 		child.reconnectLinks();
-
-		if (child.isMinimized())
+		if (child.isMinimized()) {
 			child.removeAllChildren();
+		}
 
 		// Update the EditPart.
-		var viewer = (GraphicalViewer) child.getGraph().getEditor()
-			.getAdapter(GraphicalViewer.class);
-		var registry = viewer.getEditPartRegistry();
-		var childEditPart = (EditPart) registry.get(child);
-		var parentEditPart = (AbstractComponentEditPart<?>) childEditPart
-			.getParent();
-		parentEditPart.resetChildEditPart(childEditPart);
+		var editor = child.getGraph().getEditor();
+		var childPart = editor.getEditPartOf(child);
+		if (childPart == null) return;
+		if (childPart.getParent() instanceof AbstractComponentEditPart<?> parent) {
+			parent.resetChildEditPart(childPart);
+		}
 	}
 
 	public void undo() {
 		execute();
 	}
-
 }

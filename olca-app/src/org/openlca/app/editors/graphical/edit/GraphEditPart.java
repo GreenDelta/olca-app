@@ -1,10 +1,10 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
-import static org.openlca.app.components.graphics.figures.Connection.ROUTER_MANHATTAN;
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.editors.graphical.GraphConfig.CONFIG_PROP;
-import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
+import static org.eclipse.gef.LayerConstants.*;
+import static org.openlca.app.components.graphics.figures.Connection.*;
+import static org.openlca.app.components.graphics.model.Component.*;
+import static org.openlca.app.editors.graphical.GraphConfig.*;
+import static org.openlca.app.editors.graphical.model.Graph.*;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -15,9 +15,9 @@ import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.widgets.Canvas;
 import org.openlca.app.editors.graphical.layouts.Layout;
 import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.model.Graph;
@@ -67,7 +67,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new GraphEditPolicy());
 		// Handles constraint changes (e.g. moving and/or resizing) of model
 		// elements within the graph and creation of new model elements.
-		installEditPolicy(EditPolicy.LAYOUT_ROLE, new GraphXYLayoutEditPolicy());
+		installEditPolicy(EditPolicy.LAYOUT_ROLE, new GraphLayoutPolicy());
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class GraphEditPart extends AbstractComponentEditPart<Graph> {
 
 		// Set background immediately
 		control.setBackground(theme.backgroundColor());
-		
+
 		if (control instanceof Canvas canvas) {
 			canvas.addPaintListener(new PaintListener() {
 				@Override

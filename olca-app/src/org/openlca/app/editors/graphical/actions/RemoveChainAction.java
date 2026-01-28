@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.SelectionAction;
@@ -47,15 +46,10 @@ public class RemoveChainAction extends SelectionAction {
 		if (getSelectedObjects().isEmpty())
 			return null;
 
-		var viewer = getWorkbenchPart().getAdapter(GraphicalViewer.class);
-		var registry = viewer.getEditPartRegistry();
-		var graphPart = registry.get(editor.getModel());
+		var graphPart = editor.getEditPartOf(editor.getModel());
 		if (graphPart == null)
 			return null;
-
 		var links = new ArrayList<ProcessLink>();
-
-
 		for (var object : getSelectedObjects()) {
 			addContributor(object, links);
 		}

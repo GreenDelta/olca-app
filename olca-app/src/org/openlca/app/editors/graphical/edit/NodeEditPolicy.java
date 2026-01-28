@@ -1,9 +1,6 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_COLLAPSE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EXPAND;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_EXPAND_OR_COLLAPSE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_SET_PROCESS_GROUP;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -18,7 +15,7 @@ import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.editors.graphical.model.commands.SetProcessGroupCommand;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 
-public class NodeEditPolicy extends MinMaxComponentEditPolicy {
+public class NodeEditPolicy extends MinMaxEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {

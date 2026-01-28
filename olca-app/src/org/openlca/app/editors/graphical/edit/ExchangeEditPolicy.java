@@ -20,7 +20,7 @@ import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.commands.CreateLinkCommand;
 import org.openlca.app.editors.graphical.model.commands.ReconnectLinkCommand;
 
-public class ExchangeItemEditPolicy extends GraphicalNodeEditPolicy {
+public class ExchangeEditPolicy extends GraphicalNodeEditPolicy {
 
 	@Override
 	protected Connection createDummyConnection(Request req) {

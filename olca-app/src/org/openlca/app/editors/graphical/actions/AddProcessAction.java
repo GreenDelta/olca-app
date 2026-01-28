@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -195,23 +194,20 @@ public class AddProcessAction extends WorkbenchPartAction {
 				return;
 			}
 
-			var viewer = getWorkbenchPart().getAdapter(
-				GraphicalViewer.class);
-			var registry = viewer.getEditPartRegistry();
-			var graphEditPart = registry.get(graph);
-			if (graphEditPart == null)
+			var viewer = editor.getGraphicalViewer();
+			var graphPart = editor.getEditPartOf(graph);
+			if (graphPart == null)
 				return;
 
-			var cursorLocationInViewport = new Point(viewer.getControl()
-				.toControl(cursorLocation));
+			var loc = new Point(viewer.getControl().toControl(cursorLocation));
 			var request = new GraphRequest(REQ_CREATE);
 			request.setDescriptors(d);
-			request.setLocation(cursorLocationInViewport);
+			request.setLocation(loc);
 			// Getting the command via GraphXYLayoutEditPolicy and executing it.
-			var command = graphEditPart.getCommand(request);
-			if (command.canExecute())
+			var command = graphPart.getCommand(request);
+			if (command.canExecute()) {
 				execute(command);
-			else {
+			} else {
 				MsgBox.info(M.ProcessCannotBeAddedToTheProductSystem
 						+ " - " + Labels.name(d));
 				cancelPressed();

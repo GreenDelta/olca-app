@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.gef.DefaultEditDomain;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -24,6 +26,7 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.M;
 import org.openlca.app.components.graphics.actions.SaveImageAction;
 import org.openlca.app.components.graphics.frame.GraphicalEditorWithFrame;
+import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.db.Database;
@@ -90,7 +93,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+		throws PartInitException {
 		setEditDomain(new DefaultEditDomain(this));
 		if (input instanceof GraphicalEditorInput(Descriptor d)) {
 			if (d != null) {
@@ -102,10 +105,10 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 
 	@Override
 	public Theme getTheme() {
-			if (theme == null) {
-				theme = Themes.get(CONTEXT_MODEL);
-			}
-			return theme;
+		if (theme == null) {
+			theme = Themes.get(CONTEXT_MODEL);
+		}
+		return theme;
 	}
 
 	@Override
@@ -118,9 +121,23 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	protected void configureGraphicalViewer() {
 		super.configureGraphicalViewer();
 		var viewer = getGraphicalViewer();
-		var menu = new ContextMenu(viewer,getActionRegistry());
+		var menu = new ContextMenu(viewer, getActionRegistry());
 		viewer.setContextMenu(menu);
 		viewer.setEditPartFactory(new GraphEditPartFactory());
+	}
+
+	public EditPart getEditPartOf(Component model) {
+		var viewer = getGraphicalViewer();
+		if (viewer == null) return null;
+		var registry = viewer.getEditPartRegistry();
+		if (registry == null) return null;
+		return registry.get(model);
+	}
+
+	/// Make it public.
+	@Override
+	public GraphicalViewer getGraphicalViewer() {
+		return super.getGraphicalViewer();
 	}
 
 	@Override
@@ -249,7 +266,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	 *                  <code>INullSelectionListener</code> is implemented.
 	 */
 	@Override
-	public void selectionChanged(IWorkbenchPart part, ISelection selection)	{
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		var activeEditor = getActiveEditor();
 		if (activeEditor == null)
 			return;
@@ -291,9 +308,9 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 
 	public RootEntity getDirty(long id) {
 		return dirtyEntities.stream()
-				.filter(e -> e.id == id)
-				.findFirst()
-				.orElse(null);
+			.filter(e -> e.id == id)
+			.findFirst()
+			.orElse(null);
 	}
 
 	public void removeDirty(RootEntity entity) {
@@ -336,12 +353,12 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		// Map the exchanges of the process with the ProcessLinks.
 		var mapPLinkToExchange = new HashMap<ProcessLink, Exchange>();
 		node.getAllLinks().stream()
-				.map(GraphLink.class::cast)
-				.map(graphLink -> graphLink.processLink)
-				.forEach(link -> GraphFactory.getConsumers(entity, type).stream()
-						.filter(exchange -> exchange.internalId == link.exchangeId
-								&& exchange.flow.id == link.flowId)
-						.forEach(exchange -> mapPLinkToExchange.put(link, exchange)));
+			.map(GraphLink.class::cast)
+			.map(graphLink -> graphLink.processLink)
+			.forEach(link -> GraphFactory.getConsumers(entity, type).stream()
+				.filter(exchange -> exchange.internalId == link.exchangeId
+					&& exchange.flow.id == link.flowId)
+				.forEach(exchange -> mapPLinkToExchange.put(link, exchange)));
 
 		// Update the entity
 		entity.lastChange = Calendar.getInstance().getTimeInMillis();
@@ -378,7 +395,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		String question = M.SystemSaveProceedQ;
 		if (Question.ask(M.SaveQ, question)) {
 			new ProgressMonitorDialog(UI.shell()).run(false, false,
-					systemEditor::doSave);
+				systemEditor::doSave);
 			return true;
 		}
 		return false;
@@ -392,7 +409,7 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		var nodeArray = Json.getArray(rootObj, KEY_NODES);
 		var stickyNoteArray = Json.getArray(rootObj, KEY_STICKY_NOTES);
 		var newGraph = getGraphFactory().createGraph(this, nodeArray,
-				stickyNoteArray);
+			stickyNoteArray);
 
 		setModel(newGraph);
 		getGraphicalViewer().setContents(newGraph);
@@ -405,8 +422,8 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		var stickyNoteArray = GraphFile.getLayout(this, KEY_STICKY_NOTES);
 
 		var graph = nodeArray == null || isLayoutTooLarge(nodeArray)
-				? getGraphFactory().createGraph(this)
-				: getGraphFactory().createGraph(this, nodeArray, stickyNoteArray);
+			? getGraphFactory().createGraph(this)
+			: getGraphFactory().createGraph(this, nodeArray, stickyNoteArray);
 
 		setModel(graph);
 		getGraphicalViewer().setContents(graph);

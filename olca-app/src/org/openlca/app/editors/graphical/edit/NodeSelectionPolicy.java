@@ -2,11 +2,10 @@ package org.openlca.app.editors.graphical.edit;
 
 import java.util.stream.Stream;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.editpolicies.SelectionEditPolicy;
 import org.openlca.app.components.graphics.figures.SelectableConnection;
 
-public class NodeSelectionEditPolicy extends SelectionEditPolicy {
+public class NodeSelectionPolicy extends SelectionEditPolicy {
 
 	@Override
 	public NodeEditPart getHost() {
@@ -35,8 +34,8 @@ public class NodeSelectionEditPolicy extends SelectionEditPolicy {
 				.toList();
 		for (var connection : connections) {
 			var registry = getHost().getViewer().getEditPartRegistry();
-			var linkEditPart = (EditPart) registry.get(connection);
-			if (linkEditPart instanceof LinkEditPart link)
+			var part = registry.get(connection);
+			if (part instanceof LinkEditPart link)
 				if (link.getFigure() instanceof SelectableConnection con)
 					con.setSelected(b);
 		}

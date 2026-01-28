@@ -1,9 +1,7 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MAX;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MIN;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import java.util.Arrays;
 
@@ -18,7 +16,7 @@ import org.openlca.app.editors.graphical.model.commands.CollapseCommand;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
 import org.openlca.app.editors.graphical.model.commands.MinMaxCommand;
 
-public class MinMaxComponentEditPolicy extends GraphComponentEditPolicy {
+public class MinMaxEditPolicy extends GraphComponentEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {

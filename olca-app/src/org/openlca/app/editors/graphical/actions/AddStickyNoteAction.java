@@ -3,8 +3,6 @@ package org.openlca.app.editors.graphical.actions;
 import static org.eclipse.gef.RequestConstants.*;
 
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.M;
@@ -31,22 +29,18 @@ public class AddStickyNoteAction extends WorkbenchPartAction {
 
 	@Override
 	public void run() {
-		var viewer = (GraphicalViewer) getWorkbenchPart().getAdapter(
-				GraphicalViewer.class);
-		var registry = viewer.getEditPartRegistry();
-		var graphEditPart = (EditPart) registry.get(graph);
-		if (graphEditPart == null)
-			return;
+		var viewer = editor.getGraphicalViewer();
+		var graphEdit = editor.getEditPartOf(graph);
+		if (viewer == null || graphEdit == null) return;
 
-		var cursorLocationInViewport = new Point(viewer.getControl()
-				.toControl(cursorLocation));
+		var pos = new Point(viewer.getControl().toControl(cursorLocation));
 		var request = new GraphRequest(REQ_CREATE);
-		request.setLocation(cursorLocationInViewport);
+		request.setLocation(pos);
 		// Getting the command via GraphXYLayoutEditPolicy and executing it.
-		var command = graphEditPart.getCommand(request);
-		if (command.canExecute())
+		var command = graphEdit.getCommand(request);
+		if (command.canExecute()) {
 			execute(command);
-		else {
+		} else {
 			MsgBox.info(M.StickyNoteCannotBeAddedToTheGraph);
 		}
 	}
