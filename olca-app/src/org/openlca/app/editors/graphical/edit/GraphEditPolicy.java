@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.actions.RemoveProcessChainAction.*;
+import static org.openlca.app.editors.graphical.actions.RemoveChainAction.*;
 import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import java.util.ArrayList;

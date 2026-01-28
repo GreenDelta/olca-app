@@ -30,9 +30,9 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.graphical.actions.AddExchangeAction;
 import org.openlca.app.editors.graphical.actions.AddProcessAction;
 import org.openlca.app.editors.graphical.actions.AddStickyNoteAction;
+import org.openlca.app.editors.graphical.actions.BuildChainAction;
+import org.openlca.app.editors.graphical.actions.BuildChainMenuAction;
 import org.openlca.app.editors.graphical.actions.BuildNextTierAction;
-import org.openlca.app.editors.graphical.actions.BuildSupplyChainAction;
-import org.openlca.app.editors.graphical.actions.BuildSupplyChainMenuAction;
 import org.openlca.app.editors.graphical.actions.EditExchangeAction;
 import org.openlca.app.editors.graphical.actions.EditGraphConfigAction;
 import org.openlca.app.editors.graphical.actions.EditModeAction;
@@ -43,7 +43,7 @@ import org.openlca.app.editors.graphical.actions.MassExpansionAction;
 import org.openlca.app.editors.graphical.actions.MinMaxAction;
 import org.openlca.app.editors.graphical.actions.MinMaxAllAction;
 import org.openlca.app.editors.graphical.actions.OpenEditorAction;
-import org.openlca.app.editors.graphical.actions.RemoveProcessChainAction;
+import org.openlca.app.editors.graphical.actions.RemoveChainAction;
 import org.openlca.app.editors.graphical.actions.SearchConnectorsAction;
 import org.openlca.app.editors.graphical.actions.SetProcessGroupAction;
 import org.openlca.app.editors.graphical.actions.SetReferenceAction;
@@ -111,14 +111,14 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	@Override
 	protected void initializeGraphicalViewer() {
 		super.initializeGraphicalViewer();
-		GraphDropListener.on(this);
+		DropListener.on(this);
 	}
 
 	@Override
 	protected void configureGraphicalViewer() {
 		super.configureGraphicalViewer();
 		var viewer = getGraphicalViewer();
-		var menu = new GraphContextMenu(viewer,getActionRegistry());
+		var menu = new ContextMenu(viewer,getActionRegistry());
 		viewer.setContextMenu(menu);
 		viewer.setEditPartFactory(new GraphEditPartFactory());
 	}
@@ -197,17 +197,17 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 		registry.registerAction(action);
 		stackActions.add(action.getId());
 
-		action = new BuildSupplyChainMenuAction(this);
+		action = new BuildChainMenuAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 
 		action = new BuildNextTierAction(this);
 		registry.registerAction(action);
 
-		action = new BuildSupplyChainAction(this);
+		action = new BuildChainAction(this);
 		registry.registerAction(action);
 
-		action = new RemoveProcessChainAction(this);
+		action = new RemoveChainAction(this);
 		registry.registerAction(action);
 		selectionActions.add(action.getId());
 

@@ -1,11 +1,12 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_SET_REFERENCE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 

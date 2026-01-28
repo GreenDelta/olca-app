@@ -3,6 +3,7 @@ package org.openlca.app.editors.graphical.actions;
 import java.util.List;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
 import org.openlca.app.editors.graphical.model.commands.SetProcessGroupCommand;

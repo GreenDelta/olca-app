@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.eclipse.gef.RequestConstants.REQ_CREATE;
+import static org.eclipse.gef.RequestConstants.*;
 
 import java.util.Date;
 import java.util.UUID;
@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.requests.GraphRequest;

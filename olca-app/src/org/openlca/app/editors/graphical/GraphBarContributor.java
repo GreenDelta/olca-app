@@ -1,9 +1,7 @@
-package org.openlca.app.editors.graphical.actions;
+package org.openlca.app.editors.graphical;
 
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.COLLAPSE;
-import static org.openlca.app.editors.graphical.actions.MassExpansionAction.EXPAND;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+import static org.openlca.app.editors.graphical.actions.MassExpansionAction.*;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.*;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -12,8 +10,6 @@ import org.openlca.app.components.graphics.actions.ActionIds;
 import org.openlca.app.components.graphics.actions.retarget.EditConfigRetargetAction;
 import org.openlca.app.components.graphics.actions.retarget.OpenEditorRetargetAction;
 import org.openlca.app.components.graphics.frame.GraphicalEditorWithFrame;
-import org.openlca.app.editors.graphical.GraphConfig;
-import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.actions.retarget.AddExchangeRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.AddProcessRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.AddStickyNoteRetargetAction;

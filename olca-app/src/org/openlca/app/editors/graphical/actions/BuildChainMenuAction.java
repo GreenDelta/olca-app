@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
@@ -24,16 +25,16 @@ import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 
-public class BuildSupplyChainMenuAction extends SelectionAction
+public class BuildChainMenuAction extends SelectionAction
 		implements UpdateAction {
 
 	private final GraphEditor editor;
 	protected Map<Exchange, Process> exchanges;
 
-	public BuildSupplyChainMenuAction(GraphEditor part) {
+	public BuildChainMenuAction(GraphEditor part) {
 		super(part);
 		editor = part;
-		setId(GraphActionIds.BUILD_SUPPLY_CHAIN_MENU);
+		setId(GraphActionIds.BUILD_CHAIN_MENU);
 		setImageDescriptor(Icon.BUILD_SUPPLY_CHAIN.descriptor());
 		setMenuCreator(new MenuCreator());
 	}
@@ -41,7 +42,7 @@ public class BuildSupplyChainMenuAction extends SelectionAction
 	private class MenuCreator implements IMenuCreator {
 
 		private void createMenu(Menu menu) {
-			createItem(menu, new BuildSupplyChainAction(editor));
+			createItem(menu, new BuildChainAction(editor));
 			createItem(menu, new BuildNextTierAction(editor));
 		}
 

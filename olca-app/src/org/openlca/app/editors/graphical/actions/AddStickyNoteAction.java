@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.eclipse.gef.RequestConstants.REQ_CREATE;
+import static org.eclipse.gef.RequestConstants.*;
 
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.EditPart;
@@ -8,6 +8,7 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.swt.widgets.Display;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.requests.GraphRequest;

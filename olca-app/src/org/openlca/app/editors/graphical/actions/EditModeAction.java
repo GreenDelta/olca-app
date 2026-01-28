@@ -1,6 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphConfig;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.rcp.images.Icon;

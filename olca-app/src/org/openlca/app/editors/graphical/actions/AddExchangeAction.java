@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_INPUT_EXCHANGE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_ADD_OUTPUT_EXCHANGE;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
@@ -9,6 +8,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.IOPaneEditPart;
@@ -28,8 +28,8 @@ public class AddExchangeAction extends SelectionAction {
 			? REQ_ADD_INPUT_EXCHANGE
 			: REQ_ADD_OUTPUT_EXCHANGE);
 		setId(forInput
-			?	GraphActionIds.ADD_INPUT_EXCHANGE
-			: GraphActionIds.ADD_OUTPUT_EXCHANGE);
+			?	GraphActionIds.ADD_INPUT
+			: GraphActionIds.ADD_OUTPUT);
 		setText(forInput ? M.AddInputFlow : M.AddOutputFlow);
 		setImageDescriptor(Images.descriptor(ModelType.FLOW));
 	}

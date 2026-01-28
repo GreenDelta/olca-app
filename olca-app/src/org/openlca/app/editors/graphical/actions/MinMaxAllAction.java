@@ -1,9 +1,7 @@
 package org.openlca.app.editors.graphical.actions;
 
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MAX;
-import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.REQ_MIN;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.*;
+import static org.openlca.app.editors.graphical.requests.GraphRequestConstants.*;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
@@ -12,6 +10,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.ui.actions.StackAction;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.model.MinMaxComponent;
 import org.openlca.app.rcp.images.Icon;

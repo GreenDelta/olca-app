@@ -7,12 +7,11 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.components.graphics.BaseContextMenu;
 import org.openlca.app.components.graphics.actions.ActionIds;
-import org.openlca.app.editors.graphical.actions.GraphActionIds;
 import org.openlca.app.rcp.images.Icon;
 
-class GraphContextMenu extends BaseContextMenu {
+class ContextMenu extends BaseContextMenu {
 
-	public GraphContextMenu(
+	public ContextMenu(
 		EditPartViewer viewer, ActionRegistry registry) {
 		super(viewer, registry);
 	}
@@ -23,8 +22,8 @@ class GraphContextMenu extends BaseContextMenu {
 
 		onEdit(menu, GraphActionIds.ADD_PROCESS);
 		onEdit(menu, GraphActionIds.SET_PROCESS_GROUP);
-		onEdit(menu, GraphActionIds.ADD_INPUT_EXCHANGE);
-		onEdit(menu, GraphActionIds.ADD_OUTPUT_EXCHANGE);
+		onEdit(menu, GraphActionIds.ADD_INPUT);
+		onEdit(menu, GraphActionIds.ADD_OUTPUT);
 		onEdit(menu, GraphActionIds.SET_REFERENCE);
 		onEdit(menu, GraphActionIds.EDIT_EXCHANGE);
 		onEdit(menu, GraphActionIds.EDIT_STICKY_NOTE);
@@ -37,8 +36,8 @@ class GraphContextMenu extends BaseContextMenu {
 			menu.appendToGroup(GEFActionConstants.GROUP_EDIT, delete);
 		}
 
-		onEdit(menu, GraphActionIds.BUILD_SUPPLY_CHAIN_MENU);
-		onEdit(menu, GraphActionIds.REMOVE_SUPPLY_CHAIN);
+		onEdit(menu, GraphActionIds.BUILD_CHAIN_MENU);
+		onEdit(menu, GraphActionIds.REMOVE_CHAIN);
 		onEdit(menu, GraphActionIds.SEARCH_PROVIDERS);
 		onEdit(menu, GraphActionIds.SEARCH_RECIPIENTS);
 		onEdit(menu, GraphActionIds.LINK_UPDATE);

@@ -1,11 +1,10 @@
 package org.openlca.app.editors.graphical;
 
-import static org.eclipse.gef.RequestConstants.REQ_CREATE;
+import static org.eclipse.gef.RequestConstants.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.swt.dnd.DND;
@@ -21,11 +20,11 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-class GraphDropListener extends DropTargetAdapter {
+class DropListener extends DropTargetAdapter {
 
 	private final GraphEditor editor;
 
-	GraphDropListener(GraphEditor editor) {
+	DropListener(GraphEditor editor) {
 		this.editor = editor;
 	}
 
@@ -34,7 +33,7 @@ class GraphDropListener extends DropTargetAdapter {
 		var target = new DropTarget(viewer.getControl(),
 				DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT);
 		target.setTransfer(ModelTransfer.getInstance());
-		target.addDropListener(new GraphDropListener(editor));
+		target.addDropListener(new DropListener(editor));
 	}
 
 	@Override
@@ -48,7 +47,7 @@ class GraphDropListener extends DropTargetAdapter {
 		var commandStack = (CommandStack) editor.getAdapter(CommandStack.class);
 		var registry = viewer.getEditPartRegistry();
 
-		var graphEditPart = (EditPart) registry.get(graph);
+		var graphEditPart = registry.get(graph);
 		if (graphEditPart == null)
 			return;
 

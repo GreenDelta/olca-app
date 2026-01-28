@@ -5,6 +5,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.ProductSystemBuilder;
@@ -19,17 +20,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class BuildSupplyChainAction extends BuildAction {
+public class BuildChainAction extends BuildAction {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final GraphEditor editor;
 
 	private final LinkingConfig config;
 
-	public BuildSupplyChainAction(GraphEditor part) {
+	public BuildChainAction(GraphEditor part) {
 		super(part);
 		editor = part;
-		setId(GraphActionIds.BUILD_SUPPLY_CHAIN);
+		setId(GraphActionIds.BUILD_CHAIN);
 		setText(M.Complete);
 		config = new LinkingConfig()
 			.preferredType(PreferredType.UNIT_PROCESS)

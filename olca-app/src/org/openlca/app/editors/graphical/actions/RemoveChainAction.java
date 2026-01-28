@@ -11,6 +11,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.M;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.editors.graphical.GraphEditor;
 import org.openlca.app.editors.graphical.edit.ExchangeEditPart;
 import org.openlca.app.editors.graphical.edit.NodeEditPart;
@@ -19,15 +20,15 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ProcessLink;
 
-public class RemoveProcessChainAction extends SelectionAction {
+public class RemoveChainAction extends SelectionAction {
 
 	public static final String KEY_LINKS = "links";
 	private final GraphEditor editor;
 
-	public RemoveProcessChainAction(GraphEditor editor) {
+	public RemoveChainAction(GraphEditor editor) {
 		super(editor);
 		this.editor = editor;
-		setId(GraphActionIds.REMOVE_SUPPLY_CHAIN);
+		setId(GraphActionIds.REMOVE_CHAIN);
 		setImageDescriptor(Icon.REMOVE_SUPPLY_CHAIN.descriptor());
 	}
 

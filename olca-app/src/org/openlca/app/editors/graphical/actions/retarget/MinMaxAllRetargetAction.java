@@ -1,11 +1,10 @@
 package org.openlca.app.editors.graphical.actions.retarget;
 
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MAXIMIZE;
-import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.MINIMIZE;
+import static org.openlca.app.editors.graphical.model.commands.MinMaxCommand.*;
 
 import org.eclipse.ui.actions.RetargetAction;
 import org.openlca.app.M;
-import org.openlca.app.editors.graphical.actions.GraphActionIds;
+import org.openlca.app.editors.graphical.GraphActionIds;
 import org.openlca.app.rcp.images.Icon;
 
 public class MinMaxAllRetargetAction extends RetargetAction {
