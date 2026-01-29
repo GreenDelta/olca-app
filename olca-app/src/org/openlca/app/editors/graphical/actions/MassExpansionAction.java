@@ -103,7 +103,7 @@ public class MassExpansionAction extends StackAction {
 
 		if (doIt)	{
 			execute(getCommand());
-			graph.firePropertyChange(CHILDREN_PROP, null, null);
+			graph.notifyChange(CHILDREN_PROP, null, null);
 		}
 
 		editor.updateStackActions();

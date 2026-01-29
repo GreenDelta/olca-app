@@ -45,7 +45,7 @@ public class CollapseCommand extends Command {
 	public void redo() {
 		collapse(graph, host, host, side);
 		host.setExpanded(side, false);
-		host.getGraph().firePropertyChange(CHILDREN_PROP, null, null);
+		host.getGraph().notifyChange(CHILDREN_PROP, null, null);
 	}
 
 

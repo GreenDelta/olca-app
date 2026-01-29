@@ -1,6 +1,6 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -21,7 +21,7 @@ public abstract class AbstractComponentEditPart<N extends Component> extends
 	public void activate() {
 		if (!isActive()) {
 			super.activate();
-			getModel().addPropertyChangeListener(this);
+			getModel().addListener(this);
 		}
 	}
 
@@ -33,7 +33,7 @@ public abstract class AbstractComponentEditPart<N extends Component> extends
 	public void deactivate() {
 		if (isActive()) {
 			super.deactivate();
-			getModel().removePropertyChangeListener(this);
+			getModel().removeListener(this);
 		}
 	}
 

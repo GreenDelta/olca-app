@@ -1,7 +1,7 @@
 package org.openlca.app.results.analysis.sankey.edit;
 
-import static org.eclipse.gef.LayerConstants.CONNECTION_LAYER;
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+import static org.eclipse.gef.LayerConstants.*;
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.*;
 
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -25,7 +25,7 @@ public class DiagramEditPart extends AbstractComponentEditPart<Diagram> {
 	public void activate() {
 		if (!isActive()) {
 			super.activate();
-			getModel().getConfig().addPropertyChangeListener(this);
+			getModel().getConfig().addListener(this);
 		}
 	}
 
@@ -37,7 +37,7 @@ public class DiagramEditPart extends AbstractComponentEditPart<Diagram> {
 	public void deactivate() {
 		if (isActive()) {
 			super.deactivate();
-			getModel().getConfig().removePropertyChangeListener(this);
+			getModel().getConfig().removeListener(this);
 		}
 	}
 

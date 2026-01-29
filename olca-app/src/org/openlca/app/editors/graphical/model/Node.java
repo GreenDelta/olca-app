@@ -235,7 +235,7 @@ public class Node extends MinMaxComponent {
 			case BOTH -> value ? 3 : 0;
 		};
 		if (oldState != expansionState) {
-			firePropertyChange(EXPANDED_PROP, oldState, expansionState);
+			notifyChange(EXPANDED_PROP, oldState, expansionState);
 		}
 	}
 

@@ -19,7 +19,7 @@ import org.eclipse.swt.SWT;
 	 * <li>support for adding and removing children,</li>
 	 * <li>methods for connections with other <code>Components</code>,</li>
  */
-abstract public class Component extends Element implements
+abstract public class Component extends PropertyNotifier implements
 		Comparable<Component> {
 
 	public static final String
@@ -50,14 +50,14 @@ abstract public class Component extends Element implements
 		if (p == null || Objects.equals(location, p))
 			return;
 		location = p;
-		firePropertyChange(LOCATION_PROP, null, location);
+		notifyChange(LOCATION_PROP, null, location);
 	}
 
 	public void setSize(Dimension d) {
 		if (d == null || size.equals(d))
 			return;
 		size = d;
-		firePropertyChange(SIZE_PROP, null, size);
+		notifyChange(SIZE_PROP, null, size);
 	}
 
 	public void addChild(Component child) {
@@ -70,7 +70,7 @@ abstract public class Component extends Element implements
 		else
 			children.add(child);
 		child.setParent(this);
-		firePropertyChange(CHILDREN_PROP, index, child);
+		notifyChange(CHILDREN_PROP, index, child);
 	}
 
 	/**
@@ -99,7 +99,7 @@ abstract public class Component extends Element implements
 	 */
 	public boolean removeChild(Component child) {
 		if (child != null && children.remove(child)) {
-			firePropertyChange(CHILDREN_PROP, child, null);
+			notifyChange(CHILDREN_PROP, child, null);
 			return true;
 		}
 		return false;
@@ -132,10 +132,10 @@ abstract public class Component extends Element implements
 			return;
 		if (this.equals(link.getTarget()) && !targetConnections.contains(link)) {
 			targetConnections.add(link);
-			firePropertyChange(TARGET_CONNECTIONS_PROP, null, link);
+			notifyChange(TARGET_CONNECTIONS_PROP, null, link);
 		} else if (this.equals(link.getSource()) && !sourceConnections.contains(link)) {
 			sourceConnections.add(link);
-			firePropertyChange(SOURCE_CONNECTIONS_PROP, null, link);
+			notifyChange(SOURCE_CONNECTIONS_PROP, null, link);
 		}
 	}
 
@@ -145,11 +145,11 @@ abstract public class Component extends Element implements
 		}
 		if (Objects.equals(link.getTarget(), this)) {
 			targetConnections.remove(link);
-			firePropertyChange(TARGET_CONNECTIONS_PROP, link, null);
+			notifyChange(TARGET_CONNECTIONS_PROP, link, null);
 		}
 		else if (Objects.equals(link.getSource(), this)) {
 			sourceConnections.remove(link);
-			firePropertyChange(SOURCE_CONNECTIONS_PROP, link, null);
+			notifyChange(SOURCE_CONNECTIONS_PROP, link, null);
 		}
 	}
 

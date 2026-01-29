@@ -7,7 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.components.graphics.edit.RootEditPart;
-import org.openlca.app.components.graphics.model.Element;
+import org.openlca.app.components.graphics.model.PropertyNotifier;
 
 public abstract class Header extends Composite implements
 		PropertyChangeListener {
@@ -15,7 +15,7 @@ public abstract class Header extends Composite implements
 	protected static Dimension DEFAULT_SIZE = new Dimension(SWT.DEFAULT, 50);
 
 	private RootEditPart rootEditPart;
-	private Element model;
+	private PropertyNotifier model;
 	private DisposeListener disposeListener;
 
 	public Header(Composite parent, int style) {
@@ -32,7 +32,7 @@ public abstract class Header extends Composite implements
 
 	public abstract void initialize();
 
-	public void setModel(Element element) {
+	public void setModel(PropertyNotifier element) {
 		if (model != null)
 			deactivate();
 		model = element;
@@ -40,13 +40,13 @@ public abstract class Header extends Composite implements
 			activate();
 	}
 
-	public Element getModel() {
+	public PropertyNotifier getModel() {
 		return model;
 	}
 
 	public void activate() {
 		if (getModel() != null)
-			getModel().addPropertyChangeListener(this);
+			getModel().addListener(this);
 
 		var viewer = getRootEditPart().getViewer();
 		if (viewer != null) {
@@ -57,7 +57,7 @@ public abstract class Header extends Composite implements
 
 	public void deactivate() {
 		if (getModel() != null)
-			getModel().removePropertyChangeListener(this);
+			getModel().removeListener(this);
 
 		var viewer = getRootEditPart().getViewer();
 		if (viewer != null && viewer.getControl() != null)

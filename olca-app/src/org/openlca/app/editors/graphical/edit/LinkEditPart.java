@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.editors.graphical.model.Graph.ORIENTATION;
+import static org.openlca.app.editors.graphical.model.Graph.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -24,7 +24,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 
 	public void activate() {
 		super.activate();
-		getModel().addPropertyChangeListener(this);
+		getModel().addListener(this);
 	}
 
 	public void activateFigure() {
@@ -38,7 +38,7 @@ public class LinkEditPart extends AbstractConnectionEditPart
 	}
 
 	public void deactivate() {
-		getModel().removePropertyChangeListener(this);
+		getModel().removeListener(this);
 		super.deactivate();
 	}
 

@@ -1,7 +1,7 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
-import static org.openlca.app.editors.graphical.model.GraphFactory.createGraphLink;
+import static org.openlca.app.components.graphics.model.Component.*;
+import static org.openlca.app.editors.graphical.model.GraphFactory.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,7 +102,7 @@ public class MassCreationCommand extends Command {
 	public void undo() {
 		for (Node node : createdNodes)
 			removeNodeQuietly(node);
-		graph.firePropertyChange(CHILDREN_PROP, null, null);
+		graph.notifyChange(CHILDREN_PROP, null, null);
 		for (Node node : graph.getNodes()) {
 			node.setSize(oldConstraints.get(node).getSize());
 			node.setLocation(oldConstraints.get(node).getLocation());

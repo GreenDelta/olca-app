@@ -21,7 +21,7 @@ public abstract class ComponentEditPart<N extends Component> extends
 	public void activate() {
 		if (!isActive()) {
 			super.activate();
-			getModel().addPropertyChangeListener(this);
+			getModel().addListener(this);
 		}
 	}
 
@@ -33,7 +33,7 @@ public abstract class ComponentEditPart<N extends Component> extends
 	public void deactivate() {
 		if (isActive()) {
 			super.deactivate();
-			getModel().removePropertyChangeListener(this);
+			getModel().removeListener(this);
 		}
 	}
 

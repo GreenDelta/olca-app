@@ -2,7 +2,7 @@ package org.openlca.app.components.graphics.model;
 
 import java.util.Objects;
 
-public abstract class Link extends Element {
+public abstract class Link extends PropertyNotifier {
 
 	protected Component source;
 	protected Component target;

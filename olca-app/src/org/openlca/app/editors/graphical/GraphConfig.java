@@ -1,18 +1,17 @@
 package org.openlca.app.editors.graphical;
 
-import static org.openlca.app.components.graphics.figures.Connection.ROUTERS;
-import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
+import static org.openlca.app.components.graphics.figures.Connection.*;
 
 import java.util.Objects;
 
 import org.eclipse.draw2d.geometry.Point;
-import org.openlca.app.components.graphics.model.Element;
+import org.openlca.app.components.graphics.model.PropertyNotifier;
 import org.openlca.commons.Copyable;
 import org.openlca.jsonld.Json;
 
 import com.google.gson.JsonObject;
 
-public class GraphConfig extends Element implements Copyable<GraphConfig> {
+public class GraphConfig extends PropertyNotifier implements Copyable<GraphConfig> {
 
 	public static final String CONFIG_PROP = "config";
 
@@ -43,7 +42,7 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		other.connectionRouter = connectionRouter;
 		other.zoom = zoom;
 		other.viewLocation = viewLocation;
-		other.firePropertyChange(CONFIG_PROP, null, this);
+		other.notifyChange(CONFIG_PROP, null, this);
 	}
 
 	@Override
@@ -102,21 +101,21 @@ public class GraphConfig extends Element implements Copyable<GraphConfig> {
 		if (showElementaryFlows == this.showElementaryFlows)
 			return;
 		this.showElementaryFlows = showElementaryFlows;
-		firePropertyChange(CONFIG_PROP, null, this);
+		notifyChange(CONFIG_PROP, null, this);
 	}
 
 	public void setConnectionRouter(String router) {
 		if (Objects.equals(router, this.connectionRouter))
 			return;
 		connectionRouter = router;
-		firePropertyChange(CONFIG_PROP, null, this);
+		notifyChange(CONFIG_PROP, null, this);
 	}
 
 	public void setNodeEditingEnabled(boolean nodeEditingEnabled) {
 		if (nodeEditingEnabled == this.isNodeEditingEnabled)
 			return;
 		isNodeEditingEnabled = nodeEditingEnabled;
-		firePropertyChange(CONFIG_PROP, null, this);
+		notifyChange(CONFIG_PROP, null, this);
 	}
 
 	public void setZoom(double zoom) {

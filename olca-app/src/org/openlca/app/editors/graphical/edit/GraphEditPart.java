@@ -43,7 +43,7 @@ public class GraphEditPart extends ComponentEditPart<Graph> {
 	public void activate() {
 		if (!isActive()) {
 			super.activate();
-			getModel().getConfig().addPropertyChangeListener(this);
+			getModel().getConfig().addListener(this);
 		}
 	}
 
@@ -55,7 +55,7 @@ public class GraphEditPart extends ComponentEditPart<Graph> {
 	public void deactivate() {
 		if (isActive()) {
 			super.deactivate();
-			getModel().getConfig().removePropertyChangeListener(this);
+			getModel().getConfig().removeListener(this);
 		}
 	}
 

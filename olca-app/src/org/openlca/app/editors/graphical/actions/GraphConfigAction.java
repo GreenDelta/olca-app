@@ -22,7 +22,7 @@ abstract class GraphConfigAction extends WorkbenchPartAction implements
 	public GraphConfigAction(GraphEditor part) {
 		super(part);
 		this.editor = part;
-		editor.config.addPropertyChangeListener(this);
+		editor.config.addListener(this);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ abstract class GraphConfigAction extends WorkbenchPartAction implements
 
 	@Override
 	public void dispose() {
-		getEditor().config.removePropertyChangeListener(this);
+		getEditor().config.removeListener(this);
 	}
 
 }

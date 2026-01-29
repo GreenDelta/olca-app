@@ -1,15 +1,15 @@
 package org.openlca.app.results.analysis.sankey;
 
-import static org.eclipse.draw2d.PositionConstants.NORTH;
-import static org.openlca.app.components.graphics.figures.Connection.ROUTER_CURVE;
+import static org.eclipse.draw2d.PositionConstants.*;
+import static org.openlca.app.components.graphics.figures.Connection.*;
 
 import java.util.Objects;
 
-import org.openlca.app.components.graphics.model.Element;
+import org.openlca.app.components.graphics.model.PropertyNotifier;
 import org.openlca.commons.Copyable;
 import org.openlca.commons.Strings;
 
-public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
+public class SankeyConfig extends PropertyNotifier implements Copyable<SankeyConfig> {
 
 	public static final String CONFIG_PROP = "config";
 
@@ -83,7 +83,7 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 		other.maxCount = maxCount;
 		other.orientation = orientation;
 		other.connectionRouter = connectionRouter;
-		other.firePropertyChange(CONFIG_PROP, null, this);
+		other.notifyChange(CONFIG_PROP, null, this);
 	}
 
 	public String connectionRouter() {
@@ -110,35 +110,35 @@ public class SankeyConfig extends Element implements Copyable<SankeyConfig> {
 		if (Objects.equals(this.selection, selection))
 			return;
 		this.selection = selection;
-		firePropertyChange(CONFIG_PROP, null, this);
+		notifyChange(CONFIG_PROP, null, this);
 	}
 
 	public void setCutoff(double cutoff) {
 		if (cutoff == this.cutoff)
 			return;
 		this.cutoff = cutoff;
-		firePropertyChange(CONFIG_PROP, null, this);
+		notifyChange(CONFIG_PROP, null, this);
 	}
 
 	public void setMaxCount(int maxCount) {
 		if (maxCount == this.maxCount)
 			return;
 		this.maxCount = maxCount;
-		firePropertyChange(CONFIG_PROP, null, this);
+		notifyChange(CONFIG_PROP, null, this);
 	}
 
 	public void setOrientation(int orientation) {
 		if (orientation == this.orientation)
 			return;
 		this.orientation = orientation;
-		firePropertyChange(CONFIG_PROP, null, this);
+		notifyChange(CONFIG_PROP, null, this);
 	}
 
 	public void setConnectionRouter(String connectionRouter) {
 		if (Objects.equals(connectionRouter, this.connectionRouter))
 			return;
 		this.connectionRouter = connectionRouter;
-		firePropertyChange(CONFIG_PROP, null, this);
+		notifyChange(CONFIG_PROP, null, this);
 	}
 
 }

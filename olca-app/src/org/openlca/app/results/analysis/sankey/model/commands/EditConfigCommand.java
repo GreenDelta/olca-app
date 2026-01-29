@@ -1,6 +1,6 @@
 package org.openlca.app.results.analysis.sankey.model.commands;
 
-import static org.openlca.app.results.analysis.sankey.SankeyConfig.CONFIG_PROP;
+import static org.openlca.app.results.analysis.sankey.SankeyConfig.*;
 
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
@@ -50,7 +50,7 @@ public class EditConfigCommand extends Command {
 		editor.setModel(newDiagram);
 		if (editor.getHeader() != null) {
 			editor.getHeader().setModel(newDiagram);
-			newDiagram.firePropertyChange(CONFIG_PROP, null, newDiagram.getConfig());
+			newDiagram.notifyChange(CONFIG_PROP, null, newDiagram.getConfig());
 		}
 		viewer.setContents(newDiagram);
 	}

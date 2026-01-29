@@ -186,7 +186,7 @@ public class SankeyEditor extends GraphicalEditorWithFrame {
 		setModel(diagram);
 		if (getHeader() != null) {
 			getHeader().setModel(diagram);
-			diagram.firePropertyChange(CONFIG_PROP, null, diagram.getConfig());
+			diagram.notifyChange(CONFIG_PROP, null, diagram.getConfig());
 		}
 		getGraphicalViewer().setContents(diagram);
 	}

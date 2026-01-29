@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.*;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
@@ -62,7 +62,7 @@ public class RemoveNodeCommand extends Command {
 		graph.getProductSystem().processes.remove(node.descriptor.id);
 		editor.removeDirty(node.getEntity());
 		graph.removeChildQuietly(node);
-		graph.firePropertyChange(CHILDREN_PROP, node, null);
+		graph.notifyChange(CHILDREN_PROP, node, null);
 		editor.setDirty();
 	}
 

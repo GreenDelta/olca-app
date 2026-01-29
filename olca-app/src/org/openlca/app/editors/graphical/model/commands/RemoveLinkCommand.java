@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.*;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
@@ -48,7 +48,7 @@ public class RemoveLinkCommand extends Command {
 	@Override
 	public void redo() {
 		graph.removeLink(link.processLink);
-		graph.firePropertyChange(CHILDREN_PROP, link, null);
+		graph.notifyChange(CHILDREN_PROP, link, null);
 		graph.getEditor().setDirty();
 	}
 }

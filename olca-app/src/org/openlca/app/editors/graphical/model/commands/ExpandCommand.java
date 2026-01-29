@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.*;
 import static org.openlca.app.editors.graphical.model.Node.*;
 
 import java.util.List;
@@ -91,7 +91,7 @@ public class ExpandCommand extends Command {
 
 		// Fire a property change if the Nodes have been added quietly.
 		if (!quiet)
-			graph.firePropertyChange(CHILDREN_PROP, null, null);
+			graph.notifyChange(CHILDREN_PROP, null, null);
 	}
 
 	/**
