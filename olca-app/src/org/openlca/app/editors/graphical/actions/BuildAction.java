@@ -128,7 +128,7 @@ public abstract class BuildAction extends WorkbenchPartAction {
 				viewer.getEditDomain().getCommandStack().execute(command);
 			}
 		}
-		graph.notifyChange(CHILDREN_PROP, null, null);
+		graph.notifyChange(CHILDREN_PROP);
 	}
 
 }

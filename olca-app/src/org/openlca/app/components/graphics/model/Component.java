@@ -90,13 +90,7 @@ abstract public class Component extends PropertyNotifier implements
 		return parent;
 	}
 
-	/**
-	 * Remove a child from this.
-	 *
-	 * @param child
-	 *            a non-null component instance;
-	 * @return true, if the component was removed, false otherwise
-	 */
+	 /// Remove a child from this component. Returns `true` when it was removed.
 	public boolean removeChild(Component child) {
 		if (child != null && children.remove(child)) {
 			notifyChange(CHILDREN_PROP, child, null);
@@ -105,22 +99,17 @@ abstract public class Component extends PropertyNotifier implements
 		return false;
 	}
 
-
-	/**
-	 * Remove a child from this without firing the property change.
-	 * Should be used with caution as it won't repaint the figures.
-	 *
-	 * @param child
-	 *            a non-null component instance;
-	 * @return true, if the component was removed, false otherwise
-	 */
-	public boolean removeChildQuietly(Component child) {
-		return child != null && children.remove(child);
+   /// Remove a child from this component without firing the property change.
+	 /// This should be used with caution as it won't repaint the figures.
+	public void removeChildQuietly(Component child) {
+		if (child != null) {
+			children.remove(child);
+		}
 	}
 
 	public void removeAllChildren() {
-		var children = new ArrayList<>(getChildren());
-		for (var child : children) removeChild(child);
+		children.clear();
+		notifyChange(CHILDREN_PROP);
 	}
 
 	public List<? extends Component> getChildren() {

@@ -2,7 +2,6 @@ package org.openlca.app.editors.graphical.actions;
 
 import static org.openlca.app.components.graphics.model.Component.*;
 
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -71,7 +70,7 @@ public class MassExpansionAction extends StackAction {
 		if (type == COLLAPSE) {
 			var referenceNode = editor.getModel().getReferenceNode();
 
-			var editPart = (EditPart) viewer.getEditPartRegistry().get(referenceNode);
+			var editPart = viewer.getEditPartRegistry().get(referenceNode);
 			var request = new ExpandCollapseRequest(referenceNode, GraphRequests.REQ_COLLAPSE, true);
 			if (editPart != null)
 				cc.add(editPart.getCommand(request));
@@ -81,7 +80,7 @@ public class MassExpansionAction extends StackAction {
 			for (var node : editor.getModel().getNodes()) {
 				if (!node.isExpanded(Side.INPUT)
 					|| !node.isExpanded(Side.OUTPUT)) {
-					var editPart = (EditPart) viewer.getEditPartRegistry().get(node);
+					var editPart = viewer.getEditPartRegistry().get(node);
 					var request = new ExpandCollapseRequest(node, GraphRequests.REQ_EXPAND, true);
 					if (editPart != null)
 						cc.add(editPart.getCommand(request));
@@ -103,7 +102,7 @@ public class MassExpansionAction extends StackAction {
 
 		if (doIt)	{
 			execute(getCommand());
-			graph.notifyChange(CHILDREN_PROP, null, null);
+			graph.notifyChange(CHILDREN_PROP);
 		}
 
 		editor.updateStackActions();

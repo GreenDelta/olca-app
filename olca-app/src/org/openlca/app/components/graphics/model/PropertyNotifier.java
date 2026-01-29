@@ -27,4 +27,9 @@ abstract public class PropertyNotifier {
 		listeners.firePropertyChange(prop, oldValue, newValue);
 	}
 
+	/// Notifies the listeners of this object that a property changed.
+	public void notifyChange(String prop) {
+		listeners.firePropertyChange(prop, null, null);
+	}
+
 }

@@ -120,7 +120,7 @@ public class DeleteManager {
 		for (Node node : providerNodes) {
 			removeNodeChains(node);
 		}
-		graph.notifyChange(CHILDREN_PROP, null, null);
+		graph.notifyChange(CHILDREN_PROP);
 		editor.setDirty();
 	}
 

@@ -89,9 +89,9 @@ public class ExpandCommand extends Command {
 		}
 		host.setExpanded(side, true);
 
-		// Fire a property change if the Nodes have been added quietly.
-		if (!quiet)
-			graph.notifyChange(CHILDREN_PROP, null, null);
+		if (!quiet) {
+			graph.notifyChange(CHILDREN_PROP);
+		}
 	}
 
 	/**

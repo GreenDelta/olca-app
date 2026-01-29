@@ -102,7 +102,7 @@ public class MassCreationCommand extends Command {
 	public void undo() {
 		for (Node node : createdNodes)
 			removeNodeQuietly(node);
-		graph.notifyChange(CHILDREN_PROP, null, null);
+		graph.notifyChange(CHILDREN_PROP);
 		for (Node node : graph.getNodes()) {
 			node.setSize(oldConstraints.get(node).getSize());
 			node.setLocation(oldConstraints.get(node).getLocation());
