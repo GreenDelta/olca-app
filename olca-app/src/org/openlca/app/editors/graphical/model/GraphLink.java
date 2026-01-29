@@ -2,6 +2,8 @@ package org.openlca.app.editors.graphical.model;
 
 import static org.openlca.app.components.graphics.model.Side.*;
 
+import java.util.Objects;
+
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.components.graphics.model.Link;
 import org.openlca.core.model.ProcessLink;
@@ -16,7 +18,7 @@ public class GraphLink extends Link {
 	public final ProcessLink processLink;
 
 	public GraphLink(ProcessLink pLink, Component source, Component target) {
-		this.processLink = pLink;
+		this.processLink = Objects.requireNonNull(pLink);
 		reconnect(source, target);
 	}
 

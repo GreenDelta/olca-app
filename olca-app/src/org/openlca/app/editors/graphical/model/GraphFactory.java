@@ -173,20 +173,15 @@ public class GraphFactory {
 	}
 
 	public static void createGraphLink(Graph graph, ProcessLink pLink) {
+		if (graph == null || pLink == null) return;
 		var provider = graph.getNode(pLink.providerId);
-		var recipient = graph.getNode(pLink.processId);
-		if (provider == null || recipient == null)
-			return;
+		var process = graph.getNode(pLink.processId);
+		if (provider == null || process == null) return;
+
 		var type = graph.flows.type(pLink.flowId);
-		var source = type == FlowType.PRODUCT_FLOW ? provider
-				: type == FlowType.WASTE_FLOW ? recipient
-				: null;
-		var target = type == FlowType.PRODUCT_FLOW ? recipient
-				: type == FlowType.WASTE_FLOW ? provider
-				: null;
-		if (target == null)
-			return;
-		var link = new GraphLink(pLink, source, target);
+		var link = type == FlowType.WASTE_FLOW
+			? new GraphLink(pLink, process, provider)
+			: new GraphLink(pLink, provider, process);
 		graph.mapProcessLinkToGraphLink.put(pLink, link);
 	}
 
