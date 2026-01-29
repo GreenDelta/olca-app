@@ -5,6 +5,8 @@ import static org.openlca.app.components.graphics.model.Component.*;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.function.BiConsumer;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
@@ -89,12 +91,6 @@ public class CollapseCommand extends Command {
 			collapse(graph, root, otherNode, Side.INPUT);
 			collapse(graph, root, otherNode, Side.OUTPUT);
 
-			if (link.isSelfLoop()) {
-				root.setExpanded(side == Side.INPUT
-					? Side.OUTPUT
-					: Side.INPUT, false);
-			}
-
 			boolean hasOtherLinks = otherNode
 				.getAllLinks()
 				.stream()
@@ -108,63 +104,114 @@ public class CollapseCommand extends Command {
 		node.isCollapsing = false;
 	}
 
-	private static class Collapse {
-
-		private final Graph graph;
-		private final Node start;
-		private final Side side;
-
-		Collapse(Graph graph, Node start, Side side) {
-			this.graph = graph;
-			this.start = start;
-			this.side = side;
+	protected static void collapse(Graph graph, Node start, Side side) {
+		if (graph == null || start == null || side == null) {
+			return;
 		}
+		var config = new Config(graph, start, side);
+		new Collapse(config).run();
+	}
+
+	private record Collapse(Config config) {
 
 		void run() {
+
 			var handled = new HashSet<Node>();
 			var removals = new HashSet<Node>();
-			var queue = new ArrayDeque<Node>();
-			queue.add(start);
+
+			var queue = Task.queueOf(config);
 			while (!queue.isEmpty()) {
-				var node = queue.poll();
+				var task = queue.poll();
+				var node = task.node;
+				if (handled.contains(node)) continue;
 				handled.add(node);
 
-				var links = side == Side.INPUT
-					? node.getAllTargetConnections()  // input links
-					: node.getAllSourceConnections(); // output links
+				task.eachLink((link, next) -> {
 
-				for (var l : links) {
-					if (!(l instanceof GraphLink link)) continue;
+					config.graph.removeGraphLink(link.processLink);
+					if (handled.contains(next)) return;
 
-					var thisNode = side == Side.INPUT
-						? link.getTargetNode()  // input
-						: link.getSourceNode(); // output
-					if (node.equals(thisNode)) continue; // an error!
+					boolean hasOtherLinks = next
+						.getAllLinks()
+						.stream()
+						.filter(GraphLink.class::isInstance)
+						.map(GraphLink.class::cast)
+						.anyMatch(con -> !con.isSelfLoop());
+					if (hasOtherLinks) return;
 
-					var nextNode = side == Side.INPUT
-						? link.getSourceNode()
-						: link.getTargetNode();
-					if (!canCollapse(nextNode)) continue;
+					removals.add(next);
+					task.schedule(next, queue);
+				});
+			}
 
-					graph.removeGraphLink(link.processLink);
+			removals.forEach(config.graph::removeChildQuietly);
+		}
+	}
 
+	private record Config(Graph graph, Node start, Side side) {
+	}
+
+	private record Task(Config config, Node node, boolean forInputs) {
+
+		static Queue<Task> queueOf(Config config) {
+			var queue = new ArrayDeque<Task>();
+			switch (config.side) {
+				case INPUT -> queue.add(new Task(config, config.start, true));
+				case OUTPUT -> queue.add(new Task(config, config.start, false));
+				case null, default -> {
+					queue.add(new Task(config, config.start, true));
+					queue.add(new Task(config, config.start, false));
+				}
+			}
+			return queue;
+		}
+
+		void schedule(Node next, Queue<Task> queue) {
+			queue.add(new Task(config, next, true));
+			queue.add(new Task(config, next, false));
+		}
+
+		void eachLink(BiConsumer<GraphLink, Node> fn) {
+			var links = forInputs
+				? node.getAllTargetConnections()
+				: node.getAllSourceConnections();
+
+			for (var l : links) {
+				if (!(l instanceof GraphLink link)) continue;
+
+				var thisNode = forInputs
+					? link.getTargetNode()
+					: link.getSourceNode();
+				// test if the link is correct
+				if (!node.equals(thisNode)) continue;
+
+				var other = forInputs
+					? link.getSourceNode()
+					: link.getTargetNode();
+
+				if (canRemoveLinkTo(other)) {
+					fn.accept(link, other);
 				}
 			}
 		}
 
-		/// We can collapse a node along a path if it is *not* the reference node
-		/// and:
-		/// - the start node is the reference node
-		/// - or, there is no chain the opposite collapse direction to the reference
-		///   node
-		private boolean canCollapse(Node node) {
-			if (graph.isReferenceProcess(node)){
+		private boolean canRemoveLinkTo(Node other) {
+			// do not remove links to the reference node
+			if (config.graph.isReferenceProcess(other)) {
 				return false;
 			}
-			return graph.isReferenceProcess(start)
-				|| !node.isChainingReferenceNode(side);
-		}
 
+			// if the start node is the reference node, we can
+			// collapse everything along the path
+			if (config.graph.isReferenceProcess(config.start)) {
+				return true;
+			}
+
+			// do not collapse a node along the path, that has
+			// a connection to the reference node
+			var chainSide = forInputs ? Side.INPUT : Side.OUTPUT;
+			return !node.isChainingReferenceNode(chainSide);
+		}
 	}
 
 }
