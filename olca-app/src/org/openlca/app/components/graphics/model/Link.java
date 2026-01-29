@@ -60,7 +60,7 @@ public class Link extends Element {
 		return target;
 	}
 
-	public boolean isCloseLoop() {
+	public boolean isSelfLoop() {
 		return Objects.equals(getSourceNode(), getTargetNode());
 	}
 

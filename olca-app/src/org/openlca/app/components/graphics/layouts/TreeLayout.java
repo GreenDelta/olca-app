@@ -1,11 +1,6 @@
 package org.openlca.app.components.graphics.layouts;
 
-import static org.eclipse.draw2d.PositionConstants.EAST;
-import static org.eclipse.draw2d.PositionConstants.NORTH;
-import static org.eclipse.draw2d.PositionConstants.NORTH_WEST;
-import static org.eclipse.draw2d.PositionConstants.SOUTH;
-import static org.eclipse.draw2d.PositionConstants.SOUTH_EAST;
-import static org.eclipse.draw2d.PositionConstants.WEST;
+import static org.eclipse.draw2d.PositionConstants.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -466,7 +461,7 @@ public class TreeLayout {
 				? vertex.node.getAllSourceConnections()
 				: vertex.node.getAllTargetConnections();
 		for (var link : links) {
-			if (link.isCloseLoop())
+			if (link.isSelfLoop())
 				continue;
 
 			var otherNode = forInputs

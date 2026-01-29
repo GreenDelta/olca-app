@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
-import static org.openlca.app.components.graphics.layouts.GraphLayout.DEFAULT_LOCATION;
+import static org.openlca.app.components.graphics.layouts.GraphLayout.*;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -450,8 +450,6 @@ public class Node extends MinMaxComponent {
 				handled.add(next);
 
 				var outputs = next.getOutputs();
-				if (outputs == null)
-					continue;
 				for (var output : outputs) {
 					if (getGraph().isReferenceProcess(output))
 						return true;
@@ -461,8 +459,6 @@ public class Node extends MinMaxComponent {
 				}
 
 				var inputs = next.getInputs();
-				if (inputs == null)
-					continue;
 				for (var input : inputs) {
 					if (getGraph().isReferenceProcess(input))
 						return true;

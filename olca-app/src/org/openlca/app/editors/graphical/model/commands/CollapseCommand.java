@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.*;
 
 import java.util.Objects;
 
@@ -90,21 +90,42 @@ public class CollapseCommand extends Command {
 				collapse(graph, root, otherNode, Side.INPUT);
 				collapse(graph, root, otherNode, Side.OUTPUT);
 
-				if (link.isCloseLoop()) { // close loop
+				if (link.isSelfLoop()) { // close loop
 					root.setExpanded(side == Side.INPUT
 							? Side.OUTPUT
 							: Side.INPUT, false);
 				}
 
-				var linkStream = otherNode.getAllLinks().stream()
-						.map(GraphLink.class::cast);
-				if (!linkStream.filter(con -> !con.isCloseLoop()).toList().isEmpty())
-					continue;
+				boolean hasOtherLinks = otherNode
+					.getAllLinks()
+					.stream()
+          .filter(GraphLink.class::isInstance)
+          .map(GraphLink.class::cast)
+          .anyMatch(con -> !con.isSelfLoop());
+        if (hasOtherLinks) continue;
 
 				graph.removeChildQuietly(otherNode);
 			}
 		}
 		node.isCollapsing = false;
+	}
+
+	static class Collapse {
+
+		private final Graph graph;
+		private final Node start;
+		private final Side side;
+
+		Collapse(Graph graph, Node start, Side side) {
+			this.graph = graph;
+			this.start = start;
+			this.side = side;
+		}
+
+		void run() {
+
+		}
+
 	}
 
 }

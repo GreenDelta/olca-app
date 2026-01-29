@@ -21,9 +21,9 @@ import org.openlca.app.editors.graphical.actions.retarget.MinMaxAllRetargetActio
 import org.openlca.app.editors.graphical.actions.retarget.SetReferenceRetargetAction;
 import org.openlca.app.editors.graphical.actions.retarget.ShowElementaryFlowsRetargetAction;
 
-public class GraphBarContributor extends BasicActionBarContributor {
+public class GraphMenuContributor extends BasicActionBarContributor {
 
-	public GraphBarContributor(GraphicalEditorWithFrame editor) {
+	public GraphMenuContributor(GraphicalEditorWithFrame editor) {
 		super(editor);
 	}
 
@@ -61,31 +61,29 @@ public class GraphBarContributor extends BasicActionBarContributor {
 	}
 
 	@Override
-	public void contributeToEditMenu(IMenuManager menuManager) {
-		super.contributeToEditMenu(menuManager);
-		var editMenu = getEditMenu();
-
-		editMenu.add(getAction(GraphActionIds.ADD_PROCESS));
-		editMenu.add(getAction(GraphActionIds.EDIT_STICKY_NOTE));
-		editMenu.add(getAction(GraphActionIds.ADD_STICKY_NOTE));
-		editMenu.add(getAction(ActionIds.OPEN_EDITOR));
+	public void contributeToEditMenu(IMenuManager menu) {
+		super.contributeToEditMenu(menu);
+		var m = getEditMenu();
+		m.add(getAction(GraphActionIds.ADD_PROCESS));
+		m.add(getAction(GraphActionIds.EDIT_STICKY_NOTE));
+		m.add(getAction(GraphActionIds.ADD_STICKY_NOTE));
+		m.add(getAction(ActionIds.OPEN_EDITOR));
 	}
 
 	@Override
-	public void contributeToViewMenu(IMenuManager menuManager) {
-		super.contributeToViewMenu(menuManager);
-		var viewMenu = getViewMenu();
-
-		viewMenu.add(getAction(GraphActionIds.MINIMIZE_ALL));
-		viewMenu.add(getAction(GraphActionIds.MAXIMIZE_ALL));
-		viewMenu.add(getAction(GraphActionIds.EXPAND_ALL));
-		viewMenu.add(getAction(GraphActionIds.COLLAPSE_ALL));
+	public void contributeToViewMenu(IMenuManager menu) {
+		super.contributeToViewMenu(menu);
+		var m = getViewMenu();
+		m.add(getAction(GraphActionIds.MINIMIZE_ALL));
+		m.add(getAction(GraphActionIds.MAXIMIZE_ALL));
+		m.add(getAction(GraphActionIds.EXPAND_ALL));
+		m.add(getAction(GraphActionIds.COLLAPSE_ALL));
 	}
 
 	public GraphConfig getConfig() {
-		if (getEditor() instanceof GraphEditor graphEditor)
-			return graphEditor.config;
-		else return null;
+		return getEditor() instanceof GraphEditor ge
+			? ge.config
+			: null;
 	}
 
 }

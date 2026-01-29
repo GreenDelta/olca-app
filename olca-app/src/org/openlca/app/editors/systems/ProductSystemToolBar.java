@@ -7,8 +7,8 @@ import org.openlca.app.components.graphics.EditorActionBarContributor;
 import org.openlca.app.components.graphics.MultiPageSubActionBars;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
-import org.openlca.app.editors.graphical.GraphBarContributor;
 import org.openlca.app.editors.graphical.GraphEditor;
+import org.openlca.app.editors.graphical.GraphMenuContributor;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
@@ -35,7 +35,7 @@ public class ProductSystemToolBar extends EditorActionBarContributor {
 	public MultiPageSubActionBars getNewSubActionBars() {
 		return new MultiPageSubActionBars(getPage(),
 			getActionBars2(),
-			new GraphBarContributor(editor),
+			new GraphMenuContributor(editor),
 			"org.openlca.app.editors.graphical.actions" +
 				".GraphActionBarContributor");
 	}

@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
+import static org.openlca.app.components.graphics.model.Component.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class DeleteManager {
 		var links = node.getAllLinks();
 		var linkStream = links.stream()
 				.map(GraphLink.class::cast)
-				.filter(con -> !con.isCloseLoop())
+				.filter(con -> !con.isSelfLoop())
 				.toList();
 
 		if (linkStream.isEmpty()) {

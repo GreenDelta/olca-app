@@ -1,6 +1,5 @@
 package org.openlca.app.editors.graphical.edit;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import org.eclipse.draw2d.Connection;
@@ -127,17 +126,14 @@ public class ExchangeEditPolicy extends GraphicalNodeEditPolicy {
 		var editor = exchangeItem.getGraph().getEditor();
 		var viewer = (GraphicalViewer) editor.getAdapter(GraphicalViewer.class);
 		var registry = viewer.getEditPartRegistry();
-
-		@SuppressWarnings("unchecked")
-		Collection<EditPart> parts = Collections.checkedCollection(registry.values(),
-				EditPart.class);
+		var parts = Collections.checkedCollection(registry.values(), EditPart.class);
 
 		parts.stream()
-				.filter(part -> part instanceof ExchangeEditPart)
-				.map(ExchangeEditPart.class::cast)
-				.filter(part -> !part.getModel().isConnected())
-				.filter(part -> exchangeItem.matches(part.getModel()))
-				.forEach(part -> ((ExchangeFigure) part.getFigure()).setHighlighted(b));
+			.filter(part -> part instanceof ExchangeEditPart)
+			.map(ExchangeEditPart.class::cast)
+			.filter(part -> !part.getModel().isConnected())
+			.filter(part -> exchangeItem.matches(part.getModel()))
+			.forEach(part -> ((ExchangeFigure) part.getFigure()).setHighlighted(b));
 	}
 
 }

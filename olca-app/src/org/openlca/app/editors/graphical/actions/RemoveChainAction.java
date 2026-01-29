@@ -47,8 +47,7 @@ public class RemoveChainAction extends SelectionAction {
 			return null;
 
 		var graphPart = editor.getEditPartOf(editor.getModel());
-		if (graphPart == null)
-			return null;
+		if (graphPart == null)return null;
 		var links = new ArrayList<ProcessLink>();
 		for (var object : getSelectedObjects()) {
 			addContributor(object, links);

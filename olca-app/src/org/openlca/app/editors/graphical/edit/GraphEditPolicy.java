@@ -17,13 +17,13 @@ public class GraphEditPolicy extends RootComponentEditPolicy {
 
 	@Override
 	public Command getCommand(Request request) {
-		if (REQ_REMOVE_CHAIN.equals(request.getType()))
-			return getRemoveSupplyChainCommand(request);
-		return super.getCommand(request);
+		return REQ_REMOVE_CHAIN.equals(request.getType())
+			? getRemoveSupplyChainCommand(request)
+			: super.getCommand(request);
 	}
 
-	private Command getRemoveSupplyChainCommand(Request request) {
-		var object = request.getExtendedData().get(KEY_LINKS);
+	private Command getRemoveSupplyChainCommand(Request req) {
+		var object = req.getExtendedData().get(KEY_LINKS);
 		if (object instanceof Collection<?> collection) {
 			var links = new ArrayList<ProcessLink>();
 			for (var obj : collection)
