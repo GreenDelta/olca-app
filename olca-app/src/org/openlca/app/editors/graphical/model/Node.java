@@ -62,10 +62,6 @@ public class Node extends MinMaxComponent {
 	/// + 3: both sides expanded
 	private int expansionState;
 
-	/**
-	 * Helper variable when exploring graph in CollapseCommand
-	 */
-	public boolean isCollapsing;
 	private String comparisonLabel;
 	private final Map<Side, Boolean> buttonStatus = new EnumMap<>(Side.class);
 

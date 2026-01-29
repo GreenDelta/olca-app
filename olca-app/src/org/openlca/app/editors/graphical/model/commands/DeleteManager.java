@@ -42,10 +42,10 @@ public class DeleteManager {
 			return;
 
 		if (!node.isChainingReferenceNode(Side.INPUT)) {
-			CollapseCommand.collapse(graph, node, node, Side.INPUT);
+			CollapseCommand.collapse(graph, node, Side.INPUT);
 		}
 		if (!node.isChainingReferenceNode(Side.OUTPUT)) {
-			CollapseCommand.collapse(graph, node, node, Side.OUTPUT);
+			CollapseCommand.collapse(graph, node, Side.OUTPUT);
 		}
 
 		// Remove the Nodes if it is not connected to any other node.
