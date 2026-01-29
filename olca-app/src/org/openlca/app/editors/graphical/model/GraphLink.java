@@ -1,7 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
-import static org.openlca.app.components.graphics.model.Side.INPUT;
-import static org.openlca.app.components.graphics.model.Side.OUTPUT;
+import static org.openlca.app.components.graphics.model.Side.*;
 
 import org.openlca.app.components.graphics.model.Component;
 import org.openlca.app.components.graphics.model.Link;
@@ -14,10 +13,10 @@ import org.openlca.core.model.ProcessLink;
  */
 public class GraphLink extends Link {
 
-	public ProcessLink processLink;
+	public final ProcessLink processLink;
 
 	public GraphLink(ProcessLink pLink, Component source, Component target) {
-		processLink = pLink;
+		this.processLink = pLink;
 		reconnect(source, target);
 	}
 
@@ -44,10 +43,14 @@ public class GraphLink extends Link {
 	}
 
 	private void updateIsExpanded() {
-		if (getSourceNode() != null)
-			getSourceNode().updateIsExpanded(OUTPUT);
-		if (getTargetNode() != null)
-			getTargetNode().updateIsExpanded(INPUT);
+		var s = getSourceNode();
+		if (s != null) {
+			s.updateIsExpanded(OUTPUT);
+		}
+		var t = getTargetNode();
+		if (t != null) {
+			t.updateIsExpanded(INPUT);
+		}
 	}
 
 	/**
@@ -68,50 +71,23 @@ public class GraphLink extends Link {
 		return component;
 	}
 
-	/**
-	 * Returns the provider node of the link which is the source node in case
-	 * of a production process and the target node in case of a waste treatment
-	 * process.
-	 */
-	public Node provider() {
-		if (processLink == null)
-			return null;
-		var sourceNode = getSourceNode();
-		if (sourceNode != null
-				&& sourceNode.descriptor != null
-				&& sourceNode.descriptor.id == processLink.providerId)
-			return sourceNode;
-		var targetNode = getTargetNode();
-		if (targetNode != null
-				&& targetNode.descriptor != null
-				&& targetNode.descriptor.id == processLink.providerId)
-			return targetNode;
-		return null;
-	}
-
+	@Override
 	public Node getSourceNode() {
-		if (source instanceof Node node)
-			return node;
-		else if (source instanceof IOPane pane)
-			return pane.getNode();
-		else if (source instanceof ExchangeItem item)
-			return item.getNode();
-		return null;
+		return nodeOf(source);
 	}
 
+	@Override
 	public Node getTargetNode() {
-		if (target instanceof Node node)
-			return node;
-		else if (target instanceof IOPane pane)
-			return pane.getNode();
-		else if (target instanceof ExchangeItem item)
-			return item.getNode();
-		return null;
+		return nodeOf(target);
 	}
 
-	public void setProcessLink(ProcessLink link) {
-		processLink = link;
-		firePropertyChange("processLink", null, source);
+	private Node nodeOf(Component c) {
+		return switch (c) {
+			case Node node -> node;
+			case IOPane pane -> pane.getNode();
+			case ExchangeItem item -> item.getNode();
+			case null, default -> null;
+		};
 	}
 
 	public ProcessLink getProcessLink() {

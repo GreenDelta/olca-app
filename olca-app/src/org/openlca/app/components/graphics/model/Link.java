@@ -2,9 +2,10 @@ package org.openlca.app.components.graphics.model;
 
 import java.util.Objects;
 
-public class Link extends Element {
+public abstract class Link extends Element {
 
-	protected Component source, target;
+	protected Component source;
+	protected Component target;
 
 	/** True, if the connection is attached to its endpoints. */
 	private boolean isConnected;
@@ -52,18 +53,15 @@ public class Link extends Element {
 		return source;
 	}
 
-	public Component getSourceNode() {
-		return source;
-	}
+	public abstract Component getSourceNode();
 
-	public Component getTargetNode() {
-		return target;
-	}
+	public abstract Component getTargetNode();
 
 	public boolean isSelfLoop() {
 		return Objects.equals(getSourceNode(), getTargetNode());
 	}
 
+	@Override
 	public String toString() {
 		return "Link(" + getSource() + " -> " + getTarget() + ")";
 	}
