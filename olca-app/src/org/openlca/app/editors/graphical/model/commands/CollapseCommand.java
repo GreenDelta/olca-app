@@ -2,11 +2,12 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import static org.openlca.app.components.graphics.model.Component.*;
 
+import java.util.ArrayDeque;
+import java.util.HashSet;
 import java.util.Objects;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.M;
-import org.openlca.app.components.graphics.model.Link;
 import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.editors.graphical.model.GraphLink;
@@ -53,64 +54,61 @@ public class CollapseCommand extends Command {
 	 * Recursively collapses all the input or output nodes connected to the given
 	 * node.
 	 * This method does not collapse:
-	 *  - the reference node,
-	 *  - nodes that are chained to the reference node.
+	 * - the reference node,
+	 * - nodes that are chained to the reference node.
 	 */
 	protected static void collapse(Graph graph, Node root, Node node, Side side) {
 		if (node.isCollapsing)
 			return;
 		node.isCollapsing = true;
 
-		// It is needed to copy the links otherwise we get a concurrent modification
-		// exception
 		var links = side == Side.INPUT
-				? node.getAllTargetConnections().toArray(new Link[0])
-				: node.getAllSourceConnections().toArray(new Link[0]);
+			? node.getAllTargetConnections()
+			: node.getAllSourceConnections();
 
 		for (var l : links) {
-			if (l instanceof GraphLink link) {
-				var thisNode = side == Side.INPUT
-						? link.getTargetNode()
-						: link.getSourceNode();
-				var otherNode = side == Side.INPUT
-						? link.getSourceNode()
-						: link.getTargetNode();
+			if (!(l instanceof GraphLink link)) continue;
 
-				if (!thisNode.equals(node)  // wrong link
-						|| otherNode.equals(root))  // double link
-					continue;
+			var thisNode = side == Side.INPUT
+				? link.getTargetNode()
+				: link.getSourceNode();
+			var otherNode = side == Side.INPUT
+				? link.getSourceNode()
+				: link.getTargetNode();
 
-				if (!Objects.equals(root, graph.getReferenceNode())
-						&& (otherNode.isChainingReferenceNode(side)
-						|| otherNode.equals(graph.getReferenceNode())))
-					continue;
+			if (!thisNode.equals(node)  // wrong link
+				|| otherNode.equals(root))  // double link
+				continue;
 
-				graph.mapProcessLinkToGraphLink.remove(link.processLink);
-				link.disconnect();
-				collapse(graph, root, otherNode, Side.INPUT);
-				collapse(graph, root, otherNode, Side.OUTPUT);
+			if (!Objects.equals(root, graph.getReferenceNode())
+				&& (otherNode.isChainingReferenceNode(side)
+				|| otherNode.equals(graph.getReferenceNode())))
+				continue;
 
-				if (link.isSelfLoop()) { // close loop
-					root.setExpanded(side == Side.INPUT
-							? Side.OUTPUT
-							: Side.INPUT, false);
-				}
+			graph.removeGraphLink(link.processLink);
+			collapse(graph, root, otherNode, Side.INPUT);
+			collapse(graph, root, otherNode, Side.OUTPUT);
 
-				boolean hasOtherLinks = otherNode
-					.getAllLinks()
-					.stream()
-          .filter(GraphLink.class::isInstance)
-          .map(GraphLink.class::cast)
-          .anyMatch(con -> !con.isSelfLoop());
-        if (hasOtherLinks) continue;
-
-				graph.removeChildQuietly(otherNode);
+			if (link.isSelfLoop()) {
+				root.setExpanded(side == Side.INPUT
+					? Side.OUTPUT
+					: Side.INPUT, false);
 			}
+
+			boolean hasOtherLinks = otherNode
+				.getAllLinks()
+				.stream()
+				.filter(GraphLink.class::isInstance)
+				.map(GraphLink.class::cast)
+				.anyMatch(con -> !con.isSelfLoop());
+			if (hasOtherLinks) continue;
+
+			graph.removeChildQuietly(otherNode);
 		}
 		node.isCollapsing = false;
 	}
 
-	static class Collapse {
+	private static class Collapse {
 
 		private final Graph graph;
 		private final Node start;
@@ -123,7 +121,48 @@ public class CollapseCommand extends Command {
 		}
 
 		void run() {
+			var handled = new HashSet<Node>();
+			var removals = new HashSet<Node>();
+			var queue = new ArrayDeque<Node>();
+			queue.add(start);
+			while (!queue.isEmpty()) {
+				var node = queue.poll();
+				handled.add(node);
 
+				var links = side == Side.INPUT
+					? node.getAllTargetConnections()  // input links
+					: node.getAllSourceConnections(); // output links
+
+				for (var l : links) {
+					if (!(l instanceof GraphLink link)) continue;
+
+					var thisNode = side == Side.INPUT
+						? link.getTargetNode()  // input
+						: link.getSourceNode(); // output
+					if (node.equals(thisNode)) continue; // an error!
+
+					var nextNode = side == Side.INPUT
+						? link.getSourceNode()
+						: link.getTargetNode();
+					if (!canCollapse(nextNode)) continue;
+
+					graph.removeGraphLink(link.processLink);
+
+				}
+			}
+		}
+
+		/// We can collapse a node along a path if it is *not* the reference node
+		/// and:
+		/// - the start node is the reference node
+		/// - or, there is no chain the opposite collapse direction to the reference
+		///   node
+		private boolean canCollapse(Node node) {
+			if (graph.isReferenceProcess(node)){
+				return false;
+			}
+			return graph.isReferenceProcess(start)
+				|| !node.isChainingReferenceNode(side);
 		}
 
 	}
