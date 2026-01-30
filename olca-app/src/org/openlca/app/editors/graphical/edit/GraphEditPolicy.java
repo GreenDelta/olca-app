@@ -10,7 +10,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.editors.graphical.model.Graph;
-import org.openlca.app.editors.graphical.model.commands.RemoveSupplyChainCommand;
+import org.openlca.app.editors.graphical.model.commands.RemoveChainCommand;
 import org.openlca.core.model.ProcessLink;
 
 public class GraphEditPolicy extends RootComponentEditPolicy {
@@ -28,7 +28,7 @@ public class GraphEditPolicy extends RootComponentEditPolicy {
 			var links = new ArrayList<ProcessLink>();
 			for (var obj : collection)
 				links.add((ProcessLink) obj);
-			return new RemoveSupplyChainCommand(links, (Graph) getHost().getModel());
+			return new RemoveChainCommand(links, (Graph) getHost().getModel());
 		}
 		else return null;
 	}

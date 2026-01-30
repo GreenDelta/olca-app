@@ -10,13 +10,13 @@ import org.openlca.app.editors.graphical.model.Graph;
 import org.openlca.app.util.Question;
 import org.openlca.core.model.ProcessLink;
 
-public class RemoveSupplyChainCommand extends Command {
+public class RemoveChainCommand extends Command {
 
 	private final Graph graph;
 	private final ArrayList<ProcessLink> providerLinks;
 	private int answer;
 
-	public RemoveSupplyChainCommand(ArrayList<ProcessLink> links, Graph graph) {
+	public RemoveChainCommand(ArrayList<ProcessLink> links, Graph graph) {
 		this.graph = graph;
 		providerLinks = links;
 		setLabel(M.RemoveSupplyChain);
