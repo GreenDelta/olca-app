@@ -3,15 +3,13 @@ package org.openlca.app.editors.graphical.edit;
 import static org.openlca.app.editors.graphical.actions.RemoveChainAction.*;
 import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.GraphLink;
+import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.RemoveChainCommand;
-import org.openlca.core.model.ProcessLink;
 
 public class GraphEditPolicy extends RootComponentEditPolicy {
 
@@ -23,14 +21,31 @@ public class GraphEditPolicy extends RootComponentEditPolicy {
 	}
 
 	private Command getRemoveSupplyChainCommand(Request req) {
-		var object = req.getExtendedData().get(KEY_LINKS);
-		if (object instanceof Collection<?> collection) {
-			var links = new ArrayList<ProcessLink>();
-			for (var obj : collection)
-				links.add((ProcessLink) obj);
-			return new RemoveChainCommand(links, (Graph) getHost().getModel());
+		var root = req.getExtendedData().get(KEY_ROOT);
+		var graph = (Graph) getHost().getModel();
+		if (root instanceof Node node) {
+			return new RemoveChainCommand(graph, node);
 		}
-		else return null;
+		if (root instanceof GraphLink link) {
+			return new RemoveChainCommand(graph, providerNodeOf(link));
+		}
+		return null;
 	}
 
+	private Node providerNodeOf(GraphLink link) {
+		if (link == null) return null;
+		var s = link.getSourceNode();
+		if (s != null
+			&& s.descriptor != null
+			&& s.descriptor.id == link.processLink.providerId) {
+			return s;
+		}
+		var t = link.getTargetNode();
+		if (t != null
+			&& t.descriptor != null
+			&& t.descriptor.id == link.processLink.providerId) {
+			return t;
+		}
+		return null;
+	}
 }

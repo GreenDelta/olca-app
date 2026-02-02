@@ -21,8 +21,13 @@ import org.openlca.util.Lists;
 /// - The remaining providers and their links can be safely removed
 ///
 /// Note that the root process `q` will always be included and, thus, all of its
-/// links will be also added to the removal tree.
+/// links will also be added to the removal tree.
 public record RemovalTree(Set<Long> providers, List<ProcessLink> links) {
+
+	public RemovalTree(Set<Long> providers, List<ProcessLink> links) {
+		this.providers = providers == null ? Set.of() : Set.copyOf(providers);
+		this.links = links == null ? List.of() : List.copyOf(links);
+	}
 
 	public static RemovalTree of(List<ProcessLink> links, long root) {
 		return Lists.isEmpty(links)

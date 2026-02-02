@@ -524,12 +524,12 @@ public class Node extends MinMaxComponent {
 		return null;
 	}
 
-	public boolean isOfReferenceProcess() {
+	public boolean isReferenceProcess() {
 		return getGraph().isReferenceProcess(this);
 	}
 
 	public Theme.Box getThemeBox() {
-		return Theme.Box.of(descriptor, isOfReferenceProcess());
+		return Theme.Box.of(descriptor, isReferenceProcess());
 	}
 
 	public String toString() {

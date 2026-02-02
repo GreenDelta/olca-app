@@ -1,41 +1,49 @@
 package org.openlca.app.editors.graphical.model.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import static org.openlca.app.components.graphics.model.Component.*;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.Node;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
-import org.openlca.core.model.ProcessLink;
+import org.openlca.commons.Strings;
+import org.openlca.core.model.ModelType;
 
 public class RemoveChainCommand extends Command {
 
 	private final Graph graph;
-	private final ArrayList<ProcessLink> providerLinks;
-	private int answer;
+	private final Node root;
 
-	public RemoveChainCommand(ArrayList<ProcessLink> links, Graph graph) {
+	public RemoveChainCommand(Graph graph, Node node) {
 		this.graph = graph;
-		providerLinks = links;
+		this.root = node;
 		setLabel(M.RemoveSupplyChain);
 	}
 
 	@Override
 	public boolean canExecute() {
-		return (!providerLinks.isEmpty() && graph != null);
+		if (graph == null)
+			return false;
+		if (root != null) {
+			return root.descriptor != null
+				&& root.descriptor.type == ModelType.PROCESS
+				&& !root.isReferenceProcess();
+		}
+		return false;
 	}
 
 	@Override
 	public void execute() {
-		answer = Question.ask(M.DeletingTheSupplyChainDots,
-				DeleteManager.QUESTION,
-				Arrays.stream(DeleteManager.Answer.values())
-						.map(Enum::name)
-						.toArray(String[]::new));
-
-		if (answer != DeleteManager.Answer.Cancel.ordinal()) {
+		var title = "Remove process chain - "
+			+ Strings.cutEnd(Labels.name(root.descriptor), 50);
+		var message = "This will remove the process and its entire process " +
+			"chain from the product system, including all upstream product " +
+			"providers and downstream waste treatments that are not used by " +
+			"other processes in the system.";
+		if (Question.ask(title, message)) {
 			redo();
 		}
 	}
@@ -47,9 +55,26 @@ public class RemoveChainCommand extends Command {
 
 	@Override
 	public void redo() {
-		App.runInUI(M.RemovingTheSupplyChain, () -> {
-			var graphLinks = providerLinks.stream().map(graph::getLink).toList();
-			DeleteManager.on(graph).graphLinks(graphLinks, answer);
+		var system = graph.getProductSystem();
+
+
+		App.runInUI("Removing process chain", () -> {
+			var tree = RemovalTree.of(system.processLinks, root.descriptor.id);
+			system.processes.removeAll(tree.providers());
+			system.processLinks.removeAll(tree.links());
+			graph.linkSearch.rebuild(system.processLinks);
+
+			for (var link : tree.links()) {
+				graph.removeGraphLink(link);
+			}
+			for (long id : tree.providers()) {
+				var node = graph.getNode(id);
+				if (node != null) {
+					graph.removeChildQuietly(node);
+				}
+			}
+			graph.notifyChange(CHILDREN_PROP);
+			graph.getEditor().setDirty();
 		});
 	}
 

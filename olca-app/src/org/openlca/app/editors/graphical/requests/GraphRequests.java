@@ -41,6 +41,6 @@ public class GraphRequests implements RequestConstants {
 	public static final String REQ_SET_REFERENCE = "set_reference";
 
 	/// Remove the process chain of a selected link, exchange, or process.
-	public static final String REQ_REMOVE_CHAIN = "set_reference";
+	public static final String REQ_REMOVE_CHAIN = "remove_chain";
 
 }
