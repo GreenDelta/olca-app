@@ -20,27 +20,23 @@ import org.openlca.util.Lists;
 /// - Repeat until no such provider is found
 /// - The remaining providers and their links can be safely removed
 ///
-/// Note that the root process `q` will be always and thus, all of its
+/// Note that the root process `q` will always be included and, thus, all of its
 /// links will be also added to the removal tree.
 public record RemovalTree(Set<Long> providers, List<ProcessLink> links) {
 
 	public static RemovalTree of(List<ProcessLink> links, long root) {
-		if (Lists.isEmpty(links)) {
-			return new RemovalTree(Set.of(root), List.of());
-		}
-		return new Builder(links, root).build();
+		return Lists.isEmpty(links)
+			? new RemovalTree(Set.of(root), List.of())
+			: new Builder(links, root).build();
 	}
 
 	public static RemovalTree of(List<ProcessLink> links, ProcessLink rootLink) {
 		if (rootLink == null) {
 			return new RemovalTree(Set.of(), List.of());
 		}
-		if (Lists.isEmpty(links)) {
-			return new RemovalTree(Set.of(rootLink.providerId), List.of(rootLink));
-		}
-		var tree = new Builder(links, rootLink.providerId).build();
-		tree.links.add(rootLink);
-		return tree;
+		return Lists.isEmpty(links)
+			? new RemovalTree(Set.of(rootLink.providerId), List.of(rootLink))
+			: new Builder(links, rootLink.providerId).build();
 	}
 
 	private static class Builder {
@@ -52,7 +48,7 @@ public record RemovalTree(Set<Long> providers, List<ProcessLink> links) {
 		private final Map<Long, Set<Long>> procProvs = new HashMap<>();
 
 		/// map provider -> set of processes that use it
-		private final  Map<Long, Set<Long>> provProcs = new HashMap<>();
+		private final Map<Long, Set<Long>> provProcs = new HashMap<>();
 
 		Builder(List<ProcessLink> links, long root) {
 			this.links = links;
@@ -61,11 +57,11 @@ public record RemovalTree(Set<Long> providers, List<ProcessLink> links) {
 			// index the provider links
 			for (var link : links) {
 				procProvs
-						.computeIfAbsent(link.processId, k -> new HashSet<>())
-						.add(link.providerId);
+					.computeIfAbsent(link.processId, k -> new HashSet<>())
+					.add(link.providerId);
 				provProcs
-						.computeIfAbsent(link.providerId, k -> new HashSet<>())
-						.add(link.processId);
+					.computeIfAbsent(link.providerId, k -> new HashSet<>())
+					.add(link.processId);
 			}
 		}
 
@@ -109,24 +105,53 @@ public record RemovalTree(Set<Long> providers, List<ProcessLink> links) {
 		/// A provider can be removed if all its consumers are either the root or
 		/// already in the removal set.
 		private Set<Long> reduceProviders(Set<Long> providers) {
-			var candidates = new HashSet<>(providers);
-			while (true) {
-				var withExtLinks = new HashSet<Long>();
-				for (var candidate : candidates) {
-					var consumers = provProcs.get(candidate);
-					if (consumers == null)
-						continue;
-					for (var c : consumers) {
-						if (c != root && !candidates.contains(c)) {
-							withExtLinks.add(candidate);
-							break;
-						}
+
+			// in the first iteration, identify all providers that
+			// are used outside the provider tree
+			var queue = new ArrayDeque<Long>();
+			var outDegree = new HashMap<Long, Integer>();
+			for (var p : providers) {
+				var consumers = provProcs.get(p);
+				if (consumers == null) continue;
+				int extCount = 0;
+				for (var c : consumers) {
+					if (c != root && !providers.contains(c)) {
+						extCount++;
 					}
 				}
-				if (withExtLinks.isEmpty()) break;
-				candidates.removeAll(withExtLinks);
+				if (extCount > 0) {
+					outDegree.put(p, extCount);
+					queue.add(p);
+				}
 			}
-			return candidates;
+
+			// we cannot remove providers with links outside the
+			// tree, and recursively also not their providers
+			// within the tree and so on
+			var bad = new HashSet<Long>();
+			while (!queue.isEmpty()) {
+				var p = queue.poll();
+				if (!bad.add(p)) continue;
+
+				// providers of the bad provider
+				var provs = procProvs.get(p);
+				if (provs == null) continue;
+				for (var prov : provs) {
+					if (!providers.contains(prov)) continue;
+					int outDeg = outDegree.getOrDefault(prov, 0) + 1;
+					outDegree.put(prov, outDeg);
+					if (outDeg == 1) {
+						// 1 means we found a new provider of a provider
+						// that is used outside the tree
+						queue.add(prov);
+					}
+				}
+			}
+
+			if (bad.isEmpty()) return providers;
+			var result = new HashSet<>(providers);
+			result.removeAll(bad);
+			return result;
 		}
 	}
 }
