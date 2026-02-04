@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.model;
 
-import static org.eclipse.draw2d.PositionConstants.EAST;
+import static org.eclipse.draw2d.PositionConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,24 +59,14 @@ public class Graph extends BaseComponent {
 	 * system.
 	 */
 	public void removeLink(ProcessLink link) {
-		removeProcessLink(link);
-		removeGraphLink(link);
-	}
-
-	/**
-	 * Remove the ProcessLink from the product system (and not the GraphLink from
-	 * the graph).
-	 */
-	public void removeProcessLink(ProcessLink link) {
 		getProductSystem().processLinks.remove(link);
 		linkSearch.rebuild(getProductSystem().processLinks);
+		removeVisualLink(link);
 	}
 
-	/**
-	 * Remove the GraphLink from the graph (and not the ProcessLink from the
-	 * product system).
-	 */
-	public void removeGraphLink(ProcessLink link) {
+	/// Removes the visual link from the graph (but *not* the process link from
+	/// the product system).
+	public void removeVisualLink(ProcessLink link) {
 		var graphLink = mapProcessLinkToGraphLink.remove(link);
 		if (graphLink != null) {
 			graphLink.disconnect();

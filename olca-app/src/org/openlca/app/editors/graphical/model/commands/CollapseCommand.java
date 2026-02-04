@@ -69,7 +69,7 @@ public class CollapseCommand extends Command {
 				if (handled.contains(task)) continue;
 				handled.add(task);
 				eachLink(task, (link, next) -> {
-					graph.removeGraphLink(link.processLink);
+					graph.removeVisualLink(link.processLink);
 					task.schedule(next, queue);
 				});
 			}

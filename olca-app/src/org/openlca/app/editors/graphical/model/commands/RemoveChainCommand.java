@@ -2,10 +2,14 @@ package org.openlca.app.editors.graphical.model.commands;
 
 import static org.openlca.app.components.graphics.model.Component.*;
 
+import java.util.ArrayDeque;
+import java.util.HashSet;
+
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.editors.graphical.model.Graph;
+import org.openlca.app.editors.graphical.model.GraphLink;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
@@ -57,7 +61,6 @@ public class RemoveChainCommand extends Command {
 	public void redo() {
 		var system = graph.getProductSystem();
 
-
 		App.runInUI("Removing process chain", () -> {
 			var tree = RemovalTree.of(system.processLinks, root.descriptor.id);
 			system.processes.removeAll(tree.providers());
@@ -65,7 +68,7 @@ public class RemoveChainCommand extends Command {
 			graph.linkSearch.rebuild(system.processLinks);
 
 			for (var link : tree.links()) {
-				graph.removeGraphLink(link);
+				graph.removeVisualLink(link);
 			}
 			for (long id : tree.providers()) {
 				var node = graph.getNode(id);
@@ -73,9 +76,55 @@ public class RemoveChainCommand extends Command {
 					graph.removeChildQuietly(node);
 				}
 			}
+
+			removeDisconnectedNodes();
+
 			graph.notifyChange(CHILDREN_PROP);
 			graph.getEditor().setDirty();
 		});
 	}
 
+	/// Removes visual nodes from the graph that are no longer visually
+	/// connected to the reference process.
+	private void removeDisconnectedNodes() {
+		var ref = graph.getReferenceNode();
+		if (ref == null)
+			return;
+
+		// collect all reachable nodes
+		var reachable = new HashSet<Node>();
+		var queue = new ArrayDeque<Node>();
+		queue.add(ref);
+		reachable.add(ref);
+		while (!queue.isEmpty()) {
+			var next = queue.poll();
+			for (var l : next.getAllLinks()) {
+				if (!(l instanceof GraphLink link)) continue;
+				var source = link.getSourceNode();
+				if (source != null && reachable.add(source)) {
+					queue.add(source);
+				}
+				var target = link.getTargetNode();
+				if (target != null && reachable.add(target)) {
+					queue.add(target);
+				}
+			}
+		}
+
+		// remove and unlink nodes that are not reachable
+		var removals = new HashSet<Node>();
+		for (var node : graph.getNodes()) {
+			if (!reachable.contains(node)) {
+				removals.add(node);
+			}
+		}
+
+		for (var node : removals) {
+			for (var l : node.getAllLinks()) {
+				if (!(l instanceof GraphLink link)) continue;
+				graph.removeVisualLink(link.processLink);
+			}
+			graph.removeChildQuietly(node);
+		}
+	}
 }
