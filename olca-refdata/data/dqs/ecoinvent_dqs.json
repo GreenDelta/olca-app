@@ -6,126 +6,33 @@
   "hasUncertainties": true,
   "indicators": [
     {
-      "name": "Further technological correlation",
-      "position": 5,
-      "scores": [
-        {
-          "position": 2,
-          "description": "Data from processes and materials under study (i.e. identical technology) but from different enterprises",
-          "uncertainty": 1.05
-        },
-        {
-          "position": 3,
-          "description": "Data from processes and materials under study but from different technology",
-          "uncertainty": 1.20
-        },
-        {
-          "position": 4,
-          "description": "Data on related processes or materials",
-          "uncertainty": 1.49
-        },
-        {
-          "position": 5,
-          "description": "Data on related processes on laboratory scale or from different technology",
-          "uncertainty": 2.0
-        },
-        {
-          "position": 1,
-          "description": "Data from enterprises, processes and materials under study",
-          "uncertainty": 1
-        }
-      ]
-    },
-    {
       "name": "Reliability",
       "position": 1,
       "scores": [
-        {
-          "position": 2,
-          "description": "Verified data partly based on assumptions or non-verified data based on measurements",
-          "uncertainty": 1.05
-        },
-        {
-          "position": 3,
-          "description": "Non-verified data partly based on qualified estimates",
-          "uncertainty": 1.09
-        },
         {
           "position": 1,
           "description": "Verified data based on measurements",
           "uncertainty": 1
         },
         {
-          "position": 5,
-          "description": "Non-qualified estimates",
-          "uncertainty": 1.49
+          "position": 2,
+          "description": "Verified data partly based on assumptions or non-verified data based on measurements",
+          "uncertainty": 1.024797362
+        },
+        {
+          "position": 3,
+          "description": "Non-verified data partly based on qualified estimates",
+          "uncertainty": 1.0457364348
         },
         {
           "position": 4,
           "description": "Qualified estimate (e.g. by industrial expert)",
-          "uncertainty": 1.20
-        }
-      ]
-    },
-    {
-      "name": "Geographical correlation",
-      "position": 4,
-      "scores": [
+          "uncertainty": 1.0935646911
+        },
         {
           "position": 5,
-          "description": "Data from unknown or distinctly different area (North America instead of Middle East, OECD-Europe instead of Russia)",
-          "uncertainty": 1.09
-        },
-        {
-          "position": 1,
-          "description": "Data from area under study",
-          "uncertainty": 1
-        },
-        {
-          "position": 4,
-          "description": "Data from area with slightly similar production conditions",
-          "uncertainty": 1.05
-        },
-        {
-          "position": 3,
-          "description": "Data from area with similar production conditions",
-          "uncertainty": 1.02
-        },
-        {
-          "position": 2,
-          "description": "Average data from larger area in which the area under study is included",
-          "uncertainty": 1.01
-        }
-      ]
-    },
-    {
-      "name": "Temporal correlation",
-      "position": 3,
-      "scores": [
-        {
-          "position": 5,
-          "description": "Age of data unknown or more than 15 years of difference to the time period of the data set",
-          "uncertainty": 1.49
-        },
-        {
-          "position": 3,
-          "description": "Less than 10 years of difference to the time period of the data set",
-          "uncertainty": 1.09
-        },
-        {
-          "position": 1,
-          "description": "Less than 3 years of difference to the time period of the data set",
-          "uncertainty": 1
-        },
-        {
-          "position": 2,
-          "description": "Less than 6 years of difference to the time period of the data set",
-          "uncertainty": 1.03
-        },
-        {
-          "position": 4,
-          "description": "Less than 15 years of difference to the time period of the data set",
-          "uncertainty": 1.20
+          "description": "Non-qualified estimates",
+          "uncertainty": 1.2214027582
         }
       ]
     },
@@ -139,24 +46,117 @@
           "uncertainty": 1
         },
         {
-          "position": 4,
-          "description": "Representative data from only one site relevant for the market considered or some sites but from shorter periods",
-          "uncertainty": 1.09
-        },
-        {
           "position": 2,
           "description": "Representative data from > 50% of the sites relevant for the market considered, over an adequate period to even out normal fluctuations",
-          "uncertainty": 1.02
-        },
-        {
-          "position": 5,
-          "description": "Representativeness unknown or data from a small number of sites and from shorter periods",
-          "uncertainty": 1.20
+          "uncertainty": 1.0100501671
         },
         {
           "position": 3,
           "description": "Representative data from only some sites (<< 50%) relevant for the market considered or > 50% of sites but from shorter periods",
-          "uncertainty": 1.05
+          "uncertainty": 1.024797362
+        },
+        {
+          "position": 4,
+          "description": "Representative data from only one site relevant for the market considered or some sites but from shorter periods",
+          "uncertainty": 1.0457364348
+        },
+        {
+          "position": 5,
+          "description": "Representativeness unknown or data from a small number of sites and from shorter periods",
+          "uncertainty": 1.0935646911
+        }
+      ]
+    },
+    {
+      "name": "Temporal correlation",
+      "position": 3,
+      "scores": [
+        {
+          "position": 1,
+          "description": "Less than 3 years of difference to the time period of the data set",
+          "uncertainty": 1
+        },
+        {
+          "position": 2,
+          "description": "Less than 6 years of difference to the time period of the data set",
+          "uncertainty": 1.0142426087
+        },
+        {
+          "position": 3,
+          "description": "Less than 10 years of difference to the time period of the data set",
+          "uncertainty": 1.0457364348
+        },
+        {
+          "position": 4,
+          "description": "Less than 15 years of difference to the time period of the data set",
+          "uncertainty": 1.0935646911
+        },
+        {
+          "position": 5,
+          "description": "Age of data unknown or more than 15 years of difference to the time period of the data set",
+          "uncertainty": 1.2214027582
+        }
+      ]
+    },
+    {
+      "name": "Geographical correlation",
+      "position": 4,
+      "scores": [
+        {
+          "position": 1,
+          "description": "Data from area under study",
+          "uncertainty": 1
+        },
+        {
+          "position": 2,
+          "description": "Average data from larger area in which the area under study is included",
+          "uncertainty": 1.0050125209
+        },
+        {
+          "position": 3,
+          "description": "Data from area with similar production conditions",
+          "uncertainty": 1.0100501671
+        },
+        {
+          "position": 4,
+          "description": "Data from area with slightly similar production conditions",
+          "uncertainty": 1.024797362
+        },
+        {
+          "position": 5,
+          "description": "Data from unknown or distinctly different area (North America instead of Middle East, OECD-Europe instead of Russia)",
+          "uncertainty": 1.0457364348
+        }
+      ]
+    },
+    {
+      "name": "Further technological correlation",
+      "position": 5,
+      "scores": [
+        {
+          "position": 1,
+          "description": "Data from enterprises, processes and materials under study",
+          "uncertainty": 1
+        },
+        {
+          "position": 2,
+          "description": "Data from processes and materials under study (i.e. identical technology) but from different enterprises",
+          "uncertainty": 1.024797362
+        },
+        {
+          "position": 3,
+          "description": "Data from processes and materials under study but from different technology",
+          "uncertainty": 1.0935646911
+        },
+        {
+          "position": 4,
+          "description": "Data on related processes or materials",
+          "uncertainty": 1.2214027582
+        },
+        {
+          "position": 5,
+          "description": "Data on related processes on laboratory scale or from different technology",
+          "uncertainty": 1.4139824581
         }
       ]
     }
