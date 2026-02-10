@@ -3,8 +3,12 @@ package org.openlca.app.results.contributions;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openlca.app.util.CostResultDescriptor;
@@ -20,8 +24,6 @@ import org.openlca.core.results.UpstreamTree;
 import org.openlca.io.xls.Excel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.trove.list.array.TDoubleArrayList;
 
 class UpstreamTreeExport implements Runnable {
 
@@ -51,10 +53,9 @@ class UpstreamTreeExport implements Runnable {
 
 	private Sheet sheet;
 	private int row;
-	private int maxColumn;
+	private int resOffset;
 	private double totalResult;
-	private final TDoubleArrayList results = new TDoubleArrayList(100);
-	private final TDoubleArrayList direct = new TDoubleArrayList(100);
+	private final ArrayList<PathResult> results = new ArrayList<>();
 
 	UpstreamTreeExport(File file, UpstreamTree tree) {
 		this.file = file;
@@ -72,46 +73,39 @@ class UpstreamTreeExport implements Runnable {
 			sheet = wb.createSheet("Upstream tree");
 
 			var bold = Excel.createBoldStyle(wb);
-			Excel.cell(sheet, 0, 0,
-							"Upstream contributions to: " + refName())
-					.ifPresent(c -> c.setCellStyle(bold));
-			Excel.cell(sheet, 1, 0, "Processes")
-					.ifPresent(c -> c.setCellStyle(bold));
+			style(bold, Excel.cell(sheet, 0, 0,
+				"Upstream contributions to: " + refName()));
+			style(bold, Excel.cell(sheet, 1, 0, "Processes"));
 
-			// write the tree
+			// first expand the tree, then we know where to write the results
 			row = 1;
-			maxColumn = 0;
+			resOffset = 0;
 			totalResult = tree.root.result();
 			Path path = new Path(tree.root);
 			traverse(path);
 
 			// write the result values
-			var unit = unit();
-			var resultHeader = Strings.isBlank(unit)
-					? "Result"
-					: "Result [" + unit + "]";
-			var directHeader = Strings.isNotBlank(unit)
-					? "Direct contribution [" + unit + "]"
-					: "Direct contribution";
-			Excel.cell(sheet, 1, maxColumn + 1, resultHeader)
-					.ifPresent(c -> c.setCellStyle(bold));
-			Excel.cell(sheet, 1, maxColumn + 2, directHeader)
-					.ifPresent(c -> c.setCellStyle(bold));
+			writeResultHeader(bold);
 			for (int i = 0; i < results.size(); i++) {
-				Excel.cell(sheet, i + 2, maxColumn + 1, results.get(i));
-				var d = direct.get(i);
+				var r = results.get(i);
+				Excel.cell(sheet, i + 2, resOffset + 1, r.requiredAmount);
+				Excel.cell(sheet, i + 2, resOffset + 2, r.amountUnit);
+				Excel.cell(sheet, i + 2, resOffset + 3, r.totalResult);
+				var d = r.directResult;
 				if (d != 0) {
-					Excel.cell(sheet, i + 2, maxColumn + 2, d);
+					Excel.cell(sheet, i + 2, resOffset + 4, d);
 				}
 			}
 
 			// set the column widths
-			for (int col = 0; col < maxColumn; col++) {
+			for (int col = 0; col < resOffset; col++) {
 				sheet.setColumnWidth(col, 750);
 			}
-			sheet.setColumnWidth(maxColumn, 50 * 255);
-			sheet.setColumnWidth(maxColumn + 1, 25 * 255);
-			sheet.setColumnWidth(maxColumn + 2, 25 * 255);
+			sheet.setColumnWidth(resOffset, 50 * 255);
+			sheet.setColumnWidth(resOffset + 1, 25 * 255);
+			sheet.setColumnWidth(resOffset + 2, 15 * 255);
+			sheet.setColumnWidth(resOffset + 3, 25 * 255);
+			sheet.setColumnWidth(resOffset + 4, 25 * 255);
 
 			// write the file
 			try (var fout = new FileOutputStream(file);
@@ -124,6 +118,21 @@ class UpstreamTreeExport implements Runnable {
 		}
 	}
 
+	private void writeResultHeader(CellStyle bold) {
+		var unit = unit();
+		var u = Strings.isBlank(unit)
+			? ""
+			: " [" + unit + "]";
+		style(bold, Excel.cell(sheet, 1, resOffset + 1, "Required amount"));
+		style(bold, Excel.cell(sheet, 1, resOffset + 2, "Unit"));
+		style(bold, Excel.cell(sheet, 1, resOffset + 3, "Result" + u));
+		style(bold, Excel.cell(sheet, 1, resOffset + 4, "Direct contribution" + u));
+	}
+
+	private void style(CellStyle style, Optional<Cell> cell) {
+		cell.ifPresent(c -> c.setCellStyle(style));
+	}
+
 	private String refName() {
 		var ref = tree.ref;
 		if (ref == null)
@@ -131,28 +140,19 @@ class UpstreamTreeExport implements Runnable {
 		if (ref instanceof EnviFlow enviFlow)
 			return Labels.name(enviFlow);
 		return ref instanceof Descriptor
-				? ((Descriptor) ref).name
-				: "";
+			? ((Descriptor) ref).name
+			: "";
 	}
 
 	private String unit() {
 		var ref = tree.ref;
-		if (ref == null)
-			return "";
-
-		if (ref instanceof EnviFlow)
-			return Labels.refUnit((EnviFlow) ref);
-
-		if (ref instanceof FlowDescriptor)
-			return Labels.refUnit((FlowDescriptor) ref);
-
-		if (ref instanceof ImpactDescriptor)
-			return ((ImpactDescriptor) ref).referenceUnit;
-
-		if (ref instanceof CostResultDescriptor)
-			return Labels.getReferenceCurrencyCode();
-
-		return "";
+		return switch (ref) {
+			case EnviFlow f -> Labels.refUnit(f);
+			case FlowDescriptor f -> Labels.refUnit(f);
+			case ImpactDescriptor i -> i.referenceUnit;
+			case CostResultDescriptor ignored -> Labels.getReferenceCurrencyCode();
+			case null, default -> "";
+		};
 	}
 
 	private void traverse(Path path) {
@@ -192,15 +192,11 @@ class UpstreamTreeExport implements Runnable {
 
 	private void write(Path path) {
 		row++;
-		results.add(path.node.result());
-		direct.add(path.node.directContribution());
+		results.add(PathResult.of(path));
 		int col = path.length;
-		maxColumn = Math.max(col, maxColumn);
+		resOffset = Math.max(col, resOffset);
 		var node = path.node;
-		if (node.provider() == null
-				|| node.provider().provider() == null)
-			return;
-		var label = Labels.name(node.provider().provider());
+		var label = Labels.name(node.provider());
 		Excel.cell(sheet, row, col, label);
 	}
 
@@ -228,6 +224,24 @@ class UpstreamTreeExport implements Runnable {
 		int count(TechFlow techFlow) {
 			int c = Objects.equals(techFlow, node.provider()) ? 1 : 0;
 			return prefix != null ? c + prefix.count(techFlow) : c;
+		}
+	}
+
+	private record PathResult(
+		double totalResult,
+		double directResult,
+		double requiredAmount,
+		String amountUnit
+	) {
+
+		static PathResult of(Path path) {
+			var node = path.node;
+			return new PathResult(
+				node.result(),
+				node.directContribution(),
+				node.requiredAmount(),
+				Labels.refUnit(node.provider())
+			);
 		}
 	}
 
