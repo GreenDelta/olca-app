@@ -10,7 +10,7 @@ public enum FeatureFlag {
 
 	TAG_RESULTS("Enable contributions by tags in result views"),
 
-	ADDITIONAL_PROPERTIES("Show additional properties of data sets"),
+	ADDITIONAL_PROPERTIES("Always show additional properties of data sets"),
 
 	SD_SIM("Support for system dynamics models");
 

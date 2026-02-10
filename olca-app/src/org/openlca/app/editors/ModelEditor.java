@@ -75,7 +75,9 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 		if (getComments().hasRefId(model.refId)) {
 			addPage(new CommentsPage(this, getComments(), model));
 		}
-		if (FeatureFlag.ADDITIONAL_PROPERTIES.isEnabled()) {
+		var showAddProps = FeatureFlag.ADDITIONAL_PROPERTIES.isEnabled()
+			|| (model.otherProperties != null && model.otherProperties.length > 0);
+		if (showAddProps) {
 			addPage(new AdditionalPropertiesPage<>(this));
 		}
 	}
