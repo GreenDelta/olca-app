@@ -23,6 +23,7 @@ import org.openlca.app.viewers.trees.Trees;
 import org.openlca.commons.Strings;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
+import org.openlca.core.model.DQSystem;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 
@@ -49,12 +50,12 @@ public class ImpactTreePage extends FormPage {
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var form = UI.header(mForm,
-				Labels.name(setup.target()),
-				Icon.ANALYSIS_RESULT.get());
+			Labels.name(setup.target()),
+			Icon.ANALYSIS_RESULT.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		var section = UI.section(body, tk,
-				M.ImpactAnalysis + " - " + Labels.name(setup.impactMethod()));
+			M.ImpactAnalysis + " - " + Labels.name(setup.impactMethod()));
 		UI.gridData(section, true, true);
 		var comp = UI.composite(section, tk);
 		section.setClient(comp);
@@ -87,14 +88,14 @@ public class ImpactTreePage extends FormPage {
 
 	private void createTree(Composite comp, FormToolkit tk) {
 		String[] columns = {
-				M.Name,
-				M.Category,
-				M.InventoryResult,
-				M.ImpactFactor,
-				M.ImpactResult};
+			M.Name,
+			M.Category,
+			M.InventoryResult,
+			M.ImpactFactor,
+			M.ImpactResult};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			columns = DQUI.appendTableHeaders(columns,
-					dqResult.setup.exchangeSystem);
+				dqResult.setup.exchangeSystem);
 		}
 		var label = new TreeLabel(dqResult);
 		viewer = Trees.createViewer(comp, columns, label);
@@ -110,7 +111,7 @@ public class ImpactTreePage extends FormPage {
 		double[] widths = {.3, .25, .15, .15, .15};
 		if (DQUI.displayExchangeQuality(dqResult)) {
 			widths = DQUI.adjustTableWidths(
-					widths, dqResult.setup.exchangeSystem);
+				widths, dqResult.setup.exchangeSystem);
 		}
 		viewer.getTree().getColumns()[2].setAlignment(SWT.RIGHT);
 		viewer.getTree().getColumns()[3].setAlignment(SWT.RIGHT);
@@ -144,28 +145,25 @@ public class ImpactTreePage extends FormPage {
 		}
 	}
 
-	private record ClipboardProvider(TreeLabel label, DQResult dqResult) implements Provider {
+	private record ClipboardProvider(
+		TreeLabel label, DQSystem dqs
+	) implements Provider {
+
+		ClipboardProvider(TreeLabel label, DQResult dqr) {
+			this(label, DQUI.displayExchangeQuality(dqr)
+				? dqr.setup.exchangeSystem
+				: null);
+		}
 
 		@Override
 		public int columns() {
-			int baseCols = 8;
-			if (DQUI.displayExchangeQuality(dqResult)) {
-				return baseCols + dqResult.setup.exchangeSystem.indicators.size();
-			}
-			return baseCols;
+			return dqs != null
+				? 8 + dqs.indicators.size()
+				: 8;
 		}
 
 		@Override
 		public String getHeader(int col) {
-			// Handle ALL DQ columns dynamically (however many there are)
-			if (col >= 8 && DQUI.displayExchangeQuality(dqResult)) {
-				int dqIndex = col - 8 + 1;
-				var indicator = dqResult.setup.exchangeSystem.getIndicator(dqIndex);
-				return Strings.isBlank(indicator.name)
-					? Integer.toString(indicator.position)
-					: Character.toString(indicator.name.charAt(0));
-			}
-
 			return switch (col) {
 				case 0 -> M.Name;
 				case 1 -> M.Category;
@@ -173,7 +171,14 @@ public class ImpactTreePage extends FormPage {
 				case 3, 5, 7 -> M.Unit;
 				case 4 -> M.ImpactFactor;
 				case 6 -> M.ImpactResult;
-				default -> "";
+				default -> {
+					if (dqs == null) yield "";
+					// the position of a data quality indicator starts with 1
+					var indicator = dqs.getIndicator(col - 8 + 1);
+					yield Strings.isBlank(indicator.name)
+						? Integer.toString(indicator.position)
+						: Character.toString(indicator.name.charAt(0));
+				}
 			};
 		}
 
@@ -181,17 +186,6 @@ public class ImpactTreePage extends FormPage {
 		public String getLabel(org.eclipse.swt.widgets.TreeItem widget, int col) {
 			if (!(widget.getData() instanceof TreeItem item))
 				return "";
-
-			// Handle DQ column values (col >= 8)
-			if (col >= 8 && DQUI.displayExchangeQuality(dqResult)) {
-				int dqPos = col - 8;
-				int[] quality = label.getQuality(item);
-				if (quality == null)
-					return "";
-				if (quality[dqPos] == 0)
-					return "";
-				return dqResult.setup.exchangeSystem.getScoreLabel(quality[dqPos]);
-			}
 
 			var inventoryValue = "";
 			var inventoryUnit = "";
@@ -201,8 +195,8 @@ public class ImpactTreePage extends FormPage {
 				inventoryUnit = Labels.refUnit(item.enviFlow());
 				var impactUnit = item.impact().referenceUnit;
 				impactFactorUnit = Strings.isNotBlank(impactUnit)
-						? impactUnit + "/" + inventoryUnit
-						: "1/" + inventoryUnit;
+					? impactUnit + "/" + inventoryUnit
+					: "1/" + inventoryUnit;
 			} else if (item.isTechItem() && item.isLeaf()) {
 				inventoryValue = Double.toString(item.inventoryResult());
 				inventoryUnit = Labels.refUnit(item.parent().enviFlow());
@@ -213,12 +207,21 @@ public class ImpactTreePage extends FormPage {
 				case 2 -> inventoryValue;
 				case 3 -> inventoryUnit;
 				case 4 -> item.isEnviItem()
-						? Double.toString(item.impactFactor())
-						: "";
+					? Double.toString(item.impactFactor())
+					: "";
 				case 5 -> impactFactorUnit;
 				case 6 -> Double.toString(item.impactResult());
 				case 7 -> item.impact().referenceUnit;
-				default -> "";
+				default -> {
+					if (dqs == null) yield "";
+					int[] quality = label.getQuality(item);
+					int idx = col - 8;
+					if (quality == null || idx >= quality.length) yield "";
+					int score = quality[idx];
+					yield score != 0
+						? dqs.getScoreLabel(score)
+						: "";
+				}
 			};
 		}
 	}
