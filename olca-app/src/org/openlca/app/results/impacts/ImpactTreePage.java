@@ -103,7 +103,7 @@ public class ImpactTreePage extends FormPage {
 		tk.paintBordersFor(viewer.getTree());
 
 		var onOpen = Actions.onOpen(this::onOpen);
-		var onCopy = TreeClipboard.onCopy(viewer, new ClipboardProvider(label));
+		var onCopy = TreeClipboard.onCopy(viewer, new ClipboardProvider(label, dqResult));
 		Actions.bind(viewer, onOpen, onCopy);
 		Trees.onDoubleClick(viewer, e -> onOpen.run());
 		createColumnSorters(label);
@@ -144,15 +144,28 @@ public class ImpactTreePage extends FormPage {
 		}
 	}
 
-	private record ClipboardProvider(TreeLabel label) implements Provider {
+	private record ClipboardProvider(TreeLabel label, DQResult dqResult) implements Provider {
 
 		@Override
 		public int columns() {
-			return 8;
+			int baseCols = 8;
+			if (DQUI.displayExchangeQuality(dqResult)) {
+				return baseCols + dqResult.setup.exchangeSystem.indicators.size();
+			}
+			return baseCols;
 		}
 
 		@Override
 		public String getHeader(int col) {
+			// Handle ALL DQ columns dynamically (however many there are)
+			if (col >= 8 && DQUI.displayExchangeQuality(dqResult)) {
+				int dqIndex = col - 8 + 1;
+				var indicator = dqResult.setup.exchangeSystem.getIndicator(dqIndex);
+				return Strings.isBlank(indicator.name)
+					? Integer.toString(indicator.position)
+					: Character.toString(indicator.name.charAt(0));
+			}
+
 			return switch (col) {
 				case 0 -> M.Name;
 				case 1 -> M.Category;
@@ -168,6 +181,17 @@ public class ImpactTreePage extends FormPage {
 		public String getLabel(org.eclipse.swt.widgets.TreeItem widget, int col) {
 			if (!(widget.getData() instanceof TreeItem item))
 				return "";
+
+			// Handle DQ column values (col >= 8)
+			if (col >= 8 && DQUI.displayExchangeQuality(dqResult)) {
+				int dqPos = col - 8;
+				int[] quality = label.getQuality(item);
+				if (quality == null)
+					return "";
+				if (quality[dqPos] == 0)
+					return "";
+				return dqResult.setup.exchangeSystem.getScoreLabel(quality[dqPos]);
+			}
 
 			var inventoryValue = "";
 			var inventoryUnit = "";
