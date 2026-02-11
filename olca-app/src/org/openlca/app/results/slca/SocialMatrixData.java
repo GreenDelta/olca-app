@@ -47,9 +47,9 @@ record SocialMatrixData(
 			this.socialIndex = socialIndex;
 
 			activityData = new MatrixBuilder();
-			activityData.minSize(socialIndex.size(), techIndex.size());
+			activityData.ensureSize(socialIndex.size(), techIndex.size());
 			rawData = new MatrixBuilder();
-			rawData.minSize(socialIndex.size(), techIndex.size());
+			rawData.ensureSize(socialIndex.size(), techIndex.size());
 			levelData = new SocialLevelMatrix();
 		}
 
