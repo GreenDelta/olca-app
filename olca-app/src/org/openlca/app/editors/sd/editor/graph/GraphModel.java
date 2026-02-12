@@ -5,6 +5,6 @@ import java.util.List;
 
 class GraphModel {
 
-	final List<StockModel> stocks = new ArrayList<>();
+	final List<VarModel> vars = new ArrayList<>();
 
 }

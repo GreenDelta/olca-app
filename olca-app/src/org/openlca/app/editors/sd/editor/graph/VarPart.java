@@ -4,20 +4,27 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
+import org.openlca.sd.eqn.Var;
 
-class StockPart extends AbstractGraphicalEditPart {
+class VarPart extends AbstractGraphicalEditPart {
 
 	private final Runnable listener = this::refreshVisuals;
 
 	@Override
 	protected IFigure createFigure() {
-		return new StockFigure();
+		var model = getModel();
+		return switch (model.variable) {
+			case Var.Stock s -> new StockFigure();
+			case Var.Aux a -> new AuxFigure();
+			case Var.Rate r -> new FlowFigure();
+			default -> new StockFigure();
+		};
 	}
 
 	@Override
-	public StockModel getModel() {
+	public VarModel getModel() {
 		var model = super.getModel();
-		return model instanceof StockModel m ? m : null;
+		return model instanceof VarModel m ? m : null;
 	}
 
 	@Override
@@ -47,8 +54,14 @@ class StockPart extends AbstractGraphicalEditPart {
 	protected void refreshVisuals() {
 		var model = getModel();
 		if (model == null) return;
-		var figure = (StockFigure) getFigure();
-		figure.setText(model.name());
+		var figure = getFigure();
+		if (figure instanceof StockFigure f) {
+			f.setText(model.name());
+		} else if (figure instanceof AuxFigure f) {
+			f.setText(model.name());
+		} else if (figure instanceof FlowFigure f) {
+			f.setText(model.name());
+		}
 
 		var parent = getParent();
 		if (parent instanceof AbstractGraphicalEditPart gep) {

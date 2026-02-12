@@ -6,15 +6,15 @@ import java.util.List;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.sd.eqn.Var;
 
-class StockModel {
+class VarModel {
 
-	final Var.Stock stock;
+	final Var variable;
 	final Rectangle bounds = new Rectangle();
 
 	private final List<Runnable> listeners = new ArrayList<>();
 
-	StockModel(Var.Stock variable) {
-		this.stock = variable;
+	VarModel(Var variable) {
+		this.variable = variable;
 	}
 
 	void addListener(Runnable listener) {
@@ -35,8 +35,8 @@ class StockModel {
 	}
 
 	String name() {
-		return stock != null && stock.name() != null
-			? stock.name().label()
+		return variable != null && variable.name() != null
+			? variable.name().label()
 			: "";
 	}
 

@@ -3,13 +3,13 @@ package org.openlca.app.editors.sd.editor.graph;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 
-class StockMoveCmd extends Command {
+class VarMoveCmd extends Command {
 
-	private final StockModel model;
+	private final VarModel model;
 	private final Rectangle oldBounds;
 	private final Rectangle newBounds;
 
-	StockMoveCmd(StockModel model, Rectangle newBounds) {
+	VarMoveCmd(VarModel model, Rectangle newBounds) {
 		this.model = model;
 		this.oldBounds = model.bounds.getCopy();
 		this.newBounds = newBounds.getCopy();
