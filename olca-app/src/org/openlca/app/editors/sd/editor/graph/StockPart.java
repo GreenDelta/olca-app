@@ -1,7 +1,6 @@
 package org.openlca.app.editors.sd.editor.graph;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
@@ -16,14 +15,26 @@ class StockPart extends AbstractGraphicalEditPart {
 	}
 
 	@Override
+	public StockModel getModel() {
+		var model = super.getModel();
+		return model instanceof StockModel m ? m : null;
+	}
+
+	@Override
 	public void activate() {
 		super.activate();
-		((StockModel) getModel()).addListener(listener);
+		var model = getModel();
+		if (model != null) {
+			model.addListener(listener);
+		}
 	}
 
 	@Override
 	public void deactivate() {
-		((StockModel) getModel()).removeListener(listener);
+		var model = getModel();
+		if (model != null) {
+			model.removeListener(listener);
+		}
 		super.deactivate();
 	}
 
@@ -34,16 +45,15 @@ class StockPart extends AbstractGraphicalEditPart {
 
 	@Override
 	protected void refreshVisuals() {
-		var model = (StockModel) getModel();
+		var model = getModel();
+		if (model == null) return;
 		var figure = (StockFigure) getFigure();
 		figure.setText(model.name());
 
 		var parent = getParent();
-		if (!(parent instanceof AbstractGraphicalEditPart gep))
-			return;
-
-		var bounds = new Rectangle(model.x, model.y, model.width, model.height);
-		gep.setLayoutConstraint(this, figure, bounds);
+		if (parent instanceof AbstractGraphicalEditPart gep) {
+			gep.setLayoutConstraint(this, figure, model.bounds);
+		}
 	}
 
 }

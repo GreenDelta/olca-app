@@ -11,7 +11,7 @@ class StockMoveCmd extends Command {
 
 	StockMoveCmd(StockModel model, Rectangle newBounds) {
 		this.model = model;
-		this.oldBounds = new Rectangle(model.x, model.y, model.width, model.height);
+		this.oldBounds = model.bounds.getCopy();
 		this.newBounds = newBounds.getCopy();
 	}
 

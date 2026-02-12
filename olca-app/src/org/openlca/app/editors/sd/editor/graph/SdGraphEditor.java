@@ -62,15 +62,14 @@ public class SdGraphEditor extends GraphicalEditor {
 				var stock = new StockModel(s);
 				var view = stockViews.get(s.name());
 				if (view != null) {
-					stock.x = (int) view.x();
-					stock.y = (int) view.y();
-					stock.width = view.width() != null ? view.width().intValue() : 100;
-					stock.height = view.height() != null ? view.height().intValue() : 50;
+					int x = (int) view.x();
+					int y = (int) view.y();
+					int w = view.width() != null ? view.width().intValue() : 100;
+					int h = view.height() != null ? view.height().intValue() : 50;
+					stock.bounds.setBounds(x, y, w, h);
 				} else {
-					stock.x = 10 + i * 20;
-					stock.y = 10 + i * 20;
-					stock.width = 100;
-					stock.height = 50;
+					int pos = 10 + i * 20;
+					stock.bounds.setBounds(pos, pos, 100, 50);
 				}
 				model.stocks.add(stock);
 				i++;

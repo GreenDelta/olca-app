@@ -9,11 +9,7 @@ import org.openlca.sd.eqn.Var;
 class StockModel {
 
 	final Var.Stock stock;
-
-	int x;
-	int y;
-	int width;
-	int height;
+	final Rectangle bounds = new Rectangle();
 
 	private final List<Runnable> listeners = new ArrayList<>();
 
@@ -30,11 +26,9 @@ class StockModel {
 	}
 
 	void moveTo(Rectangle rect) {
-		if (rect == null) return;
-		this.x = rect.x;
-		this.y = rect.y;
-		this.width = rect.width;
-		this.height = rect.height;
+		if (rect == null)
+			return;
+		bounds.setBounds(rect);
 		for (var listener : listeners) {
 			listener.run();
 		}
