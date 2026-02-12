@@ -12,7 +12,9 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.AppContext;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
+import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.sd.SdVars;
+import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.editors.sd.interop.JsonSetupReader;
 import org.openlca.app.editors.sd.interop.JsonSetupWriter;
 import org.openlca.app.editors.sd.interop.SimulationSetup;
@@ -36,6 +38,7 @@ public class SdModelEditor extends FormEditor {
 	private SimulationSetup setup;
 	private List<Var> vars;
 	private boolean dirty;
+	private SdGraphEditor graphEditor;
 
 	public static void open(File modelDir) {
 		if (modelDir == null || !modelDir.exists() || !modelDir.isDirectory())
@@ -129,9 +132,17 @@ public class SdModelEditor extends FormEditor {
 			addPage(new SetupPage(this));
 			addPage(new BindingsPage(this));
 			addPage(new VarsPage(this));
+			addGraphPage();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create SD model editor pages", e);
 		}
+	}
+
+	private void addGraphPage() throws PartInitException {
+		graphEditor = new SdGraphEditor(this);
+		var gInput = new GraphicalEditorInput(null);
+		int index = addPage(graphEditor, gInput);
+		setPageText(index, "Graph");
 	}
 
 	@Override
