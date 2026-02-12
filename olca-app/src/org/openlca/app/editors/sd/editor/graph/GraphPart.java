@@ -6,10 +6,13 @@ import java.util.List;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
+import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 
 class GraphPart extends AbstractGraphicalEditPart {
@@ -40,13 +43,13 @@ class GraphPart extends AbstractGraphicalEditPart {
 			return null;
 		}
 
-		// @Override
-		// protected Command createChangeBoundsCommand(EditPart child, Object constraint) {
-		//	if (child instanceof StockPart part && constraint instanceof Rectangle rect) {
-		//		return new ChangeBoundsCommand((StockModel) part.getModel(), rect);
-		//	}
-		//	return null;
-		// }
+		@Override
+		protected Command createChangeConstraintCommand(ChangeBoundsRequest request, EditPart child, Object constraint) {
+			if (child instanceof StockPart part && constraint instanceof Rectangle rect) {
+				return new StockMoveCmd((StockModel) part.getModel(), rect);
+			}
+			return super.createChangeConstraintCommand(request, child, constraint);
+		}
 	}
 
 }
