@@ -12,6 +12,11 @@ class PartFactory implements EditPartFactory {
 			part.setModel(model);
 			return part;
 		}
+		if (model instanceof StockModel) {
+			var part = new StockPart();
+			part.setModel(model);
+			return part;
+		}
 		return null;
 	}
 

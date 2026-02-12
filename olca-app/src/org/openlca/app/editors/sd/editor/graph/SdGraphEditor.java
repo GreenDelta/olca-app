@@ -31,7 +31,20 @@ public class SdGraphEditor extends GraphicalEditor {
 	protected void initializeGraphicalViewer() {
 		var viewer = getGraphicalViewer();
 		viewer.setEditPartFactory(new PartFactory());
-		viewer.setContents(new GraphModel());
+		var model = new GraphModel();
+		populate(model);
+		viewer.setContents(model);
+	}
+
+	private void populate(GraphModel model) {
+		var vars = parent.vars();
+		if (vars == null)
+			return;
+		for (var variable : vars) {
+			if (variable instanceof org.openlca.sd.eqn.Var.Stock stock) {
+				model.stocks.add(new StockModel(stock));
+			}
+		}
 	}
 
 	@Override
