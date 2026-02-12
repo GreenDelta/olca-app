@@ -2,9 +2,13 @@ package org.openlca.app.editors.sd.editor.graph;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 
 class StockPart extends AbstractGraphicalEditPart {
+
+	private final Runnable listener = this::refreshVisuals;
 
 	@Override
 	protected IFigure createFigure() {
@@ -12,7 +16,20 @@ class StockPart extends AbstractGraphicalEditPart {
 	}
 
 	@Override
+	public void activate() {
+		super.activate();
+		((StockModel) getModel()).addListener(listener);
+	}
+
+	@Override
+	public void deactivate() {
+		((StockModel) getModel()).removeListener(listener);
+		super.deactivate();
+	}
+
+	@Override
 	protected void createEditPolicies() {
+		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new ResizableEditPolicy());
 	}
 
 	@Override
