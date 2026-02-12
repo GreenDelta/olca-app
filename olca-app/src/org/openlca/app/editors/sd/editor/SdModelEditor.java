@@ -38,7 +38,6 @@ public class SdModelEditor extends FormEditor {
 	private SimulationSetup setup;
 	private List<Var> vars;
 	private boolean dirty;
-	private SdGraphEditor graphEditor;
 
 	public static void open(File modelDir) {
 		if (modelDir == null || !modelDir.exists() || !modelDir.isDirectory())
@@ -99,7 +98,7 @@ public class SdModelEditor extends FormEditor {
 		return dirty;
 	}
 
-	Xmile xmile() {
+	public Xmile xmile() {
 		return xmile;
 	}
 
@@ -139,7 +138,7 @@ public class SdModelEditor extends FormEditor {
 	}
 
 	private void addGraphPage() throws PartInitException {
-		graphEditor = new SdGraphEditor(this);
+		var graphEditor = new SdGraphEditor(this);
 		var gInput = new GraphicalEditorInput(null);
 		int index = addPage(graphEditor, gInput);
 		setPageText(index, "Graph");

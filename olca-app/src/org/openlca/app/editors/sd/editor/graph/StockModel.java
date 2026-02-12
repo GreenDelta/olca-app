@@ -6,6 +6,11 @@ class StockModel {
 
 	final Var.Stock stock;
 
+	int x;
+	int y;
+	int width;
+	int height;
+
 	StockModel(Var.Stock variable) {
 		this.stock = variable;
 	}

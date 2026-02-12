@@ -21,13 +21,11 @@ class StockPart extends AbstractGraphicalEditPart {
 		var figure = (StockFigure) getFigure();
 		figure.setText(model.name());
 
-		// for now, use a default position and size
 		var parent = getParent();
 		if (!(parent instanceof AbstractGraphicalEditPart gep))
 			return;
 
-		int index = gep.getChildren().indexOf(this);
-		var bounds = new Rectangle(10 + index * 10, 10 + index * 10, 100, 50);
+		var bounds = new Rectangle(model.x, model.y, model.width, model.height);
 		gep.setLayoutConstraint(this, figure, bounds);
 	}
 
