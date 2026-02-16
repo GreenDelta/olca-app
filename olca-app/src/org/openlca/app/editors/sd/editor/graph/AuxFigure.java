@@ -1,21 +1,25 @@
 package org.openlca.app.editors.sd.editor.graph;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.ToolbarLayout;
+import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.components.graphics.themes.Theme.Box;
 
 class AuxFigure extends Figure {
 
 	private final Label label = new Label();
+	private final Theme theme;
 
-	AuxFigure() {
+	AuxFigure(Theme theme) {
+		this.theme = theme;
 		var layout = new ToolbarLayout();
 		layout.setMinorAlignment(ToolbarLayout.ALIGN_CENTER);
 		layout.setSpacing(4);
 		setLayoutManager(layout);
+		label.setForegroundColor(theme.boxFontColor(Box.DEFAULT));
 		add(label);
 		add(new FixedCircle());
 	}
@@ -24,12 +28,10 @@ class AuxFigure extends Figure {
 		label.setText(text);
 	}
 
-	private static class FixedCircle extends Shape {
+	private class FixedCircle extends Shape {
 
 		private FixedCircle() {
 			setPreferredSize(8, 8);
-			setBackgroundColor(ColorConstants.black);
-			setForegroundColor(ColorConstants.black);
 		}
 
 		@Override
@@ -37,7 +39,7 @@ class AuxFigure extends Figure {
 			var r = getBounds();
 			int x = r.x + (r.width - 8) / 2;
 			int y = r.y + (r.height - 8) / 2;
-			g.setBackgroundColor(getForegroundColor());
+			g.setBackgroundColor(theme.boxBorderColor(Box.RESULT));
 			g.fillOval(x, y, 8, 8);
 		}
 

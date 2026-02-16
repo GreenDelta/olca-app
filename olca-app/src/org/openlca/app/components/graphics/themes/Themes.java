@@ -36,7 +36,7 @@ public final class Themes {
 				.stream()
 				.filter(theme -> name.equalsIgnoreCase(theme.name()))
 				.findAny()
-				.orElse(noCss().get(0));
+				.orElse(noCss().getFirst());
 	}
 
 	public static List<String> getValidThemeNames() {

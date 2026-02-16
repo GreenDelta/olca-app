@@ -6,16 +6,21 @@ import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.components.graphics.themes.Theme.Box;
 
 class FlowFigure extends Figure {
 
+	private final Theme theme;
 	private final Label label = new Label();
 
-	FlowFigure() {
+	FlowFigure(Theme theme) {
+		this.theme = theme;
 		var layout = new ToolbarLayout();
 		layout.setMinorAlignment(ToolbarLayout.ALIGN_CENTER);
 		layout.setSpacing(4);
 		setLayoutManager(layout);
+		label.setForegroundColor(theme.boxFontColor(Box.DEFAULT));
 		add(label);
 		ValveFigure valve = new ValveFigure();
 		valve.setPreferredSize(25, 25);
@@ -26,7 +31,7 @@ class FlowFigure extends Figure {
 		label.setText(text);
 	}
 
-	private static class ValveFigure extends Shape {
+	private class ValveFigure extends Shape {
 
 		@Override
 		protected void fillShape(Graphics g) {
@@ -35,6 +40,7 @@ class FlowFigure extends Figure {
 
 		@Override
 		protected void outlineShape(Graphics g) {
+			g.setForegroundColor(theme.boxBorderColor(Box.SUB_SYSTEM));
 			Rectangle r = getBounds();
 			int size = 24;
 			int x = r.x + (r.width - size) / 2;

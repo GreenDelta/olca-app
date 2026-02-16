@@ -12,10 +12,8 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.openlca.app.components.graphics.themes.Theme;
-import org.openlca.app.components.graphics.themes.Theme.Box;
 import org.openlca.sd.eqn.Var.Aux;
 import org.openlca.sd.eqn.Var.Rate;
-import org.openlca.sd.eqn.Var.Stock;
 
 class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
@@ -33,17 +31,13 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
 	@Override
 	protected IFigure createFigure() {
-		var variable = getModel().variable;
-		if (variable instanceof Stock) {
-			return new StockFigure();
-		}
-		if (variable instanceof Aux) {
-			return new AuxFigure();
-		}
-		if (variable instanceof Rate) {
-			return new FlowFigure();
-		}
-		return new StockFigure();
+		var model = getModel();
+		if (model == null) return new StockFigure(theme);
+		return switch (getModel().variable) {
+			case Aux ignore -> new AuxFigure(theme);
+			case Rate ignore -> new FlowFigure(theme);
+			case null, default -> new StockFigure(theme);
+		};
 	}
 
 	@Override
@@ -76,12 +70,12 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 	}
 
 	@Override
-	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connection) {
+	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart con) {
 		return new ChopboxAnchor(getFigure());
 	}
 
 	@Override
-	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
+	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart con) {
 		return new ChopboxAnchor(getFigure());
 	}
 
@@ -113,8 +107,6 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 		if (model == null)
 			return;
 		var figure = getFigure();
-		var color = theme.boxBorderColor(Box.UNIT_PROCESS);
-		figure.setForegroundColor(color);
 		if (figure instanceof StockFigure f) {
 			f.setText(model.name());
 		} else if (figure instanceof AuxFigure f) {

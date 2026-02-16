@@ -14,11 +14,15 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.openlca.app.components.graphics.themes.Theme;
 
 class GraphPart extends AbstractGraphicalEditPart {
 
-	GraphPart(GraphModel model) {
+	private final Theme theme;
+
+	GraphPart(GraphModel model, Theme theme) {
 		setModel(model);
+		this.theme = theme;
 	}
 
 	@Override
@@ -30,7 +34,18 @@ class GraphPart extends AbstractGraphicalEditPart {
 	protected IFigure createFigure() {
 		var figure = new FreeformLayer();
 		figure.setLayoutManager(new FreeformLayout());
+		figure.setBackgroundColor(theme.backgroundColor());
+		figure.setOpaque(true);
 		return figure;
+	}
+
+	@Override
+	protected void refreshVisuals() {
+		super.refreshVisuals();
+		var figure = getFigure();
+		if (figure != null) {
+			figure.setBackgroundColor(theme.backgroundColor());
+		}
 	}
 
 	@Override
@@ -40,7 +55,7 @@ class GraphPart extends AbstractGraphicalEditPart {
 
 	@Override
 	protected List<?> getModelChildren() {
-		var model = (GraphModel) getModel();
+		var model = getModel();
 		if (model == null)
 			return Collections.emptyList();
 		return model.vars;

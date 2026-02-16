@@ -5,7 +5,7 @@ import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.openlca.app.components.graphics.themes.Theme;
-import org.openlca.core.model.FlowType;
+import org.openlca.app.components.graphics.themes.Theme.Box;
 
 class LinkPart extends AbstractConnectionEditPart {
 
@@ -42,8 +42,8 @@ class LinkPart extends AbstractConnectionEditPart {
 		// we just re-use the colors from the theme here,
 		// the flow types have no specific meaning
 		var color = link.isStockFlow()
-			? theme.linkColor(FlowType.PRODUCT_FLOW)
-			: theme.linkColor(FlowType.ELEMENTARY_FLOW);
+			? theme.boxBorderColor(Box.SUB_SYSTEM)
+			: theme.boxBorderColor(Box.RESULT);
 		con.setForegroundColor(color);
 	}
 

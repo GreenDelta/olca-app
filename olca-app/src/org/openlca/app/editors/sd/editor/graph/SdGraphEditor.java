@@ -9,7 +9,6 @@ import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
 import org.openlca.sd.eqn.EvaluationOrder;
@@ -22,7 +21,6 @@ import org.openlca.sd.xmile.view.XmiStockView;
 public class SdGraphEditor extends GraphicalEditor {
 
 	private final SdModelEditor parent;
-	private Theme theme;
 
 	public SdGraphEditor(SdModelEditor parent) {
 		this.parent = parent;
@@ -37,12 +35,12 @@ public class SdGraphEditor extends GraphicalEditor {
 	@Override
 	protected void configureGraphicalViewer() {
 		super.configureGraphicalViewer();
-		theme = Themes.get(Themes.CONTEXT_MODEL);
 	}
 
 	@Override
 	protected void initializeGraphicalViewer() {
 		var viewer = getGraphicalViewer();
+		var theme = Themes.get(Themes.CONTEXT_MODEL);
 		viewer.setEditPartFactory(new PartFactory(theme));
 		var model = new GraphModel();
 		populate(model);

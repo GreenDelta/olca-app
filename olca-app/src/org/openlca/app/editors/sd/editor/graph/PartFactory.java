@@ -15,7 +15,7 @@ class PartFactory implements EditPartFactory {
 	@Override
 	public EditPart createEditPart(EditPart context, Object model) {
 		return switch (model) {
-			case GraphModel m -> new GraphPart(m);
+			case GraphModel m -> new GraphPart(m, theme);
 			case VarModel m -> new VarPart(m, theme);
 			case LinkModel m -> new LinkPart(m, theme);
 			case null, default -> null;
