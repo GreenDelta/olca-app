@@ -62,6 +62,7 @@ class GraphPart extends AbstractGraphicalEditPart {
 	}
 
 	private static class LayoutPolicy extends XYLayoutEditPolicy {
+
 		@Override
 		protected Command getCreateCommand(CreateRequest request) {
 			return null;
@@ -69,11 +70,10 @@ class GraphPart extends AbstractGraphicalEditPart {
 
 		@Override
 		protected Command createChangeConstraintCommand(
-			ChangeBoundsRequest request, EditPart child, Object constraint) {
-			if (child instanceof VarPart part && constraint instanceof Rectangle rect) {
-				return new VarMoveCmd(part.getModel(), rect);
-			}
-			return super.createChangeConstraintCommand(request, child, constraint);
+			ChangeBoundsRequest req, EditPart child, Object constraint) {
+			return child instanceof VarPart p && constraint instanceof Rectangle r
+				? new VarMoveCmd(p.getModel(), r)
+				: super.createChangeConstraintCommand(req, child, constraint);
 		}
 	}
 

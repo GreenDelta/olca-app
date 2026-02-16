@@ -11,6 +11,8 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
+import org.openlca.app.editors.sd.interop.Rect;
+import org.openlca.app.editors.sd.interop.SimulationSetup;
 import org.openlca.sd.eqn.EvaluationOrder;
 import org.openlca.sd.eqn.Id;
 import org.openlca.sd.eqn.Var.Stock;
@@ -21,15 +23,23 @@ import org.openlca.sd.xmile.view.XmiStockView;
 public class SdGraphEditor extends GraphicalEditor {
 
 	private final SdModelEditor parent;
+	private GraphModel model;
 
 	public SdGraphEditor(SdModelEditor parent) {
 		this.parent = parent;
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+	public void init(
+		IEditorSite site, IEditorInput input
+	) throws PartInitException {
 		setEditDomain(new DefaultEditDomain(this));
 		super.init(site, input);
+
+		// this sets the parent editor to dirty whenever there was a command
+		// executed; when we have non-editing commands later, we may need to
+		// filter them here
+		getCommandStack().addCommandStackEventListener(e -> parent.setDirty());
 	}
 
 	@Override
@@ -42,7 +52,7 @@ public class SdGraphEditor extends GraphicalEditor {
 		var viewer = getGraphicalViewer();
 		var theme = Themes.get(Themes.CONTEXT_MODEL);
 		viewer.setEditPartFactory(new PartFactory(theme));
-		var model = new GraphModel();
+		model = new GraphModel();
 		populate(model);
 		viewer.setContents(model);
 	}
@@ -66,6 +76,12 @@ public class SdGraphEditor extends GraphicalEditor {
 					bounds.putIfAbsent(Id.of(v.name()), boundsOf(v));
 				}
 			}
+		}
+
+		var setup = parent.setup();
+		if (setup != null) {
+			setup.positions().forEach((id, r) ->
+				bounds.put(id, new Rectangle(r.x(), r.y(), r.width(), r.height())));
 		}
 
 		int i = 0;
@@ -104,8 +120,20 @@ public class SdGraphEditor extends GraphicalEditor {
 		target.targetLinks.add(link);
 	}
 
+	public void syncTo(SimulationSetup setup) {
+		if (setup == null || model == null)
+			return;
+		setup.positions().clear();
+		for (var varModel : model.vars) {
+			var b = varModel.bounds;
+			setup.positions().put(varModel.variable.name(),
+					new Rect(b.x, b.y, b.width, b.height));
+		}
+	}
+
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		getCommandStack().markSaveLocation();
 	}
 
 	private Rectangle boundsOf(XmiStockView v) {

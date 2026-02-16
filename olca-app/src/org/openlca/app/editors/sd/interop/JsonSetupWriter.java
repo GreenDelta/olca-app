@@ -42,6 +42,7 @@ public class JsonSetupWriter {
 		}
 
 		writeSystemBindings(json);
+		writePositions(json);
 		return json;
 	}
 
@@ -116,5 +117,20 @@ public class JsonSetupWriter {
 			obj.add("context", contextObj);
 		}
 		return obj;
+	}
+
+	private void writePositions(JsonObject json) {
+		if (setup.positions().isEmpty())
+			return;
+		var positions = new JsonObject();
+		setup.positions().forEach((id, rect) -> {
+			var obj = new JsonObject();
+			Json.put(obj, "x", rect.x());
+			Json.put(obj, "y", rect.y());
+			Json.put(obj, "width", rect.width());
+			Json.put(obj, "height", rect.height());
+			positions.add(id.label(), obj);
+		});
+		json.add("positions", positions);
 	}
 }

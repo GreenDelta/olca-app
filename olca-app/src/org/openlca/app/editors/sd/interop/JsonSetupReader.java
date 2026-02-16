@@ -46,6 +46,7 @@ public class JsonSetupReader {
 			for (var sb : readSystemBindings()) {
 				setup.systemBindings().add(sb);
 			}
+			readPositions(setup);
 			return Res.ok(setup);
 		} catch (Exception e) {
 			return Res.error("Failed to parse setup", e);
@@ -147,5 +148,23 @@ public class JsonSetupReader {
 			redef.contextType = d.type;
 		}
 		return redef;
+	}
+
+	private void readPositions(SimulationSetup setup) {
+		var obj = Json.getObject(json, "positions");
+		if (obj == null)
+			return;
+		for (var entry : obj.entrySet()) {
+			var id = Id.of(entry.getKey());
+			if (id.isNil() || !entry.getValue().isJsonObject())
+				continue;
+			var o = entry.getValue().getAsJsonObject();
+			var rect = new Rect(
+					Json.getInt(o, "x", 0),
+					Json.getInt(o, "y", 0),
+					Json.getInt(o, "width", 0),
+					Json.getInt(o, "height", 0));
+			setup.positions().put(id, rect);
+		}
 	}
 }

@@ -38,6 +38,7 @@ public class SdModelEditor extends FormEditor {
 	private SimulationSetup setup;
 	private List<Var> vars;
 	private boolean dirty;
+	private SdGraphEditor graph;
 
 	public static void open(File modelDir) {
 		if (modelDir == null || !modelDir.exists() || !modelDir.isDirectory())
@@ -110,7 +111,7 @@ public class SdModelEditor extends FormEditor {
 		return modelDir;
 	}
 
-	SimulationSetup setup() {
+	public SimulationSetup setup() {
 		if (setup == null) {
 			setup = new SimulationSetup();
 		}
@@ -138,14 +139,19 @@ public class SdModelEditor extends FormEditor {
 	}
 
 	private void addGraphPage() throws PartInitException {
-		var graphEditor = new SdGraphEditor(this);
+		graph = new SdGraphEditor(this);
 		var gInput = new GraphicalEditorInput(null);
-		int index = addPage(graphEditor, gInput);
+		int index = addPage(graph, gInput);
 		setPageText(index, "Graph");
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		if (graph != null) {
+			graph.syncTo(setup);
+			graph.doSave(monitor);
+		}
+
 		var setupFile = new File(modelDir, "setup.json");
 		var err = JsonSetupWriter.write(setup, setupFile);
 		if (err.isError()) {
