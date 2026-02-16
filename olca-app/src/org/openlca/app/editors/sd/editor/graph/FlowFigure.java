@@ -10,7 +10,6 @@ import org.eclipse.draw2d.geometry.Rectangle;
 class FlowFigure extends Figure {
 
 	private final Label label = new Label();
-	private final ValveFigure valve = new ValveFigure();
 
 	FlowFigure() {
 		var layout = new ToolbarLayout();
@@ -18,6 +17,7 @@ class FlowFigure extends Figure {
 		layout.setSpacing(4);
 		setLayoutManager(layout);
 		add(label);
+		ValveFigure valve = new ValveFigure();
 		valve.setPreferredSize(25, 25);
 		add(valve);
 	}

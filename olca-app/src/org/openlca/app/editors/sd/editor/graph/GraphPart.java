@@ -44,9 +44,10 @@ class GraphPart extends AbstractGraphicalEditPart {
 		}
 
 		@Override
-		protected Command createChangeConstraintCommand(ChangeBoundsRequest request, EditPart child, Object constraint) {
+		protected Command createChangeConstraintCommand(
+			ChangeBoundsRequest request, EditPart child, Object constraint) {
 			if (child instanceof VarPart part && constraint instanceof Rectangle rect) {
-				return new VarMoveCmd((VarModel) part.getModel(), rect);
+				return new VarMoveCmd(part.getModel(), rect);
 			}
 			return super.createChangeConstraintCommand(request, child, constraint);
 		}

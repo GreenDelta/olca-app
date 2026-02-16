@@ -11,7 +11,6 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
-import org.openlca.sd.eqn.Var;
 import org.openlca.sd.eqn.Var.Aux;
 import org.openlca.sd.eqn.Var.Rate;
 import org.openlca.sd.eqn.Var.Stock;
