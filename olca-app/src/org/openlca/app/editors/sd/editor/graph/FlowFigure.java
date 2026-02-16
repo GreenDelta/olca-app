@@ -15,9 +15,10 @@ class FlowFigure extends Figure {
 	FlowFigure() {
 		var layout = new ToolbarLayout();
 		layout.setMinorAlignment(ToolbarLayout.ALIGN_CENTER);
+		layout.setSpacing(4);
 		setLayoutManager(layout);
 		add(label);
-		valve.setPreferredSize(24, 24);
+		valve.setPreferredSize(25, 25);
 		add(valve);
 	}
 
