@@ -11,9 +11,6 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
 import org.openlca.sd.eqn.Id;
-import org.openlca.sd.eqn.Var.Aux;
-import org.openlca.sd.eqn.Var.Rate;
-import org.openlca.sd.eqn.Var.Stock;
 import org.openlca.sd.xmile.view.XmiAuxView;
 import org.openlca.sd.xmile.view.XmiFlowView;
 import org.openlca.sd.xmile.view.XmiStockView;
@@ -51,20 +48,18 @@ public class SdGraphEditor extends GraphicalEditor {
 		if (vars == null)
 			return;
 
-		var stockViews = new HashMap<Id, XmiStockView>();
-		var auxViews = new HashMap<Id, XmiAuxView>();
-		var flowViews = new HashMap<Id, XmiFlowView>();
+		var bounds = new HashMap<Id, Rectangle>();
 		var xmile = parent.xmile();
 		if (xmile.model() != null) {
 			for (var view : xmile.model().views()) {
-				for (var stockView : view.stocks()) {
-					stockViews.putIfAbsent(Id.of(stockView.name()), stockView);
+				for (var v : view.stocks()) {
+					bounds.putIfAbsent(Id.of(v.name()), boundsOf(v));
 				}
-				for (var auxView : view.auxiliaries()) {
-					auxViews.putIfAbsent(Id.of(auxView.name()), auxView);
+				for (var v : view.auxiliaries()) {
+					bounds.putIfAbsent(Id.of(v.name()), boundsOf(v));
 				}
-				for (var flowView : view.flows()) {
-					flowViews.putIfAbsent(Id.of(flowView.name()), flowView);
+				for (var v : view.flows()) {
+					bounds.putIfAbsent(Id.of(v.name()), boundsOf(v));
 				}
 			}
 		}
@@ -72,31 +67,9 @@ public class SdGraphEditor extends GraphicalEditor {
 		int i = 0;
 		for (var variable : vars) {
 			var m = new VarModel(variable);
-			Rectangle b = null;
-			if (variable instanceof Stock s) {
-				var v = stockViews.get(s.name());
-				if (v != null) {
-					b = new Rectangle((int) v.x(), (int) v.y(),
-							v.width() != null ? v.width().intValue() : 100,
-							v.height() != null ? v.height().intValue() : 50);
-				}
-			} else if (variable instanceof Aux a) {
-				var v = auxViews.get(a.name());
-				if (v != null) {
-					b = new Rectangle((int) v.x(), (int) v.y(), 40, 40);
-				}
-			} else if (variable instanceof Rate r) {
-				var v = flowViews.get(r.name());
-				if (v != null) {
-					b = new Rectangle((int) v.x(), (int) v.y(), 120, 40);
-				}
-			}
-
-			if (b != null) {
-				m.bounds.setBounds(b);
-			} else {
-				m.bounds.setBounds(10 + i * 20, 10 + i * 20, 100, 50);
-			}
+			var b = bounds.getOrDefault(
+				variable.name(), new Rectangle(10 + i * 20, 10 + i * 20, 100, 50));
+			m.bounds.setBounds(b);
 			model.vars.add(m);
 			i++;
 		}
@@ -106,4 +79,23 @@ public class SdGraphEditor extends GraphicalEditor {
 	public void doSave(IProgressMonitor monitor) {
 	}
 
+	private Rectangle boundsOf(XmiStockView v) {
+		return boundsOf(v.x(), v.y(), v.width(), v.height());
+	}
+
+	private Rectangle boundsOf(XmiAuxView v) {
+		return boundsOf(v.x(), v.y(), v.width(), v.height());
+	}
+
+	private Rectangle boundsOf(XmiFlowView v) {
+		return boundsOf(v.x(), v.y(), null, null);
+	}
+
+	private Rectangle boundsOf(double x, double y, Double w, Double h) {
+		return new Rectangle(
+			(int) x,
+			(int) y,
+			w != null ? w.intValue() : 80,
+			h != null ? h.intValue() : 45);
+	}
 }
