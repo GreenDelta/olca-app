@@ -12,6 +12,9 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.openlca.sd.eqn.Var;
+import org.openlca.sd.eqn.Var.Aux;
+import org.openlca.sd.eqn.Var.Rate;
+import org.openlca.sd.eqn.Var.Stock;
 
 class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
@@ -23,13 +26,17 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
 	@Override
 	protected IFigure createFigure() {
-		var model = getModel();
-		return switch (model.variable) {
-			case Var.Stock s -> new StockFigure();
-			case Var.Aux a -> new AuxFigure();
-			case Var.Rate r -> new FlowFigure();
-			default -> new StockFigure();
-		};
+		var variable = getModel().variable;
+		if (variable instanceof Stock) {
+			return new StockFigure();
+		}
+		if (variable instanceof Aux) {
+			return new AuxFigure();
+		}
+		if (variable instanceof Rate) {
+			return new FlowFigure();
+		}
+		return new StockFigure();
 	}
 
 	@Override

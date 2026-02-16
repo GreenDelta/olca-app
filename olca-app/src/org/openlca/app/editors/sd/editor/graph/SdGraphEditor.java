@@ -111,7 +111,7 @@ public class SdGraphEditor extends GraphicalEditor {
 	}
 
 	private Rectangle boundsOf(XmiAuxView v) {
-		return boundsOf(v.x(), v.y(), v.width(), v.height());
+		return boundsOf(v.x(), v.y(), null, null);
 	}
 
 	private Rectangle boundsOf(XmiFlowView v) {
@@ -119,10 +119,14 @@ public class SdGraphEditor extends GraphicalEditor {
 	}
 
 	private Rectangle boundsOf(double x, double y, Double w, Double h) {
+		int width = w != null ? w.intValue() : 80;
+		int height = h != null ? h.intValue() : 45;
+		// XMILE coordinates are often centers; GEF expects top-left.
+		// We subtract half the size to center the figure on the coordinate.
 		return new Rectangle(
-			(int) x,
-			(int) y,
-			w != null ? w.intValue() : 80,
-			h != null ? h.intValue() : 45);
+				(int) x - width / 2,
+				(int) y - height / 2,
+				width,
+				height);
 	}
 }
