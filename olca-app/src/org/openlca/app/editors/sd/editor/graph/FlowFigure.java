@@ -35,12 +35,13 @@ class FlowFigure extends Figure {
 		@Override
 		protected void outlineShape(Graphics g) {
 			Rectangle r = getBounds();
-			int x = r.x;
-			int y = r.y;
-			int w = r.width;
-			int h = r.height;
+			int size = 24;
+			int x = r.x + (r.width - size) / 2;
+			int y = r.y + (r.height - size) / 2;
+			int w = size;
+			int h = size;
 
-			int o = h / 10;
+			int o = 2;
 			int midx = x + w / 2;
 			int midy = y + h / 2;
 
