@@ -17,6 +17,15 @@ import org.eclipse.gef.requests.CreateRequest;
 
 class GraphPart extends AbstractGraphicalEditPart {
 
+	GraphPart(GraphModel model) {
+		setModel(model);
+	}
+
+	@Override
+	public GraphModel getModel() {
+		return super.getModel() instanceof GraphModel g ? g : null;
+	}
+
 	@Override
 	protected IFigure createFigure() {
 		var figure = new FreeformLayer();

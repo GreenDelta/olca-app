@@ -11,17 +11,25 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
+import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.components.graphics.themes.Theme.Box;
 import org.openlca.sd.eqn.Var.Aux;
 import org.openlca.sd.eqn.Var.Rate;
 import org.openlca.sd.eqn.Var.Stock;
 
 class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
+	private final Theme theme;
 	private final Runnable listener = () -> {
 		refreshVisuals();
 		refreshSourceConnections();
 		refreshTargetConnections();
 	};
+
+	VarPart(VarModel model, Theme theme) {
+		setModel(model);
+		this.theme = theme;
+	}
 
 	@Override
 	protected IFigure createFigure() {
@@ -102,8 +110,11 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 	@Override
 	protected void refreshVisuals() {
 		var model = getModel();
-		if (model == null) return;
+		if (model == null)
+			return;
 		var figure = getFigure();
+		var color = theme.boxBorderColor(Box.UNIT_PROCESS);
+		figure.setForegroundColor(color);
 		if (figure instanceof StockFigure f) {
 			f.setText(model.name());
 		} else if (figure instanceof AuxFigure f) {

@@ -2,27 +2,24 @@ package org.openlca.app.editors.sd.editor.graph;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
+import org.openlca.app.components.graphics.themes.Theme;
 
 class PartFactory implements EditPartFactory {
 
+	private final Theme theme;
+
+	PartFactory(Theme theme) {
+		this.theme = theme;
+	}
+
 	@Override
 	public EditPart createEditPart(EditPart context, Object model) {
-		if (model instanceof GraphModel) {
-			var part = new GraphPart();
-			part.setModel(model);
-			return part;
-		}
-		if (model instanceof VarModel) {
-			var part = new VarPart();
-			part.setModel(model);
-			return part;
-		}
-		if (model instanceof LinkModel) {
-			var part = new LinkPart();
-			part.setModel(model);
-			return part;
-		}
-		return null;
+		return switch (model) {
+			case GraphModel m -> new GraphPart(m);
+			case VarModel m -> new VarPart(m, theme);
+			case LinkModel m -> new LinkPart(m, theme);
+			case null, default -> null;
+		};
 	}
 
 }

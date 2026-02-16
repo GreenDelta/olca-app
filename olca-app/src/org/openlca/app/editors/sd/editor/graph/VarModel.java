@@ -42,5 +42,4 @@ class VarModel {
 			? variable.name().label()
 			: "";
 	}
-
 }

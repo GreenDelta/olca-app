@@ -37,15 +37,12 @@ class AuxFigure extends Figure {
 			var r = getBounds();
 			int x = r.x + (r.width - 8) / 2;
 			int y = r.y + (r.height - 8) / 2;
+			g.setBackgroundColor(getForegroundColor());
 			g.fillOval(x, y, 8, 8);
 		}
 
 		@Override
 		protected void outlineShape(Graphics g) {
-			var r = getBounds();
-			int x = r.x + (r.width - 8) / 2;
-			int y = r.y + (r.height - 8) / 2;
-			g.drawOval(x, y, 7, 7);
 		}
 	}
 

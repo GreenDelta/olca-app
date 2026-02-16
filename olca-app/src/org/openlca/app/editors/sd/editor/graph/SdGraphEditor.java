@@ -9,6 +9,8 @@ import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
 import org.openlca.sd.eqn.EvaluationOrder;
 import org.openlca.sd.eqn.Id;
@@ -20,6 +22,7 @@ import org.openlca.sd.xmile.view.XmiStockView;
 public class SdGraphEditor extends GraphicalEditor {
 
 	private final SdModelEditor parent;
+	private Theme theme;
 
 	public SdGraphEditor(SdModelEditor parent) {
 		this.parent = parent;
@@ -34,12 +37,13 @@ public class SdGraphEditor extends GraphicalEditor {
 	@Override
 	protected void configureGraphicalViewer() {
 		super.configureGraphicalViewer();
+		theme = Themes.get(Themes.CONTEXT_MODEL);
 	}
 
 	@Override
 	protected void initializeGraphicalViewer() {
 		var viewer = getGraphicalViewer();
-		viewer.setEditPartFactory(new PartFactory());
+		viewer.setEditPartFactory(new PartFactory(theme));
 		var model = new GraphModel();
 		populate(model);
 		viewer.setContents(model);
@@ -81,23 +85,23 @@ public class SdGraphEditor extends GraphicalEditor {
 		for (var m : model.vars) {
 			if (m.variable instanceof Stock stock) {
 				for (var flowId : stock.inFlows()) {
-					link(modelMap.get(flowId), m);
+					link(modelMap.get(flowId), m, true);
 				}
 				for (var flowId : stock.outFlows()) {
-					link(m, modelMap.get(flowId));
+					link(m, modelMap.get(flowId), true);
 				}
 			}
-			var dependencies = EvaluationOrder.dependenciesOf(m.variable);
-			for (var depId : dependencies) {
-				link(modelMap.get(depId), m);
+			var deps = EvaluationOrder.dependenciesOf(m.variable);
+			for (var depId : deps) {
+				link(modelMap.get(depId), m, false);
 			}
 		}
 	}
 
-	private void link(VarModel source, VarModel target) {
+	private void link(VarModel source, VarModel target, boolean isFlow) {
 		if (source == null || target == null)
 			return;
-		var link = new LinkModel(source, target);
+		var link = new LinkModel(source, target, isFlow);
 		source.sourceLinks.add(link);
 		target.targetLinks.add(link);
 	}
