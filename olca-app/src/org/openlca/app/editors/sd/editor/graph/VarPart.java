@@ -1,14 +1,25 @@
 package org.openlca.app.editors.sd.editor.graph;
 
+import java.util.List;
+
+import org.eclipse.draw2d.ChopboxAnchor;
+import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.NodeEditPart;
+import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.openlca.sd.eqn.Var;
 
-class VarPart extends AbstractGraphicalEditPart {
+class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
-	private final Runnable listener = this::refreshVisuals;
+	private final Runnable listener = () -> {
+		refreshVisuals();
+		refreshSourceConnections();
+		refreshTargetConnections();
+	};
 
 	@Override
 	protected IFigure createFigure() {
@@ -48,6 +59,38 @@ class VarPart extends AbstractGraphicalEditPart {
 	@Override
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new ResizableEditPolicy());
+	}
+
+	@Override
+	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connection) {
+		return new ChopboxAnchor(getFigure());
+	}
+
+	@Override
+	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
+		return new ChopboxAnchor(getFigure());
+	}
+
+	@Override
+	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
+		return new ChopboxAnchor(getFigure());
+	}
+
+	@Override
+	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
+		return new ChopboxAnchor(getFigure());
+	}
+
+	@Override
+	protected List<LinkModel> getModelSourceConnections() {
+		var model = getModel();
+		return model != null ? model.sourceLinks : List.of();
+	}
+
+	@Override
+	protected List<LinkModel> getModelTargetConnections() {
+		var model = getModel();
+		return model != null ? model.targetLinks : List.of();
 	}
 
 	@Override

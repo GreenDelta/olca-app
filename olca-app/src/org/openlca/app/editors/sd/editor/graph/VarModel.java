@@ -11,6 +11,9 @@ class VarModel {
 	final Var variable;
 	final Rectangle bounds = new Rectangle();
 
+	final List<LinkModel> sourceLinks = new ArrayList<>();
+	final List<LinkModel> targetLinks = new ArrayList<>();
+
 	private final List<Runnable> listeners = new ArrayList<>();
 
 	VarModel(Var variable) {
