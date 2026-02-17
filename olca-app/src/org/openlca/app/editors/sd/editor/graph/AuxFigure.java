@@ -7,6 +7,7 @@ import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
+import org.openlca.sd.eqn.Var;
 
 class AuxFigure extends Figure {
 
@@ -24,8 +25,15 @@ class AuxFigure extends Figure {
 		add(new FixedCircle());
 	}
 
-	void setText(String text) {
-		label.setText(text);
+	void setVar(Var v) {
+		if (v == null) {
+			label.setText("");
+			setToolTip(null);
+		} else {
+			var name = v.name();
+			label.setText(name != null ? name.label() : "");
+			setToolTip(new VarToolTip(v));
+		}
 	}
 
 	private class FixedCircle extends Shape {

@@ -108,11 +108,11 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 			return;
 		var figure = getFigure();
 		if (figure instanceof StockFigure f) {
-			f.setText(model.name());
+			f.setVar(model.variable);
 		} else if (figure instanceof AuxFigure f) {
-			f.setText(model.name());
+			f.setVar(model.variable);
 		} else if (figure instanceof FlowFigure f) {
-			f.setText(model.name());
+			f.setVar(model.variable);
 		}
 
 		var parent = getParent();
