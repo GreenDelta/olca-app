@@ -35,7 +35,14 @@ class GraphPart extends AbstractGraphicalEditPart {
 		var figure = new FreeformLayer();
 		figure.setLayoutManager(new FreeformLayout());
 		figure.setBackgroundColor(theme.backgroundColor());
-		figure.setOpaque(true);
+
+		// setting it opaque puts like a shield over the background,
+		// GEF then thinks we are trying to select or drag the entire
+		// GraphPart when interacting with the mouse with it. So in
+		// order to have the panning and selection tools working,
+		// don't do that. Set the background color in the graphical
+		// editor instead.
+		// figure.setOpaque(true);
 		return figure;
 	}
 

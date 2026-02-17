@@ -5,10 +5,12 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.DefaultEditDomain;
+import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
 import org.openlca.app.editors.sd.interop.Rect;
@@ -23,6 +25,7 @@ import org.openlca.sd.xmile.view.XmiStockView;
 public class SdGraphEditor extends GraphicalEditor {
 
 	private final SdModelEditor parent;
+	private final Theme theme = Themes.get(Themes.CONTEXT_MODEL);
 	private GraphModel model;
 
 	public SdGraphEditor(SdModelEditor parent) {
@@ -43,18 +46,32 @@ public class SdGraphEditor extends GraphicalEditor {
 	}
 
 	@Override
-	protected void configureGraphicalViewer() {
-		super.configureGraphicalViewer();
-	}
-
-	@Override
 	protected void initializeGraphicalViewer() {
 		var viewer = getGraphicalViewer();
-		var theme = Themes.get(Themes.CONTEXT_MODEL);
 		viewer.setEditPartFactory(new PartFactory(theme));
 		model = new GraphModel();
 		populate(model);
 		viewer.setContents(model);
+
+		var domain = viewer.getEditDomain();
+		if (domain != null) {
+			var tool = new PanningSelectionTool();
+			domain.setActiveTool(tool);
+			domain.setDefaultTool(tool);
+		}
+	}
+
+	@Override
+	protected void configureGraphicalViewer() {
+		// it always falls back to the default background color
+		// so we need to set it every time it is painted
+		var control = getGraphicalViewer().getControl();
+		control.setBackground(theme.backgroundColor());
+		control.addPaintListener(e -> {
+			if (!control.isDisposed()) {
+				control.setBackground(theme.backgroundColor());
+			}
+		});
 	}
 
 	private void populate(GraphModel model) {
@@ -127,7 +144,7 @@ public class SdGraphEditor extends GraphicalEditor {
 		for (var varModel : model.vars) {
 			var b = varModel.bounds;
 			setup.positions().put(varModel.variable.name(),
-					new Rect(b.x, b.y, b.width, b.height));
+				new Rect(b.x, b.y, b.width, b.height));
 		}
 	}
 
@@ -154,9 +171,9 @@ public class SdGraphEditor extends GraphicalEditor {
 		// XMILE coordinates are often centers; GEF expects top-left.
 		// We subtract half the size to center the figure on the coordinate.
 		return new Rectangle(
-				(int) x - width / 2,
-				(int) y - height / 2,
-				width,
-				height);
+			(int) x - width / 2,
+			(int) y - height / 2,
+			width,
+			height);
 	}
 }

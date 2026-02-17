@@ -71,19 +71,20 @@ public class GraphEditPart extends ComponentEditPart<Graph> {
 	@Override
 	protected IFigure createFigure() {
 		var theme = getModel().getEditor().getTheme();
+
+		// this could be better done when configuring the graphical
+		// viewer in the graph editor, see the editor for system
+		// dynamics models. We need to set the background color
+		// with every paint event because it always falls back
+		// to the default background color.
 		var control = getViewer().getControl();
-
-		// Set background immediately
 		control.setBackground(theme.backgroundColor());
-
-		if (control instanceof Canvas canvas) {
-			canvas.addPaintListener(e -> {
-				if (!canvas.isDisposed()) {
-					var currentTheme = getModel().getEditor().getTheme();
-					canvas.setBackground(currentTheme.backgroundColor());
-				}
-			});
-		}
+		control.addPaintListener(e -> {
+			if (!control.isDisposed()) {
+				var current = getModel().getEditor().getTheme();
+				control.setBackground(current.backgroundColor());
+			}
+		});
 
 		var f = new FreeformLayer();
 		f.setLayoutManager(new Layout(getModel().getEditor(), ORIENTATION));
