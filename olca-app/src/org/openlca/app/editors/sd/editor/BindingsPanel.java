@@ -5,14 +5,11 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.components.ModelSelector;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.sd.interop.SimulationSetup;
 import org.openlca.app.editors.sd.interop.SystemBinding;
 import org.openlca.app.editors.sd.interop.VarBinding;
@@ -28,35 +25,33 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 
-class BindingsPage extends FormPage {
+class BindingsPanel {
 
 	private final IDatabase db;
 	private final SdModelEditor editor;
 	private final SimulationSetup setup;
+	private final ScrolledForm form;
+	private final FormToolkit tk;
+	private final Composite body;
+	private final AddButton addButton;
 
-	private ScrolledForm form;
-	private FormToolkit tk;
-	private Composite body;
-	private AddButton addButton;
-
-	BindingsPage(SdModelEditor editor) {
-		super(editor, "SdBindingsPage", "Product systems");
+	BindingsPanel(
+		Composite body, SdModelEditor editor, FormToolkit tk, ScrolledForm form
+	) {
 		this.editor = editor;
 		this.setup = editor.setup();
-		this.db = Database.get();
-	}
+		this.db = editor.db();
+		this.tk = tk;
+		this.form = form;
+		this.body = UI.composite(body, tk);
+		UI.gridLayout(this.body, 1);
+		UI.gridData(this.body, true, false);
 
-	@Override
-	protected void createFormContent(IManagedForm mForm) {
-		form = UI.header(mForm, "System bindings: " + editor.modelName());
-		tk = mForm.getToolkit();
-		body = UI.body(form, tk);
 		var bindings = setup.systemBindings();
 		for (int i = 0; i < bindings.size(); i++) {
 			new BindingSection(i, bindings.get(i));
 		}
 		addButton = new AddButton();
-		form.reflow(true);
 	}
 
 	private void addSectionOf(SystemBinding binding) {
@@ -83,8 +78,8 @@ class BindingsPage extends FormPage {
 
 		private void render() {
 			var name = binding.system() != null
-					? binding.system().name
-					: "System binding " + (pos + 1);
+				? binding.system().name
+				: "System binding " + (pos + 1);
 			var section = UI.section(body, tk, name);
 			UI.gridData(section, true, false);
 
@@ -108,22 +103,22 @@ class BindingsPage extends FormPage {
 			// Product system selection
 			UI.label(comp, tk, "Product system");
 			ModelLink.of(ProductSystem.class)
-					.setModel(binding.system())
-					.setEditable(false)
-					.renderOn(comp, tk);
+				.setModel(binding.system())
+				.setEditable(false)
+				.renderOn(comp, tk);
 			UI.filler(comp, tk);
 
 			UI.label(comp, tk, "Reference flow");
 			ModelLink.of(Flow.class)
-					.setModel(binding.flow())
-					.setEditable(false)
-					.renderOn(comp, tk);
+				.setModel(binding.flow())
+				.setEditable(false)
+				.renderOn(comp, tk);
 			UI.filler(comp, tk);
 
 			var unit = binding.unit();
 			var unitSymbol = unit != null && Strings.isNotBlank(unit.name)
-					? unit.name
-					: "?";
+				? unit.name
+				: "?";
 			var amountText = UI.labeledText(comp, tk, M.Amount);
 			amountText.setText(Double.toString(binding.amount()));
 			UI.label(comp, tk, unitSymbol);
@@ -132,13 +127,13 @@ class BindingsPage extends FormPage {
 				try {
 					double v = Double.parseDouble(amountText.getText());
 					binding.amount(v);
+					editor.setDirty();
 				} catch (Exception ignored) {
 				}
 			});
 		}
 
 		private void createParamTable(Composite parent) {
-
 			var section = UI.section(parent, tk, "Parameter bindings");
 			var comp = UI.sectionClient(section, tk);
 
@@ -147,24 +142,24 @@ class BindingsPage extends FormPage {
 			table.setLabelProvider(new VarBindingLabelProvider());
 
 			var onAdd = Actions.create(
-					"Add parameter binding",
-					Icon.ADD.descriptor(),
-					() -> VarBindingDialog.create(editor.vars(), binding)
-							.ifPresent(vb -> {
-								binding.varBindings().add(vb);
-								table.setInput(binding.varBindings());
-								editor.setDirty();
-							}));
+				"Add parameter binding",
+				Icon.ADD.descriptor(),
+				() -> VarBindingDialog.create(editor.vars(), binding)
+					.ifPresent(vb -> {
+						binding.varBindings().add(vb);
+						table.setInput(binding.varBindings());
+						editor.setDirty();
+					}));
 
 			var onDel = Actions.create(
-					"Remove parameter binding", Icon.DELETE.descriptor(), () -> {
-						VarBinding vb = Viewers.getFirstSelected(table);
-						if (vb != null) {
-							binding.varBindings().remove(vb);
-							table.setInput(binding.varBindings());
-							editor.setDirty();
-						}
-					});
+				"Remove parameter binding", Icon.DELETE.descriptor(), () -> {
+					VarBinding vb = Viewers.getFirstSelected(table);
+					if (vb != null) {
+						binding.varBindings().remove(vb);
+						table.setInput(binding.varBindings());
+						editor.setDirty();
+					}
+				});
 
 			Actions.bind(table, onAdd, onDel);
 			Actions.bind(section, onAdd, onDel);
@@ -207,7 +202,7 @@ class BindingsPage extends FormPage {
 	}
 
 	private static class VarBindingLabelProvider extends BaseLabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
@@ -215,11 +210,11 @@ class BindingsPage extends FormPage {
 				return "";
 			return switch (col) {
 				case 0 -> vb.varId() != null
-						? vb.varId().label()
-						: "";
+					? vb.varId().label()
+					: "";
 				case 1 -> vb.parameter() != null
-						? vb.parameter().name
-						: "";
+					? vb.parameter().name
+					: "";
 				default -> "";
 			};
 		}

@@ -135,7 +135,6 @@ public class SdModelEditor extends FormEditor {
 			setPageText(index, "Model");
 
 			addPage(new SetupPage(this));
-			addPage(new BindingsPage(this));
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create SD model editor pages", e);
 		}
