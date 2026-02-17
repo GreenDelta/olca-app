@@ -12,11 +12,11 @@ class VarToolTip extends Figure {
 	VarToolTip(Var v) {
 		var layout = new ToolbarLayout();
 		layout.setSpacing(2);
+		layout.setMinorAlignment(ToolbarLayout.ALIGN_TOPLEFT);
 		setLayoutManager(layout);
 		setBorder(new MarginBorder(5));
-		add(new Label("Variable: " + v.name().label()));
-		add(new Label("Type: " + SdVars.typeOf(v)));
-		add(new Label("Cell Type: " + SdVars.cellTypeOf(v)));
+		add(new Label(SdVars.typeOf(v) + ": " + v.name().label()));
+		add(new Label("Type: " + SdVars.cellTypeOf(v)));
 		if (v.unit() != null && !v.unit().isBlank()) {
 			add(new Label("Unit: " + v.unit()));
 		}

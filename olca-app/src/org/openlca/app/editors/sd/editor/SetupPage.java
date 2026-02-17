@@ -44,7 +44,6 @@ class SetupPage extends FormPage {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		infoSection(body, tk);
-		new ImageSection(editor).render(body, tk);
 	}
 
 	private void infoSection(Composite body, FormToolkit tk) {

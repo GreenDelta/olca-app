@@ -129,20 +129,16 @@ public class SdModelEditor extends FormEditor {
 	@Override
 	protected void addPages() {
 		try {
+			graph = new SdGraphEditor(this);
+			var gInput = new GraphicalEditorInput(null);
+			int index = addPage(graph, gInput);
+			setPageText(index, "Model");
+
 			addPage(new SetupPage(this));
 			addPage(new BindingsPage(this));
-			addPage(new VarsPage(this));
-			addGraphPage();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create SD model editor pages", e);
 		}
-	}
-
-	private void addGraphPage() throws PartInitException {
-		graph = new SdGraphEditor(this);
-		var gInput = new GraphicalEditorInput(null);
-		int index = addPage(graph, gInput);
-		setPageText(index, "Graph");
 	}
 
 	@Override
