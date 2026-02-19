@@ -72,19 +72,19 @@
 	<classpathentry exported="true" kind="lib" path="libs/mimepull-1.9.15.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/npy-0.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-commons-1.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.6.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-core-2.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-1-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ecospold-2-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-formula-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-git-2.6.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-git-2.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-grpc-2.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-ilcd-3.1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.6.1-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.6.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-io-2.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-ipc-2.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-license-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-native-0.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-proto-2.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/olca-proto-io-2.6.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/olca-proto-io-2.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-sd-0.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.jgit-7.5.0.202512021534-r.jar"/>

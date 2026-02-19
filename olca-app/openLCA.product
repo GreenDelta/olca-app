@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="2.6.1.qualifier" type="bundles" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="openLCA" uid="openLCA" id="olca-app.openLCA" application="org.openlca.app.Application" version="2.6.1" type="bundles" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
       <image path="/olca-app/icons/logo/about.png"/>
       <text>
          openLCA 2.6
 
-Copyright (c) 2007 - 2025 GreenDelta. All rights reserved.
+Copyright (c) 2007 - 2026 GreenDelta. All rights reserved.
 Visit http://openlca.org and http://greendelta.com
 
 This product includes software developed in the openLCA
@@ -35,7 +35,7 @@ project and other open source software.
 
    <splash
       location="olca-app"
-      startupProgressRect="0,495,676,5"
+      startupProgressRect="0,426,585,5"
       startupMessageRect="7,570,445,20"
       startupForegroundColor="000000" />
    <launcher name="openLCA">
