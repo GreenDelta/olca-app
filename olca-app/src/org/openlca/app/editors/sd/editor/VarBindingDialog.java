@@ -28,6 +28,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.sd.eqn.Id;
 import org.openlca.sd.eqn.Var;
 import org.openlca.util.ParameterRedefSets;
@@ -58,7 +59,7 @@ class VarBindingDialog extends FormDialog {
 
 	private static List<ParameterRedef> getFreeParamsOf(SystemBinding binding) {
 		var all = ParameterRedefSets.allOf(
-				Database.get(), binding.system()).parameters;
+			Database.get(), Descriptor.of(binding.system())).parameters;
 
 		Function<ParameterRedef, String> keyFn = p -> {
 			if (Strings.isBlank(p.name))
