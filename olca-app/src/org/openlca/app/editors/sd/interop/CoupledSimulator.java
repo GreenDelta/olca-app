@@ -3,11 +3,6 @@ package org.openlca.app.editors.sd.interop;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.openlca.app.App;
-import org.openlca.app.db.Database;
-import org.openlca.app.db.Libraries;
 import org.openlca.commons.Res;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.CalculationSetup;
@@ -18,7 +13,7 @@ import org.openlca.sd.eqn.Simulator;
 import org.openlca.sd.eqn.cells.NumCell;
 import org.openlca.sd.xmile.Xmile;
 
-public class CoupledSimulator implements IRunnableWithProgress {
+public class CoupledSimulator {
 
 	private final Simulator simulator;
 	private final SimulationSetup setup;
@@ -37,15 +32,11 @@ public class CoupledSimulator implements IRunnableWithProgress {
 	}
 
 	public static Res<CoupledSimulator> of(
-		Xmile xmile, SimulationSetup setup) {
+		Xmile xmile, SimulationSetup setup, SystemCalculator calculator) {
 		var simulator = Simulator.of(xmile);
 		if (simulator.isError())
 			return simulator.wrapError("Failed to create simulator");
 
-		var calculator = new SystemCalculator(Database.get())
-			.withSolver(App.getSolver());
-		Libraries.readersForCalculation()
-			.ifPresent(calculator::withLibraries);
 		return Res.ok(new CoupledSimulator(simulator.value(), setup, calculator));
 	}
 
@@ -55,14 +46,15 @@ public class CoupledSimulator implements IRunnableWithProgress {
 				: Res.ok(result);
 	}
 
-	@Override
-	public void run(IProgressMonitor monitor) {
-		int iteration = 0;
+	public interface Progress {
+		void worked(int work);
+		boolean isCanceled();
+	}
+
+	public void run(Progress progress) {
 		for (var res : simulator) {
-			if (monitor.isCanceled())
+			if (progress.isCanceled())
 				break;
-			iteration++;
-			monitor.subTask("Run iteration " + iteration);
 
 			if (res.isError()) {
 				error = res.wrapError("Simulation error");
@@ -72,7 +64,7 @@ public class CoupledSimulator implements IRunnableWithProgress {
 			var simState = res.value();
 			var rs = new ArrayList<LcaResult>();
 			for (var b : setup.systemBindings()) {
-				if (monitor.isCanceled())
+				if (progress.isCanceled())
 					break;
 
 				var params = paramsOf(simState, b);
@@ -101,7 +93,7 @@ public class CoupledSimulator implements IRunnableWithProgress {
 				break;
 
 			result.append(simState, rs);
-			monitor.worked(1);
+			progress.worked(1);
 		}
 	}
 

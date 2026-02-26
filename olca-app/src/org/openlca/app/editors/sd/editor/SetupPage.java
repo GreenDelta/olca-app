@@ -8,6 +8,8 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.sd.interop.CoupledSimulator;
 import org.openlca.app.editors.sd.interop.SimulationSetup;
 import org.openlca.app.editors.sd.results.SdResultEditor;
@@ -20,6 +22,7 @@ import org.openlca.app.viewers.combo.ImpactMethodViewer;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
+import org.openlca.core.math.SystemCalculator;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.sd.eqn.TimeSeq;
@@ -108,7 +111,13 @@ class SetupPage extends FormPage {
 	}
 
 	private void runSimulation() {
-		var simRes = CoupledSimulator.of(editor.xmile(), editor.setup());
+		var calculator = new SystemCalculator(Database.get())
+			.withSolver(App.getSolver());
+		Libraries.readersForCalculation()
+			.ifPresent(calculator::withLibraries);
+
+		var simRes = CoupledSimulator.of(
+			editor.xmile(), editor.setup(), calculator);
 		if (simRes.isError()) {
 			MsgBox.error("Failed to create simulator", simRes.error());
 			return;
@@ -122,7 +131,22 @@ class SetupPage extends FormPage {
 				monitor.beginTask(
 					"Running simulation",
 					iterationCountOf(editor.xmile()));
-				sim.run(monitor);
+
+				int[] iteration = { 0 };
+				sim.run(new CoupledSimulator.Progress() {
+
+					@Override
+					public void worked(int work) {
+						iteration[0]++;
+						monitor.subTask("Run iteration " + iteration[0]);
+						monitor.worked(work);
+					}
+
+					@Override
+					public boolean isCanceled() {
+						return monitor.isCanceled();
+					}
+				});
 				monitor.done();
 				App.runInUI("Open simulation result", () -> {
 					var res = sim.getResult();
