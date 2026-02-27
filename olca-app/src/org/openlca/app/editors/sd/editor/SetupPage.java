@@ -24,7 +24,7 @@ import org.openlca.core.math.SystemCalculator;
 import org.openlca.sd.interop.CoupledSimulator;
 import org.openlca.sd.model.EntityRef;
 import org.openlca.sd.model.SdModel;
-import org.openlca.sd.xmile.Xmile;
+import org.openlca.sd.model.SimSpecs;
 
 class SetupPage extends FormPage {
 
@@ -57,27 +57,51 @@ class SetupPage extends FormPage {
 		nameText.setText(editor.modelName());
 		UI.filler(comp, tk);
 
-		var specs = SimSpecs.of(editor.xmile());
-
-		var methodText = UI.labeledText(comp, tk, "Solver method");
-		methodText.setEditable(false);
-		methodText.setText(specs.method);
-		UI.filler(comp, tk);
+		var time = model.time();
+		var unit = time != null && time.unit() != null
+			? time.unit()
+			: "";
 
 		var startText = UI.labeledText(comp, tk, "Start time");
-		startText.setEditable(false);
-		startText.setText(Double.toString(specs.start));
-		UI.label(comp, tk, specs.timeUnit);
+		startText.setText(Double.toString(time != null ? time.start() : 0));
+		UI.label(comp, tk, unit);
+		startText.addModifyListener(e -> {
+			try {
+				time().setStart(Double.parseDouble(startText.getText()));
+				editor.setDirty();
+			} catch (Exception ignored) {
+			}
+		});
 
 		var endText = UI.labeledText(comp, tk, "Stop time");
-		endText.setEditable(false);
-		endText.setText(Double.toString(specs.stop));
-		UI.label(comp, tk, specs.timeUnit);
+		endText.setText(Double.toString(time != null ? time.end() : 0));
+		UI.label(comp, tk, unit);
+		endText.addModifyListener(e -> {
+			try {
+				time().setEnd(Double.parseDouble(endText.getText()));
+				editor.setDirty();
+			} catch (Exception ignored) {
+			}
+		});
 
 		var dtText = UI.labeledText(comp, tk, "Δt");
-		dtText.setEditable(false);
-		dtText.setText(Double.toString(specs.dt));
-		UI.label(comp, tk, specs.timeUnit);
+		dtText.setText(Double.toString(time != null ? time.dt() : 1));
+		UI.label(comp, tk, unit);
+		dtText.addModifyListener(e -> {
+			try {
+				time().setDt(Double.parseDouble(dtText.getText()));
+				editor.setDirty();
+			} catch (Exception ignored) {
+			}
+		});
+
+		var unitText = UI.labeledText(comp, tk, "Time unit");
+		unitText.setText(unit);
+		UI.filler(comp, tk);
+		unitText.addModifyListener(e -> {
+			time().setUnit(unitText.getText().strip());
+			editor.setDirty();
+		});
 
 		createMethodCombo(comp, tk);
 		UI.filler(comp, tk);
@@ -86,6 +110,15 @@ class SetupPage extends FormPage {
 		var btn = UI.button(comp, tk, "Run simulation");
 		btn.setImage(Icon.RUN.get());
 		Controls.onSelect(btn, e -> runSimulation());
+	}
+
+	private SimSpecs time() {
+		var time = model.time();
+		if (time == null) {
+			time = new SimSpecs();
+			model.setTime(time);
+		}
+		return time;
 	}
 
 	private void createMethodCombo(Composite comp, FormToolkit tk) {
@@ -134,7 +167,7 @@ class SetupPage extends FormPage {
 			service.run(true, true, monitor -> {
 				monitor.beginTask(
 					"Running simulation",
-					iterationCountOf(editor.xmile()));
+					iterationCount());
 
 				int[] iteration = { 0 };
 				sim.run(new CoupledSimulator.Progress() {
@@ -167,38 +200,11 @@ class SetupPage extends FormPage {
 		}
 	}
 
-	private int iterationCountOf(Xmile xmile) {
-		var seq = TimeSeq.of(xmile);
-		return seq.isError()
-			? IProgressMonitor.UNKNOWN
-			: seq.value().iterationCount();
-	}
-
-	private record SimSpecs(
-		double start,
-		double stop,
-		double dt,
-		String timeUnit,
-		String method) {
-
-		static SimSpecs of(Xmile xmile) {
-			if (xmile == null || xmile.simSpecs() == null)
-				return new SimSpecs(0, 0, 0, "", "");
-			var specs = xmile.simSpecs();
-			double dt = 1;
-			if (specs.dt() != null && specs.dt().value() != null) {
-				dt = specs.dt().reciprocal() != null && specs.dt().reciprocal()
-					? 1 / specs.dt().value()
-					: specs.dt().value();
-			}
-
-			return new SimSpecs(
-				specs.start() != null ? specs.start() : 0,
-				specs.stop() != null ? specs.stop() : 0,
-				dt,
-				specs.timeUnits() != null ? specs.timeUnits() : "",
-				specs.method() != null ? specs.method() : "");
-		}
+	private int iterationCount() {
+		var time = model.time();
+		return time != null
+			? time.iterationCount()
+			: IProgressMonitor.UNKNOWN;
 	}
 
 }
