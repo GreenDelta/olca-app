@@ -11,16 +11,16 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
-import org.openlca.sd.interop.CoupledResult;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.UI;
+import org.openlca.sd.interop.CoupledResult;
+import org.openlca.sd.model.Auxil;
+import org.openlca.sd.model.Rate;
+import org.openlca.sd.model.Stock;
 import org.openlca.sd.model.Var;
-import org.openlca.sd.model.Var.Aux;
-import org.openlca.sd.model.Var.Rate;
-import org.openlca.sd.model.Var.Stock;
 
 class SdResultPage extends FormPage {
 
@@ -163,7 +163,7 @@ class SdResultPage extends FormPage {
 					switch (v) {
 						case Stock ignored -> stocks++;
 						case Rate ignored -> rates++;
-						case Aux ignored -> auxs++;
+						case Auxil ignored -> auxs++;
 					}
 					iterations = Math.max(iterations, v.values().size());
 				}

@@ -15,17 +15,14 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.sd.SdVars;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
-import org.openlca.app.editors.sd.interop.JsonSetupReader;
-import org.openlca.app.editors.sd.interop.JsonSetupWriter;
-import org.openlca.sd.interop.SimulationSetup;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.SystemDynamics;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
-import org.openlca.sd.model.Var;
 import org.openlca.sd.model.SdModel;
+import org.openlca.sd.model.Var;
 import org.openlca.sd.xmile.Xmile;
 
 public class SdModelEditor extends FormEditor {
@@ -34,9 +31,8 @@ public class SdModelEditor extends FormEditor {
 
 	private final IDatabase db = Database.get();
 	private File modelDir;
+	private SdModel model;
 	private Xmile xmile;
-	private SimulationSetup setup;
-	private List<Var> vars;
 	private boolean dirty;
 	private SdGraphEditor graph;
 
@@ -64,28 +60,13 @@ public class SdModelEditor extends FormEditor {
 		setTitleImage(Icon.SD.get());
 		setPartName(inp.getName());
 
-		// load the setup
-		var setupFile = new File(modelDir, "setup.json");
-		setup = setupFile.exists()
-				? JsonSetupReader.read(setupFile, db)
-				.orElse(SimulationSetup::new)
-				: new SimulationSetup();
-
-		// load the model variables
-		var varRes = SdModel.readFrom(xmile);
-		if (varRes.isError()) {
-			MsgBox.error("Failed to read variables from model", varRes.error());
-			vars = new ArrayList<>();
+		// load the model from the XMILE file
+		var res = SdModel.readFrom(xmile);
+		if (res.isError()) {
+			MsgBox.error("Failed to read the model", res.error());
+			model = new SdModel();
 		} else {
-			vars = new ArrayList<>(varRes.value());
-			vars.sort((vi, vj) -> {
-				int c = Strings.compareIgnoreCase(SdVars.typeOf(vj), SdVars.typeOf(vi));
-				if (c != 0)
-					return c;
-				var li = vi.name() != null ? vi.name().label() : "";
-				var lj = vj.name() != null ? vj.name().label() : "";
-				return Strings.compareIgnoreCase(li, lj);
-			});
+			model = res.value();
 		}
 	}
 
@@ -97,6 +78,10 @@ public class SdModelEditor extends FormEditor {
 	@Override
 	public boolean isDirty() {
 		return dirty;
+	}
+
+	public SdModel model() {
+		return model;
 	}
 
 	public Xmile xmile() {
@@ -111,14 +96,16 @@ public class SdModelEditor extends FormEditor {
 		return modelDir;
 	}
 
-	public SimulationSetup setup() {
-		if (setup == null) {
-			setup = new SimulationSetup();
-		}
-		return setup;
-	}
-
 	public List<Var> vars() {
+		var vars = new ArrayList<>(model.vars());
+		vars.sort((vi, vj) -> {
+			int c = Strings.compareIgnoreCase(SdVars.typeOf(vj), SdVars.typeOf(vi));
+			if (c != 0)
+				return c;
+			var li = vi.name() != null ? vi.name().label() : "";
+			var lj = vj.name() != null ? vj.name().label() : "";
+			return Strings.compareIgnoreCase(li, lj);
+		});
 		return vars;
 	}
 
@@ -143,14 +130,18 @@ public class SdModelEditor extends FormEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		if (graph != null) {
-			graph.syncTo(setup);
+			graph.syncTo(model);
 			graph.doSave(monitor);
 		}
 
-		var setupFile = new File(modelDir, "setup.json");
-		var err = JsonSetupWriter.write(setup, setupFile);
+		var xmileFile = SystemDynamics.getXmileFile(modelDir);
+		if (xmileFile == null) {
+			MsgBox.error("Failed to save model", "Could not find XMILE file in " + modelDir);
+			return;
+		}
+		var err = model.writeTo(xmileFile);
 		if (err.isError()) {
-			MsgBox.error("Failed to save setup", err.error());
+			MsgBox.error("Failed to save model", err.error());
 			return;
 		}
 		dirty = false;

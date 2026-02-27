@@ -13,11 +13,11 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
-import org.openlca.sd.interop.Rect;
-import org.openlca.sd.interop.SimulationSetup;
 import org.openlca.sd.eqn.EvaluationOrder;
 import org.openlca.sd.model.Id;
-import org.openlca.sd.model.Var.Stock;
+import org.openlca.sd.model.Rect;
+import org.openlca.sd.model.SdModel;
+import org.openlca.sd.model.Stock;
 import org.openlca.sd.xmile.view.XmiAuxView;
 import org.openlca.sd.xmile.view.XmiFlowView;
 import org.openlca.sd.xmile.view.XmiStockView;
@@ -81,7 +81,7 @@ public class SdGraphEditor extends GraphicalEditor {
 
 		var bounds = new HashMap<Id, Rectangle>();
 		var xmile = parent.xmile();
-		if (xmile.model() != null) {
+		if (xmile != null && xmile.model() != null) {
 			for (var view : xmile.model().views()) {
 				for (var v : view.stocks()) {
 					bounds.putIfAbsent(Id.of(v.name()), boundsOf(v));
@@ -95,9 +95,9 @@ public class SdGraphEditor extends GraphicalEditor {
 			}
 		}
 
-		var setup = parent.setup();
-		if (setup != null) {
-			setup.positions().forEach((id, r) ->
+		var sdModel = parent.model();
+		if (sdModel != null) {
+			sdModel.positions().forEach((id, r) ->
 				bounds.put(id, new Rectangle(r.x(), r.y(), r.width(), r.height())));
 		}
 
@@ -137,13 +137,13 @@ public class SdGraphEditor extends GraphicalEditor {
 		target.targetLinks.add(link);
 	}
 
-	public void syncTo(SimulationSetup setup) {
-		if (setup == null || model == null)
+	public void syncTo(SdModel sdModel) {
+		if (sdModel == null || model == null)
 			return;
-		setup.positions().clear();
+		sdModel.positions().clear();
 		for (var varModel : model.vars) {
 			var b = varModel.bounds;
-			setup.positions().put(varModel.variable.name(),
+			sdModel.positions().put(varModel.variable.name(),
 				new Rect(b.x, b.y, b.width, b.height));
 		}
 	}
@@ -158,11 +158,11 @@ public class SdGraphEditor extends GraphicalEditor {
 	}
 
 	private Rectangle boundsOf(XmiAuxView v) {
-		return boundsOf(v.x(), v.y(), null, null);
+		return boundsOf(v.x(), v.y(), v.width(), v.height());
 	}
 
 	private Rectangle boundsOf(XmiFlowView v) {
-		return boundsOf(v.x(), v.y(), null, null);
+		return boundsOf(v.x(), v.y(), v.width(), v.height());
 	}
 
 	private Rectangle boundsOf(double x, double y, Double w, Double h) {

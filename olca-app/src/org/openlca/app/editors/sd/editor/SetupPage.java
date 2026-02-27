@@ -11,7 +11,8 @@ import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.sd.interop.CoupledSimulator;
-import org.openlca.sd.interop.SimulationSetup;
+import org.openlca.sd.model.SdModel;
+import org.openlca.sd.interop.SystemBinding;
 import org.openlca.app.editors.sd.results.SdResultEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -31,13 +32,13 @@ import org.openlca.sd.xmile.Xmile;
 class SetupPage extends FormPage {
 
 	private final SdModelEditor editor;
-	private final SimulationSetup setup;
+	private final SdModel model;
 	private final IDatabase db;
 
 	SetupPage(SdModelEditor editor) {
 		super(editor, "SdSetupPage", M.CalculationSetup);
 		this.editor = editor;
-		this.setup = editor.setup();
+		this.model = editor.model();
 		this.db = editor.db();
 	}
 
@@ -99,13 +100,15 @@ class SetupPage extends FormPage {
 			.sorted((m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name))
 			.toList();
 		combo.setInput(methods);
-		if (setup.method() != null) {
-			combo.select(Descriptor.of(setup.method()));
+		if (model.method() != null) {
+			combo.select(Descriptor.of(model.method()));
 		}
 		combo.addSelectionChangedListener(d -> {
-			if (d == null)
-				return;
-			setup.method(db.get(ImpactMethod.class, d.id));
+			if (d == null) {
+				model.method(null);
+			} else {
+				model.method(db.get(ImpactMethod.class, d.id));
+			}
 			editor.setDirty();
 		});
 	}
@@ -117,7 +120,7 @@ class SetupPage extends FormPage {
 			.ifPresent(calculator::withLibraries);
 
 		var simRes = CoupledSimulator.of(
-			editor.xmile(), editor.setup(), calculator);
+			model, db, calculator);
 		if (simRes.isError()) {
 			MsgBox.error("Failed to create simulator", simRes.error());
 			return;

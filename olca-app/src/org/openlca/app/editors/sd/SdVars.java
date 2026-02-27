@@ -1,12 +1,12 @@
 package org.openlca.app.editors.sd;
 
 import org.openlca.commons.Strings;
+import org.openlca.sd.model.Auxil;
 import org.openlca.sd.model.LookupFunc;
+import org.openlca.sd.model.Rate;
+import org.openlca.sd.model.Stock;
 import org.openlca.sd.model.Tensor;
 import org.openlca.sd.model.Var;
-import org.openlca.sd.model.Var.Aux;
-import org.openlca.sd.model.Var.Rate;
-import org.openlca.sd.model.Var.Stock;
 import org.openlca.sd.model.cells.BoolCell;
 import org.openlca.sd.model.cells.Cell;
 import org.openlca.sd.model.cells.EmptyCell;
@@ -26,7 +26,7 @@ public class SdVars {
 	public static String typeOf(Var var) {
 		return switch (var) {
 			case Stock ignored -> "Stock";
-			case Aux ignored -> "Aux";
+			case Auxil ignored -> "Aux";
 			case Rate ignored -> "Rate";
 			case null -> "None";
 		};

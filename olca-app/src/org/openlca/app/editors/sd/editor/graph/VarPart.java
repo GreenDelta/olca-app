@@ -12,8 +12,8 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.openlca.app.components.graphics.themes.Theme;
-import org.openlca.sd.model.Var.Aux;
-import org.openlca.sd.model.Var.Rate;
+import org.openlca.sd.model.Auxil;
+import org.openlca.sd.model.Rate;
 
 class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
@@ -34,7 +34,7 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 		var model = getModel();
 		if (model == null) return new StockFigure(theme);
 		return switch (getModel().variable) {
-			case Aux ignore -> new AuxFigure(theme);
+			case Auxil ignore -> new AuxFigure(theme);
 			case Rate ignore -> new FlowFigure(theme);
 			case null, default -> new StockFigure(theme);
 		};

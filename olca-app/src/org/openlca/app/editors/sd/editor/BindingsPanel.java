@@ -10,7 +10,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.components.ModelSelector;
-import org.openlca.sd.interop.SimulationSetup;
+import org.openlca.sd.model.SdModel;
 import org.openlca.sd.interop.SystemBinding;
 import org.openlca.sd.interop.VarBinding;
 import org.openlca.app.rcp.images.Icon;
@@ -29,7 +29,7 @@ class BindingsPanel {
 
 	private final IDatabase db;
 	private final SdModelEditor editor;
-	private final SimulationSetup setup;
+	private final SdModel model;
 	private final ScrolledForm form;
 	private final FormToolkit tk;
 	private final Composite body;
@@ -39,7 +39,7 @@ class BindingsPanel {
 		Composite body, SdModelEditor editor, FormToolkit tk, ScrolledForm form
 	) {
 		this.editor = editor;
-		this.setup = editor.setup();
+		this.model = editor.model();
 		this.db = editor.db();
 		this.tk = tk;
 		this.form = form;
@@ -47,7 +47,7 @@ class BindingsPanel {
 		UI.gridLayout(this.body, 1);
 		UI.gridData(this.body, true, false);
 
-		var bindings = setup.systemBindings();
+		var bindings = model.systemBindings();
 		for (int i = 0; i < bindings.size(); i++) {
 			new BindingSection(i, bindings.get(i));
 		}
@@ -57,8 +57,8 @@ class BindingsPanel {
 	private void addSectionOf(SystemBinding binding) {
 		if (binding == null)
 			return;
-		var pos = setup.systemBindings().size();
-		setup.systemBindings().add(binding);
+		var pos = model.systemBindings().size();
+		model.systemBindings().add(binding);
 		new BindingSection(pos, binding);
 		addButton.render();
 		form.reflow(true);
@@ -84,7 +84,7 @@ class BindingsPanel {
 			UI.gridData(section, true, false);
 
 			var onDelete = Actions.create("Delete", Icon.DELETE.descriptor(), () -> {
-				setup.systemBindings().remove(binding);
+				model.systemBindings().remove(binding);
 				section.dispose();
 				form.reflow(true);
 				editor.setDirty();

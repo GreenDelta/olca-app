@@ -63,14 +63,20 @@ public class SystemDynamics {
 	public static Res<Xmile> openModel(File modelDir) {
 		if (modelDir == null || !modelDir.isDirectory())
 			return Res.error("no model directory provided");
-		var modelFile = new File(modelDir, "model.xml");
-		if (!modelFile.exists() || !modelFile.isFile())
+		var modelFile = getXmileFile(modelDir);
+		if (modelFile == null || !modelFile.exists() || !modelFile.isFile())
 			return Res.error("model file does not exist: "
-					+ modelFile.getAbsolutePath());
+					+ (modelFile != null ? modelFile.getAbsolutePath() : "null"));
 		var xmile = Xmile.readFrom(modelFile);
 		return xmile.isOk()
 				? Res.ok(xmile.value())
 				: Res.error(xmile.error());
+	}
+
+	public static File getXmileFile(File modelDir) {
+		if (modelDir == null || !modelDir.exists())
+			return null;
+		return new File(modelDir, "model.xml");
 	}
 
 	public static Res<File> getModelImage(File modelDir) {
