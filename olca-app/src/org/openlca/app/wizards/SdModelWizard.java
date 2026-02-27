@@ -26,8 +26,7 @@ import org.openlca.app.wizards.io.WizFileSelector;
 import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.sd.eqn.EvaluationOrder;
-import org.openlca.sd.eqn.Vars;
-import org.openlca.sd.xmile.Xmile;
+import org.openlca.sd.model.SdModel;
 
 public class SdModelWizard extends Wizard implements INewWizard {
 
@@ -108,13 +107,10 @@ public class SdModelWizard extends Wizard implements INewWizard {
 
 	private Res<File> createModel(String name, File file) {
 		try {
-			var xmile = Xmile.readFrom(file);
-			if (xmile.isError())
-				return xmile.castError();
-			var vars = Vars.readFrom(xmile.value());
-			if (vars.isError())
-				return vars.wrapError("Failed to read model file: " + file);
-			var order = EvaluationOrder.of(vars.value());
+			var model = SdModel.readFrom(file);
+			if (model.isError())
+				return model.wrapError("Failed to read model file: " + file);
+			var order = EvaluationOrder.of(model.value().vars());
 			if (order.isError()) {
 				return order.wrapError(
 						"Failed to create evaluation order of vars in file: " + file);
