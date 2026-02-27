@@ -5,13 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.imageio.ImageIO;
-
 import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
-import org.openlca.sd.xmile.Xmile;
-import org.openlca.sd.xmile.img.ModelImage;
 import org.openlca.util.Dirs;
 
 public class SystemDynamics {
@@ -41,9 +37,12 @@ public class SystemDynamics {
 				: Arrays.asList(dirs);
 	}
 
-	public static Res<File> createModelDir(String name, IDatabase db) {
-		if (Strings.isBlank(name))
-			return Res.error("no name defined");
+	/**
+	 * Creates a new model directory under {@code sd-models/{uuid}}.
+	 */
+	public static Res<File> createModelDir(String uuid, IDatabase db) {
+		if (Strings.isBlank(uuid))
+			return Res.error("no model ID defined");
 		if (db == null)
 			return Res.error("no database provided");
 		var root = db.getFileStorageLocation();
@@ -52,7 +51,7 @@ public class SystemDynamics {
 		var modelRoot = new File(root, "sd-models");
 		try {
 			Dirs.createIfAbsent(modelRoot);
-			var modelDir = new File(modelRoot, name);
+			var modelDir = new File(modelRoot, uuid);
 			Dirs.createIfAbsent(modelDir);
 			return Res.ok(modelDir);
 		} catch (Exception e) {
@@ -60,41 +59,46 @@ public class SystemDynamics {
 		}
 	}
 
-	public static Res<Xmile> openModel(File modelDir) {
-		if (modelDir == null || !modelDir.isDirectory())
-			return Res.error("no model directory provided");
-		var modelFile = getXmileFile(modelDir);
-		if (modelFile == null || !modelFile.exists() || !modelFile.isFile())
-			return Res.error("model file does not exist: "
-					+ (modelFile != null ? modelFile.getAbsolutePath() : "null"));
-		var xmile = Xmile.readFrom(modelFile);
-		return xmile.isOk()
-				? Res.ok(xmile.value())
-				: Res.error(xmile.error());
-	}
-
+	/**
+	 * Finds the XMILE file in the given model directory. First looks for
+	 * any {@code .xml} file; falls back to {@code model.xml} for legacy
+	 * compatibility.
+	 */
 	public static File getXmileFile(File modelDir) {
 		if (modelDir == null || !modelDir.exists())
 			return null;
+		var files = modelDir.listFiles(
+				(dir, name) -> name.endsWith(".xml"));
+		if (files != null && files.length > 0)
+			return files[0];
+		// legacy fallback
 		return new File(modelDir, "model.xml");
 	}
 
-	public static Res<File> getModelImage(File modelDir) {
-		var file = new File(modelDir, "model-image.png");
-		if (file.exists() && file.isFile())
-			return Res.ok(file);
-		var model = openModel(modelDir);
-		if (model.isError())
-			return model.wrapError("failed to load model");
-		try {
-			var image = ModelImage.createFrom(model.value());
-			if (image.isError())
-				return Res.error(image.error());
-			ImageIO.write(image.value(), "png", file);
-			return Res.ok(file);
-		} catch (Exception e) {
-			return Res.error("failed to create model image");
+	/**
+	 * Returns the display name for a model directory. This is the name of
+	 * the {@code .xml} file without its extension. Falls back to the
+	 * directory name if no XML file is found.
+	 */
+	public static String modelNameOf(File modelDir) {
+		var file = getXmileFile(modelDir);
+		if (file != null && file.exists()) {
+			var name = file.getName();
+			return name.endsWith(".xml")
+					? name.substring(0, name.length() - 4)
+					: name;
 		}
+		return modelDir != null ? modelDir.getName() : "?";
+	}
+
+	/**
+	 * Sanitizes a name so it can be used as a file name. Replaces
+	 * characters that are not allowed in file names with underscores.
+	 */
+	public static String sanitizeName(String name) {
+		if (Strings.isBlank(name))
+			return "System dynamics model";
+		return name.strip().replaceAll("[<>:\"/\\\\|?*]", "_");
 	}
 
 }

@@ -32,6 +32,7 @@ import org.openlca.app.navigation.elements.SdModelElement;
 import org.openlca.app.navigation.elements.SdRootElement;
 import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.util.SystemDynamics;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
@@ -256,7 +257,9 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return "System dynamics models";
 		if (elem instanceof SdModelElement sdm) {
 			var dir = sdm.getContent();
-			return dir != null ? dir.getName() : "?";
+			return dir != null
+					? SystemDynamics.modelNameOf(dir)
+					: "?";
 		}
 
 		return content == null ? "?" : content.toString();

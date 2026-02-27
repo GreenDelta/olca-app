@@ -3,13 +3,13 @@ package org.openlca.app.editors.sd.editor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
-import org.openlca.app.AppContext;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
@@ -23,7 +23,6 @@ import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.Var;
-import org.openlca.sd.xmile.Xmile;
 
 public class SdModelEditor extends FormEditor {
 
@@ -32,21 +31,19 @@ public class SdModelEditor extends FormEditor {
 	private final IDatabase db = Database.get();
 	private File modelDir;
 	private SdModel model;
-	private Xmile xmile;
 	private boolean dirty;
 	private SdGraphEditor graph;
 
-	public static void open(File modelDir) {
-		if (modelDir == null || !modelDir.exists() || !modelDir.isDirectory())
+	public static void open(File dir) {
+		if (dir == null || !dir.exists() || !dir.isDirectory())
 			return;
-		var xmile = SystemDynamics.openModel(modelDir);
-		if (xmile.isError()) {
+		var file = SystemDynamics.getXmileFile(dir);
+		if (file == null || !file.exists()) {
 			MsgBox.error("Failed to read model",
-					"Failed to read the model from the model folder: " + xmile.error());
+					"No XMILE file found in: " + dir);
 			return;
 		}
-		var key = AppContext.put(xmile.value());
-		Editors.open(new SdEditorInput(modelDir, key), ID);
+		Editors.open(SdEditorInput.of(dir), ID);
 	}
 
 	@Override
@@ -56,17 +53,23 @@ public class SdModelEditor extends FormEditor {
 		super.init(site, input);
 		var inp = (SdEditorInput) input;
 		modelDir = inp.dir();
-		xmile = AppContext.remove(inp.key(), Xmile.class);
 		setTitleImage(Icon.SD.get());
 		setPartName(inp.getName());
 
 		// load the model from the XMILE file
-		var res = SdModel.readFrom(xmile);
-		if (res.isError()) {
-			MsgBox.error("Failed to read the model", res.error());
+		var file = SystemDynamics.getXmileFile(modelDir);
+		if (file == null || !file.exists()) {
+			MsgBox.error("Failed to read the model",
+					"No XMILE file in: " + modelDir);
 			model = new SdModel();
 		} else {
-			model = res.value();
+			var res = SdModel.readFrom(file);
+			if (res.isError()) {
+				MsgBox.error("Failed to read the model", res.error());
+				model = new SdModel();
+			} else {
+				model = res.value();
+			}
 		}
 	}
 
@@ -82,14 +85,6 @@ public class SdModelEditor extends FormEditor {
 
 	public SdModel model() {
 		return model;
-	}
-
-	public Xmile xmile() {
-		return xmile;
-	}
-
-	String modelName() {
-		return modelDir.getName();
 	}
 
 	File modelDir() {
@@ -134,16 +129,23 @@ public class SdModelEditor extends FormEditor {
 			graph.doSave(monitor);
 		}
 
-		var xmileFile = SystemDynamics.getXmileFile(modelDir);
-		if (xmileFile == null) {
-			MsgBox.error("Failed to save model", "Could not find XMILE file in " + modelDir);
-			return;
+		// determine the target file; rename if the model name changed
+		var currentFile = SystemDynamics.getXmileFile(modelDir);
+		var targetName = SystemDynamics.sanitizeName(model.name()) + ".xml";
+		var targetFile = new File(modelDir, targetName);
+		if (currentFile != null && currentFile.exists()
+				&& !currentFile.getName().equals(targetName)) {
+			// name changed — delete old file (we write fresh below)
+			currentFile.delete();
 		}
-		var err = model.writeTo(xmileFile);
+
+		var err = model.writeTo(targetFile);
 		if (err.isError()) {
 			MsgBox.error("Failed to save model", err.error());
 			return;
 		}
+		setPartName(Objects.requireNonNullElse(
+			model.name(), "System dynamics model"));
 		dirty = false;
 		editorDirtyStateChanged();
 	}

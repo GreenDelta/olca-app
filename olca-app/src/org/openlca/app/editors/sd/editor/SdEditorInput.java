@@ -7,8 +7,15 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
+import org.openlca.app.util.SystemDynamics;
 
 record SdEditorInput(File dir, String key) implements IEditorInput {
+
+	public static SdEditorInput of(File dir) {
+		return dir != null
+			? new SdEditorInput(dir, dir.getAbsolutePath())
+			: null;
+	}
 
 	@Override
 	public boolean exists() {
@@ -22,7 +29,7 @@ record SdEditorInput(File dir, String key) implements IEditorInput {
 
 	@Override
 	public String getName() {
-		return dir.getName();
+		return SystemDynamics.modelNameOf(dir);
 	}
 
 	@Override
@@ -38,21 +45,5 @@ record SdEditorInput(File dir, String key) implements IEditorInput {
 	@Override
 	public <T> T getAdapter(Class<T> adapter) {
 		return null;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		if (obj == this)
-			return true;
-		if (!(obj instanceof SdEditorInput other))
-			return false;
-		return dir != null && dir.equals(other.dir);
-	}
-
-	@Override
-	public int hashCode() {
-		return dir != null ? dir.hashCode() : 0;
 	}
 }

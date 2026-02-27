@@ -41,7 +41,7 @@ class SetupPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.header(mForm, "System dynamics model: " + editor.modelName());
+		var form = UI.header(mForm, "System dynamics model: " + model.name());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		infoSection(body, tk);
@@ -53,9 +53,15 @@ class SetupPage extends FormPage {
 		UI.gridLayout(comp, 3);
 
 		var nameText = UI.labeledText(comp, tk, M.Name);
-		nameText.setEditable(false);
-		nameText.setText(editor.modelName());
+		Controls.set(nameText, model.name());
 		UI.filler(comp, tk);
+		nameText.addModifyListener(e -> {
+			var name = nameText.getText().strip();
+			if (!name.isEmpty()) {
+				model.setName(name);
+				editor.setDirty();
+			}
+		});
 
 		var time = model.time();
 		var unit = time != null && time.unit() != null
@@ -190,7 +196,7 @@ class SetupPage extends FormPage {
 					if (res.isError()) {
 						MsgBox.error("Simulation failed", res.error());
 					} else {
-						SdResultEditor.open(editor.modelName(), res.value());
+						SdResultEditor.open(model.name(), res.value());
 					}
 				});
 			});

@@ -18,9 +18,6 @@ import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Rect;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.Stock;
-import org.openlca.sd.xmile.view.XmiAuxView;
-import org.openlca.sd.xmile.view.XmiFlowView;
-import org.openlca.sd.xmile.view.XmiStockView;
 
 public class SdGraphEditor extends GraphicalEditor {
 
@@ -80,21 +77,6 @@ public class SdGraphEditor extends GraphicalEditor {
 			return;
 
 		var bounds = new HashMap<Id, Rectangle>();
-		var xmile = parent.xmile();
-		if (xmile != null && xmile.model() != null) {
-			for (var view : xmile.model().views()) {
-				for (var v : view.stocks()) {
-					bounds.putIfAbsent(Id.of(v.name()), boundsOf(v));
-				}
-				for (var v : view.auxiliaries()) {
-					bounds.putIfAbsent(Id.of(v.name()), boundsOf(v));
-				}
-				for (var v : view.flows()) {
-					bounds.putIfAbsent(Id.of(v.name()), boundsOf(v));
-				}
-			}
-		}
-
 		var sdModel = parent.model();
 		if (sdModel != null) {
 			sdModel.positions().forEach((id, r) ->
@@ -151,29 +133,5 @@ public class SdGraphEditor extends GraphicalEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		getCommandStack().markSaveLocation();
-	}
-
-	private Rectangle boundsOf(XmiStockView v) {
-		return boundsOf(v.x(), v.y(), v.width(), v.height());
-	}
-
-	private Rectangle boundsOf(XmiAuxView v) {
-		return boundsOf(v.x(), v.y(), v.width(), v.height());
-	}
-
-	private Rectangle boundsOf(XmiFlowView v) {
-		return boundsOf(v.x(), v.y(), v.width(), v.height());
-	}
-
-	private Rectangle boundsOf(double x, double y, Double w, Double h) {
-		int width = w != null ? w.intValue() : 80;
-		int height = h != null ? h.intValue() : 45;
-		// XMILE coordinates are often centers; GEF expects top-left.
-		// We subtract half the size to center the figure on the coordinate.
-		return new Rectangle(
-			(int) x - width / 2,
-			(int) y - height / 2,
-			width,
-			height);
 	}
 }
