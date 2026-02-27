@@ -10,9 +10,6 @@ import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
-import org.openlca.sd.interop.CoupledSimulator;
-import org.openlca.sd.model.SdModel;
-import org.openlca.sd.interop.SystemBinding;
 import org.openlca.app.editors.sd.results.SdResultEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -24,9 +21,9 @@ import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.SystemCalculator;
-import org.openlca.core.model.ImpactMethod;
-import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.sd.eqn.TimeSeq;
+import org.openlca.sd.interop.CoupledSimulator;
+import org.openlca.sd.model.EntityRef;
+import org.openlca.sd.model.SdModel;
 import org.openlca.sd.xmile.Xmile;
 
 class SetupPage extends FormPage {
@@ -100,14 +97,18 @@ class SetupPage extends FormPage {
 			.sorted((m1, m2) -> Strings.compareIgnoreCase(m1.name, m2.name))
 			.toList();
 		combo.setInput(methods);
-		if (model.method() != null) {
-			combo.select(Descriptor.of(model.method()));
+		var methodRef = model.lca().impactMethod();
+		if (methodRef != null) {
+			methods.stream()
+				.filter(m -> methodRef.refId().equals(m.refId))
+				.findFirst()
+				.ifPresent(combo::select);
 		}
 		combo.addSelectionChangedListener(d -> {
 			if (d == null) {
-				model.method(null);
+				model.lca().impactMethod(null);
 			} else {
-				model.method(db.get(ImpactMethod.class, d.id));
+				model.lca().impactMethod(EntityRef.of(d));
 			}
 			editor.setDirty();
 		});

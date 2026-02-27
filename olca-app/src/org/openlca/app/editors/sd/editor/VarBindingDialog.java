@@ -1,10 +1,10 @@
 package org.openlca.app.editors.sd.editor;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -26,7 +26,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.ParameterRedef;
+import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.sd.model.EntityRef;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.SystemBinding;
 import org.openlca.sd.model.Var;
@@ -35,7 +37,10 @@ import org.openlca.util.ParameterRedefSets;
 
 class VarBindingDialog extends FormDialog {
 
-	private final VarBinding binding;
+	private Id selectedVarId;
+	private ParameterRedef selectedParam;
+	private VarBinding result;
+
 	private final List<Var> vars;
 	private final List<ParameterRedef> params;
 
@@ -49,7 +54,7 @@ class VarBindingDialog extends FormDialog {
 			var params = getFreeParamsOf(binding);
 			var dialog = new VarBindingDialog(vars, params);
 			return dialog.open() == OK
-					? Optional.of(dialog.binding)
+					? Optional.ofNullable(dialog.result)
 					: Optional.empty();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create binding dialog", e);
@@ -58,8 +63,16 @@ class VarBindingDialog extends FormDialog {
 	}
 
 	private static List<ParameterRedef> getFreeParamsOf(SystemBinding binding) {
+		var db = Database.get();
+		var sysRef = binding.system();
+		if (sysRef == null || db == null)
+			return List.of();
+		var system = db.get(ProductSystem.class, sysRef.refId());
+		if (system == null)
+			return List.of();
+
 		var all = ParameterRedefSets.allOf(
-			Database.get(), Descriptor.of(binding.system())).parameters;
+				db, Descriptor.of(system)).parameters;
 
 		Function<ParameterRedef, String> keyFn = p -> {
 			if (Strings.isBlank(p.name))
@@ -70,10 +83,23 @@ class VarBindingDialog extends FormDialog {
 					: name + "//" + p.contextId;
 		};
 
-		var bound = binding.varBindings().stream()
-				.map(VarBinding::parameter)
-				.map(keyFn)
-				.collect(Collectors.toSet());
+		// build bound set from existing VarBindings
+		var bound = new HashSet<String>();
+		for (var vb : binding.varBindings()) {
+			if (Strings.isBlank(vb.parameter()))
+				continue;
+			var name = vb.parameter().strip().toLowerCase();
+			if (vb.context() == null) {
+				bound.add(name);
+			} else {
+				var ctx = db.get(
+						vb.context().type().getModelClass(),
+						vb.context().refId());
+				bound.add(ctx != null
+						? name + "//" + ctx.id
+						: name);
+			}
+		}
 
 		return all.stream()
 			.filter(p -> !bound.contains(keyFn.apply(p)))
@@ -85,7 +111,6 @@ class VarBindingDialog extends FormDialog {
 		super(UI.shell());
 		this.vars = vars;
 		this.params = params;
-		this.binding = new VarBinding();
 	}
 
 	@Override
@@ -130,7 +155,7 @@ class VarBindingDialog extends FormDialog {
 		varsTable.addSelectionChangedListener(e -> {
 			var selected = Viewers.getFirstSelected(varsTable);
 			if (selected instanceof Var v) {
-				binding.varId(v.name());
+				selectedVarId = v.name();
 				checkOk();
 			}
 		});
@@ -145,10 +170,10 @@ class VarBindingDialog extends FormDialog {
 		Predicate<Id> matcher = (id) ->
 				id != null && id.label().toLowerCase().contains(f);
 
-		// remove the binding, if it does not match the filter
-		if (binding.varId() != null && !matcher.test(binding.varId())) {
-				binding.varId(null);
-				checkOk();
+		// remove the selection if it does not match the filter
+		if (selectedVarId != null && !matcher.test(selectedVarId)) {
+			selectedVarId = null;
+			checkOk();
 		}
 
 		var filtered = vars.stream()
@@ -181,7 +206,7 @@ class VarBindingDialog extends FormDialog {
 		paramsTable.addSelectionChangedListener(e -> {
 			var selected = Viewers.getFirstSelected(paramsTable);
 			if (selected instanceof ParameterRedef param) {
-				binding.parameter(param);
+				selectedParam = param;
 				checkOk();
 			}
 		});
@@ -196,9 +221,9 @@ class VarBindingDialog extends FormDialog {
 		Predicate<ParameterRedef> matcher = (p) -> !Strings.isBlank(p.name)
 			&& p.name.toLowerCase().contains(f);
 
-		// remove the binding, if it does not match the filter
-		if (binding.parameter() != null && !matcher.test(binding.parameter())) {
-			binding.parameter(null);
+		// remove the selection if it does not match the filter
+		if (selectedParam != null && !matcher.test(selectedParam)) {
+			selectedParam = null;
 			checkOk();
 		}
 
@@ -209,7 +234,7 @@ class VarBindingDialog extends FormDialog {
 	}
 
 	private void checkOk() {
-		var ok = binding.varId() != null && binding.parameter() != null;
+		var ok = selectedVarId != null && selectedParam != null;
 		var btn = getButton(IDialogConstants.OK_ID);
 		if (btn != null) {
 			btn.setEnabled(ok);
@@ -218,8 +243,25 @@ class VarBindingDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		if (binding.varId() == null || binding.parameter() == null)
+		if (selectedVarId == null || selectedParam == null)
 			return;
+
+		// resolve context from the selected ParameterRedef
+		EntityRef context = null;
+		if (selectedParam.contextId != null
+				&& selectedParam.contextType != null) {
+			var db = Database.get();
+			if (db != null) {
+				var ctx = db.getDescriptor(
+						selectedParam.contextType.getModelClass(),
+						selectedParam.contextId);
+				if (ctx != null) {
+					context = EntityRef.of(ctx);
+				}
+			}
+		}
+
+		result = new VarBinding(selectedVarId, selectedParam.name, context);
 		super.okPressed();
 	}
 

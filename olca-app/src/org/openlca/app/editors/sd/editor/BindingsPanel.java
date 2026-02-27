@@ -10,9 +10,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.components.ModelSelector;
-import org.openlca.sd.model.SdModel;
-import org.openlca.sd.interop.SystemBinding;
-import org.openlca.sd.interop.VarBinding;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
@@ -24,6 +21,10 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
+import org.openlca.sd.model.EntityRef;
+import org.openlca.sd.model.SdModel;
+import org.openlca.sd.model.SystemBinding;
+import org.openlca.sd.model.VarBinding;
 
 class BindingsPanel {
 
@@ -47,7 +48,7 @@ class BindingsPanel {
 		UI.gridLayout(this.body, 1);
 		UI.gridData(this.body, true, false);
 
-		var bindings = model.systemBindings();
+		var bindings = model.lca().systemBindings();
 		for (int i = 0; i < bindings.size(); i++) {
 			new BindingSection(i, bindings.get(i));
 		}
@@ -57,8 +58,8 @@ class BindingsPanel {
 	private void addSectionOf(SystemBinding binding) {
 		if (binding == null)
 			return;
-		var pos = model.systemBindings().size();
-		model.systemBindings().add(binding);
+		var pos = model.lca().systemBindings().size();
+		model.lca().systemBindings().add(binding);
 		new BindingSection(pos, binding);
 		addButton.render();
 		form.reflow(true);
@@ -77,14 +78,15 @@ class BindingsPanel {
 		}
 
 		private void render() {
-			var name = binding.system() != null
-				? binding.system().name
+			var sysRef = binding.system();
+			var name = sysRef != null
+				? sysRef.name()
 				: "System binding " + (pos + 1);
 			var section = UI.section(body, tk, name);
 			UI.gridData(section, true, false);
 
 			var onDelete = Actions.create("Delete", Icon.DELETE.descriptor(), () -> {
-				model.systemBindings().remove(binding);
+				model.lca().systemBindings().remove(binding);
 				section.dispose();
 				form.reflow(true);
 				editor.setDirty();
@@ -100,22 +102,36 @@ class BindingsPanel {
 		private void createQRefSection(Composite parent) {
 			var comp = UI.formSection(parent, tk, "Quantitative reference", 3);
 
+			// resolve the product system from the database
+			var sysRef = binding.system();
+			var system = sysRef != null
+				? db.get(ProductSystem.class, sysRef.refId())
+				: null;
+
 			// Product system selection
 			UI.label(comp, tk, "Product system");
 			ModelLink.of(ProductSystem.class)
-				.setModel(binding.system())
+				.setModel(system)
 				.setEditable(false)
 				.renderOn(comp, tk);
 			UI.filler(comp, tk);
 
+			var refFlow = system != null
+				? system.referenceExchange != null
+					? system.referenceExchange.flow
+					: null
+				: null;
 			UI.label(comp, tk, "Reference flow");
 			ModelLink.of(Flow.class)
-				.setModel(binding.flow())
+				.setModel(refFlow)
 				.setEditable(false)
 				.renderOn(comp, tk);
 			UI.filler(comp, tk);
 
-			var unit = binding.unit();
+			var unit = system != null
+				&& system.targetUnit != null
+				? system.targetUnit
+				: null;
 			var unitSymbol = unit != null && Strings.isNotBlank(unit.name)
 				? unit.name
 				: "?";
@@ -126,7 +142,7 @@ class BindingsPanel {
 			amountText.addModifyListener(e -> {
 				try {
 					double v = Double.parseDouble(amountText.getText());
-					binding.amount(v);
+					binding.setAmount(v);
 					editor.setDirty();
 				} catch (Exception ignored) {
 				}
@@ -179,6 +195,7 @@ class BindingsPanel {
 			if (comp != null) {
 				comp.dispose();
 			}
+
 			comp = UI.composite(body, tk);
 			UI.fillHorizontal(comp);
 			var grid = UI.gridLayout(comp, 1);
@@ -188,6 +205,7 @@ class BindingsPanel {
 			var btn = UI.button(comp, tk, "Add product system");
 			btn.setImage(Icon.ADD.get());
 			UI.gridData(btn, false, false).horizontalAlignment = SWT.CENTER;
+
 			Controls.onSelect(btn, e -> {
 				var d = ModelSelector.select(ModelType.PRODUCT_SYSTEM);
 				if (d == null)
@@ -195,7 +213,8 @@ class BindingsPanel {
 				var sys = db.get(ProductSystem.class, d.id);
 				if (sys == null)
 					return;
-				var binding = new SystemBinding().system(sys);
+				var binding = new SystemBinding(EntityRef.of(sys));
+				binding.setAmount(sys.targetAmount);
 				addSectionOf(binding);
 			});
 		}
@@ -213,7 +232,7 @@ class BindingsPanel {
 					? vb.varId().label()
 					: "";
 				case 1 -> vb.parameter() != null
-					? vb.parameter().name
+					? vb.parameter()
 					: "";
 				default -> "";
 			};
