@@ -3,8 +3,8 @@ package org.openlca.app.editors.sd.results;
 import java.util.List;
 
 import org.openlca.commons.Strings;
-import org.openlca.sd.eqn.Var;
-import org.openlca.sd.eqn.cells.NumCell;
+import org.openlca.sd.model.Var;
+import org.openlca.sd.model.cells.NumCell;
 
 class Util {
 

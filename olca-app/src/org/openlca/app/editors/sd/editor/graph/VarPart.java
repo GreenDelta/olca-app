@@ -12,8 +12,8 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.openlca.app.components.graphics.themes.Theme;
-import org.openlca.sd.eqn.Var.Aux;
-import org.openlca.sd.eqn.Var.Rate;
+import org.openlca.sd.model.Var.Aux;
+import org.openlca.sd.model.Var.Rate;
 
 class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 

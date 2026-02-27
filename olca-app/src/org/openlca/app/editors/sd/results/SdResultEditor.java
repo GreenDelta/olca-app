@@ -10,11 +10,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.AppContext;
 import org.openlca.app.editors.Editors;
-import org.openlca.app.editors.sd.interop.CoupledResult;
+import org.openlca.sd.interop.CoupledResult;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.commons.Strings;
-import org.openlca.sd.eqn.Var;
+import org.openlca.sd.model.Var;
 
 public class SdResultEditor extends FormEditor {
 

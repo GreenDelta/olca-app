@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openlca.app.editors.sd.interop.CoupledResult;
+import org.openlca.sd.interop.CoupledResult;
 import org.openlca.commons.Res;
 import org.openlca.io.xls.Excel;
 

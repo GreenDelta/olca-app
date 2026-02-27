@@ -20,8 +20,8 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.sd.interop.SystemBinding;
-import org.openlca.app.editors.sd.interop.VarBinding;
+import org.openlca.sd.interop.SystemBinding;
+import org.openlca.sd.interop.VarBinding;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
@@ -29,8 +29,8 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.openlca.sd.eqn.Id;
-import org.openlca.sd.eqn.Var;
+import org.openlca.sd.model.Id;
+import org.openlca.sd.model.Var;
 import org.openlca.util.ParameterRedefSets;
 
 class VarBindingDialog extends FormDialog {

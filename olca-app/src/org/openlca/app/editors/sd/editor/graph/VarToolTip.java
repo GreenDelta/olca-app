@@ -5,7 +5,7 @@ import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.openlca.app.editors.sd.SdVars;
-import org.openlca.sd.eqn.Var;
+import org.openlca.sd.model.Var;
 
 class VarToolTip extends Figure {
 

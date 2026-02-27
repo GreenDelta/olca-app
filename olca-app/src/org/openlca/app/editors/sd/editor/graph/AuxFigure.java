@@ -7,7 +7,7 @@ import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
-import org.openlca.sd.eqn.Var;
+import org.openlca.sd.model.Var;
 
 class AuxFigure extends Figure {
 

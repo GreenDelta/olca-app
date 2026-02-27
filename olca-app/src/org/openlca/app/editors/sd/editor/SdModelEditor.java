@@ -17,15 +17,15 @@ import org.openlca.app.editors.sd.SdVars;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.editors.sd.interop.JsonSetupReader;
 import org.openlca.app.editors.sd.interop.JsonSetupWriter;
-import org.openlca.app.editors.sd.interop.SimulationSetup;
+import org.openlca.sd.interop.SimulationSetup;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.SystemDynamics;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
-import org.openlca.sd.eqn.Var;
-import org.openlca.sd.eqn.Vars;
+import org.openlca.sd.model.Var;
+import org.openlca.sd.model.SdModel;
 import org.openlca.sd.xmile.Xmile;
 
 public class SdModelEditor extends FormEditor {
@@ -72,7 +72,7 @@ public class SdModelEditor extends FormEditor {
 				: new SimulationSetup();
 
 		// load the model variables
-		var varRes = Vars.readFrom(xmile);
+		var varRes = SdModel.readFrom(xmile);
 		if (varRes.isError()) {
 			MsgBox.error("Failed to read variables from model", varRes.error());
 			vars = new ArrayList<>();

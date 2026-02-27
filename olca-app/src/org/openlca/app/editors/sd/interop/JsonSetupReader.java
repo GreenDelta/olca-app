@@ -14,7 +14,11 @@ import org.openlca.core.model.ParameterRedef;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.jsonld.Json;
-import org.openlca.sd.eqn.Id;
+import org.openlca.sd.model.Id;
+import org.openlca.sd.interop.Rect;
+import org.openlca.sd.interop.SimulationSetup;
+import org.openlca.sd.interop.SystemBinding;
+import org.openlca.sd.interop.VarBinding;
 
 import com.google.gson.JsonObject;
 

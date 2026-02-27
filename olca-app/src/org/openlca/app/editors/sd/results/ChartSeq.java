@@ -3,12 +3,12 @@ package org.openlca.app.editors.sd.results;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openlca.app.editors.sd.interop.CoupledResult;
-import org.openlca.sd.eqn.Subscript;
-import org.openlca.sd.eqn.Tensor;
-import org.openlca.sd.eqn.Var;
-import org.openlca.sd.eqn.cells.NumCell;
-import org.openlca.sd.eqn.cells.TensorCell;
+import org.openlca.sd.interop.CoupledResult;
+import org.openlca.sd.model.Subscript;
+import org.openlca.sd.model.Tensor;
+import org.openlca.sd.model.Var;
+import org.openlca.sd.model.cells.NumCell;
+import org.openlca.sd.model.cells.TensorCell;
 import org.openlca.sd.util.Tensors;
 
 record ChartSeq(String title, double[] values) {

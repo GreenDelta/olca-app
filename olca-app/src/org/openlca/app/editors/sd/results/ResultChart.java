@@ -11,13 +11,13 @@ import org.eclipse.nebula.visualization.xygraph.figures.XYGraph;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.app.editors.sd.interop.CoupledResult;
+import org.openlca.sd.interop.CoupledResult;
 import org.openlca.app.preferences.Theme;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
-import org.openlca.sd.eqn.Var;
+import org.openlca.sd.model.Var;
 
 class ResultChart {
 

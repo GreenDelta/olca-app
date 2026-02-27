@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.openlca.sd.eqn.Var;
+import org.openlca.sd.model.Var;
 
 class VarModel {
 

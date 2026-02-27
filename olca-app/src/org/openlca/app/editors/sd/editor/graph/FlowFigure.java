@@ -8,7 +8,7 @@ import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
-import org.openlca.sd.eqn.Var;
+import org.openlca.sd.model.Var;
 
 class FlowFigure extends Figure {
 

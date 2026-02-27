@@ -8,16 +8,16 @@ import java.util.Map;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.openlca.app.editors.sd.interop.CoupledResult;
+import org.openlca.sd.interop.CoupledResult;
 import org.openlca.commons.Strings;
 import org.openlca.io.xls.Excel;
-import org.openlca.sd.eqn.Tensor;
-import org.openlca.sd.eqn.Var;
-import org.openlca.sd.eqn.cells.BoolCell;
-import org.openlca.sd.eqn.cells.Cell;
-import org.openlca.sd.eqn.cells.EqnCell;
-import org.openlca.sd.eqn.cells.NumCell;
-import org.openlca.sd.eqn.cells.TensorCell;
+import org.openlca.sd.model.Tensor;
+import org.openlca.sd.model.Var;
+import org.openlca.sd.model.cells.BoolCell;
+import org.openlca.sd.model.cells.Cell;
+import org.openlca.sd.model.cells.EqnCell;
+import org.openlca.sd.model.cells.NumCell;
+import org.openlca.sd.model.cells.TensorCell;
 import org.openlca.sd.util.Tensors;
 
 class XlsVarSheet {
