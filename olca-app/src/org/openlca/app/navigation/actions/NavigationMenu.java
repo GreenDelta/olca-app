@@ -41,9 +41,10 @@ import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.actions.scripts.RenameScriptAction;
-import org.openlca.app.navigation.actions.sd.DeleteSdModelAction;
-import org.openlca.app.navigation.actions.sd.ImportSdModelAction;
-import org.openlca.app.navigation.actions.sd.OpenSdModelAction;
+import org.openlca.app.navigation.actions.sd.SdModelDeleteAction;
+import org.openlca.app.navigation.actions.sd.SdModelExportAction;
+import org.openlca.app.navigation.actions.sd.SdModelImportAction;
+import org.openlca.app.navigation.actions.sd.SdModelOpenAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.rcp.images.Icon;
@@ -121,11 +122,11 @@ public class NavigationMenu extends CommonActionProvider {
 				new OpenModelAction(),
 				new CalculateSystemAction(),
 				new CreateModelAction(),
-				new ImportSdModelAction(),
-				new OpenSdModelAction(),
+				new SdModelImportAction(),
+				new SdModelOpenAction(),
 				new OpenUsageAction(),
 				new DeleteModelAction(),
-				new DeleteSdModelAction());
+				new SdModelDeleteAction());
 
 		// script & mapping actions
 		addActions(selection, menu,
@@ -182,6 +183,7 @@ public class NavigationMenu extends CommonActionProvider {
 		}
 		addActions(selection, menu,
 				new ExportAction(),
+				new SdModelExportAction(),
 				new ExportScriptAction(),
 				new ExportFlowMapAction(),
 				new ExportLibraryAction());

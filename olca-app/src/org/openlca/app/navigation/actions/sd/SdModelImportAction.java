@@ -20,9 +20,9 @@ import org.openlca.app.util.SystemDynamics;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.SdModel;
 
-public class ImportSdModelAction extends Action implements INavigationAction {
+public class SdModelImportAction extends Action implements INavigationAction {
 
-	public ImportSdModelAction() {
+	public SdModelImportAction() {
 		setText("Import system dynamics model");
 		setImageDescriptor(Icon.SD.descriptor());
 	}

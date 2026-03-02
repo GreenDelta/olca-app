@@ -13,11 +13,11 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Question;
 import org.openlca.util.Dirs;
 
-public class DeleteSdModelAction extends Action implements INavigationAction {
+public class SdModelDeleteAction extends Action implements INavigationAction {
 
 	private List<SdModelElement> elems;
 
-	public DeleteSdModelAction() {
+	public SdModelDeleteAction() {
 		setText(M.Delete);
 		setImageDescriptor(Icon.DELETE.descriptor());
 	}

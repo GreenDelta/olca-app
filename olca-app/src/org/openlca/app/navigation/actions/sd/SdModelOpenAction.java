@@ -10,11 +10,11 @@ import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.SdModelElement;
 import org.openlca.app.rcp.images.Icon;
 
-public class OpenSdModelAction extends Action implements INavigationAction {
+public class SdModelOpenAction extends Action implements INavigationAction {
 
 	private SdModelElement elem;
 
-	public OpenSdModelAction() {
+	public SdModelOpenAction() {
 		setText(M.Open);
 		setImageDescriptor(Icon.FOLDER_OPEN.descriptor());
 	}
