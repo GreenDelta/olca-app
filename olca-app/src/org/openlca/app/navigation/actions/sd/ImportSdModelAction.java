@@ -95,20 +95,12 @@ public class ImportSdModelAction extends Action implements INavigationAction {
 	}
 
 	private void writeAndOpen(SdModel model) {
-		var dirRes = SystemDynamics.createModelDir(model.id(), Database.get());
-		if (dirRes.isError()) {
-			MsgBox.error("Failed to create model folder", dirRes.error());
+		var res = SystemDynamics.saveModel(model, Database.get());
+		if (res.isError()) {
+			MsgBox.error("Failed to write model", res.error());
 			return;
 		}
-		var modelDir = dirRes.value();
-		var targetName = SystemDynamics.sanitizeName(model.name()) + ".xml";
-		var targetFile = new File(modelDir, targetName);
-		var err = model.writeTo(targetFile);
-		if (err.isError()) {
-			MsgBox.error("Failed to write model", err.error());
-			return;
-		}
-		SdModelEditor.open(modelDir);
+		SdModelEditor.open(res.value());
 		Navigator.refresh();
 	}
 }

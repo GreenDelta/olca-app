@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
+import org.openlca.sd.model.SdModel;
 import org.openlca.util.Dirs;
 
 public class SystemDynamics {
@@ -37,42 +38,20 @@ public class SystemDynamics {
 		return Optional.of(sdRoot);
 	}
 
-	/**
-	 * Creates a new model directory under {@code sd-models/{uuid}}.
-	 */
-	public static Res<File> createModelDir(String uuid, IDatabase db) {
-		if (Strings.isBlank(uuid))
-			return Res.error("no model ID defined");
-		if (db == null)
-			return Res.error("no database provided");
-		var root = db.getFileStorageLocation();
-		if (root == null)
-			return Res.error("no file storage available for database");
-		var modelRoot = new File(root, "sd-models");
-		try {
-			Dirs.createIfAbsent(modelRoot);
-			var modelDir = new File(modelRoot, uuid);
-			Dirs.createIfAbsent(modelDir);
-			return Res.ok(modelDir);
-		} catch (Exception e) {
-			return Res.error("failed to create model folder", e);
-		}
-	}
-
-	/**
-	 * Finds the XMILE file in the given model directory. First looks for
-	 * any {@code .xml} file; falls back to {@code model.xml} for legacy
-	 * compatibility.
-	 */
+	/// Finds the XMILE file in the given model directory. Looks for any `.xml`
+	/// file in that folder.
 	public static File getXmileFile(File modelDir) {
-		if (modelDir == null || !modelDir.exists())
+		if (modelDir == null || !modelDir.exists()) {
 			return null;
-		var files = modelDir.listFiles(
-				(dir, name) -> name.endsWith(".xml"));
-		if (files != null && files.length > 0)
-			return files[0];
-		// legacy fallback
-		return new File(modelDir, "model.xml");
+		}
+		var files = modelDir.listFiles();
+		if (files == null ) return null;
+		for (var f : files) {
+			if (f.getName().endsWith(".xml")) {
+				return f;
+			}
+		}
+		return null;
 	}
 
 	/// Returns the display name for a model directory. This is the name of the
@@ -89,14 +68,45 @@ public class SystemDynamics {
 		return modelDir != null ? modelDir.getName() : "?";
 	}
 
-	/**
-	 * Sanitizes a name so it can be used as a file name. Replaces
-	 * characters that are not allowed in file names with underscores.
-	 */
-	public static String sanitizeName(String name) {
-		if (Strings.isBlank(name))
-			return "System dynamics model";
-		return name.strip().replaceAll("[<>:\"/\\\\|?*]", "_");
+	/// Saves the given model to a respective database folder. It returns the
+	/// folder (the _model directory_) where the model file is stored.
+	public static Res<File> saveModel(SdModel model, IDatabase db) {
+		if (model == null || db == null) {
+			return Res.error("Provided model or database is null");
+		}
+		if (Strings.isBlank(model.id())) {
+			return Res.error("Model has no UUID set");
+		}
+
+		try {
+			var dbDir = db.getFileStorageLocation();
+			Dirs.createIfAbsent(dbDir);
+			var sdRoot = new File(dbDir, "sd-models");
+			Dirs.createIfAbsent(sdRoot);
+			var dir = new File(sdRoot, model.id());
+			Dirs.createIfAbsent(dir);
+
+			var old = getXmileFile(dir);
+			var name = sanitize(model.name()) + ".xml";
+			var file = new File(dir, name);
+			if (old != null
+				&& old.exists()
+				&& !old.getName().equals(name)) {
+				old.delete();
+			}
+
+			var res = model.writeTo(file);
+			return res.isError()
+				? res.wrapError("Failed to write model to file " + name)
+				: Res.ok(dir);
+		} catch (Exception e) {
+			return Res.error("Failed to store model", e);
+		}
 	}
 
+	private static String sanitize(String name) {
+		return Strings.isBlank(name)
+			? "System dynamics model"
+			: name.strip().replaceAll("[<>:\"/\\\\|?*]", "_");
+	}
 }

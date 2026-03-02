@@ -3,7 +3,6 @@ package org.openlca.app.editors.sd.editor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -15,6 +14,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.graphical.GraphicalEditorInput;
 import org.openlca.app.editors.sd.SdVars;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
+import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -29,7 +29,6 @@ public class SdModelEditor extends FormEditor {
 	public static final String ID = "editors.SdModelEditor";
 
 	private final IDatabase db = Database.get();
-	private File modelDir;
 	private SdModel model;
 	private boolean dirty;
 	private SdGraphEditor graph;
@@ -52,7 +51,7 @@ public class SdModelEditor extends FormEditor {
 	) throws PartInitException {
 		super.init(site, input);
 		var inp = (SdEditorInput) input;
-		modelDir = inp.dir();
+		var modelDir = inp.dir();
 		setTitleImage(Icon.SD.get());
 		setPartName(inp.getName());
 
@@ -85,10 +84,6 @@ public class SdModelEditor extends FormEditor {
 
 	public SdModel model() {
 		return model;
-	}
-
-	File modelDir() {
-		return modelDir;
 	}
 
 	public List<Var> vars() {
@@ -128,26 +123,17 @@ public class SdModelEditor extends FormEditor {
 			graph.syncTo(model);
 			graph.doSave(monitor);
 		}
-
-		// determine the target file; rename if the model name changed
-		var currentFile = SystemDynamics.getXmileFile(modelDir);
-		var targetName = SystemDynamics.sanitizeName(model.name()) + ".xml";
-		var targetFile = new File(modelDir, targetName);
-		if (currentFile != null && currentFile.exists()
-				&& !currentFile.getName().equals(targetName)) {
-			// name changed — delete old file (we write fresh below)
-			currentFile.delete();
-		}
-
-		var err = model.writeTo(targetFile);
-		if (err.isError()) {
-			MsgBox.error("Failed to save model", err.error());
+		var res = SystemDynamics.saveModel(model, db);
+		if (res.isError()) {
+			MsgBox.error("Failed to save model", res.error());
 			return;
 		}
-		setPartName(Objects.requireNonNullElse(
-			model.name(), "System dynamics model"));
+		if (Strings.isNotBlank(model.name())) {
+			setPartName(model.name());
+		}
 		dirty = false;
 		editorDirtyStateChanged();
+		Navigator.refresh();
 	}
 
 	@Override
