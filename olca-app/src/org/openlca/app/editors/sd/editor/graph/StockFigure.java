@@ -1,9 +1,10 @@
 package org.openlca.app.editors.sd.editor.graph;
 
+import org.eclipse.draw2d.BorderLayout;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LineBorder;
-import org.eclipse.draw2d.ToolbarLayout;
+import org.eclipse.draw2d.PositionConstants;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
 import org.openlca.sd.model.Var;
@@ -13,8 +14,7 @@ class StockFigure extends Figure {
 	private final Label label = new Label();
 
 	StockFigure(Theme theme) {
-		var layout = new ToolbarLayout();
-		layout.setMinorAlignment(ToolbarLayout.ALIGN_CENTER);
+		var layout = new BorderLayout();
 		setLayoutManager(layout);
 		var borderColor = theme.boxBorderColor(Box.DEFAULT);
 		var bgColor = theme.boxBackgroundColor(Box.DEFAULT);
@@ -22,8 +22,9 @@ class StockFigure extends Figure {
 		setBorder(new LineBorder(borderColor, 1));
 		setBackgroundColor(bgColor);
 		label.setForegroundColor(textColor);
+		label.setTextAlignment(PositionConstants.CENTER);
+		add(label, BorderLayout.CENTER);
 		setOpaque(true);
-		add(label);
 	}
 
 	void setVar(Var v) {
