@@ -46,7 +46,7 @@ public class SdModelImportAction extends Action implements INavigationAction {
 
 		var file = FileChooser.openFile()
 				.withTitle("Select an XMILE model file")
-				.withExtensions("xml", "stmx")
+				.withExtensions("xmile", "xml", "stmx")
 				.select()
 				.orElse(null);
 		if (file == null)

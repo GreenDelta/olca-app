@@ -38,8 +38,8 @@ public class SystemDynamics {
 		return Optional.of(sdRoot);
 	}
 
-	/// Finds the XMILE file in the given model directory. Looks for any `.xml`
-	/// file in that folder.
+	/// Finds the XMILE file in the given model directory. Looks for any `*.xmile`
+	/// or `*.xml` file in that folder.
 	public static File getXmileFile(File modelDir) {
 		if (modelDir == null || !modelDir.exists()) {
 			return null;
@@ -47,7 +47,8 @@ public class SystemDynamics {
 		var files = modelDir.listFiles();
 		if (files == null ) return null;
 		for (var f : files) {
-			if (f.getName().endsWith(".xml")) {
+			var name = f.getName();
+			if (name.endsWith(".xmile") || name.endsWith(".xml")) {
 				return f;
 			}
 		}
@@ -61,9 +62,13 @@ public class SystemDynamics {
 		var file = getXmileFile(modelDir);
 		if (file != null && file.exists()) {
 			var name = file.getName();
-			return name.endsWith(".xml")
-					? name.substring(0, name.length() - 4)
-					: name;
+			if (name.endsWith(".xmile")) {
+				return name.substring(0, name.length() - 6);
+			}
+			if (name.endsWith(".xml")) {
+				return name.substring(0, name.length() - 4);
+			}
+			return name;
 		}
 		return modelDir != null ? modelDir.getName() : "?";
 	}
@@ -87,7 +92,7 @@ public class SystemDynamics {
 			Dirs.createIfAbsent(dir);
 
 			var old = getXmileFile(dir);
-			var name = sanitize(model.name()) + ".xml";
+			var name = sanitize(model.name()) + ".xmile";
 			var file = new File(dir, name);
 			if (old != null
 				&& old.exists()
