@@ -15,7 +15,17 @@ public class SystemDynamics {
 	private SystemDynamics() {
 	}
 
-	public static Optional<File> getModelRootOf(IDatabase db) {
+	public static List<File> getModelDirsOf(IDatabase db) {
+		var root = sdRootOf(db).orElse(null);
+		if (root == null)
+			return List.of();
+		var dirs = root.listFiles();
+		return dirs == null || dirs.length == 0
+				? List.of()
+				: Arrays.asList(dirs);
+	}
+
+	private static Optional<File> sdRootOf(IDatabase db) {
 		if (db == null)
 			return Optional.empty();
 		var dir = db.getFileStorageLocation();
@@ -25,16 +35,6 @@ public class SystemDynamics {
 		if (!sdRoot.exists() || !sdRoot.isDirectory())
 			return Optional.empty();
 		return Optional.of(sdRoot);
-	}
-
-	public static List<File> getModelDirsOf(IDatabase db) {
-		var root = getModelRootOf(db).orElse(null);
-		if (root == null)
-			return List.of();
-		var dirs = root.listFiles();
-		return dirs == null || dirs.length == 0
-				? List.of()
-				: Arrays.asList(dirs);
 	}
 
 	/**
@@ -75,11 +75,9 @@ public class SystemDynamics {
 		return new File(modelDir, "model.xml");
 	}
 
-	/**
-	 * Returns the display name for a model directory. This is the name of
-	 * the {@code .xml} file without its extension. Falls back to the
-	 * directory name if no XML file is found.
-	 */
+	/// Returns the display name for a model directory. This is the name of the
+	/// `.xml` file without its extension. Falls back to the  directory name if
+	/// no XML file is found.
 	public static String modelNameOf(File modelDir) {
 		var file = getXmileFile(modelDir);
 		if (file != null && file.exists()) {

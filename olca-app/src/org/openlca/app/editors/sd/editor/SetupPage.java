@@ -1,5 +1,7 @@
 package org.openlca.app.editors.sd.editor;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
@@ -22,6 +24,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.ImpactMethodDao;
 import org.openlca.core.math.SystemCalculator;
 import org.openlca.sd.interop.CoupledSimulator;
+import org.openlca.sd.interop.Progress;
 import org.openlca.sd.model.EntityRef;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.SimSpecs;
@@ -63,39 +66,39 @@ class SetupPage extends FormPage {
 			}
 		});
 
-		var time = model.time();
-		var unit = time != null && time.unit() != null
-			? time.unit()
+		var specs = specs();
+		var unit = Strings.isNotBlank(specs.unit())
+			? specs.unit()
 			: "";
 
 		var startText = UI.labeledText(comp, tk, "Start time");
-		startText.setText(Double.toString(time != null ? time.start() : 0));
+		startText.setText(Double.toString(specs.start()));
 		UI.label(comp, tk, unit);
 		startText.addModifyListener(e -> {
 			try {
-				time().setStart(Double.parseDouble(startText.getText()));
+				specs().setStart(Double.parseDouble(startText.getText()));
 				editor.setDirty();
 			} catch (Exception ignored) {
 			}
 		});
 
 		var endText = UI.labeledText(comp, tk, "Stop time");
-		endText.setText(Double.toString(time != null ? time.end() : 0));
+		endText.setText(Double.toString(specs.end()));
 		UI.label(comp, tk, unit);
 		endText.addModifyListener(e -> {
 			try {
-				time().setEnd(Double.parseDouble(endText.getText()));
+				specs().setEnd(Double.parseDouble(endText.getText()));
 				editor.setDirty();
 			} catch (Exception ignored) {
 			}
 		});
 
 		var dtText = UI.labeledText(comp, tk, "Δt");
-		dtText.setText(Double.toString(time != null ? time.dt() : 1));
+		dtText.setText(Double.toString(specs.dt()));
 		UI.label(comp, tk, unit);
 		dtText.addModifyListener(e -> {
 			try {
-				time().setDt(Double.parseDouble(dtText.getText()));
+				specs().setDt(Double.parseDouble(dtText.getText()));
 				editor.setDirty();
 			} catch (Exception ignored) {
 			}
@@ -105,7 +108,7 @@ class SetupPage extends FormPage {
 		unitText.setText(unit);
 		UI.filler(comp, tk);
 		unitText.addModifyListener(e -> {
-			time().setUnit(unitText.getText().strip());
+			specs().setUnit(unitText.getText().strip());
 			editor.setDirty();
 		});
 
@@ -118,13 +121,13 @@ class SetupPage extends FormPage {
 		Controls.onSelect(btn, e -> runSimulation());
 	}
 
-	private SimSpecs time() {
-		var time = model.time();
-		if (time == null) {
-			time = new SimSpecs();
-			model.setTime(time);
+	private SimSpecs specs() {
+		var specs = model.simSpecs();
+		if (specs == null) {
+			specs = new SimSpecs();
+			model.setSimSpecs(specs);
 		}
-		return time;
+		return specs;
 	}
 
 	private void createMethodCombo(Composite comp, FormToolkit tk) {
@@ -169,20 +172,18 @@ class SetupPage extends FormPage {
 
 		try {
 			var service = PlatformUI.getWorkbench().getProgressService();
+			int totalWork = model.simSpecs() != null
+				? model.simSpecs().iterationCount()
+				: IProgressMonitor.UNKNOWN;
 
 			service.run(true, true, monitor -> {
-				monitor.beginTask(
-					"Running simulation",
-					iterationCount());
+				monitor.beginTask("Running simulation", totalWork);
 
-				int[] iteration = { 0 };
-				sim.run(new CoupledSimulator.Progress() {
-
+				var iteration = new AtomicInteger(0);
+				sim.run(new Progress() {
 					@Override
-					public void worked(int work) {
-						iteration[0]++;
-						monitor.subTask("Run iteration " + iteration[0]);
-						monitor.worked(work);
+					public void tick() {
+						monitor.worked(iteration.incrementAndGet());
 					}
 
 					@Override
@@ -191,6 +192,7 @@ class SetupPage extends FormPage {
 					}
 				});
 				monitor.done();
+
 				App.runInUI("Open simulation result", () -> {
 					var res = sim.getResult();
 					if (res.isError()) {
@@ -205,12 +207,4 @@ class SetupPage extends FormPage {
 			ErrorReporter.on("Failed to run simulation", e);
 		}
 	}
-
-	private int iterationCount() {
-		var time = model.time();
-		return time != null
-			? time.iterationCount()
-			: IProgressMonitor.UNKNOWN;
-	}
-
 }

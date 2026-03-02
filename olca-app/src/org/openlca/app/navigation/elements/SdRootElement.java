@@ -14,7 +14,7 @@ public class SdRootElement extends NavigationElement<Void> {
 
 	@Override
 	protected List<INavigationElement<?>> queryChilds() {
-			var sds = new ArrayList<INavigationElement<?>>();
+		var sds = new ArrayList<INavigationElement<?>>();
 		for (var modelDir : SystemDynamics.getModelDirsOf(Database.get())) {
 			sds.add(new SdModelElement(this, modelDir));
 		}

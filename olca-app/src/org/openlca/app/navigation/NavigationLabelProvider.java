@@ -20,7 +20,6 @@ import org.openlca.app.navigation.elements.CategoryElement;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.Group;
-import org.openlca.app.navigation.elements.GroupElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.LibraryDirElement;
 import org.openlca.app.navigation.elements.LibraryElement;
@@ -32,12 +31,12 @@ import org.openlca.app.navigation.elements.SdModelElement;
 import org.openlca.app.navigation.elements.SdRootElement;
 import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.Workspace;
-import org.openlca.app.util.SystemDynamics;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.SystemDynamics;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.library.Library;
@@ -48,7 +47,7 @@ import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.util.Categories;
 
 public class NavigationLabelProvider extends ColumnLabelProvider
-		implements ICommonLabelProvider, IColorProvider {
+	implements ICommonLabelProvider, IColorProvider {
 
 	private final boolean indicateRepositoryState;
 
@@ -97,43 +96,43 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			if (descriptor.category == null)
 				return name;
 			var category = AppContext.getEntityCache().get(
-					Category.class, descriptor.category);
+				Category.class, descriptor.category);
 			var text = category != null
-					? String.join(" / ", Categories.path(category)) + " / " + name
-					: name;
+				? String.join(" / ", Categories.path(category)) + " / " + name
+				: name;
 			return descriptor.isFromLibrary()
-					? descriptor.library + ": " + text
-					: text;
+				? descriptor.library + ": " + text
+				: text;
 		}
 
 		// for categories show the full path
 		if (obj instanceof CategoryElement elem) {
 			var category = elem.getContent();
 			return category != null
-					? String.join(" / ", Categories.path(category))
-					: null;
+				? String.join(" / ", Categories.path(category))
+				: null;
 		}
 
 		// for script files and folders show the full file path
 		if (obj instanceof ScriptElement elem) {
 			var file = elem.getContent();
 			return file != null
-					? file.getAbsolutePath()
-					: null;
+				? file.getAbsolutePath()
+				: null;
 		}
 
 		// libraries
 		if (obj instanceof LibraryDirElement elem) {
 			var libDir = elem.getContent();
 			return libDir != null
-					? libDir.folder().getAbsolutePath()
-					: null;
+				? libDir.folder().getAbsolutePath()
+				: null;
 		}
 		if (obj instanceof LibraryElement elem) {
 			var lib = elem.getContent();
 			return lib != null
-					? lib.folder().getAbsolutePath()
-					: null;
+				? lib.folder().getAbsolutePath()
+				: null;
 		}
 
 		return getText(obj);
@@ -156,8 +155,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		var content = (elem).getContent();
 		if (content instanceof DatabaseConfig config) {
 			return Database.isActive(config)
-					? Icon.DATABASE.get()
-					: Icon.DATABASE_DISABLED.get();
+				? Icon.DATABASE.get()
+				: Icon.DATABASE_DISABLED.get();
 		}
 
 		// groups and models
@@ -176,7 +175,7 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (content instanceof Library(File folder)) {
 			var license = Libraries.getLicense(folder);
 			return license.map(Images::licensedLibrary)
-					.orElse(Icon.LIBRARY.get());
+				.orElse(Icon.LIBRARY.get());
 		}
 
 		if (obj instanceof SdRootElement)
@@ -187,8 +186,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		// files and folders
 		if (content instanceof File file) {
 			return file.isDirectory()
-					? Icon.FOLDER.get()
-					: Images.get(FileType.of(file));
+				? Icon.FOLDER.get()
+				: Images.get(FileType.of(file));
 		}
 
 		// mapping files
@@ -196,8 +195,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 			return Icon.FOLDER.get();
 		if (elem instanceof MappingFileElement) {
 			var name = content instanceof String
-					? (String) content
-					: "?";
+				? (String) content
+				: "?";
 			return Images.get(FileType.forName(name));
 		}
 
@@ -208,61 +207,50 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	public String getText(Object obj) {
 		if (!(obj instanceof INavigationElement<?> elem))
 			return null;
-		var baseText = getBaseText(elem);
-		if (baseText == null)
-			return null;
+
+		var base = elementLabelOf(elem);
+		if (base == null) return null;
+
 		if (elem instanceof DatabaseElement dbElem) {
 			var config = dbElem.getContent();
 			var repoText = RepositoryLabel.getRepositoryText(config);
-			if (repoText != null)
-				baseText += repoText;
+			if (repoText != null) {
+				base += repoText;
+			}
 		}
-		if (!indicateRepositoryState)
-			return baseText;
+
+		// append a possible repository state
+		if (!indicateRepositoryState) return base;
 		var state = RepositoryLabel.getStateIndicator(elem);
-		if (state == null)
-			return baseText;
-		return state + baseText;
+		if (state == null) return base;
+		return state + base;
 	}
 
-	private String getBaseText(INavigationElement<?> elem) {
+	private String elementLabelOf(INavigationElement<?> elem) {
+		return switch (elem) {
+			case null -> null;
+			case DatabaseDirElement e -> e.getContent();
+			case MappingDirElement ignore -> M.MappingFiles;
+			case SdModelElement e -> SystemDynamics.modelNameOf(e.getContent());
+			case SdRootElement ignore -> "System dynamics models";
+			default -> contentLabelOf(elem.getContent());
+		};
+	}
 
-		if (elem instanceof DatabaseDirElement dirElem)
-			return dirElem.getContent();
-		if (elem instanceof GroupElement groupElem)
-			return groupElem.getContent().label;
-
-		var content = elem.getContent();
-		if (content instanceof DatabaseConfig config)
-			return config.name();
-		if (content instanceof Category category)
-			return category.name;
-		if (content instanceof ModelType type)
-			return Labels.plural(type);
-		if (content instanceof Descriptor d)
-			return Labels.name(d);
-		if (content instanceof LibraryDir)
-			return M.Libraries;
-		if (content instanceof Library lib)
-			return lib.name();
-
-		if (elem instanceof MappingDirElement)
-			return M.MappingFiles;
-		if (content instanceof File file)
-			return file.getName();
-		if (content instanceof String)
-			return (String) content;
-
-		if (elem instanceof SdRootElement)
-			return "System dynamics models";
-		if (elem instanceof SdModelElement sdm) {
-			var dir = sdm.getContent();
-			return dir != null
-					? SystemDynamics.modelNameOf(dir)
-					: "?";
-		}
-
-		return content == null ? "?" : content.toString();
+	private String contentLabelOf(Object content) {
+		return switch (content) {
+			case null -> "?";
+			case Category category -> category.name;
+			case DatabaseConfig conf -> conf.name();
+			case Descriptor d -> Labels.name(d);
+			case File file -> file.getName();
+			case Group group -> group.label;
+			case ModelType type -> Labels.plural(type);
+			case Library lib -> lib.name();
+			case LibraryDir ignore -> M.Libraries;
+			case String s -> s;
+			default -> content.toString();
+		};
 	}
 
 	@Override
@@ -270,11 +258,11 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 		if (!(elem instanceof INavigationElement<?>))
 			return null;
 		if (elem instanceof DatabaseElement dbElem
-				&& Database.isActive(dbElem.getContent()))
+			&& Database.isActive(dbElem.getContent()))
 			return UI.boldFont();
 		return isFromLibrary(elem)
-				? UI.italicFont()
-				: null;
+			? UI.italicFont()
+			: null;
 	}
 
 	@Override
@@ -303,8 +291,8 @@ public class NavigationLabelProvider extends ColumnLabelProvider
 	public Color getForeground(Object obj) {
 		if (isFromLibrary(obj))
 			return Theme.isDark()
-					? Colors.get(103, 134, 151)
-					: Colors.get(55, 71, 79);
+				? Colors.get(103, 134, 151)
+				: Colors.get(55, 71, 79);
 		return null;
 	}
 
