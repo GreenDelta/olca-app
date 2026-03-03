@@ -13,6 +13,7 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
+import org.openlca.app.editors.sd.editor.graph.actions.AddRateAction;
 import org.openlca.sd.eqn.EvaluationOrder;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Rect;
@@ -62,13 +63,25 @@ public class SdGraphEditor extends GraphicalEditor {
 	protected void configureGraphicalViewer() {
 		// it always falls back to the default background color
 		// so we need to set it every time it is painted
-		var control = getGraphicalViewer().getControl();
+		var viewer = getGraphicalViewer();
+		var control = viewer.getControl();
 		control.setBackground(theme.backgroundColor());
 		control.addPaintListener(e -> {
 			if (!control.isDisposed()) {
 				control.setBackground(theme.backgroundColor());
 			}
 		});
+
+		var menu = new ContextMenu(viewer, getActionRegistry());
+		viewer.setContextMenu(menu);
+
+	}
+
+	@Override
+	protected void createActions() {
+		super.createActions();
+		var registry = getActionRegistry();
+		registry.registerAction(new AddRateAction(this));
 	}
 
 	private void populate(GraphModel model) {
