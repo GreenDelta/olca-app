@@ -60,15 +60,13 @@ public class AddRateAction extends WorkbenchPartAction {
 			nameText = UI.labeledText(body, tk, M.Name);
 			unitText = UI.labeledText(body, tk, M.Unit);
 			equationText = UI.labeledMultiText(body, tk, "Equation", 200);
-
 			nameText.addModifyListener(e -> checkOk());
 			equationText.addModifyListener(e -> checkOk());
-			checkOk();
 		}
 
 		@Override
 		protected void createButtonsForButtonBar(Composite parent) {
-			createButton(parent, OK, M.OK, true);
+			createButton(parent, OK, M.OK, true).setEnabled(false);
 			createButton(parent, CANCEL, M.Cancel, false);
 		}
 

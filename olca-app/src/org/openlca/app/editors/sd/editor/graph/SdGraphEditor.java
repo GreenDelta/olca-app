@@ -5,10 +5,12 @@ import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
@@ -81,6 +83,16 @@ public class SdGraphEditor extends GraphicalEditor {
 		super.createActions();
 		var registry = getActionRegistry();
 		registry.registerAction(new AddRateAction(this));
+	}
+
+	/// We need to overwrite this otherwise the selection actions are not updated.
+	/// The implementation of the super class does not handle graphical editors
+	/// that are in a page of a parent editor.
+	@Override
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		if (parent.equals(part)) {
+			updateActions(getSelectionActions());
+		}
 	}
 
 	public SdGraph graph() {
