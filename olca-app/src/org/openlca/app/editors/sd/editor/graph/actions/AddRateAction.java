@@ -11,6 +11,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.editors.sd.editor.graph.edit.AddVarCmd;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
@@ -83,8 +84,18 @@ public class AddRateAction extends WorkbenchPartAction {
 
 		@Override
 		protected void okPressed() {
+
+			var name = Id.of(nameText.getText());
+			for (var n : editor.graph().nodes()) {
+				if (name.equals(n.variable().name())) {
+					MsgBox.error(name.label() + " - already defined",
+						"A variable with this name is already defined in this model");
+					return;
+				}
+			}
+
 			var rate = new Rate();
-			rate.setName(Id.of(nameText.getText().trim()));
+			rate.setName(name);
 			rate.setUnit(unitText.getText().trim());
 			rate.setDef(Cell.of(equationText.getText().trim()));
 

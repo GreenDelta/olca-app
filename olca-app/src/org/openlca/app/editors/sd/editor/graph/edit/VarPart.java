@@ -7,10 +7,14 @@ import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
+import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.editors.sd.editor.graph.model.NotifySupport;
+import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarLink;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
 import org.openlca.app.editors.sd.editor.graph.view.AuxFigure;
@@ -67,6 +71,19 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 	@Override
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new ResizableEditPolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
+			@Override
+			protected Command createDeleteCommand(GroupRequest request) {
+				var node = getModel();
+				var parent = getParent();
+				if (!(parent instanceof GraphPart graphPart))
+					return null;
+				SdGraph graph = graphPart.getModel();
+				return node != null && graph != null
+					? new DeleteVarCmd(graph, node)
+					: null;
+			}
+		});
 	}
 
 	@Override
