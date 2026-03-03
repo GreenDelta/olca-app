@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph;
+package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ConnectionAnchor;
@@ -10,6 +10,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.sd.editor.graph.model.NotifySupport;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarLink;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
 import org.openlca.app.editors.sd.editor.graph.view.AuxFigure;
@@ -23,7 +24,7 @@ import java.util.List;
 class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
 	private final Theme theme;
-	private final Runnable listener = () -> {
+	private final Runnable onModelChange = () -> {
 		refreshVisuals();
 		refreshSourceConnections();
 		refreshTargetConnections();
@@ -54,18 +55,12 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 	@Override
 	public void activate() {
 		super.activate();
-		var model = getModel();
-		if (model != null) {
-			model.addListener(listener);
-		}
+		NotifySupport.on(getModel(), onModelChange);
 	}
 
 	@Override
 	public void deactivate() {
-		var model = getModel();
-		if (model != null) {
-			model.removeListener(listener);
-		}
+		NotifySupport.off(getModel(), onModelChange);
 		super.deactivate();
 	}
 

@@ -2,13 +2,14 @@ package org.openlca.app.editors.sd.editor.graph.actions;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
-import org.openlca.app.editors.sd.editor.graph.AddVarCmd;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
+import org.openlca.app.editors.sd.editor.graph.edit.AddVarCmd;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
 import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;
@@ -20,6 +21,7 @@ public class AddRateAction extends WorkbenchPartAction {
 
 	public static String ID = "sd-add-rate-action";
 	private final SdGraphEditor editor;
+	private Point location = new Point(250, 250);
 
 	public AddRateAction(SdGraphEditor editor) {
 		super(editor);
@@ -35,6 +37,7 @@ public class AddRateAction extends WorkbenchPartAction {
 
 	@Override
 	protected boolean calculateEnabled() {
+		location = editor.getCursorLocation();
 		return true;
 	}
 
@@ -85,16 +88,10 @@ public class AddRateAction extends WorkbenchPartAction {
 			rate.setUnit(unitText.getText().trim());
 			rate.setDef(Cell.of(equationText.getText().trim()));
 
-			var p = editor.getCursorLocation();
-			var m = new SdVarNode(rate, editor.graph().model());
-			m.moveTo(new Rectangle(p.x, p.y, 100, 50));
-
-			var cmd = new AddVarCmd(
-				editor.parent().model(),
-				editor.graph(),
-				m);
+			var node = new SdVarNode(rate, editor.graph().model());
+			node.moveTo(new Rectangle(location.x - 50, location.y - 25, 100, 50));
+			var cmd = new AddVarCmd(editor.graph(), node);
 			editor.exec(cmd);
-
 			super.okPressed();
 		}
 	}

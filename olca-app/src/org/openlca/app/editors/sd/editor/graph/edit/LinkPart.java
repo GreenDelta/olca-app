@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph;
+package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolylineConnection;

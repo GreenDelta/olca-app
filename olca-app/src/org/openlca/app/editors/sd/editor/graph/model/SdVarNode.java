@@ -8,7 +8,7 @@ import org.openlca.sd.model.Var;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SdVarNode {
+public class SdVarNode implements NotifySupport {
 
 	private final Var variable;
 	private final SdModel model;
@@ -17,19 +17,16 @@ public class SdVarNode {
 	private final List<SdVarLink> sourceLinks = new ArrayList<>();
 	private final List<SdVarLink> targetLinks = new ArrayList<>();
 
-	private final List<Runnable> listeners = new ArrayList<>();
+	private final Notifier notifier = new Notifier();
 
 	public SdVarNode(Var variable, SdModel model) {
 		this.variable = variable;
 		this.model = model;
 	}
 
-	public void addListener(Runnable listener) {
-		listeners.add(listener);
-	}
-
-	public void removeListener(Runnable listener) {
-		listeners.remove(listener);
+	@Override
+	public Notifier notifier() {
+		return notifier;
 	}
 
 	public void moveTo(Rectangle rect) {
@@ -38,9 +35,7 @@ public class SdVarNode {
 		bounds.setBounds(rect);
 		model.positions().put(
 			variable.name(), new Rect(rect.x, rect.y, rect.width, rect.height));
-		for (var listener : listeners) {
-			listener.run();
-		}
+		notifier.fire();
 	}
 
 	public Var variable() {

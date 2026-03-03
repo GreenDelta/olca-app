@@ -14,6 +14,7 @@ import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
 import org.openlca.app.editors.sd.editor.graph.actions.AddRateAction;
+import org.openlca.app.editors.sd.editor.graph.edit.PartFactory;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 
 public class SdGraphEditor extends GraphicalEditor {
@@ -87,8 +88,11 @@ public class SdGraphEditor extends GraphicalEditor {
 	}
 
 	public Point getCursorLocation() {
-		var loc = Display.getCurrent().getCursorLocation();
-		return getGraphicalViewer().getControl().toControl(loc);
+		var display = Display.getCurrent();
+		if (display == null) return new Point(150, 150);
+		return getGraphicalViewer()
+			.getControl()
+			.toControl(display.getCursorLocation());
 	}
 
 	public void exec(Command cmd) {

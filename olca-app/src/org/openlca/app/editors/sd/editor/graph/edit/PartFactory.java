@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph;
+package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
@@ -7,11 +7,11 @@ import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarLink;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
 
-class PartFactory implements EditPartFactory {
+public class PartFactory implements EditPartFactory {
 
 	private final Theme theme;
 
-	PartFactory(Theme theme) {
+	public PartFactory(Theme theme) {
 		this.theme = theme;
 	}
 

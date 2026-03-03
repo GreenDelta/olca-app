@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class SdGraph {
+public class SdGraph implements NotifySupport {
 
 	private final SdModel model;
+	private final Notifier notifier = new Notifier();
 	private final List<SdVarNode> nodes = new ArrayList<>();
-	private final List<Runnable> listeners = new ArrayList<>();
 
 	private SdGraph(SdModel model) {
 		this.model = model;
@@ -66,6 +66,11 @@ public class SdGraph {
 		target.targetLinks().add(link);
 	}
 
+	@Override
+	public Notifier notifier() {
+		return notifier;
+	}
+
 	public SdModel model() {
 		return model;
 	}
@@ -74,26 +79,15 @@ public class SdGraph {
 		return nodes;
 	}
 
-	public void addListener(Runnable listener) {
-		listeners.add(listener);
-	}
-
-	public void removeListener(Runnable listener) {
-		listeners.remove(listener);
-	}
 
 	public void add(SdVarNode var) {
 		nodes.add(var);
-		for (var listener : listeners) {
-			listener.run();
-		}
+		notifier.fire();
 	}
 
 	public void remove(SdVarNode var) {
 		nodes.remove(var);
-		for (var listener : listeners) {
-			listener.run();
-		}
+		notifier.fire();
 	}
 
 }

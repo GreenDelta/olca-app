@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph;
+package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.FreeformLayout;
@@ -12,6 +12,7 @@ import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.sd.editor.graph.model.NotifySupport;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 
 import java.util.Collections;
@@ -20,7 +21,7 @@ import java.util.List;
 class GraphPart extends AbstractGraphicalEditPart {
 
 	private final Theme theme;
-	private final Runnable listener = this::refreshChildren;
+	private final Runnable onModelChange = this::refreshChildren;
 
 	GraphPart(SdGraph model, Theme theme) {
 		setModel(model);
@@ -30,18 +31,12 @@ class GraphPart extends AbstractGraphicalEditPart {
 	@Override
 	public void activate() {
 		super.activate();
-		var model = getModel();
-		if (model != null) {
-			model.addListener(listener);
-		}
+		NotifySupport.on(getModel(), onModelChange);
 	}
 
 	@Override
 	public void deactivate() {
-		var model = getModel();
-		if (model != null) {
-			model.removeListener(listener);
-		}
+		NotifySupport.off(getModel(), onModelChange);
 		super.deactivate();
 	}
 
