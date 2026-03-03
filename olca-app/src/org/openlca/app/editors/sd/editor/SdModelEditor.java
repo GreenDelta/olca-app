@@ -1,9 +1,5 @@
 package org.openlca.app.editors.sd.editor;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -23,6 +19,10 @@ import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.Var;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SdModelEditor extends FormEditor {
 
@@ -120,7 +120,6 @@ public class SdModelEditor extends FormEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		if (graph != null) {
-			graph.syncTo(model);
 			graph.doSave(monitor);
 		}
 		var res = SystemDynamics.saveModel(model, db);

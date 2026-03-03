@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph;
+package org.openlca.app.editors.sd.editor.graph.view;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Label;

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph;
+package org.openlca.app.editors.sd.editor.graph.view;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -10,12 +10,12 @@ import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
 import org.openlca.sd.model.Var;
 
-class FlowFigure extends Figure {
+public class FlowFigure extends Figure {
 
 	private final Theme theme;
 	private final Label label = new Label();
 
-	FlowFigure(Theme theme) {
+	public FlowFigure(Theme theme) {
 		this.theme = theme;
 		var layout = new ToolbarLayout();
 		layout.setMinorAlignment(ToolbarLayout.ALIGN_CENTER);
@@ -28,7 +28,7 @@ class FlowFigure extends Figure {
 		add(valve);
 	}
 
-	void setVar(Var v) {
+	public void setVar(Var v) {
 		if (v == null) {
 			label.setText("");
 			setToolTip(null);

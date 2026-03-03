@@ -6,6 +6,7 @@ import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
+import org.openlca.app.editors.sd.editor.graph.model.SdVarLink;
 import org.openlca.sd.model.Auxil;
 import org.openlca.sd.model.Stock;
 
@@ -13,7 +14,7 @@ class LinkPart extends AbstractConnectionEditPart {
 
 	private final Theme theme;
 
-	LinkPart(LinkModel model, Theme theme) {
+	LinkPart(SdVarLink model, Theme theme) {
 		setModel(model);
 		this.theme = theme;
 	}
@@ -30,8 +31,8 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	@Override
-	public LinkModel getModel() {
-		return super.getModel() instanceof LinkModel link ? link : null;
+	public SdVarLink getModel() {
+		return super.getModel() instanceof SdVarLink link ? link : null;
 	}
 
 	@Override
@@ -46,7 +47,7 @@ class LinkPart extends AbstractConnectionEditPart {
 
 		// we just re-use the colors from the theme here,
 		// the flow types have no specific meaning
-		var color = switch (link.source().variable) {
+		var color = switch (link.source().variable()) {
 			case Auxil ignore -> theme.boxBorderColor(Box.RESULT);
 			case Stock ignore -> theme.boxBorderColor(Box.DEFAULT);
 			default -> theme.boxBorderColor(Box.SUB_SYSTEM);

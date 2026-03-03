@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph;
+package org.openlca.app.editors.sd.editor.graph.view;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
@@ -9,12 +9,12 @@ import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
 import org.openlca.sd.model.Var;
 
-class AuxFigure extends Figure {
+public class AuxFigure extends Figure {
 
 	private final Label label = new Label();
 	private final Theme theme;
 
-	AuxFigure(Theme theme) {
+	public AuxFigure(Theme theme) {
 		this.theme = theme;
 		var layout = new ToolbarLayout();
 		layout.setMinorAlignment(ToolbarLayout.ALIGN_CENTER);
@@ -25,7 +25,7 @@ class AuxFigure extends Figure {
 		add(new FixedCircle());
 	}
 
-	void setVar(Var v) {
+	public void setVar(Var v) {
 		if (v == null) {
 			label.setText("");
 			setToolTip(null);

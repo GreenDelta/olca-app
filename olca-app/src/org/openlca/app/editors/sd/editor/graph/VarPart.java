@@ -1,7 +1,5 @@
 package org.openlca.app.editors.sd.editor.graph;
 
-import java.util.List;
-
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
@@ -12,8 +10,15 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.sd.editor.graph.model.SdVarLink;
+import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
+import org.openlca.app.editors.sd.editor.graph.view.AuxFigure;
+import org.openlca.app.editors.sd.editor.graph.view.FlowFigure;
+import org.openlca.app.editors.sd.editor.graph.view.StockFigure;
 import org.openlca.sd.model.Auxil;
 import org.openlca.sd.model.Rate;
+
+import java.util.List;
 
 class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
@@ -24,7 +29,7 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 		refreshTargetConnections();
 	};
 
-	VarPart(VarModel model, Theme theme) {
+	VarPart(SdVarNode model, Theme theme) {
 		setModel(model);
 		this.theme = theme;
 	}
@@ -33,7 +38,7 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 	protected IFigure createFigure() {
 		var model = getModel();
 		if (model == null) return new StockFigure(theme);
-		return switch (getModel().variable) {
+		return switch (getModel().variable()) {
 			case Auxil ignore -> new AuxFigure(theme);
 			case Rate ignore -> new FlowFigure(theme);
 			case null, default -> new StockFigure(theme);
@@ -41,9 +46,9 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 	}
 
 	@Override
-	public VarModel getModel() {
+	public SdVarNode getModel() {
 		var model = super.getModel();
-		return model instanceof VarModel m ? m : null;
+		return model instanceof SdVarNode m ? m : null;
 	}
 
 	@Override
@@ -90,34 +95,34 @@ class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 	}
 
 	@Override
-	protected List<LinkModel> getModelSourceConnections() {
+	protected List<SdVarLink> getModelSourceConnections() {
 		var model = getModel();
-		return model != null ? model.sourceLinks : List.of();
+		return model != null ? model.sourceLinks() : List.of();
 	}
 
 	@Override
-	protected List<LinkModel> getModelTargetConnections() {
+	protected List<SdVarLink> getModelTargetConnections() {
 		var model = getModel();
-		return model != null ? model.targetLinks : List.of();
+		return model != null ? model.targetLinks() : List.of();
 	}
 
 	@Override
 	protected void refreshVisuals() {
-		var model = getModel();
-		if (model == null)
+		var node = getModel();
+		if (node == null)
 			return;
 		var figure = getFigure();
 		if (figure instanceof StockFigure f) {
-			f.setVar(model.variable);
+			f.setVar(node.variable());
 		} else if (figure instanceof AuxFigure f) {
-			f.setVar(model.variable);
+			f.setVar(node.variable());
 		} else if (figure instanceof FlowFigure f) {
-			f.setVar(model.variable);
+			f.setVar(node.variable());
 		}
 
 		var parent = getParent();
 		if (parent instanceof AbstractGraphicalEditPart gep) {
-			gep.setLayoutConstraint(this, figure, model.bounds);
+			gep.setLayoutConstraint(this, figure, node.bounds());
 		}
 	}
 
