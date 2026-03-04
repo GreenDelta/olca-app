@@ -68,22 +68,21 @@ public class SdGraph implements NotifySupport {
 		if (source == null || target == null)
 			return;
 		var link = new SdVarLink(source, target, isFlow);
-		source.sourceLinks().add(link);
-		target.targetLinks().add(link);
+		source.addSourceLink(link);
+		target.addTargetLink(link);
 	}
 
 	private void removeLinksOf(SdVarNode node) {
 		if (node == null) return;
 		for (var link : node.sourceLinks()) {
 			unlink(link);
-			link.target().targetLinks().remove(link);
+			link.target().removeTargetLink(link);
 		}
 		for (var link : node.targetLinks()) {
 			unlink(link);
-			link.source().sourceLinks().remove(link);
+			link.source().removeSourceLink(link);
 		}
-		node.sourceLinks().clear();
-		node.targetLinks().clear();
+		node.clearLinks();
 	}
 
 	private void unlink(SdVarLink link) {

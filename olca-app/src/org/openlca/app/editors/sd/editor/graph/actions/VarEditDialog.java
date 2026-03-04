@@ -132,7 +132,7 @@ class VarEditDialog extends FormDialog {
 
 		if (origin == null) {
 			var node = new SdVarNode(variable, editor.graph().model());
-			node.moveTo(new Rectangle(location.x - 50, location.y - 25, 100, 50));
+			node.moveTo(new Rectangle(location.x - 50, location.y - 25, 80, 50));
 			var cmd = new AddVarCmd(editor.graph(), node);
 			editor.exec(cmd);
 		} else {

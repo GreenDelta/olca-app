@@ -55,8 +55,40 @@ public class SdVarNode implements NotifySupport {
 		return targetLinks;
 	}
 
+	public void addSourceLink(SdVarLink link) {
+		if (link == null) return;
+		sourceLinks.add(link);
+		notifier.fire();
+	}
+
+	public void addTargetLink(SdVarLink link) {
+		if (link == null) return;
+		targetLinks.add(link);
+		notifier.fire();
+	}
+
+	public void removeSourceLink(SdVarLink link) {
+		if (link == null) return;
+		if (sourceLinks.remove(link)) {
+			notifier.fire();
+		}
+	}
+
+	public void removeTargetLink(SdVarLink link) {
+		if (link == null) return;
+		if (targetLinks.remove(link)) {
+			notifier.fire();
+		}
+	}
+
+	public void clearLinks() {
+		sourceLinks.clear();
+		targetLinks.clear();
+		notifier.fire();;
+	}
+
 	public String name() {
-		return variable != null && variable.name() != null
+		return variable.name() != null
 			? variable.name().label()
 			: "";
 	}
