@@ -120,30 +120,24 @@ class VarEditDialog extends FormDialog {
 
 		if (origin != null) {
 			// TODO: when the name changed, we may need to update
-			// it in other equations
+			// it in other equations -> ask the user
 		}
 
 		// TODO: check equation
 		var cell = Cell.of(equationText.getText());
-		var v = origin != null ? origin : variable;
-		v.setName(name);
-		v.setUnit(unitText.getText());
-		v.setDef(cell);
 
-		if (origin == null && location != null) {
+		variable.setName(name);
+		variable.setUnit(unitText.getText());
+		variable.setDef(cell);
+
+		if (origin == null) {
 			var node = new SdVarNode(variable, editor.graph().model());
 			node.moveTo(new Rectangle(location.x - 50, location.y - 25, 100, 50));
 			var cmd = new AddVarCmd(editor.graph(), node);
 			editor.exec(cmd);
-		} else if (origin != null) {
-			var node = editor.graph().nodes().stream()
-				.filter(n -> origin.equals(n.variable()))
-				.findFirst()
-				.orElse(null);
-			if (node != null) {
-				var cmd = new UpdateVarCmd(editor.graph(), node);
-				editor.exec(cmd);
-			}
+		} else {
+			var cmd = new UpdateVarCmd(editor.graph(), origin.name(), variable);
+			editor.exec(cmd);
 		}
 		super.okPressed();
 	}
@@ -152,12 +146,11 @@ class VarEditDialog extends FormDialog {
 		if (origin != null && name.equals(origin.name())) {
 			return false;
 		}
-		for (var n : editor.graph().nodes()) {
-			if (name.equals(n.variable().name())) {
-				MsgBox.error(name.label() + " - already defined",
-					"A variable with this name is already defined in this model");
-				return true;
-			}
+		var n = editor.graph().getNode(name);
+		if (n != null) {
+			MsgBox.error(name.label() + " - already defined",
+				"A variable with this name is already defined in this model");
+			return true;
 		}
 		return false;
 	}

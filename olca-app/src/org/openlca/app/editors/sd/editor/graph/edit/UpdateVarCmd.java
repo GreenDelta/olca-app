@@ -2,23 +2,25 @@ package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
-import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
+import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Var;
 
 public class UpdateVarCmd extends Command {
 
 	private final SdGraph graph;
-	private final SdVarNode node;
+	private final Id name;
+	private final Var data;
 
-	public UpdateVarCmd(SdGraph graph, SdVarNode node) {
+	public UpdateVarCmd(SdGraph graph, Id name, Var data) {
 		this.graph = graph;
-		this.node = node;
+		this.name = name;
+		this.data = data;
 		setLabel("Update variable");
 	}
 
 	@Override
 	public boolean canExecute() {
-		return graph != null && node != null;
+		return graph != null && name != null && data != null;
 	}
 
 	@Override
@@ -28,9 +30,14 @@ public class UpdateVarCmd extends Command {
 
 	@Override
 	public void execute() {
-		Var variable = node.variable();
+		var origin = graph.getNode(name);
+		if (origin == null) return;
+		graph.remove(origin);
 
-		node.notifier().fire();
-		graph.notifier().fire();
+		var v = origin.variable();
+		v.setName(data.name());
+		v.setDef(data.def());
+		v.setUnit(data.unit());
+		graph.add(origin);
 	}
 }

@@ -19,23 +19,17 @@ public class AddVarCmd extends Command {
 	}
 
 	@Override
+	public boolean canExecute() {
+		return graph != null && node != null;
+	}
+
+	@Override
 	public void execute() {
-		if (sdModel != null) {
-			sdModel.vars().add(node.variable());
-		}
-		if (graph != null) {
-			graph.add(node);
-		}
+		graph.add(node);
 	}
 
 	@Override
 	public void undo() {
-		if (graph != null) {
-			graph.remove(node);
-		}
-		if (sdModel != null) {
-			sdModel.vars().remove(node.variable());
-		}
+		graph.remove(node);
 	}
-
 }

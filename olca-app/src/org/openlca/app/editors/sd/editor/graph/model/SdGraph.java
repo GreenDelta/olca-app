@@ -8,7 +8,9 @@ import org.openlca.sd.model.Rect;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.Stock;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SdGraph implements NotifySupport {
 
@@ -102,6 +104,14 @@ public class SdGraph implements NotifySupport {
 
 	public SdModel model() {
 		return model;
+	}
+
+	public SdVarNode getNode(Id name) {
+		return nodes.get(name);
+	}
+
+	public List<SdVarNode> nodes() {
+		return new ArrayList<>(nodes.values());
 	}
 
 	public void add(SdVarNode node) {
