@@ -4,9 +4,10 @@ import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
-import org.openlca.app.editors.sd.editor.graph.actions.AddRateAction;
+import org.openlca.app.editors.sd.editor.graph.actions.AddVarAction;
 import org.openlca.app.rcp.images.Icon;
 
 class ContextMenu extends ContextMenuProvider {
@@ -20,7 +21,17 @@ class ContextMenu extends ContextMenuProvider {
 
 	@Override
 	public void buildContextMenu(IMenuManager menu) {
-		menu.add(actions.getAction(AddRateAction.ID));
+
+		var addMenu = new MenuManager("Add ...", Icon.ADD.descriptor(), "add-var");
+		for (var id : AddVarAction.ids()) {
+			var a = actions.getAction(id);
+			if (a != null) {
+				addMenu.add(a);
+			}
+		}
+		menu.add(addMenu);
+
+
 		var delete = actions.getAction(ActionFactory.DELETE.getId());
 		if (delete != null && delete.isEnabled()) {
 			delete.setText(M.Delete);
