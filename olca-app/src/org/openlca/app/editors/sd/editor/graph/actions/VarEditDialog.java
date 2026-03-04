@@ -2,6 +2,7 @@ package org.openlca.app.editors.sd.editor.graph.actions;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
@@ -33,6 +34,7 @@ class VarEditDialog extends FormDialog {
 	private Text nameText;
 	private Text unitText;
 	private Text equationText;
+	private Button nonNegativeCheck;
 
 	public static void edit(SdGraphEditor editor, Var origin) {
 		if (editor == null || origin == null) return;
@@ -82,6 +84,11 @@ class VarEditDialog extends FormDialog {
 			equationText.setText(initialEqn(origin.def()));
 		}
 
+		nonNegativeCheck = UI.labeledCheckbox(body, tk, "Non-negative");
+		if (origin != null) {
+			nonNegativeCheck.setSelection(isNonNegative(origin.def()));
+		}
+
 		nameText.addModifyListener(e -> checkOk());
 		equationText.addModifyListener(e -> checkOk());
 	}
@@ -94,6 +101,10 @@ class VarEditDialog extends FormDialog {
 			case NonNegativeCell(Cell value) -> initialEqn(value);
 			case null, default -> "";
 		};
+	}
+
+	private boolean isNonNegative(Cell def) {
+		return def instanceof NonNegativeCell;
 	}
 
 	@Override
@@ -125,6 +136,9 @@ class VarEditDialog extends FormDialog {
 
 		// TODO: check equation
 		var cell = Cell.of(equationText.getText());
+		if (nonNegativeCheck.getSelection()) {
+			cell = new NonNegativeCell(cell);
+		}
 
 		variable.setName(name);
 		variable.setUnit(unitText.getText());
