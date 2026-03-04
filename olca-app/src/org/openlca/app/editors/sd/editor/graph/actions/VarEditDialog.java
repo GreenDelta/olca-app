@@ -66,25 +66,32 @@ class VarEditDialog extends FormDialog {
 	}
 
 	@Override
+	protected Point getInitialSize() {
+		return new Point(500, 450);
+	}
+
+	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
-		UI.gridLayout(body, 2);
+		var comp = UI.composite(body, tk);
+		UI.gridLayout(comp, 2);
+		UI.gridData(comp, true, false);
 
-		nameText = UI.labeledText(body, tk, M.Name);
+		nameText = UI.labeledText(comp, tk, M.Name);
 		if (variable.name() != null) {
 			nameText.setText(variable.name().label());
 		}
 
-		unitText = UI.labeledText(body, tk, M.Unit);
+		unitText = UI.labeledText(comp, tk, M.Unit);
 		Controls.set(unitText, variable.unit());
 
-		equationText = UI.labeledMultiText(body, tk, "Equation", 200);
+		equationText = UI.labeledMultiText(comp, tk, "Equation", 200);
 		if (origin != null) {
 			equationText.setText(initialEqn(origin.def()));
 		}
 
-		nonNegativeCheck = UI.labeledCheckbox(body, tk, "Non-negative");
+		nonNegativeCheck = UI.labeledCheckbox(comp, tk, "Non-negative");
 		if (origin != null) {
 			nonNegativeCheck.setSelection(isNonNegative(origin.def()));
 		}
