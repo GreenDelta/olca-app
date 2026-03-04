@@ -1,8 +1,10 @@
 package org.openlca.app.editors.sd.editor.graph.actions;
 
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
@@ -18,13 +20,21 @@ import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Var;
-import org.openlca.sd.model.cells.BoolCell;
 import org.openlca.sd.model.cells.Cell;
-import org.openlca.sd.model.cells.EqnCell;
+import org.openlca.sd.model.cells.LookupCell;
+import org.openlca.sd.model.cells.LookupEqnCell;
 import org.openlca.sd.model.cells.NonNegativeCell;
-import org.openlca.sd.model.cells.NumCell;
+import org.openlca.sd.model.cells.TensorCell;
+import org.openlca.sd.model.cells.TensorEqnCell;
 
 class VarEditDialog extends FormDialog {
+
+	private static final String[] CELL_TYPES = {
+		"Equation", "Lookup function", "Array"
+	};
+	private static final int TYPE_EQUATION = 0;
+	private static final int TYPE_LOOKUP = 1;
+	private static final int TYPE_ARRAY = 2;
 
 	private final SdGraphEditor editor;
 	private final Var variable;
@@ -33,8 +43,14 @@ class VarEditDialog extends FormDialog {
 
 	private Text nameText;
 	private Text unitText;
-	private Text equationText;
 	private Button nonNegativeCheck;
+	private Combo typeCombo;
+
+	private Composite stackComposite;
+	private StackLayout stackLayout;
+	private EquationPanel equationPanel;
+	private LookupPanel lookupPanel;
+	private TensorPanel tensorPanel;
 
 	public static void edit(SdGraphEditor editor, Var origin) {
 		if (editor == null || origin == null) return;
@@ -67,46 +83,84 @@ class VarEditDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(500, 450);
+		return new Point(500, 550);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
-		var comp = UI.composite(body, tk);
-		UI.gridLayout(comp, 2);
-		UI.gridData(comp, true, false);
 
-		nameText = UI.labeledText(comp, tk, M.Name);
+		// top section: name, unit, non-negative, type selector
+		var top = UI.composite(body, tk);
+		UI.gridLayout(top, 2);
+		UI.gridData(top, true, false);
+
+		nameText = UI.labeledText(top, tk, M.Name);
 		if (variable.name() != null) {
 			nameText.setText(variable.name().label());
 		}
 
-		unitText = UI.labeledText(comp, tk, M.Unit);
+		unitText = UI.labeledText(top, tk, M.Unit);
 		Controls.set(unitText, variable.unit());
 
-		equationText = UI.labeledMultiText(comp, tk, "Equation", 200);
-		if (origin != null) {
-			equationText.setText(initialEqn(origin.def()));
-		}
+		nonNegativeCheck = UI.labeledCheckbox(top, tk, "Non-negative");
 
-		nonNegativeCheck = UI.labeledCheckbox(comp, tk, "Non-negative");
-		if (origin != null) {
-			nonNegativeCheck.setSelection(isNonNegative(origin.def()));
-		}
+		typeCombo = UI.labeledCombo(top, tk, "Type");
+		typeCombo.setItems(CELL_TYPES);
 
+		// stack composite for the panels
+		stackComposite = UI.composite(body, tk);
+		UI.gridData(stackComposite, true, true);
+		stackLayout = new StackLayout();
+		stackComposite.setLayout(stackLayout);
+
+		equationPanel = new EquationPanel(stackComposite, tk);
+		lookupPanel = new LookupPanel(stackComposite, tk);
+		tensorPanel = new TensorPanel(stackComposite, tk);
+
+		// set initial state from the origin variable
+		var initialType = TYPE_EQUATION;
+		if (origin != null) {
+			var def = origin.def();
+			nonNegativeCheck.setSelection(isNonNegative(def));
+			initialType = cellTypeIndex(def);
+			switch (initialType) {
+				case TYPE_EQUATION -> equationPanel.setInput(def);
+				case TYPE_LOOKUP -> lookupPanel.setInput(def);
+				case TYPE_ARRAY -> tensorPanel.setInput(def);
+			}
+		}
+		typeCombo.select(initialType);
+		showPanel(initialType);
+
+		// listeners
+		Controls.onSelect(typeCombo, e -> {
+			showPanel(typeCombo.getSelectionIndex());
+			checkOk();
+		});
 		nameText.addModifyListener(e -> checkOk());
-		equationText.addModifyListener(e -> checkOk());
+		equationPanel.equationText().addModifyListener(e -> checkOk());
 	}
 
-	private String initialEqn(Cell def) {
-		return switch (def) {
-			case BoolCell(boolean b) -> Boolean.toString(b);
-			case NumCell(double num) -> Double.toString(num);
-			case EqnCell(String eqn) -> eqn != null ? eqn : "";
-			case NonNegativeCell(Cell value) -> initialEqn(value);
-			case null, default -> "";
+	private void showPanel(int type) {
+		stackLayout.topControl = switch (type) {
+			case TYPE_LOOKUP -> lookupPanel.composite;
+			case TYPE_ARRAY -> tensorPanel.composite;
+			default -> equationPanel.composite;
+		};
+		stackComposite.layout(true, true);
+	}
+
+	private int cellTypeIndex(Cell def) {
+		var unwrapped = def instanceof NonNegativeCell(Cell inner)
+			? inner : def;
+		return switch (unwrapped) {
+			case LookupCell ignored -> TYPE_LOOKUP;
+			case LookupEqnCell ignored -> TYPE_LOOKUP;
+			case TensorCell ignored -> TYPE_ARRAY;
+			case TensorEqnCell ignored -> TYPE_ARRAY;
+			default -> TYPE_EQUATION;
 		};
 	}
 
@@ -122,12 +176,10 @@ class VarEditDialog extends FormDialog {
 
 	private void checkOk() {
 		var btn = getButton(OK);
-		if (btn == null || nameText == null || equationText == null) {
+		if (btn == null || nameText == null) {
 			return;
 		}
-		var isOk = Strings.isNotBlank(nameText.getText())
-			&& Strings.isNotBlank(equationText.getText());
-		btn.setEnabled(isOk);
+		btn.setEnabled(Strings.isNotBlank(nameText.getText()));
 	}
 
 	@Override
@@ -141,8 +193,13 @@ class VarEditDialog extends FormDialog {
 			// it in other equations -> ask the user
 		}
 
-		// TODO: check equation
-		var cell = Cell.of(equationText.getText());
+		var type = typeCombo.getSelectionIndex();
+		var cell = switch (type) {
+			case TYPE_LOOKUP -> lookupPanel.getCell();
+			case TYPE_ARRAY -> tensorPanel.getCell();
+			default -> equationPanel.getCell();
+		};
+
 		if (nonNegativeCheck.getSelection()) {
 			cell = new NonNegativeCell(cell);
 		}
