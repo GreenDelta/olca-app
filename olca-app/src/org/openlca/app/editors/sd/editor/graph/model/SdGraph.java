@@ -3,6 +3,8 @@ package org.openlca.app.editors.sd.editor.graph.model;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.openlca.sd.eqn.EvaluationOrder;
 import org.openlca.sd.model.Id;
+import org.openlca.sd.model.Rate;
+import org.openlca.sd.model.Rect;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.Stock;
 
@@ -46,7 +48,7 @@ public class SdGraph implements NotifySupport {
 		if (node == null || node.variable() == null) {
 			return;
 		}
-		if (node.variable() instanceof  Stock stock) {
+		if (node.variable() instanceof Stock stock) {
 			for (var flowId : stock.inFlows()) {
 				link(nodes.get(flowId), node, true);
 			}
@@ -71,19 +73,26 @@ public class SdGraph implements NotifySupport {
 	private void removeLinksOf(SdVarNode node) {
 		if (node == null) return;
 		for (var link : node.sourceLinks()) {
-			var target = link.target();
-			if (target != null) {
-				target.targetLinks().remove(link);
-			}
+			unlink(link);
+			link.target().targetLinks().remove(link);
 		}
 		for (var link : node.targetLinks()) {
-			var source = link.source();
-			if (source != null) {
-				source.sourceLinks().remove(link);
-			}
+			unlink(link);
+			link.source().sourceLinks().remove(link);
 		}
 		node.sourceLinks().clear();
 		node.targetLinks().clear();
+	}
+
+	private void unlink(SdVarLink link) {
+		if (!link.isStockFlow()) return;
+		if (link.source().variable() instanceof Stock stock
+			&& link.target().variable() instanceof Rate rate) {
+			stock.outFlows().remove(rate.name());
+		} else if (link.target().variable() instanceof Stock stock
+			&& link.source().variable() instanceof Rate rate) {
+			stock.inFlows().remove(rate.name());
+		}
 	}
 
 	@Override
@@ -97,13 +106,19 @@ public class SdGraph implements NotifySupport {
 
 	public void add(SdVarNode node) {
 		if (node == null || node.variable() == null) return;
-		nodes.put(node.variable().name(), node);
+		var v = node.variable();
+		nodes.put(v.name(), node);
 		addLinksOf(node);
+		model.vars().add(v);
+		var b = node.bounds();
+		model.positions().put(v.name(), new Rect(b.x, b.y, b.width, b.height));
 		notifier.fire();
 	}
 
 	public void remove(SdVarNode node) {
 		if (node == null || node.variable() == null) return;
+		model.vars().remove(node.variable());
+		model.positions().remove(node.variable().name());
 		nodes.remove(node.variable().name());
 		removeLinksOf(node);
 		notifier.fire();

@@ -7,6 +7,7 @@ import org.openlca.sd.model.Var;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SdVarNode implements NotifySupport {
 
@@ -20,8 +21,8 @@ public class SdVarNode implements NotifySupport {
 	private final Notifier notifier = new Notifier();
 
 	public SdVarNode(Var variable, SdModel model) {
-		this.variable = variable;
-		this.model = model;
+		this.variable = Objects.requireNonNull(variable);
+		this.model = Objects.requireNonNull(model);
 	}
 
 	@Override
