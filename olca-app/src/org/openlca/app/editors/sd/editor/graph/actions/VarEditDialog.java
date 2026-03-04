@@ -9,6 +9,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.M;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.editors.sd.editor.graph.edit.AddVarCmd;
+import org.openlca.app.editors.sd.editor.graph.edit.UpdateVarCmd;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
@@ -135,7 +136,14 @@ class VarEditDialog extends FormDialog {
 			var cmd = new AddVarCmd(editor.graph(), node);
 			editor.exec(cmd);
 		} else if (origin != null) {
-			// TODO: fire some update command
+			var node = editor.graph().nodes().stream()
+				.filter(n -> origin.equals(n.variable()))
+				.findFirst()
+				.orElse(null);
+			if (node != null) {
+				var cmd = new UpdateVarCmd(editor.graph(), node);
+				editor.exec(cmd);
+			}
 		}
 		super.okPressed();
 	}
