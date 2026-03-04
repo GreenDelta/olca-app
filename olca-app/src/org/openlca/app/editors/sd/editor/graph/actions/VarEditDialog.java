@@ -10,12 +10,17 @@ import org.openlca.app.M;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.editors.sd.editor.graph.edit.AddVarCmd;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Var;
+import org.openlca.sd.model.cells.BoolCell;
 import org.openlca.sd.model.cells.Cell;
+import org.openlca.sd.model.cells.EqnCell;
+import org.openlca.sd.model.cells.NonNegativeCell;
+import org.openlca.sd.model.cells.NumCell;
 
 class VarEditDialog extends FormDialog {
 
@@ -62,11 +67,32 @@ class VarEditDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 2);
+
 		nameText = UI.labeledText(body, tk, M.Name);
+		if (variable.name() != null) {
+			nameText.setText(variable.name().label());
+		}
+
 		unitText = UI.labeledText(body, tk, M.Unit);
+		Controls.set(unitText, variable.unit());
+
 		equationText = UI.labeledMultiText(body, tk, "Equation", 200);
+		if (origin != null) {
+			equationText.setText(initialEqn(origin.def()));
+		}
+
 		nameText.addModifyListener(e -> checkOk());
 		equationText.addModifyListener(e -> checkOk());
+	}
+
+	private String initialEqn(Cell def) {
+		return switch (def) {
+			case BoolCell(boolean b) -> Boolean.toString(b);
+			case NumCell(double num) -> Double.toString(num);
+			case EqnCell(String eqn) -> eqn != null ? eqn : "";
+			case NonNegativeCell(Cell value) -> initialEqn(value);
+			case null, default -> "";
+		};
 	}
 
 	@Override

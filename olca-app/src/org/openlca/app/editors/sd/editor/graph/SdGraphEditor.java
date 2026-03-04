@@ -16,6 +16,7 @@ import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
 import org.openlca.app.editors.sd.editor.graph.actions.AddVarAction;
+import org.openlca.app.editors.sd.editor.graph.actions.EditVarAction;
 import org.openlca.app.editors.sd.editor.graph.edit.PartFactory;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 
@@ -85,6 +86,9 @@ public class SdGraphEditor extends GraphicalEditor {
 		for (var a : AddVarAction.allFor(this)) {
 			registry.registerAction(a);
 		}
+
+		getSelectionActions().add(EditVarAction.ID);
+		registry.registerAction(new EditVarAction(this));
 	}
 
 	/// We need to overwrite this otherwise the selection actions are not updated.

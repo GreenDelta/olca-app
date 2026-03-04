@@ -25,7 +25,7 @@ import org.openlca.sd.model.Rate;
 
 import java.util.List;
 
-class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
+public class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 
 	private final Theme theme;
 	private final Runnable onModelChange = () -> {
