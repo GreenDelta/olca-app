@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.openlca.app.M;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.Labels;
+import org.openlca.core.io.ImportLog.State;
 import org.openlca.io.Import;
 
 record ImportMonitor(IProgressMonitor monitor) {
@@ -19,16 +19,10 @@ record ImportMonitor(IProgressMonitor monitor) {
 		imp.log().listen(message -> {
 			if (message.state() == null)
 				return;
-			switch (message.state()) {
-				case IMPORTED, INFO, UPDATED -> {
-					if (message.hasMessage()) {
-						monitor.subTask(message.message());
-					} else if (message.hasDescriptor()) {
-						var d = message.descriptor();
-						monitor.subTask(Labels.of(d.type) + "; " + Labels.name(d));
-					}
+			if (message.state() == State.INFO) {
+				if (message.hasMessage()) {
+					monitor.subTask(message.message());
 				}
-				default -> {}
 			}
 		});
 
