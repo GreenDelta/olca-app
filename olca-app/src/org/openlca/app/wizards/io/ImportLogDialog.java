@@ -78,21 +78,23 @@ public class ImportLogDialog extends FormDialog {
 		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 1, 10, 25);
 
-		long count = log.messages().stream()
-				.filter(ImportLog.Message::hasDescriptor)
-				.count();
+		var states = new ImportLog.State[]{
+			ImportLog.State.IMPORTED,
+			ImportLog.State.UPDATED,
+			ImportLog.State.SKIPPED,
+			ImportLog.State.ERROR,
+			ImportLog.State.WARNING
+		};
+
+		int count = 0;
+		for (var s : states) {
+			count += log.countOf(s);
+		}
 		tk.createLabel(body, M.HandledDataSets + " (" + count + ")")
 				.setFont(UI.boldFont());
 
 		var comp = tk.createComposite(body);
 		UI.gridLayout(comp, 2, 5, 5);
-		var states = new ImportLog.State[]{
-				ImportLog.State.IMPORTED,
-				ImportLog.State.UPDATED,
-				ImportLog.State.SKIPPED,
-				ImportLog.State.ERROR,
-				ImportLog.State.WARNING
-		};
 		for (var state : states) {
 			tk.createLabel(comp, headerOf(state));
 			int c = log.countOf(state);
