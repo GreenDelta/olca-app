@@ -13,35 +13,39 @@ import org.openlca.sd.model.cells.NumCell;
 /// Panel for editing simple equation cells: EqnCell, NumCell, BoolCell.
 class EquationPanel {
 
-	final Composite composite;
-	private final Text equationText;
+	private final Composite composite;
+	private final Text text;
 
 	EquationPanel(Composite parent, FormToolkit tk) {
 		composite = UI.composite(parent, tk);
-		UI.gridLayout(composite, 2);
+		UI.gridLayout(composite, 1, 5, 0);
 		UI.gridData(composite, true, true);
+		text = UI.multiText(composite, tk, 150);
+		UI.gridData(text, true, true);
+	}
 
-		equationText = UI.labeledMultiText(composite, tk, "Equation", 200);
+	public Composite composite() {
+		return composite;
 	}
 
 	void setInput(Cell cell) {
-		equationText.setText(cellToText(cell));
+		text.setText(eqnOf(cell));
 	}
 
 	Cell getCell() {
-		return Cell.of(equationText.getText());
+		return Cell.of(text.getText());
 	}
 
 	Text equationText() {
-		return equationText;
+		return text;
 	}
 
-	private String cellToText(Cell def) {
+	private String eqnOf(Cell def) {
 		return switch (def) {
 			case BoolCell(boolean b) -> Boolean.toString(b);
 			case NumCell(double num) -> Double.toString(num);
 			case EqnCell(String eqn) -> eqn != null ? eqn : "";
-			case NonNegativeCell(Cell value) -> cellToText(value);
+			case NonNegativeCell(Cell value) -> eqnOf(value);
 			case null, default -> "";
 		};
 	}

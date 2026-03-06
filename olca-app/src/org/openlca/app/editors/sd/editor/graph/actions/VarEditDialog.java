@@ -46,7 +46,7 @@ class VarEditDialog extends FormDialog {
 	private Button nonNegativeCheck;
 	private Combo typeCombo;
 
-	private Composite stackComposite;
+	private Composite stack;
 	private StackLayout stackLayout;
 	private EquationPanel equationPanel;
 	private LookupPanel lookupPanel;
@@ -91,33 +91,32 @@ class VarEditDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
 
-		// top section: name, unit, non-negative, type selector
-		var top = UI.composite(body, tk);
-		UI.gridLayout(top, 2);
-		UI.gridData(top, true, false);
+		var comp = UI.composite(body, tk);
+		UI.gridLayout(comp, 2);
+		UI.gridData(comp, true, false);
 
-		nameText = UI.labeledText(top, tk, M.Name);
+		nameText = UI.labeledText(comp, tk, M.Name);
 		if (variable.name() != null) {
 			nameText.setText(variable.name().label());
 		}
 
-		unitText = UI.labeledText(top, tk, M.Unit);
+		unitText = UI.labeledText(comp, tk, M.Unit);
 		Controls.set(unitText, variable.unit());
 
-		nonNegativeCheck = UI.labeledCheckbox(top, tk, "Non-negative");
+		nonNegativeCheck = UI.labeledCheckbox(comp, tk, "Non-negative");
 
-		typeCombo = UI.labeledCombo(top, tk, "Type");
+		typeCombo = UI.labeledCombo(comp, tk, "Type");
 		typeCombo.setItems(CELL_TYPES);
 
-		// stack composite for the panels
-		stackComposite = UI.composite(body, tk);
-		UI.gridData(stackComposite, true, true);
+		UI.filler(comp, tk);
+		stack = UI.composite(comp, tk);
+		UI.gridData(stack, true, true);
 		stackLayout = new StackLayout();
-		stackComposite.setLayout(stackLayout);
+		stack.setLayout(stackLayout);
 
-		equationPanel = new EquationPanel(stackComposite, tk);
-		lookupPanel = new LookupPanel(stackComposite, tk);
-		tensorPanel = new TensorPanel(stackComposite, tk);
+		equationPanel = new EquationPanel(stack, tk);
+		lookupPanel = new LookupPanel(stack, tk);
+		tensorPanel = new TensorPanel(stack, tk);
 
 		// set initial state from the origin variable
 		var initialType = TYPE_EQUATION;
@@ -147,9 +146,9 @@ class VarEditDialog extends FormDialog {
 		stackLayout.topControl = switch (type) {
 			case TYPE_LOOKUP -> lookupPanel.composite;
 			case TYPE_ARRAY -> tensorPanel.composite;
-			default -> equationPanel.composite;
+			default -> equationPanel.composite();
 		};
-		stackComposite.layout(true, true);
+		stack.layout(true, true);
 	}
 
 	private int cellTypeIndex(Cell def) {
