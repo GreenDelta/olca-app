@@ -5,9 +5,12 @@ import org.eclipse.swt.graphics.Point;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.editors.sd.editor.graph.model.VarType;
 import org.openlca.sd.model.Auxil;
+import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Rate;
 import org.openlca.sd.model.Stock;
+import org.openlca.sd.model.cells.Cell;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,10 +51,12 @@ public class AddVarAction extends WorkbenchPartAction {
 
 	@Override
 	public void run() {
+		var def = Cell.of(1);
 		var v = switch (type) {
-			case AUX ->  new Auxil();
-			case RATE -> new Rate();
-			case STOCK -> new Stock();
+			case AUX ->  new Auxil(Id.of("aux"), def, "");
+			case RATE -> new Rate(Id.of("rate"), def, "");
+			case STOCK -> new Stock(
+				Id.of("stock"), def, "", new ArrayList<>(), new ArrayList<>());
 		};
 		VarEditDialog.create(editor, v, location);
 	}
