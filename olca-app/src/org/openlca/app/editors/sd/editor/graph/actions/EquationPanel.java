@@ -5,11 +5,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.UI;
-import org.openlca.sd.model.cells.BoolCell;
 import org.openlca.sd.model.cells.Cell;
-import org.openlca.sd.model.cells.EqnCell;
-import org.openlca.sd.model.cells.NonNegativeCell;
-import org.openlca.sd.model.cells.NumCell;
 
 class EquationPanel {
 
@@ -30,7 +26,7 @@ class EquationPanel {
 	}
 
 	void setInput(Cell cell) {
-		text.setText(eqnOf(cell));
+		text.setText(Panels.eqnOf(cell));
 	}
 
 	Cell getCell() {
@@ -39,15 +35,5 @@ class EquationPanel {
 
 	StyledText equationText() {
 		return text;
-	}
-
-	private String eqnOf(Cell def) {
-		return switch (def) {
-			case BoolCell(boolean b) -> Boolean.toString(b);
-			case NumCell(double num) -> Double.toString(num);
-			case EqnCell(String eqn) -> eqn != null ? eqn : "";
-			case NonNegativeCell(Cell value) -> eqnOf(value);
-			case null, default -> "";
-		};
 	}
 }

@@ -146,7 +146,7 @@ class VarEditDialog extends FormDialog {
 	private void showPanel(int type) {
 		stackLayout.topControl = switch (type) {
 			case TYPE_LOOKUP -> lookupPanel.composite();
-			case TYPE_ARRAY -> tensorPanel.composite;
+			case TYPE_ARRAY -> tensorPanel.composite();
 			default -> equationPanel.composite();
 		};
 		stack.layout(true, true);

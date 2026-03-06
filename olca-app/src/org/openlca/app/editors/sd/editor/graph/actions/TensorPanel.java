@@ -1,15 +1,12 @@
 package org.openlca.app.editors.sd.editor.graph.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.UI;
 import org.openlca.sd.model.Dimension;
@@ -22,42 +19,42 @@ import org.openlca.sd.model.cells.NumCell;
 import org.openlca.sd.model.cells.TensorCell;
 import org.openlca.sd.model.cells.TensorEqnCell;
 
-/// Read-only panel for displaying tensor (array) cells: TensorCell,
-/// TensorEqnCell. Shows an equation text box and a table for array values.
-/// Supports 1D and 2D arrays.
+import java.util.ArrayList;
+import java.util.List;
+
 class TensorPanel {
 
-	final Composite composite;
-	private final Text equationText;
+	private final Composite composite;
+	private final StyledText text;
 	private final TableViewer table;
 
 	private Dimension rowDim;
 	private Dimension colDim;
 	private final List<String[]> data = new ArrayList<>();
 
-	/// The original cell that was set via {@link #setInput(Cell)}.
 	private Cell originalCell;
 
 	TensorPanel(Composite parent, FormToolkit tk) {
 		composite = UI.composite(parent, tk);
-		UI.gridLayout(composite, 2);
+		UI.gridLayout(composite, 1, 5, 0);
 		UI.gridData(composite, true, true);
 
-		equationText = UI.labeledMultiText(composite, tk, "Equation", 80);
-		equationText.setEditable(false);
+		UI.label(composite, tk, "Equation");
+		text = new StyledText(composite, SWT.BORDER | SWT.MULTI);
+		text.setEditable(false);
+		UI.gridData(text, true, false).heightHint = 80;
 
-		var tableLabel = UI.label(composite, tk, "Array values");
-		var gd = UI.gridData(tableLabel, true, false);
-		gd.horizontalSpan = 2;
-
+		UI.label(composite, tk, "Array values");
 		table = new TableViewer(composite,
 			SWT.BORDER | SWT.FULL_SELECTION);
-		var tableGd = UI.gridData(table.getControl(), true, true);
-		tableGd.horizontalSpan = 2;
-		tableGd.heightHint = 200;
+		UI.gridData(table.getControl(), true, true).heightHint = 200;
 		table.getTable().setHeaderVisible(true);
 		table.getTable().setLinesVisible(true);
 		table.setContentProvider(ArrayContentProvider.getInstance());
+	}
+
+	Composite composite() {
+		return composite;
 	}
 
 	void setInput(Cell cell) {
@@ -72,14 +69,14 @@ class TensorPanel {
 
 		switch (unwrapped) {
 			case TensorEqnCell(Cell eqn, Tensor tensor) -> {
-				equationText.setText(eqnToText(eqn));
+				text.setText(eqnToText(eqn));
 				loadTensor(tensor);
 			}
 			case TensorCell(Tensor tensor) -> {
-				equationText.setText("");
+				text.setText("");
 				loadTensor(tensor);
 			}
-			default -> equationText.setText("");
+			default -> text.setText("");
 		}
 		rebuildTable();
 	}
@@ -134,7 +131,6 @@ class TensorPanel {
 		};
 	}
 
-	/// Rebuilds table columns and data from current dimensions.
 	private void rebuildTable() {
 		for (var col : table.getTable().getColumns()) {
 			col.dispose();
@@ -142,7 +138,6 @@ class TensorPanel {
 
 		int colCount = colDim != null ? colDim.size() : 1;
 
-		// row label column
 		var rowCol = new TableViewerColumn(table, SWT.NONE);
 		rowCol.getColumn().setText(
 			rowDim != null ? rowDim.name().label() : "Index");
@@ -159,7 +154,6 @@ class TensorPanel {
 			}
 		});
 
-		// value columns (read-only, no editing support)
 		for (int c = 0; c < colCount; c++) {
 			final int ci = c;
 			var vc = new TableViewerColumn(table, SWT.NONE);
