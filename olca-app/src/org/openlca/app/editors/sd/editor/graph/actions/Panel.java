@@ -1,5 +1,6 @@
 package org.openlca.app.editors.sd.editor.graph.actions;
 
+import org.eclipse.swt.widgets.Composite;
 import org.openlca.sd.model.LookupFunc;
 import org.openlca.sd.model.Tensor;
 import org.openlca.sd.model.cells.BoolCell;
@@ -13,12 +14,15 @@ import org.openlca.sd.model.cells.NumCell;
 import org.openlca.sd.model.cells.TensorCell;
 import org.openlca.sd.model.cells.TensorEqnCell;
 
-class Panels {
+sealed interface Panel permits EquationPanel, LookupPanel, TensorPanel {
 
-	private Panels() {
-	}
+	Composite composite();
 
-	static String eqnOf(Cell cell) {
+	void setInput(Cell cell);
+
+	Cell getCell();
+
+	default String eqnOf(Cell cell) {
 		return switch (cell) {
 			case BoolCell(boolean b) -> Boolean.toString(b);
 			case EmptyCell ignore -> "";

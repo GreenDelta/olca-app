@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Icon;
@@ -25,75 +26,77 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-class LookupPanel {
+final class LookupPanel implements Panel {
 
 	private final Composite composite;
 	private final StyledText text;
 	private final TableViewer table;
+	private final TypeCombo typeCombo;
 	private final List<Row> rows = new ArrayList<>();
-	private LookupFunc.Type type = LookupFunc.Type.CONTINUOUS;
 
 	LookupPanel(Composite parent, FormToolkit tk) {
 		composite = UI.composite(parent, tk);
 		UI.gridLayout(composite, 1, 5, 0);
 		UI.gridData(composite, true, true);
-
 		UI.label(composite, tk, "Equation for x");
 		text = new StyledText(composite, SWT.BORDER | SWT.MULTI);
 		UI.gridData(text, true, false).heightHint = 80;
-
-		var comp = UI.composite(composite, tk);
-		UI.gridLayout(comp, 2, 10, 0);
-		UI.gridData(comp, true, false);
-		var combo = UI.labeledCombo(comp, tk, "Lookup values");
-
-
+		typeCombo = new TypeCombo(composite);
 		table = createTable(composite);
 		UI.gridData(table.getControl(), true, true).heightHint = 200;
 	}
 
+	@Override
 	public Composite composite() {
 		return composite;
 	}
 
 	private TableViewer createTable(Composite parent) {
-		var viewer = Tables.createViewer(parent, "x", "y");
-		Tables.bindColumnWidths(viewer, 0.5, 0.5);
-		viewer.setLabelProvider(new RowLabel());
-		new ModifySupport<Row>(viewer)
+		var table = Tables.createViewer(parent, "x", "y");
+		table.getTable().getColumn(0).setWidth(150);
+		table.getTable().getColumn(1).setWidth(150);
+		table.setLabelProvider(new RowLabel());
+		new ModifySupport<Row>(table)
 			.bind("x", Row.modifierOfX())
 			.bind("y", Row.modifierOfY());
 
-		Actions.bind(viewer, Actions.create("Add row", Icon.ADD.descriptor(), () -> {
-			rows.add(new Row(0, 0));
-			viewer.setInput(rows);
-		}));
-
-		Actions.bind(viewer, Actions.create("Remove row(s)", Icon.DELETE.descriptor(), () -> {
-			for (var o : Viewers.getAllSelected(viewer)) {
-				if (o instanceof Row row) {
-					rows.remove(row);
+		var onAdd = Actions.create(
+			"Add row", Icon.ADD.descriptor(), () -> {
+				rows.add(new Row(0, 0));
+				table.setInput(rows);
+			});
+		var onDelete = Actions.create(
+			"Remove row(s)", Icon.DELETE.descriptor(), () -> {
+				for (var o : Viewers.getAllSelected(table)) {
+					if (o instanceof Row row) {
+						rows.remove(row);
+					}
+					table.setInput(rows);
 				}
-				viewer.setInput(rows);
-			}
-		}));
+			});
+		Actions.bind(table, onAdd, onDelete);
 
-		return viewer;
+		return table;
 	}
 
-	void setInput(Cell input) {
-		text.setText(Panels.eqnOf(input));
+	@Override
+	public void setInput(Cell input) {
+		text.setText(eqnOf(input));
 		rows.clear();
-		switch (input) {
-			case LookupEqnCell(String ignore, LookupFunc func) -> Row.fill(func, rows);
-			case LookupCell(LookupFunc func) -> Row.fill(func, rows);
-			case null, default -> {
-			}
+		var func = switch (input) {
+			case LookupEqnCell(String ignore, LookupFunc fn) -> fn;
+			case LookupCell(LookupFunc fn) -> fn;
+			case null, default -> null;
+		};
+		if (func != null) {
+			Row.fill(func, rows);
+			typeCombo.select(func.type());
 		}
 		table.setInput(rows);
 	}
 
-	Cell getCell() {
+	@Override
+	public Cell getCell() {
 		rows.sort(Comparator.comparingDouble(ri -> ri.x));
 		var xs = new double[rows.size()];
 		var ys = new double[rows.size()];
@@ -102,8 +105,7 @@ class LookupPanel {
 			xs[i] = row.x;
 			ys[i] = row.y;
 		}
-		var func = new LookupFunc(type, xs, ys);
-
+		var func = new LookupFunc(typeCombo.selected(), xs, ys);
 		var eqn = text.getText().trim();
 		return Strings.isBlank(eqn)
 			? new LookupCell(func) // TODO: this is not valid
@@ -178,4 +180,47 @@ class LookupPanel {
 			};
 		}
 	}
+
+	private static class TypeCombo {
+
+		private final Combo combo;
+		private LookupFunc.Type selected = LookupFunc.Type.CONTINUOUS;
+
+		private final LookupFunc.Type[] types = {
+			LookupFunc.Type.CONTINUOUS,
+			LookupFunc.Type.EXTRAPOLATE,
+			LookupFunc.Type.DISCRETE,
+		};
+
+		TypeCombo(Composite parent) {
+			combo = new Combo(parent, SWT.READ_ONLY);
+			UI.gridData(combo, true, false);
+			var items = new String[]{
+				"Lookup values - linear interpolation",
+				"Lookup values - linear extrapolation",
+				"Lookup values - discrete (next lower)"
+			};
+			combo.setItems(items);
+			combo.select(0);
+			select(LookupFunc.Type.CONTINUOUS);
+		}
+
+		void select(LookupFunc.Type type) {
+			if (type == null) return;
+			selected = type;
+			int idx = 0;
+			for (int i = 0; i < types.length; i++) {
+				if (types[i] == type) {
+					idx = i;
+					break;
+				}
+			}
+			combo.select(idx);
+		}
+
+		public LookupFunc.Type selected() {
+			return selected;
+		}
+	}
+
 }

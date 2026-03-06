@@ -22,7 +22,7 @@ import org.openlca.sd.model.cells.TensorEqnCell;
 import java.util.ArrayList;
 import java.util.List;
 
-class TensorPanel {
+final class TensorPanel implements Panel {
 
 	private final Composite composite;
 	private final StyledText text;
@@ -53,11 +53,13 @@ class TensorPanel {
 		table.setContentProvider(ArrayContentProvider.getInstance());
 	}
 
-	Composite composite() {
+	@Override
+	public Composite composite() {
 		return composite;
 	}
 
-	void setInput(Cell cell) {
+	@Override
+	public void setInput(Cell cell) {
 		originalCell = cell;
 		var unwrapped = cell instanceof NonNegativeCell(Cell inner)
 			? inner
@@ -81,7 +83,8 @@ class TensorPanel {
 		rebuildTable();
 	}
 
-	Cell getCell() {
+	@Override
+	public Cell getCell() {
 		return originalCell != null ? originalCell : Cell.empty();
 	}
 

@@ -7,7 +7,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.UI;
 import org.openlca.sd.model.cells.Cell;
 
-class EquationPanel {
+final class EquationPanel implements Panel {
 
 	private final Composite composite;
 	private final StyledText text;
@@ -21,15 +21,18 @@ class EquationPanel {
 		UI.gridData(text, true, true);
 	}
 
+	@Override
 	public Composite composite() {
 		return composite;
 	}
 
-	void setInput(Cell cell) {
-		text.setText(Panels.eqnOf(cell));
+	@Override
+	public void setInput(Cell cell) {
+		text.setText(eqnOf(cell));
 	}
 
-	Cell getCell() {
+	@Override
+	public Cell getCell() {
 		return Cell.of(text.getText());
 	}
 
