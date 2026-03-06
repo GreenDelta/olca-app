@@ -1,8 +1,5 @@
 package org.openlca.app.editors.sd.editor.graph.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -11,10 +8,10 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
@@ -24,33 +21,33 @@ import org.openlca.sd.model.cells.LookupCell;
 import org.openlca.sd.model.cells.LookupEqnCell;
 import org.openlca.sd.model.cells.NonNegativeCell;
 
-/// Panel for editing lookup function cells: LookupCell, LookupEqnCell.
-/// Shows an equation text box and a table with x/y value pairs.
+import java.util.ArrayList;
+import java.util.List;
+
 class LookupPanel {
 
-	final Composite composite;
-	private final Text equationText;
+	private final Composite composite;
+	private final StyledText text;
 	private final TableViewer table;
 	private final List<double[]> rows = new ArrayList<>();
 
 	LookupPanel(Composite parent, FormToolkit tk) {
 		composite = UI.composite(parent, tk);
-		UI.gridLayout(composite, 2);
+		UI.gridLayout(composite, 1, 5, 0);
 		UI.gridData(composite, true, true);
 
-		equationText = UI.labeledMultiText(composite, tk, "Equation", 80);
+		UI.label(composite, tk, "Equation for x");
+		text = new StyledText(composite, SWT.BORDER | SWT.MULTI);
+		UI.gridData(text, true, false).heightHint = 80;
 
-		// lookup table label spans both columns
-		var tableLabel = UI.label(composite, tk, "Lookup values");
-		var gd = UI.gridData(tableLabel, true, false);
-		gd.horizontalSpan = 2;
-
+		UI.label(composite, tk, "Lookup values");
 		table = createTable(composite);
-		var tableGd = UI.gridData(table.getControl(), true, true);
-		tableGd.horizontalSpan = 2;
-		tableGd.heightHint = 200;
-
+		UI.gridData(table.getControl(), true, true).heightHint = 200;
 		createContextMenu();
+	}
+
+	public Composite composite() {
+		return composite;
 	}
 
 	private TableViewer createTable(Composite parent) {
@@ -125,14 +122,14 @@ class LookupPanel {
 		rows.clear();
 		switch (unwrapped) {
 			case LookupEqnCell(String eqn, LookupFunc func) -> {
-				equationText.setText(eqn != null ? eqn : "");
+				text.setText(eqn != null ? eqn : "");
 				fillRows(func);
 			}
 			case LookupCell(LookupFunc func) -> {
-				equationText.setText("");
+				text.setText("");
 				fillRows(func);
 			}
-			default -> equationText.setText("");
+			default -> text.setText("");
 		}
 		table.setInput(rows);
 	}
@@ -150,7 +147,7 @@ class LookupPanel {
 
 	Cell getCell() {
 		var func = buildFunc();
-		var eqn = equationText.getText().trim();
+		var eqn = text.getText().trim();
 		if (eqn.isEmpty()) {
 			return new LookupCell(func);
 		}
@@ -165,10 +162,6 @@ class LookupPanel {
 			ys[i] = rows.get(i)[1];
 		}
 		return new LookupFunc(LookupFunc.Type.CONTINUOUS, xs, ys);
-	}
-
-	Text equationText() {
-		return equationText;
 	}
 
 	private class ValueEditingSupport extends EditingSupport {

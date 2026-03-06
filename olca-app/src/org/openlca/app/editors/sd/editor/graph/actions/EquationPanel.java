@@ -1,7 +1,8 @@
 package org.openlca.app.editors.sd.editor.graph.actions;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.UI;
 import org.openlca.sd.model.cells.BoolCell;
@@ -10,17 +11,17 @@ import org.openlca.sd.model.cells.EqnCell;
 import org.openlca.sd.model.cells.NonNegativeCell;
 import org.openlca.sd.model.cells.NumCell;
 
-/// Panel for editing simple equation cells: EqnCell, NumCell, BoolCell.
 class EquationPanel {
 
 	private final Composite composite;
-	private final Text text;
+	private final StyledText text;
 
 	EquationPanel(Composite parent, FormToolkit tk) {
 		composite = UI.composite(parent, tk);
 		UI.gridLayout(composite, 1, 5, 0);
 		UI.gridData(composite, true, true);
-		text = UI.multiText(composite, tk, 150);
+		text = new StyledText(composite, SWT.BORDER | SWT.MULTI);
+		tk.adapt(text);
 		UI.gridData(text, true, true);
 	}
 
@@ -36,7 +37,7 @@ class EquationPanel {
 		return Cell.of(text.getText());
 	}
 
-	Text equationText() {
+	StyledText equationText() {
 		return text;
 	}
 

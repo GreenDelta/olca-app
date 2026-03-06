@@ -83,7 +83,7 @@ class VarEditDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(500, 550);
+		return new Point(600, 625);
 	}
 
 	@Override
@@ -140,11 +140,12 @@ class VarEditDialog extends FormDialog {
 		});
 		nameText.addModifyListener(e -> checkOk());
 		equationPanel.equationText().addModifyListener(e -> checkOk());
+		mForm.getForm().reflow(true);
 	}
 
 	private void showPanel(int type) {
 		stackLayout.topControl = switch (type) {
-			case TYPE_LOOKUP -> lookupPanel.composite;
+			case TYPE_LOOKUP -> lookupPanel.composite();
 			case TYPE_ARRAY -> tensorPanel.composite;
 			default -> equationPanel.composite();
 		};
