@@ -5,25 +5,23 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.sd.model.cells.Cell;
 
-final class EquationPanel implements Panel {
+final class EquationPanel extends Panel {
 
-	private final Composite composite;
 	private final StyledText text;
 
 	EquationPanel(Composite parent, FormToolkit tk) {
-		composite = UI.composite(parent, tk);
-		UI.gridLayout(composite, 1, 5, 0);
-		UI.gridData(composite, true, true);
-		text = new StyledText(composite, SWT.BORDER | SWT.MULTI);
+		super(UI.composite(parent, tk));
+		var comp = composite();
+		UI.gridLayout(comp, 1, 5, 0);
+		UI.gridData(comp, true, true);
+		text = new StyledText(comp, SWT.BORDER | SWT.MULTI);
 		tk.adapt(text);
 		UI.gridData(text, true, true);
-	}
-
-	@Override
-	public Composite composite() {
-		return composite;
+		text.addModifyListener(
+			e -> fireValid(Strings.isNotBlank(text.getText())));
 	}
 
 	@Override
@@ -34,9 +32,5 @@ final class EquationPanel implements Panel {
 	@Override
 	public Cell getCell() {
 		return Cell.of(text.getText());
-	}
-
-	StyledText equationText() {
-		return text;
 	}
 }

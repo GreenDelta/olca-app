@@ -22,8 +22,10 @@ class PanelStack {
 	private final EquationPanel equationPanel;
 	private final LookupPanel lookupPanel;
 	private final TensorPanel tensorPanel;
+
 	private Panel top;
 	private Cell input;
+	private ChangeObserver onChange;
 
 	PanelStack(Composite comp, FormToolkit tk) {
 
@@ -47,10 +49,18 @@ class PanelStack {
 		top = equationPanel;
 	}
 
-	public void setInput(Cell input) {
+	void setInput(Cell input) {
 		this.input = input;
 		var type = PanelType.of(input);
 		updatePanel(type);
+	}
+
+	void onChange(ChangeObserver onChange) {
+		this.onChange = onChange;
+	}
+
+	Cell getCell() {
+		return top.getCell();
 	}
 
 	private void updatePanel(PanelType type) {

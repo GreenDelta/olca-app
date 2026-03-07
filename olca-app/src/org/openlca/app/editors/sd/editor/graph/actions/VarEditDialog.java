@@ -18,7 +18,6 @@ import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Var;
-import org.openlca.sd.model.cells.Cell;
 import org.openlca.sd.model.cells.NonNegativeCell;
 
 class VarEditDialog extends FormDialog {
@@ -31,6 +30,8 @@ class VarEditDialog extends FormDialog {
 	private Text nameText;
 	private Text unitText;
 	private Button nonNegativeCheck;
+	private PanelStack panels;
+	private boolean panelFinished;
 
 	public static void edit(SdGraphEditor editor, Var origin) {
 		if (editor == null || origin == null) return;
@@ -79,23 +80,21 @@ class VarEditDialog extends FormDialog {
 		if (variable.name() != null) {
 			nameText.setText(variable.name().label());
 		}
+		nameText.addModifyListener(e -> checkOk());
+
 		unitText = UI.labeledText(comp, tk, M.Unit);
 		Controls.set(unitText, variable.unit());
 		nonNegativeCheck = UI.labeledCheckbox(comp, tk, "Non-negative");
-		nonNegativeCheck.setSelection(isNonNegative(variable.def()));
+		nonNegativeCheck.setSelection(
+			variable.def() instanceof NonNegativeCell);
 
-		var stack = new PanelStack(comp, tk);
-		stack.setInput(variable.def());
-		nameText.addModifyListener(e -> checkOk());
+		panels = new PanelStack(comp, tk);
+		panels.setInput(variable.def());
+		panels.onChange(b -> {
+			panelFinished = b;
+			checkOk();
+		});
 		mForm.getForm().reflow(true);
-	}
-
-
-
-
-
-	private boolean isNonNegative(Cell def) {
-		return def instanceof NonNegativeCell;
 	}
 
 	@Override
@@ -109,7 +108,8 @@ class VarEditDialog extends FormDialog {
 		if (btn == null || nameText == null) {
 			return;
 		}
-		btn.setEnabled(Strings.isNotBlank(nameText.getText()));
+		btn.setEnabled(panelFinished &&
+			Strings.isNotBlank(nameText.getText()));
 	}
 
 	@Override
@@ -123,17 +123,9 @@ class VarEditDialog extends FormDialog {
 			// it in other equations -> ask the user
 		}
 
-		var type = typeCombo.getSelectionIndex();
-		var cell = switch (type) {
-			case TYPE_LOOKUP -> lookupPanel.getCell();
-			case TYPE_ARRAY -> tensorPanel.getCell();
-			default -> equationPanel.getCell();
-		};
-
-		if (nonNegativeCheck.getSelection()) {
-			cell = new NonNegativeCell(cell);
-		}
-
+		var cell = nonNegativeCheck.getSelection()
+			?  new NonNegativeCell(panels.getCell())
+			: panels.getCell();
 		variable.setName(name);
 		variable.setUnit(unitText.getText());
 		variable.setDef(cell);

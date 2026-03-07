@@ -22,9 +22,8 @@ import org.openlca.sd.model.cells.TensorEqnCell;
 import java.util.ArrayList;
 import java.util.List;
 
-final class TensorPanel implements Panel {
+final class TensorPanel extends Panel {
 
-	private final Composite composite;
 	private final StyledText text;
 	private final TableViewer table;
 
@@ -35,27 +34,23 @@ final class TensorPanel implements Panel {
 	private Cell originalCell;
 
 	TensorPanel(Composite parent, FormToolkit tk) {
-		composite = UI.composite(parent, tk);
-		UI.gridLayout(composite, 1, 5, 0);
-		UI.gridData(composite, true, true);
+		super(UI.composite(parent, tk));
+		var comp = composite();
+		UI.gridLayout(comp, 1, 5, 0);
+		UI.gridData(comp, true, true);
 
-		UI.label(composite, tk, "Equation");
-		text = new StyledText(composite, SWT.BORDER | SWT.MULTI);
+		UI.label(comp, tk, "Equation");
+		text = new StyledText(comp, SWT.BORDER | SWT.MULTI);
 		text.setEditable(false);
 		UI.gridData(text, true, false).heightHint = 80;
 
-		UI.label(composite, tk, "Array values");
-		table = new TableViewer(composite,
+		UI.label(comp, tk, "Array values");
+		table = new TableViewer(comp,
 			SWT.BORDER | SWT.FULL_SELECTION);
 		UI.gridData(table.getControl(), true, true).heightHint = 200;
 		table.getTable().setHeaderVisible(true);
 		table.getTable().setLinesVisible(true);
 		table.setContentProvider(ArrayContentProvider.getInstance());
-	}
-
-	@Override
-	public Composite composite() {
-		return composite;
 	}
 
 	@Override

@@ -14,15 +14,35 @@ import org.openlca.sd.model.cells.NumCell;
 import org.openlca.sd.model.cells.TensorCell;
 import org.openlca.sd.model.cells.TensorEqnCell;
 
-sealed interface Panel permits EquationPanel, LookupPanel, TensorPanel {
 
-	Composite composite();
+sealed abstract class Panel permits EquationPanel, LookupPanel, TensorPanel {
 
-	void setInput(Cell cell);
+	private final Composite composite;
+	private ChangeObserver onChange;
 
-	Cell getCell();
+	Panel(Composite composite) {
+		this.composite = composite;
+	}
 
-	default String eqnOf(Cell cell) {
+	final Composite composite() {
+		return composite;
+	}
+
+	void onChange(ChangeObserver onChange) {
+		this.onChange = onChange;
+	}
+
+	void fireValid(boolean b) {
+		if (onChange != null) {
+			onChange.reactOn(b);
+		}
+	}
+
+	abstract void setInput(Cell cell);
+
+	abstract Cell getCell();
+
+	String eqnOf(Cell cell) {
 		return switch (cell) {
 			case BoolCell(boolean b) -> Boolean.toString(b);
 			case EmptyCell ignore -> "";
@@ -36,5 +56,4 @@ sealed interface Panel permits EquationPanel, LookupPanel, TensorPanel {
 			case null -> "";
 		};
 	}
-
 }

@@ -26,29 +26,26 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-final class LookupPanel implements Panel {
+final class LookupPanel extends Panel {
 
-	private final Composite composite;
 	private final StyledText text;
 	private final TableViewer table;
 	private final TypeCombo typeCombo;
 	private final List<Row> rows = new ArrayList<>();
 
 	LookupPanel(Composite parent, FormToolkit tk) {
-		composite = UI.composite(parent, tk);
-		UI.gridLayout(composite, 1, 5, 0);
-		UI.gridData(composite, true, true);
-		UI.label(composite, tk, "Equation for x");
-		text = new StyledText(composite, SWT.BORDER | SWT.MULTI);
+		super(UI.composite(parent, tk));
+		var comp = composite();
+		UI.gridLayout(comp, 1, 5, 0);
+		UI.gridData(comp, true, true);
+		UI.label(comp, tk, "Equation for x");
+		text = new StyledText(comp, SWT.BORDER | SWT.MULTI);
 		UI.gridData(text, true, false).heightHint = 80;
-		typeCombo = new TypeCombo(composite);
-		table = createTable(composite);
-		UI.gridData(table.getControl(), true, true).heightHint = 200;
-	}
+		text.addModifyListener($ -> checkValid());
 
-	@Override
-	public Composite composite() {
-		return composite;
+		typeCombo = new TypeCombo(comp);
+		table = createTable(comp);
+		UI.gridData(table.getControl(), true, true).heightHint = 200;
 	}
 
 	private TableViewer createTable(Composite parent) {
@@ -64,6 +61,7 @@ final class LookupPanel implements Panel {
 			"Add row", Icon.ADD.descriptor(), () -> {
 				rows.add(new Row(0, 0));
 				table.setInput(rows);
+				checkValid();
 			});
 		var onDelete = Actions.create(
 			"Remove row(s)", Icon.DELETE.descriptor(), () -> {
@@ -71,12 +69,18 @@ final class LookupPanel implements Panel {
 					if (o instanceof Row row) {
 						rows.remove(row);
 					}
-					table.setInput(rows);
 				}
+				table.setInput(rows);
+				checkValid();
 			});
 		Actions.bind(table, onAdd, onDelete);
 
 		return table;
+	}
+
+	private void checkValid() {
+		if (text == null) return;
+		fireValid(!rows.isEmpty() && Strings.isNotBlank(text.getText()));
 	}
 
 	@Override
