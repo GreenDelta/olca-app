@@ -10,12 +10,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.UI;
 import org.openlca.sd.model.Dimension;
+import org.openlca.sd.model.Id;
+import org.openlca.sd.model.Subscript;
 import org.openlca.sd.model.Tensor;
-import org.openlca.sd.model.cells.BoolCell;
 import org.openlca.sd.model.cells.Cell;
-import org.openlca.sd.model.cells.EqnCell;
-import org.openlca.sd.model.cells.NonNegativeCell;
-import org.openlca.sd.model.cells.NumCell;
 import org.openlca.sd.model.cells.TensorCell;
 import org.openlca.sd.model.cells.TensorEqnCell;
 
@@ -29,9 +27,8 @@ final class TensorPanel extends Panel {
 
 	private Dimension rowDim;
 	private Dimension colDim;
-	private final List<String[]> data = new ArrayList<>();
-
-	private Cell originalCell;
+	private final List<Row> data = new ArrayList<>();
+	private Cell input;
 
 	TensorPanel(Composite parent, FormToolkit tk) {
 		super(UI.composite(parent, tk));
@@ -39,14 +36,14 @@ final class TensorPanel extends Panel {
 		UI.gridLayout(comp, 1, 5, 0);
 		UI.gridData(comp, true, true);
 
-		UI.label(comp, tk, "Equation");
+		UI.label(comp, tk, "Equation for updating the array values");
 		text = new StyledText(comp, SWT.BORDER | SWT.MULTI);
 		text.setEditable(false);
+		text.setEnabled(false);
 		UI.gridData(text, true, false).heightHint = 80;
 
 		UI.label(comp, tk, "Array values");
-		table = new TableViewer(comp,
-			SWT.BORDER | SWT.FULL_SELECTION);
+		table = new TableViewer(comp, SWT.BORDER | SWT.FULL_SELECTION);
 		UI.gridData(table.getControl(), true, true).heightHint = 200;
 		table.getTable().setHeaderVisible(true);
 		table.getTable().setLinesVisible(true);
@@ -55,121 +52,108 @@ final class TensorPanel extends Panel {
 
 	@Override
 	public void setInput(Cell cell) {
-		originalCell = cell;
-		var unwrapped = cell instanceof NonNegativeCell(Cell inner)
-			? inner
-			: cell;
-
-		data.clear();
-		rowDim = null;
-		colDim = null;
-
-		switch (unwrapped) {
-			case TensorEqnCell(Cell eqn, Tensor tensor) -> {
-				text.setText(eqnToText(eqn));
-				loadTensor(tensor);
-			}
-			case TensorCell(Tensor tensor) -> {
-				text.setText("");
-				loadTensor(tensor);
-			}
-			default -> text.setText("");
-		}
+		input = cell;
+		text.setText(eqnOf(cell));
+		var tensor = switch (cell) {
+			case TensorEqnCell(Cell ignore, Tensor t) -> t;
+			case TensorCell(Tensor t) -> t;
+			case null, default -> null;
+		};
+		fillDataOf(tensor);
 		rebuildTable();
 	}
 
 	@Override
 	public Cell getCell() {
-		return originalCell != null ? originalCell : Cell.empty();
+		return input != null ? input : Cell.empty();
 	}
 
-	private String eqnToText(Cell eqn) {
-		return switch (eqn) {
-			case EqnCell(String s) -> s != null ? s : "";
-			case NumCell(double num) -> Double.toString(num);
-			case BoolCell(boolean b) -> Boolean.toString(b);
-			case null, default -> "";
-		};
-	}
-
-	private void loadTensor(Tensor tensor) {
-		if (tensor == null)
-			return;
+	private void fillDataOf(Tensor tensor) {
+		data.clear();
+		rowDim = null;
+		colDim = null;
+		if (tensor == null) return;
 		var dims = tensor.dimensions();
-		if (dims.isEmpty())
-			return;
+		if (dims.isEmpty()) return;
 
 		rowDim = dims.getFirst();
-		if (dims.size() > 1) {
-			colDim = dims.get(1);
-		}
+		colDim = dims.size() > 1 ? dims.get(1) : null;
+		int cols = colDim != null ? colDim.size() : 1;
 
-		int colCount = colDim != null ? colDim.size() : 1;
-		for (int r = 0; r < tensor.size(); r++) {
-			var row = new String[colCount];
-			var rowCell = tensor.get(r);
-			if (colDim != null && rowCell instanceof TensorCell(Tensor sub)) {
-				for (int c = 0; c < colCount && c < sub.size(); c++) {
-					row[c] = cellToString(sub.get(c));
+		for (var rowIdx : rowDim.elements()) {
+			var eqns = new ArrayList<String>(cols);
+			var row = new Row(rowIdx, eqns);
+			data.add(row);
+			var cell = tensor.get(Subscript.of(rowIdx));
+
+			if (cols > 1 && cell instanceof TensorCell(Tensor sub)) {
+				for (int c = 0; c < cols && c < sub.size(); c++) {
+					eqns.add(eqnOf(sub.get(c)));
 				}
 			} else {
-				row[0] = cellToString(rowCell);
+				eqns.add(eqnOf(cell));
 			}
-			data.add(row);
 		}
 	}
 
-	private String cellToString(Cell cell) {
-		return switch (cell) {
-			case NumCell(double num) -> Double.toString(num);
-			case EqnCell(String eqn) -> eqn != null ? eqn : "0";
-			case BoolCell(boolean b) -> Boolean.toString(b);
-			case NonNegativeCell(Cell inner) -> cellToString(inner);
-			case null, default -> "0";
-		};
-	}
 
 	private void rebuildTable() {
 		for (var col : table.getTable().getColumns()) {
 			col.dispose();
 		}
 
-		int colCount = colDim != null ? colDim.size() : 1;
-
-		var rowCol = new TableViewerColumn(table, SWT.NONE);
-		rowCol.getColumn().setText(
-			rowDim != null ? rowDim.name().label() : "Index");
-		rowCol.getColumn().setWidth(100);
-		rowCol.setLabelProvider(new ColumnLabelProvider() {
+		var idxLabel = rowDim != null && rowDim.name() != null
+			? rowDim.name().label()
+			: "Index";
+		var idxCol = new TableViewerColumn(table, SWT.NONE);
+		idxCol.getColumn().setText(idxLabel);
+		idxCol.getColumn().setWidth(100);
+		idxCol.setLabelProvider(new ColumnLabelProvider() {
 			@Override
-			public String getText(Object element) {
-				int idx = data.indexOf(element);
-				if (rowDim != null && idx >= 0
-						&& idx < rowDim.elements().size()) {
-					return rowDim.elements().get(idx).label();
-				}
-				return Integer.toString(idx);
+			public String getText(Object o) {
+				return o instanceof Row row
+					? row.subscript().label()
+					: null;
 			}
 		});
 
-		for (int c = 0; c < colCount; c++) {
-			final int ci = c;
-			var vc = new TableViewerColumn(table, SWT.NONE);
-			vc.getColumn().setText(
-				colDim != null ? colDim.elements().get(c).label()
-					: "Value");
-			vc.getColumn().setWidth(120);
-			vc.setLabelProvider(new ColumnLabelProvider() {
-				@Override
-				public String getText(Object element) {
-					if (element instanceof String[] row && ci < row.length) {
-						return row[ci];
-					}
-					return "";
-				}
-			});
+		if (colDim == null) {
+			var valCol = new TableViewerColumn(table, SWT.NONE);
+			valCol.getColumn().setText("Value");
+			valCol.getColumn().setWidth(120);
+			valCol.setLabelProvider(new CellLabel(0));
+		} else {
+			int idx = 0;
+			for (var colIdx : colDim.elements()) {
+				var col = new TableViewerColumn(table, SWT.NONE);
+				col.getColumn().setText(colIdx.label());
+				col.getColumn().setWidth(120);
+				col.setLabelProvider(new CellLabel(idx));
+				idx++;
+			}
 		}
 
 		table.setInput(data);
+	}
+
+	private record Row(Id subscript, List<String> cells) {
+	}
+
+	private static class CellLabel extends ColumnLabelProvider {
+
+		private final int idx;
+
+		CellLabel(int idx) {
+			this.idx = idx;
+		}
+
+		@Override
+		public String getText(Object o) {
+			if (!(o instanceof Row row)) return null;
+			var cells = row.cells;
+			return idx < cells.size()
+				? cells.get(idx)
+				: null;
+		}
 	}
 }

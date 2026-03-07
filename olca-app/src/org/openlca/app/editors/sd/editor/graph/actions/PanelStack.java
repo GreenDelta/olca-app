@@ -13,6 +13,8 @@ import org.openlca.sd.model.cells.NonNegativeCell;
 import org.openlca.sd.model.cells.TensorCell;
 import org.openlca.sd.model.cells.TensorEqnCell;
 
+import java.util.List;
+
 class PanelStack {
 
 	private final Combo combo;
@@ -46,6 +48,13 @@ class PanelStack {
 		equationPanel = new EquationPanel(stack, tk);
 		lookupPanel = new LookupPanel(stack, tk);
 		tensorPanel = new TensorPanel(stack, tk);
+		List.of(equationPanel, lookupPanel, tensorPanel)
+			.forEach(p -> p.onChange(b -> {
+				if (onChange != null) {
+					onChange.reactOn(b);
+				}
+			}));
+
 		top = equationPanel;
 	}
 

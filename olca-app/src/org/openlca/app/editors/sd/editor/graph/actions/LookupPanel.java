@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
@@ -43,7 +44,7 @@ final class LookupPanel extends Panel {
 		UI.gridData(text, true, false).heightHint = 80;
 		text.addModifyListener($ -> checkValid());
 
-		typeCombo = new TypeCombo(comp);
+		typeCombo = new TypeCombo(comp, this::checkValid);
 		table = createTable(comp);
 		UI.gridData(table.getControl(), true, true).heightHint = 200;
 	}
@@ -196,7 +197,7 @@ final class LookupPanel extends Panel {
 			LookupFunc.Type.DISCRETE,
 		};
 
-		TypeCombo(Composite parent) {
+		TypeCombo(Composite parent, Runnable onChange) {
 			combo = new Combo(parent, SWT.READ_ONLY);
 			UI.gridData(combo, true, false);
 			var items = new String[]{
@@ -207,6 +208,7 @@ final class LookupPanel extends Panel {
 			combo.setItems(items);
 			combo.select(0);
 			select(LookupFunc.Type.CONTINUOUS);
+			Controls.onSelect(combo, $ -> onChange.run());
 		}
 
 		void select(LookupFunc.Type type) {
