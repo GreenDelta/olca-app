@@ -37,10 +37,14 @@ final class TensorPanel extends Panel {
 		UI.gridData(comp, true, true);
 
 		UI.label(comp, tk, "Equation for updating the array values");
-		text = new StyledText(comp, SWT.BORDER | SWT.MULTI);
+		text = new StyledText(comp, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 		text.setEditable(false);
 		text.setEnabled(false);
-		UI.gridData(text, true, false).heightHint = 80;
+		var gd = UI.gridData(text, true, false);
+		gd.heightHint = 80;
+		// avoid horizontal growing
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
+		gd.widthHint = 1;
 
 		UI.label(comp, tk, "Array values");
 		table = new TableViewer(comp, SWT.BORDER | SWT.FULL_SELECTION);

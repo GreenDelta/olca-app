@@ -41,7 +41,12 @@ final class LookupPanel extends Panel {
 		UI.gridData(comp, true, true);
 		UI.label(comp, tk, "Equation for x");
 		text = new StyledText(comp, SWT.BORDER | SWT.MULTI);
-		UI.gridData(text, true, false).heightHint = 80;
+		var gd = UI.gridData(text, true, false);
+		gd.heightHint = 80;
+		// avoid horizontal growing
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
+		gd.widthHint = 1;
+
 		text.addModifyListener($ -> checkValid());
 
 		typeCombo = new TypeCombo(comp, this::checkValid);

@@ -17,9 +17,13 @@ final class EquationPanel extends Panel {
 		var comp = composite();
 		UI.gridLayout(comp, 1, 5, 0);
 		UI.gridData(comp, true, true);
+
 		text = new StyledText(comp, SWT.BORDER | SWT.MULTI);
 		tk.adapt(text);
-		UI.gridData(text, true, true);
+		var gd = UI.gridData(text, true, true);
+		// avoid horizontal growing
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
+		gd.widthHint = 1;
 		text.addModifyListener(
 			e -> fireValid(Strings.isNotBlank(text.getText())));
 	}
