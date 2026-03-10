@@ -99,7 +99,7 @@ class PanelStack {
 				case LookupEqnCell ignored -> LOOKUP;
 				case TensorCell ignored -> TENSOR;
 				case TensorEqnCell ignored -> TENSOR;
-				default -> EQUATION;
+				case null, default -> EQUATION;
 			};
 		}
 
