@@ -17,6 +17,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
+import org.openlca.sd.model.Stock;
 import org.openlca.sd.model.Var;
 import org.openlca.sd.model.cells.NonNegativeCell;
 
@@ -87,6 +88,10 @@ class VarEditDialog extends FormDialog {
 		nonNegativeCheck = UI.labeledCheckbox(comp, tk, "Non-negative");
 		nonNegativeCheck.setSelection(
 			variable.def() instanceof NonNegativeCell);
+
+		if (variable instanceof Stock stock) {
+			new StockFlowPanel(comp, tk, stock);
+		}
 
 		panels = new PanelStack(comp, tk);
 		panels.setInput(variable.def());
