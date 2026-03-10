@@ -1,8 +1,5 @@
 package org.openlca.app.navigation.actions;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -41,9 +38,11 @@ import org.openlca.app.navigation.actions.scripts.DeleteScriptAction;
 import org.openlca.app.navigation.actions.scripts.ExportScriptAction;
 import org.openlca.app.navigation.actions.scripts.OpenScriptAction;
 import org.openlca.app.navigation.actions.scripts.RenameScriptAction;
+import org.openlca.app.navigation.actions.sd.SdModelCopyAction;
 import org.openlca.app.navigation.actions.sd.SdModelDeleteAction;
 import org.openlca.app.navigation.actions.sd.SdModelExportAction;
 import org.openlca.app.navigation.actions.sd.SdModelImportAction;
+import org.openlca.app.navigation.actions.sd.SdModelNewAction;
 import org.openlca.app.navigation.actions.sd.SdModelOpenAction;
 import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
@@ -52,6 +51,9 @@ import org.openlca.app.tools.FileImport;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.viewers.Selections;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Adds the actions to the context menu of the navigation tree.
@@ -122,9 +124,11 @@ public class NavigationMenu extends CommonActionProvider {
 				new OpenModelAction(),
 				new CalculateSystemAction(),
 				new CreateModelAction(),
+				new SdModelNewAction(),
 				new SdModelImportAction(),
 				new SdModelOpenAction(),
 				new OpenUsageAction(),
+				new SdModelCopyAction(),
 				new DeleteModelAction(),
 				new SdModelDeleteAction());
 
