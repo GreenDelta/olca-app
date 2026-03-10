@@ -41,14 +41,14 @@ final class TensorPanel extends Panel {
 		text.setEditable(false);
 		text.setEnabled(false);
 		var gd = UI.gridData(text, true, false);
-		gd.heightHint = 80;
+		gd.heightHint = 60;
 		// avoid horizontal growing
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
 		gd.widthHint = 1;
 
 		UI.label(comp, tk, "Array values");
 		table = new TableViewer(comp, SWT.BORDER | SWT.FULL_SELECTION);
-		UI.gridData(table.getControl(), true, true).heightHint = 200;
+		UI.gridData(table.getControl(), true, true).heightHint = 150;
 		table.getTable().setHeaderVisible(true);
 		table.getTable().setLinesVisible(true);
 		table.setContentProvider(ArrayContentProvider.getInstance());

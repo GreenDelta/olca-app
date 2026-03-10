@@ -6,6 +6,8 @@ import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Stock;
 import org.openlca.sd.model.Var;
 
+import java.util.ArrayList;
+
 public class UpdateVarCmd extends Command {
 
 	private final SdGraph graph;
@@ -41,12 +43,9 @@ public class UpdateVarCmd extends Command {
 		v.setUnit(data.unit());
 
 		if (v instanceof Stock stock && data instanceof Stock stockData) {
-			stock.inFlows().clear();
-			stock.inFlows().addAll(stockData.inFlows());
-			stock.outFlows().clear();
-			stock.outFlows().addAll(stockData.outFlows());
+			stock.setInFlows(new ArrayList<>(stockData.inFlows()));
+			stock.setOutFlows(new ArrayList<>(stockData.outFlows()));
 		}
-
 		graph.add(origin);
 	}
 }

@@ -42,7 +42,7 @@ final class LookupPanel extends Panel {
 		UI.label(comp, tk, "Equation for x");
 		text = new StyledText(comp, SWT.BORDER | SWT.MULTI);
 		var gd = UI.gridData(text, true, false);
-		gd.heightHint = 80;
+		gd.heightHint = 50;
 		// avoid horizontal growing
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
 		gd.widthHint = 1;
@@ -51,7 +51,7 @@ final class LookupPanel extends Panel {
 
 		typeCombo = new TypeCombo(comp, this::checkValid);
 		table = createTable(comp);
-		UI.gridData(table.getControl(), true, true).heightHint = 200;
+		UI.gridData(table.getControl(), true, true).heightHint = 150;
 	}
 
 	private TableViewer createTable(Composite parent) {
