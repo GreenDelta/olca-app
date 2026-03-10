@@ -30,7 +30,7 @@ final class TensorPanel extends Panel {
 	private final List<Row> data = new ArrayList<>();
 	private Cell input;
 
-	TensorPanel(Composite parent, FormToolkit tk) {
+	TensorPanel(Composite parent, FormToolkit tk, boolean stockVar) {
 		super(UI.composite(parent, tk));
 		var comp = composite();
 		UI.gridLayout(comp, 1, 5, 0);
@@ -41,14 +41,16 @@ final class TensorPanel extends Panel {
 		text.setEditable(false);
 		text.setEnabled(false);
 		var gd = UI.gridData(text, true, false);
-		gd.heightHint = 60;
+		gd.heightHint = stockVar ? 50 : 80;
 		// avoid horizontal growing
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
 		gd.widthHint = 1;
 
 		UI.label(comp, tk, "Array values");
 		table = new TableViewer(comp, SWT.BORDER | SWT.FULL_SELECTION);
-		UI.gridData(table.getControl(), true, true).heightHint = 150;
+		UI.gridData(table.getControl(), true, true).heightHint = stockVar
+			? 140
+			: 200;
 		table.getTable().setHeaderVisible(true);
 		table.getTable().setLinesVisible(true);
 		table.setContentProvider(ArrayContentProvider.getInstance());

@@ -34,7 +34,7 @@ final class LookupPanel extends Panel {
 	private final TypeCombo typeCombo;
 	private final List<Row> rows = new ArrayList<>();
 
-	LookupPanel(Composite parent, FormToolkit tk) {
+	LookupPanel(Composite parent, FormToolkit tk, boolean stockVar) {
 		super(UI.composite(parent, tk));
 		var comp = composite();
 		UI.gridLayout(comp, 1, 5, 0);
@@ -42,7 +42,7 @@ final class LookupPanel extends Panel {
 		UI.label(comp, tk, "Equation for x");
 		text = new StyledText(comp, SWT.BORDER | SWT.MULTI);
 		var gd = UI.gridData(text, true, false);
-		gd.heightHint = 50;
+		gd.heightHint = stockVar ? 45 : 80;
 		// avoid horizontal growing
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
 		gd.widthHint = 1;
@@ -51,7 +51,9 @@ final class LookupPanel extends Panel {
 
 		typeCombo = new TypeCombo(comp, this::checkValid);
 		table = createTable(comp);
-		UI.gridData(table.getControl(), true, true).heightHint = 150;
+		UI.gridData(table.getControl(), true, true).heightHint = stockVar
+			? 140
+			: 200;
 	}
 
 	private TableViewer createTable(Composite parent) {

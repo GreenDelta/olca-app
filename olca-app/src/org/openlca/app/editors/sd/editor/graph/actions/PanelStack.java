@@ -29,7 +29,7 @@ class PanelStack {
 	private Cell input;
 	private ChangeObserver onChange;
 
-	PanelStack(Composite comp, FormToolkit tk) {
+	PanelStack(Composite comp, FormToolkit tk, boolean stockVar) {
 
 		combo = UI.labeledCombo(comp, tk, "Type");
 		combo.setItems(PanelType.items());
@@ -46,8 +46,8 @@ class PanelStack {
 		stack.setLayout(stackLayout);
 
 		equationPanel = new EquationPanel(stack, tk);
-		lookupPanel = new LookupPanel(stack, tk);
-		tensorPanel = new TensorPanel(stack, tk);
+		lookupPanel = new LookupPanel(stack, tk, stockVar);
+		tensorPanel = new TensorPanel(stack, tk, stockVar);
 		List.of(equationPanel, lookupPanel, tensorPanel)
 			.forEach(p -> p.onChange(b -> {
 				if (onChange != null) {

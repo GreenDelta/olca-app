@@ -90,12 +90,14 @@ class VarEditDialog extends FormDialog {
 		nonNegativeCheck.setSelection(
 			variable.def() instanceof NonNegativeCell);
 
+		boolean isStockVar = false;
 		if (variable instanceof Stock stock) {
+			isStockVar = true;
 			new StockFlowPanel(editor.graph().model(), stock)
 				.render(comp, tk, this::checkOk);
 		}
 
-		panels = new PanelStack(comp, tk);
+		panels = new PanelStack(comp, tk, isStockVar);
 		panels.setInput(variable.def());
 		panels.onChange(b -> {
 			panelFinished = b;
