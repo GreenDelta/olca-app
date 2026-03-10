@@ -61,6 +61,7 @@ class PanelStack {
 	void setInput(Cell input) {
 		this.input = input;
 		var type = PanelType.of(input);
+		combo.select(type.ordinal());
 		updatePanel(type);
 	}
 
