@@ -53,6 +53,7 @@ class VarEditDialog extends FormDialog {
 		this.variable = origin.freshCopy();
 		this.origin = origin;
 		this.location = null;
+		this.panelFinished = true;
 	}
 
 	private VarEditDialog(SdGraphEditor editor, Var variable, Point location) {
@@ -90,7 +91,8 @@ class VarEditDialog extends FormDialog {
 			variable.def() instanceof NonNegativeCell);
 
 		if (variable instanceof Stock stock) {
-			new StockFlowPanel(comp, tk, stock);
+			new StockFlowPanel(editor.graph().model(), stock)
+				.render(comp, tk, this::checkOk);
 		}
 
 		panels = new PanelStack(comp, tk);
@@ -129,7 +131,7 @@ class VarEditDialog extends FormDialog {
 		}
 
 		var cell = nonNegativeCheck.getSelection()
-			?  new NonNegativeCell(panels.getCell())
+			? new NonNegativeCell(panels.getCell())
 			: panels.getCell();
 		variable.setName(name);
 		variable.setUnit(unitText.getText());
