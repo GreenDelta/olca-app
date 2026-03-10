@@ -1,15 +1,22 @@
 package org.openlca.app.editors.sd.editor.graph.actions;
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.forms.FormDialog;
+import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Rate;
@@ -18,7 +25,9 @@ import org.openlca.sd.model.Stock;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 class StockFlowPanel {
 
@@ -44,7 +53,7 @@ class StockFlowPanel {
 		new ListBox(comp, stock.outFlows(), onChange);
 	}
 
-	private java.util.List<Id> getNewFlowCandidates() {
+	private List<Id> getNewFlowCandidates() {
 		var used = new HashSet<>(stock.inFlows());
 		used.addAll(stock.outFlows());
 		var candidates = new ArrayList<Id>();
@@ -61,11 +70,12 @@ class StockFlowPanel {
 
 	private class ListBox {
 
-		private final List widget;
-		private final java.util.List<Id> flows;
+		private final org.eclipse.swt.widgets.List widget;
+		private final List<Id> flows;
 
-		ListBox(Composite comp, java.util.List<Id> flows, Runnable onChange) {
-			widget = new List(comp, SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE);
+		ListBox(Composite comp, List<Id> flows, Runnable onChange) {
+			widget = new org.eclipse.swt.widgets.List(
+				comp, SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE);
 			this.flows = flows;
 
 			var gd = UI.gridData(widget, true, false);
@@ -79,8 +89,12 @@ class StockFlowPanel {
 			addItem.setText(M.Add);
 			addItem.setImage(Icon.ADD.get());
 			Controls.onSelect(addItem, $ -> {
-				// TODO -> open a dialog.
-				onChange.run();
+				var candidates = getNewFlowCandidates();
+				FlowSelector.open(candidates, selected -> {
+					flows.addAll(selected);
+					updateItems();
+					onChange.run();
+				});
 			});
 
 			var delItem = new MenuItem(menu, SWT.NONE);
@@ -106,6 +120,83 @@ class StockFlowPanel {
 				.sorted()
 				.toArray(String[]::new);
 			widget.setItems(items);
+		}
+	}
+
+	private static class FlowSelector extends FormDialog {
+
+		private final List<Id> candidates;
+		private final Consumer<List<Id>> onResult;
+		private ListViewer list;
+
+		static void open(List<Id> candidates, Consumer<List<Id>> onResult) {
+			if (candidates == null || candidates.isEmpty()) return;
+			new FlowSelector(candidates, onResult).open();
+		}
+
+		private FlowSelector(List<Id> candidates, Consumer<List<Id>> onResult) {
+			super(UI.shell());
+			this.candidates = candidates;
+			this.onResult = onResult;
+		}
+
+		@Override
+		protected void configureShell(Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText("Select flow(s)");
+		}
+
+		@Override
+		protected Point getInitialSize() {
+			return new Point(400, 500);
+		}
+
+		@Override
+		protected void createFormContent(IManagedForm mForm) {
+			var tk = mForm.getToolkit();
+			var body = UI.dialogBody(mForm.getForm(), tk);
+			UI.gridLayout(body, 1);
+
+			var filter = UI.text(
+				body, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+			UI.gridData(filter, true, false);
+			filter.setMessage(M.Filter);
+			filter.addModifyListener(e -> {
+				var ids = applyFilter(filter.getText());
+				list.setInput(ids);
+			});
+
+			list = new ListViewer(body, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
+			UI.gridData(list.getControl(), true, true);
+			list.setContentProvider(ArrayContentProvider.getInstance());
+			list.setLabelProvider(new LabelProvider() {
+				@Override
+				public String getText(Object o) {
+					return o instanceof Id id
+						? id.label()
+						: super.getText(o);
+				}
+			});
+			list.setInput(candidates);
+		}
+
+		private List<Id> applyFilter(String query) {
+			if (Strings.isBlank(query)) {
+				return candidates;
+			}
+			var q = query.trim().toLowerCase();
+			return candidates.stream()
+				.filter(id -> id.label().toLowerCase().contains(q))
+				.toList();
+		}
+
+		@Override
+		protected void okPressed() {
+			List<Id> selection = Viewers.getAllSelected(list);
+			if (!selection.isEmpty()) {
+				onResult.accept(selection);
+			}
+			super.okPressed();
 		}
 	}
 }

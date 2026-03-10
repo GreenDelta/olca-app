@@ -3,6 +3,7 @@ package org.openlca.app.editors.sd.editor.graph.edit;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 import org.openlca.sd.model.Id;
+import org.openlca.sd.model.Stock;
 import org.openlca.sd.model.Var;
 
 public class UpdateVarCmd extends Command {
@@ -38,6 +39,14 @@ public class UpdateVarCmd extends Command {
 		v.setName(data.name());
 		v.setDef(data.def());
 		v.setUnit(data.unit());
+
+		if (v instanceof Stock stock && data instanceof Stock stockData) {
+			stock.inFlows().clear();
+			stock.inFlows().addAll(stockData.inFlows());
+			stock.outFlows().clear();
+			stock.outFlows().addAll(stockData.outFlows());
+		}
+
 		graph.add(origin);
 	}
 }
