@@ -1,7 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph;
-
-import java.util.Collections;
-import java.util.List;
+package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.FreeformLayout;
@@ -15,19 +12,37 @@ import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.sd.editor.graph.model.NotifySupport;
+import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
+
+import java.util.Collections;
+import java.util.List;
 
 class GraphPart extends AbstractGraphicalEditPart {
 
 	private final Theme theme;
+	private final Runnable onModelChange = this::refreshChildren;
 
-	GraphPart(GraphModel model, Theme theme) {
+	GraphPart(SdGraph model, Theme theme) {
 		setModel(model);
 		this.theme = theme;
 	}
 
 	@Override
-	public GraphModel getModel() {
-		return super.getModel() instanceof GraphModel g ? g : null;
+	public void activate() {
+		super.activate();
+		NotifySupport.on(getModel(), onModelChange);
+	}
+
+	@Override
+	public void deactivate() {
+		NotifySupport.off(getModel(), onModelChange);
+		super.deactivate();
+	}
+
+	@Override
+	public SdGraph getModel() {
+		return super.getModel() instanceof SdGraph g ? g : null;
 	}
 
 	@Override
@@ -62,10 +77,11 @@ class GraphPart extends AbstractGraphicalEditPart {
 
 	@Override
 	protected List<?> getModelChildren() {
-		var model = getModel();
-		if (model == null)
+		var g = getModel();
+		if (g == null) {
 			return Collections.emptyList();
-		return model.vars;
+		}
+		return g.nodes();
 	}
 
 	private static class LayoutPolicy extends XYLayoutEditPolicy {

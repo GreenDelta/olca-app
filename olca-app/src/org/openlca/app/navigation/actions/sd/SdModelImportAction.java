@@ -1,9 +1,5 @@
 package org.openlca.app.navigation.actions.sd;
 
-import java.io.File;
-import java.util.List;
-import java.util.UUID;
-
 import org.eclipse.jface.action.Action;
 import org.openlca.app.components.FileChooser;
 import org.openlca.app.db.Database;
@@ -20,10 +16,14 @@ import org.openlca.app.util.SystemDynamics;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.SdModel;
 
+import java.io.File;
+import java.util.List;
+import java.util.UUID;
+
 public class SdModelImportAction extends Action implements INavigationAction {
 
 	public SdModelImportAction() {
-		setText("Import system dynamics model");
+		setText("Import model");
 		setImageDescriptor(Icon.SD.descriptor());
 	}
 

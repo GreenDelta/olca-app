@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph;
+package org.openlca.app.editors.sd.editor.graph.view;
 
 import org.eclipse.draw2d.BorderLayout;
 import org.eclipse.draw2d.Figure;
@@ -9,11 +9,11 @@ import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
 import org.openlca.sd.model.Var;
 
-class StockFigure extends Figure {
+public class StockFigure extends Figure {
 
 	private final Label label = new Label();
 
-	StockFigure(Theme theme) {
+	public StockFigure(Theme theme) {
 		var layout = new BorderLayout();
 		setLayoutManager(layout);
 		var borderColor = theme.boxBorderColor(Box.DEFAULT);
@@ -27,7 +27,7 @@ class StockFigure extends Figure {
 		setOpaque(true);
 	}
 
-	void setVar(Var v) {
+	public void setVar(Var v) {
 		if (v == null) {
 			label.setText("");
 			setToolTip(null);

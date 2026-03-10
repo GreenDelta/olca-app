@@ -1,8 +1,5 @@
 package org.openlca.app.util;
 
-import java.util.function.Consumer;
-import java.util.function.DoubleConsumer;
-
 import org.eclipse.nebula.widgets.tablecombo.TableCombo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -10,6 +7,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
@@ -22,6 +20,10 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
+
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.DoubleConsumer;
 
 public class Controls {
 
@@ -49,8 +51,15 @@ public class Controls {
 			try {
 				var d = Double.parseDouble(text.getText());
 				fn.accept(d);
-				text.setBackground(Colors.white());
+				if (text.getData("o-default-bg") instanceof Color bg
+					&& !Objects.equals(bg, text.getBackground())) {
+					text.setBackground(bg);
+				}
 			} catch (NumberFormatException e) {
+				if (text.getData("o-default-bg") == null) {
+					// capture the default background in the first error
+					text.setData("o-default-bg", text.getBackground());
+				}
 				text.setBackground(Colors.errorColor());
 			}
 		});
