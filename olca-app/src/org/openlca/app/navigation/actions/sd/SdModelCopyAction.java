@@ -2,6 +2,7 @@ package org.openlca.app.navigation.actions.sd;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -22,7 +23,7 @@ public class SdModelCopyAction extends Action implements INavigationAction {
 	private SdModelElement elem;
 
 	public SdModelCopyAction() {
-		setText("Copy model");
+		setText(M.Copy);
 		setImageDescriptor(Icon.COPY.descriptor());
 	}
 

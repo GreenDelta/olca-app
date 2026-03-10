@@ -13,7 +13,7 @@ import java.util.List;
 public class SdModelNewAction extends Action implements INavigationAction {
 
 	public SdModelNewAction() {
-		setText("New system dynamics model");
+		setText("New model");
 		setImageDescriptor(Icon.ADD.descriptor());
 	}
 
