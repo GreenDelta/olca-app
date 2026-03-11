@@ -2,15 +2,15 @@ package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
-import org.openlca.app.editors.sd.editor.graph.model.VarNode;
+import org.openlca.app.editors.sd.editor.graph.model.SystemNode;
 
-class VarMoveCmd extends Command {
+class SystemMoveCmd extends Command {
 
-	private final VarNode node;
+	private final SystemNode node;
 	private final Rectangle oldBounds;
 	private final Rectangle newBounds;
 
-	VarMoveCmd(VarNode node, Rectangle newBounds) {
+	SystemMoveCmd(SystemNode node, Rectangle newBounds) {
 		this.node = node;
 		this.oldBounds = node.bounds().getCopy();
 		this.newBounds = newBounds.getCopy();
@@ -25,5 +25,4 @@ class VarMoveCmd extends Command {
 	public void undo() {
 		node.moveTo(oldBounds);
 	}
-
 }

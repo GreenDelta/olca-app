@@ -9,18 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class SdVarNode implements NotifySupport {
+public class VarNode implements NotifySupport {
 
 	private final Var variable;
 	private final SdModel model;
 	private final Rectangle bounds = new Rectangle();
 
-	private final List<SdVarLink> sourceLinks = new ArrayList<>();
-	private final List<SdVarLink> targetLinks = new ArrayList<>();
+	private final List<VarLink> sourceLinks = new ArrayList<>();
+	private final List<VarLink> targetLinks = new ArrayList<>();
 
 	private final Notifier notifier = new Notifier();
 
-	public SdVarNode(Var variable, SdModel model) {
+	public VarNode(Var variable, SdModel model) {
 		this.variable = Objects.requireNonNull(variable);
 		this.model = Objects.requireNonNull(model);
 	}
@@ -47,34 +47,34 @@ public class SdVarNode implements NotifySupport {
 		return bounds;
 	}
 
-	public List<SdVarLink> sourceLinks() {
+	public List<VarLink> sourceLinks() {
 		return sourceLinks;
 	}
 
-	public List<SdVarLink> targetLinks() {
+	public List<VarLink> targetLinks() {
 		return targetLinks;
 	}
 
-	public void addSourceLink(SdVarLink link) {
+	public void addSourceLink(VarLink link) {
 		if (link == null) return;
 		sourceLinks.add(link);
 		notifier.fire();
 	}
 
-	public void addTargetLink(SdVarLink link) {
+	public void addTargetLink(VarLink link) {
 		if (link == null) return;
 		targetLinks.add(link);
 		notifier.fire();
 	}
 
-	public void removeSourceLink(SdVarLink link) {
+	public void removeSourceLink(VarLink link) {
 		if (link == null) return;
 		if (sourceLinks.remove(link)) {
 			notifier.fire();
 		}
 	}
 
-	public void removeTargetLink(SdVarLink link) {
+	public void removeTargetLink(VarLink link) {
 		if (link == null) return;
 		if (targetLinks.remove(link)) {
 			notifier.fire();

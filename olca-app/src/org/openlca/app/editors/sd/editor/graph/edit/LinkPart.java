@@ -6,7 +6,7 @@ import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
-import org.openlca.app.editors.sd.editor.graph.model.SdVarLink;
+import org.openlca.app.editors.sd.editor.graph.model.VarLink;
 import org.openlca.sd.model.Auxil;
 import org.openlca.sd.model.Stock;
 
@@ -14,7 +14,7 @@ class LinkPart extends AbstractConnectionEditPart {
 
 	private final Theme theme;
 
-	LinkPart(SdVarLink model, Theme theme) {
+	LinkPart(VarLink model, Theme theme) {
 		setModel(model);
 		this.theme = theme;
 	}
@@ -31,8 +31,8 @@ class LinkPart extends AbstractConnectionEditPart {
 	}
 
 	@Override
-	public SdVarLink getModel() {
-		return super.getModel() instanceof SdVarLink link ? link : null;
+	public VarLink getModel() {
+		return super.getModel() instanceof VarLink link ? link : null;
 	}
 
 	@Override

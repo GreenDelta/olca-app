@@ -7,6 +7,7 @@ import org.openlca.sd.model.Rate;
 import org.openlca.sd.model.Rect;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.Stock;
+import org.openlca.sd.model.SystemBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,8 @@ public class SdGraph implements NotifySupport {
 
 	private final SdModel model;
 	private final Notifier notifier = new Notifier();
-	private final HashMap<Id, SdVarNode> nodes = new HashMap<>();
+	private final HashMap<Id, VarNode> nodes = new HashMap<>();
+	private final List<SystemNode> systemNodes = new ArrayList<>();
 
 	private SdGraph(SdModel model) {
 		this.model = model;
@@ -34,7 +36,7 @@ public class SdGraph implements NotifySupport {
 		for (var variable : model.vars()) {
 			var b = bounds.getOrDefault(
 				variable.name(), new Rectangle(10 + i * 20, 10 + i * 20, 100, 50));
-			var node = new SdVarNode(variable, model);
+			var node = new VarNode(variable, model);
 			node.moveTo(b);
 			g.nodes.put(variable.name(), node);
 			i++;
@@ -42,11 +44,63 @@ public class SdGraph implements NotifySupport {
 		for (var node : g.nodes.values()) {
 			g.addLinksOf(node);
 		}
+		g.syncSystemBindings(false);
 
 		return g;
 	}
 
-	private void addLinksOf(SdVarNode node) {
+	public static Rectangle defaultSystemBounds(SdModel model, int index) {
+		int width = 140;
+		int height = 60;
+		int right = 40;
+		int top = Integer.MAX_VALUE;
+
+		for (var rect : model.positions().values()) {
+			if (rect == null)
+				continue;
+			right = Math.max(right, rect.x() + rect.width());
+			top = Math.min(top, rect.y());
+		}
+		for (var binding : model.lca().systemBindings()) {
+			var view = binding.view();
+			if (view == null)
+				continue;
+			right = Math.max(right, view.x() + view.width());
+			top = Math.min(top, view.y());
+		}
+
+		int x = right + 80;
+		int y = top != Integer.MAX_VALUE
+			? top + index * (height + 20)
+			: 40 + index * (height + 20);
+		return new Rectangle(x, y, width, height);
+	}
+
+	public void syncSystemBindings() {
+		syncSystemBindings(true);
+	}
+
+	private void syncSystemBindings(boolean notify) {
+		systemNodes.clear();
+		var bindings = model.lca().systemBindings();
+		for (int i = 0; i < bindings.size(); i++) {
+			var binding = bindings.get(i);
+			systemNodes.add(new SystemNode(binding, boundsOf(binding, i)));
+		}
+		if (notify) {
+			notifier.fire();
+		}
+	}
+
+	private Rectangle boundsOf(SystemBinding binding, int index) {
+		if (binding != null && binding.view() != null) {
+			var view = binding.view();
+			return new Rectangle(view.x(), view.y(), view.width(), view.height());
+		}
+		return defaultSystemBounds(model, index);
+	}
+
+	private void addLinksOf(VarNode node) {
 		if (node == null || node.variable() == null) {
 			return;
 		}
@@ -64,10 +118,10 @@ public class SdGraph implements NotifySupport {
 		}
 	}
 
-	private void link(SdVarNode source, SdVarNode target, boolean isFlow) {
+	private void link(VarNode source, VarNode target, boolean isFlow) {
 		if (source == null || target == null)
 			return;
-		var link = new SdVarLink(source, target, isFlow);
+		var link = new VarLink(source, target, isFlow);
 		source.addSourceLink(link);
 		target.addTargetLink(link);
 	}
@@ -82,15 +136,22 @@ public class SdGraph implements NotifySupport {
 		return model;
 	}
 
-	public SdVarNode getNode(Id name) {
+	public VarNode getNode(Id name) {
 		return nodes.get(name);
 	}
 
-	public List<SdVarNode> nodes() {
+	public List<VarNode> nodes() {
 		return new ArrayList<>(nodes.values());
 	}
 
-	public void add(SdVarNode node) {
+	public List<Object> children() {
+		var children = new ArrayList<>();
+		children.addAll(nodes.values());
+		children.addAll(systemNodes);
+		return children;
+	}
+
+	public void add(VarNode node) {
 		if (node == null || node.variable() == null) return;
 		var v = node.variable();
 		nodes.put(v.name(), node);
@@ -106,7 +167,7 @@ public class SdGraph implements NotifySupport {
 	/// flows, etc.) have been changed. The `oldName` is the name the node was
 	/// registered under before the update. This re-maps the node and
 	/// rebuilds all its links.
-	public void update(SdVarNode node, Id oldName) {
+	public void update(VarNode node, Id oldName) {
 		if (node == null || node.variable() == null) {
 			return;
 		}
@@ -122,7 +183,7 @@ public class SdGraph implements NotifySupport {
 		notifier.fire();
 	}
 
-	public void remove(SdVarNode node) {
+	public void remove(VarNode node) {
 		if (node == null || node.variable() == null) return;
 		model.vars().remove(node.variable());
 		model.positions().remove(node.variable().name());
@@ -134,7 +195,7 @@ public class SdGraph implements NotifySupport {
 
 	/// Creates links from the given node to other nodes that reference it
 	/// in their equations or stock flow lists.
-	private void addReverseLinksOf(SdVarNode node) {
+	private void addReverseLinksOf(VarNode node) {
 		var nodeId = node.variable().name();
 		if (nodeId == null)
 			return;
@@ -155,7 +216,7 @@ public class SdGraph implements NotifySupport {
 		}
 	}
 
-	private void removeLinksOf(SdVarNode node, boolean withFlows) {
+	private void removeLinksOf(VarNode node, boolean withFlows) {
 		if (node == null) return;
 		for (var link : node.sourceLinks()) {
 			if (withFlows) {
@@ -172,7 +233,7 @@ public class SdGraph implements NotifySupport {
 		node.clearLinks();
 	}
 
-	private void unlinkFlows(SdVarLink link) {
+	private void unlinkFlows(VarLink link) {
 		if (!link.isStockFlow()) return;
 		if (link.source().variable() instanceof Stock stock
 			&& link.target().variable() instanceof Rate rate) {

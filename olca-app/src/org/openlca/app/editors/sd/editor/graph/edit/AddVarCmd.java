@@ -2,14 +2,14 @@ package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
-import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
+import org.openlca.app.editors.sd.editor.graph.model.VarNode;
 
 public class AddVarCmd extends Command {
 
 	private final SdGraph graph;
-	private final SdVarNode node;
+	private final VarNode node;
 
-	public AddVarCmd(SdGraph graph, SdVarNode node) {
+	public AddVarCmd(SdGraph graph, VarNode node) {
 		this.graph = graph;
 		this.node = node;
 		setLabel("Add Variable");

@@ -15,8 +15,8 @@ import org.eclipse.gef.requests.GroupRequest;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.editors.sd.editor.graph.model.NotifySupport;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
-import org.openlca.app.editors.sd.editor.graph.model.SdVarLink;
-import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
+import org.openlca.app.editors.sd.editor.graph.model.VarLink;
+import org.openlca.app.editors.sd.editor.graph.model.VarNode;
 import org.openlca.app.editors.sd.editor.graph.view.AuxFigure;
 import org.openlca.app.editors.sd.editor.graph.view.FlowFigure;
 import org.openlca.app.editors.sd.editor.graph.view.StockFigure;
@@ -34,7 +34,7 @@ public class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 		refreshTargetConnections();
 	};
 
-	VarPart(SdVarNode model, Theme theme) {
+	VarPart(VarNode model, Theme theme) {
 		setModel(model);
 		this.theme = theme;
 	}
@@ -51,9 +51,9 @@ public class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 	}
 
 	@Override
-	public SdVarNode getModel() {
+	public VarNode getModel() {
 		var model = super.getModel();
-		return model instanceof SdVarNode m ? m : null;
+		return model instanceof VarNode m ? m : null;
 	}
 
 	@Override
@@ -107,13 +107,13 @@ public class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 	}
 
 	@Override
-	protected List<SdVarLink> getModelSourceConnections() {
+	protected List<VarLink> getModelSourceConnections() {
 		var model = getModel();
 		return model != null ? model.sourceLinks() : List.of();
 	}
 
 	@Override
-	protected List<SdVarLink> getModelTargetConnections() {
+	protected List<VarLink> getModelTargetConnections() {
 		var model = getModel();
 		return model != null ? model.targetLinks() : List.of();
 	}

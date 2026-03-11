@@ -11,7 +11,7 @@ import org.openlca.app.M;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.editors.sd.editor.graph.edit.AddVarCmd;
 import org.openlca.app.editors.sd.editor.graph.edit.UpdateVarCmd;
-import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
+import org.openlca.app.editors.sd.editor.graph.model.VarNode;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
@@ -144,7 +144,7 @@ class VarEditDialog extends FormDialog {
 		variable.setDef(cell);
 
 		if (origin == null) {
-			var node = new SdVarNode(variable, editor.graph().model());
+			var node = new VarNode(variable, editor.graph().model());
 			node.moveTo(new Rectangle(location.x - 50, location.y - 25, 80, 50));
 			var cmd = new AddVarCmd(editor.graph(), node);
 			editor.exec(cmd);

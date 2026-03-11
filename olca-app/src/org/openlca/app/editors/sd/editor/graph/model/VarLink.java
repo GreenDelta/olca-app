@@ -6,11 +6,11 @@ import java.util.Objects;
 /// calculated flow values will update the stock in the iteration steps, or it
 /// can be a link because of the usage of the source variable in the equation
 /// that calculates the target variable.
-public record SdVarLink(
-	SdVarNode source, SdVarNode target, boolean isStockFlow
+public record VarLink(
+	VarNode source, VarNode target, boolean isStockFlow
 ) {
 
-	public SdVarLink {
+	public VarLink {
 		Objects.requireNonNull(source);
 		Objects.requireNonNull(target);
 	}
