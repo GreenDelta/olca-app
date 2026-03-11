@@ -14,6 +14,7 @@ import org.openlca.app.editors.sd.editor.graph.edit.UpdateVarCmd;
 import org.openlca.app.editors.sd.editor.graph.model.SdVarNode;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.MsgBox;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
@@ -127,9 +128,12 @@ class VarEditDialog extends FormDialog {
 		var name = Id.of(nameText.getText());
 		if (isDuplicateName(name)) return;
 
-		if (origin != null) {
-			// TODO: when the name changed, we may need to update
-			// it in other equations -> ask the user
+		if (origin != null && !name.equals(origin.name())) {
+			var b = Question.ask(
+				"Rename variable?",
+				"Renaming the variable will also update mathematical expressions " +
+					"where it is used. Do you want to rename it?");
+			if (!b) return;
 		}
 
 		var cell = nonNegativeCheck.getSelection()

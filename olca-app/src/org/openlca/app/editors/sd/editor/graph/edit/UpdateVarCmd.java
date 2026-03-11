@@ -5,8 +5,10 @@ import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Stock;
 import org.openlca.sd.model.Var;
+import org.openlca.sd.util.VarRenamer;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class UpdateVarCmd extends Command {
 
@@ -36,6 +38,10 @@ public class UpdateVarCmd extends Command {
 		var origin = graph.getNode(name);
 		if (origin == null) return;
 		graph.remove(origin);
+
+		if (!Objects.equals(data.name(), origin.variable().name())) {
+			VarRenamer.rename(graph.model(), origin.variable(), data.name());
+		}
 
 		var v = origin.variable();
 		v.setName(data.name());
