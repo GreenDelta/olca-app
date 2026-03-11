@@ -1,11 +1,5 @@
 package org.openlca.app.editors.sd.editor;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -35,7 +29,13 @@ import org.openlca.sd.model.Var;
 import org.openlca.sd.model.VarBinding;
 import org.openlca.util.ParameterRedefSets;
 
-class VarBindingDialog extends FormDialog {
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+public class VarBindingDialog extends FormDialog {
 
 	private Id selectedVarId;
 	private ParameterRedef selectedParam;

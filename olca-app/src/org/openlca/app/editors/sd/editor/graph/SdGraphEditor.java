@@ -15,7 +15,9 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
+import org.openlca.app.editors.sd.editor.graph.actions.AddSystemAction;
 import org.openlca.app.editors.sd.editor.graph.actions.AddVarAction;
+import org.openlca.app.editors.sd.editor.graph.actions.EditSystemAction;
 import org.openlca.app.editors.sd.editor.graph.actions.EditVarAction;
 import org.openlca.app.editors.sd.editor.graph.edit.PartFactory;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
@@ -89,6 +91,10 @@ public class SdGraphEditor extends GraphicalEditor {
 
 		getSelectionActions().add(EditVarAction.ID);
 		registry.registerAction(new EditVarAction(this));
+
+		registry.registerAction(new AddSystemAction(this));
+		getSelectionActions().add(EditSystemAction.ID);
+		registry.registerAction(new EditSystemAction(this));
 	}
 
 	/// We need to overwrite this otherwise the selection actions are not updated.

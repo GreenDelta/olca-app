@@ -143,6 +143,24 @@ public class SdGraph implements NotifySupport {
 		notifier.fire();
 	}
 
+	public List<SystemNode> systemNodes() {
+		return systemNodes;
+	}
+
+	public void addSystem(SystemNode node) {
+		if (node == null) return;
+		systemNodes.add(node);
+		model.lca().systemBindings().add(node.binding());
+		notifier.fire();
+	}
+
+	public void removeSystem(SystemNode node) {
+		if (node == null) return;
+		systemNodes.remove(node);
+		model.lca().systemBindings().remove(node.binding());
+		notifier.fire();
+	}
+
 	/// Creates links from the given node to other nodes that reference it
 	/// in their equations or stock flow lists.
 	private void addReverseLinksOf(VarNode node) {
