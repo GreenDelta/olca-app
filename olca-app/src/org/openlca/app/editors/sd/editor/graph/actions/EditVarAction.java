@@ -2,6 +2,7 @@ package org.openlca.app.editors.sd.editor.graph.actions;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
+import org.openlca.app.editors.sd.editor.graph.actions.vardialog.VarEditDialog;
 import org.openlca.app.editors.sd.editor.graph.edit.VarPart;
 import org.openlca.app.editors.sd.editor.graph.model.VarNode;
 import org.openlca.app.rcp.images.Icon;

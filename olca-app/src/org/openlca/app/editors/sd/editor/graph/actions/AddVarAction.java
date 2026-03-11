@@ -3,6 +3,7 @@ package org.openlca.app.editors.sd.editor.graph.actions;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.swt.graphics.Point;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
+import org.openlca.app.editors.sd.editor.graph.actions.vardialog.VarEditDialog;
 import org.openlca.app.editors.sd.editor.graph.model.VarType;
 import org.openlca.sd.model.Auxil;
 import org.openlca.sd.model.Rate;

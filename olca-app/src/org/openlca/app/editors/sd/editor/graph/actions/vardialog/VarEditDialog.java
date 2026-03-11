@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph.actions;
+package org.openlca.app.editors.sd.editor.graph.actions.vardialog;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Point;
@@ -22,7 +22,7 @@ import org.openlca.sd.model.Stock;
 import org.openlca.sd.model.Var;
 import org.openlca.sd.model.cells.NonNegativeCell;
 
-class VarEditDialog extends FormDialog {
+public class VarEditDialog extends FormDialog {
 
 	private final SdGraphEditor editor;
 	private final Var variable;

@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph.actions;
+package org.openlca.app.editors.sd.editor.graph.actions.vardialog;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;

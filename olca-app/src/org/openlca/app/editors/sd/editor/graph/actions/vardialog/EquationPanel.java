@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph.actions;
+package org.openlca.app.editors.sd.editor.graph.actions.vardialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
