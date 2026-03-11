@@ -37,7 +37,6 @@ public class UpdateVarCmd extends Command {
 	public void execute() {
 		var origin = graph.getNode(name);
 		if (origin == null) return;
-		graph.remove(origin);
 
 		if (!Objects.equals(data.name(), origin.variable().name())) {
 			VarRenamer.rename(graph.model(), origin.variable(), data.name());
@@ -52,6 +51,6 @@ public class UpdateVarCmd extends Command {
 			stock.setInFlows(new ArrayList<>(stockData.inFlows()));
 			stock.setOutFlows(new ArrayList<>(stockData.outFlows()));
 		}
-		graph.add(origin);
+		graph.update(origin, name);
 	}
 }

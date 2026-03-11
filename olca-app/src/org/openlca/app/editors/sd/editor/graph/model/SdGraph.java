@@ -72,29 +72,6 @@ public class SdGraph implements NotifySupport {
 		target.addTargetLink(link);
 	}
 
-	private void removeLinksOf(SdVarNode node) {
-		if (node == null) return;
-		for (var link : node.sourceLinks()) {
-			unlink(link);
-			link.target().removeTargetLink(link);
-		}
-		for (var link : node.targetLinks()) {
-			unlink(link);
-			link.source().removeSourceLink(link);
-		}
-		node.clearLinks();
-	}
-
-	private void unlink(SdVarLink link) {
-		if (!link.isStockFlow()) return;
-		if (link.source().variable() instanceof Stock stock
-			&& link.target().variable() instanceof Rate rate) {
-			stock.outFlows().remove(rate.name());
-		} else if (link.target().variable() instanceof Stock stock
-			&& link.source().variable() instanceof Rate rate) {
-			stock.inFlows().remove(rate.name());
-		}
-	}
 
 	@Override
 	public Notifier notifier() {
@@ -118,8 +95,29 @@ public class SdGraph implements NotifySupport {
 		var v = node.variable();
 		nodes.put(v.name(), node);
 		addLinksOf(node);
+		addReverseLinksOf(node);
 		model.vars().add(v);
 		var b = node.bounds();
+		model.positions().put(v.name(), new Rect(b.x, b.y, b.width, b.height));
+		notifier.fire();
+	}
+
+	/// Updates a node after its variable properties (name, equation, stock
+	/// flows, etc.) have been changed. The `oldName` is the name the node was
+	/// registered under before the update. This re-maps the node and
+	/// rebuilds all its links.
+	public void update(SdVarNode node, Id oldName) {
+		if (node == null || node.variable() == null) {
+			return;
+		}
+		removeLinksOf(node, false);
+		nodes.remove(oldName);
+		var v = node.variable();
+		nodes.put(v.name(), node);
+		addLinksOf(node);
+		addReverseLinksOf(node);
+		var b = node.bounds();
+		model.positions().remove(oldName);
 		model.positions().put(v.name(), new Rect(b.x, b.y, b.width, b.height));
 		notifier.fire();
 	}
@@ -129,7 +127,59 @@ public class SdGraph implements NotifySupport {
 		model.vars().remove(node.variable());
 		model.positions().remove(node.variable().name());
 		nodes.remove(node.variable().name());
-		removeLinksOf(node);
+		removeLinksOf(node, true);
 		notifier.fire();
+	}
+
+
+	/// Creates links from the given node to other nodes that reference it
+	/// in their equations or stock flow lists.
+	private void addReverseLinksOf(SdVarNode node) {
+		var nodeId = node.variable().name();
+		if (nodeId == null)
+			return;
+		for (var other : nodes.values()) {
+			if (other == node) continue;
+			var deps = EvaluationOrder.dependenciesOf(other.variable());
+			if (deps.contains(nodeId)) {
+				link(node, other, false);
+			}
+			if (other.variable() instanceof Stock stock) {
+				if (stock.inFlows().contains(nodeId)) {
+					link(node, other, true);
+				}
+				if (stock.outFlows().contains(nodeId)) {
+					link(other, node, true);
+				}
+			}
+		}
+	}
+
+	private void removeLinksOf(SdVarNode node, boolean withFlows) {
+		if (node == null) return;
+		for (var link : node.sourceLinks()) {
+			if (withFlows) {
+				unlinkFlows(link);
+			}
+			link.target().removeTargetLink(link);
+		}
+		for (var link : node.targetLinks()) {
+			if (withFlows) {
+				unlinkFlows(link);
+			}
+			link.source().removeSourceLink(link);
+		}
+		node.clearLinks();
+	}
+
+	private void unlinkFlows(SdVarLink link) {
+		if (!link.isStockFlow()) return;
+		if (link.source().variable() instanceof Stock stock
+			&& link.target().variable() instanceof Rate rate) {
+			stock.outFlows().remove(rate.name());
+		} else if (link.target().variable() instanceof Stock stock
+			&& link.source().variable() instanceof Rate rate) {
+			stock.inFlows().remove(rate.name());
+		}
 	}
 }
