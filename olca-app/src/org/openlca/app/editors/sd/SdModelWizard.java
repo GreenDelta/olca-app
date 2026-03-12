@@ -1,5 +1,7 @@
 package org.openlca.app.editors.sd;
 
+import java.util.UUID;
+
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
@@ -18,8 +20,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.sd.model.EntityRef;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.SimSpecs;
-
-import java.util.UUID;
 
 public class SdModelWizard extends FormDialog {
 
@@ -93,6 +93,7 @@ public class SdModelWizard extends FormDialog {
 
 		UI.label(comp, tk, M.ImpactAssessmentMethod);
 		var methodCombo = new ImpactMethodViewer(comp);
+		UI.gridData(methodCombo.getControl(), true, false).widthHint = 1;
 		methodCombo.setInput(db);
 		methodCombo.addSelectionChangedListener(
 			d -> model.lca().impactMethod(EntityRef.of(d)));

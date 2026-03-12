@@ -61,11 +61,6 @@ public class ImpactMethodViewer extends
 	}
 
 	@Override
-	protected int getDisplayColumn() {
-		return 0;
-	}
-
-	@Override
 	protected String[] getColumnHeaders() {
 		return withCategories()
 				? new String[] { M.Name, M.Category }
