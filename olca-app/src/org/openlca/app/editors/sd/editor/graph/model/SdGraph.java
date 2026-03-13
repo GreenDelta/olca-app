@@ -40,44 +40,14 @@ public class SdGraph implements NotifySupport {
 			g.varNodes.put(variable.name(), node);
 			i++;
 		}
-		for (var node : g.varNodes.values()) {
-			g.addLinksOf(node);
-		}
 
 		for (var sys : model.lca().systemBindings()) {
 			var node = new SystemNode(sys);
 			g.systemNodes.add(node);
-			g.addLinksOf(node);
 		}
+		g.rebuildLinks();
 
 		return g;
-	}
-
-	private void addLinksOf(VarNode node) {
-		if (node == null) return;
-		if (node.variable() instanceof Stock stock) {
-			for (var flowId : stock.inFlows()) {
-				link(varNodes.get(flowId), node, LinkType.STOCK_IO);
-			}
-			for (var flowId : stock.outFlows()) {
-				link(node, varNodes.get(flowId), LinkType.STOCK_IO);
-			}
-		}
-		var deps = EvaluationOrder.dependenciesOf(node.variable());
-		for (var depId : deps) {
-			link(varNodes.get(depId), node, LinkType.EQN_LINK);
-		}
-	}
-
-	private void addLinksOf(SystemNode node) {
-		if (node == null) return;
-		var binding = node.binding();
-
-		link(varNodes.get(binding.amountVar()), node, LinkType.SYS_LINK);
-		for (var varBinding : binding.varBindings()) {
-			if (varBinding == null) continue;
-			link(varNodes.get(varBinding.varId()), node, LinkType.SYS_LINK);
-		}
 	}
 
 	private void link(VarNode source, SdNode target, LinkType type) {
@@ -85,6 +55,56 @@ public class SdGraph implements NotifySupport {
 		var link = new VarLink(source, target, type);
 		source.addSourceLink(link);
 		target.addTargetLink(link);
+	}
+
+	private void rebuildLinks() {
+		clearLinks();
+		addStockLinks();
+		addEquationLinks();
+		addSystemBindingLinks();
+	}
+
+	private void clearLinks() {
+		for (var node : varNodes.values()) {
+			node.clearLinks();
+		}
+		for (var node : systemNodes) {
+			node.clearLinks();
+		}
+	}
+
+	private void addStockLinks() {
+		for (var node : varNodes.values()) {
+			if (!(node.variable() instanceof Stock stock)) {
+				continue;
+			}
+			for (var flowId : stock.inFlows()) {
+				link(varNodes.get(flowId), node, LinkType.STOCK_IO);
+			}
+			for (var flowId : stock.outFlows()) {
+				link(node, varNodes.get(flowId), LinkType.STOCK_IO);
+			}
+		}
+	}
+
+	private void addEquationLinks() {
+		for (var node : varNodes.values()) {
+			var deps = EvaluationOrder.dependenciesOf(node.variable());
+			for (var depId : deps) {
+				link(varNodes.get(depId), node, LinkType.EQN_LINK);
+			}
+		}
+	}
+
+	private void addSystemBindingLinks() {
+		for (var node : systemNodes) {
+			var binding = node.binding();
+			link(varNodes.get(binding.amountVar()), node, LinkType.SYS_LINK);
+			for (var varBinding : binding.varBindings()) {
+				if (varBinding == null) continue;
+				link(varNodes.get(varBinding.varId()), node, LinkType.SYS_LINK);
+			}
+		}
 	}
 
 	@Override
@@ -115,12 +135,10 @@ public class SdGraph implements NotifySupport {
 		if (node == null) return;
 		var v = node.variable();
 		varNodes.put(v.name(), node);
-		addLinksOf(node);
-		addReverseLinksOf(node);
-		addSystemLinksOf(node);
 		model.vars().add(v);
 		var b = node.bounds();
 		model.positions().put(v.name(), new Rect(b.x, b.y, b.width, b.height));
+		rebuildLinks();
 		notifier.fire();
 	}
 
@@ -130,25 +148,23 @@ public class SdGraph implements NotifySupport {
 	/// rebuilds all its links.
 	public void update(VarNode node, Id oldName) {
 		if (node == null) return;
-		removeLinksOf(node, false);
 		varNodes.remove(oldName);
 		var v = node.variable();
 		varNodes.put(v.name(), node);
-		addLinksOf(node);
-		addReverseLinksOf(node);
-		addSystemLinksOf(node);
 		var b = node.bounds();
 		model.positions().remove(oldName);
 		model.positions().put(v.name(), new Rect(b.x, b.y, b.width, b.height));
+		rebuildLinks();
 		notifier.fire();
 	}
 
 	public void remove(VarNode node) {
 		if (node == null) return;
+		unlinkFlowsOf(node);
 		model.vars().remove(node.variable());
 		model.positions().remove(node.variable().name());
 		varNodes.remove(node.variable().name());
-		removeLinksOf(node, true);
+		rebuildLinks();
 		notifier.fire();
 	}
 
@@ -156,87 +172,31 @@ public class SdGraph implements NotifySupport {
 		if (node == null) return;
 		systemNodes.add(node);
 		model.lca().systemBindings().add(node.binding());
-		addLinksOf(node);
+		rebuildLinks();
 		notifier.fire();
 	}
 
 	public void removeSystem(SystemNode node) {
 		if (node == null) return;
-		removeLinksOf(node);
 		systemNodes.remove(node);
 		model.lca().systemBindings().remove(node.binding());
+		rebuildLinks();
 		notifier.fire();
 	}
 
 	public void update(SystemNode node) {
 		if (node == null) return;
-		removeLinksOf(node);
-		addLinksOf(node);
+		rebuildLinks();
 		notifier.fire();
 	}
 
-	/// Creates links from the given node to other nodes that reference it
-	/// in their equations or stock flow lists.
-	private void addReverseLinksOf(VarNode node) {
-		var nodeId = node.variable().name();
-		if (nodeId == null)
-			return;
-		for (var other : varNodes.values()) {
-			if (other == node) continue;
-			var deps = EvaluationOrder.dependenciesOf(other.variable());
-			if (deps.contains(nodeId)) {
-				link(node, other, LinkType.EQN_LINK);
-			}
-			if (other.variable() instanceof Stock stock) {
-				if (stock.inFlows().contains(nodeId)) {
-					link(node, other, LinkType.STOCK_IO);
-				}
-				if (stock.outFlows().contains(nodeId)) {
-					link(other, node, LinkType.STOCK_IO);
-				}
-			}
+	private void unlinkFlowsOf(VarNode node) {
+		for (var link : node.sourceLinks()) {
+			unlinkFlows(link);
 		}
-	}
-
-	private void addSystemLinksOf(VarNode node) {
-		var nodeId = node.variable().name();
-		if (nodeId == null) return;
-		for (var systemNode : systemNodes) {
-			var binding = systemNode.binding();
-			if (nodeId.equals(binding.amountVar())) {
-				link(node, systemNode, LinkType.SYS_LINK);
-			}
-			for (var varBinding : binding.varBindings()) {
-				if (varBinding != null && nodeId.equals(varBinding.varId())) {
-					link(node, systemNode, LinkType.SYS_LINK);
-				}
-			}
+		for (var link : node.targetLinks()) {
+			unlinkFlows(link);
 		}
-	}
-
-	private void removeLinksOf(VarNode node, boolean withFlows) {
-		if (node == null) return;
-		for (var link : new ArrayList<>(node.sourceLinks())) {
-			if (withFlows) {
-				unlinkFlows(link);
-			}
-			link.target().removeTargetLink(link);
-		}
-		for (var link : new ArrayList<>(node.targetLinks())) {
-			if (withFlows) {
-				unlinkFlows(link);
-			}
-			link.source().removeSourceLink(link);
-		}
-		node.clearLinks();
-	}
-
-	private void removeLinksOf(SystemNode node) {
-		if (node == null) return;
-		for (var link : new ArrayList<>(node.targetLinks())) {
-			link.source().removeSourceLink(link);
-		}
-		node.clearLinks();
 	}
 
 	private void unlinkFlows(VarLink link) {
