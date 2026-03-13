@@ -27,11 +27,4 @@ public final class SystemNode extends SdNode {
 		binding.setView(new Rect(rect.x, rect.y, rect.width, rect.height));
 		super.moveTo(rect);
 	}
-
-	public String name() {
-		var system = binding.system();
-		return system != null && system.name() != null
-			? system.name()
-			: "Product system";
-	}
 }

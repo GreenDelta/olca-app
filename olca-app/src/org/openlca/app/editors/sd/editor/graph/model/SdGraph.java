@@ -56,22 +56,21 @@ public class SdGraph implements NotifySupport {
 		if (node == null) return;
 		if (node.variable() instanceof Stock stock) {
 			for (var flowId : stock.inFlows()) {
-				link(varNodes.get(flowId), node, true);
+				link(varNodes.get(flowId), node, LinkType.STOCK_IO);
 			}
 			for (var flowId : stock.outFlows()) {
-				link(node, varNodes.get(flowId), true);
+				link(node, varNodes.get(flowId), LinkType.STOCK_IO);
 			}
 		}
 		var deps = EvaluationOrder.dependenciesOf(node.variable());
 		for (var depId : deps) {
-			link(varNodes.get(depId), node, false);
+			link(varNodes.get(depId), node, LinkType.EQN_LINK);
 		}
 	}
 
-	private void link(VarNode source, VarNode target, boolean isFlow) {
-		if (source == null || target == null)
-			return;
-		var link = new VarLink(source, target, isFlow);
+	private void link(VarNode source, SdNode target, LinkType type) {
+		if (source == null || target == null) return;
+		var link = new VarLink(source, target, type);
 		source.addSourceLink(link);
 		target.addTargetLink(link);
 	}
@@ -163,14 +162,14 @@ public class SdGraph implements NotifySupport {
 			if (other == node) continue;
 			var deps = EvaluationOrder.dependenciesOf(other.variable());
 			if (deps.contains(nodeId)) {
-				link(node, other, false);
+				link(node, other, LinkType.EQN_LINK);
 			}
 			if (other.variable() instanceof Stock stock) {
 				if (stock.inFlows().contains(nodeId)) {
-					link(node, other, true);
+					link(node, other, LinkType.STOCK_IO);
 				}
 				if (stock.outFlows().contains(nodeId)) {
-					link(other, node, true);
+					link(other, node, LinkType.STOCK_IO);
 				}
 			}
 		}
@@ -194,13 +193,18 @@ public class SdGraph implements NotifySupport {
 	}
 
 	private void unlinkFlows(VarLink link) {
-		if (!link.isStockFlow()) return;
-		if (link.source().variable() instanceof Stock stock
-			&& link.target().variable() instanceof Rate rate) {
+		if (link.type() != LinkType.STOCK_IO
+			|| !(link.source() instanceof VarNode source)
+			|| !(link.target() instanceof VarNode target)) {
+			return;
+		}
+		if (source.variable() instanceof Stock stock
+			&& target.variable() instanceof Rate rate) {
 			stock.outFlows().remove(rate.name());
-		} else if (link.target().variable() instanceof Stock stock
-			&& link.source().variable() instanceof Rate rate) {
+		} else if (target.variable() instanceof Stock stock
+			&& source.variable() instanceof Rate rate) {
 			stock.inFlows().remove(rate.name());
 		}
+
 	}
 }

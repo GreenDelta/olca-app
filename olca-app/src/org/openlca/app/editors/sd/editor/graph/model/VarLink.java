@@ -19,11 +19,11 @@ import java.util.Objects;
 /// such links, the model variable is the source and the product system the
 /// target.
 public record VarLink(
-	VarNode source, VarNode target, boolean isStockFlow
+	VarNode source, SdNode target, LinkType type
 ) {
-
 	public VarLink {
 		Objects.requireNonNull(source);
 		Objects.requireNonNull(target);
+		Objects.requireNonNull(type);
 	}
 }

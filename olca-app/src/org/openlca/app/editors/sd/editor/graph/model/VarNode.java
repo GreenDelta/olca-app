@@ -28,10 +28,4 @@ public final class VarNode extends SdNode {
 			variable.name(), new Rect(rect.x, rect.y, rect.width, rect.height));
 		super.moveTo(rect);
 	}
-
-	public String name() {
-		return variable.name() != null
-			? variable.name().label()
-			: "";
-	}
 }
