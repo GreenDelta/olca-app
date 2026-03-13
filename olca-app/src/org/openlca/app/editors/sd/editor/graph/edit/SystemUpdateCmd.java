@@ -3,33 +3,21 @@ package org.openlca.app.editors.sd.editor.graph.edit;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 import org.openlca.app.editors.sd.editor.graph.model.SystemNode;
-import org.openlca.sd.model.Id;
-import org.openlca.sd.model.VarBinding;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.openlca.sd.model.SystemBinding;
 
 public class SystemUpdateCmd extends Command {
 
 	private final SdGraph graph;
 	private final SystemNode node;
-	private final double amount;
-	private final Id amountVar;
-	private final List<VarBinding> varBindings;
+	private final SystemBinding data;
 
 	public SystemUpdateCmd(
-		SdGraph graph,
-		SystemNode node,
-		double amount,
-		Id amountVar,
-		List<VarBinding> varBindings
+		SdGraph graph, SystemNode node, SystemBinding data
 	) {
 		this.graph = graph;
 		this.node = node;
-		this.amount = amount;
-		this.amountVar = amountVar;
-		this.varBindings = new ArrayList<>(varBindings);
-		setLabel("Update Product System");
+		this.data = data;
+		setLabel("Update product system bindings");
 	}
 
 	@Override
@@ -45,10 +33,10 @@ public class SystemUpdateCmd extends Command {
 	@Override
 	public void execute() {
 		var binding = node.binding();
-		binding.setAmount(amount);
-		binding.setAmountVar(amountVar);
+		binding.setAmount(data.amount());
+		binding.setAmountVar(data.amountVar());
 		binding.varBindings().clear();
-		binding.varBindings().addAll(varBindings);
+		binding.varBindings().addAll(data.varBindings());
 		graph.update(node);
 	}
 }

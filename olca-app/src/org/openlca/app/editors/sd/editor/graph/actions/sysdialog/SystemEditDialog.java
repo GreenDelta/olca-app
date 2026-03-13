@@ -167,6 +167,10 @@ public class SystemEditDialog extends FormDialog {
 
 		var table = Tables.createViewer(comp, "Model variable", "Parameter");
 		Tables.bindColumnWidths(table, 0.5, 0.5);
+		var gd = UI.gridData(table.getTable(), true, true);
+		gd.heightHint = 1;
+		gd.widthHint = 1;
+
 		table.setLabelProvider(new VarBindingLabel());
 		table.setInput(working.varBindings());
 
@@ -211,12 +215,7 @@ public class SystemEditDialog extends FormDialog {
 			var cmd = new SystemAddCmd(editor.graph(), node);
 			editor.exec(cmd);
 		} else {
-			var cmd = new SystemUpdateCmd(
-				editor.graph(),
-				origin,
-				working.amount(),
-				working.amountVar(),
-				new ArrayList<>(working.varBindings()));
+			var cmd = new SystemUpdateCmd(editor.graph(), origin, working);
 			editor.exec(cmd);
 		}
 		super.okPressed();
