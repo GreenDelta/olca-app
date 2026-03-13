@@ -53,6 +53,10 @@ public class SdGraph implements NotifySupport {
 	private void link(VarNode source, SdNode target, LinkType type) {
 		if (source == null || target == null) return;
 		var link = new VarLink(source, target, type);
+		if (source.sourceLinks().contains(link)
+			|| target.targetLinks().contains(link)) {
+			return;
+		}
 		source.addSourceLink(link);
 		target.addTargetLink(link);
 	}

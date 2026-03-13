@@ -48,12 +48,12 @@ final class TensorPanel extends Panel {
 
 		UI.label(comp, tk, "Array values");
 		table = new TableViewer(comp, SWT.BORDER | SWT.FULL_SELECTION);
-		UI.gridData(table.getControl(), true, true).heightHint = stockVar
-			? 140
-			: 200;
 		table.getTable().setHeaderVisible(true);
 		table.getTable().setLinesVisible(true);
 		table.setContentProvider(ArrayContentProvider.getInstance());
+		var tabGd = UI.gridData(table.getControl(), true, true);
+		tabGd.widthHint = 1;
+		tabGd.heightHint = 1;
 	}
 
 	@Override

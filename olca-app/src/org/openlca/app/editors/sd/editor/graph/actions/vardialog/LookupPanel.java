@@ -51,9 +51,9 @@ final class LookupPanel extends Panel {
 
 		typeCombo = new TypeCombo(comp, this::checkValid);
 		table = createTable(comp);
-		UI.gridData(table.getControl(), true, true).heightHint = stockVar
-			? 140
-			: 200;
+		var tabGd = UI.gridData(table.getControl(), true, true);
+		tabGd.widthHint = 1;
+		tabGd.heightHint = 1;
 	}
 
 	private TableViewer createTable(Composite parent) {

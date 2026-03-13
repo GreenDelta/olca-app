@@ -77,7 +77,7 @@ public class VarEditDialog extends FormDialog {
 
 		var comp = UI.composite(body, tk);
 		UI.gridLayout(comp, 2);
-		UI.gridData(comp, true, false);
+		UI.gridData(comp, true, true);
 
 		nameText = UI.labeledText(comp, tk, M.Name);
 		if (variable.name() != null) {
