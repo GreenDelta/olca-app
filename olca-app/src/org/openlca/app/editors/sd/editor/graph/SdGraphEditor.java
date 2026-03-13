@@ -15,10 +15,10 @@ import org.eclipse.ui.PartInitException;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.editors.sd.editor.SdModelEditor;
-import org.openlca.app.editors.sd.editor.graph.actions.AddSystemAction;
-import org.openlca.app.editors.sd.editor.graph.actions.AddVarAction;
-import org.openlca.app.editors.sd.editor.graph.actions.EditSystemAction;
-import org.openlca.app.editors.sd.editor.graph.actions.EditVarAction;
+import org.openlca.app.editors.sd.editor.graph.actions.SystemAddAction;
+import org.openlca.app.editors.sd.editor.graph.actions.SystemEditAction;
+import org.openlca.app.editors.sd.editor.graph.actions.VarAddAction;
+import org.openlca.app.editors.sd.editor.graph.actions.VarEditAction;
 import org.openlca.app.editors.sd.editor.graph.edit.PartFactory;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 
@@ -85,16 +85,16 @@ public class SdGraphEditor extends GraphicalEditor {
 	protected void createActions() {
 		super.createActions();
 		var registry = getActionRegistry();
-		for (var a : AddVarAction.allFor(this)) {
+		for (var a : VarAddAction.allFor(this)) {
 			registry.registerAction(a);
 		}
 
-		getSelectionActions().add(EditVarAction.ID);
-		registry.registerAction(new EditVarAction(this));
+		getSelectionActions().add(VarEditAction.ID);
+		registry.registerAction(new VarEditAction(this));
 
-		registry.registerAction(new AddSystemAction(this));
-		getSelectionActions().add(EditSystemAction.ID);
-		registry.registerAction(new EditSystemAction(this));
+		registry.registerAction(new SystemAddAction(this));
+		getSelectionActions().add(SystemEditAction.ID);
+		registry.registerAction(new SystemEditAction(this));
 	}
 
 	/// We need to overwrite this otherwise the selection actions are not updated.

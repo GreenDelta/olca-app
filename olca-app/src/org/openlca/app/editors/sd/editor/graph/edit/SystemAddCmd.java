@@ -2,31 +2,31 @@ package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
-import org.openlca.app.editors.sd.editor.graph.model.VarNode;
+import org.openlca.app.editors.sd.editor.graph.model.SystemNode;
 
-public class DeleteVarCmd extends Command {
+public class SystemAddCmd extends Command {
 
 	private final SdGraph graph;
-	private final VarNode node;
+	private final SystemNode node;
 
-	public DeleteVarCmd(SdGraph graph, VarNode node) {
+	public SystemAddCmd(SdGraph graph, SystemNode node) {
 		this.graph = graph;
 		this.node = node;
-		setLabel("Delete Variable");
+		setLabel("Add Product System");
 	}
 
 	@Override
 	public boolean canExecute() {
-		return graph != null	&& node != null;
+		return graph != null && node != null;
 	}
 
 	@Override
 	public void execute() {
-		graph.remove(node);
+		graph.addSystem(node);
 	}
 
 	@Override
 	public void undo() {
-		graph.add(node);
+		graph.removeSystem(node);
 	}
 }

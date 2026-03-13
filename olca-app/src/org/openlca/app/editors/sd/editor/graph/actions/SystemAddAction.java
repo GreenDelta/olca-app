@@ -10,13 +10,13 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.sd.model.EntityRef;
 import org.openlca.sd.model.SystemBinding;
 
-public class AddSystemAction extends WorkbenchPartAction {
+public class SystemAddAction extends WorkbenchPartAction {
 
 	public static final String ID = "ADD-SYSTEM-ACTION";
 	private final SdGraphEditor editor;
 	private Point location = new Point(250, 250);
 
-	public AddSystemAction(SdGraphEditor editor) {
+	public SystemAddAction(SdGraphEditor editor) {
 		super(editor);
 		this.editor = editor;
 		setId(ID);

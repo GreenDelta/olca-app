@@ -10,13 +10,13 @@ import org.openlca.sd.util.VarRenamer;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class UpdateVarCmd extends Command {
+public class VarUpdateCmd extends Command {
 
 	private final SdGraph graph;
 	private final Id name;
 	private final Var data;
 
-	public UpdateVarCmd(SdGraph graph, Id name, Var data) {
+	public VarUpdateCmd(SdGraph graph, Id name, Var data) {
 		this.graph = graph;
 		this.name = name;
 		this.data = data;

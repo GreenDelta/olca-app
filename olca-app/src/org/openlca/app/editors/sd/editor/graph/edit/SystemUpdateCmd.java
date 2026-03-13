@@ -8,14 +8,14 @@ import org.openlca.sd.model.VarBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateSystemCmd extends Command {
+public class SystemUpdateCmd extends Command {
 
 	private final SystemNode node;
 	private final double amount;
 	private final Id amountVar;
 	private final List<VarBinding> varBindings;
 
-	public UpdateSystemCmd(
+	public SystemUpdateCmd(
 		SystemNode node,
 		double amount,
 		Id amountVar,

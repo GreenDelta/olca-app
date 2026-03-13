@@ -6,13 +6,13 @@ import org.openlca.app.editors.sd.editor.graph.edit.SystemPart;
 import org.openlca.app.editors.sd.editor.graph.model.SystemNode;
 import org.openlca.app.rcp.images.Icon;
 
-public class EditSystemAction extends SelectionAction {
+public class SystemEditAction extends SelectionAction {
 
 	public static final String ID = "EDIT-SYSTEM-ACTION";
 	private final SdGraphEditor editor;
 	private SystemNode node;
 
-	public EditSystemAction(SdGraphEditor editor) {
+	public SystemEditAction(SdGraphEditor editor) {
 		super(editor);
 		this.editor = editor;
 		setId(ID);

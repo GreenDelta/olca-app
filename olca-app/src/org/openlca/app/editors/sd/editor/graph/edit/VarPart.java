@@ -80,7 +80,7 @@ public class VarPart extends AbstractGraphicalEditPart implements NodeEditPart {
 					return null;
 				SdGraph graph = graphPart.getModel();
 				return node != null && graph != null
-					? new DeleteVarCmd(graph, node)
+					? new VarDeleteCmd(graph, node)
 					: null;
 			}
 		});

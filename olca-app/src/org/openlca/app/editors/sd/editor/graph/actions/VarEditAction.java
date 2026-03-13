@@ -7,13 +7,13 @@ import org.openlca.app.editors.sd.editor.graph.edit.VarPart;
 import org.openlca.app.editors.sd.editor.graph.model.VarNode;
 import org.openlca.app.rcp.images.Icon;
 
-public class EditVarAction extends SelectionAction {
+public class VarEditAction extends SelectionAction {
 
 	public static String ID = "EDIT-VAR-ACTION";
 	private final SdGraphEditor editor;
 	private VarNode node;
 
-	public EditVarAction(SdGraphEditor editor) {
+	public VarEditAction(SdGraphEditor editor) {
 		super(editor);
 		this.editor = editor;
 		setId(ID);

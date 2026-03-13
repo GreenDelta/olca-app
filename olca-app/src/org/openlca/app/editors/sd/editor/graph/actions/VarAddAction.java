@@ -12,13 +12,13 @@ import org.openlca.sd.model.Stock;
 import java.util.Arrays;
 import java.util.List;
 
-public class AddVarAction extends WorkbenchPartAction {
+public class VarAddAction extends WorkbenchPartAction {
 
 	private final VarType type;
 	private final SdGraphEditor editor;
 	private Point location = new Point(250, 250);
 
-	public AddVarAction(SdGraphEditor editor, VarType type) {
+	public VarAddAction(SdGraphEditor editor, VarType type) {
 		super(editor);
 		this.editor = editor;
 		this.type = type;
@@ -31,15 +31,15 @@ public class AddVarAction extends WorkbenchPartAction {
 		setText(label);
 	}
 
-	public static List<AddVarAction> allFor(SdGraphEditor editor) {
+	public static List<VarAddAction> allFor(SdGraphEditor editor) {
 		return Arrays.stream(VarType.values())
-			.map(type -> new AddVarAction(editor, type))
+			.map(type -> new VarAddAction(editor, type))
 			.toList();
 	}
 
 	public static List<String> ids() {
 		return Arrays.stream(VarType.values())
-			.map(AddVarAction::idOf)
+			.map(VarAddAction::idOf)
 			.toList();
 	}
 

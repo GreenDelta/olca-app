@@ -7,10 +7,10 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
-import org.openlca.app.editors.sd.editor.graph.actions.AddSystemAction;
-import org.openlca.app.editors.sd.editor.graph.actions.AddVarAction;
-import org.openlca.app.editors.sd.editor.graph.actions.EditSystemAction;
-import org.openlca.app.editors.sd.editor.graph.actions.EditVarAction;
+import org.openlca.app.editors.sd.editor.graph.actions.SystemAddAction;
+import org.openlca.app.editors.sd.editor.graph.actions.SystemEditAction;
+import org.openlca.app.editors.sd.editor.graph.actions.VarAddAction;
+import org.openlca.app.editors.sd.editor.graph.actions.VarEditAction;
 import org.openlca.app.rcp.images.Icon;
 
 class ContextMenu extends ContextMenuProvider {
@@ -26,24 +26,24 @@ class ContextMenu extends ContextMenuProvider {
 	public void buildContextMenu(IMenuManager menu) {
 
 		var addMenu = new MenuManager("Add ...", Icon.ADD.descriptor(), "add-var");
-		for (var id : AddVarAction.ids()) {
+		for (var id : VarAddAction.ids()) {
 			var a = actions.getAction(id);
 			if (a != null) {
 				addMenu.add(a);
 			}
 		}
-		var addSystem = actions.getAction(AddSystemAction.ID);
+		var addSystem = actions.getAction(SystemAddAction.ID);
 		if (addSystem != null) {
 			addMenu.add(addSystem);
 		}
 		menu.add(addMenu);
 
-		var edit = actions.getAction(EditVarAction.ID);
+		var edit = actions.getAction(VarEditAction.ID);
 		if (edit != null) {
 			menu.add(edit);
 		}
 
-		var editSystem = actions.getAction(EditSystemAction.ID);
+		var editSystem = actions.getAction(SystemEditAction.ID);
 		if (editSystem != null) {
 			menu.add(editSystem);
 		}

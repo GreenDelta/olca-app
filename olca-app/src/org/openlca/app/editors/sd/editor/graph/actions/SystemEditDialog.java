@@ -17,8 +17,8 @@ import org.openlca.app.components.ModelLink;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.sd.editor.VarBindingDialog;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
-import org.openlca.app.editors.sd.editor.graph.edit.AddSystemCmd;
-import org.openlca.app.editors.sd.editor.graph.edit.UpdateSystemCmd;
+import org.openlca.app.editors.sd.editor.graph.edit.SystemAddCmd;
+import org.openlca.app.editors.sd.editor.graph.edit.SystemUpdateCmd;
 import org.openlca.app.editors.sd.editor.graph.model.SystemNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
@@ -209,10 +209,10 @@ public class SystemEditDialog extends FormDialog {
 			var node = new SystemNode(working);
 			node.moveTo(new Rectangle(
 				location.x - 40, location.y - 20, 80, 40));
-			var cmd = new AddSystemCmd(editor.graph(), node);
+			var cmd = new SystemAddCmd(editor.graph(), node);
 			editor.exec(cmd);
 		} else {
-			var cmd = new UpdateSystemCmd(
+			var cmd = new SystemUpdateCmd(
 				origin,
 				working.amount(),
 				working.amountVar(),
