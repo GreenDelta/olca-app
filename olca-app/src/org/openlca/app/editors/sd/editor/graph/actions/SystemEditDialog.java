@@ -213,6 +213,7 @@ public class SystemEditDialog extends FormDialog {
 			editor.exec(cmd);
 		} else {
 			var cmd = new SystemUpdateCmd(
+				editor.graph(),
 				origin,
 				working.amount(),
 				working.amountVar(),

@@ -1,6 +1,7 @@
 package org.openlca.app.editors.sd.editor.graph.edit;
 
 import org.eclipse.gef.commands.Command;
+import org.openlca.app.editors.sd.editor.graph.model.SdGraph;
 import org.openlca.app.editors.sd.editor.graph.model.SystemNode;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.VarBinding;
@@ -10,17 +11,20 @@ import java.util.List;
 
 public class SystemUpdateCmd extends Command {
 
+	private final SdGraph graph;
 	private final SystemNode node;
 	private final double amount;
 	private final Id amountVar;
 	private final List<VarBinding> varBindings;
 
 	public SystemUpdateCmd(
+		SdGraph graph,
 		SystemNode node,
 		double amount,
 		Id amountVar,
 		List<VarBinding> varBindings
 	) {
+		this.graph = graph;
 		this.node = node;
 		this.amount = amount;
 		this.amountVar = amountVar;
@@ -30,7 +34,7 @@ public class SystemUpdateCmd extends Command {
 
 	@Override
 	public boolean canExecute() {
-		return node != null;
+		return graph != null && node != null;
 	}
 
 	@Override
@@ -45,6 +49,6 @@ public class SystemUpdateCmd extends Command {
 		binding.setAmountVar(amountVar);
 		binding.varBindings().clear();
 		binding.varBindings().addAll(varBindings);
-		node.notifier().fire();
+		graph.update(node);
 	}
 }

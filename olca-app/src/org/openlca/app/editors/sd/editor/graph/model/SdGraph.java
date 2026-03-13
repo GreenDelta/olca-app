@@ -47,6 +47,7 @@ public class SdGraph implements NotifySupport {
 		for (var sys : model.lca().systemBindings()) {
 			var node = new SystemNode(sys);
 			g.systemNodes.add(node);
+			g.addLinksOf(node);
 		}
 
 		return g;
@@ -65,6 +66,17 @@ public class SdGraph implements NotifySupport {
 		var deps = EvaluationOrder.dependenciesOf(node.variable());
 		for (var depId : deps) {
 			link(varNodes.get(depId), node, LinkType.EQN_LINK);
+		}
+	}
+
+	private void addLinksOf(SystemNode node) {
+		if (node == null) return;
+		var binding = node.binding();
+
+		link(varNodes.get(binding.amountVar()), node, LinkType.SYS_LINK);
+		for (var varBinding : binding.varBindings()) {
+			if (varBinding == null) continue;
+			link(varNodes.get(varBinding.varId()), node, LinkType.SYS_LINK);
 		}
 	}
 
@@ -105,6 +117,7 @@ public class SdGraph implements NotifySupport {
 		varNodes.put(v.name(), node);
 		addLinksOf(node);
 		addReverseLinksOf(node);
+		addSystemLinksOf(node);
 		model.vars().add(v);
 		var b = node.bounds();
 		model.positions().put(v.name(), new Rect(b.x, b.y, b.width, b.height));
@@ -123,6 +136,7 @@ public class SdGraph implements NotifySupport {
 		varNodes.put(v.name(), node);
 		addLinksOf(node);
 		addReverseLinksOf(node);
+		addSystemLinksOf(node);
 		var b = node.bounds();
 		model.positions().remove(oldName);
 		model.positions().put(v.name(), new Rect(b.x, b.y, b.width, b.height));
@@ -142,13 +156,22 @@ public class SdGraph implements NotifySupport {
 		if (node == null) return;
 		systemNodes.add(node);
 		model.lca().systemBindings().add(node.binding());
+		addLinksOf(node);
 		notifier.fire();
 	}
 
 	public void removeSystem(SystemNode node) {
 		if (node == null) return;
+		removeLinksOf(node);
 		systemNodes.remove(node);
 		model.lca().systemBindings().remove(node.binding());
+		notifier.fire();
+	}
+
+	public void update(SystemNode node) {
+		if (node == null) return;
+		removeLinksOf(node);
+		addLinksOf(node);
 		notifier.fire();
 	}
 
@@ -175,18 +198,42 @@ public class SdGraph implements NotifySupport {
 		}
 	}
 
+	private void addSystemLinksOf(VarNode node) {
+		var nodeId = node.variable().name();
+		if (nodeId == null) return;
+		for (var systemNode : systemNodes) {
+			var binding = systemNode.binding();
+			if (nodeId.equals(binding.amountVar())) {
+				link(node, systemNode, LinkType.SYS_LINK);
+			}
+			for (var varBinding : binding.varBindings()) {
+				if (varBinding != null && nodeId.equals(varBinding.varId())) {
+					link(node, systemNode, LinkType.SYS_LINK);
+				}
+			}
+		}
+	}
+
 	private void removeLinksOf(VarNode node, boolean withFlows) {
 		if (node == null) return;
-		for (var link : node.sourceLinks()) {
+		for (var link : new ArrayList<>(node.sourceLinks())) {
 			if (withFlows) {
 				unlinkFlows(link);
 			}
 			link.target().removeTargetLink(link);
 		}
-		for (var link : node.targetLinks()) {
+		for (var link : new ArrayList<>(node.targetLinks())) {
 			if (withFlows) {
 				unlinkFlows(link);
 			}
+			link.source().removeSourceLink(link);
+		}
+		node.clearLinks();
+	}
+
+	private void removeLinksOf(SystemNode node) {
+		if (node == null) return;
+		for (var link : new ArrayList<>(node.targetLinks())) {
 			link.source().removeSourceLink(link);
 		}
 		node.clearLinks();
