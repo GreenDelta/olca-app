@@ -53,9 +53,7 @@ public class SdGraph implements NotifySupport {
 	}
 
 	private void addLinksOf(VarNode node) {
-		if (node == null || node.variable() == null) {
-			return;
-		}
+		if (node == null) return;
 		if (node.variable() instanceof Stock stock) {
 			for (var flowId : stock.inFlows()) {
 				link(varNodes.get(flowId), node, true);
@@ -95,15 +93,15 @@ public class SdGraph implements NotifySupport {
 		return new ArrayList<>(varNodes.values());
 	}
 
-	public List<Object> children() {
-		var children = new ArrayList<>();
+	public List<SdNode> children() {
+		var children = new ArrayList<SdNode>();
 		children.addAll(varNodes.values());
 		children.addAll(systemNodes);
 		return children;
 	}
 
 	public void add(VarNode node) {
-		if (node == null || node.variable() == null) return;
+		if (node == null) return;
 		var v = node.variable();
 		varNodes.put(v.name(), node);
 		addLinksOf(node);
@@ -119,9 +117,7 @@ public class SdGraph implements NotifySupport {
 	/// registered under before the update. This re-maps the node and
 	/// rebuilds all its links.
 	public void update(VarNode node, Id oldName) {
-		if (node == null || node.variable() == null) {
-			return;
-		}
+		if (node == null) return;
 		removeLinksOf(node, false);
 		varNodes.remove(oldName);
 		var v = node.variable();
@@ -135,16 +131,12 @@ public class SdGraph implements NotifySupport {
 	}
 
 	public void remove(VarNode node) {
-		if (node == null || node.variable() == null) return;
+		if (node == null) return;
 		model.vars().remove(node.variable());
 		model.positions().remove(node.variable().name());
 		varNodes.remove(node.variable().name());
 		removeLinksOf(node, true);
 		notifier.fire();
-	}
-
-	public List<SystemNode> systemNodes() {
-		return systemNodes;
 	}
 
 	public void addSystem(SystemNode node) {

@@ -5,7 +5,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract sealed class SdNode implements NotifySupport permits VarNode {
+public abstract sealed class SdNode implements NotifySupport
+	permits VarNode, SystemNode  {
 
 	private final Notifier notifier = new Notifier();
 	private final Rectangle bounds = new Rectangle();

@@ -6,39 +6,26 @@ import org.openlca.sd.model.SystemBinding;
 
 import java.util.Objects;
 
-public class SystemNode implements NotifySupport {
+public final class SystemNode extends SdNode {
 
 	private final SystemBinding binding;
-	private final Rectangle bounds;
-	private final Notifier notifier = new Notifier();
 
 	public SystemNode(SystemBinding binding) {
 		this.binding = Objects.requireNonNull(binding);
 		var v = binding.view();
-		bounds = v != null
+		var b = v != null
 			? new Rectangle(v.x(), v.y(), v.width(), v.height())
 			: new Rectangle(100, 100, 80, 40);
+		moveTo(b);
 	}
-
-	@Override
-	public Notifier notifier() {
-		return notifier;
-	}
-
 	public SystemBinding binding() {
 		return binding;
 	}
 
-	public Rectangle bounds() {
-		return bounds;
-	}
-
 	public void moveTo(Rectangle rect) {
-		if (rect == null)
-			return;
-		bounds.setBounds(rect);
+		if (rect == null) return;
 		binding.setView(new Rect(rect.x, rect.y, rect.width, rect.height));
-		notifier.fire();
+		super.moveTo(rect);
 	}
 
 	public String name() {
