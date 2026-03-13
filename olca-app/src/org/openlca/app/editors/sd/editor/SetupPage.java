@@ -1,7 +1,5 @@
 package org.openlca.app.editors.sd.editor;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
@@ -29,6 +27,8 @@ import org.openlca.sd.model.EntityRef;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.SimSpecs;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 class SetupPage extends FormPage {
 
 	private final SdModelEditor editor;
@@ -48,7 +48,6 @@ class SetupPage extends FormPage {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		infoSection(body, tk);
-		new BindingsPanel(body, editor, tk, form);
 	}
 
 	private void infoSection(Composite body, FormToolkit tk) {

@@ -5,6 +5,7 @@ import org.eclipse.swt.graphics.Point;
 import org.openlca.app.components.ModelSelector;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
+import org.openlca.app.editors.sd.editor.graph.actions.sysdialog.SystemEditDialog;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.sd.model.EntityRef;

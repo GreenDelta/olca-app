@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor.graph.actions;
+package org.openlca.app.editors.sd.editor.graph.actions.sysdialog;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -15,7 +15,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.db.Database;
-import org.openlca.app.editors.sd.editor.VarBindingDialog;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.editors.sd.editor.graph.edit.SystemAddCmd;
 import org.openlca.app.editors.sd.editor.graph.edit.SystemUpdateCmd;

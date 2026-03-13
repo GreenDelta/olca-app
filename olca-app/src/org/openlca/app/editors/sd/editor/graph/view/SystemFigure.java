@@ -19,7 +19,7 @@ public class SystemFigure extends Figure {
 
 	public SystemFigure(Theme theme) {
 		setLayoutManager(new BorderLayout());
-		setBorder(new DoubleLineBorder(theme.boxBorderColor(Box.DEFAULT)));
+		setBorder(new DoubleLineBorder(theme.boxBorderColor(Box.SUB_SYSTEM)));
 		setBackgroundColor(theme.boxBackgroundColor(Box.DEFAULT));
 		label.setForegroundColor(theme.boxFontColor(Box.DEFAULT));
 		label.setTextAlignment(PositionConstants.CENTER);

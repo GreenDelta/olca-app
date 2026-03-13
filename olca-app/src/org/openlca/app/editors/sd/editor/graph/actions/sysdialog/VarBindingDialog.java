@@ -1,4 +1,4 @@
-package org.openlca.app.editors.sd.editor;
+package org.openlca.app.editors.sd.editor.graph.actions.sysdialog;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
