@@ -7,10 +7,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.ui.actions.ActionFactory;
 import org.openlca.app.M;
+import org.openlca.app.editors.sd.editor.graph.actions.EditAction;
 import org.openlca.app.editors.sd.editor.graph.actions.SystemAddAction;
-import org.openlca.app.editors.sd.editor.graph.actions.SystemEditAction;
 import org.openlca.app.editors.sd.editor.graph.actions.VarAddAction;
-import org.openlca.app.editors.sd.editor.graph.actions.VarEditAction;
 import org.openlca.app.rcp.images.Icon;
 
 class ContextMenu extends ContextMenuProvider {
@@ -38,14 +37,9 @@ class ContextMenu extends ContextMenuProvider {
 		}
 		menu.add(addMenu);
 
-		var edit = actions.getAction(VarEditAction.ID);
+		var edit = actions.getAction(EditAction.ID);
 		if (edit != null) {
 			menu.add(edit);
-		}
-
-		var editSystem = actions.getAction(SystemEditAction.ID);
-		if (editSystem != null) {
-			menu.add(editSystem);
 		}
 
 		var delete = actions.getAction(ActionFactory.DELETE.getId());
