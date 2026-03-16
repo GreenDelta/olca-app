@@ -48,14 +48,14 @@ public class VarBindingDialog extends FormDialog {
 	private TableViewer paramsTable;
 
 	public static Optional<VarBinding> create(
-			List<Var> vars, SystemBinding binding
+		List<Var> vars, SystemBinding binding
 	) {
 		try {
 			var params = getFreeParamsOf(binding);
 			var dialog = new VarBindingDialog(vars, params);
 			return dialog.open() == OK
-					? Optional.ofNullable(dialog.result)
-					: Optional.empty();
+				? Optional.ofNullable(dialog.result)
+				: Optional.empty();
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create binding dialog", e);
 			return Optional.empty();
@@ -65,39 +65,36 @@ public class VarBindingDialog extends FormDialog {
 	private static List<ParameterRedef> getFreeParamsOf(SystemBinding binding) {
 		var db = Database.get();
 		var sysRef = binding.system();
-		if (sysRef == null || db == null)
-			return List.of();
+		if (sysRef == null || db == null) return List.of();
 		var system = db.get(ProductSystem.class, sysRef.refId());
-		if (system == null)
-			return List.of();
+		if (system == null) return List.of();
 
 		var all = ParameterRedefSets.allOf(
-				db, Descriptor.of(system)).parameters;
+			db, Descriptor.of(system)).parameters;
 
 		Function<ParameterRedef, String> keyFn = p -> {
 			if (Strings.isBlank(p.name))
 				return "--";
 			var name = p.name.strip().toLowerCase();
 			return p.contextId == null
-					? name
-					: name + "//" + p.contextId;
+				? name
+				: name + "//" + p.contextId;
 		};
 
 		// build bound set from existing VarBindings
 		var bound = new HashSet<String>();
 		for (var vb : binding.varBindings()) {
-			if (Strings.isBlank(vb.parameter()))
-				continue;
+			if (Strings.isBlank(vb.parameter())) continue;
 			var name = vb.parameter().strip().toLowerCase();
 			if (vb.context() == null) {
 				bound.add(name);
 			} else {
 				var ctx = db.get(
-						vb.context().type().getModelClass(),
-						vb.context().refId());
+					vb.context().type().getModelClass(),
+					vb.context().refId());
 				bound.add(ctx != null
-						? name + "//" + ctx.id
-						: name);
+					? name + "//" + ctx.id
+					: name);
 			}
 		}
 
@@ -168,7 +165,7 @@ public class VarBindingDialog extends FormDialog {
 		}
 		var f = text.strip().toLowerCase();
 		Predicate<Id> matcher = (id) ->
-				id != null && id.label().toLowerCase().contains(f);
+			id != null && id.label().toLowerCase().contains(f);
 
 		// remove the selection if it does not match the filter
 		if (selectedVarId != null && !matcher.test(selectedVarId)) {
@@ -177,8 +174,8 @@ public class VarBindingDialog extends FormDialog {
 		}
 
 		var filtered = vars.stream()
-				.filter(v -> matcher.test(v.name()))
-				.toList();
+			.filter(v -> matcher.test(v.name()))
+			.toList();
 		varsTable.setInput(filtered);
 	}
 
@@ -190,14 +187,14 @@ public class VarBindingDialog extends FormDialog {
 		UI.label(comp, tk, "System parameter");
 
 		var paramsFilter = UI.text(
-				comp, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+			comp, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		UI.gridData(paramsFilter, true, false);
 		paramsFilter.setMessage("Search");
 		paramsFilter.addModifyListener(
-				e -> filterParameters(paramsFilter.getText()));
+			e -> filterParameters(paramsFilter.getText()));
 
 		paramsTable = new TableViewer(
-				comp, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
+			comp, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
 		UI.gridData(paramsTable.getControl(), true, true);
 		paramsTable.setContentProvider(ArrayContentProvider.getInstance());
 		paramsTable.setLabelProvider(new ParamLabel());
@@ -228,8 +225,8 @@ public class VarBindingDialog extends FormDialog {
 		}
 
 		var filtered = params.stream()
-				.filter(matcher)
-				.toList();
+			.filter(matcher)
+			.toList();
 		paramsTable.setInput(filtered);
 	}
 
@@ -249,12 +246,12 @@ public class VarBindingDialog extends FormDialog {
 		// resolve context from the selected ParameterRedef
 		EntityRef context = null;
 		if (selectedParam.contextId != null
-				&& selectedParam.contextType != null) {
+			&& selectedParam.contextType != null) {
 			var db = Database.get();
 			if (db != null) {
 				var ctx = db.getDescriptor(
-						selectedParam.contextType.getModelClass(),
-						selectedParam.contextId);
+					selectedParam.contextType.getModelClass(),
+					selectedParam.contextId);
 				if (ctx != null) {
 					context = EntityRef.of(ctx);
 				}
@@ -266,7 +263,7 @@ public class VarBindingDialog extends FormDialog {
 	}
 
 	private static class VarLabel extends BaseLabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
@@ -282,7 +279,7 @@ public class VarBindingDialog extends FormDialog {
 	}
 
 	private static class ParamLabel extends BaseLabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
