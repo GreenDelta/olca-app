@@ -1,5 +1,9 @@
 package org.openlca.app.editors.sd.editor;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -7,7 +11,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
-import org.openlca.app.editors.graphical.GraphicalEditorInput;
+import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.sd.SdVars;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.navigation.Navigator;
@@ -19,10 +23,6 @@ import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.Var;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SdModelEditor extends FormEditor {
 
@@ -52,8 +52,6 @@ public class SdModelEditor extends FormEditor {
 		super.init(site, input);
 		var inp = (SdEditorInput) input;
 		var modelDir = inp.dir();
-		setTitleImage(Icon.SD.get());
-		setPartName(inp.getName());
 
 		// load the model from the XMILE file
 		var file = SystemDynamics.getXmileFile(modelDir);
@@ -69,6 +67,11 @@ public class SdModelEditor extends FormEditor {
 			} else {
 				model = res.value();
 			}
+		}
+
+		setTitleImage(Icon.SD.get());
+		if (Strings.isNotBlank(model.name())) {
+			setPartName(model.name());
 		}
 	}
 
@@ -107,8 +110,8 @@ public class SdModelEditor extends FormEditor {
 	protected void addPages() {
 		try {
 			graph = new SdGraphEditor(this);
-			var gInput = new GraphicalEditorInput(null);
-			int index = addPage(graph, gInput);
+			int index = addPage(
+				graph, new SimpleEditorInput(model.id(), model.name()));
 			setPageText(index, "Model");
 
 			addPage(new SetupPage(this));

@@ -21,6 +21,7 @@ import org.openlca.sd.model.EntityRef;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.SimSpecs;
 
+/// The wizard for creating new system dynamics models.
 public class SdModelWizard extends FormDialog {
 
 	private final IDatabase db;
@@ -117,12 +118,12 @@ public class SdModelWizard extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		var res = SystemDynamics.saveModel(model, db);
-		if (res.isError()) {
-			MsgBox.error("Failed to create model", res.error());
+		var folder = SystemDynamics.saveModel(model, db);
+		if (folder.isError()) {
+			MsgBox.error("Failed to create model", folder.error());
 			return;
 		}
-		SdModelEditor.open(res.value());
+		SdModelEditor.open(folder.value());
 		Navigator.refresh();
 		super.okPressed();
 	}

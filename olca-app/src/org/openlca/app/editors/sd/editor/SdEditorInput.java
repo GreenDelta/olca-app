@@ -9,11 +9,11 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.FileType;
 import org.openlca.app.util.SystemDynamics;
 
-record SdEditorInput(File dir, String key) implements IEditorInput {
+record SdEditorInput(File dir) implements IEditorInput {
 
 	public static SdEditorInput of(File dir) {
 		return dir != null
-			? new SdEditorInput(dir, dir.getAbsolutePath())
+			? new SdEditorInput(dir)
 			: null;
 	}
 
@@ -39,7 +39,7 @@ record SdEditorInput(File dir, String key) implements IEditorInput {
 
 	@Override
 	public String getToolTipText() {
-		return "System dynamics model: " + getName();
+		return getName();
 	}
 
 	@Override
