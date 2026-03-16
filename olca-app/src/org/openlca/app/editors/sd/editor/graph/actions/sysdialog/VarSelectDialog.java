@@ -1,41 +1,36 @@
 package org.openlca.app.editors.sd.editor.graph.actions.sysdialog;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.util.UI;
-import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Var;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 class VarSelectDialog extends FormDialog {
 
-	private final List<Id> all;
+	private final List<Var> vars;
 	private Id selected;
+	private VarPanel panel;
 
 	static Optional<Id> selectFrom(List<Var> vars) {
 		if (vars == null || vars.isEmpty()) {
 			return Optional.empty();
 		}
-		var all = new ArrayList<Id>(vars.size());
-		for (var v : vars) {
-			all.add(v.name());
-		}
-		all.sort((i, j) -> Strings.compareIgnoreCase(i.label(), j.label()));
-		var dialog = new VarSelectDialog(all);
+		var dialog = new VarSelectDialog(vars);
 		return dialog.open() == OK && dialog.selected != null
 			? Optional.of(dialog.selected)
 			: Optional.empty();
 	}
 
-	private VarSelectDialog(List<Id> all) {
+	private VarSelectDialog(List<Var> vars) {
 		super(UI.shell());
-		this.all = all;
+		this.vars = vars;
 	}
 
 	@Override
@@ -53,8 +48,20 @@ class VarSelectDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
-		UI.gridLayout(body, 2, 10, 0);
-		
+		UI.gridLayout(body, 1);
+		panel = new VarPanel(vars, body, tk);
+		panel.onSelection(id -> {
+			selected = id;
+			checkOk();
+		});
+		checkOk();
+	}
+
+	private void checkOk() {
+		var btn = getButton(IDialogConstants.OK_ID);
+		if (btn != null) {
+			btn.setEnabled(selected != null);
+		}
 	}
 
 }
