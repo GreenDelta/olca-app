@@ -1,8 +1,5 @@
 package org.openlca.app.editors.sd.editor.graph.actions.sysdialog;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
@@ -12,11 +9,13 @@ import org.openlca.app.util.UI;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Var;
 
+import java.util.List;
+import java.util.Optional;
+
 class VarSelectDialog extends FormDialog {
 
 	private final List<Var> vars;
 	private Id selected;
-	private VarPanel panel;
 
 	static Optional<Id> selectFrom(List<Var> vars) {
 		if (vars == null || vars.isEmpty()) {
@@ -49,7 +48,7 @@ class VarSelectDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 1);
-		panel = new VarPanel(vars, body, tk);
+		var panel = new VarPanel(vars, body, tk);
 		panel.onSelection(id -> {
 			selected = id;
 			checkOk();
@@ -63,5 +62,4 @@ class VarSelectDialog extends FormDialog {
 			btn.setEnabled(selected != null);
 		}
 	}
-
 }

@@ -1,8 +1,5 @@
 package org.openlca.app.editors.sd.editor.graph.actions.sysdialog;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -18,6 +15,10 @@ import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Var;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+
 class VarPanel {
 
 	private final List<Id> all;
@@ -32,11 +33,11 @@ class VarPanel {
 			? List.of()
 			: vars.stream()
 				.map(Var::name)
-				.filter(id -> id != null)
+				.filter(Objects::nonNull)
 				.sorted((i, j) -> Strings.compareIgnoreCase(i.label(), j.label()))
 				.toList();
 
-		var filter = UI.text(comp,
+		var filter = UI.text(comp, tk,
 			SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		UI.gridData(filter, true, false);
 		filter.setMessage("Search");

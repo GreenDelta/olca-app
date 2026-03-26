@@ -6,7 +6,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
@@ -21,6 +20,7 @@ import org.openlca.app.editors.sd.editor.graph.edit.SystemUpdateCmd;
 import org.openlca.app.editors.sd.editor.graph.model.SystemNode;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
@@ -31,7 +31,6 @@ import org.openlca.sd.model.SystemBinding;
 import org.openlca.sd.model.Var;
 import org.openlca.sd.model.VarBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SystemEditDialog extends FormDialog {
@@ -42,9 +41,7 @@ public class SystemEditDialog extends FormDialog {
 	private final Point location;
 
 	private Text amountText;
-	private Combo amountVarCombo;
 	private List<Var> vars;
-	private List<Id> varIds;
 
 	public static void edit(SdGraphEditor editor, SystemNode node) {
 		if (editor == null || node == null)
@@ -132,32 +129,16 @@ public class SystemEditDialog extends FormDialog {
 		var unit = system != null && system.targetUnit != null
 			? system.targetUnit.name
 			: "?";
+		var amountValue = working.amountVar() != null
+			? working.amountVar().label()
+			: Double.toString(working.amount());
 		amountText = UI.labeledText(comp, tk, M.Amount);
-		amountText.setText(Double.toString(working.amount()));
+		amountText.setText(amountValue);
+		var selectVarButton = UI.button(comp, tk, M.Browse);
+		selectVarButton.addListener(SWT.Selection, e ->
+			VarSelectDialog.selectFrom(vars)
+				.ifPresent(id -> amountText.setText(id.label())));
 		UI.label(comp, tk, unit);
-
-		// amount variable
-		UI.label(comp, tk, "Amount variable");
-		amountVarCombo = new Combo(comp, SWT.READ_ONLY);
-		tk.adapt(amountVarCombo);
-		UI.gridData(amountVarCombo, true, false);
-		UI.filler(comp, tk);
-
-		varIds = new ArrayList<>();
-		amountVarCombo.add("");
-		varIds.add(null);
-		int selectedIndex = 0;
-		for (int i = 0; i < vars.size(); i++) {
-			var v = vars.get(i);
-			var label = v.name() != null ? v.name().label() : "";
-			amountVarCombo.add(label);
-			varIds.add(v.name());
-			if (working.amountVar() != null
-				&& working.amountVar().equals(v.name())) {
-				selectedIndex = i + 1;
-			}
-		}
-		amountVarCombo.select(selectedIndex);
 	}
 
 	private void createBindingsSection(Composite body, FormToolkit tk) {
@@ -200,13 +181,25 @@ public class SystemEditDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
+		var amountValue = amountText.getText() != null
+			? amountText.getText().trim()
+			: "";
 		try {
-			working.setAmount(Double.parseDouble(amountText.getText()));
+			working.setAmount(Double.parseDouble(amountValue));
+			working.setAmountVar(null);
 		} catch (Exception ignored) {
+			var amountVar = Id.of(amountValue);
+			var boundVar = vars.stream()
+				.filter(v -> v != null && amountVar.equals(v.name()))
+				.findFirst()
+				.orElse(null);
+			if (boundVar == null) {
+				MsgBox.error("Invalid reference amount",
+					"Enter a number or the name of an existing variable.");
+				return;
+			}
+			working.setAmountVar(boundVar.name());
 		}
-
-		int idx = amountVarCombo.getSelectionIndex();
-		working.setAmountVar(idx > 0 ? varIds.get(idx) : null);
 
 		if (origin == null) {
 			var node = new SystemNode(working);
