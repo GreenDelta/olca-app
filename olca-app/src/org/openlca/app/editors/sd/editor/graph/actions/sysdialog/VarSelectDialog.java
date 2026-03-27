@@ -49,7 +49,7 @@ class VarSelectDialog extends FormDialog {
 		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 1);
 		var panel = new VarPanel(vars, body, tk);
-		panel.onSelection(id -> {
+		panel.onSelect(id -> {
 			selected = id;
 			checkOk();
 		});

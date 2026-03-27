@@ -27,8 +27,6 @@ import org.openlca.sd.model.EntityRef;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.SimSpecs;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 class SetupPage extends FormPage {
 
 	private final SdModelEditor editor;
@@ -178,11 +176,10 @@ class SetupPage extends FormPage {
 			service.run(true, true, monitor -> {
 				monitor.beginTask("Running simulation", totalWork);
 
-				var iteration = new AtomicInteger(0);
 				sim.run(new Progress() {
 					@Override
 					public void tick() {
-						monitor.worked(iteration.incrementAndGet());
+						monitor.worked(1);
 					}
 
 					@Override

@@ -1,8 +1,5 @@
 package org.openlca.app.components;
 
-import java.util.Objects;
-import java.util.function.Consumer;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -21,6 +18,9 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
 
+import java.util.Objects;
+import java.util.function.Consumer;
+
 public class ModelLink<T extends RootEntity> {
 
 	private final IDatabase db;
@@ -35,24 +35,15 @@ public class ModelLink<T extends RootEntity> {
 	private ModelLink(Class<T> type) {
 		this.db = Objects.requireNonNull(Database.get());
 		this.type = Objects.requireNonNull(type);
-		ModelType modelType = null;
-		for (var mt : ModelType.values()) {
-			if (type.equals(mt.getModelClass())) {
-				modelType = mt;
-				break;
-			}
-		}
-		this.modelType = modelType;
+		this.modelType = ModelType.of(type);
 	}
 
 	public static <T extends RootEntity> ModelLink<T> of(Class<T> type) {
 		return new ModelLink<>(type);
 	}
 
-	/**
-	 * Set if the model link is enabled or not. This has to be done before the
-	 * model links is rendered.
-	 */
+	/// Set if the model link is enabled or not. This has to be set before the
+	/// model links is rendered because it looks different then.
 	public ModelLink<T> setEditable(boolean editable) {
 		this.editable = editable;
 		return this;
@@ -70,20 +61,24 @@ public class ModelLink<T extends RootEntity> {
 
 	public ModelLink<T> renderOn(Composite parent, FormToolkit tk) {
 		var comp = UI.composite(parent, tk, SWT.FILL);
-		UI.gridLayout(comp, 3, 10, 0);
+		UI.gridLayout(comp, editable ? 3 : 1, 10, 0);
 
 		// the selection handler of this widget
 		Runnable doSelect = () -> select(ModelSelector.select(modelType));
 
 		// selection button
-		var btn = UI.imageHyperlink(comp, tk, SWT.BORDER);
-		btn.setToolTipText(M.SelectADataset);
-		btn.setImage(Images.get(modelType));
-		btn.setEnabled(editable);
-		Controls.onClick(btn, $ -> doSelect.run());
+		if (editable) {
+			var btn = UI.imageHyperlink(comp, tk, SWT.BORDER);
+			btn.setToolTipText(M.SelectADataset);
+			btn.setImage(Images.get(modelType));
+			Controls.onClick(btn, $ -> doSelect.run());
+		}
 
 		// the link
 		link = UI.imageHyperlink(comp, tk, SWT.NONE);
+		if (!editable) {
+			link.setImage(Images.get(modelType));
+		}
 		Controls.onClick(link, $ -> {
 			if (model != null) {
 				App.open(model);
@@ -100,18 +95,19 @@ public class ModelLink<T extends RootEntity> {
 		}
 
 		// the delete button
-		var deleteBtn = UI.imageHyperlink(comp, tk, SWT.TOP);
-		deleteBtn.setEnabled(editable);
-		deleteBtn.setToolTipText(M.Remove);
-		deleteBtn.setHoverImage(Icon.DELETE.get());
-		deleteBtn.setImage(Icon.DELETE_DISABLED.get());
-		Controls.onClick(deleteBtn, $ -> {
-			model = null;
-			updateLinkText();
-			if (onChange != null) {
-				onChange.accept(null);
-			}
-		});
+		if (editable) {
+			var deleteBtn = UI.imageHyperlink(comp, tk, SWT.TOP);
+			deleteBtn.setToolTipText(M.Remove);
+			deleteBtn.setHoverImage(Icon.DELETE.get());
+			deleteBtn.setImage(Icon.DELETE_DISABLED.get());
+			Controls.onClick(deleteBtn, $ -> {
+				model = null;
+				updateLinkText();
+				if (onChange != null) {
+					onChange.accept(null);
+				}
+			});
+		}
 
 		updateLinkText();
 		return this;

@@ -21,15 +21,14 @@ import java.util.function.Consumer;
 
 class VarPanel {
 
-	private final List<Id> all;
-	private Id selected;
-	private Consumer<Id> onSelection = _id -> {
-	};
-
+	private final List<Id> vars;
 	private final TableViewer table;
+	private Consumer<Id> selectionHandler;
+
+	private Id selected;
 
 	VarPanel(List<Var> vars, Composite comp, FormToolkit tk) {
-		all = vars == null
+		this.vars = vars == null
 			? List.of()
 			: vars.stream()
 				.map(Var::name)
@@ -37,54 +36,54 @@ class VarPanel {
 				.sorted((i, j) -> Strings.compareIgnoreCase(i.label(), j.label()))
 				.toList();
 
-		var filter = UI.text(comp, tk,
-			SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		UI.gridData(filter, true, false);
-		filter.setMessage("Search");
-		filter.addModifyListener(e -> applyFilter(filter.getText()));
+		createSearchText(comp, tk);
+		table = createTable(comp);
+		table.setInput(this.vars);
+	}
 
-		table = new TableViewer(comp,
+	void onSelect(Consumer<Id> handler) {
+		selectionHandler = handler;
+	}
+
+	private TableViewer createTable(Composite comp) {
+		var table = new TableViewer(comp,
 			SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
 		var gd = UI.gridData(table.getControl(), true, true);
 		gd.heightHint = 1;
 		gd.widthHint = 1;
 		table.setContentProvider(ArrayContentProvider.getInstance());
 		table.setLabelProvider(new IdLabel());
-		table.setInput(all);
+
 		table.addSelectionChangedListener(e -> {
+			if (selectionHandler == null) return;
 			selected = Viewers.getFirstSelected(table);
-			onSelection.accept(selected);
+			selectionHandler.accept(selected);
 		});
-	}
-
-	Id selected() {
-		return selected;
-	}
-
-	TableViewer table() {
 		return table;
 	}
 
-	void onSelection(Consumer<Id> handler) {
-		onSelection = handler != null
-			? handler
-			: _id -> {
-			};
+	private void createSearchText(Composite comp, FormToolkit tk) {
+		var text = UI.text(comp, tk, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		UI.gridData(text, true, false);
+		text.setMessage("Search");
+		text.addModifyListener(e -> doSearch(text.getText()));
 	}
 
-	private void applyFilter(String query) {
+	private void doSearch(String query) {
 		if (Strings.isBlank(query)) {
-			table.setInput(all);
+			table.setInput(vars);
 			return;
 		}
 
 		var q = query.strip().toLowerCase();
 		if (selected != null && !matches(selected, q)) {
 			selected = null;
-			onSelection.accept(null);
+			if (selectionHandler != null) {
+				selectionHandler.accept(null);
+			}
 		}
 
-		var filtered = all.stream()
+		var filtered = vars.stream()
 			.filter(id -> matches(id, q))
 			.toList();
 		table.setInput(filtered);

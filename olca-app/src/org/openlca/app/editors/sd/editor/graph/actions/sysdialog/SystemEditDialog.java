@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
@@ -90,12 +89,12 @@ public class SystemEditDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
 		vars = editor.parent().vars();
-		createInfoSection(body, tk);
+		createRefAmountSection(body, tk);
 		createBindingsSection(body, tk);
 		mForm.getForm().reflow(true);
 	}
 
-	private void createInfoSection(Composite body, FormToolkit tk) {
+	private void createRefAmountSection(Composite body, FormToolkit tk) {
 		var comp = UI.composite(body, tk);
 		UI.gridLayout(comp, 3);
 		UI.gridData(comp, true, false);
@@ -106,7 +105,7 @@ public class SystemEditDialog extends FormDialog {
 			? db.get(ProductSystem.class, sysRef.refId())
 			: null;
 
-		// product system (read-only)
+		// product system link
 		UI.label(comp, tk, "Product system");
 		ModelLink.of(ProductSystem.class)
 			.setModel(system)
@@ -114,7 +113,7 @@ public class SystemEditDialog extends FormDialog {
 			.renderOn(comp, tk);
 		UI.filler(comp, tk);
 
-		// reference flow (read-only)
+		// reference flow link
 		var refFlow = system != null && system.referenceExchange != null
 			? system.referenceExchange.flow
 			: null;
@@ -125,20 +124,26 @@ public class SystemEditDialog extends FormDialog {
 			.renderOn(comp, tk);
 		UI.filler(comp, tk);
 
-		// amount
+		// amount text
+		var amount = working.amountVar() != null
+			? working.amountVar().label()
+			: Double.toString(working.amount());
+		amountText = UI.labeledText(comp, tk, "Reference amount");
+		amountText.setText(amount);
+
+		// unit label
 		var unit = system != null && system.targetUnit != null
 			? system.targetUnit.name
 			: "?";
-		var amountValue = working.amountVar() != null
-			? working.amountVar().label()
-			: Double.toString(working.amount());
-		amountText = UI.labeledText(comp, tk, M.Amount);
-		amountText.setText(amountValue);
-		var selectVarButton = UI.button(comp, tk, M.Browse);
-		selectVarButton.addListener(SWT.Selection, e ->
+		UI.label(comp, tk, unit);
+
+		// button for selecting a variable
+		UI.filler(comp, tk);
+		var varBtn = UI.button(comp, tk, "Select a variable");
+		varBtn.setImage(Icon.FORMULA.get());
+		varBtn.addListener(SWT.Selection, e ->
 			VarSelectDialog.selectFrom(vars)
 				.ifPresent(id -> amountText.setText(id.label())));
-		UI.label(comp, tk, unit);
 	}
 
 	private void createBindingsSection(Composite body, FormToolkit tk) {
