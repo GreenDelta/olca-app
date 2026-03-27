@@ -24,8 +24,8 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.sd.model.EntityRef;
 import org.openlca.sd.model.Id;
+import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.SystemBinding;
-import org.openlca.sd.model.Var;
 import org.openlca.sd.model.VarBinding;
 import org.openlca.util.ParameterRedefSets;
 
@@ -41,18 +41,17 @@ public class VarBindingDialog extends FormDialog {
 	private ParameterRedef selectedParam;
 	private VarBinding result;
 
-	private final List<Var> vars;
+	private final SdModel model;
 	private final List<ParameterRedef> params;
 
-	private TableViewer varsTable;
 	private TableViewer paramsTable;
 
 	public static Optional<VarBinding> create(
-		List<Var> vars, SystemBinding binding
+		SdModel model, SystemBinding binding
 	) {
 		try {
 			var params = getFreeParamsOf(binding);
-			var dialog = new VarBindingDialog(vars, params);
+			var dialog = new VarBindingDialog(model, params);
 			return dialog.open() == OK
 				? Optional.ofNullable(dialog.result)
 				: Optional.empty();
@@ -104,9 +103,9 @@ public class VarBindingDialog extends FormDialog {
 			.toList();
 	}
 
-	private VarBindingDialog(List<Var> vars, List<ParameterRedef> params) {
+	private VarBindingDialog(SdModel model, List<ParameterRedef> params) {
 		super(UI.shell());
-		this.vars = vars;
+		this.model = model;
 		this.params = params;
 	}
 
@@ -135,48 +134,12 @@ public class VarBindingDialog extends FormDialog {
 		var comp = tk.createComposite(body);
 		UI.gridData(comp, true, true);
 		UI.gridLayout(comp, 1);
-
 		UI.label(comp, tk, "Model variable");
-
-		var varsFilter = UI.text(comp, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		UI.gridData(varsFilter, true, false);
-		varsFilter.setMessage("Search");
-		varsFilter.addModifyListener(e -> filterVars(varsFilter.getText()));
-
-		varsTable = new TableViewer(comp, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
-		UI.gridData(varsTable.getControl(), true, true);
-		varsTable.setContentProvider(ArrayContentProvider.getInstance());
-		varsTable.setLabelProvider(new VarLabel());
-		varsTable.setInput(vars);
-
-		varsTable.addSelectionChangedListener(e -> {
-			var selected = Viewers.getFirstSelected(varsTable);
-			if (selected instanceof Var v) {
-				selectedVarId = v.name();
-				checkOk();
-			}
-		});
-	}
-
-	private void filterVars(String text) {
-		if (Strings.isBlank(text)) {
-			varsTable.setInput(vars);
-			return;
-		}
-		var f = text.strip().toLowerCase();
-		Predicate<Id> matcher = (id) ->
-			id != null && id.label().toLowerCase().contains(f);
-
-		// remove the selection if it does not match the filter
-		if (selectedVarId != null && !matcher.test(selectedVarId)) {
-			selectedVarId = null;
+		var panel = new VarPanel(model, comp, tk);
+		panel.onSelect(id -> {
+			selectedVarId = id;
 			checkOk();
-		}
-
-		var filtered = vars.stream()
-			.filter(v -> matcher.test(v.name()))
-			.toList();
-		varsTable.setInput(filtered);
+		});
 	}
 
 	private void createParamsSection(Composite body, FormToolkit tk) {
@@ -260,22 +223,6 @@ public class VarBindingDialog extends FormDialog {
 
 		result = new VarBinding(selectedVarId, selectedParam.name, context);
 		super.okPressed();
-	}
-
-	private static class VarLabel extends BaseLabelProvider
-		implements ITableLabelProvider {
-
-		@Override
-		public Image getColumnImage(Object obj, int col) {
-			return Icon.FORMULA.get();
-		}
-
-		@Override
-		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof Var v))
-				return null;
-			return v.name().label();
-		}
 	}
 
 	private static class ParamLabel extends BaseLabelProvider

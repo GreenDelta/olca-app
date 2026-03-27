@@ -13,10 +13,9 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
-import org.openlca.sd.model.Var;
+import org.openlca.sd.model.SdModel;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 class VarPanel {
@@ -27,15 +26,8 @@ class VarPanel {
 
 	private Id selected;
 
-	VarPanel(List<Var> vars, Composite comp, FormToolkit tk) {
-		this.vars = vars == null
-			? List.of()
-			: vars.stream()
-				.map(Var::name)
-				.filter(Objects::nonNull)
-				.sorted((i, j) -> Strings.compareIgnoreCase(i.label(), j.label()))
-				.toList();
-
+	VarPanel(SdModel model, Composite comp, FormToolkit tk) {
+		this.vars = Vars.namesOf(model);
 		createSearchText(comp, tk);
 		table = createTable(comp);
 		table.setInput(this.vars);

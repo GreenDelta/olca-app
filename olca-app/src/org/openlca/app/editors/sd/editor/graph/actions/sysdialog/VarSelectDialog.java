@@ -7,29 +7,28 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.util.UI;
 import org.openlca.sd.model.Id;
-import org.openlca.sd.model.Var;
+import org.openlca.sd.model.SdModel;
 
-import java.util.List;
 import java.util.Optional;
 
 class VarSelectDialog extends FormDialog {
 
-	private final List<Var> vars;
+	private final SdModel model;
 	private Id selected;
 
-	static Optional<Id> selectFrom(List<Var> vars) {
-		if (vars == null || vars.isEmpty()) {
+	static Optional<Id> selectFrom(SdModel model) {
+		if (model == null) {
 			return Optional.empty();
 		}
-		var dialog = new VarSelectDialog(vars);
+		var dialog = new VarSelectDialog(model);
 		return dialog.open() == OK && dialog.selected != null
 			? Optional.of(dialog.selected)
 			: Optional.empty();
 	}
 
-	private VarSelectDialog(List<Var> vars) {
+	private VarSelectDialog(SdModel model) {
 		super(UI.shell());
-		this.vars = vars;
+		this.model = model;
 	}
 
 	@Override
@@ -48,7 +47,7 @@ class VarSelectDialog extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
 		UI.gridLayout(body, 1);
-		var panel = new VarPanel(vars, body, tk);
+		var panel = new VarPanel(model, body, tk);
 		panel.onSelect(id -> {
 			selected = id;
 			checkOk();

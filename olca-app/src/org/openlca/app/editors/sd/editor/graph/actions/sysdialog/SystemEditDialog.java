@@ -26,21 +26,19 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.sd.model.Id;
+import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.SystemBinding;
-import org.openlca.sd.model.Var;
 import org.openlca.sd.model.VarBinding;
-
-import java.util.List;
 
 public class SystemEditDialog extends FormDialog {
 
 	private final SdGraphEditor editor;
+	private final SdModel model;
 	private final SystemBinding working;
 	private final SystemNode origin;
 	private final Point location;
 
 	private Text amountText;
-	private List<Var> vars;
 
 	public static void edit(SdGraphEditor editor, SystemNode node) {
 		if (editor == null || node == null)
@@ -60,6 +58,7 @@ public class SystemEditDialog extends FormDialog {
 	private SystemEditDialog(SdGraphEditor editor, SystemNode node) {
 		super(UI.shell());
 		this.editor = editor;
+		this.model = editor.graph().model();
 		this.origin = node;
 		this.location = null;
 		var b = node.binding();
@@ -74,6 +73,7 @@ public class SystemEditDialog extends FormDialog {
 	) {
 		super(UI.shell());
 		this.editor = editor;
+		this.model = editor.graph().model();
 		this.working = binding;
 		this.origin = null;
 		this.location = location;
@@ -88,7 +88,6 @@ public class SystemEditDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
-		vars = editor.parent().vars();
 		createRefAmountSection(body, tk);
 		createBindingsSection(body, tk);
 		mForm.getForm().reflow(true);
@@ -142,7 +141,7 @@ public class SystemEditDialog extends FormDialog {
 		var varBtn = UI.button(comp, tk, "Select a variable");
 		varBtn.setImage(Icon.FORMULA.get());
 		varBtn.addListener(SWT.Selection, e ->
-			VarSelectDialog.selectFrom(vars)
+			VarSelectDialog.selectFrom(model)
 				.ifPresent(id -> amountText.setText(id.label())));
 	}
 
@@ -163,7 +162,7 @@ public class SystemEditDialog extends FormDialog {
 		var onAdd = Actions.create(
 			"Add parameter binding",
 			Icon.ADD.descriptor(),
-			() -> VarBindingDialog.create(vars, working)
+			() -> VarBindingDialog.create(model, working)
 				.ifPresent(vb -> {
 					working.varBindings().add(vb);
 					table.setInput(working.varBindings());
@@ -186,24 +185,22 @@ public class SystemEditDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		var amountValue = amountText.getText() != null
+
+		// parse & check the reference amount
+		var amount = amountText.getText() != null
 			? amountText.getText().trim()
 			: "";
 		try {
-			working.setAmount(Double.parseDouble(amountValue));
+			working.setAmount(Double.parseDouble(amount));
 			working.setAmountVar(null);
 		} catch (Exception ignored) {
-			var amountVar = Id.of(amountValue);
-			var boundVar = vars.stream()
-				.filter(v -> v != null && amountVar.equals(v.name()))
-				.findFirst()
-				.orElse(null);
-			if (boundVar == null) {
+			var variable = Id.of(amount);
+			if (!Vars.contains(model, variable)) {
 				MsgBox.error("Invalid reference amount",
 					"Enter a number or the name of an existing variable.");
 				return;
 			}
-			working.setAmountVar(boundVar.name());
+			working.setAmountVar(variable);
 		}
 
 		if (origin == null) {

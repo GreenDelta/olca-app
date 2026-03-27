@@ -1,9 +1,5 @@
 package org.openlca.app.editors.sd.editor;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -12,7 +8,6 @@ import org.eclipse.ui.forms.editor.FormEditor;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
-import org.openlca.app.editors.sd.SdVars;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.rcp.images.Icon;
@@ -22,7 +17,8 @@ import org.openlca.app.util.SystemDynamics;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.sd.model.SdModel;
-import org.openlca.sd.model.Var;
+
+import java.io.File;
 
 public class SdModelEditor extends FormEditor {
 
@@ -87,19 +83,6 @@ public class SdModelEditor extends FormEditor {
 
 	public SdModel model() {
 		return model;
-	}
-
-	public List<Var> vars() {
-		var vars = new ArrayList<>(model.vars());
-		vars.sort((vi, vj) -> {
-			int c = Strings.compareIgnoreCase(SdVars.typeOf(vj), SdVars.typeOf(vi));
-			if (c != 0)
-				return c;
-			var li = vi.name() != null ? vi.name().label() : "";
-			var lj = vj.name() != null ? vj.name().label() : "";
-			return Strings.compareIgnoreCase(li, lj);
-		});
-		return vars;
 	}
 
 	IDatabase db() {
