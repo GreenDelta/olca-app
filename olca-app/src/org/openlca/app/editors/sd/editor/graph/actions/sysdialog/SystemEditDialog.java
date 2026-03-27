@@ -148,10 +148,10 @@ public class SystemEditDialog extends FormDialog {
 	private void createBindingsSection(Composite body, FormToolkit tk) {
 		var section = UI.section(body, tk, "Parameter bindings");
 		UI.gridData(section, true, true);
-		var comp = UI.sectionClient(section, tk);
+		var comp = UI.sectionClient(section, tk, 1);
 
 		var table = Tables.createViewer(comp, "Model variable", "Parameter");
-		Tables.bindColumnWidths(table, 0.5, 0.5);
+		Tables.bindColumnWidths2(table, 0.5, 0.5);
 		var gd = UI.gridData(table.getTable(), true, true);
 		gd.heightHint = 1;
 		gd.widthHint = 1;
