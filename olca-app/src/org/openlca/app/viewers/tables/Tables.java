@@ -111,13 +111,14 @@ public class Tables {
 		var table = viewer.getTable();
 		table.addControlListener(new ControlAdapter() {
 
-			int width = table.getClientArea().width;
+			int width = table.getSize().x;
 
 			@Override
 			public void controlResized(ControlEvent e) {
-				var nextWidth = table.getClientArea().width;
-				if (nextWidth == width || nextWidth == 0)
+				var nextWidth = table.getSize().x;
+				if (Math.abs(nextWidth - width) < 5) {
 					return;
+				}
 
 				width = nextWidth;
 				var n = table.getColumnCount();
