@@ -1,9 +1,11 @@
 package org.openlca.app.editors.sd.editor.graph.edit;
 
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
+import org.eclipse.swt.SWT;
 import org.openlca.app.components.graphics.themes.Theme;
 import org.openlca.app.components.graphics.themes.Theme.Box;
 import org.openlca.app.editors.sd.editor.graph.model.VarLink;
@@ -21,7 +23,13 @@ class LinkPart extends AbstractConnectionEditPart {
 
 	@Override
 	protected IFigure createFigure() {
-		var connection = new PolylineConnection();
+		var connection = new PolylineConnection() {
+			@Override
+			public void paint(Graphics g) {
+				g.setAntialias(SWT.ON);
+				super.paint(g);
+			}
+		};
 		connection.setTargetDecoration(new PolylineDecoration());
 		return connection;
 	}
