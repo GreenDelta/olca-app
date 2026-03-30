@@ -92,7 +92,7 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 		addScriptElements(list);
 
 		if (FeatureFlag.SD_SIM.isEnabled()) {
-			list.add(new SdRootElement(this));
+			list.add(new SdRootElement(this, Database.get()));
 		}
 		return list;
 	}

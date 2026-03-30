@@ -26,7 +26,7 @@ public class SystemDynamics {
 				: Arrays.asList(dirs);
 	}
 
-	private static Optional<File> sdRootOf(IDatabase db) {
+	public static Optional<File> sdRootOf(IDatabase db) {
 		if (db == null)
 			return Optional.empty();
 		var dir = db.getFileStorageLocation();
