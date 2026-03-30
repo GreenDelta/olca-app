@@ -11,12 +11,12 @@ import org.eclipse.nebula.visualization.xygraph.figures.XYGraph;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.openlca.sd.interop.CoupledResult;
 import org.openlca.app.preferences.Theme;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
+import org.openlca.sd.interop.CoupledResult;
 import org.openlca.sd.model.Var;
 
 class ResultChart {
@@ -38,6 +38,8 @@ class ResultChart {
 
 	void show(Var var) {
 		clear();
+		var unit = var.unit();
+		graph.getPrimaryYAxis().setTitle(unit != null ? unit : "");
 
 		var seqs = ChartSeq.of(result, var);
 		if (seqs.isEmpty())
@@ -63,16 +65,16 @@ class ResultChart {
 			range = range == null
 				? r
 				: new ChartRange(
-					Math.min(r.min(), range.min()),
-					Math.max(r.max(), range.max()));
+				Math.min(r.min(), range.min()),
+				Math.max(r.max(), range.max()));
 		}
-		if (range != null) {
-			graph.getPrimaryYAxis().setRange(range.min(), range.max());
-		}
+		graph.getPrimaryYAxis().setRange(range.min(), range.max());
 	}
 
 	void show(ImpactDescriptor d) {
 		clear();
+		var unit = d.referenceUnit;
+		graph.getPrimaryYAxis().setTitle(unit != null ? unit : "");
 		double[] ys = result.impactResultsOf(d);
 
 		var range = ChartRange.of(ys);
@@ -135,7 +137,9 @@ class ResultChart {
 		var x = g.getPrimaryXAxis();
 		x.setRange(start, end);
 		x.setMinorTicksVisible(false);
-		x.setTitle("");
+		x.setMajorGridStep(result.simSpecs().dt());
+		var tu = result.simSpecs().unit();
+		x.setTitle(tu != null ? tu : "");
 
 		// configure y
 		var y = g.getPrimaryYAxis();
@@ -143,6 +147,11 @@ class ResultChart {
 		y.setMinorTicksVisible(false);
 		y.setFormatPattern("###,###,##0.###");
 		y.setTitle("");
+
+		// use the default font for axis titles
+		var font = UI.defaultFont();
+		x.setTitleFont(font);
+		y.setTitleFont(font);
 
 		return g;
 	}
