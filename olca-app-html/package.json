@@ -15,7 +15,7 @@
   "devDependencies": {
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
-    "axios": "^1.8.2",
+    "axios": "^1.15.0",
     "copy-webpack-plugin": "^14.0.0",
     "decompress": "^4.2.1",
     "prettier": "^2.8.8",
