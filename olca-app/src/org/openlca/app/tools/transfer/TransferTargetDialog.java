@@ -4,13 +4,12 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -24,16 +23,12 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
 public class TransferTargetDialog extends FormDialog {
 
 	private final Config config;
-
-	private TableViewer sysTable;
-	private Combo targetDatabaseCombo;
 
 	public static void show() {
 
@@ -73,35 +68,55 @@ public class TransferTargetDialog extends FormDialog {
 		var tk = form.getToolkit();
 		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
-
-		var filter = UI.text(
-			body, tk, SWT.SEARCH | SWT.ICON_SEARCH | SWT.CANCEL);
+		var filter = UI.text(body, tk, SWT.SEARCH | SWT.CANCEL);
 		filter.setMessage("Search product systems");
-
-		sysTable = Tables.createViewer(
-			body, "Product system", "Category");
-		Tables.bindColumnWidths2(sysTable, 0.6, 0.4);
-		var label = new ProductSystemLabel();
-		sysTable.setLabelProvider(label);
-		Viewers.sortByLabels(sysTable, label, 0, 1, 2);
-		sysTable.addFilter(new ProductSystemFilter(sysTable, filter));
-		sysTable.addSelectionChangedListener($ -> updateOkButton());
-		sysTable.setInput(config.systems());
-		if (!config.systems().isEmpty()) {
-			sysTable.setSelection(
-				new StructuredSelection(config.systems().getFirst()));
-		}
+		createSystemTable(body, filter);
 
 		var bottom = UI.composite(body, tk);
 		UI.gridLayout(bottom, 2);
 		UI.gridData(bottom, true, false);
-
 		createLinkingCombo(bottom, tk);
+		createTargetCombo(bottom, tk);
+	}
 
-		targetDatabaseCombo = UI.labeledCombo(bottom, tk, "Target database");
-		targetDatabaseCombo.setItems(targetDatabaseLabels());
-		targetDatabaseCombo.select(0);
-		targetDatabaseCombo.addListener(SWT.Selection, $ -> updateOkButton());
+	private void createSystemTable(Composite body, Text filter) {
+		var table = Tables.createViewer(
+			body, "Product system", "Category");
+		Tables.bindColumnWidths2(table, 0.6, 0.4);
+		table.setLabelProvider(new ProductSystemLabel());
+		table.addFilter(new ProductSystemFilter(filter));
+		table.addSelectionChangedListener($ -> {
+			config.setSystem(selectedProductSystemOf(table));
+			updateOkButton();
+		});
+		table.setInput(config.systems());
+		if (!config.systems().isEmpty()) {
+			config.setSystem(config.systems().getFirst());
+			table.setSelection(
+				new StructuredSelection(config.systems().getFirst()));
+		}
+		filter.addModifyListener($ -> {
+			table.refresh();
+			config.setSystem(selectedProductSystemOf(table));
+			updateOkButton();
+		});
+	}
+
+	private void createTargetCombo(Composite bottom, FormToolkit tk) {
+		var combo = UI.labeledCombo(bottom, tk, "Target database");
+		var targets = config.targets();
+		var items = new String[targets.size()];
+		for (int i = 0; i < targets.size(); i++) {
+			items[i] = targets.get(i).name();
+		}
+		combo.setItems(items);
+		combo.select(0);
+		config.setTarget(targets.getFirst());
+		Controls.onSelect(combo, $ -> {
+			int idx = combo.getSelectionIndex();
+			config.setTarget(targets.get(idx));
+			updateOkButton();
+		});
 	}
 
 	private void createLinkingCombo(Composite comp, FormToolkit tk) {
@@ -133,36 +148,18 @@ public class TransferTargetDialog extends FormDialog {
 
 	@Override
 	protected void okPressed() {
-		var productSystem = selectedProductSystem();
-		var targetDatabase = selectedTargetDatabase();
-		var providerLinkingStrategy = selectedStrategy();
+		var productSystem = config.system();
+		var targetDatabase = config.target();
+		var providerLinkingStrategy = config.strategy();
 		if (productSystem == null || targetDatabase == null || providerLinkingStrategy == null)
 			return;
 		super.okPressed();
 	}
 
-	private String[] targetDatabaseLabels() {
-		var labels = new String[targetDatabases.size()];
-		for (int i = 0; i < targetDatabases.size(); i++) {
-			labels[i] = targetDatabases.get(i).name();
-		}
-		return labels;
-	}
-
-	private ProductSystemDescriptor selectedProductSystem() {
-		var selected = Viewers.getFirstSelected(sysTable);
+	private ProductSystemDescriptor selectedProductSystemOf(StructuredViewer viewer) {
+		var selected = Viewers.getFirstSelected(viewer);
 		return selected instanceof ProductSystemDescriptor productSystem
 			? productSystem
-			: null;
-	}
-
-
-	private DatabaseConfig selectedTargetDatabase() {
-		var index = targetDatabaseCombo != null
-			? targetDatabaseCombo.getSelectionIndex()
-			: -1;
-		return index >= 0 && index < targetDatabases.size()
-			? targetDatabases.get(index)
 			: null;
 	}
 
@@ -174,13 +171,10 @@ public class TransferTargetDialog extends FormDialog {
 
 	private static class ProductSystemFilter extends ViewerFilter {
 
-		private final TableViewer table;
 		private final Text text;
 
-		private ProductSystemFilter(TableViewer table, Text text) {
-			this.table = table;
+		private ProductSystemFilter(Text text) {
 			this.text = text;
-			this.text.addModifyListener($ -> this.table.refresh());
 		}
 
 		@Override
