@@ -1,10 +1,11 @@
 package org.openlca.app.tools.transfer;
 
+import java.util.function.Supplier;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
@@ -28,11 +29,11 @@ import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
 public class TransferTargetDialog extends FormDialog {
 
-	private final Config config;
+	private final TargetSelection config;
 
 	public static void show() {
 
-		var res = Config.load();
+		var res = TargetSelection.load();
 		if (res.isError()) {
 			MsgBox.error("Cannot transfer a product system", res.error());
 			return;
@@ -45,7 +46,7 @@ public class TransferTargetDialog extends FormDialog {
 
 	}
 
-	private TransferTargetDialog(Config config) {
+	private TransferTargetDialog(TargetSelection config) {
 		super(UI.shell());
 		setBlockOnOpen(true);
 		this.config = config;
@@ -77,28 +78,34 @@ public class TransferTargetDialog extends FormDialog {
 		UI.gridData(bottom, true, false);
 		createLinkingCombo(bottom, tk);
 		createTargetCombo(bottom, tk);
+		updateOk();
 	}
 
 	private void createSystemTable(Composite body, Text filter) {
-		var table = Tables.createViewer(
-			body, "Product system", "Category");
+		var table = Tables.createViewer(body, "Product system", "Category");
+		Supplier<ProductSystemDescriptor> selection = () -> {
+			var selected = Viewers.getFirstSelected(table);
+			return selected instanceof ProductSystemDescriptor d ? d : null;
+		};
+
 		Tables.bindColumnWidths2(table, 0.6, 0.4);
 		table.setLabelProvider(new ProductSystemLabel());
 		table.addFilter(new ProductSystemFilter(filter));
 		table.addSelectionChangedListener($ -> {
-			config.setSystem(selectedProductSystemOf(table));
-			updateOkButton();
+			config.setSystem(selection.get());
+			updateOk();
 		});
 		table.setInput(config.systems());
+
 		if (!config.systems().isEmpty()) {
-			config.setSystem(config.systems().getFirst());
-			table.setSelection(
-				new StructuredSelection(config.systems().getFirst()));
+			var first = config.systems().getFirst();
+			config.setSystem(first);
+			table.setSelection(new StructuredSelection(first));
 		}
 		filter.addModifyListener($ -> {
 			table.refresh();
-			config.setSystem(selectedProductSystemOf(table));
-			updateOkButton();
+			config.setSystem(selection.get());
+			updateOk();
 		});
 	}
 
@@ -115,7 +122,7 @@ public class TransferTargetDialog extends FormDialog {
 		Controls.onSelect(combo, $ -> {
 			int idx = combo.getSelectionIndex();
 			config.setTarget(targets.get(idx));
-			updateOkButton();
+			updateOk();
 		});
 	}
 
@@ -136,34 +143,11 @@ public class TransferTargetDialog extends FormDialog {
 		Controls.onSelect(combo, $ -> {
 			int idx = combo.getSelectionIndex();
 			config.setStrategy(strats[idx]);
-			updateOkButton();
+			updateOk();
 		});
 	}
 
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
-		super.createButtonsForButtonBar(parent);
-		updateOkButton();
-	}
-
-	@Override
-	protected void okPressed() {
-		var productSystem = config.system();
-		var targetDatabase = config.target();
-		var providerLinkingStrategy = config.strategy();
-		if (productSystem == null || targetDatabase == null || providerLinkingStrategy == null)
-			return;
-		super.okPressed();
-	}
-
-	private ProductSystemDescriptor selectedProductSystemOf(StructuredViewer viewer) {
-		var selected = Viewers.getFirstSelected(viewer);
-		return selected instanceof ProductSystemDescriptor productSystem
-			? productSystem
-			: null;
-	}
-
-	private void updateOkButton() {
+	private void updateOk() {
 		var button = getButton(IDialogConstants.OK_ID);
 		if (button == null) return;
 		button.setEnabled(config.isComplete());

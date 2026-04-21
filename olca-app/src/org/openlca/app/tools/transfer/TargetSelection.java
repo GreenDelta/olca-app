@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
@@ -11,7 +12,7 @@ import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
-class Config {
+class TargetSelection {
 
 	private final IDatabase source;
 	private final List<DatabaseConfig> targets;
@@ -21,7 +22,7 @@ class Config {
 	private ProductSystemDescriptor system;
 	private LinkingStrategy strategy;
 
-	private Config(
+	private TargetSelection(
 		IDatabase source,
 		List<DatabaseConfig> targets,
 		List<ProductSystemDescriptor> systems) {
@@ -30,7 +31,7 @@ class Config {
 		this.systems = systems;
 	}
 
-	static Res<Config> load() {
+	static Res<TargetSelection> load() {
 		var source = Database.get();
 		if (source == null)
 			return Res.error(M.NoDatabaseOpenedInfo);
@@ -54,43 +55,27 @@ class Config {
 				"There are no product systems in the currently active database");
 		}
 
-		var config = new Config(source, targets, systems);
+		var config = new TargetSelection(source, targets, systems);
 		return Res.ok(config);
 	}
 
-	public IDatabase source() {
-		return source;
-	}
-
-	public List<DatabaseConfig> targets() {
+	List<DatabaseConfig> targets() {
 		return targets;
 	}
 
-	public List<ProductSystemDescriptor> systems() {
+	List<ProductSystemDescriptor> systems() {
 		return systems;
 	}
 
-	public DatabaseConfig target() {
-		return target;
-	}
-
-	public void setTarget(DatabaseConfig target) {
+	void setTarget(DatabaseConfig target) {
 		this.target = target;
 	}
 
-	public ProductSystemDescriptor system() {
-		return system;
-	}
-
-	public void setSystem(ProductSystemDescriptor system) {
+	void setSystem(ProductSystemDescriptor system) {
 		this.system = system;
 	}
 
-	public LinkingStrategy strategy() {
-		return strategy;
-	}
-
-	public void setStrategy(LinkingStrategy strategy) {
+	void setStrategy(LinkingStrategy strategy) {
 		this.strategy = strategy;
 	}
 
@@ -99,5 +84,26 @@ class Config {
 			&& target != null
 			&& system != null
 			&& strategy != null;
+	}
+
+	Res<TransferConfig> open() {
+		if (!isComplete())
+			return Res.error("The selection is not complete");
+
+		try {
+			var system = source.get(ProductSystem.class, this.system.id);
+			if (system == null)
+				return Res.error("Failed to load product system");
+			var target = this.target.connect(Workspace.dbDir());
+			var existing = target.get(ProductSystem.class, system.refId);
+			if (existing != null) {
+
+				target.close();
+			}
+
+			var config = new TransferConfig(source, target, )
+
+		}
+
 	}
 }

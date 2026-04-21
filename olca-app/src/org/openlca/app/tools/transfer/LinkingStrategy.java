@@ -1,22 +1,9 @@
 package org.openlca.app.tools.transfer;
 
-enum LinkingStrategy {
+public enum LinkingStrategy {
 
-	BY_ID(),
-	BY_NAME("");
+	BY_ID,
 
-	private final String label;
+	BY_NAME
 
-	LinkingStrategy(String label) {
-		this.label = label;
-	}
-
-	public String label() {
-		return label;
-	}
-
-	@Override
-	public String toString() {
-		return label;
-	}
 }
