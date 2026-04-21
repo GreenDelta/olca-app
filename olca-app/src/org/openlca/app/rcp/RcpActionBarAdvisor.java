@@ -47,6 +47,7 @@ import org.openlca.app.tools.openepd.EpdPanel;
 import org.openlca.app.tools.params.ParameterAnalysisDialog;
 import org.openlca.app.tools.smartepd.SmartEpdTool;
 import org.openlca.app.tools.soda.SodaClientTool;
+import org.openlca.app.tools.transfer.TransferTargetDialog;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Desktop;
 import org.openlca.app.util.MsgBox;
@@ -180,6 +181,8 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		menu.add(Actions.create(
 				"Parameter analysis (experimental)", ParameterAnalysisDialog::show));
+		menu.add(Actions.create(
+				"Transfer product system", () -> new TransferTargetDialog().open()));
 
 		// API clients
 		var apiMenu = new MenuManager("API Clients");
