@@ -1,13 +1,13 @@
 package org.openlca.app.tools.transfer;
 
-public enum ProviderLinkingStrategy {
+enum LinkingStrategy {
 
-	PROCESS_UUID("Processes by identifier (UUID)"),
-	PROCESS_NAME_AND_LOCATION("Processes by name and location");
+	BY_ID(),
+	BY_NAME("");
 
 	private final String label;
 
-	ProviderLinkingStrategy(String label) {
+	LinkingStrategy(String label) {
 		this.label = label;
 	}
 
