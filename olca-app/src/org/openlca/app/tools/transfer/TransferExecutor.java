@@ -3,7 +3,6 @@ package org.openlca.app.tools.transfer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.openlca.commons.Res;
 import org.openlca.core.model.Category;
@@ -13,8 +12,11 @@ import org.openlca.core.model.Process;
 import org.openlca.core.model.ProcessLink;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.ProviderType;
+import org.openlca.core.model.RootEntity;
+import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.matrix.ProductSystemBuilder;
+import org.openlca.core.matrix.linking.LinkingConfig;
 import org.openlca.io.olca.TransferContext;
-import org.openlca.io.olca.TransferPolicy;
 
 final class TransferExecutor {
 
@@ -35,19 +37,24 @@ final class TransferExecutor {
 		}
 
 		try {
-			var processIds = new HashSet<Long>(plan.processIds());
-			var ctx = TransferContext.create(source, target,
-				new ForegroundPolicy(processIds, sourceSystem.id));
+			var ctx = TransferContext.create(source, target);
 			var copied = new HashMap<Long, Process>();
+			var updated = new HashSet<Long>();
+			var sourceLinks = linkIndexOf(sourceSystem);
+			var matches = matchIndexOf(plan);
 
 			for (var processId : plan.processIds()) {
 				var origin = source.get(Process.class, processId);
 				if (origin == null)
 					continue;
-				var copy = ctx.getTransfer(Process.class).sync(origin);
+				var existing = target.get(Process.class, origin.refId);
+				var copy = ctx.resolve(origin);
 				if (copy == null)
 					continue;
-				clearDefaultProviders(copy);
+				if (existing == null) {
+					clearDefaultProviders(copy);
+					updated.add(copy.id);
+				}
 				copied.put(processId, copy);
 			}
 
@@ -58,7 +65,7 @@ final class TransferExecutor {
 
 			var system = sourceSystem.copy();
 			system.category = sourceSystem.category != null
-				? ctx.getTransfer(Category.class).sync(sourceSystem.category)
+				? ctx.resolve(sourceSystem.category)
 				: null;
 			system.referenceProcess = refProcess;
 			system.referenceExchange = sourceSystem.referenceExchange != null
@@ -79,11 +86,15 @@ final class TransferExecutor {
 			for (var process : copied.values()) {
 				system.processes.add(process.id);
 			}
-			applyAssignments(system, copied, plan);
+			applyAssignments(system, copied, sourceLinks, matches, ctx, plan);
 
 			for (var process : copied.values()) {
-				target.update(process);
+				if (updated.contains(process.id)) {
+					target.update(process);
+				}
 			}
+
+			new ProductSystemBuilder(target, new LinkingConfig()).autoComplete(system);
 			system = target.insert(system);
 			return Res.ok(system);
 		} catch (Exception e) {
@@ -114,8 +125,8 @@ final class TransferExecutor {
 					continue;
 				}
 				if (parameter.contextType == ModelType.IMPACT_CATEGORY) {
-					var impact = ctx.getTransfer(ImpactCategory.class)
-						.sync(source.get(ImpactCategory.class, parameter.contextId));
+					var impact = ctx.resolve(
+						source.get(ImpactCategory.class, parameter.contextId));
 					parameter.contextId = impact != null ? impact.id : null;
 				}
 			}
@@ -142,50 +153,105 @@ final class TransferExecutor {
 	private static void applyAssignments(
 		ProductSystem system,
 		Map<Long, Process> copied,
+		Map<Long, ProcessLink> sourceLinks,
+		Map<ProviderKey, TransferMatch> matches,
+		TransferContext ctx,
 		TransferPlan plan
 	) {
-		for (var match : plan.matches()) {
-			var consumer = copied.get(match.sourceProcessId());
+		for (var sourceProcessId : plan.processIds()) {
+			var consumer = copied.get(sourceProcessId);
 			if (consumer == null)
 				continue;
-			var exchange = consumer.getExchange(match.sourceExchangeInternalId());
-			if (exchange == null || exchange.flow == null)
+			var sourceProcess = plan.config().source().get(Process.class, sourceProcessId);
+			if (sourceProcess == null)
 				continue;
+			for (var sourceExchange : sourceProcess.exchanges) {
+				var exchange = consumer.getExchange(sourceExchange.internalId);
+				if (exchange == null || exchange.flow == null)
+					continue;
+				var sourceLink = sourceLinks.get(sourceExchange.id);
+				if (sourceLink == null || sourceLink.providerId == 0)
+					continue;
 
-			var selected = match.selectedCandidate();
-			if (selected != null) {
-				assign(system, exchange,
-					selected.providerId(),
-					selected.providerType());
-				continue;
-			}
+				var match = matches.get(new ProviderKey(
+					sourceLink.providerType,
+					sourceLink.providerId));
+				if (match == null)
+					continue;
 
-			if (match.sourceProviderType() != ProviderType.PROCESS
-				|| match.sourceProviderId() == 0) {
-				continue;
-			}
+				var selected = match.selectedCandidate();
+				if (selected != null) {
+					assign(system, consumer.id, exchange,
+						selected.providerId(),
+						selected.providerType());
+					continue;
+				}
 
-			var copiedProvider = copied.get(match.sourceProviderId());
-			if (copiedProvider != null) {
-				assign(system, exchange, copiedProvider.id, ProviderType.PROCESS);
+				if (sourceLink.providerType == ProviderType.PROCESS) {
+					var copiedProvider = copied.get(sourceLink.providerId);
+					if (copiedProvider != null) {
+						assign(system, consumer.id, exchange,
+							copiedProvider.id, ProviderType.PROCESS);
+					}
+					continue;
+				}
+
+				var provider = copyProvider(match, plan, ctx);
+				if (provider != null) {
+					assign(system, consumer.id, exchange, provider.id,
+						ProviderType.of(ModelType.of(provider)));
+				}
 			}
 		}
 	}
 
+	private static Map<Long, ProcessLink> linkIndexOf(ProductSystem system) {
+		var index = new HashMap<Long, ProcessLink>();
+		for (var link : system.processLinks) {
+			index.put(link.exchangeId, link);
+		}
+		return index;
+	}
+
+	private static Map<ProviderKey, TransferMatch> matchIndexOf(TransferPlan plan) {
+		var index = new HashMap<ProviderKey, TransferMatch>();
+		for (var match : plan.matches()) {
+			var provider = match.provider();
+			if (provider != null) {
+				index.put(new ProviderKey(ProviderType.of(provider.type), provider.id), match);
+			}
+		}
+		return index;
+	}
+
+	private static RootEntity copyProvider(
+		TransferMatch match,
+		TransferPlan plan,
+		TransferContext ctx
+	) {
+		var provider = match.provider();
+		if (provider == null || provider.type == null)
+			return null;
+		var type = provider.type.getModelClass();
+		var sourceProvider = plan.config().source().get(type, provider.id);
+		if (!(sourceProvider instanceof RootEntity entity)) {
+			return null;
+		}
+		return ctx.resolve(entity);
+	}
+
 	private static void assign(
 		ProductSystem system,
+		long processId,
 		org.openlca.core.model.Exchange exchange,
 		long providerId,
 		byte providerType
 	) {
-		exchange.defaultProviderId = providerId;
-		exchange.defaultProviderType = providerType;
-
 		var link = new ProcessLink();
 		link.flowId = exchange.flow.id;
 		link.providerId = providerId;
 		link.providerType = providerType;
-		link.processId = exchange.owner != null ? exchange.owner.id : 0;
+		link.processId = processId;
 		link.exchangeId = exchange.id;
 		system.processLinks.add(link);
 
@@ -194,25 +260,6 @@ final class TransferExecutor {
 		}
 	}
 
-	private record ForegroundPolicy(Set<Long> processIds, long systemId)
-		implements TransferPolicy {
-
-		@Override
-		public boolean mapToExisting(ModelType type, long sourceId) {
-			return !isForeground(type, sourceId);
-		}
-
-		@Override
-		public boolean keepRefId(ModelType type, long sourceId) {
-			return !isForeground(type, sourceId);
-		}
-
-		private boolean isForeground(ModelType type, long sourceId) {
-			return switch (type) {
-				case PROCESS -> processIds.contains(sourceId);
-				case PRODUCT_SYSTEM -> sourceId == systemId;
-				default -> false;
-			};
-		}
+	private record ProviderKey(byte type, long id) {
 	}
 }

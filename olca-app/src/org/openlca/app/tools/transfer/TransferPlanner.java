@@ -4,12 +4,14 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.openlca.commons.Res;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
@@ -39,7 +41,7 @@ final class TransferPlanner {
 			var links = linkIndexOf(system);
 			var processCache = new HashMap<Long, Process>();
 			var order = new ArrayList<Long>();
-			var matches = new ArrayList<TransferMatch>();
+			var matches = new LinkedHashMap<ProviderKey, TransferMatch>();
 			var queued = new HashSet<Long>();
 			var visited = new HashSet<Long>();
 			var queue = new ArrayDeque<Long>();
@@ -63,27 +65,21 @@ final class TransferPlanner {
 
 					var sourceLink = links.get(exchange.id);
 					var sourceProvider = providerOf(config.source(), sourceLink);
-					var candidates = index.providersOf(exchange.flow.id);
-					var selected = sourceProvider != null
-						? defaultMatchOf(index, config.strategy(), sourceProvider, exchange.flow.id)
-						: null;
+					TransferMatch match = null;
+					if (sourceProvider != null) {
+						var key = new ProviderKey(sourceProvider.type, sourceProvider.id);
+						match = matches.computeIfAbsent(key, $ -> {
+							var candidates = index.providersOf(exchange.flow.id);
+							var selected = defaultMatchOf(index,
+								config.strategy(), sourceProvider, exchange.flow.id);
+							return new TransferMatch(
+								sourceProvider.descriptor,
+								candidates,
+								selected);
+						});
+					}
 
-					matches.add(new TransferMatch(
-						process.id,
-						process.name,
-						exchange.id,
-						exchange.internalId,
-						exchange.flow.id,
-						exchange.flow.name,
-						sourceProvider != null ? sourceProvider.id() : 0,
-						sourceProvider != null ? sourceProvider.type() : ProviderType.PROCESS,
-						sourceProvider != null ? sourceProvider.refId() : null,
-						sourceProvider != null ? sourceProvider.name() : null,
-						sourceProvider != null ? sourceProvider.location() : null,
-						candidates,
-						selected));
-
-					if (selected == null
+					if ((match == null || match.selectedCandidate() == null)
 						&& sourceLink != null
 						&& sourceLink.providerType == ProviderType.PROCESS
 						&& sourceLink.providerId != 0
@@ -95,7 +91,8 @@ final class TransferPlanner {
 				}
 			}
 
-			return Res.ok(new TransferPlan(config, order, matches));
+			return Res.ok(new TransferPlan(config, order,
+				new ArrayList<>(matches.values())));
 		} catch (Exception e) {
 			return Res.error("Failed to prepare the transfer plan", e);
 		}
@@ -135,6 +132,7 @@ final class TransferPlanner {
 			return new ProviderRef(
 				process.id,
 				type,
+				Descriptor.of(process),
 				process.refId,
 				process.name,
 				process.location != null ? process.location.code : null);
@@ -143,7 +141,8 @@ final class TransferPlanner {
 			var location = system.referenceProcess != null && system.referenceProcess.location != null
 				? system.referenceProcess.location.code
 				: null;
-			return new ProviderRef(system.id, type, system.refId, system.name, location);
+			return new ProviderRef(
+				system.id, type, Descriptor.of(system), system.refId, system.name, location);
 		}
 		if (provider instanceof Result result) {
 			var location = result.productSystem != null
@@ -151,7 +150,8 @@ final class TransferPlanner {
 				&& result.productSystem.referenceProcess.location != null
 					? result.productSystem.referenceProcess.location.code
 					: null;
-			return new ProviderRef(result.id, type, result.refId, result.name, location);
+			return new ProviderRef(
+				result.id, type, Descriptor.of(result), result.refId, result.name, location);
 		}
 		return null;
 	}
@@ -187,9 +187,13 @@ final class TransferPlanner {
 	private record ProviderRef(
 		long id,
 		byte type,
+		Descriptor descriptor,
 		String refId,
 		String name,
 		String location
 	) {
+	}
+
+	private record ProviderKey(byte type, long id) {
 	}
 }

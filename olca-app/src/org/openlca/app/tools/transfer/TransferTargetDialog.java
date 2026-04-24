@@ -25,6 +25,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Res;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 
@@ -52,7 +53,6 @@ public class TransferTargetDialog extends FormDialog {
 		}
 
 		try (var transfer = confRes.value()) {
-			@SuppressWarnings("unchecked")
 			var planRes = new Res[1];
 			App.runWithProgress("Prepare transfer", () ->
 				planRes[0] = TransferPlanner.plan(transfer));
@@ -65,10 +65,15 @@ public class TransferTargetDialog extends FormDialog {
 			}
 
 			var plan = (TransferPlan) planRes[0].value();
-			if (!TransferReviewDialog.show(plan))
+			if (plan.processIds().isEmpty()) {
+				MsgBox.error("Cannot transfer a product system",
+					"The selected product system does not contain transferable processes.");
+				return;
+			}
+
+			if (!plan.matches().isEmpty() && !TransferReviewDialog.show(plan))
 				return;
 
-			@SuppressWarnings("unchecked")
 			var execRes = new Res[1];
 			App.runWithProgress("Transfer product system", () ->
 				execRes[0] = TransferExecutor.execute(plan));
@@ -82,7 +87,9 @@ public class TransferTargetDialog extends FormDialog {
 
 			MsgBox.info("Transfer complete",
 				"Transferred product system to target database '"
-					+ transfer.target().getName() + "'.");
+					+ transfer.target().getName() + "' with "
+					+ plan.matchedCount() + " provider assignment"
+					+ (plan.matchedCount() == 1 ? "" : "s") + ".");
 		}
 
 	}

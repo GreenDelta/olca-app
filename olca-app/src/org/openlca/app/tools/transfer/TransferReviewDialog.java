@@ -59,12 +59,10 @@ final class TransferReviewDialog extends FormDialog {
 		UI.gridLayout(body, 1);
 
 		table = Tables.createViewer(body,
-			"Process",
-			"Flow",
-			"Source provider",
+			"Provider",
 			"Selected provider",
 			"Status");
-		Tables.bindColumnWidths2(table, 0.22, 0.18, 0.24, 0.24, 0.12);
+		Tables.bindColumnWidths2(table, 0.42, 0.42, 0.16);
 		table.setLabelProvider(new MatchLabel());
 		table.setInput(plan.matches());
 		table.addSelectionChangedListener($ -> updateSelection());
@@ -114,7 +112,7 @@ final class TransferReviewDialog extends FormDialog {
 			return;
 		}
 
-		providerInfo.setText("Flow: " + match.flowName() + " | Candidates: "
+		providerInfo.setText("Provider: " + match.providerLabel() + " | Candidates: "
 			+ currentCandidates.size());
 		providerCombo.setEnabled(!currentCandidates.isEmpty());
 		clearButton.setEnabled(match.selectedCandidate() != null);
@@ -173,11 +171,9 @@ final class TransferReviewDialog extends FormDialog {
 			if (!(element instanceof TransferMatch match))
 				return null;
 			return switch (columnIndex) {
-				case 0 -> match.sourceProcessName();
-				case 1 -> match.flowName();
-				case 2 -> match.sourceProviderLabel();
-				case 3 -> match.selectedLabel();
-				case 4 -> match.status();
+				case 0 -> match.providerLabel();
+				case 1 -> match.selectedLabel();
+				case 2 -> match.status();
 				default -> null;
 			};
 		}
