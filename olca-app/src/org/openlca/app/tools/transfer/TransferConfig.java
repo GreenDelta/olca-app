@@ -7,5 +7,15 @@ public record TransferConfig(
 	IDatabase source,
 	IDatabase target,
 	ProductSystem system,
-	LinkingStrategy strategy) {
+	LinkingStrategy strategy) implements AutoCloseable {
+
+	@Override
+	public void close() {
+		if (target == null)
+			return;
+		try {
+			target.close();
+		} catch (Exception ignored) {
+		}
+	}
 }

@@ -86,24 +86,18 @@ class TargetSelection {
 			&& strategy != null;
 	}
 
-	Res<TransferConfig> open() {
+	Res<TransferConfig> openConfig() {
 		if (!isComplete())
 			return Res.error("The selection is not complete");
-
 		try {
 			var system = source.get(ProductSystem.class, this.system.id);
 			if (system == null)
 				return Res.error("Failed to load product system");
 			var target = this.target.connect(Workspace.dbDir());
-			var existing = target.get(ProductSystem.class, system.refId);
-			if (existing != null) {
-
-				target.close();
-			}
-
-			var config = new TransferConfig(source, target, )
-
+			var config = new TransferConfig(source, target, system, strategy);
+			return Res.ok(config);
+		} catch (Exception e) {
+			return Res.error("Failed to create target configuration", e);
 		}
-
 	}
 }

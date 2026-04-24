@@ -182,7 +182,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(Actions.create(
 				"Parameter analysis (experimental)", ParameterAnalysisDialog::show));
 		menu.add(Actions.create(
-				"Transfer product system", () -> new TransferTargetDialog().open()));
+				"Transfer product system", TransferTargetDialog::show));
 
 		// API clients
 		var apiMenu = new MenuManager("API Clients");

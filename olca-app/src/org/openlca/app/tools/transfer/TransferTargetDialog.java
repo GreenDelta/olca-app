@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.App;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -43,6 +44,46 @@ public class TransferTargetDialog extends FormDialog {
 		var dialog = new TransferTargetDialog(config);
 		if (dialog.open() != OK || !config.isComplete())
 			return;
+
+		var confRes = config.openConfig();
+		if (confRes.isError()) {
+			MsgBox.error("Cannot transfer a product system", confRes.error());
+			return;
+		}
+
+		try (var transfer = confRes.value()) {
+			@SuppressWarnings("unchecked")
+			var planRes = new Res[1];
+			App.runWithProgress("Prepare transfer", () ->
+				planRes[0] = TransferPlanner.plan(transfer));
+			if (planRes[0] == null || planRes[0].isError()) {
+				var error = planRes[0] != null
+					? planRes[0].error()
+					: "Failed to prepare the transfer";
+				MsgBox.error("Cannot transfer a product system", error);
+				return;
+			}
+
+			var plan = (TransferPlan) planRes[0].value();
+			if (!TransferReviewDialog.show(plan))
+				return;
+
+			@SuppressWarnings("unchecked")
+			var execRes = new Res[1];
+			App.runWithProgress("Transfer product system", () ->
+				execRes[0] = TransferExecutor.execute(plan));
+			if (execRes[0] == null || execRes[0].isError()) {
+				var error = execRes[0] != null
+					? execRes[0].error()
+					: "Failed to transfer the product system";
+				MsgBox.error("Transfer failed", error);
+				return;
+			}
+
+			MsgBox.info("Transfer complete",
+				"Transferred product system to target database '"
+					+ transfer.target().getName() + "'.");
+		}
 
 	}
 
