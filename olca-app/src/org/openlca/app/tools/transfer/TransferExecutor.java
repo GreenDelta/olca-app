@@ -181,9 +181,12 @@ final class TransferExecutor {
 
 				var selected = match.selectedCandidate();
 				if (selected != null) {
+					var provider = selected.provider();
+					if (provider == null || provider.type == null)
+						continue;
 					assign(system, consumer.id, exchange,
-						selected.providerId(),
-						selected.providerType());
+						provider.id,
+						ProviderType.of(provider.type));
 					continue;
 				}
 

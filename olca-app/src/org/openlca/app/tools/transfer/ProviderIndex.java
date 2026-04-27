@@ -50,12 +50,16 @@ final class ProviderIndex {
 		if (candidate == null)
 			return;
 
-		put(byFlow, candidate.flowId(), candidate);
-		if (candidate.providerRefId() != null) {
-			put(byRefId, candidate.providerRefId(), candidate);
+		if (candidate.flow() != null) {
+			put(byFlow, candidate.flow().id, candidate);
+		}
+		if (candidate.provider() != null && candidate.provider().refId != null) {
+			put(byRefId, candidate.provider().refId, candidate);
 		}
 		put(byNameAndLocation,
-			new NameAndLocation(candidate.providerName(), candidate.providerLocation()),
+			new NameAndLocation(
+				candidate.provider() != null ? candidate.provider().name : null,
+				candidate.locationCode()),
 			candidate);
 	}
 

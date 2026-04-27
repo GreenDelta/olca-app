@@ -2,30 +2,28 @@ package org.openlca.app.tools.transfer;
 
 import java.util.Objects;
 
+import org.openlca.app.util.Labels;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProviderType;
 import org.openlca.core.model.Result;
+import org.openlca.core.model.descriptors.Descriptor;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.ProcessDescriptor;
 
 /// A possible target-side provider that can be used when creating a process
 /// link in a transferred product system.
 public record ProviderCandidate(
-	long flowId,
-	long providerId,
-	byte providerType,
-	String providerRefId,
-	String providerName,
-	String providerLocation
+	FlowDescriptor flow,
+	Descriptor provider,
+	String locationCode
 ) {
 
 	static ProviderCandidate of(Process process, Exchange exchange) {
 		return new ProviderCandidate(
-			exchange.flow != null ? exchange.flow.id : 0,
-			process.id,
-			ProviderType.PROCESS,
-			process.refId,
-			process.name,
+			exchange.flow != null ? org.openlca.core.model.descriptors.Descriptor.of(exchange.flow) : null,
+			org.openlca.core.model.descriptors.Descriptor.of(process),
 			process.location != null ? process.location.code : null);
 	}
 
@@ -35,11 +33,8 @@ public record ProviderCandidate(
 			|| system.referenceExchange.flow == null)
 			return null;
 		return new ProviderCandidate(
-			system.referenceExchange.flow.id,
-			system.id,
-			ProviderType.SUB_SYSTEM,
-			system.refId,
-			system.name,
+			org.openlca.core.model.descriptors.Descriptor.of(system.referenceExchange.flow),
+			org.openlca.core.model.descriptors.Descriptor.of(system),
 			locationOf(system.referenceProcess));
 	}
 
@@ -50,42 +45,47 @@ public record ProviderCandidate(
 			return null;
 		var system = result.productSystem;
 		return new ProviderCandidate(
-			result.referenceFlow.flow.id,
-			result.id,
-			ProviderType.RESULT,
-			result.refId,
-			result.name,
+			org.openlca.core.model.descriptors.Descriptor.of(result.referenceFlow.flow),
+			org.openlca.core.model.descriptors.Descriptor.of(result),
 			system != null ? locationOf(system.referenceProcess) : null);
 	}
 
 	boolean hasFlow(long flowId) {
-		return this.flowId == flowId;
+		return flow != null && flow.id == flowId;
 	}
 
 	boolean matchesRefId(String refId) {
-		return Objects.equals(providerRefId, refId);
+		return provider != null && Objects.equals(provider.refId, refId);
 	}
 
 	boolean matchesNameAndLocation(String name, String location) {
-		return Objects.equals(providerName, name)
-			&& Objects.equals(providerLocation, location);
+		return provider != null
+			&& Objects.equals(provider.name, name)
+			&& Objects.equals(locationCode, location);
 	}
 
 	String label() {
-		var name = providerName != null && !providerName.isBlank()
-			? providerName
-			: providerRefId;
+		var name = provider instanceof ProcessDescriptor p
+			? Labels.asProviderName(p)
+			: Labels.name(provider);
+		if ((name == null || name.isBlank()) && provider != null) {
+			name = provider.refId;
+		}
 		if (name == null || name.isBlank()) {
 			name = "unknown provider";
 		}
 		var label = new StringBuilder(name);
-		if (providerLocation != null && !providerLocation.isBlank()) {
-			label.append(" [").append(providerLocation).append(']');
+		if (locationCode != null && !locationCode.isBlank()
+			&& !(provider instanceof ProcessDescriptor)) {
+			label.append(" [").append(locationCode).append(']');
 		}
 		return label.append(" (").append(typeLabel()).append(')').toString();
 	}
 
 	private String typeLabel() {
+		var providerType = provider != null && provider.type != null
+			? ProviderType.of(provider.type)
+			: ProviderType.PROCESS;
 		return switch (providerType) {
 			case ProviderType.SUB_SYSTEM -> "System";
 			case ProviderType.RESULT -> "Result";
