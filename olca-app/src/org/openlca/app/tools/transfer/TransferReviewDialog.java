@@ -6,21 +6,22 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.commons.Strings;
+import org.openlca.io.olca.systransfer.ProviderInfo;
+import org.openlca.io.olca.systransfer.ProviderMatch;
+import org.openlca.io.olca.systransfer.TransferPlan;
 
 final class TransferReviewDialog extends FormDialog {
 
@@ -28,8 +29,7 @@ final class TransferReviewDialog extends FormDialog {
 	private org.eclipse.jface.viewers.TableViewer table;
 	private Combo providerCombo;
 	private Label providerInfo;
-	private Button clearButton;
-	private List<ProviderCandidate> currentCandidates = List.of();
+	private List<ProviderInfo> currentCandidates = List.of();
 
 	static boolean show(TransferPlan plan) {
 		return new TransferReviewDialog(plan).open() == OK;
@@ -57,6 +57,8 @@ final class TransferReviewDialog extends FormDialog {
 		var tk = form.getToolkit();
 		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
+		var summary = UI.label(body, tk, summaryText());
+		UI.gridData(summary, true, false);
 
 		table = Tables.createViewer(body,
 			"Provider",
@@ -68,17 +70,14 @@ final class TransferReviewDialog extends FormDialog {
 		table.addSelectionChangedListener($ -> updateSelection());
 
 		var bottom = UI.composite(body, tk);
-		UI.gridLayout(bottom, 3);
+		UI.gridLayout(bottom, 2);
 		UI.gridData(bottom, true, false);
 		providerInfo = UI.label(bottom, tk, "Select a row to review provider options");
-		UI.gridData(providerInfo, true, false).horizontalSpan = 3;
+		UI.gridData(providerInfo, true, false).horizontalSpan = 2;
 
 		providerCombo = UI.labeledCombo(bottom, tk, "Provider");
-		UI.gridData(providerCombo, true, false).horizontalSpan = 2;
+		UI.gridData(providerCombo, true, false);
 		Controls.onSelect(providerCombo, $ -> selectCandidate());
-
-		clearButton = tk.createButton(bottom, "Clear", SWT.PUSH);
-		clearButton.addListener(SWT.Selection, $ -> clearSelection());
 		updateProviderControls(null);
 
 		if (!plan.matches().isEmpty()) {
@@ -90,17 +89,17 @@ final class TransferReviewDialog extends FormDialog {
 
 	private void updateSelection() {
 		var match = Viewers.getFirstSelected(table);
-		updateProviderControls(match instanceof TransferMatch m ? m : null);
+		updateProviderControls(match instanceof ProviderMatch m ? m : null);
 	}
 
-	private void updateProviderControls(TransferMatch match) {
+	private void updateProviderControls(ProviderMatch match) {
 		if (providerCombo == null || providerCombo.isDisposed())
 			return;
 
-		currentCandidates = match != null ? match.candidates() : List.of();
+		currentCandidates = match != null ? match.alternatives() : List.of();
 		var items = new String[currentCandidates.size()];
 		for (int i = 0; i < currentCandidates.size(); i++) {
-			items[i] = currentCandidates.get(i).label();
+			items[i] = providerLabel(currentCandidates.get(i));
 		}
 		providerCombo.setItems(items);
 
@@ -108,17 +107,15 @@ final class TransferReviewDialog extends FormDialog {
 			providerInfo.setText("Select a row to review provider options");
 			providerCombo.setEnabled(false);
 			providerCombo.deselectAll();
-			clearButton.setEnabled(false);
 			return;
 		}
 
-		providerInfo.setText("Provider: " + match.providerLabel() + " | Candidates: "
-			+ currentCandidates.size());
+		providerInfo.setText("Provider: " + providerLabel(match.provider())
+			+ " | Candidates: " + currentCandidates.size());
 		providerCombo.setEnabled(!currentCandidates.isEmpty());
-		clearButton.setEnabled(match.selectedCandidate() != null);
 
-		if (match.selectedCandidate() != null) {
-			int idx = currentCandidates.indexOf(match.selectedCandidate());
+		if (match.selected() != null) {
+			int idx = currentCandidates.indexOf(match.selected());
 			if (idx >= 0) {
 				providerCombo.select(idx);
 				return;
@@ -129,24 +126,14 @@ final class TransferReviewDialog extends FormDialog {
 
 	private void selectCandidate() {
 		var match = Viewers.getFirstSelected(table);
-		if (!(match instanceof TransferMatch row))
+		if (!(match instanceof ProviderMatch row))
 			return;
 		int idx = providerCombo.getSelectionIndex();
 		if (idx < 0 || idx >= currentCandidates.size())
 			return;
 		row.select(currentCandidates.get(idx));
-		clearButton.setEnabled(true);
 		table.refresh(row);
-	}
-
-	private void clearSelection() {
-		var match = Viewers.getFirstSelected(table);
-		if (!(match instanceof TransferMatch row))
-			return;
-		row.select(null);
-		providerCombo.deselectAll();
-		clearButton.setEnabled(false);
-		table.refresh(row);
+		updateProviderControls(row);
 	}
 
 	@Override
@@ -168,14 +155,45 @@ final class TransferReviewDialog extends FormDialog {
 
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof TransferMatch match))
+			if (!(element instanceof ProviderMatch match))
 				return null;
 			return switch (columnIndex) {
-				case 0 -> match.providerLabel();
-				case 1 -> match.selectedLabel();
-				case 2 -> match.status();
+				case 0 -> providerLabel(match.provider());
+				case 1 -> providerLabel(match.selected());
+				case 2 -> statusOf(match);
 				default -> null;
 			};
 		}
+	}
+
+	private String summaryText() {
+		return plan.matches().size() + " provider match"
+			+ (plan.matches().size() == 1 ? "" : "es")
+			+ " found; "
+			+ plan.copies().size() + " provider"
+			+ (plan.copies().size() == 1 ? "" : "s")
+			+ " will be copied.";
+	}
+
+	private static String statusOf(ProviderMatch match) {
+		if (match == null)
+			return null;
+		int count = match.alternatives().size();
+		return count == 1 ? "Single candidate" : count + " candidates";
+	}
+
+	private static String providerLabel(ProviderInfo info) {
+		if (info == null || info.provider() == null)
+			return null;
+		var label = Strings.isBlank(info.provider().name)
+			? "Unnamed provider"
+			: info.provider().name.strip();
+		if (info.location() != null && Strings.isBlank(info.location().code)) {
+			label += " - " + info.location().code.strip();
+		}
+		if (info.flow() != null && Strings.isBlank(info.flow().name)) {
+			label += " [" + info.flow().name.strip() + "]";
+		}
+		return label;
 	}
 }

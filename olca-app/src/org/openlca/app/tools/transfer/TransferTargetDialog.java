@@ -17,7 +17,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.openlca.app.App;
+import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
@@ -28,10 +30,17 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.commons.Res;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
+import org.openlca.io.olca.systransfer.MatchingStrategy;
+import org.openlca.io.olca.systransfer.TransferExecutor;
+import org.openlca.io.olca.systransfer.TransferPlan;
 
 public class TransferTargetDialog extends FormDialog {
 
 	private final TargetSelection config;
+	private org.eclipse.jface.viewers.TableViewer strategyTable;
+	private ImageHyperlink upLink;
+	private ImageHyperlink downLink;
+	private ImageHyperlink removeLink;
 
 	public static void show() {
 
@@ -55,7 +64,7 @@ public class TransferTargetDialog extends FormDialog {
 		try (var transfer = confRes.value()) {
 			var planRes = new Res[1];
 			App.runWithProgress("Prepare transfer", () ->
-				planRes[0] = TransferPlanner.plan(transfer));
+				planRes[0] = TransferPlan.createFrom(transfer.config()));
 			if (planRes[0] == null || planRes[0].isError()) {
 				var error = planRes[0] != null
 					? planRes[0].error()
@@ -65,18 +74,12 @@ public class TransferTargetDialog extends FormDialog {
 			}
 
 			var plan = (TransferPlan) planRes[0].value();
-			if (plan.processIds().isEmpty()) {
-				MsgBox.error("Cannot transfer a product system",
-					"The selected product system does not contain transferable processes.");
-				return;
-			}
-
-			if (!plan.matches().isEmpty() && !TransferReviewDialog.show(plan))
+			if (!TransferReviewDialog.show(plan))
 				return;
 
 			var execRes = new Res[1];
 			App.runWithProgress("Transfer product system", () ->
-				execRes[0] = TransferExecutor.execute(plan));
+				execRes[0] = TransferExecutor.of(plan).execute());
 			if (execRes[0] == null || execRes[0].isError()) {
 				var error = execRes[0] != null
 					? execRes[0].error()
@@ -87,9 +90,11 @@ public class TransferTargetDialog extends FormDialog {
 
 			MsgBox.info("Transfer complete",
 				"Transferred product system to target database '"
-					+ transfer.target().getName() + "' with "
-					+ plan.matchedCount() + " provider assignment"
-					+ (plan.matchedCount() == 1 ? "" : "s") + ".");
+					+ transfer.config().target().getName() + "' with "
+					+ plan.matches().size() + " provider assignment"
+					+ (plan.matches().size() == 1 ? "" : "s")
+					+ " and " + plan.copies().size() + " provider "
+					+ (plan.copies().size() == 1 ? "copy" : "copies") + ".");
 		}
 
 	}
@@ -120,12 +125,8 @@ public class TransferTargetDialog extends FormDialog {
 		var filter = UI.text(body, tk, SWT.SEARCH | SWT.CANCEL);
 		filter.setMessage("Search product systems");
 		createSystemTable(body, filter);
-
-		var bottom = UI.composite(body, tk);
-		UI.gridLayout(bottom, 2);
-		UI.gridData(bottom, true, false);
-		createLinkingCombo(bottom, tk);
-		createTargetCombo(bottom, tk);
+		createTargetCombo(body, tk);
+		createMatchingTable(body, tk);
 		updateOk();
 	}
 
@@ -157,8 +158,8 @@ public class TransferTargetDialog extends FormDialog {
 		});
 	}
 
-	private void createTargetCombo(Composite bottom, FormToolkit tk) {
-		var combo = UI.labeledCombo(bottom, tk, "Target database");
+	private void createTargetCombo(Composite parent, FormToolkit tk) {
+		var combo = UI.labeledCombo(parent, tk, "Target database");
 		var targets = config.targets();
 		var items = new String[targets.size()];
 		for (int i = 0; i < targets.size(); i++) {
@@ -174,31 +175,138 @@ public class TransferTargetDialog extends FormDialog {
 		});
 	}
 
-	private void createLinkingCombo(Composite comp, FormToolkit tk) {
-		var combo = UI.labeledCombo(comp, tk, "Provider linking");
-		var strats = LinkingStrategy.values();
-		var items = new String[strats.length];
-		for (int i = 0; i < strats.length; i++) {
-			items[i] = switch (strats[i]) {
-				case BY_ID -> "Processes by identifier (UUID)";
-				case BY_NAME -> "Processes by name and location";
-			};
-		}
+	private void createMatchingTable(Composite parent, FormToolkit tk) {
+		var comp = UI.composite(parent, tk);
+		UI.gridLayout(comp, 2);
+		UI.gridData(comp, true, true);
 
-		combo.setItems(items);
-		combo.select(0);
-		config.setStrategy(strats[0]);
-		Controls.onSelect(combo, $ -> {
-			int idx = combo.getSelectionIndex();
-			config.setStrategy(strats[idx]);
-			updateOk();
-		});
+		strategyTable = Tables.createViewer(comp, "Provider matching");
+		UI.gridData(strategyTable.getControl(), true, true);
+		strategyTable.setLabelProvider(new StrategyLabel());
+		strategyTable.setInput(config.strategies());
+		strategyTable.addSelectionChangedListener($ -> updateStrategyButtons());
+
+		var buttons = UI.composite(comp, tk);
+		UI.gridLayout(buttons, 1);
+		UI.gridData(buttons, false, false);
+
+		upLink = createIconLink(buttons, tk,
+			Icon.UP,
+			Icon.UP_DISABLED,
+			"Move strategy up",
+			() -> moveSelectedStrategy(-1));
+		downLink = createIconLink(buttons, tk,
+			Icon.DOWN,
+			Icon.DOWN_DISABLED,
+			"Move strategy down",
+			() -> moveSelectedStrategy(1));
+		removeLink = createIconLink(buttons, tk,
+			Icon.DELETE,
+			Icon.DELETE_DISABLED,
+			"Remove strategy",
+			this::removeSelectedStrategy);
+
+		if (!config.strategies().isEmpty()) {
+			strategyTable.setSelection(
+				new StructuredSelection(config.strategies().getFirst()),
+				true);
+		}
+		updateStrategyButtons();
+	}
+
+	private ImageHyperlink createIconLink(
+		Composite parent,
+		FormToolkit tk,
+		Icon enabledIcon,
+		Icon disabledIcon,
+		String toolTip,
+		Runnable action
+	) {
+		var link = UI.imageHyperlink(parent, tk, SWT.TOP);
+		link.setImage(disabledIcon.get());
+		link.setToolTipText(toolTip);
+		Controls.onClick(link, $ -> action.run());
+		link.setData("enabledIcon", enabledIcon);
+		link.setData("disabledIcon", disabledIcon);
+		return link;
+	}
+
+	private void moveSelectedStrategy(int delta) {
+		var strategy = selectedStrategy();
+		if (strategy == null)
+			return;
+		config.moveStrategy(strategy, delta);
+		strategyTable.refresh();
+		strategyTable.setSelection(new StructuredSelection(strategy), true);
+		updateStrategyButtons();
+		updateOk();
+	}
+
+	private void removeSelectedStrategy() {
+		var strategy = selectedStrategy();
+		if (strategy == null)
+			return;
+		int index = config.strategies().indexOf(strategy);
+		config.removeStrategy(strategy);
+		strategyTable.refresh();
+		if (!config.strategies().isEmpty()) {
+			int nextIndex = Math.min(index, config.strategies().size() - 1);
+			strategyTable.setSelection(
+				new StructuredSelection(config.strategies().get(nextIndex)),
+				true);
+		}
+		updateStrategyButtons();
+		updateOk();
+	}
+
+	private MatchingStrategy selectedStrategy() {
+		var selected = Viewers.getFirstSelected(strategyTable);
+		return selected instanceof MatchingStrategy strategy ? strategy : null;
+	}
+
+	private void updateStrategyButtons() {
+		updateLink(upLink, config.canMoveUp(selectedStrategy()));
+		updateLink(downLink, config.canMoveDown(selectedStrategy()));
+		updateLink(removeLink, selectedStrategy() != null);
+	}
+
+	private void updateLink(ImageHyperlink link, boolean enabled) {
+		if (link == null || link.isDisposed())
+			return;
+		var enabledIcon = (Icon) link.getData("enabledIcon");
+		var disabledIcon = (Icon) link.getData("disabledIcon");
+		link.setEnabled(enabled);
+		link.setImage((enabled ? enabledIcon : disabledIcon).get());
 	}
 
 	private void updateOk() {
 		var button = getButton(IDialogConstants.OK_ID);
 		if (button == null) return;
 		button.setEnabled(config.isComplete());
+	}
+
+	private static class StrategyLabel extends LabelProvider
+		implements ITableLabelProvider {
+
+		@Override
+		public Image getColumnImage(Object element, int columnIndex) {
+			return null;
+		}
+
+		@Override
+		public String getColumnText(Object element, int columnIndex) {
+			if (!(element instanceof MatchingStrategy strategy))
+				return null;
+			return strategyLabel(strategy);
+		}
+	}
+
+	private static String strategyLabel(MatchingStrategy strategy) {
+		return switch (strategy) {
+			case BY_ID -> "Match providers by their IDs";
+			case BY_NAME -> "Match providers by their name and location";
+			case ANY -> "Match providers by flows";
+		};
 	}
 
 	private static class ProductSystemFilter extends ViewerFilter {
