@@ -28,8 +28,8 @@ public class StatisticFigure extends Figure {
 	private final int marginTop = 25;
 
 	private final Label numberLabel;
-	private final Label perc5Label;
-	private final Label perc95Label;
+	private final Label perc2p5Label;
+	private final Label perc97p5Label;
 	private final Label medianLabel;
 	private final Label meanLabel;
 	private final Label standardDevLabel;
@@ -47,8 +47,8 @@ public class StatisticFigure extends Figure {
 		numberLabel = initLabel(M.Results);
 		meanLabel = initLabel(M.Mean);
 		standardDevLabel = initLabel(M.StandardDeviation);
-		perc5Label = initLabel(M.Percentile5);
-		perc95Label = initLabel(M.Percentile95);
+		perc2p5Label = initLabel(M.Percentile2p5);
+		perc97p5Label = initLabel(M.Percentile97p5);
 		medianLabel = initLabel(M.Median);
 	}
 
@@ -99,8 +99,8 @@ public class StatisticFigure extends Figure {
 
 	private void paintParameterLabels() {
 		numberLabel.setText(Integer.toString(hist.statistics.count));
-		setLabelValue(perc5Label, hist.statistics.getPercentileValue(5));
-		setLabelValue(perc95Label, hist.statistics.getPercentileValue(95));
+		setLabelValue(perc2p5Label, hist.statistics.getPercentileValue(2.5));
+		setLabelValue(perc97p5Label, hist.statistics.getPercentileValue(97.5));
 		setLabelValue(medianLabel, hist.statistics.median);
 		setLabelValue(meanLabel, hist.statistics.mean);
 		setLabelValue(standardDevLabel, hist.statistics.standardDeviation);
@@ -149,9 +149,9 @@ public class StatisticFigure extends Figure {
 
 	private void paintLines(Graphics g, Point box) {
 		g.setForegroundColor(ColorConstants.red);
-		drawLine(g, hist.statistics.getPercentileValue(5), box);
+		drawLine(g, hist.statistics.getPercentileValue(2.5), box);
 		drawLine(g, hist.statistics.median, box);
-		drawLine(g, hist.statistics.getPercentileValue(95), box);
+		drawLine(g, hist.statistics.getPercentileValue(97.5), box);
 		drawLine(g, hist.statistics.mean, box);
 		g.setForegroundColor(t.foreground());
 	}
