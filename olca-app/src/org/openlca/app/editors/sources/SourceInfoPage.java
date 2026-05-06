@@ -177,10 +177,13 @@ class SourceInfoPage extends ModelPage<Source> {
 	}
 
 	private File getDatabaseFile() {
-		String fileName = getModel().externalFile;
+		var fileName = getModel().externalFile;
 		if (fileName == null)
 			return null;
-		File dir = new FileStore(Database.get()).getFolder(getModel());
+		var store = FileStore.of(Database.get());
+		if (store.isError())
+			return null;
+		var dir = store.value().getFolder(getModel());
 		return new File(dir, fileName);
 	}
 
