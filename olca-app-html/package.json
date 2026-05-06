@@ -4,7 +4,7 @@
   "description": "HTML pages of the openLCA application",
   "main": "index.js",
   "scripts": {
-    "prebuild": "python3 scripts/extract_completions.py",
+    "prebuild": "node ../gen-jython-bindings.js && python3 scripts/extract_completions.py",
     "build": "webpack --config webpack.config.js --mode=production",
     "predev": "python3 scripts/extract_completions.py",
     "dev": "webpack --config webpack.config.js --mode=development --watch",

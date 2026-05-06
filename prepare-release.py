@@ -16,7 +16,6 @@ def main():
         call(["mvn", "package"], cwd="./olca-refdata")
         call(["npm", "install"], cwd="./olca-app-html")
         call(["npm", "run", "build"], cwd="./olca-app-html")
-        call(["node", "gen-jython-bindings.js"])
         call(["npm", "install"], cwd="./olca-app-build/credits")
         call(["node", "credits-gen.js"], cwd="./olca-app-build/credits")
     else:
@@ -25,7 +24,6 @@ def main():
         call("mvn.cmd package", cwd="./olca-refdata")
         call("npm.cmd install", cwd="./olca-app-html")
         call("npm.cmd run build", cwd="./olca-app-html")
-        call("node gen-jython-bindings.js")
         call("npm.cmd install", cwd="./olca-app-build/credits")
         call("node credits-gen.js", cwd="./olca-app-build/credits")
 
