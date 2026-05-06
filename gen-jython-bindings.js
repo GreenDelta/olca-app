@@ -2,6 +2,7 @@
 // interpreter
 
 const fs = require('fs')
+const path = require('path')
 
 // checks if the given thing is a Java file
 let isFile = file =>
@@ -65,7 +66,7 @@ let scan = (folder, package, bindings) => {
   }
 }
 
-let generate = (folders, target) => {
+let generate = (baseFolder, folders, target) => {
   let bindings = {}
   for (let folder of folders) {
     scan(folder, '', bindings)
@@ -74,13 +75,15 @@ let generate = (folders, target) => {
     .sort()
     .map(clazz => `import ${bindings[clazz]} as ${clazz}\n`)
     .reduce((t, s) => t.concat(s))
-  let out = `olca-app/src/org/openlca/app/devtools/python/${target}`
+  let out = path.join(baseFolder, `olca-app/src/org/openlca/app/devtools/python/${target}`);
   let header = '# auto-generated bindings; do not edit them\n'
   fs.writeFileSync(out, header + text)
 }
 
 let main = () => {
-  let modPath = '../olca-modules'
+  let folder = path.dirname(process.argv[1]);
+  let parent = path.dirname(folder);
+  let modPath = path.join(parent, 'olca-modules');
   // duplicate class names are skipped, so
   // the order of the folders is important
   let modFolders = [
@@ -89,7 +92,7 @@ let main = () => {
     `${modPath}/olca-proto-io/src/main/java`,
     `${modPath}/olca-ipc/src/main/java`,
   ]
-  generate(modFolders, 'mod_bindings.py')
+  generate(folder, modFolders, 'mod_bindings.py')
 }
 
 main()
