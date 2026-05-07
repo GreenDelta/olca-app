@@ -1230,8 +1230,8 @@ public class M extends NLS {
 	public static String Pcr;
 	public static String PedigreeMatrix;
 	public static String PedigreeMatrixMessage;
-	public static String Percentile5;
-	public static String Percentile95;
+	public static String Percentile2p5;
+	public static String Percentile97p5;
 	public static String Physical;
 	public static String PhysicalAllocation;
 	public static String PhysicalAndEconomicAllocation;
