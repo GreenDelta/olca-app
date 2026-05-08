@@ -243,12 +243,12 @@ public class FileImport {
 
 		@Override
 		protected void okPressed() {
+			super.okPressed();
 			if (intoActiveDB) {
-				DbImportWizard.of(zolca);
+				DbImportWizard.run(zolca);
 			} else {
 				DbRestoreAction.run(zolca);
 			}
-			super.okPressed();
 		}
 	}
 }
