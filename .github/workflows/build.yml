@@ -1,0 +1,53 @@
+name: Build OLCA App
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: olca-app
+
+      - name: Set up java
+        uses: actions/setup-java@v5
+        with:
+          java-version: '26'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set up python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Set up node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Checkout olca-modules
+        uses: actions/checkout@v6
+        with:
+          repository: GreenDelta/olca-modules
+          path: olca-modules
+
+      - name: Run prepare-release.py
+        working-directory: olca-app
+        run: python prepare-release.py
+
+      - name: Build app
+        working-directory: olca-app/olca-app
+        run: mvn -B package
