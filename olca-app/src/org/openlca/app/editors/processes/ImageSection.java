@@ -48,12 +48,16 @@ class ImageSection {
 		if (doc == null)
 			return;
 
-		List<File> files = new ArrayList<>();
+		var storeRes = FileStore.of(Database.get());
+		if (storeRes.isError())
+			return;
+		var store = storeRes.value();
+
+		var files = new ArrayList<File>();
 		for (Source s : doc.sources) {
 			if (!isImage(s.externalFile))
 				continue;
-			File dir = new FileStore(
-					Database.get()).getFolder(s);
+			File dir = store.getFolder(s);
 			File file = new File(dir, s.externalFile);
 			if (!file.exists())
 				continue;

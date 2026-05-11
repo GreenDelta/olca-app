@@ -31,21 +31,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
 
-/**
- * Wizards for the import of data from an openLCA database to another openLCA
- * database.
- */
+/// A wizard for importing another database or external `*.zolca` file into
+/// the currently active database.
 public class DbImportWizard extends Wizard implements IImportWizard {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private DbImportPage page;
 
-	private File initialFile;
-
-	public static void of(File file) {
-		Wizards.forImport(
-				"wizard.import.db",
-				(DbImportWizard w) -> w.initialFile = file);
+	/// Runs the database import of the given `*.zolca` file directly in headless
+	/// mode. This means that no UI is created of the wizard but the import of
+	/// the database file is directly executed with the import logic of this
+	/// wizard.
+	public static void run(File file) {
+		if (Database.isNoneActive()) {
+			MsgBox.error(M.NoDatabaseOpened, M.NoDatabaseOpenedErr);
+			return;
+		}
+		if (file == null) return;
+		var wizard = new DbImportWizard();
+		var config = new DbImportPage.ImportConfig();
+		config.mode = config.FILE_MODE;
+		config.file = file;
+		wizard.runImport(config);
 	}
 
 	public DbImportWizard() {
@@ -64,9 +71,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			addPage(new NoDatabaseErrorPage());
 			return;
 		}
-		page = initialFile != null
-				? new DbImportPage(initialFile)
-				: new DbImportPage();
+		page = new DbImportPage();
 		addPage(page);
 	}
 
@@ -76,17 +81,30 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			MsgBox.error(M.NoDatabaseOpened, M.DBImportNoTarget);
 			return true;
 		}
+		return runImport(page.getConfig());
+	}
+
+	private boolean runImport(DbImportPage.ImportConfig config) {
 		try {
-			var config = page.getConfig();
-			var connectionDispatch = createConnection(config);
-			boolean canRun = canRun(config, connectionDispatch);
+
+			var connection = createConnection(config);
+			boolean canRun = canRun(config, connection);
 			if (!canRun) {
-				connectionDispatch.close();
+				connection.close();
 				return false;
 			}
-			var importDispatch = new ImportDispatch(connectionDispatch);
-			getContainer().run(true, true, importDispatch);
+
+			var dbImport = new ImportDispatch(connection);
+			var container = getContainer();
+			if (container != null) {
+				container.run(true, true, dbImport);
+			} else {
+				PlatformUI.getWorkbench()
+					.getProgressService()
+					.run(true, true, dbImport);
+			}
 			return true;
+
 		} catch (Exception e) {
 			ErrorReporter.on("Database import failed", e);
 			return false;
@@ -96,14 +114,14 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		}
 	}
 
-	private boolean canRun(DbImportPage.ImportConfig config,
-						   ConnectionDispatch connectionDispatch) {
-		VersionState state = connectionDispatch.getSourceState();
+	private boolean canRun(
+		DbImportPage.ImportConfig config, ConnectionDispatch connection) {
+		VersionState state = connection.getSourceState();
 		if (state == VersionState.UP_TO_DATE)
 			return true;
 		if (state == null || state == VersionState.ERROR) {
 			MsgBox.error(M.ConnectionFailed,
-					M.DBImportNoTargetConnectionFailedMessage);
+				M.DBImportNoTargetConnectionFailedMessage);
 			return false;
 		}
 		if (state == VersionState.HIGHER_VERSION) {
@@ -113,16 +131,17 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 		if (config.mode == config.FILE_MODE)
 			return true;
 		return Question
-				.ask(M.UpdateDatabase,
-						M.DBImportUpdateDatabaseQuestion);
+			.ask(M.UpdateDatabase,
+				M.DBImportUpdateDatabaseQuestion);
 	}
 
 	private ConnectionDispatch createConnection(DbImportPage.ImportConfig config)
-			throws Exception {
-		ConnectionDispatch connectionDispatch = new ConnectionDispatch(config);
-		PlatformUI.getWorkbench().getProgressService()
-				.busyCursorWhile(connectionDispatch);
-		return connectionDispatch;
+		throws Exception {
+		var dispatch = new ConnectionDispatch(config);
+		PlatformUI.getWorkbench()
+			.getProgressService()
+			.busyCursorWhile(dispatch);
+		return dispatch;
 	}
 
 	private class ImportDispatch implements IRunnableWithProgress {
@@ -139,7 +158,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 
 		@Override
 		public void run(IProgressMonitor monitor)
-				throws InvocationTargetException, OperationCanceledException {
+			throws InvocationTargetException, OperationCanceledException {
 			try {
 				monitor.beginTask(M.ImportDatabase, IProgressMonitor.UNKNOWN);
 				if (sourceState == VersionState.NEEDS_UPGRADE) {
