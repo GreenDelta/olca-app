@@ -47,7 +47,7 @@ public class TransferTargetDialog extends FormDialog {
 		if (dialog.open() != OK || !config.isComplete())
 			return;
 
-		var confRes = config.openConfig();
+		var confRes = App.exec("Open target database", config::openConfig);
 		if (confRes.isError()) {
 			MsgBox.error("Cannot transfer a product system", confRes.error());
 			return;
