@@ -18,7 +18,6 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.commons.Strings;
 import org.openlca.io.olca.systransfer.ProviderInfo;
 import org.openlca.io.olca.systransfer.ProviderMatch;
 import org.openlca.io.olca.systransfer.TransferPlan;
@@ -183,17 +182,6 @@ final class TransferReviewDialog extends FormDialog {
 	}
 
 	private static String providerLabel(ProviderInfo info) {
-		if (info == null || info.provider() == null)
-			return null;
-		var label = Strings.isBlank(info.provider().name)
-			? "Unnamed provider"
-			: info.provider().name.strip();
-		if (info.location() != null && Strings.isBlank(info.location().code)) {
-			label += " - " + info.location().code.strip();
-		}
-		if (info.flow() != null && Strings.isBlank(info.flow().name)) {
-			label += " [" + info.flow().name.strip() + "]";
-		}
-		return label;
+		return TransferProviderLabels.of(info);
 	}
 }

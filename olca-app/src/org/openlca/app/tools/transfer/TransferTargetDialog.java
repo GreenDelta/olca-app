@@ -31,7 +31,6 @@ import org.openlca.commons.Res;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.io.olca.systransfer.MatchingStrategy;
-import org.openlca.io.olca.systransfer.TransferExecutor;
 import org.openlca.io.olca.systransfer.TransferPlan;
 
 public class TransferTargetDialog extends FormDialog {
@@ -74,27 +73,7 @@ public class TransferTargetDialog extends FormDialog {
 			}
 
 			var plan = (TransferPlan) planRes[0].value();
-			if (!TransferReviewDialog.show(plan))
-				return;
-
-			var execRes = new Res[1];
-			App.runWithProgress("Transfer product system", () ->
-				execRes[0] = TransferExecutor.of(plan).execute());
-			if (execRes[0] == null || execRes[0].isError()) {
-				var error = execRes[0] != null
-					? execRes[0].error()
-					: "Failed to transfer the product system";
-				MsgBox.error("Transfer failed", error);
-				return;
-			}
-
-			MsgBox.info("Transfer complete",
-				"Transferred product system to target database '"
-					+ transfer.config().target().getName() + "' with "
-					+ plan.matches().size() + " provider assignment"
-					+ (plan.matches().size() == 1 ? "" : "s")
-					+ " and " + plan.copies().size() + " provider "
-					+ (plan.copies().size() == 1 ? "copy" : "copies") + ".");
+			TransferPlanEditor.open(plan);
 		}
 
 	}

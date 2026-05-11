@@ -270,6 +270,13 @@
 		</editor>
 
 		<editor
+				class="org.openlca.app.tools.transfer.TransferPlanEditor"
+				default="false"
+				id="TransferPlanEditor"
+				name="Transfer plan">
+		</editor>
+
+		<editor
 				class="org.openlca.app.editors.libraries.LibraryEditor"
 				default="false"
 				id="editors.LibraryEditor"
