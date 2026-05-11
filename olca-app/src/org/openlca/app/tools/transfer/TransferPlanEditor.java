@@ -1,6 +1,5 @@
 package org.openlca.app.tools.transfer;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -36,10 +35,9 @@ public class TransferPlanEditor extends SimpleFormEditor {
 	private boolean running;
 
 	public static void open(TransferPlan plan) {
-		if (plan == null)
-			return;
+		if (plan == null)	return;
 		var key = AppContext.put(plan);
-		var input = new Input(key, titleOf(plan));
+		var input = new SimpleEditorInput(key, titleOf(plan));
 		Editors.open(input, ID);
 	}
 
@@ -47,7 +45,7 @@ public class TransferPlanEditor extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		setTitleImage(Icon.TARGET.get());
-		if (!(input instanceof Input editorInput)) {
+		if (!(input instanceof SimpleEditorInput editorInput)) {
 			throw new PartInitException("No transfer plan provided");
 		}
 		plan = AppContext.remove(editorInput.id, TransferPlan.class);
@@ -93,18 +91,6 @@ public class TransferPlanEditor extends SimpleFormEditor {
 			? config.system().name
 			: "Product system";
 		return "Transfer plan - " + system;
-	}
-
-	private static final class Input extends SimpleEditorInput {
-
-		Input(String id, String name) {
-			super(id, name);
-		}
-
-		@Override
-		public ImageDescriptor getImageDescriptor() {
-			return Icon.TARGET.descriptor();
-		}
 	}
 
 	private static final class Page extends FormPage {
