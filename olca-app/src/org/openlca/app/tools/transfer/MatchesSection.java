@@ -15,30 +15,37 @@ import org.openlca.io.olca.systransfer.TransferPlan;
 
 final class MatchesSection {
 
-	private MatchesSection() {
+	private final TransferPlan plan;
+
+	private MatchesSection(TransferPlan plan) {
+		this.plan = plan;
 	}
 
-	static void create(Composite parent, FormToolkit tk, TransferPlan plan) {
+	static void create(TransferPlan plan, Composite parent, FormToolkit tk) {
+		new MatchesSection(plan).render(parent, tk);
+	}
+
+	private void render(Composite parent, FormToolkit tk) {
 		var section = UI.section(parent, tk, "Provider matches");
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
-		var matchesTable = Tables.createViewer(comp,
-			"Provider",
-			"Selected provider",
+		var table = Tables.createViewer(comp,
+			"Source provider",
+			"Flow",
+			"Target provider",
 			"Status");
-		matchesTable.setLabelProvider(new MatchLabel());
-		matchesTable.setInput(plan.matches());
-		Tables.bindColumnWidths2(matchesTable, 0.42, 0.42, 0.16);
-		var table = matchesTable.getTable();
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		UI.gridData(table, true, true);
+		table.setLabelProvider(new MatchLabel());
+		table.setInput(plan.matches());
+		Tables.bindColumnWidths2(table, 0.25, 0.25, 0.25, 0.25);
+		var gd = UI.gridData(table.getTable(), true, true);
+		gd.heightHint = 1;
+		gd.widthHint = 1;
 
-		new ModifySupport<ProviderMatch>(matchesTable)
-			.bind("Selected provider", new SelectedProviderModifier());
+		new ModifySupport<ProviderMatch>(table)
+			.bind("Target provider", new TargetProviderModifier());
 	}
 
-	static final class SelectedProviderModifier
+	private static final class TargetProviderModifier
 		extends ComboBoxCellModifier<ProviderMatch, ProviderInfo> {
 
 		@Override

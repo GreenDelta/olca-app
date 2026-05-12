@@ -34,7 +34,7 @@ final class TransferPlanPage extends FormPage {
 		createSummary(body, tk);
 		createMetaSection(body, tk);
 		createCopiesSection(body, tk);
-		MatchesSection.create(body, tk, plan);
+		MatchesSection.create(plan, body, tk);
 
 		form.reflow(true);
 	}
