@@ -20,40 +20,44 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AllocationCombo;
-import org.openlca.commons.Strings;
-import org.openlca.core.database.IDatabase;
 import org.openlca.core.library.LibraryInfo;
 import org.openlca.core.library.export.LibraryExport;
 import org.openlca.core.model.AllocationMethod;
 import org.openlca.core.model.DQSystem;
-import org.openlca.core.model.ImpactCategory;
-import org.openlca.core.model.Process;
-import org.openlca.util.Databases;
 
 public class LibraryExportDialog extends FormDialog {
 
-	private final Props props;
+	private final DatabaseProperties props;
 	private final Config config;
 
-	private LibraryExportDialog(Props props) {
+	private LibraryExportDialog(DatabaseProperties props) {
 		super(UI.shell());
 		this.props = props;
 		this.config = new Config();
-		config.name = props.db.getName();
+		config.name = props.db().getName();
 		config.allocation = AllocationMethod.NONE;
 	}
 
 	public static void show() {
+		// check the database
 		var db = Database.get();
 		if (db == null) {
 			MsgBox.error(M.NoDatabaseOpened, M.NoDatabaseOpenedLibraryErr);
 			return;
 		}
+
+		// collect database properties and open
 		try {
 			var props = App.exec(
-					M.CollectDatabasePropertiesDots,
-					() -> Props.of(db));
-			if (props.hasLibraryProcesses) {
+				M.CollectDatabasePropertiesDots, () -> DatabaseProperties.of(db));
+			if (props.hasResultProviderLinks()) {
+				MsgBox.error(
+					"Cannot export database as library",
+					"The database contains processes that link results as default provider.");
+				return;
+			}
+
+			if (props.hasLibraryProcesses()) {
 				var b = Question.ask(M.ContainsLibraryProcesses, M.ContainsLibraryProcessesQ);
 				if (!b)
 					return;
@@ -74,10 +78,10 @@ public class LibraryExportDialog extends FormDialog {
 	protected Point getInitialSize() {
 		int height = 350;
 		boolean[] adds = {
-				props.hasInventory,
-				props.hasUncertainty,
-				props.hasInventory || props.hasImpacts,
-				props.hasInventory && props.flowDqs != null
+			props.hasInventory(),
+			props.hasUncertainty(),
+			props.hasInventory() || props.hasImpacts(),
+			props.hasInventory() && props.flowDqs() != null
 		};
 		UI.initialSizeOf(this, 600, height + 25 * adds.length);
 		return super.getInitialSize();
@@ -92,60 +96,60 @@ public class LibraryExportDialog extends FormDialog {
 		var name = UI.labeledText(body, tk, M.Name);
 		name.setText(config.name);
 		name.addModifyListener(_e ->
-				config.name = name.getText().trim());
+			config.name = name.getText().trim());
 
 		// allocation method
-		if (props.hasInventory) {
+		if (props.hasInventory()) {
 			UI.label(body, tk, M.AllocationMethod);
 			var allocCombo = new AllocationCombo(
-					body, AllocationMethod.values());
+				body, AllocationMethod.values());
 			allocCombo.select(config.allocation);
 			allocCombo.addSelectionChangedListener(
-					m -> config.allocation = m);
+				m -> config.allocation = m);
 		}
 
 		BiFunction<String, Consumer<Boolean>, Button> check =
-				(label, onClick) -> {
-					UI.filler(body, tk);
-					var button = UI.checkbox(body, tk);
-					button.setText(label);
-					Controls.onSelect(button,
-							_e -> onClick.accept(button.getSelection()));
-					return button;
-				};
+			(label, onClick) -> {
+				UI.filler(body, tk);
+				var button = UI.checkbox(body, tk);
+				button.setText(label);
+				Controls.onSelect(button,
+					_e -> onClick.accept(button.getSelection()));
+				return button;
+			};
 
 		// costs
-		if (props.hasInventory) {
+		if (props.hasInventory()) {
 			check.apply("With costs", b -> config.withCosts = b)
-					.setSelection(config.withCosts);
+				.setSelection(config.withCosts);
 		}
 
 		// inversion check
-		if (props.hasInventory) {
+		if (props.hasInventory()) {
 			check.apply(M.PrecalculateMatrices, b -> config.withInversion = b)
-					.setSelection(config.withInversion);
+				.setSelection(config.withInversion);
 		}
 
 		// uncertainty check
-		if (props.hasUncertainty) {
+		if (props.hasUncertainty()) {
 			check.apply(M.WithUncertaintyDistributions,
-							b -> config.withUncertainties = b)
-					.setSelection(config.withUncertainties);
+					b -> config.withUncertainties = b)
+				.setSelection(config.withUncertainties);
 		}
 
 		// regionalization check
-		if (props.hasInventory || props.hasImpacts) {
+		if (props.hasInventory() || props.hasImpacts()) {
 			check.apply(M.Regionalized, b -> config.regionalized = b)
-					.setSelection(config.regionalized);
+				.setSelection(config.regionalized);
 		}
 
 		// data quality check
-		if (props.hasInventory && props.flowDqs != null) {
+		if (props.hasInventory() && props.flowDqs() != null) {
 			var dqCheck = check.apply(
-					M.WithDataQualityValues + " - " + props.flowDqs.name,
-					b -> config.dqSystem = b
-							? props.flowDqs
-							: null);
+				M.WithDataQualityValues + " - " + props.flowDqs().name,
+				b -> config.dqSystem = b
+					? props.flowDqs()
+					: null);
 			dqCheck.setSelection(config.dqSystem != null);
 			dqCheck.setEnabled(false); // disabled for now
 		}
@@ -162,16 +166,16 @@ public class LibraryExportDialog extends FormDialog {
 		}
 		var exportDir = new File(libDir.folder(), id);
 		super.okPressed();
-		var export = new LibraryExport(props.db, exportDir)
-				.withConfig(info)
-				.withCosts(config.withCosts)
-				.withAllocation(config.allocation)
-				.withInversion(config.withInversion)
-				.withUncertainties(config.withUncertainties);
+		var export = new LibraryExport(props.db(), exportDir)
+			.withConfig(info)
+			.withCosts(config.withCosts)
+			.withAllocation(config.allocation)
+			.withInversion(config.withInversion)
+			.withUncertainties(config.withUncertainties);
 		App.runWithProgress(
-				M.CreatingLibraryDots,
-				export,
-				Navigator::refresh);
+			M.CreatingLibraryDots,
+			export,
+			Navigator::refresh);
 	}
 
 	private static class Config {
@@ -185,47 +189,7 @@ public class LibraryExportDialog extends FormDialog {
 
 		LibraryInfo toInfo() {
 			return LibraryInfo.of(name)
-					.isRegionalized(regionalized);
-		}
-	}
-
-	private record Props(
-			IDatabase db,
-			boolean hasLibraryProcesses,
-			boolean hasInventory,
-			boolean hasImpacts,
-			boolean hasUncertainty,
-			DQSystem flowDqs
-	) {
-
-		static Props of(IDatabase db) {
-			boolean hasLibraryProcesses = false;
-			boolean hasInventory = false;
-			for (var d : db.getDescriptors(Process.class)) {
-				hasInventory = true;
-				if (Strings.isNotBlank(d.library)) {
-					hasLibraryProcesses = true;
-					break;
-				}
-			}
-			boolean hasImpacts = false;
-			for (var d : db.getDescriptors(ImpactCategory.class)) {
-				if (Strings.isBlank(d.library)) {
-					hasImpacts = true;
-					break;
-				}
-			}
-
-			if (hasLibraryProcesses)
-				return new Props(db, true, true, hasImpacts, false, null);
-
-			return new Props(
-					db,
-					false,
-					hasInventory,
-					hasImpacts,
-					Databases.hasUncertaintyData(db),
-					Databases.getCommonFlowDQS(db).orElse(null));
+				.isRegionalized(regionalized);
 		}
 	}
 }
