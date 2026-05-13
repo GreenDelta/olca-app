@@ -82,7 +82,7 @@ class CalculationPreferences {
 			Json.write(prefs.toSystemJson(), sysFile);
 
 		} catch (Exception e) {
-			ErrorReporter.on("failed to save calculation preferences", e);
+			ErrorReporter.on("Failed to save calculation preferences", e);
 		}
 	}
 
@@ -115,7 +115,7 @@ class CalculationPreferences {
 					? fromJson(json)
 					: null;
 		} catch (Exception e) {
-			ErrorReporter.on("failed to load calculation preferences", e);
+			ErrorReporter.on("Failed to load calculation preferences", e);
 			return;
 		}
 

@@ -47,10 +47,9 @@ public class DbCompressAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
+		var first = selection.getFirst();
+		if (!(first instanceof DatabaseElement e))
 			return false;
-		var e = (DatabaseElement) first;
 		var config = e.getContent();
 		if (!(config instanceof DerbyConfig))
 			return false;
@@ -128,7 +127,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 				HistoryView.refresh();
 				CompareView.clear();
 			} catch (Exception e) {
-				ErrorReporter.on("failed to compress database", e);
+				ErrorReporter.on("Failed to compress database", e);
 			}
 		}
 
@@ -154,7 +153,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 				rs.close();
 				con.close();
 			} catch (Exception e) {
-				ErrorReporter.on("failed to compress database", e);
+				ErrorReporter.on("Failed to compress database", e);
 			}
 		}
 

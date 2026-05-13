@@ -99,7 +99,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 				Navigator.refresh(Navigator.findElement(ModelType.PRODUCT_SYSTEM));
 			}
 		} catch (Exception e) {
-			ErrorReporter.on("failed to open product system dialog for process", e);
+			ErrorReporter.on("Failed to open product system dialog for process", e);
 		}
 	}
 

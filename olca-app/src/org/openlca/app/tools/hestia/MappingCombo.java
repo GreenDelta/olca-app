@@ -51,7 +51,7 @@ class MappingCombo {
 			var file = new MappingFileDao(db).getForName(mapping);
 			return FlowMap.of(file);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to load flow map", e);
+			ErrorReporter.on("Failed to load flow map", e);
 			return FlowMap.empty();
 		}
 	}

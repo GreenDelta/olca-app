@@ -31,7 +31,7 @@ public class GlobalParameterEditor extends ModelEditor<Parameter> {
 			addPage(infoPage = new GlobalParameterInfoPage(this));
 			addExtensionPages();
 		} catch (Exception e) {
-			ErrorReporter.on("failed to add page", e);
+			ErrorReporter.on("Failed to add page", e);
 		}
 	}
 

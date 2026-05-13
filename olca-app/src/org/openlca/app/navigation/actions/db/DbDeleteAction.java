@@ -65,7 +65,7 @@ public class DbDeleteAction extends Action implements INavigationAction {
 		if (configs.isEmpty())
 			return;
 		var name = configs.size() == 1
-				? configs.get(0).name()
+				? configs.getFirst().name()
 				: M.TheSelectedDatabases;
 		if (!Question.askDelete(name))
 			return;
@@ -90,7 +90,7 @@ public class DbDeleteAction extends Action implements INavigationAction {
 			try {
 				tryDelete(config);
 			} catch (Exception e) {
-				ErrorReporter.on("failed to delete database", e);
+				ErrorReporter.on("Failed to delete database", e);
 			}
 		}
 	}

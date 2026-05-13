@@ -71,8 +71,7 @@ public class MountLibraryDialog extends FormDialog {
 			Consumer<Set<Library>> callback) {
 		if (checkResult.isError()) {
 			ErrorReporter.on(
-					"Failed to check library: " + library,
-					checkResult.error());
+				"Failed to check library: " + library, checkResult.error());
 			if (callback != null) {
 				callback.accept(Collections.emptySet());
 			}

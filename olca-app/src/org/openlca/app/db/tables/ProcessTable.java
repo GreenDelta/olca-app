@@ -45,7 +45,7 @@ public class ProcessTable extends SimpleFormEditor {
 		try {
 			processes = Database.get().getAll(Process.class);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to load processes", e);
+			ErrorReporter.on("Failed to load processes", e);
 		}
 		super.init(site, input);
 	}

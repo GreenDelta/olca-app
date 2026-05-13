@@ -62,7 +62,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 		try {
 			progress.run(false, false, editor.getProductSystemEditor()::doSave);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to save product system in link update", e);
+			ErrorReporter.on("Failed to save product system in link update", e);
 			return;
 		}
 

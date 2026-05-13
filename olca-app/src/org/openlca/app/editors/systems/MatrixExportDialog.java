@@ -307,7 +307,7 @@ public class MatrixExportDialog extends FormDialog {
 				var out = new File(folder, target).toPath();
 				Files.copy(in, out, StandardCopyOption.REPLACE_EXISTING);
 			} catch (Exception e) {
-				ErrorReporter.on("failed to write " + target, e);
+				ErrorReporter.on("Failed to write " + target, e);
 			}
 		}
 

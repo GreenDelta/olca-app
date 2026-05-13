@@ -182,7 +182,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			AppContext.evict(d);
 			DatabaseDir.deleteDir(d);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to delete " + d, e);
+			ErrorReporter.on("Failed to delete " + d, e);
 		}
 	}
 
@@ -225,7 +225,7 @@ public class DeleteModelAction extends Action implements INavigationAction {
 			AppContext.evict(Descriptor.of(category));
 			return true;
 		} catch (Exception e) {
-			ErrorReporter.on("failed to delete category " + category, e);
+			ErrorReporter.on("Failed to delete category " + category, e);
 			return false;
 		}
 	}

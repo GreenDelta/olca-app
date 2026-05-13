@@ -147,7 +147,7 @@ public class ResultEditor extends FormEditor {
 			}
 
 		} catch (Throwable e) {
-			ErrorReporter.on("failed to create result pages", e);
+			ErrorReporter.on("Failed to create result pages", e);
 			this.close(false);
 		}
 	}

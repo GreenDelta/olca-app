@@ -57,7 +57,7 @@ public class LibraryEditor extends FormEditor {
 				addPage(new LibraryLicensePage(this));
 			}
 		} catch (Exception e) {
-			ErrorReporter.on("failed to add page", e);
+			ErrorReporter.on("Failed to add page", e);
 		}
 	}
 

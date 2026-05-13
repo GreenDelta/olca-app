@@ -40,7 +40,7 @@ record ImportMonitor(IProgressMonitor monitor) {
 					break;
 				}
 			} catch (InterruptedException e) {
-				ErrorReporter.on("failed to join import thread", e);
+					ErrorReporter.on("Failed to join import thread", e);
 			}
 		}
 		monitor.done();

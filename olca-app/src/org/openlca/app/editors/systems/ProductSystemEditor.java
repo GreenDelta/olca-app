@@ -36,7 +36,7 @@ public class ProductSystemEditor extends ModelEditor<ProductSystem> {
 			addPage(new StatisticsPage(this));
 			addExtensionPages();
 		} catch (Exception e) {
-			ErrorReporter.on("failed to add page", e);
+			ErrorReporter.on("Failed to add page", e);
 		}
 	}
 

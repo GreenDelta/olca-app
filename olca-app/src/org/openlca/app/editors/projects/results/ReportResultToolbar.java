@@ -136,7 +136,7 @@ public class ReportResultToolbar extends EditorActionBarContributor {
 				var file = new File(targetDir, fileName);
 				Files.writeString(file.toPath(), text.toString());
 			} catch (Exception e) {
-				ErrorReporter.on("failed to export report", e);
+				ErrorReporter.on("Failed to export report", e);
 			}
 		}
 

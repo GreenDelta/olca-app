@@ -122,7 +122,7 @@ public class PythonEditor extends ScriptingEditor {
 				});
 
 			} catch (Exception e) {
-				ErrorReporter.on("failed to create browser in Python editor", e);
+				ErrorReporter.on("Failed to create browser in Python editor", e);
 			}
 		}
 
@@ -138,7 +138,7 @@ public class PythonEditor extends ScriptingEditor {
 						? script.toString()
 						: "";
 			} catch (Exception e) {
-				ErrorReporter.on("failed to get script content", e);
+				ErrorReporter.on("Failed to get script content", e);
 				return "";
 			}
 		}

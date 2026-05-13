@@ -99,7 +99,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 			HistoryView.refresh();
 			CompareView.clear();
 		} catch (Exception e) {
-			ErrorReporter.on("failed to copy database", e);
+			ErrorReporter.on("Failed to copy database", e);
 		}
 	}
 }

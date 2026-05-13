@@ -58,7 +58,7 @@ public class Database {
 				LoggerFactory.getLogger(Database.class)
 						.error("failed to close database resources", ce);
 			}
-			ErrorReporter.on("failed to activate database: " + config, e);
+			ErrorReporter.on("Failed to activate database: " + config, e);
 			return null;
 		}
 	}

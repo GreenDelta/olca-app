@@ -91,7 +91,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 				addExtensionPages();
 			}
 		} catch (Exception e) {
-			ErrorReporter.on("failed to init pages", e);
+			ErrorReporter.on("Failed to init pages", e);
 		}
 	}
 

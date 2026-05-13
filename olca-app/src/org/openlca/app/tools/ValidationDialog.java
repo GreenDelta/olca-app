@@ -150,7 +150,7 @@ public class ValidationDialog extends FormDialog {
 						progressBar.setSelection(1 + validation.finishedWorkerCount());
 					});
 				} catch (InterruptedException e) {
-					ErrorReporter.on("failed to wait during validation", e);
+					ErrorReporter.on("Failed to wait during validation", e);
 					close();
 				}
 			}

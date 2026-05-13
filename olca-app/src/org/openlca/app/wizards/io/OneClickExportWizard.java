@@ -62,7 +62,7 @@ public class OneClickExportWizard extends Wizard implements IExportWizard {
 			});
 			return true;
 		} catch (Exception e) {
-			ErrorReporter.on("export failed", e);
+			ErrorReporter.on("Export failed", e);
 			return false;
 		}
 	}

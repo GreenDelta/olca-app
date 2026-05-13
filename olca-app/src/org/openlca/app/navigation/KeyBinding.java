@@ -98,7 +98,7 @@ class KeyBinding extends KeyAdapter {
 				fn.accept(elements);
 			}
 		} catch (Exception e) {
-			ErrorReporter.on("failed to handle key event in navigation", e);
+			ErrorReporter.on("Failed to handle key event in navigation", e);
 		}
 	}
 }
