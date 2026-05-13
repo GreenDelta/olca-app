@@ -8,26 +8,28 @@
 import os
 from subprocess import call
 
+_is_posix = os.name == "posix"
+
 
 def main():
-    if os.name == "posix":
-        call(["mvn", "-f", "pom_libs.xml", "clean"], cwd="./olca-app")
-        call("./update_modules.sh")
-        call(["mvn", "package"], cwd="./olca-refdata")
-        call(["npm", "install"], cwd="./olca-app-html")
-        call(["npm", "run", "build"], cwd="./olca-app-html")
-        call(["node", "gen-jython-bindings.js"])
-        call(["npm", "install"], cwd="./olca-app-build/credits")
-        call(["node", "credits-gen.js"], cwd="./olca-app-build/credits")
-    else:
-        call("mvn.cmd -f pom_libs.xml clean", cwd="./olca-app")
-        call("update_modules.bat")
-        call("mvn.cmd package", cwd="./olca-refdata")
-        call("npm.cmd install", cwd="./olca-app-html")
-        call("npm.cmd run build", cwd="./olca-app-html")
-        call("node gen-jython-bindings.js")
-        call("npm.cmd install", cwd="./olca-app-build/credits")
-        call("node credits-gen.js", cwd="./olca-app-build/credits")
+    # note that the order of these steps is important
+    call([cmd("mvn"), "-f", "pom_libs.xml", "clean"], cwd="./olca-app")
+    mods_update = "./update_modules.sh" if _is_posix else "update_modules.bat"
+    call(mods_update)
+    call([cmd("mvn"), "package"], cwd="./olca-refdata")
+    call([cmd("node"), "gen-jython-bindings.js"])
+    call([cmd("npm"), "install"], cwd="./olca-app-html")
+    call([cmd("npm"), "run", "build"], cwd="./olca-app-html")
+    call([cmd("npm"), "install"], cwd="./olca-app-build/credits")
+    call([cmd("node"), "credits-gen.js"], cwd="./olca-app-build/credits")
+
+
+def cmd(cm: str) -> str:
+    if _is_posix:
+        return cm
+    if cm == "mvn" or cm == "npm":
+        return cm + ".cmd"
+    return cm
 
 
 if __name__ == "__main__":
