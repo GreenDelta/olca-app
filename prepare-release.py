@@ -5,13 +5,40 @@
 # * the HTML pages
 # * the current modules interface for the Jython interpreter
 
+import argparse
 import os
-from subprocess import call
+import re
+from pathlib import Path
+from subprocess import call, check_call
 
 _is_posix = os.name == "posix"
+_root_dir = Path(__file__).resolve().parent
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest="command")
+
+    # register argument parsers
+    bump_parser = subparsers.add_parser(
+        "bump-version",
+        help="update the Tycho Maven and RCP versions",
+    )
+    bump_parser.add_argument(
+        "version",
+        help="version like 2.6.2 or 2.6.3-SNAPSHOT",
+    )
+
+    args = parser.parse_args()
+    if args.command == "bump-version":
+        bump_version(args.version)
+        return
+
+    # run the release preparation per default
+    prepare_release()
+
+
+def prepare_release():
     # note that the order of these steps is important
     call([cmd("mvn"), "-f", "pom_libs.xml", "clean"], cwd="./olca-app")
     mods_update = "./update_modules.sh" if _is_posix else "update_modules.bat"
@@ -22,6 +49,40 @@ def main():
     call([cmd("npm"), "run", "build"], cwd="./olca-app-html")
     call([cmd("npm"), "install"], cwd="./olca-app-build/credits")
     call([cmd("node"), "credits-gen.js"], cwd="./olca-app-build/credits")
+
+
+def bump_version(version: str):
+    if not re.fullmatch(r"\d+\.\d+\.\d+(?:-SNAPSHOT)?", version):
+        raise SystemExit(
+            "version must be <major>.<minor>.<patch> or"
+            " <major>.<minor>.<patch>-SNAPSHOT"
+        )
+
+    mvn = cmd("mvn")
+    tycho_version = get_tycho_version()
+    tycho_versions_plugin = (
+        f"org.eclipse.tycho:tycho-versions-plugin:{tycho_version}"
+    )
+    set_version_goal = f"{tycho_versions_plugin}:set-version"
+    update_metadata_goal = f"{tycho_versions_plugin}:update-eclipse-metadata"
+    build_dir = _root_dir / "olca-app-build"
+
+    check_call(
+        [mvn, set_version_goal, f"-DnewVersion={version}"],
+        cwd=build_dir,
+    )
+    check_call([mvn, update_metadata_goal], cwd=build_dir)
+
+
+def get_tycho_version() -> str:
+    """Get the Tycho version from the POM in the build folder."""
+    pom = (_root_dir / "olca-app-build/pom.xml").read_text(encoding="utf-8")
+    match = re.search(r"<tycho.version>([^<]+)</tycho.version>", pom)
+    if match is None:
+        raise SystemExit(
+            "failed to read tycho.version from olca-app-build/pom.xml"
+        )
+    return match.group(1).strip()
 
 
 def cmd(cm: str) -> str:
