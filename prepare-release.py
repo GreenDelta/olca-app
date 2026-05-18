@@ -8,8 +8,9 @@
 import argparse
 import os
 import re
+import sys
 from pathlib import Path
-from subprocess import call, check_call
+from subprocess import check_call
 
 _is_posix = os.name == "posix"
 _root_dir = Path(__file__).resolve().parent
@@ -28,10 +29,18 @@ def main():
         "version",
         help="version like 2.6.2 or 2.6.3-SNAPSHOT",
     )
+    subparsers.add_parser(
+        "full-build",
+        help="run release preparation, Tycho build, and full packaging",
+    )
 
+    # execute specific commands
     args = parser.parse_args()
     if args.command == "bump-version":
         bump_version(args.version)
+        return
+    if args.command == "full-build":
+        full_build()
         return
 
     # run the release preparation per default
@@ -40,15 +49,15 @@ def main():
 
 def prepare_release():
     # note that the order of these steps is important
-    call([cmd("mvn"), "-f", "pom_libs.xml", "clean"], cwd="./olca-app")
+    check_call([cmd("mvn"), "-f", "pom_libs.xml", "clean"], cwd="./olca-app")
     mods_update = "./update_modules.sh" if _is_posix else "update_modules.bat"
-    call(mods_update)
-    call([cmd("mvn"), "package"], cwd="./olca-refdata")
-    call([cmd("node"), "gen-jython-bindings.js"])
-    call([cmd("npm"), "install"], cwd="./olca-app-html")
-    call([cmd("npm"), "run", "build"], cwd="./olca-app-html")
-    call([cmd("npm"), "install"], cwd="./olca-app-build/credits")
-    call([cmd("node"), "credits-gen.js"], cwd="./olca-app-build/credits")
+    check_call(mods_update)
+    check_call([cmd("mvn"), "package"], cwd="./olca-refdata")
+    check_call([cmd("node"), "gen-jython-bindings.js"])
+    check_call([cmd("npm"), "install"], cwd="./olca-app-html")
+    check_call([cmd("npm"), "run", "build"], cwd="./olca-app-html")
+    check_call([cmd("npm"), "install"], cwd="./olca-app-build/credits")
+    check_call([cmd("node"), "credits-gen.js"], cwd="./olca-app-build/credits")
 
 
 def bump_version(version: str):
@@ -74,6 +83,15 @@ def bump_version(version: str):
     check_call([mvn, update_metadata_goal], cwd=build_dir)
 
 
+def full_build():
+    prepare_release()
+    build_dir = _root_dir / "olca-app-build"
+    check_call([cmd("mvn"), "clean", "verify"], cwd=build_dir)
+    check_call(
+        [python_cmd(), "-m", "package", "--mkl", "--winstaller"], cwd=build_dir
+    )
+
+
 def get_tycho_version() -> str:
     """Get the Tycho version from the POM in the build folder."""
     pom = (_root_dir / "olca-app-build/pom.xml").read_text(encoding="utf-8")
@@ -91,6 +109,12 @@ def cmd(cm: str) -> str:
     if cm == "mvn" or cm == "npm":
         return cm + ".cmd"
     return cm
+
+
+def python_cmd() -> str:
+    if os.name == "nt":
+        return "py"
+    return sys.executable
 
 
 if __name__ == "__main__":
