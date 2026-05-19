@@ -20,7 +20,7 @@ import org.openlca.app.util.UI;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.io.UnitMappingSync;
 import org.openlca.io.ecospold1.input.ES1UnitFetch;
-import org.openlca.io.ecospold1.input.EcoSpold01Import;
+import org.openlca.io.ecospold1.input.EcoSpold1Import;
 import org.openlca.io.ecospold1.input.ImportConfig;
 
 public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
@@ -86,7 +86,7 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 	public boolean performFinish() {
 		try {
 			getContainer().run(true, true, m -> {
-				var imp = new EcoSpold01Import(config());
+				var imp = new EcoSpold1Import(config());
 				imp.setFiles(filePage.files());
 				ImportMonitor.on(m).run(imp);
 			});

@@ -7,11 +7,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.io.ecospold1.output.ExportConfig;
+import org.openlca.io.ecospold1.output.EcoSpold1Export.EcoSpold1Config;
 
 class Es1ExportConfigPage extends WizardPage {
 
-	private final ExportConfig config;
+	private final EcoSpold1Config config;
 
 	Es1ExportConfigPage() {
 		super("Es1ExportConfigPage");

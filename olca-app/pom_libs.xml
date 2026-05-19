@@ -122,7 +122,6 @@
 						<configuration>
 							<outputDirectory>${basedir}/libs</outputDirectory>
 							<includeScope>runtime</includeScope>
-							<skipIfMissing>true</skipIfMissing>
 							<silent>true</silent>
 						</configuration>
 					</execution>
