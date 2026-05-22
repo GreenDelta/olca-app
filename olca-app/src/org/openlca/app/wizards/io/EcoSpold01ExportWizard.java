@@ -15,7 +15,7 @@ import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.ecospold1.output.EcoSpold1Export;
-import org.openlca.io.ecospold1.output.ExportConfig;
+import org.openlca.io.ecospold1.output.EcoSpold1Export.EcoSpold1Config;
 
 /**
  * Wizard for exporting processes and impact methods to the EcoSpold01 format
@@ -49,10 +49,14 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	public boolean performFinish() {
 		var models = modelPage.getSelectedModels();
 		var config = configPage == null
-				? ExportConfig.getDefault()
-				: configPage.getConfig();
-		try (var export = new EcoSpold1Export(
-				modelPage.getExportDestination(), config)) {
+				? EcoSpold1Export.of(Database.get(), modelPage.getExportDestination())
+				: configPage.getConfig().withDir(modelPage.getExportDestination());
+		var res = config.create();
+		if (res.isError()) {
+			ErrorReporter.on("EcoSpold I export failed", res.error());
+			return false;
+		}
+		try (var export = res.value()) {
 			getContainer().run(true, true, monitor -> {
 				int size = models.size();
 				monitor.beginTask(M.ExportingProcesses, size + 1);
