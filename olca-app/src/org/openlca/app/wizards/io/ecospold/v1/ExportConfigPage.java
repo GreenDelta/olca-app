@@ -5,21 +5,19 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.openlca.app.M;
-import org.openlca.app.db.Database;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.io.ecospold1.output.EcoSpold1Export;
 import org.openlca.io.ecospold1.output.EcoSpold1Export.EcoSpold1Config;
 
 class ExportConfigPage extends WizardPage {
 
 	private final EcoSpold1Config config;
 
-	ExportConfigPage() {
+	ExportConfigPage(EcoSpold1Config config) {
 		super("Es1ExportConfigPage");
 		setTitle(M.EcoSpoldConfiguration);
 		setDescription(M.ConfigureEcospoldMessage);
-		config = EcoSpold1Export.of(Database.get());
+		this.config = config;
 	}
 
 	public EcoSpold1Config getConfig() {
@@ -43,22 +41,19 @@ class ExportConfigPage extends WizardPage {
 
 		var defaultCheck = UI.checkbox(g, M.CreateDefaultValuesForMissingFields);
 		defaultCheck.setSelection(config.isWithDefaultValues());
-		Controls.onSelect(defaultCheck, $ -> {
-			config.writeDefaultValues(defaultCheck.getSelection());
-		});
+		Controls.onSelect(defaultCheck,
+			$ -> config.writeDefaultValues(defaultCheck.getSelection()));
 
 		var singleCheck = UI.checkbox(g, M.ExportDataSetsInOneFile);
 		singleCheck.setSelection(config.isWithSingleFile());
-		Controls.onSelect(singleCheck, $ -> {
-			config.writeSingleFile(singleCheck.getSelection());
-		});
+		Controls.onSelect(singleCheck,
+			$ -> config.writeSingleFile(singleCheck.getSelection()));
 
 		var refIdCheck = UI.checkbox(g,
 			"Add export information with data set ID to general comment");
 		refIdCheck.setSelection(config.isWithRefIdInfo());
-		Controls.onSelect(refIdCheck, $ -> {
-			config.writeRefIdInfo(refIdCheck.getSelection());
-		});
+		Controls.onSelect(refIdCheck,
+			$ -> config.writeRefIdInfo(refIdCheck.getSelection()));
 	}
 
 	private void productNameConfig(Composite body) {
@@ -80,7 +75,7 @@ class ExportConfigPage extends WizardPage {
 				text += ", U";
 			}
 			example.setText(text);
-			example.getParent().pack();
+			example.getParent().layout();
 		};
 		updateExample.run();
 

@@ -20,21 +20,23 @@ import org.openlca.io.ecospold1.output.EcoSpold1Export;
 abstract class AbstractExportWizard extends Wizard implements IExportWizard {
 
 	private final ModelType type;
+	private final EcoSpold1Export.EcoSpold1Config config;
 	private ModelSelectionPage modelPage;
-	private ExportConfigPage configPage;
 
 	public AbstractExportWizard(ModelType type) {
 		super();
 		setNeedsProgressMonitor(true);
 		this.type = type;
+		this.config = EcoSpold1Export.of(Database.get());
 	}
 
 	@Override
 	public void addPages() {
 		modelPage = ModelSelectionPage.forDirectory(type);
 		addPage(modelPage);
-		configPage = new ExportConfigPage();
-		addPage(configPage);
+		if (type == ModelType.PROCESS) {
+			addPage(new ExportConfigPage(config));
+		}
 	}
 
 	@Override
@@ -45,14 +47,14 @@ abstract class AbstractExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public boolean performFinish() {
 		var models = modelPage.getSelectedModels();
-		var config = configPage == null
-				? EcoSpold1Export.of(Database.get(), modelPage.getExportDestination())
-				: configPage.getConfig().withDir(modelPage.getExportDestination());
-		var res = config.create();
+		var res = config
+			.withDir(modelPage.getExportDestination())
+			.create();
 		if (res.isError()) {
 			ErrorReporter.on("EcoSpold I export failed", res.error());
 			return false;
 		}
+
 		try (var export = res.value()) {
 			getContainer().run(true, true, monitor -> {
 				int size = models.size();
@@ -70,7 +72,9 @@ abstract class AbstractExportWizard extends Wizard implements IExportWizard {
 	}
 
 	private void doExport(
-			List<RootDescriptor> models, IProgressMonitor monitor, EcoSpold1Export export
+			List<RootDescriptor> models,
+			IProgressMonitor monitor,
+			EcoSpold1Export export
 	) throws InterruptedException {
 		try {
 			var db = Database.get();
