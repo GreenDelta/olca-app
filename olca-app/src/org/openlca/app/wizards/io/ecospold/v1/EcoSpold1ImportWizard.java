@@ -1,4 +1,4 @@
-package org.openlca.app.wizards.io;
+package org.openlca.app.wizards.io.ecospold.v1;
 
 import java.io.File;
 import java.util.List;
@@ -17,13 +17,18 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
+import org.openlca.app.wizards.io.FilePanel;
+import org.openlca.app.wizards.io.ImportMonitor;
+import org.openlca.app.wizards.io.MappingSelector;
+import org.openlca.app.wizards.io.NoDatabaseErrorPage;
+import org.openlca.app.wizards.io.Wizards;
 import org.openlca.core.io.maps.FlowMap;
 import org.openlca.io.UnitMappingSync;
 import org.openlca.io.ecospold1.input.ES1UnitFetch;
 import org.openlca.io.ecospold1.input.EcoSpold1Import;
 import org.openlca.io.ecospold1.input.ImportConfig;
 
-public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
+public class EcoSpold1ImportWizard extends Wizard implements IImportWizard {
 
 	private FilePage filePage;
 	private UnitMappingPage mappingPage;
@@ -37,10 +42,10 @@ public class EcoSpold01ImportWizard extends Wizard implements IImportWizard {
 		}
 		Wizards.forImport(
 				"wizard.import.ecospold1",
-				(EcoSpold01ImportWizard w) -> w.initialFile = file);
+				(EcoSpold1ImportWizard w) -> w.initialFile = file);
 	}
 
-	public EcoSpold01ImportWizard() {
+	public EcoSpold1ImportWizard() {
 		setWindowTitle(M.ImportEcoSpold);
 		setDefaultPageImageDescriptor(Icon.IMPORT_ZIP_WIZARD.descriptor());
 		setNeedsProgressMonitor(true);

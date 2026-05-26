@@ -23,7 +23,7 @@ import org.openlca.app.util.FileType;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 
-class FilePanel {
+public class FilePanel {
 
 	private final Consumer<List<File>> handler;
 	private final List<File> files = new ArrayList<>();
@@ -34,25 +34,25 @@ class FilePanel {
 		this.handler = handler;
 	}
 
-	static FilePanel on(Consumer<List<File>> handler) {
+	public static FilePanel on(Consumer<List<File>> handler) {
 		return new FilePanel(handler);
 	}
 
-	FilePanel withTitle(String title) {
+	public FilePanel withTitle(String title) {
 		if (title != null) {
 			this.title = title;
 		}
 		return this;
 	}
 
-	FilePanel withFiles(List<File> files) {
+	public FilePanel withFiles(List<File> files) {
 		if (files == null)
 			return this;
 		this.files.addAll(files);
 		return this;
 	}
 
-	FilePanel withExtensions(String... exts) {
+	public FilePanel withExtensions(String... exts) {
 		if (exts == null || exts.length == 0) {
 			extensions = null;
 			return this;
@@ -61,7 +61,7 @@ class FilePanel {
 		return this;
 	}
 
-	void render(Composite body) {
+	public void render(Composite body) {
 
 		var link = new Hyperlink(body, SWT.NONE);
 		link.setText(title);

@@ -26,13 +26,13 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.io.DbImportWizard;
-import org.openlca.app.wizards.io.EcoSpold01ImportWizard;
 import org.openlca.app.wizards.io.ExcelImportWizard;
 import org.openlca.app.wizards.io.GeoJsonImportWizard;
 import org.openlca.app.wizards.io.ILCDImportWizard;
 import org.openlca.app.wizards.io.ImportLibraryDialog;
 import org.openlca.app.wizards.io.JsonImportWizard;
 import org.openlca.app.wizards.io.SimaProCsvImportWizard;
+import org.openlca.app.wizards.io.ecospold.v1.EcoSpold1ImportWizard;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MappingFileDao;
@@ -94,7 +94,7 @@ public class FileImport {
 
 	private void handleFormat(File file, Format format) {
 		switch (format) {
-			case ES1_XML, ES1_ZIP -> EcoSpold01ImportWizard.of(file);
+			case ES1_XML, ES1_ZIP -> EcoSpold1ImportWizard.of(file);
 			case ES2_XML, ES2_ZIP -> MsgBox.info(M.EcoSpoldV2, M.EcoSpoldV2Info);
 			case EXCEL -> ExcelImportWizard.of(file);
 			case GEO_JSON -> GeoJsonImportWizard.of(file);

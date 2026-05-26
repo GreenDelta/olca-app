@@ -21,7 +21,7 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.MappingFileDao;
 import org.openlca.core.io.maps.FlowMap;
 
-class MappingSelector {
+public class MappingSelector {
 
 	private final IDatabase db;
 	private final Consumer<FlowMap> handler;
@@ -32,19 +32,19 @@ class MappingSelector {
 		this.handler = handler;
 	}
 
-	static MappingSelector on(Consumer<FlowMap> handler) {
+	public static MappingSelector on(Consumer<FlowMap> handler) {
 		return new MappingSelector(Database.get(), handler);
 	}
 
 	/**
 	 * Provide a regex pattern for pre-selecting a possible mapping.
 	 */
-	MappingSelector withSelectionPattern(String p) {
+	public MappingSelector withSelectionPattern(String p) {
 		selection = Pattern.compile(p);
 		return this;
 	}
 
-	void render(Composite comp) {
+	public void render(Composite comp) {
 		UI.label(comp, M.FlowMapping);
 
 		// initialize the combo box

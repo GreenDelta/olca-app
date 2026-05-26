@@ -1,4 +1,4 @@
-package org.openlca.app.wizards.io;
+package org.openlca.app.wizards.io.ecospold.v1;
 
 import java.util.List;
 
@@ -10,23 +10,20 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.wizards.io.ModelSelectionPage;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.ecospold1.output.EcoSpold1Export;
-import org.openlca.io.ecospold1.output.EcoSpold1Export.EcoSpold1Config;
 
-/**
- * Wizard for exporting processes and impact methods to the EcoSpold01 format
- */
-public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
+abstract class AbstractExportWizard extends Wizard implements IExportWizard {
 
 	private final ModelType type;
 	private ModelSelectionPage modelPage;
-	private Es1ExportConfigPage configPage;
+	private ExportConfigPage configPage;
 
-	public EcoSpold01ExportWizard(ModelType type) {
+	public AbstractExportWizard(ModelType type) {
 		super();
 		setNeedsProgressMonitor(true);
 		this.type = type;
@@ -36,7 +33,7 @@ public class EcoSpold01ExportWizard extends Wizard implements IExportWizard {
 	public void addPages() {
 		modelPage = ModelSelectionPage.forDirectory(type);
 		addPage(modelPage);
-		configPage = new Es1ExportConfigPage();
+		configPage = new ExportConfigPage();
 		addPage(configPage);
 	}
 
