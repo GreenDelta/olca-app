@@ -39,7 +39,8 @@ class ExportConfigPage extends WizardPage {
 		UI.gridLayout(g, 1);
 		UI.fillHorizontal(g);
 
-		var defaultCheck = UI.checkbox(g, M.CreateDefaultValuesForMissingFields);
+		var defaultCheck = UI.checkbox(g,
+			"Autofill missing schema-required fields with default values");
 		defaultCheck.setSelection(config.isWithDefaultValues());
 		Controls.onSelect(defaultCheck,
 			$ -> config.writeDefaultValues(defaultCheck.getSelection()));
@@ -48,6 +49,12 @@ class ExportConfigPage extends WizardPage {
 		singleCheck.setSelection(config.isWithSingleFile());
 		Controls.onSelect(singleCheck,
 			$ -> config.writeSingleFile(singleCheck.getSelection()));
+
+		var categoryFileCheck = UI.checkbox(g,
+			"Create category file (categories.xml)");
+		categoryFileCheck.setSelection(config.isWithCategoryFile());
+		Controls.onSelect(categoryFileCheck,
+			$ -> config.writeCategoryFile(categoryFileCheck.getSelection()));
 
 		var refIdCheck = UI.checkbox(g,
 			"Add export information with data set ID to general comment");
