@@ -20,15 +20,11 @@ final class StrategyList {
 		this.onChange = onChange;
 	}
 
-	static StrategyList create(
-		Composite parent,
-		FormToolkit tk,
-		TargetSelection config,
-		Runnable onChange
+	static void create(
+		Composite parent, FormToolkit tk, TargetSelection config, Runnable onChange
 	) {
 		var strategyList = new StrategyList(config, onChange);
 		strategyList.render(parent, tk);
-		return strategyList;
 	}
 
 	private void render(Composite parent, FormToolkit tk) {
@@ -124,9 +120,9 @@ final class StrategyList {
 
 	static String labelOf(MatchingStrategy strategy) {
 		return switch (strategy) {
-			case BY_ID -> "Match providers by their IDs";
-			case BY_NAME -> "Match providers by their name and location";
-			case ANY -> "Match providers by flows";
+			case BY_ID -> "Match by flow and exact provider ID";
+			case BY_NAME -> "Match by flow, provider name, and location";
+			case ANY -> "Match by flow only (take any available provider)";
 		};
 	}
 }

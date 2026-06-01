@@ -7,10 +7,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
+import org.openlca.app.components.ModelLink;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
+import org.openlca.core.model.ProductSystem;
+import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.LocationDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.olca.systransfer.ProviderInfo;
 import org.openlca.io.olca.systransfer.TransferPlan;
 
@@ -30,97 +38,74 @@ final class TransferPlanPage extends FormPage {
 		var form = UI.header(mForm, "Transfer plan", Icon.TARGET.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
-
-		createSummary(body, tk);
-		createMetaSection(body, tk);
+		createInfoSection(body, tk);
 		createCopiesSection(body, tk);
 		MatchesSection.create(plan, body, tk);
-
-		form.reflow(true);
 	}
 
-	private void createSummary(Composite parent, FormToolkit tk) {
-		var comp = UI.composite(parent, tk);
-		UI.gridLayout(comp, 2);
-		UI.gridData(comp, true, false);
-
-		var summary = UI.label(comp, tk, summaryText());
-		UI.gridData(summary, true, false);
-
-		var button = UI.button(comp, tk, "Transfer");
-		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, $ -> editor.runTransfer());
-	}
-
-	private void createMetaSection(Composite parent, FormToolkit tk) {
-		var comp = UI.formSection(parent, tk, "Transfer metadata", 2);
+	private void createInfoSection(Composite parent, FormToolkit tk) {
+		var comp = UI.formSection(parent, tk, "Setup", 2);
 		var config = plan.config();
 
 		UI.label(comp, tk, "Source database");
 		UI.label(comp, tk, config.source().getName());
-
 		UI.label(comp, tk, "Target database");
 		UI.label(comp, tk, config.target().getName());
+		ModelLink.of(ProductSystem.class)
+			.setEditable(false)
+			.setModel(config.system())
+			.renderOn(comp, tk, M.ProductSystem);
 
-		UI.label(comp, tk, "Product system");
-		UI.label(comp, tk, config.system() != null ? config.system().name : null);
-
-		UI.label(comp, tk, "Matching strategies");
-		UI.label(comp, tk, strategiesText());
+		UI.filler(comp, tk);
+		var button = UI.button(comp, tk, "Transfer");
+		button.setImage(Icon.RUN.get());
+		Controls.onSelect(button, $ -> editor.runTransfer());
 	}
 
 	private void createCopiesSection(Composite parent, FormToolkit tk) {
 		var section = UI.section(parent, tk, "Providers copied to target database");
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
-		var copiedTable = Tables.createViewer(comp, "Provider", "Flow", "Location");
-		copiedTable.setLabelProvider(new ProviderInfoLabel());
-		copiedTable.setInput(plan.copies());
-		Tables.bindColumnWidths2(copiedTable, 0.5, 0.3, 0.2);
-		var table = copiedTable.getTable();
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		UI.gridData(table, true, true);
-	}
-
-	private String summaryText() {
-		return plan.matches().size() + " provider match"
-			+ (plan.matches().size() == 1 ? "" : "es")
-			+ " found; " + plan.copies().size() + " provider"
-			+ (plan.copies().size() == 1 ? "" : "s")
-			+ " will be copied.";
-	}
-
-	private String strategiesText() {
-		var strategies = plan.config().strategies();
-		if (strategies == null || strategies.length == 0)
-			return "None";
-		var text = new StringBuilder();
-		for (int i = 0; i < strategies.length; i++) {
-			if (i > 0) {
-				text.append(" -> ");
-			}
-			text.append(i + 1).append(". ").append(strategies[i]);
-		}
-		return text.toString();
+		var table = Tables.createViewer(comp, "Provider", "Flow", "Location");
+		table.setLabelProvider(new ProviderInfoLabel());
+		table.setInput(plan.copies());
+		Tables.bindColumnWidths2(table, 0.5, 0.3, 0.2);
+		var gd = UI.gridData(table.getTable(), true, true);
+		gd.heightHint = 1;
+		gd.widthHint = 1;
 	}
 
 	private static final class ProviderInfoLabel extends BaseLabelProvider
 		implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object element, int columnIndex) {
-			return columnIndex == 0 ? Icon.LINK.get() : null;
+		public Image getColumnImage(Object o, int col) {
+			if (!(o instanceof ProviderInfo(
+				FlowDescriptor flow,
+				RootDescriptor provider,
+				LocationDescriptor location
+			)))
+				return null;
+			return switch (col) {
+				case 0 -> Images.get(provider);
+				case 1 -> Images.get(flow);
+				case 2 -> Images.get(location);
+				default -> null;
+			};
 		}
 
 		@Override
-		public String getColumnText(Object element, int columnIndex) {
-			if (!(element instanceof ProviderInfo info))
+		public String getColumnText(Object o, int col) {
+			if (!(o instanceof ProviderInfo(
+				FlowDescriptor flow,
+				RootDescriptor provider,
+				LocationDescriptor location
+			)))
 				return null;
-			return switch (columnIndex) {
-				case 0 -> TransferProviderLabels.providerOnly(info);
-				case 1 -> info.flow() != null ? info.flow().name : null;
-				case 2 -> info.location() != null ? info.location().code : null;
+			return switch (col) {
+				case 0 -> Labels.name(provider);
+				case 1 -> Labels.name(flow);
+				case 2 -> Labels.name(location);
 				default -> null;
 			};
 		}

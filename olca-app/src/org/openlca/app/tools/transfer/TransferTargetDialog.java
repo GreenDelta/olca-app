@@ -55,7 +55,7 @@ public class TransferTargetDialog extends FormDialog {
 
 		try (var transfer = confRes.value()) {
 			var planRes = new Res[1];
-			App.runWithProgress("Prepare transfer", () ->
+			App.runWithProgress("Prepare transfer plan", () ->
 				planRes[0] = TransferPlan.createFrom(transfer.config()));
 			if (planRes[0] == null || planRes[0].isError()) {
 				var error = planRes[0] != null
@@ -76,7 +76,6 @@ public class TransferTargetDialog extends FormDialog {
 		setBlockOnOpen(true);
 		this.config = config;
 	}
-
 
 	@Override
 	protected void configureShell(Shell shell) {
