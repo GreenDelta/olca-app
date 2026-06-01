@@ -43,7 +43,7 @@ record SodaNode(
 			nodes.sort((n1, n2) -> Strings.compareIgnoreCase(n1.name, n2.name));
 			return nodes;
 		} catch (Exception e) {
-			ErrorReporter.on("failed to parse default list of soda4LCA nodes", e);
+			ErrorReporter.on("Failed to parse default list of soda4LCA nodes", e);
 			return Collections.emptyList();
 		}
 	}

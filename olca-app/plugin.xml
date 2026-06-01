@@ -515,7 +515,7 @@
 				<!--
 					Workaround for search toolbar spacing issue on Windows at high zoom levels (>200%).
 					See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=465732#c5
-					
+
 					The fix is to add a HandledToolItem (via command) as the first element in the toolbar
 					before the ControlContribution. We use a zero-width space character (U+200B) as the
 					label to make it invisible while still fixing the alignment issue.
@@ -564,7 +564,7 @@
 					value="openLCA"/>
 			<property
 					name="startupProgressRect"
-					value="0,426,585,5">
+					value="0,569,773,5">
 			</property>
    <property
          name="startupForegroundColor"
@@ -572,7 +572,7 @@
    </property>
    <property
          name="startupMessageRect"
-         value="7,570,445,20">
+         value="7,800,445,20">
    </property>
    <property
          name="preferenceCustomization"
@@ -797,7 +797,7 @@
 		</category>
 		<wizard
 				category="import.category.otherLCA"
-				class="org.openlca.app.wizards.io.EcoSpold01ImportWizard"
+				class="org.openlca.app.wizards.io.ecospold.v1.EcoSpold1ImportWizard"
 				icon="icons/immutable/xml_es1.png"
 				id="wizard.import.ecospold1"
 				name="EcoSpold 1">
@@ -888,7 +888,7 @@
 		</category>
 		<wizard
 				category="export.category.ecospold"
-				class="org.openlca.app.wizards.io.EcoSpold01ExportProcessWizard"
+				class="org.openlca.app.wizards.io.ecospold.v1.EcoSpold1ProcessExportWizard"
 				icon="icons/immutable/xml_es1.png"
 				id="wizard.export.ecospold.process"
 				name="%Processes">
@@ -914,7 +914,7 @@
 	 -->
 		<wizard
 				category="export.category.ecospold"
-				class="org.openlca.app.wizards.io.EcoSpold01ExportMethodWizard"
+				class="org.openlca.app.wizards.io.ecospold.v1.EcoSpold1MethodExportWizard"
 				icon="icons/immutable/xml_es1.png"
 				id="wizard.export.ecospold.impactmethod"
 				name="%ImpactMethods">

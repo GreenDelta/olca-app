@@ -106,8 +106,7 @@ public class SmartEpdTool extends SimpleFormEditor {
 				var res = TreeModel.fetch(client);
 				if (res.isError()) {
 					ErrorReporter.on(
-						"Failed to fetch data from SmartEPD",
-						res.error());
+						"Failed to fetch data from SmartEPD", res.error());
 				} else {
 					tree.setInput(res.value());
 					tree.expandAll();

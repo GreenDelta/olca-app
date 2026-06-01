@@ -44,7 +44,7 @@ public class CurrencyTable extends SimpleFormEditor {
 		try {
 			currencies = Database.get().getAll(Currency.class);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to load currencies", e);
+			ErrorReporter.on("Failed to load currencies", e);
 		}
 		super.init(site, input);
 	}

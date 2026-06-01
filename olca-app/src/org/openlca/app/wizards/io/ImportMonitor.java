@@ -8,13 +8,13 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.io.ImportLog.State;
 import org.openlca.io.Import;
 
-record ImportMonitor(IProgressMonitor monitor) {
+public record ImportMonitor(IProgressMonitor monitor) {
 
-	static ImportMonitor on(IProgressMonitor monitor) {
+	public static ImportMonitor on(IProgressMonitor monitor) {
 		return new ImportMonitor(monitor);
 	}
 
-	void run(Import imp) {
+	public void run(Import imp) {
 
 		imp.log().listen(message -> {
 			if (message.state() == null)
@@ -40,7 +40,7 @@ record ImportMonitor(IProgressMonitor monitor) {
 					break;
 				}
 			} catch (InterruptedException e) {
-				ErrorReporter.on("failed to join import thread", e);
+					ErrorReporter.on("Failed to join import thread", e);
 			}
 		}
 		monitor.done();

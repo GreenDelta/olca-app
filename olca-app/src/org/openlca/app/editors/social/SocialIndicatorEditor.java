@@ -32,7 +32,7 @@ public class SocialIndicatorEditor extends ModelEditor<SocialIndicator> {
 			addPage(new Page());
 			addExtensionPages();
 		} catch (Exception e) {
-			ErrorReporter.on("failed to add page", e);
+			ErrorReporter.on("Failed to add page", e);
 		}
 	}
 

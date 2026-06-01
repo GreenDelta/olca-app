@@ -18,45 +18,45 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.commons.Strings;
+import org.openlca.core.matrix.solvers.mkl.MKL;
 import org.openlca.nativelib.Module;
 import org.openlca.nativelib.NativeLib;
 import org.slf4j.LoggerFactory;
 
+/// Logs an unexpected error and shows a dialog with diagnostic details.
+/// The static `on(...)` methods are safe to call from non-UI threads; the
+/// dialog is opened on the UI thread.
 public class ErrorReporter extends FormDialog {
 
-	private final String message;
+	private final String title;
 	private final String details;
 	private final Throwable error;
 
-	public static void on(String message) {
-		on(message, null, null);
+	public static void on(String title) {
+		on(title, null, null);
 	}
 
-	public static void on(String message, String details) {
-		on(message, details, null);
+	public static void on(String title, String details) {
+		on(title, details, null);
 	}
 
-	/**
-	 * Opens the error reporter for the given message and error. It also writes the
-	 * error to the log. So no need to log an error when you later want to open it
-	 * in the reporter. It is safe to call this method from non-UI threads.
-	 */
-	public static void on(String message, Throwable error) {
-		on(message, null, error);
+	public static void on(String title, Throwable error) {
+		on(title, null, error);
 	}
 
-	public static void on(String message, String details, Throwable error) {
+	public static void on(String title, String details, Throwable error) {
 		var log = LoggerFactory.getLogger(ErrorReporter.class);
-		log.error(message, error);
+		log.error(title, error);
 		App.runInUI(M.ShowErrorReporter,
-				() -> new ErrorReporter(message, details, error).open());
+			() -> new ErrorReporter(title, details, error).open());
 	}
 
-	private ErrorReporter(String message, String details, Throwable error) {
+	private ErrorReporter(String title, String details, Throwable error) {
 		super(UI.shell());
-		this.message = message == null
-				? "No error message"
-				: message;
+		this.title = title == null
+			? "No error message"
+			: title;
 		this.details = details;
 		this.error = error;
 		setBlockOnOpen(true);
@@ -66,16 +66,19 @@ public class ErrorReporter extends FormDialog {
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setImage(Icon.ERROR.get());
-		shell.setText(M.AnErrorOccurred);
+		var shellTitle = Strings.isNotBlank(title)
+			? title
+			: M.AnErrorOccurred;
+		shell.setText(shellTitle);
 	}
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(
-				parent,
-				IDialogConstants.OK_ID,
-				IDialogConstants.OK_LABEL,
-				true);
+			parent,
+			IDialogConstants.OK_ID,
+			IDialogConstants.OK_LABEL,
+			true);
 	}
 
 	@Override
@@ -96,12 +99,10 @@ public class ErrorReporter extends FormDialog {
 		UI.gridData(formText, true, false).widthHint = 560;
 
 		var text = tk.createText(comp, "", SWT.MULTI | SWT.V_SCROLL);
-		UI.gridData(text, true, true);
-		form.reflow(true);
-		var message = details != null
-				? "# Error details: \n" + details + "\n\n" + reportTemplate()
-				: reportTemplate();
-		text.setText(message);
+		var textGrid = UI.gridData(text, true, true);
+		textGrid.widthHint = 1;
+		textGrid.heightHint = 1;
+		text.setText(errorText());
 
 		formText.addHyperlinkListener(new HyperlinkAdapter() {
 			@Override
@@ -114,7 +115,7 @@ public class ErrorReporter extends FormDialog {
 					uri += "?subject=openLCA%20error&body=";
 					uri += URLEncoder.encode(
 							text.getText(), StandardCharsets.US_ASCII)
-							.replace("+", "%20");
+						.replace("+", "%20");
 				}
 				Desktop.browse(uri);
 			}
@@ -122,58 +123,56 @@ public class ErrorReporter extends FormDialog {
 	}
 
 	private String formMessage() {
-		return "<html>"
-				+ "<p><b>"
-				+ message
-				+ "</b></p>"
-				+ "<p> If you think this should not happen or if there is "
-				+ "something that we should improve please open an issue "
-				+ "on our <a href='https://github.com/GreenDelta/olca-app'>"
-				+ "openLCA Github repository</a> or send us an "
-				+ "<a href='mailto:error@openlca.org'>email</a>. For "
-				+ "reporting the issue, you can use the template below. "
-				+ "Thanks!</p>"
-				+ "</html>";
+		var formTitle = title;
+		if (error != null) {
+			var cause = error;
+			while (cause.getCause() != null) {
+				cause = cause.getCause();
+			}
+			var causeMsg = cause.getMessage();
+			if (Strings.isNotBlank(causeMsg)) {
+				formTitle = Strings.cutEnd(causeMsg, 125);
+			}
+		}
+
+		return "<html><p><b>" + formTitle + "</b></p>"
+			+ "<p> This was an unexpected error. If you want to report it, please "
+			+ "copy the details below and report the problem in our "
+			+ "<a href='https://github.com/GreenDelta/olca-app'>GitHub repository</a> "
+			+ "or by <a href='mailto:error@openlca.org'>email</a>. If possible, "
+			+ "include the steps needed to reproduce the problem.</p>"
+			+ "</html>";
 	}
 
-	private String reportTemplate() {
-		return "If you want to report this error to us, please replace the\n" +
-				"question marks in the template below (if possible).\n" +
-				"Thanks a lot!\n\n" +
-				"# Error description\n" +
-				"\n" +
-				"I tried to ??? but openLCA threw an error.\n" +
-				"\n" +
-				"# Steps to reproduce\n" +
-				"\n" +
-				"1. ?\n" +
-				"2. ?\n" +
-				"3. ?\n" +
-				"\n" +
-				"# Attached files\n" +
-				"\n" +
-				"* example database ?\n" +
-				"* screen shots ?\n" +
-				"* ...\n" +
-				"\n" +
-				"# openLCA error message\n" +
-				"\n" +
-				message +
-				"\n\n" +
-				"# Installation details\n" +
-				"\n" +
-				"* openLCA version: " + App.getVersion() + "\n" +
-				"* operating system: " + System.getProperty("os.name") + "\n" +
-				"* os architecture: " + System.getProperty("os.arch") + "\n" +
-				"* os version: " + System.getProperty("os.version") + "\n" +
-				"* native libraries loaded: " + NativeLib.isLoaded() + "\n" +
-				"* with sparse matrix support: " +  NativeLib.isLoaded(Module.UMFPACK)  + "\n" +
-				"\n" +
-				"# Full error stack trace\n" +
-				"\n" +
-				"```\n" +
-				stackTrace() +
-				"\n```";
+	private String errorText() {
+		var header = "# " + title + "\n\n";
+		if (Strings.isNotBlank(details)) {
+			header += "## Error details\n\n" + details + "\n\n";
+		}
+		return header +
+			"## Installation details\n\n" +
+			"- openLCA version: " + App.getVersion() + "\n" +
+			"- Operating system: " + System.getProperty("os.name") + "\n" +
+			"- OS architecture: " + System.getProperty("os.arch") + "\n" +
+			"- OS version: " + System.getProperty("os.version") + "\n" +
+			"- Native library: " + nativeLib() + "\n" +
+			"\n" +
+			"## Full error stack trace\n" +
+			"\n" +
+			"```\n" +
+			stackTrace() +
+			"\n```";
+	}
+
+	private String nativeLib() {
+		if (MKL.isLoaded())
+			return "Intel MKL";
+		if (NativeLib.isLoaded()) {
+			return NativeLib.isLoaded(Module.UMFPACK)
+				? "OpenBLAS & UMFPACK"
+				: "OpenBLAS";
+		}
+		return "None";
 	}
 
 	private String stackTrace() {

@@ -1,5 +1,8 @@
 package org.openlca.app.navigation.actions;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -51,9 +54,6 @@ import org.openlca.app.tools.FileImport;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.viewers.Selections;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Adds the actions to the context menu of the navigation tree.
@@ -223,7 +223,7 @@ public class NavigationMenu extends CommonActionProvider {
 								ActionFactory.IMPORT.getCommandId(),
 								null);
 			} catch (Exception e) {
-				ErrorReporter.on("failed to open import dialog", e);
+				ErrorReporter.on("Failed to open import dialog", e);
 			}
 		}));
 		return menu;

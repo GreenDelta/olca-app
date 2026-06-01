@@ -45,7 +45,7 @@ public class FlowTable extends SimpleFormEditor {
 		try {
 			flows = Database.get().getAll(Flow.class);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to load flows", e);
+			ErrorReporter.on("Failed to load flows", e);
 		}
 		super.init(site, input);
 	}

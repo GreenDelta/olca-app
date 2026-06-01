@@ -89,7 +89,7 @@ public class DatabaseWizard extends Wizard {
 			try {
 				createIt();
 			} catch (Exception e) {
-				ErrorReporter.on("failed to create database", e);
+				ErrorReporter.on("Failed to create database", e);
 			}
 			monitor.done();
 		}

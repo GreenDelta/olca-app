@@ -31,7 +31,7 @@ public class FlowEditor extends ModelEditor<Flow> {
 			}
 			addExtensionPages();
 		} catch (Exception e) {
-			ErrorReporter.on("failed to add page", e);
+			ErrorReporter.on("Failed to add page", e);
 		}
 	}
 

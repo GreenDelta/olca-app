@@ -80,7 +80,7 @@ public class DataBinding {
 				link.setModel((T) model);
 			}
 		} catch (Exception e) {
-			ErrorReporter.on("failed to set value in model link", e);
+			ErrorReporter.on("Failed to set value in model link", e);
 		}
 
 		link.onChange(next -> {
@@ -92,7 +92,7 @@ public class DataBinding {
 				Bean.setValue(obj, property, next);
 				editorChange();
 			} catch (Exception e) {
-				ErrorReporter.on("failed to set value in model link", e);
+				ErrorReporter.on("Failed to set value in model link", e);
 			}
 		});
 	}

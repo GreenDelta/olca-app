@@ -40,7 +40,7 @@ public class MySQLDatabaseExport implements Runnable {
 			success = true;
 		} catch (Exception e) {
 			success = false;
-			ErrorReporter.on("failed export MySQL database as zolca-File", e);
+			ErrorReporter.on("Failed export MySQL database as zolca-File", e);
 		}
 	}
 

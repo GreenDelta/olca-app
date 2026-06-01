@@ -70,7 +70,7 @@ public class ProductSystemToolBar extends EditorActionBarContributor {
 				? null
 				: editor.getModel();
 		} catch (Exception e) {
-			ErrorReporter.on("failed to get product system", e);
+			ErrorReporter.on("Failed to get product system", e);
 			return null;
 		}
 	}

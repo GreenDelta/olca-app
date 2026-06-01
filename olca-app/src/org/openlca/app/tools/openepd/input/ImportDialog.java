@@ -145,7 +145,7 @@ public class ImportDialog extends FormDialog {
 			}
 
 		} catch (Exception e) {
-			ErrorReporter.on("failed to save EPD", e);
+			ErrorReporter.on("Failed to save EPD", e);
 			return;
 		}
 

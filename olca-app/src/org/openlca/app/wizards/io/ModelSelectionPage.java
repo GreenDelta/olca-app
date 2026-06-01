@@ -38,7 +38,7 @@ import org.openlca.app.viewers.trees.TreeCheckStateContentProvider;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-class ModelSelectionPage extends WizardPage {
+public class ModelSelectionPage extends WizardPage {
 
 	private final ModelType[] types;
 	private ModelContentProvider content;
@@ -47,7 +47,7 @@ class ModelSelectionPage extends WizardPage {
 	private String fileExtension;
 	private Consumer<Composite> extension;
 
-	static ModelSelectionPage forDirectory(ModelType... types) {
+	public static ModelSelectionPage forDirectory(ModelType... types) {
 		ModelSelectionPage page = new ModelSelectionPage(types);
 		page.targetIsDir = true;
 		return page;
@@ -57,7 +57,7 @@ class ModelSelectionPage extends WizardPage {
 	 * For the file extension please use only the extension, e.g. zip instead of
 	 * *.zip
 	 */
-	static ModelSelectionPage forFile(String extension, ModelType... types) {
+	public static ModelSelectionPage forFile(String extension, ModelType... types) {
 		var page = new ModelSelectionPage(types);
 		page.targetIsDir = false;
 		page.fileExtension = extension;

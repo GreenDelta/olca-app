@@ -52,7 +52,7 @@ class ExcelExportWizard extends Wizard {
 	static void open() {
 		ResultEditor editor = Editors.getActive();
 		if (editor == null) {
-			ErrorReporter.on("no result editor active");
+			ErrorReporter.on("No result editor active");
 			return;
 		}
 		var wizard = new ExcelExportWizard(editor);

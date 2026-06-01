@@ -38,7 +38,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
+		var first = selection.getFirst();
 		this.parent = null;
 		this.modelType = null;
 
@@ -73,7 +73,7 @@ class CreateCategoryAction extends Action implements INavigationAction {
 			Navigator.refresh(element);
 			Navigator.select(category);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to save category", e);
+			ErrorReporter.on("Failed to save category", e);
 		}
 	}
 

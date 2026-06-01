@@ -39,7 +39,7 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 						: prefix;
 				shell.setText(title);
 			} catch (Exception e) {
-				ErrorReporter.on("failed to update app-title", e);
+				ErrorReporter.on("Failed to update app-title", e);
 			}
 		});
 	}

@@ -18,7 +18,7 @@ public class SourceEditor extends ModelEditor<Source> {
 			addPage(new SourceInfoPage(this));
 			addExtensionPages();
 		} catch (Exception e) {
-			ErrorReporter.on("failed to add editor pages", e);
+			ErrorReporter.on("Failed to add editor pages", e);
 		}
 	}
 

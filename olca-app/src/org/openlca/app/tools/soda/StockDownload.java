@@ -40,7 +40,8 @@ class StockDownload {
 			try (var stream = client.exportDataStock(stock.getUUID())) {
 				Files.copy(stream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (Exception e) {
-				ErrorReporter.on(e.getMessage());
+				ErrorReporter.on(
+					"Failed to download data stock: " + stock.getShortName(), e);
 				err.set(true);
 			}
 		}, () -> {

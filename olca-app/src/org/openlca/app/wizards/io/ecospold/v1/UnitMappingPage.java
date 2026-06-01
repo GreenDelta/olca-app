@@ -1,4 +1,4 @@
-package org.openlca.app.wizards.io;
+package org.openlca.app.wizards.io.ecospold.v1;
 
 import java.io.File;
 import java.util.ArrayList;

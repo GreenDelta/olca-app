@@ -126,7 +126,7 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 			dao = Daos.base(Database.get(), modelClass);
 			model = dao.getForId(i.getDescriptor().id);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to load " + modelClass.getSimpleName()
+			ErrorReporter.on("Failed to load " + modelClass.getSimpleName()
 					+ " from editor input", e);
 		}
 	}
@@ -232,7 +232,7 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 			App.open(clone);
 			Navigator.refresh();
 		} catch (Exception e) {
-			ErrorReporter.on("failed to save " + model + " as " + newName, e);
+			ErrorReporter.on("Failed to save " + model + " as " + newName, e);
 		}
 	}
 

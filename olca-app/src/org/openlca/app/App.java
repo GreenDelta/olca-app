@@ -191,7 +191,7 @@ public class App {
 				if (Objects.equals(input.getDescriptor(), d))
 					return ref;
 			} catch (Exception e) {
-				ErrorReporter.on("editor search failed for: " + d, e);
+				ErrorReporter.on("Editor search failed for: " + d.name, e);
 			}
 		}
 		return null;

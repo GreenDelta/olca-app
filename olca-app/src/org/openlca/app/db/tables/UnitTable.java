@@ -57,7 +57,7 @@ public class UnitTable extends SimpleFormEditor {
 			}
 			Collections.sort(items);
 		} catch (Exception e) {
-			ErrorReporter.on("failed to load units", e);
+			ErrorReporter.on("Failed to load units", e);
 		}
 		super.init(site, input);
 	}
@@ -122,24 +122,24 @@ public class UnitTable extends SimpleFormEditor {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof UnitItem item))
+			if (!(obj instanceof UnitItem(UnitGroup group, Unit unit)))
 				return null;
 			return switch (col) {
-				case 0 -> Labels.name(item.group);
-				case 1 -> Labels.name(item.unit);
-				case 2 -> item.unit.description;
-				case 3 -> item.unit.synonyms;
+				case 0 -> Labels.name(group);
+				case 1 -> Labels.name(unit);
+				case 2 -> unit.description;
+				case 3 -> unit.synonyms;
 				case 4 -> {
-					var refUnit = item.group.referenceUnit;
-					if (Objects.equals(refUnit, item.unit))
+					var refUnit = group.referenceUnit;
+					if (Objects.equals(refUnit, unit))
 						yield "1 " + Labels.name(refUnit);
 					var ref = Labels.name(refUnit);
-					var f = item.unit.conversionFactor != 0
-						? 1 / item.unit.conversionFactor
+					var f = unit.conversionFactor != 0
+						? 1 / unit.conversionFactor
 						: 0;
-					yield "1 " + ref  + " = " + Numbers.format(f) + " " + Labels.name(item.unit);
+					yield "1 " + ref  + " = " + Numbers.format(f) + " " + Labels.name(unit);
 				}
-				case 5 -> item.unit.refId;
+				case 5 -> unit.refId;
 				default -> null;
 			};
 		}

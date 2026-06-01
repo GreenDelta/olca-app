@@ -8,7 +8,7 @@ import org.eclipse.ui.PlatformUI;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 
-final class Wizards {
+public final class Wizards {
 
 	private Wizards() {
 	}
@@ -22,7 +22,7 @@ final class Wizards {
 	 * into the wizard.
 	 */
 	@SuppressWarnings("unchecked")
-	static <T extends IImportWizard> void forImport(
+	public static <T extends IImportWizard> void forImport(
 			String wizardID, Consumer<T> fn) {
 		if (wizardID == null)
 			return;

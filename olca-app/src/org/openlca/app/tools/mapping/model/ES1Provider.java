@@ -17,10 +17,10 @@ import org.openlca.core.io.maps.FlowRef;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.UnitDescriptor;
-import org.openlca.ecospold.IEcoSpold;
-import org.openlca.ecospold.IExchange;
-import org.openlca.ecospold.io.DataSetType;
-import org.openlca.ecospold.io.EcoSpold;
+import org.openlca.ecospold.DataSetType;
+import org.openlca.ecospold.EcoSpold;
+import org.openlca.ecospold.model.IEcoSpold;
+import org.openlca.ecospold.model.IExchange;
 import org.openlca.io.ecospold1.input.ES1KeyGen;
 import org.openlca.util.ZipFiles;
 import org.slf4j.LoggerFactory;
@@ -50,9 +50,9 @@ public class ES1Provider implements FlowProvider {
 		var handled = new HashSet<String>();
 		try {
 			scan(spold -> {
-				for (var ds : spold.getDataset()) {
+				for (var ds : spold.getDataSets()) {
 					for (var flows : ds.getFlowData()) {
-						for (var exchange : flows.getExchange()) {
+						for (var exchange : flows.getExchanges()) {
 							if (!exchange.isElementaryFlow())
 								continue;
 							var refId = ES1KeyGen.forFlow(exchange);

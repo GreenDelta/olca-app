@@ -166,7 +166,7 @@ public abstract class ModelPage<T extends RootEntity> extends FormPage {
 			new CommentControl(parent, getToolkit(), property, getComments());
 			return link;
 		} catch (Exception e) {
-			ErrorReporter.on("failed to create model link");
+			ErrorReporter.on("Failed to create model link");
 			return ModelLink.of(RootEntity.class);
 		}
 	}

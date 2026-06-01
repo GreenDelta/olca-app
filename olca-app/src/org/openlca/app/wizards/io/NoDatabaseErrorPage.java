@@ -5,9 +5,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.util.UI;
 
-class NoDatabaseErrorPage extends WizardPage  {
+public class NoDatabaseErrorPage extends WizardPage {
 
-	NoDatabaseErrorPage() {
+	public NoDatabaseErrorPage() {
 		super("NoDatabasePage");
 		setTitle(M.NoDatabaseOpened);
 		setDescription(M.NeedOpenDatabase);

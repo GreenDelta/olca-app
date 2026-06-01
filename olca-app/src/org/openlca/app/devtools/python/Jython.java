@@ -50,7 +50,7 @@ class Jython {
 			}
 
 		} catch (Exception e) {
-			ErrorReporter.on("failed execute script", e);
+			ErrorReporter.on("Failed execute script", e);
 		}
 	}
 
@@ -101,7 +101,7 @@ class Jython {
 			}
 			Files.writeString(versionFile.toPath(), App.getVersion());
 		} catch (Exception e) {
-			ErrorReporter.on("failed to initialize Python folder " + pyDir, e);
+			ErrorReporter.on("Failed to initialize Python folder " + pyDir, e);
 		}
 	}
 

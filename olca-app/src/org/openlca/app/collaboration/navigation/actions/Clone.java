@@ -35,7 +35,7 @@ public class Clone {
 		try {
 			Database.close();
 		} catch (Exception e) {
-			ErrorReporter.on("failed to close database", e);
+			ErrorReporter.on("Failed to close database", e);
 			return;
 		}
 
