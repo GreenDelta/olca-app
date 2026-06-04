@@ -69,17 +69,17 @@ class ExportConfigPage extends WizardPage {
 		UI.fillHorizontal(g);
 		UI.gridLayout(g, 1);
 
-		var example = UI.label(g, "Example: product | process {GLO}, U");
+		var example = UI.label(g, "Example: product {GLO} | process | U");
 		Runnable updateExample = () -> {
 			var text = "Example: product";
-			if (config.isWithProcessSuffixes()) {
-				text += " | process";
-			}
 			if (config.isWithLocationSuffixes()) {
 				text += " {GLO}";
 			}
+			if (config.isWithProcessSuffixes()) {
+				text += " | process";
+			}
 			if (config.isWithTypeSuffixes()) {
-				text += ", U";
+				text += " | U";
 			}
 			example.setText(text);
 			example.getParent().layout();

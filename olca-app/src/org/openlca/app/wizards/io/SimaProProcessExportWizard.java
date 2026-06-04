@@ -123,17 +123,17 @@ public class SimaProProcessExportWizard
 			UI.gridLayout(productGroup, 1);
 
 			var example = UI.label(
-					productGroup, "Example: product | process {GLO}, U");
+					productGroup, "Example: product {GLO} | process | U");
 			Runnable updateExample = () -> {
 				var text = "Example: product";
-				if (withProcessSuffix) {
-					text += " | process";
-				}
 				if (withLocationSuffix) {
 					text += " {GLO}";
 				}
+				if (withProcessSuffix) {
+					text += " | process";
+				}
 				if (withTypeSuffix) {
-					text += ", U";
+					text += " | U";
 				}
 				example.setText(text);
 			};
