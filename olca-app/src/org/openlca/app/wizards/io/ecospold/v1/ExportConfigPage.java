@@ -57,7 +57,7 @@ class ExportConfigPage extends WizardPage {
 			$ -> config.writeCategoryFile(categoryFileCheck.getSelection()));
 
 		var refIdCheck = UI.checkbox(g,
-			"Add export information with data set ID to general comment");
+			"Add openLCA data set ID to general comment");
 		refIdCheck.setSelection(config.isWithRefIdInfo());
 		Controls.onSelect(refIdCheck,
 			$ -> config.writeRefIdInfo(refIdCheck.getSelection()));
