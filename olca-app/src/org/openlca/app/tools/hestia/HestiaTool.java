@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -31,6 +32,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.tools.ApiKeyAuth;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Desktop;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
@@ -41,6 +43,7 @@ import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.hestia.HestiaClient;
+import org.openlca.io.hestia.Release;
 import org.openlca.io.hestia.SearchQuery;
 import org.openlca.io.hestia.SearchResult;
 import org.openlca.io.hestia.User;
@@ -64,7 +67,7 @@ public class HestiaTool extends SimpleFormEditor {
 		if (user.isEmpty())
 			return;
 		var id = AppContext.put(user.get());
-		var input = new SimpleEditorInput(id, "Hestia");
+		var input = new SimpleEditorInput(id, "HESTIA");
 		Editors.open(input, "HestiaTool");
 	}
 
@@ -93,12 +96,14 @@ public class HestiaTool extends SimpleFormEditor {
 
 		private final HestiaClient client;
 		private final User user;
+		private final List<Release> releases = new ArrayList<>();
 		private TableViewer table;
 		private Text searchText;
+		private Combo versionCombo;
 		private SettingsPanel settings;
 
 		Page(HestiaTool editor) {
-			super(editor, "Hestia", "Hestia");
+			super(editor, "Hestia", "HESTIA");
 			this.client = editor.client;
 			this.user = editor.user;
 		}
@@ -151,6 +156,19 @@ public class HestiaTool extends SimpleFormEditor {
 			var section = UI.section(body, tk, M.Search);
 			var comp = UI.sectionClient(section, tk, 1);
 
+			var versionComp = tk.createComposite(comp);
+			UI.fillHorizontal(versionComp);
+			var vgrid = UI.gridLayout(versionComp, 3);
+			vgrid.marginWidth = 0;
+			vgrid.marginHeight = 0;
+			versionCombo = UI.labeledCombo(versionComp, tk, "Release");
+			versionCombo.setEnabled(false);
+
+			var guideLink = tk.createHyperlink(
+				versionComp, "Priority data access guide", SWT.NONE);
+			Controls.onClick(guideLink, e -> Desktop.browse(
+				"https://www.hestia.earth/guide/guide-priority-data-access"));
+
 			var searchComp = tk.createComposite(comp);
 			UI.fillHorizontal(searchComp);
 			var grid = UI.gridLayout(searchComp, 2);
@@ -171,6 +189,38 @@ public class HestiaTool extends SimpleFormEditor {
 			});
 
 			settings = new SettingsPanel(searchComp, tk);
+			loadReleases();
+		}
+
+		private void loadReleases() {
+			var ref = new AtomicReference<Res<List<Release>>>();
+			App.runWithProgress("Loading HESTIA releases...",
+				() -> ref.set(client.getReleases()), () -> {
+					var res = ref.get();
+					if (res == null)
+						return;
+					if (res.isError()) {
+						MsgBox.error("Failed to load releases", res.error());
+						return;
+					}
+					releases.clear();
+					releases.addAll(res.value());
+					if (releases.isEmpty())
+						return;
+					var items = releases.stream()
+						.map(r -> r.name() != null ? r.name() : r.version())
+						.toArray(String[]::new);
+					versionCombo.setItems(items);
+					versionCombo.select(0);
+					versionCombo.setEnabled(true);
+				});
+		}
+
+		private String selectedDataVersion() {
+			int idx = versionCombo.getSelectionIndex();
+			return idx < 0 || idx >= releases.size()
+				? null
+				: releases.get(idx).version();
 		}
 
 		private void createTableSection(Composite body, FormToolkit tk) {
@@ -203,10 +253,12 @@ public class HestiaTool extends SimpleFormEditor {
 			}
 			var agg = settings.searchAggregated();
 			var count = settings.numberOfResults();
+			var dataVersion = selectedDataVersion();
 
 			var ref = new AtomicReference<Res<List<SearchResult>>>();
-			App.runWithProgress("Searching Hestia...", () -> {
-				var res = client.search(new SearchQuery(count, query, agg));
+			App.runWithProgress("Searching HESTIA...", () -> {
+				var res = client.search(
+					new SearchQuery(count, query, agg, dataVersion));
 				ref.set(res);
 			}, () -> {
 				var res = ref.get();

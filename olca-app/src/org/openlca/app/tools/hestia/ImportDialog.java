@@ -66,7 +66,7 @@ public class ImportDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Import Cycles from Hestia");
+		newShell.setText("Import Cycles from HESTIA");
 	}
 
 	@Override
