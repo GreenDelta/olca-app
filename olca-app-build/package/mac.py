@@ -1,6 +1,5 @@
 import shutil
 import xml.etree.ElementTree as ElementTree
-
 from pathlib import Path
 
 from package import JRE_ID, PROJECT_DIR
@@ -28,11 +27,12 @@ class MacDir:
             (app_root / "Resources", bundle_dir / "Contents"),
             (app_root / "MacOS/openLCA", macos_dir / "openLCA"),
         ]
-        for (source, target) in moves:
+        for source, target in moves:
             if source.exists():
                 shutil.move(str(source), str(target))
 
         MacDir.add_app_info(bundle_dir / "Contents/Info.plist")
+        MacDir.add_bin(bundle_dir / "Contents/Eclipse")
 
         # create the ini file
         plugins_dir = build_dir.app / "plugins"
@@ -49,7 +49,7 @@ class MacDir:
         delete(app_root / "MacOS")
         delete(app_root / "Info.plist")
         delete(macos_dir / "openLCA.ini")
-        
+
         # Remove any code signature from PDE export as it will be invalid
         # after rearranging the bundle structure
         delete(bundle_dir / "Contents/_CodeSignature")
@@ -64,6 +64,18 @@ class MacDir:
             "CFBundleVersion": version,
         }
         MacDir.edit_plist(PROJECT_DIR / "templates/Info.plist", path, info_dict)
+
+    @staticmethod
+    def add_bin(path: Path):
+        bins = ["ipc-server.sh", "grpc-server.sh"]
+        bin_dir = path / "bin"
+        bin_dir.mkdir(exist_ok=True, parents=True)
+        for binary in bins:
+            bin_source = PROJECT_DIR / f"bin/{binary}"
+            bin_target = bin_dir / binary
+            if not bin_source.exists() or bin_target.exists():
+                continue
+            shutil.copy2(bin_source, bin_target)
 
     @staticmethod
     def edit_jre_info(build_dir: BuildDir):
@@ -88,7 +100,6 @@ class MacDir:
 
         with open(path_out, "wb") as out:
             out.write(
-                b'<?xml version="1.0" encoding="UTF-8" standalone = '
-                b'"no" ?>\n'
+                b'<?xml version="1.0" encoding="UTF-8" standalone = ' b'"no" ?>\n'
             )
             plist.write(out, encoding="UTF-8", xml_declaration=False)
