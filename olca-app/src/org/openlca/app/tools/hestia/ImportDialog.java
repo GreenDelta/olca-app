@@ -38,12 +38,15 @@ public class ImportDialog extends FormDialog {
 	private final IDatabase db;
 	private final HestiaClient client;
 	private final List<SearchResult> cycles;
+	private final String dataVersion;
 
 	private MappingCombo mappingCombo;
 	private ProcessType processType = ProcessType.UNIT_PROCESS;
 	private boolean linkProviders = true;
 
-	public static void show(HestiaClient client, List<SearchResult> cycles) {
+	public static void show(
+		HestiaClient client, List<SearchResult> cycles, String dataVersion
+	) {
 		if (client == null || cycles == null || cycles.isEmpty())
 			return;
 		var db = Database.get();
@@ -51,22 +54,26 @@ public class ImportDialog extends FormDialog {
 			MsgBox.error(M.NoDatabaseOpened, M.NoDatabaseOpenedImportInfo);
 			return;
 		}
-		var dialog = new ImportDialog(db, client, cycles);
+		var dialog = new ImportDialog(db, client, cycles, dataVersion);
 		dialog.open();
 	}
 
 	private ImportDialog(
-		IDatabase db, HestiaClient client, List<SearchResult> cycles) {
+		IDatabase db,
+		HestiaClient client,
+		List<SearchResult> cycles,
+		String dataVersion) {
 		super(UI.shell());
 		this.db = db;
 		this.client = client;
 		this.cycles = cycles;
+		this.dataVersion = dataVersion;
 	}
 
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Import Cycles from Hestia");
+		newShell.setText("Import Cycles from HESTIA");
 	}
 
 	@Override
@@ -78,12 +85,12 @@ public class ImportDialog extends FormDialog {
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
-		createCyclesTable(body, tk);
+		createCyclesTable(body);
 		createImportSettings(body, tk);
 		mForm.reflow(true);
 	}
 
-	private void createCyclesTable(Composite comp, FormToolkit tk) {
+	private void createCyclesTable(Composite comp) {
 		var table = Tables.createViewer(comp, "Name", "ID");
 		var gd = UI.gridData(table.getControl(), true, false);
 		gd.heightHint = 200;
@@ -132,9 +139,8 @@ public class ImportDialog extends FormDialog {
 
 		Controls.onSelect(uRadio, onSelect);
 		Controls.onSelect(sRadio, onSelect);
-		Controls.onSelect(providerCheck, e -> {
-			linkProviders = providerCheck.getSelection();
-		});
+		Controls.onSelect(
+			providerCheck, e -> linkProviders = providerCheck.getSelection());
 	}
 
 	@Override
@@ -154,7 +160,8 @@ public class ImportDialog extends FormDialog {
 		var flowMap = mappingCombo.getFlowMap();
 		var imp = new HestiaImport(client, db, flowMap)
 			.withProcessType(processType)
-			.withProviderLinks(linkProviders);
+			.withProviderLinks(linkProviders)
+			.withDataVersion(dataVersion);
 		var log = imp.log();
 
 		App.runWithProgress(

@@ -57,7 +57,7 @@ class ExportConfigPage extends WizardPage {
 			$ -> config.writeCategoryFile(categoryFileCheck.getSelection()));
 
 		var refIdCheck = UI.checkbox(g,
-			"Add export information with data set ID to general comment");
+			"Add openLCA data set ID to general comment");
 		refIdCheck.setSelection(config.isWithRefIdInfo());
 		Controls.onSelect(refIdCheck,
 			$ -> config.writeRefIdInfo(refIdCheck.getSelection()));
@@ -69,17 +69,17 @@ class ExportConfigPage extends WizardPage {
 		UI.fillHorizontal(g);
 		UI.gridLayout(g, 1);
 
-		var example = UI.label(g, "Example: product | process {GLO}, U");
+		var example = UI.label(g, "Example: product {GLO} | process | U");
 		Runnable updateExample = () -> {
 			var text = "Example: product";
-			if (config.isWithProcessSuffixes()) {
-				text += " | process";
-			}
 			if (config.isWithLocationSuffixes()) {
 				text += " {GLO}";
 			}
+			if (config.isWithProcessSuffixes()) {
+				text += " | process";
+			}
 			if (config.isWithTypeSuffixes()) {
-				text += ", U";
+				text += " | U";
 			}
 			example.setText(text);
 			example.getParent().layout();

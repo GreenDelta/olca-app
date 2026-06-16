@@ -4,11 +4,11 @@ rem This script will start a headless gRPC server for a database in the openLCA
 rem workspace. The name of the database must be provided as first argument to
 rem this script. You can of course also connect to other data folders and use
 rem another server setup by changing the start command below. See also the
-rem openLCA IPC documentation. 
+rem openLCA IPC documentation.
 
 if "%1" == "" (
     echo error: no database provided; use this script like this:
-    echo   .\ipc-server.bat {name of your database}
+    echo   .\grpc-server.bat {name of your database}
     goto :END
 )
 

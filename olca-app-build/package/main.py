@@ -2,7 +2,7 @@ import argparse
 import shutil
 
 from package import PROJECT_DIR
-from package.dir import DistDir, BuildDir, delete
+from package.dir import BuildDir, DistDir, delete
 from package.dist import Lib, OsArch, Version
 from package.jre import JRE
 from package.mac import MacDir

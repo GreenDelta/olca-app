@@ -195,7 +195,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 				Icon.BUILDING.descriptor(), EpdPanel::open));
 		apiMenu.add(Actions.create("SmartEPD (experimental)",
 				Icon.SMART_EPD.descriptor(), SmartEpdTool::open));
-		apiMenu.add(Actions.create("Hestia (experimental)",
+		apiMenu.add(Actions.create("HESTIA (experimental)",
 				Icon.HESTIA.descriptor(), HestiaTool::open));
 
 		// console

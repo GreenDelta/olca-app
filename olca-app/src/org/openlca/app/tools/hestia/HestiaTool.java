@@ -41,30 +41,22 @@ import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.hestia.HestiaClient;
+import org.openlca.io.hestia.Release;
 import org.openlca.io.hestia.SearchQuery;
 import org.openlca.io.hestia.SearchResult;
 import org.openlca.io.hestia.User;
 
 public class HestiaTool extends SimpleFormEditor {
 
-	private HestiaClient client;
-	private User user;
+	private HestiaUser user;
 
 	public static void open() {
-
 		var user = ApiKeyAuth.fromCacheOrDialog(
-			".hestia.json", "https://api.hestia.earth", key -> {
-				var c = HestiaClient.of(key.endpoint(), key.value());
-				var u = c.getCurrentUser();
-				return u.isError()
-					? u.wrapError("Failed to get user information")
-					: Res.ok(new ApiUser(c, u.value()));
-			});
-
+			".hestia.json", "https://api.hestia.earth", HestiaUser::get);
 		if (user.isEmpty())
 			return;
 		var id = AppContext.put(user.get());
-		var input = new SimpleEditorInput(id, "Hestia");
+		var input = new SimpleEditorInput(id, "HESTIA");
 		Editors.open(input, "HestiaTool");
 	}
 
@@ -72,35 +64,32 @@ public class HestiaTool extends SimpleFormEditor {
 	public void init(
 		IEditorSite site, IEditorInput input) throws PartInitException {
 		var inp = (SimpleEditorInput) input;
-		var u = AppContext.remove(inp.id, ApiUser.class);
-		if (u == null)
+		user = AppContext.remove(inp.id, HestiaUser.class);
+		if (user == null)
 			throw new PartInitException("Failed to get tool data");
 		setTitleImage(Icon.HESTIA.get());
-		client = u.client;
-		user = u.user;
 		super.init(site, input);
 	}
 
 	@Override
 	protected FormPage getPage() {
-		return new Page(this);
-	}
-
-	record ApiUser(HestiaClient client, User user) {
+		return new Page(this, user);
 	}
 
 	private static class Page extends FormPage {
 
 		private final HestiaClient client;
 		private final User user;
+		private final List<Release> releases;
 		private TableViewer table;
 		private Text searchText;
 		private SettingsPanel settings;
 
-		Page(HestiaTool editor) {
-			super(editor, "Hestia", "Hestia");
-			this.client = editor.client;
-			this.user = editor.user;
+		Page(HestiaTool editor, HestiaUser user) {
+			super(editor, "Hestia", "HESTIA");
+			this.client = user.client();
+			this.user = user.user();
+			this.releases = user.releases();
 		}
 
 		@Override
@@ -169,8 +158,7 @@ public class HestiaTool extends SimpleFormEditor {
 					runSearch();
 				}
 			});
-
-			settings = new SettingsPanel(searchComp, tk);
+			settings = new SettingsPanel(searchComp, tk, releases);
 		}
 
 		private void createTableSection(Composite body, FormToolkit tk) {
@@ -203,10 +191,12 @@ public class HestiaTool extends SimpleFormEditor {
 			}
 			var agg = settings.searchAggregated();
 			var count = settings.numberOfResults();
+			var dataVersion = settings.dataVersion();
 
 			var ref = new AtomicReference<Res<List<SearchResult>>>();
-			App.runWithProgress("Searching Hestia...", () -> {
-				var res = client.search(new SearchQuery(count, query, agg));
+			App.runWithProgress("Searching HESTIA...", () -> {
+				var res = client.search(
+					new SearchQuery(count, query, agg, dataVersion));
 				ref.set(res);
 			}, () -> {
 				var res = ref.get();
@@ -222,8 +212,8 @@ public class HestiaTool extends SimpleFormEditor {
 			List<SearchResult> selected = Viewers.getAllSelected(table);
 			if (selected.isEmpty())
 				return;
-
-			ImportDialog.show(client, selected);
+			var dataVersion = settings.dataVersion();
+			ImportDialog.show(client, selected, dataVersion);
 		}
 	}
 
