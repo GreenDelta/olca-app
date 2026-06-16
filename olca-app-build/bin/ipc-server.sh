@@ -15,7 +15,17 @@ fi
 script_dir="$(dirname "$(realpath "$0")")"
 
 # openLCA comes with an embedded JRE that we use
-java_exec="$script_dir/../jre/bin/java"
+os="$(uname)"
+if [[ "$os" == "Darwin" ]]; then
+  java_exec="$script_dir/../jre/Contents/Home/bin/java"
+else
+  java_exec="$script_dir/../jre/bin/java"
+fi
+
+if [ ! -x "$java_exec" ]; then
+  echo "Error: Java executable not found at $java_exec"
+  exit 1
+fi
 
 # The library folder is our classpath
 cp=$(realpath $script_dir/../plugins/olca-app*/libs)

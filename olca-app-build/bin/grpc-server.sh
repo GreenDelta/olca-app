@@ -4,12 +4,11 @@
 # workspace. The name of the database must be provided as the first argument to
 # this script. You can of course also connect to other data folders and use
 # another server setup by changing the start command below. See also the openLCA
-# IPC documentation. 
+# IPC documentation.
 
-if ["$1" = ""]
-then
+if [ -z "$1" ]; then
   echo "error: no database provided; use this script like this:"
-  echo "./ipc-server.sh {name of your database}"
+  echo "./grpc-server.sh {name of your database}"
   exit 1
 fi
 
@@ -17,7 +16,17 @@ fi
 script_dir=$(dirname "$0")
 
 # openLCA comes with an embedded JRE that we use
-java="$script_dir/../jre/bin/java"
+os="$(uname)"
+if [[ "$os" == "Darwin" ]]; then
+  java_exec="$script_dir/../jre/Contents/Home/bin/java"
+else
+  java_exec="$script_dir/../jre/bin/java"
+fi
+
+if [ ! -x "$java_exec" ]; then
+  echo "Error: Java executable not found at $java_exec"
+  exit 1
+fi
 
 # The library folder is our classpath
 cp=$(realpath $script_dir/../plugins/olca-app*/libs)
