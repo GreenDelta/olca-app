@@ -6,6 +6,9 @@
 	<classpathentry exported="true" kind="lib" path="libs/annotations-4.1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/antlr4-runtime-4.13.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/aopalliance-repackaged-3.0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/asm-9.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/asm-commons-9.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/asm-tree-9.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcpkix-jdk15on-1.70.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcprov-jdk15on-1.70.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bcutil-jdk15on-1.70.jar"/>
@@ -44,7 +47,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.activation-api-2.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.annotation-api-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.inject-api-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jakarta.persistence-api-3.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jakarta.persistence-api-3.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.ws.rs-api-3.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jakarta.xml.bind-api-4.0.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/JavaEWAH-1.2.3.jar"/>
@@ -88,10 +91,9 @@
 	<classpathentry exported="true" kind="lib" path="libs/olca-sd-2.6.3-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/olca-simapro-csv-3.0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.jgit-7.5.0.202512021534-r.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.asm-9.8.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-4.0.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-4.0.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa-4.0.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.core-5.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa.jpql-5.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.persistence.jpa-5.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/osgi-resource-locator-1.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/perfmark-api-0.27.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/ph-annotations-12.0.4.jar"/>
