@@ -11,17 +11,17 @@ import org.openlca.io.olca.systransfer.MatchingStrategy;
 
 final class StrategyList {
 
-	private final TargetSelection config;
+	private final TransferSetup config;
 	private final Runnable onChange;
 	private org.eclipse.swt.widgets.List list;
 
-	private StrategyList(TargetSelection config, Runnable onChange) {
+	private StrategyList(TransferSetup config, Runnable onChange) {
 		this.config = config;
 		this.onChange = onChange;
 	}
 
 	static void create(
-		Composite parent, FormToolkit tk, TargetSelection config, Runnable onChange
+		Composite parent, FormToolkit tk, TransferSetup config, Runnable onChange
 	) {
 		var strategyList = new StrategyList(config, onChange);
 		strategyList.render(parent, tk);

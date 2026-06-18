@@ -15,7 +15,7 @@ import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.io.olca.systransfer.MatchingStrategy;
 import org.openlca.io.olca.systransfer.TransferConfig;
 
-class TargetSelection {
+class TransferSetup {
 
 	private final IDatabase source;
 	private final List<DatabaseConfig> targets;
@@ -25,7 +25,7 @@ class TargetSelection {
 	private DatabaseConfig target;
 	private ProductSystemDescriptor system;
 
-	private TargetSelection(
+	private TransferSetup(
 		IDatabase source,
 		List<DatabaseConfig> targets,
 		List<ProductSystemDescriptor> systems) {
@@ -35,7 +35,7 @@ class TargetSelection {
 		this.strategies = new ArrayList<>(List.of(MatchingStrategy.values()));
 	}
 
-	static Res<TargetSelection> load() {
+	static Res<TransferSetup> load() {
 		var source = Database.get();
 		if (source == null)
 			return Res.error(M.NoDatabaseOpenedInfo);
@@ -59,7 +59,7 @@ class TargetSelection {
 				"There are no product systems in the currently active database");
 		}
 
-		var config = new TargetSelection(source, targets, systems);
+		var config = new TransferSetup(source, targets, systems);
 		return Res.ok(config);
 	}
 
@@ -116,7 +116,7 @@ class TargetSelection {
 			&& !strategies.isEmpty();
 	}
 
-	Res<TransferSetup> openConfig() {
+	Res<TransferConfig> openConfig() {
 		if (!isComplete())
 			return Res.error("The selection is not complete");
 		try {
@@ -129,23 +129,9 @@ class TargetSelection {
 				target,
 				system,
 				strategies.toArray(MatchingStrategy[]::new));
-			return Res.ok(new TransferSetup(config));
+			return Res.ok(config);
 		} catch (Exception e) {
 			return Res.error("Failed to create target configuration", e);
-		}
-	}
-
-	record TransferSetup(TransferConfig config) implements AutoCloseable {
-
-		@Override
-		public void close() {
-			if (config == null || config.target() == null)
-				return;
-			try {
-				config.target().close();
-			} catch (Exception e) {
-				// ignore close errors of the temporary target connection
-			}
 		}
 	}
 }

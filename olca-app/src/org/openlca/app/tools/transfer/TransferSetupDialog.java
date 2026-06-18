@@ -20,58 +20,57 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.commons.Res;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.io.olca.systransfer.TransferPlan;
 
-public class TransferTargetDialog extends FormDialog {
+public class TransferSetupDialog extends FormDialog {
 
-	private final TargetSelection config;
+	private final TransferSetup config;
 
 	public static void show() {
 
-		var res = TargetSelection.load();
+		// initialize the transfer setup
+		var res = TransferSetup.load();
 		if (res.isError()) {
 			MsgBox.error("Cannot transfer a product system", res.error());
 			return;
 		}
-
-		var config = res.value();
-		var dialog = new TransferTargetDialog(config);
-		if (dialog.open() != OK || !config.isComplete())
+		var setup = res.value();
+		var dialog = new TransferSetupDialog(setup);
+		if (dialog.open() != OK || !setup.isComplete())
 			return;
 
-		var confRes = App.exec("Open target database", config::openConfig);
+		// open the target database of the configuration
+		var confRes = App.exec("Open target database", setup::openConfig);
 		if (confRes.isError()) {
 			MsgBox.error("Cannot transfer a product system", confRes.error());
 			return;
 		}
+		var config = confRes.value();
+		var target = config.target();
 
-		try (var transfer = confRes.value()) {
-			var planRes = new Res[1];
-			App.runWithProgress("Prepare transfer plan", () ->
-				planRes[0] = TransferPlan.createFrom(transfer.config()));
-			if (planRes[0] == null || planRes[0].isError()) {
-				var error = planRes[0] != null
-					? planRes[0].error()
-					: "Failed to prepare the transfer";
-				MsgBox.error("Cannot transfer a product system", error);
+		// initialize the transfer plan and open it in the editor
+		try (target) {
+			var planRes = App.exec(
+				"Prepare transfer plan", () -> TransferPlan.createFrom(config));
+			if (planRes.isError()) {
+				MsgBox.error("Failed to create transfer plan", planRes.error());
 				return;
 			}
-
-			var plan = (TransferPlan) planRes[0].value();
-			TransferPlanEditor.open(plan, transfer.config());
+			TransferPlanEditor.open(planRes.value(), config);
+		} catch (Exception e) {
+			ErrorReporter.on("Failed to create transfer plan", e);
 		}
-
 	}
 
-	private TransferTargetDialog(TargetSelection config) {
+	private TransferSetupDialog(TransferSetup config) {
 		super(UI.shell());
 		setBlockOnOpen(true);
 		this.config = config;
