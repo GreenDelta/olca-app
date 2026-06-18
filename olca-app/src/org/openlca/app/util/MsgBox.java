@@ -4,7 +4,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.progress.UIJob;
 import org.openlca.app.M;
@@ -80,16 +79,7 @@ public class MsgBox {
 
 		@Override
 		public IStatus runInUIThread(IProgressMonitor monitor) {
-			var shell = UI.shell();
-			if (shell == null) {
-				Display display = getDisplay();
-				if (display == null)
-					return Status.CANCEL_STATUS;
-				shell = display.getActiveShell();
-				if (shell == null)
-					shell = new Shell(display);
-			}
-			openBox(shell);
+			openBox( UI.shell());
 			return Status.OK_STATUS;
 		}
 

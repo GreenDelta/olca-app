@@ -54,7 +54,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
+		var first = selection.getFirst();
 		if (!(first instanceof DatabaseElement e))
 			return false;
 		var config = e.getContent();

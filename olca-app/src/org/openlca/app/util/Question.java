@@ -28,8 +28,6 @@ public class Question {
 			return IDialogConstants.YES_ID;
 		if (result == 1)
 			return IDialogConstants.NO_ID;
-		if (result == 2)
-			return IDialogConstants.CANCEL_ID;
 		return IDialogConstants.CANCEL_ID;
 	}
 
