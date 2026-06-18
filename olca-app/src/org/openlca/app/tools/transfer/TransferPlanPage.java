@@ -13,6 +13,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
+import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ProductSystem;
@@ -61,7 +62,15 @@ final class TransferPlanPage extends FormPage {
 		UI.filler(comp, tk);
 		var button = UI.button(comp, tk, "Transfer");
 		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, $ -> editor.runTransfer());
+		Controls.onSelect(button, $ -> {
+			var b = Question.ask("Executing the transfer plan?",
+				"Do you want to execute the transfer plan now?");
+			if (!b) return;
+			button.setText("Executed");
+			button.setEnabled(false);
+			button.getParent().layout();
+			editor.runTransfer();
+		});
 	}
 
 	private void createCopiesSection(Composite parent, FormToolkit tk) {
