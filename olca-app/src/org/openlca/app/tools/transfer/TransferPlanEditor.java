@@ -6,34 +6,28 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.AppContext;
-import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.commons.Res;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.io.olca.systransfer.TransferConfig;
-import org.openlca.io.olca.systransfer.TransferExecutor;
 import org.openlca.io.olca.systransfer.TransferPlan;
 
 public class TransferPlanEditor extends SimpleFormEditor {
 
 	private static final String ID = "TransferPlanEditor";
 
-	private TransferPlan plan;
-	private TransferConfig config;
+	private TransferCommand command;
 	private boolean running;
 
-	public static void open(TransferPlan plan, TransferConfig config) {
-		if (plan == null || config == null)
+	public static void open(TransferCommand cmd) {
+		if (cmd == null)
 			return;
-		var storage = new PlanStorage(plan, config);
-		var key = AppContext.put(storage);
-		var name = "Transfer plan - " + Labels.name(config.system());
+		var key = AppContext.put(cmd);
+		var name = "Transfer plan - " + Labels.name(cmd.config().system());
 		var input = new SimpleEditorInput(key, name);
 		Editors.open(input, ID);
 	}
@@ -46,12 +40,10 @@ public class TransferPlanEditor extends SimpleFormEditor {
 		if (!(input instanceof SimpleEditorInput si)) {
 			throw new PartInitException("No transfer plan provided");
 		}
-		var storage = AppContext.remove(si.id, PlanStorage.class);
-		if (storage == null) {
+		command = AppContext.remove(si.id, TransferCommand.class);
+		if (command == null) {
 			throw new PartInitException("The transfer plan is no longer available");
 		}
-		plan = storage.plan;
-		config = storage.config;
 	}
 
 	@Override
@@ -60,20 +52,20 @@ public class TransferPlanEditor extends SimpleFormEditor {
 	}
 
 	TransferPlan plan() {
-		return plan;
+		return command != null ? command.plan() : null;
 	}
 
 	TransferConfig config() {
-		return config;
+		return command != null ? command.config() : null;
 	}
 
 	void runTransfer() {
-		if (running || plan == null || config == null)
+		if (running || command == null)
 			return;
 		running = true;
 		var execRes = new Res[1];
 		App.runWithProgress("Transfer product system", () ->
-			execRes[0] = doTransfer());
+			execRes[0] = command.execute());
 		running = false;
 		if (execRes[0] == null || execRes[0].isError()) {
 			var error = execRes[0] != null
@@ -85,38 +77,10 @@ public class TransferPlanEditor extends SimpleFormEditor {
 
 		MsgBox.info("Transfer complete",
 			"Transferred product system to target database '"
-				+ config.target().getName() + "' with "
-				+ plan.matches().size() + " provider assignment"
-				+ (plan.matches().size() == 1 ? "" : "s")
-				+ " and " + plan.copies().size() + " provider "
-				+ (plan.copies().size() == 1 ? "copy" : "copies") + ".");
-	}
-
-	private Res<ProductSystem> doTransfer() {
-		var targetName = config.target().getName();
-		var dbConfig = Database.getConfigurations().getAll().stream()
-			.filter(c -> c.name().equals(targetName))
-			.findFirst()
-			.orElse(null);
-		if (dbConfig == null) {
-			return Res.error("Target database '" + targetName
-				+ "' is no longer available");
-		}
-		var freshTarget = dbConfig.connect(Workspace.dbDir());
-		try {
-			var freshConfig = new TransferConfig(
-				config.source(), freshTarget, config.system(),
-				config.strategies());
-			return TransferExecutor.of(plan, freshConfig).execute();
-		} finally {
-			try {
-				freshTarget.close();
-			} catch (Exception e) {
-				// ignore close errors
-			}
-		}
-	}
-
-	private record PlanStorage(TransferPlan plan, TransferConfig config) {
+				+ command.config().target().getName() + "' with "
+				+ command.plan().matches().size() + " provider assignment"
+				+ (command.plan().matches().size() == 1 ? "" : "s")
+				+ " and " + command.plan().copies().size() + " provider "
+				+ (command.plan().copies().size() == 1 ? "copy" : "copies") + ".");
 	}
 }

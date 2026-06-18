@@ -75,6 +75,10 @@ class TransferSetup {
 		return strategies;
 	}
 
+	DatabaseConfig targetConfig() {
+		return target;
+	}
+
 	void setTarget(DatabaseConfig target) {
 		this.target = target;
 	}

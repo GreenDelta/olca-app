@@ -64,7 +64,9 @@ public class TransferSetupDialog extends FormDialog {
 				MsgBox.error("Failed to create transfer plan", planRes.error());
 				return;
 			}
-			TransferPlanEditor.open(planRes.value(), config);
+			var cmd = new TransferCommand(
+				planRes.value(), config, setup.targetConfig());
+			TransferPlanEditor.open(cmd);
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create transfer plan", e);
 		}
