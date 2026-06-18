@@ -97,8 +97,8 @@ final class MatchesSection {
 		public Image getColumnImage(Object o, int col) {
 			if (!(o instanceof ProviderMatch match))
 				return null;
-			if (col == 0 && match.provider() != null)
-				return Images.get(match.provider().provider());
+			if (col == 0 && match.source() != null)
+				return Images.get(match.source().provider());
 			if (col == 1 && match.selected() != null)
 				return Images.get(match.selected().provider());
 			return null;
@@ -109,8 +109,8 @@ final class MatchesSection {
 			if (!(o instanceof ProviderMatch match))
 				return null;
 			return switch (col) {
-				case 0 -> match.provider() != null
-					? Labels.name(match.provider().provider())
+				case 0 -> match.source() != null
+					? Labels.name(match.source().provider())
 					: null;
 				case 1 -> labelOf(match.selected());
 				case 2 -> statusOf(match);

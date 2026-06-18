@@ -20,17 +20,20 @@ import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.olca.systransfer.ProviderInfo;
+import org.openlca.io.olca.systransfer.TransferConfig;
 import org.openlca.io.olca.systransfer.TransferPlan;
 
 final class TransferPlanPage extends FormPage {
 
 	private final TransferPlanEditor editor;
 	private final TransferPlan plan;
+	private final TransferConfig config;
 
 	TransferPlanPage(TransferPlanEditor editor) {
 		super(editor, "TransferPlanEditor.Page", "Transfer plan");
 		this.editor = editor;
 		this.plan = editor.plan();
+		this.config = editor.config();
 	}
 
 	@Override
@@ -45,7 +48,6 @@ final class TransferPlanPage extends FormPage {
 
 	private void createInfoSection(Composite parent, FormToolkit tk) {
 		var comp = UI.formSection(parent, tk, "Setup", 2);
-		var config = plan.config();
 
 		UI.label(comp, tk, "Source database");
 		UI.label(comp, tk, config.source().getName());

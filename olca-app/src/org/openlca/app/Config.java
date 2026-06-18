@@ -38,6 +38,6 @@ public final class Config {
 	/**
 	 * Link to the openLCA online help.
 	 */
-	public static final String HELP_URL = "http://www.openlca.org/manuals";
+	public static final String HELP_URL = "https://www.openlca.org/get-started-with-openlca/";
 
 }

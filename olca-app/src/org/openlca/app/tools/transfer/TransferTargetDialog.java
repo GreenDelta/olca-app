@@ -66,7 +66,7 @@ public class TransferTargetDialog extends FormDialog {
 			}
 
 			var plan = (TransferPlan) planRes[0].value();
-			TransferPlanEditor.open(plan);
+			TransferPlanEditor.open(plan, transfer.config());
 		}
 
 	}
