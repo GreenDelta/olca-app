@@ -1,4 +1,4 @@
-package org.openlca.app.tools.transfer;
+package org.openlca.app.tools.migration;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -20,17 +20,17 @@ import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.io.olca.systransfer.ProviderInfo;
-import org.openlca.io.olca.systransfer.TransferConfig;
-import org.openlca.io.olca.systransfer.TransferPlan;
+import org.openlca.io.olca.migration.ProviderInfo;
+import org.openlca.io.olca.migration.MigrationConfig;
+import org.openlca.io.olca.migration.MigrationPlan;
 
-final class TransferPlanPage extends FormPage {
+final class MigrationPlanPage extends FormPage {
 
-	private final TransferPlanEditor editor;
-	private final TransferPlan plan;
-	private final TransferConfig config;
+	private final MigrationPlanEditor editor;
+	private final MigrationPlan plan;
+	private final MigrationConfig config;
 
-	TransferPlanPage(TransferPlanEditor editor) {
+	MigrationPlanPage(MigrationPlanEditor editor) {
 		super(editor, "TransferPlanEditor.Page", "Transfer plan");
 		this.editor = editor;
 		this.plan = editor.plan();

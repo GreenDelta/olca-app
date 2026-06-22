@@ -1,4 +1,4 @@
-package org.openlca.app.tools.transfer;
+package org.openlca.app.tools.migration;
 
 import java.util.function.Supplier;
 
@@ -28,22 +28,22 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
-import org.openlca.io.olca.systransfer.TransferPlan;
+import org.openlca.io.olca.migration.MigrationPlan;
 
-public class TransferSetupDialog extends FormDialog {
+public class MigrationSetupDialog extends FormDialog {
 
-	private final TransferSetup config;
+	private final MigrationSetup config;
 
 	public static void show() {
 
 		// initialize the transfer setup
-		var res = TransferSetup.load();
+		var res = MigrationSetup.load();
 		if (res.isError()) {
 			MsgBox.error("Cannot transfer a product system", res.error());
 			return;
 		}
 		var setup = res.value();
-		var dialog = new TransferSetupDialog(setup);
+		var dialog = new MigrationSetupDialog(setup);
 		if (dialog.open() != OK || !setup.isComplete())
 			return;
 
@@ -59,20 +59,20 @@ public class TransferSetupDialog extends FormDialog {
 		// initialize the transfer plan and open it in the editor
 		try (target) {
 			var planRes = App.exec(
-				"Prepare transfer plan", () -> TransferPlan.createFrom(config));
+				"Prepare transfer plan", () -> MigrationPlan.createFrom(config));
 			if (planRes.isError()) {
 				MsgBox.error("Failed to create transfer plan", planRes.error());
 				return;
 			}
-			var cmd = new TransferCommand(
+			var cmd = new MigrationCommand(
 				planRes.value(), config, setup.targetConfig());
-			TransferPlanEditor.open(cmd);
+			MigrationPlanEditor.open(cmd);
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to create transfer plan", e);
 		}
 	}
 
-	private TransferSetupDialog(TransferSetup config) {
+	private MigrationSetupDialog(MigrationSetup config) {
 		super(UI.shell());
 		setBlockOnOpen(true);
 		this.config = config;

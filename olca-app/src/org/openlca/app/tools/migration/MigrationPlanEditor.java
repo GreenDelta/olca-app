@@ -1,4 +1,4 @@
-package org.openlca.app.tools.transfer;
+package org.openlca.app.tools.migration;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -14,16 +14,16 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
-import org.openlca.io.olca.systransfer.TransferConfig;
-import org.openlca.io.olca.systransfer.TransferPlan;
+import org.openlca.io.olca.migration.MigrationConfig;
+import org.openlca.io.olca.migration.MigrationPlan;
 
-public class TransferPlanEditor extends SimpleFormEditor {
+public class MigrationPlanEditor extends SimpleFormEditor {
 
 	private static final String ID = "TransferPlanEditor";
 
-	private TransferCommand command;
+	private MigrationCommand command;
 
-	static void open(TransferCommand cmd) {
+	static void open(MigrationCommand cmd) {
 		if (cmd == null)
 			return;
 		var key = AppContext.put(cmd);
@@ -40,7 +40,7 @@ public class TransferPlanEditor extends SimpleFormEditor {
 		if (!(input instanceof SimpleEditorInput si)) {
 			throw new PartInitException("No transfer plan provided");
 		}
-		command = AppContext.remove(si.id, TransferCommand.class);
+		command = AppContext.remove(si.id, MigrationCommand.class);
 		if (command == null) {
 			throw new PartInitException("The transfer plan is no longer available");
 		}
@@ -48,14 +48,14 @@ public class TransferPlanEditor extends SimpleFormEditor {
 
 	@Override
 	protected FormPage getPage() {
-		return new TransferPlanPage(this);
+		return new MigrationPlanPage(this);
 	}
 
-	TransferPlan plan() {
+	MigrationPlan plan() {
 		return command.plan();
 	}
 
-	TransferConfig config() {
+	MigrationConfig config() {
 		return command.config();
 	}
 

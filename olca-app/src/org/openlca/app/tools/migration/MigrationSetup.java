@@ -1,4 +1,4 @@
-package org.openlca.app.tools.transfer;
+package org.openlca.app.tools.migration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,10 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
-import org.openlca.io.olca.systransfer.MatchingStrategy;
-import org.openlca.io.olca.systransfer.TransferConfig;
+import org.openlca.io.olca.migration.MatchingStrategy;
+import org.openlca.io.olca.migration.MigrationConfig;
 
-class TransferSetup {
+class MigrationSetup {
 
 	private final IDatabase source;
 	private final List<DatabaseConfig> targets;
@@ -25,7 +25,7 @@ class TransferSetup {
 	private DatabaseConfig target;
 	private ProductSystemDescriptor system;
 
-	private TransferSetup(
+	private MigrationSetup(
 		IDatabase source,
 		List<DatabaseConfig> targets,
 		List<ProductSystemDescriptor> systems) {
@@ -35,7 +35,7 @@ class TransferSetup {
 		this.strategies = new ArrayList<>(List.of(MatchingStrategy.values()));
 	}
 
-	static Res<TransferSetup> load() {
+	static Res<MigrationSetup> load() {
 		var source = Database.get();
 		if (source == null)
 			return Res.error(M.NoDatabaseOpenedInfo);
@@ -59,7 +59,7 @@ class TransferSetup {
 				"There are no product systems in the currently active database");
 		}
 
-		var config = new TransferSetup(source, targets, systems);
+		var config = new MigrationSetup(source, targets, systems);
 		return Res.ok(config);
 	}
 
@@ -120,7 +120,7 @@ class TransferSetup {
 			&& !strategies.isEmpty();
 	}
 
-	Res<TransferConfig> openConfig() {
+	Res<MigrationConfig> openConfig() {
 		if (!isComplete())
 			return Res.error("The selection is not complete");
 		try {
@@ -128,7 +128,7 @@ class TransferSetup {
 			if (system == null)
 				return Res.error("Failed to load product system");
 			var target = this.target.connect(Workspace.dbDir());
-			var config = new TransferConfig(
+			var config = new MigrationConfig(
 				source,
 				target,
 				system,

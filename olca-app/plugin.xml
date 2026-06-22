@@ -270,7 +270,7 @@
 		</editor>
 
 		<editor
-				class="org.openlca.app.tools.transfer.TransferPlanEditor"
+				class="org.openlca.app.tools.migration.MigrationPlanEditor"
 				default="false"
 				id="TransferPlanEditor"
 				name="Transfer plan">

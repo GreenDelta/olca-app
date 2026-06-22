@@ -1,4 +1,4 @@
-package org.openlca.app.tools.transfer;
+package org.openlca.app.tools.migration;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -12,19 +12,19 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.commons.Strings;
-import org.openlca.io.olca.systransfer.ProviderInfo;
-import org.openlca.io.olca.systransfer.ProviderMatch;
-import org.openlca.io.olca.systransfer.TransferPlan;
+import org.openlca.io.olca.migration.ProviderInfo;
+import org.openlca.io.olca.migration.ProviderMatch;
+import org.openlca.io.olca.migration.MigrationPlan;
 
 final class MatchesSection {
 
-	private final TransferPlan plan;
+	private final MigrationPlan plan;
 
-	private MatchesSection(TransferPlan plan) {
+	private MatchesSection(MigrationPlan plan) {
 		this.plan = plan;
 	}
 
-	static void create(TransferPlan plan, Composite parent, FormToolkit tk) {
+	static void create(MigrationPlan plan, Composite parent, FormToolkit tk) {
 		new MatchesSection(plan).render(parent, tk);
 	}
 

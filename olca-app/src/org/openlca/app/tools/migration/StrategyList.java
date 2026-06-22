@@ -1,4 +1,4 @@
-package org.openlca.app.tools.transfer;
+package org.openlca.app.tools.migration;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -7,21 +7,21 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
-import org.openlca.io.olca.systransfer.MatchingStrategy;
+import org.openlca.io.olca.migration.MatchingStrategy;
 
 final class StrategyList {
 
-	private final TransferSetup config;
+	private final MigrationSetup config;
 	private final Runnable onChange;
 	private org.eclipse.swt.widgets.List list;
 
-	private StrategyList(TransferSetup config, Runnable onChange) {
+	private StrategyList(MigrationSetup config, Runnable onChange) {
 		this.config = config;
 		this.onChange = onChange;
 	}
 
 	static void create(
-		Composite parent, FormToolkit tk, TransferSetup config, Runnable onChange
+		Composite parent, FormToolkit tk, MigrationSetup config, Runnable onChange
 	) {
 		var strategyList = new StrategyList(config, onChange);
 		strategyList.render(parent, tk);

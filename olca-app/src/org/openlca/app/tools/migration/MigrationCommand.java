@@ -1,17 +1,17 @@
-package org.openlca.app.tools.transfer;
+package org.openlca.app.tools.migration;
 
 import org.openlca.app.rcp.Workspace;
 import org.openlca.commons.Res;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.ProductSystemDescriptor;
-import org.openlca.io.olca.systransfer.TransferConfig;
-import org.openlca.io.olca.systransfer.TransferExecutor;
-import org.openlca.io.olca.systransfer.TransferPlan;
+import org.openlca.io.olca.migration.MigrationConfig;
+import org.openlca.io.olca.migration.MigrationExecutor;
+import org.openlca.io.olca.migration.MigrationPlan;
 
-record TransferCommand(
-	TransferPlan plan,
-	TransferConfig config,
+record MigrationCommand(
+	MigrationPlan plan,
+	MigrationConfig config,
 	DatabaseConfig targetConfig
 ) {
 
@@ -21,7 +21,7 @@ record TransferCommand(
 			return config.castError();
 		var target = config.value().target();
 		try (target) {
-			var system = TransferExecutor.of(plan, config.value()).execute();
+			var system = MigrationExecutor.of(plan, config.value()).execute();
 			return system.isError()
 				? system.wrapError("Failed to transfer product system")
 				: Res.ok(Descriptor.of(system.value()));
@@ -30,10 +30,10 @@ record TransferCommand(
 		}
 	}
 
-	private Res<TransferConfig> reconnect() {
+	private Res<MigrationConfig> reconnect() {
 		try {
 			var target = targetConfig.connect(Workspace.dbDir());
-			var c = new TransferConfig(
+			var c = new MigrationConfig(
 				config.source(), target, config.system(), config.strategies());
 			return Res.ok(c);
 		} catch (Exception e) {
