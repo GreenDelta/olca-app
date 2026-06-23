@@ -17,9 +17,9 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
-import org.openlca.io.olca.migration.ProviderInfo;
 import org.openlca.io.olca.migration.MigrationConfig;
 import org.openlca.io.olca.migration.MigrationPlan;
+import org.openlca.io.olca.migration.ProviderInfo;
 
 final class MigrationPlanPage extends FormPage {
 
@@ -28,7 +28,7 @@ final class MigrationPlanPage extends FormPage {
 	private final MigrationConfig config;
 
 	MigrationPlanPage(MigrationPlanEditor editor) {
-		super(editor, "TransferPlanEditor.Page", "Transfer plan");
+		super(editor, "MigrationPlanEditor.Page", "Migration plan");
 		this.editor = editor;
 		this.plan = editor.plan();
 		this.config = editor.config();
@@ -36,7 +36,7 @@ final class MigrationPlanPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.header(mForm, "Transfer plan", Icon.TARGET.get());
+		var form = UI.header(mForm, "Migration plan", Icon.TARGET.get());
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		createInfoSection(body, tk);
@@ -51,13 +51,13 @@ final class MigrationPlanPage extends FormPage {
 		UI.label(comp, tk, config.source().getName());
 		UI.label(comp, tk, "Target database");
 		UI.label(comp, tk, config.target().getName());
-		
+
 		UI.filler(comp, tk);
 		var button = UI.button(comp, tk, "Transfer");
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, $ -> {
-			var b = Question.ask("Executing the transfer plan?",
-				"Do you want to execute the transfer plan now?");
+			var b = Question.ask("Execute migration?",
+				"Do you want to execute the migration now?");
 			if (!b) return;
 			button.setText("Executed");
 			button.setEnabled(false);

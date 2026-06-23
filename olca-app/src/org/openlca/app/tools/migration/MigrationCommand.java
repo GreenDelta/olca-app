@@ -21,7 +21,7 @@ record MigrationCommand(
 		try (target) {
 			return MigrationExecutor.of(plan, config.value()).execute();			
 		} catch (Exception e) {
-			return Res.error("Failed to transfer product system", e);
+			return Res.error("Migration failed", e);
 		}
 	}
 

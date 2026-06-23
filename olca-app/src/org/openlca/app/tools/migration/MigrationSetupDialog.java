@@ -1,33 +1,19 @@
 package org.openlca.app.tools.migration;
 
-import java.util.function.Supplier;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
-import org.openlca.app.rcp.images.Images;
+import org.openlca.app.components.ModelCheckBoxTree;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
-import org.openlca.app.viewers.Viewers;
-import org.openlca.app.viewers.tables.Tables;
 import org.openlca.core.model.ModelType;
-import org.openlca.core.model.descriptors.ProductSystemDescriptor;
 import org.openlca.io.olca.migration.MigrationPlan;
 
 public class MigrationSetupDialog extends FormDialog {
@@ -36,10 +22,10 @@ public class MigrationSetupDialog extends FormDialog {
 
 	public static void show() {
 
-		// initialize the transfer setup
+		// initialize the migration setup
 		var res = MigrationSetup.load();
 		if (res.isError()) {
-			MsgBox.error("Cannot transfer a product system", res.error());
+			MsgBox.error("Cannot create migration", res.error());
 			return;
 		}
 		var setup = res.value();
@@ -50,25 +36,25 @@ public class MigrationSetupDialog extends FormDialog {
 		// open the target database of the configuration
 		var confRes = App.exec("Open target database", setup::openConfig);
 		if (confRes.isError()) {
-			MsgBox.error("Cannot transfer a product system", confRes.error());
+			MsgBox.error("Cannot create migration", confRes.error());
 			return;
 		}
 		var config = confRes.value();
 		var target = config.target();
 
-		// initialize the transfer plan and open it in the editor
+		// initialize the migration plan and open it in the editor
 		try (target) {
 			var planRes = App.exec(
-				"Prepare transfer plan", () -> MigrationPlan.createFrom(config));
+				"Prepare migration plan", () -> MigrationPlan.createFrom(config));
 			if (planRes.isError()) {
-				MsgBox.error("Failed to create transfer plan", planRes.error());
+				MsgBox.error("Failed to create migration plan", planRes.error());
 				return;
 			}
 			var cmd = new MigrationCommand(
 				planRes.value(), config, setup.targetConfig());
 			MigrationPlanEditor.open(cmd);
 		} catch (Exception e) {
-			ErrorReporter.on("Failed to create transfer plan", e);
+			ErrorReporter.on("Failed to create migration plan", e);
 		}
 	}
 
@@ -81,7 +67,7 @@ public class MigrationSetupDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setText("Transfer product system");
+		shell.setText("Migration setup");
 	}
 
 	@Override
@@ -94,40 +80,27 @@ public class MigrationSetupDialog extends FormDialog {
 		var tk = form.getToolkit();
 		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
-		var filter = UI.text(body, tk, SWT.SEARCH | SWT.CANCEL);
-		filter.setMessage("Search product systems");
-		createSystemTable(body, filter);
+
+		var allProcessesBtn = UI.checkbox(body, tk,
+			"Copy all foreground processes");
+		Controls.onSelect(allProcessesBtn, $ -> {
+			config.setAllProcesses(allProcessesBtn.getSelection());
+			updateOk();
+		});
+
+		var entityTree = new ModelCheckBoxTree(
+			ModelType.PROJECT,
+			ModelType.PRODUCT_SYSTEM,
+			ModelType.IMPACT_METHOD);
+		entityTree.drawOn(body, tk);
+		entityTree.onSelectionChanged(() -> {
+			config.setEntities(entityTree.getSelection());
+			updateOk();
+		});
+
 		createTargetCombo(body, tk);
 		StrategyList.create(body, tk, config, this::updateOk);
 		updateOk();
-	}
-
-	private void createSystemTable(Composite body, Text filter) {
-		var table = Tables.createViewer(body, "Product system", "Category");
-		Supplier<ProductSystemDescriptor> selection = () -> {
-			var selected = Viewers.getFirstSelected(table);
-			return selected instanceof ProductSystemDescriptor d ? d : null;
-		};
-
-		Tables.bindColumnWidths2(table, 0.6, 0.4);
-		table.setLabelProvider(new ProductSystemLabel());
-		table.addFilter(new ProductSystemFilter(filter));
-		table.addSelectionChangedListener($ -> {
-			config.setSystem(selection.get());
-			updateOk();
-		});
-		table.setInput(config.systems());
-
-		if (!config.systems().isEmpty()) {
-			var first = config.systems().getFirst();
-			config.setSystem(first);
-			table.setSelection(new StructuredSelection(first));
-		}
-		filter.addModifyListener($ -> {
-			table.refresh();
-			config.setSystem(selection.get());
-			updateOk();
-		});
 	}
 
 	private void createTargetCombo(Composite parent, FormToolkit tk) {
@@ -151,50 +124,5 @@ public class MigrationSetupDialog extends FormDialog {
 		var button = getButton(IDialogConstants.OK_ID);
 		if (button == null) return;
 		button.setEnabled(config.isComplete());
-	}
-
-	private static class ProductSystemFilter extends ViewerFilter {
-
-		private final Text text;
-
-		private ProductSystemFilter(Text text) {
-			this.text = text;
-		}
-
-		@Override
-		public boolean select(Viewer viewer, Object parent, Object element) {
-			var filter = text.getText();
-			if (filter == null || filter.isBlank())
-				return true;
-			if (!(element instanceof ProductSystemDescriptor d))
-				return false;
-			var query = filter.strip().toLowerCase();
-			return matches(Labels.name(d), query)
-				|| matches(Labels.category(d), query);
-		}
-
-		private boolean matches(String value, String query) {
-			return value != null && value.toLowerCase().contains(query);
-		}
-	}
-
-	private static class ProductSystemLabel extends LabelProvider
-		implements ITableLabelProvider {
-
-		@Override
-		public Image getColumnImage(Object o, int col) {
-			return col == 0 ? Images.get(ModelType.PRODUCT_SYSTEM) : null;
-		}
-
-		@Override
-		public String getColumnText(Object o, int col) {
-			if (!(o instanceof ProductSystemDescriptor d))
-				return null;
-			return switch (col) {
-				case 0 -> Labels.name(d);
-				case 1 -> Labels.category(d);
-				default -> null;
-			};
-		}
 	}
 }

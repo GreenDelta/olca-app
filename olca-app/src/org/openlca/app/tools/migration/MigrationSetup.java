@@ -10,8 +10,7 @@ import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.config.DatabaseConfig;
-import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.ProductSystemDescriptor;
+import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.olca.migration.MatchingStrategy;
 import org.openlca.io.olca.migration.MigrationConfig;
 
@@ -19,19 +18,17 @@ class MigrationSetup {
 
 	private final IDatabase source;
 	private final List<DatabaseConfig> targets;
-	private final List<ProductSystemDescriptor> systems;
 	private final List<MatchingStrategy> strategies;
 
 	private DatabaseConfig target;
-	private ProductSystemDescriptor system;
+	private List<RootDescriptor> entities = new ArrayList<>();
+	private boolean allProcesses;
 
 	private MigrationSetup(
 		IDatabase source,
-		List<DatabaseConfig> targets,
-		List<ProductSystemDescriptor> systems) {
+		List<DatabaseConfig> targets) {
 		this.source = source;
 		this.targets = targets;
-		this.systems = systems;
 		this.strategies = new ArrayList<>(List.of(MatchingStrategy.values()));
 	}
 
@@ -49,26 +46,11 @@ class MigrationSetup {
 				"There are no possible target databases in the workspace.");
 		}
 
-		var systems = source.getDescriptors(ProductSystem.class).stream()
-			.filter(d -> d instanceof ProductSystemDescriptor)
-			.map(d -> (ProductSystemDescriptor) d)
-			.sorted((di, dj) -> Strings.compareIgnoreCase(di.name, dj.name))
-			.toList();
-		if (systems.isEmpty()) {
-			return Res.error(
-				"There are no product systems in the currently active database");
-		}
-
-		var config = new MigrationSetup(source, targets, systems);
-		return Res.ok(config);
+		return Res.ok(new MigrationSetup(source, targets));
 	}
 
 	List<DatabaseConfig> targets() {
 		return targets;
-	}
-
-	List<ProductSystemDescriptor> systems() {
-		return systems;
 	}
 
 	List<MatchingStrategy> strategies() {
@@ -83,8 +65,12 @@ class MigrationSetup {
 		this.target = target;
 	}
 
-	void setSystem(ProductSystemDescriptor system) {
-		this.system = system;
+	void setEntities(List<RootDescriptor> entities) {
+		this.entities = entities != null ? entities : new ArrayList<>();
+	}
+
+	void setAllProcesses(boolean allProcesses) {
+		this.allProcesses = allProcesses;
 	}
 
 	void moveStrategy(MatchingStrategy strategy, int delta) {
@@ -116,7 +102,7 @@ class MigrationSetup {
 	boolean isComplete() {
 		return source != null
 			&& target != null
-			&& system != null
+			&& (!entities.isEmpty() || allProcesses)
 			&& !strategies.isEmpty();
 	}
 
@@ -124,18 +110,16 @@ class MigrationSetup {
 		if (!isComplete())
 			return Res.error("The selection is not complete");
 		try {
-			var system = source.get(ProductSystem.class, this.system.id);
-			if (system == null)
-				return Res.error("Failed to load product system");
 			var target = this.target.connect(Workspace.dbDir());
 			var config = new MigrationConfig(
 				source,
 				target,
-				system,
+				entities,
+				allProcesses,
 				strategies.toArray(MatchingStrategy[]::new));
 			return Res.ok(config);
 		} catch (Exception e) {
-			return Res.error("Failed to create target configuration", e);
+			return Res.error("Failed to create migration configuration", e);
 		}
 	}
 }

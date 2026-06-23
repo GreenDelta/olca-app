@@ -18,7 +18,7 @@ import org.openlca.io.olca.migration.MigrationPlan;
 
 public class MigrationPlanEditor extends SimpleFormEditor {
 
-	private static final String ID = "TransferPlanEditor";
+	private static final String ID = "MigrationPlanEditor";
 
 	private MigrationCommand command;
 
@@ -36,11 +36,11 @@ public class MigrationPlanEditor extends SimpleFormEditor {
 		super.init(site, input);
 		setTitleImage(Icon.DATABASE_DISABLED.get());
 		if (!(input instanceof SimpleEditorInput si)) {
-			throw new PartInitException("No transfer plan provided");
+			throw new PartInitException("No migration plan provided");
 		}
 		command = AppContext.remove(si.id, MigrationCommand.class);
 		if (command == null) {
-			throw new PartInitException("The transfer plan is no longer available");
+			throw new PartInitException("The migration plan is no longer available");
 		}
 	}
 
@@ -58,13 +58,13 @@ public class MigrationPlanEditor extends SimpleFormEditor {
 	}
 
 	void runTransfer() {
-		var res = App.exec("Transfer product system", () -> command.execute());
+		var res = App.exec("Execute migration", () -> command.execute());
 		if (res.isError()) {
-			MsgBox.error("Transfer failed", res.error());
+			MsgBox.error("Migration failed", res.error());
 			return;
 		}
-		var b = Question.ask("Transfer complete",
-			"Successfully transferred the product system to the target database. "
+		var b = Question.ask("Migration complete",
+			"Successfully migrated to the target database. "
 				+ "Do you want to open the target database now?");
 		if (b) {
 			new DbActivateAction(command.targetConfig()).run();
