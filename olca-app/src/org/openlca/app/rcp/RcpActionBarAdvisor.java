@@ -43,7 +43,6 @@ import org.openlca.app.tools.hestia.HestiaTool;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.libraries.LibrarySigningDialog;
 import org.openlca.app.tools.mapping.MappingTool;
-import org.openlca.app.tools.migration.MigrationSetupDialog;
 import org.openlca.app.tools.openepd.EpdPanel;
 import org.openlca.app.tools.params.ParameterAnalysisDialog;
 import org.openlca.app.tools.smartepd.SmartEpdTool;
@@ -181,8 +180,6 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 
 		menu.add(Actions.create(
 				"Parameter analysis (experimental)", ParameterAnalysisDialog::show));
-		menu.add(Actions.create(
-				"Transfer product system", MigrationSetupDialog::show));
 
 		// API clients
 		var apiMenu = new MenuManager("API Clients");

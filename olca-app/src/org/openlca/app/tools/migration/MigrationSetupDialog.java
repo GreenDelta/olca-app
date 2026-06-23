@@ -23,7 +23,7 @@ public class MigrationSetupDialog extends FormDialog {
 	public static void show() {
 
 		// initialize the migration setup
-		var res = MigrationSetup.load();
+		var res = MigrationSetup.initialize();
 		if (res.isError()) {
 			MsgBox.error("Cannot create migration", res.error());
 			return;

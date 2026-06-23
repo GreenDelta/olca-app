@@ -32,7 +32,7 @@ class MigrationSetup {
 		this.strategies = new ArrayList<>(List.of(MatchingStrategy.values()));
 	}
 
-	static Res<MigrationSetup> load() {
+	static Res<MigrationSetup> initialize() {
 		var source = Database.get();
 		if (source == null)
 			return Res.error(M.NoDatabaseOpenedInfo);
@@ -43,7 +43,7 @@ class MigrationSetup {
 			.toList();
 		if (targets.isEmpty()) {
 			return Res.error(
-				"There are no possible target databases in the workspace.");
+				"There is no possible target database in the workspace.");
 		}
 
 		return Res.ok(new MigrationSetup(source, targets));

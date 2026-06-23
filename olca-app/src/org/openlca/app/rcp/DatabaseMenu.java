@@ -26,6 +26,7 @@ import org.openlca.app.navigation.actions.db.DbRestoreAction;
 import org.openlca.app.navigation.actions.db.DbValidationAction;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.tools.migration.MigrationSetupDialog;
 import org.openlca.app.util.Actions;
 import org.openlca.core.model.ModelType;
 
@@ -38,8 +39,8 @@ class DatabaseMenu implements IMenuListener {
 		manager.add(menu);
 	}
 
-	static void addTo(IMenuManager manager) {
-		new DatabaseMenu(manager);
+	static void addTo(IMenuManager menu) {
+		new DatabaseMenu(menu);
 	}
 
 	@Override
@@ -49,17 +50,21 @@ class DatabaseMenu implements IMenuListener {
 		if (Database.getActiveConfiguration() == null)
 			return;
 		var checkLinksAction = Actions.create(
-				M.CheckLinkingProperties, null, LinkingPropertiesPage::show);
-		var actions = new IAction[] {
-				new DbExportAction(),
-				new DbValidationAction(),
-				new DbCopyAction(),
-				new DbRenameAction(),
-				new DbDeleteAction(),
-				new DbCloseAction(),
-				checkLinksAction,
-				new DbPropertiesAction(),
-				new DbCompressAction(),
+			M.CheckLinkingProperties, null, LinkingPropertiesPage::show);
+		var migrationAction = Actions.create(
+			"Migrate content", MigrationSetupDialog::show);
+
+		var actions = new IAction[]{
+			new DbExportAction(),
+			new DbValidationAction(),
+			migrationAction,
+			new DbCopyAction(),
+			new DbRenameAction(),
+			new DbDeleteAction(),
+			new DbCloseAction(),
+			checkLinksAction,
+			new DbPropertiesAction(),
+			new DbCompressAction(),
 		};
 		for (var action : actions) {
 			menu.add(action);
