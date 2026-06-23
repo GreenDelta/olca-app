@@ -7,8 +7,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.openlca.app.M;
-import org.openlca.app.components.ModelLink;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
@@ -16,7 +14,6 @@ import org.openlca.app.util.Labels;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.core.model.ProductSystem;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.core.model.descriptors.RootDescriptor;
@@ -54,11 +51,7 @@ final class MigrationPlanPage extends FormPage {
 		UI.label(comp, tk, config.source().getName());
 		UI.label(comp, tk, "Target database");
 		UI.label(comp, tk, config.target().getName());
-		ModelLink.of(ProductSystem.class)
-			.setEditable(false)
-			.setModel(config.system())
-			.renderOn(comp, tk, M.ProductSystem);
-
+		
 		UI.filler(comp, tk);
 		var button = UI.button(comp, tk, "Transfer");
 		button.setImage(Icon.RUN.get());
@@ -79,7 +72,7 @@ final class MigrationPlanPage extends FormPage {
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(comp, "Provider", "Flow", "Location");
 		table.setLabelProvider(new ProviderInfoLabel());
-		table.setInput(plan.copies());
+		table.setInput(plan.providerCopies());
 		Tables.bindColumnWidths2(table, 0.5, 0.3, 0.2);
 		var gd = UI.gridData(table.getTable(), true, true);
 		gd.heightHint = 1;

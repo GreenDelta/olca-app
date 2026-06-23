@@ -37,7 +37,7 @@ final class MatchesSection {
 			"Target provider",
 			"Status");
 		table.setLabelProvider(new MatchLabel());
-		table.setInput(plan.matches());
+		table.setInput(plan.providerMatches());
 		Tables.bindColumnWidths2(table, 0.4, 0.4, 0.2);
 		var gd = UI.gridData(table.getTable(), true, true);
 		gd.heightHint = 1;

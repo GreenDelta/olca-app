@@ -11,7 +11,6 @@ import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.navigation.actions.db.DbActivateAction;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.io.olca.migration.MigrationConfig;
@@ -27,8 +26,7 @@ public class MigrationPlanEditor extends SimpleFormEditor {
 		if (cmd == null)
 			return;
 		var key = AppContext.put(cmd);
-		var name = "Transfer plan - " + Labels.name(cmd.config().system());
-		var input = new SimpleEditorInput(key, name);
+		var input = new SimpleEditorInput(key, "Migration plan");
 		Editors.open(input, ID);
 	}
 
