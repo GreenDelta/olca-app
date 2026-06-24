@@ -20,22 +20,23 @@ class RefData {
 			return switch (this) {
 				case NONE -> List.of();
 				case UNITS -> List.of(
-						"currencies.csv",
-						"flow_properties.csv",
-						"unit_groups.csv",
-						"units.csv"
+					"currencies.csv",
+					"flow_properties.csv",
+					"unit_groups.csv",
+					"units.csv"
 				);
 				case FLOWS -> List.of(
-						"currencies.csv",
-						"flow_properties.csv",
-						"flows.csv",
-						"locations.csv",
-						"unit_groups.csv",
-						"units.csv",
+					"currencies.csv",
+					"flow_properties.csv",
+					"flows.csv",
+					"locations.csv",
+					"unit_groups.csv",
+					"units.csv",
 
-						"mappings/EcoSpold1_Import.csv",
-						"mappings/ILCD_Import.csv",
-						"mappings/SimaPro_Import.csv"
+					"mappings/EcoSpold1_Import_BAFU_2025.csv",
+					"mappings/EcoSpold1_Import_Default.csv",
+					"mappings/ILCD_Import.csv",
+					"mappings/SimaPro_Import.csv"
 				);
 			};
 		}
@@ -49,11 +50,11 @@ class RefData {
 		File tempDir;
 		try {
 			tempDir = Files.createTempDirectory(
-					"_ref_data_build_" + refSet.name()).toFile();
+				"_ref_data_build_" + refSet.name()).toFile();
 			System.out.println("created import folder: " + tempDir);
 		} catch (Exception e) {
 			System.out.println("ERROR: failed to create import folder: "
-					+ e.getMessage());
+				+ e.getMessage());
 			return Optional.empty();
 		}
 
@@ -65,12 +66,12 @@ class RefData {
 				var target = new File(tempDir, file);
 				Dirs.createIfAbsent(target.getParentFile());
 				Files.copy(cached.toPath(), target.toPath(),
-						StandardCopyOption.REPLACE_EXISTING);
+					StandardCopyOption.REPLACE_EXISTING);
 			}
 			return Optional.of(tempDir);
 		} catch (Exception e) {
 			System.out.println("ERROR: failed to copy resources to "
-					+ tempDir + ": " + e.getMessage());
+				+ tempDir + ": " + e.getMessage());
 			return Optional.empty();
 		}
 	}
@@ -93,12 +94,12 @@ class RefData {
 			Dirs.createIfAbsent(target.getParentFile());
 		} catch (Exception e) {
 			System.out.println("ERROR: failed to create download folder of: "
-					+ name + e.getMessage());
+				+ name + e.getMessage());
 			return Optional.empty();
 		}
 
 		var path = "https://raw.githubusercontent.com/GreenDelta/data" +
-				"/master/refdata/" + name;
+			"/master/refdata/" + name;
 		System.out.println("download: " + path);
 		try {
 			var url = new URI(path).toURL();
@@ -108,7 +109,7 @@ class RefData {
 			return Optional.of(target);
 		} catch (Exception e) {
 			System.out.println(
-					"ERROR: failed to download: " + path + e.getMessage());
+				"ERROR: failed to download: " + path + e.getMessage());
 			return Optional.empty();
 		}
 	}
