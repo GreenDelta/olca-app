@@ -81,7 +81,15 @@ public class MigrationSetupDialog extends FormDialog {
 		var body = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(body, 1);
 
-		var allProcessesBtn = UI.checkbox(body, tk,
+		var dataGroup = UI.group(body, tk);
+		var gd = UI.gridData(dataGroup, true, true);
+		gd.heightHint = 1;
+		gd.widthHint = 1;
+
+		dataGroup.setText("Data for migration");
+		UI.gridLayout(dataGroup, 1);
+
+		var allProcessesBtn = UI.checkbox(dataGroup, tk,
 			"Copy all foreground processes");
 		Controls.onSelect(allProcessesBtn, $ -> {
 			config.setAllProcesses(allProcessesBtn.getSelection());
@@ -92,19 +100,24 @@ public class MigrationSetupDialog extends FormDialog {
 			ModelType.PROJECT,
 			ModelType.PRODUCT_SYSTEM,
 			ModelType.IMPACT_METHOD);
-		entityTree.drawOn(body, tk);
+		entityTree.drawOn(dataGroup, tk);
 		entityTree.onSelectionChanged(() -> {
 			config.setEntities(entityTree.getSelection());
 			updateOk();
 		});
 
-		createTargetCombo(body, tk);
-		StrategyList.create(body, tk, config, this::updateOk);
+		var targetGroup = UI.group(body, tk);
+		UI.fillHorizontal(targetGroup);
+		targetGroup.setText("Target database");
+		UI.gridLayout(targetGroup, 1);
+
+		createTargetCombo(targetGroup, tk);
+		StrategyList.create(targetGroup, tk, config, this::updateOk);
 		updateOk();
 	}
 
 	private void createTargetCombo(Composite parent, FormToolkit tk) {
-		var combo = UI.labeledCombo(parent, tk, "Target database");
+		var combo = UI.combo(parent, tk);
 		var targets = config.targets();
 		var items = new String[targets.size()];
 		for (int i = 0; i < targets.size(); i++) {

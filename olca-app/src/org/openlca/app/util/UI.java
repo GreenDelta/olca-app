@@ -643,7 +643,14 @@ public class UI {
 	public static Combo labeledCombo(Composite comp, FormToolkit tk,
 			String label) {
 		label(comp, tk, label);
+		return combo(comp, tk);
+	}
+
+	public static Combo combo(Composite comp, FormToolkit tk) {
 		var combo = new Combo(comp, SWT.READ_ONLY);
+		if (tk != null) {
+			tk.adapt(combo);
+		}
 		gridData(combo, true, false);
 		return combo;
 	}
@@ -782,7 +789,7 @@ public class UI {
 	}
 
 	public static void folderSelect(Composite comp, FormToolkit tk, String label, Consumer<File> onSelect) {
-		fileSelect(comp, tk, label, () -> FileChooser.selectFolder(), onSelect);
+		fileSelect(comp, tk, label, FileChooser::selectFolder, onSelect);
 	}
 
 	public static void fileSelectOpen(Composite comp, FormToolkit tk, String label, String fileExtension,

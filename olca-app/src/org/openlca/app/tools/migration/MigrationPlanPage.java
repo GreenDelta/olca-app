@@ -36,7 +36,7 @@ final class MigrationPlanPage extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm mForm) {
-		var form = UI.header(mForm, "Migration plan", Icon.TARGET.get());
+		var form = UI.header(mForm, "Migration plan");
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		createInfoSection(body, tk);

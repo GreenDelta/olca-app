@@ -34,7 +34,7 @@ public class MigrationPlanEditor extends SimpleFormEditor {
 	public void init(IEditorSite site, IEditorInput input)
 		throws PartInitException {
 		super.init(site, input);
-		setTitleImage(Icon.DATABASE_DISABLED.get());
+		setTitleImage(Icon.LINK.get());
 		if (!(input instanceof SimpleEditorInput si)) {
 			throw new PartInitException("No migration plan provided");
 		}

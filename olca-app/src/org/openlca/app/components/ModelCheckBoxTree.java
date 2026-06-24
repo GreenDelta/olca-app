@@ -11,8 +11,6 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.navigation.NavigationComparator;
@@ -36,10 +34,6 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 		this.types = types;
 	}
 
-	public void drawOn(Composite comp) {
-		drawOn(comp, null);
-	}
-
 	public void onSelectionChanged(Runnable fn) {
 		this.onChange = fn;
 	}
@@ -59,10 +53,10 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 		}
 
 		// compute a height hint
-		GridData data = UI.gridData(tree.getTree(), true, true);
-		data.minimumHeight = 120;
-		Point p = comp.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		data.heightHint = Math.max(p.y, 120);
+		var data = UI.gridData(tree.getTree(), true, true);
+		data.heightHint = 1;
+		//Point p = comp.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		//data.heightHint = Math.max(p.y, 120);
 
 		if (types == null || types.length == 0)
 			return;
