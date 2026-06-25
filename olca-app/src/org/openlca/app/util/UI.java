@@ -45,6 +45,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.events.ExpansionAdapter;
+import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -290,6 +292,16 @@ public class UI {
 						| ExpandableComposite.TWISTIE);
 		gridData(s, true, false);
 		s.setText(title);
+
+		s.addExpansionListener(new ExpansionAdapter() {
+			@Override
+			public void expansionStateChanged(ExpansionEvent e) {
+				if (s.getLayoutData() instanceof GridData gd) {
+					gd.grabExcessVerticalSpace = s.isExpanded();
+					s.getParent().layout(true, true);
+				}
+			}
+		});
 
 		if (org.openlca.util.OS.get() == WINDOWS) {
 			s.setTitleBarBackground(Colors.white());
