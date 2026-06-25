@@ -298,6 +298,9 @@ public class UI {
 			public void expansionStateChanged(ExpansionEvent e) {
 				if (s.getLayoutData() instanceof GridData gd) {
 					gd.grabExcessVerticalSpace = s.isExpanded();
+					gd.verticalAlignment = s.isExpanded()
+						? GridData.FILL
+						: GridData.BEGINNING;
 					s.getParent().layout(true, true);
 				}
 			}
