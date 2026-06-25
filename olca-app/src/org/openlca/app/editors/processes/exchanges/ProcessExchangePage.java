@@ -2,8 +2,6 @@ package org.openlca.app.editors.processes.exchanges;
 
 import java.util.Objects;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -36,11 +34,8 @@ public class ProcessExchangePage extends ModelPage<Process> {
 		ScrolledForm form = UI.header(this);
 		toolkit = mform.getToolkit();
 		Composite body = UI.body(form, toolkit);
-		SashForm sash = new SashForm(body, SWT.VERTICAL);
-		UI.gridData(sash, true, true);
-		toolkit.adapt(sash);
-		inputTable = createTable(sash, true);
-		outputTable = createTable(sash, false);
+		inputTable = createTable(body, true);
+		outputTable = createTable(body, false);
 		body.setFocus();
 		form.reflow(true);
 		sortExchanges();
