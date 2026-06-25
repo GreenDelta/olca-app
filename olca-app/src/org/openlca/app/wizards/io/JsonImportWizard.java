@@ -132,7 +132,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			UI.gridLayout(body, 1).verticalSpacing = 0;
 
 			var fileComp = UI.composite(body);
-			UI.fillHorizontal(fileComp);
+			UI.stretchX(fileComp);
 			UI.gridLayout(fileComp, 3).marginBottom = 0;
 			WizFileSelector.on(file -> {
 						zip = file;
@@ -146,7 +146,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			// update mode
 			var groupComp = UI.composite(body);
 			UI.gridLayout(groupComp, 1).marginTop = 0;
-			UI.fillHorizontal(groupComp);
+			UI.stretchX(groupComp);
 			var group = UI.group(groupComp);
 			group.setText(M.UpdatingExistingData);
 			UI.gridData(group, true, false);

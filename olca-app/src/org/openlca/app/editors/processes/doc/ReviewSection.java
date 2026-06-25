@@ -135,7 +135,7 @@ class ReviewSection {
 		private void renderTop(Composite root) {
 			var comp = tk.createComposite(root);
 			UI.gridLayout(comp, 2, 10, 0);
-			UI.fillHorizontal(comp);
+			UI.stretchX(comp);
 			typeCombo(comp);
 
 			UI.label(comp, tk, M.ReviewReport);

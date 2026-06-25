@@ -87,7 +87,7 @@ public class ApiKeyAuth<T> extends FormDialog {
 		var tk = form.getToolkit();
 		var body = UI.dialogBody(form.getForm(), tk);
 		var comp = tk.createComposite(body);
-		UI.fillHorizontal(comp);
+		UI.stretchX(comp);
 		UI.gridLayout(comp, 2);
 
 		urlText = UI.labeledText(comp, tk, "URL");

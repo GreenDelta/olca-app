@@ -39,8 +39,7 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 	}
 
 	public void drawOn(Composite comp, FormToolkit tk) {
-		tree = new CheckboxTreeViewer(comp,
-			SWT.VIRTUAL | SWT.MULTI | SWT.BORDER);
+		tree = new CheckboxTreeViewer(comp, SWT.VIRTUAL | SWT.MULTI | SWT.BORDER);
 		tree.setUseHashlookup(true);
 		tree.setContentProvider(new NavigationContentProvider());
 		tree.setLabelProvider(NavigationLabelProvider.withoutRepositoryState());
@@ -51,12 +50,7 @@ public class ModelCheckBoxTree implements ICheckStateListener {
 		if (tk != null) {
 			tk.adapt(tree.getTree());
 		}
-
-		// compute a height hint
-		var data = UI.gridData(tree.getTree(), true, true);
-		data.heightHint = 1;
-		//Point p = comp.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		//data.heightHint = Math.max(p.y, 120);
+		UI.stretchXY(tree.getTree());
 
 		if (types == null || types.length == 0)
 			return;

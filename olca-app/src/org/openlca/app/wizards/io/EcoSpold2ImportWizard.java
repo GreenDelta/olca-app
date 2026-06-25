@@ -132,7 +132,7 @@ public class EcoSpold2ImportWizard extends Wizard implements IImportWizard {
 
 			var mapComp = UI.composite(body);
 			UI.gridLayout(mapComp, 3);
-			UI.fillHorizontal(mapComp);
+			UI.stretchX(mapComp);
 			MappingSelector.on(fm -> this.flowMap = fm)
 					.render(mapComp);
 

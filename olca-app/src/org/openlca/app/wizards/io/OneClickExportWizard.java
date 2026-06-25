@@ -29,7 +29,7 @@ public class OneClickExportWizard extends Wizard implements IExportWizard {
 		page = ModelSelectionPage.forDirectory(ModelType.PROCESS)
 				.withExtension(parent -> {
 					var comp = UI.composite(parent);
-					UI.fillHorizontal(comp);
+					UI.stretchX(comp);
 					UI.gridLayout(comp, 3);
 					MappingSelector.on(flowMap -> this.flowMap = flowMap)
 							.withSelectionPattern("(?i).*one.*click.*lca.*export.*")

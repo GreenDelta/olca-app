@@ -94,7 +94,7 @@ public class ValidationDialog extends FormDialog {
 		gd.verticalIndent = 2;
 
 		spinner = new Spinner(body, SWT.BORDER);
-		UI.fillHorizontal(spinner);
+		UI.stretchX(spinner);
 		tk.adapt(spinner);
 		spinner.setValues(maxItems, 0, Integer.MAX_VALUE, 0, 100, 1000);
 		Controls.onSelect(
@@ -109,7 +109,7 @@ public class ValidationDialog extends FormDialog {
 				M.WarningAndErrors,
 				M.ErrorsOnly);
 		combo.select(1);
-		UI.fillHorizontal(combo);
+		UI.stretchX(combo);
 	}
 
 	@Override

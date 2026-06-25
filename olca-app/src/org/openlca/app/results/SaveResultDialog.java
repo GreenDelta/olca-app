@@ -64,7 +64,7 @@ public class SaveResultDialog extends FormDialog {
 		// name
 		var nameComp = UI.composite(body, tk);
 		UI.gridLayout(nameComp, 2);
-		UI.fillHorizontal(nameComp);
+		UI.stretchX(nameComp);
 		nameText = UI.labeledText(nameComp, tk, M.Name);
 		Controls.onPainted(nameText, () -> {
 			var name = Labels.name(editor.setup().target());
@@ -75,7 +75,7 @@ public class SaveResultDialog extends FormDialog {
 
 		var groupComp = UI.composite(body, tk);
 		UI.gridLayout(groupComp, 2, 0, 0).horizontalSpacing = 10;
-		UI.fillHorizontal(groupComp);
+		UI.stretchX(groupComp);
 
 		resultRadio = Selector.forResult(groupComp, tk).button;
 		var processSelector = Selector.forProcess(groupComp, tk);
@@ -170,7 +170,7 @@ public class SaveResultDialog extends FormDialog {
 
 		private static Group makeGroup(Composite comp, FormToolkit tk) {
 			var group = UI.group(comp, tk);
-			UI.fillHorizontal(group);
+			UI.stretchX(group);
 			UI.gridLayout(group, 1).makeColumnsEqualWidth = false;
 			return group;
 		}

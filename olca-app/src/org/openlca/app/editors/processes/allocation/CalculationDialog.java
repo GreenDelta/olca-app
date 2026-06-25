@@ -81,7 +81,7 @@ class CalculationDialog extends FormDialog {
 		tk.createLabel(body, M.SelectFlowPropertiesForCalculation);
 		var comp = UI.composite(body, tk);
 		UI.gridLayout(comp, 2);
-		UI.fillHorizontal(comp);
+		UI.stretchX(comp);
 
 		Function<AllocationMethod, Selector> selector =
 			method -> Selector.of(method, props).render(comp, tk);
@@ -120,7 +120,7 @@ class CalculationDialog extends FormDialog {
 			};
 
 			var combo = UI.labeledCombo(comp, tk, title);
-			UI.fillHorizontal(combo);
+			UI.stretchX(combo);
 			var items = props
 				.stream()
 				.map(p -> p.name)

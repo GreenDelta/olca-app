@@ -69,7 +69,7 @@ public class EpdPanel extends SimpleFormEditor {
 			UI.gridLayout(downloadComp, 3);
 			UI.label(downloadComp, tk, M.UrlOrId);
 			var urlText = UI.labeledText(downloadComp, "", SWT.BORDER);
-			UI.fillHorizontal(urlText);
+			UI.stretchX(urlText);
 			var downloadBtn = UI.button(downloadComp, tk, M.Download);
 			Controls.onSelect(downloadBtn, $ -> {
 				var client = loginPanel.login().orElse(null);
@@ -83,10 +83,10 @@ public class EpdPanel extends SimpleFormEditor {
 			UI.gridData(section, true, true);
 			var comp = UI.sectionClient(section, tk, 1);
 			var searchComp = UI.composite(comp, tk);
-			UI.fillHorizontal(searchComp);
+			UI.stretchX(searchComp);
 			UI.gridLayout(searchComp, 4);
 			var searchText = UI.emptyText(searchComp, tk, SWT.BORDER);
-			UI.fillHorizontal(searchText);
+			UI.stretchX(searchText);
 			var searchButton = UI.button(searchComp, tk, M.Search);
 			searchButton.setImage(Icon.SEARCH.get());
 			UI.label(searchComp, tk, M.MaxCount);

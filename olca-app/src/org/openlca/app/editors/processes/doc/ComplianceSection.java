@@ -113,7 +113,7 @@ class ComplianceSection {
 		private void renderTop(Composite root) {
 			var comp = tk.createComposite(root);
 			UI.gridLayout(comp, 2, 10, 0);
-			UI.fillHorizontal(comp);
+			UI.stretchX(comp);
 
 			UI.label(comp, tk, M.ComplianceSystem);
 			ModelLink.of(Source.class)

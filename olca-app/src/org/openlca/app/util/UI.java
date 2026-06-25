@@ -1,6 +1,6 @@
 package org.openlca.app.util;
 
-import static org.openlca.util.OS.WINDOWS;
+import static org.openlca.util.OS.*;
 
 import java.io.File;
 import java.util.Calendar;
@@ -194,8 +194,19 @@ public class UI {
 		return data;
 	}
 
-	public static GridData fillHorizontal(Control control) {
-		return gridData(control, true, false);
+	public static GridData stretchX(Control control) {
+		var data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		data.widthHint = 1;
+		control.setLayoutData(data);
+		return data;
+	}
+
+	public static GridData stretchXY(Control control) {
+		var data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data.widthHint = 1;
+		data.heightHint = 1;
+		control.setLayoutData(data);
+		return data;
 	}
 
 	public static ScrolledForm header(ModelPage<?> page) {
@@ -534,7 +545,7 @@ public class UI {
 		if (label != null) {
 			text.setText(label);
 		}
-		fillHorizontal(text);
+		stretchX(text);
 		return text;
 	}
 
@@ -616,7 +627,7 @@ public class UI {
 		var text = tk != null
 				? tk.createText(comp, null, style)
 				: new Text(comp, style);
-		GridData gd = fillHorizontal(text);
+		GridData gd = stretchX(text);
 		gd.minimumHeight = heightHint;
 		gd.heightHint = heightHint;
 		return text;

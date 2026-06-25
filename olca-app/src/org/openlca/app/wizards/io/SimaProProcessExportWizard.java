@@ -102,7 +102,7 @@ public class SimaProProcessExportWizard
 			var generalGroup = new Group(body, SWT.NONE);
 			generalGroup.setText(M.GeneralExportSettings);
 			UI.gridLayout(generalGroup, 1);
-			UI.fillHorizontal(generalGroup);
+			UI.stretchX(generalGroup);
 
 			var categoryCheck = UI.checkbox(
 					generalGroup, M.UseMatchingTopCategoriesAsProcessTypes);
@@ -111,7 +111,7 @@ public class SimaProProcessExportWizard
 					$ -> withTopCategoryToType = categoryCheck.getSelection());
 
 			var mappingComp = UI.composite(generalGroup);
-			UI.fillHorizontal(mappingComp);
+			UI.stretchX(mappingComp);
 			UI.gridLayout(mappingComp, 3);
 			MappingSelector.on(flowMap -> this.flowMap = flowMap)
 					.render(mappingComp);
@@ -119,7 +119,7 @@ public class SimaProProcessExportWizard
 			// product names
 			var productGroup = new Group(body, SWT.NONE);
 			productGroup.setText(M.ExportedProductNames);
-			UI.fillHorizontal(productGroup);
+			UI.stretchX(productGroup);
 			UI.gridLayout(productGroup, 1);
 
 			var example = UI.label(

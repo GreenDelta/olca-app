@@ -118,7 +118,7 @@ class ExcelExportWizard extends Wizard {
 			createFileSelector(body);
 
 			var group = new Group(body, SWT.NONE);
-			UI.fillHorizontal(group);
+			UI.stretchX(group);
 			group.setText(M.ResultMatricesOptional);
 			UI.gridLayout(group, 1);
 			new Label(group, SWT.NONE).setText(M.MatricesExportTimeInfo);
@@ -175,7 +175,7 @@ class ExcelExportWizard extends Wizard {
 
 		private void createFileSelector(Composite body) {
 			var comp = new Composite(body, SWT.NONE);
-			UI.fillHorizontal(comp);
+			UI.stretchX(comp);
 			UI.gridLayout(comp, 3);
 
 			var text = UI.labeledText(comp, M.File, SWT.READ_ONLY);
@@ -183,7 +183,7 @@ class ExcelExportWizard extends Wizard {
 			if (file != null) {
 				text.setText(file.getName());
 			}
-			UI.fillHorizontal(text);
+			UI.stretchX(text);
 
 			var browse = new Button(comp, SWT.NONE);
 			browse.setText(M.Browse);

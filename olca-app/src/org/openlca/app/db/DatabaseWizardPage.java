@@ -55,7 +55,7 @@ class DatabaseWizardPage extends WizardPage {
 		gd.verticalAlignment = SWT.TOP;
 		gd.verticalIndent = 2;
 		var text = new Text(comp, SWT.BORDER);
-		UI.fillHorizontal(text);
+		UI.stretchX(text);
 		return text;
 	}
 

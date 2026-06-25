@@ -160,7 +160,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 					"Impact assessment results per category");
 			UI.gridLayout(comp, 1);
 			var top = tk.createComposite(comp);
-			UI.fillHorizontal(top);
+			UI.stretchX(top);
 			UI.gridLayout(top, 2);
 			UI.label(top, tk, M.ImpactCategory);
 			var impacts = result.impacts();
@@ -168,7 +168,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 			impactCombo.addSelectionChangedListener(e -> setChartData());
 
 			chart = new Chart(comp, SWT.NONE);
-			UI.fillHorizontal(chart).heightHint = 400;
+			UI.stretchX(chart).heightHint = 400;
 			chart.setOrientation(SWT.HORIZONTAL);
 			chart.getLegend().setVisible(false);
 

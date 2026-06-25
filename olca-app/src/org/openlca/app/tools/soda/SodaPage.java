@@ -73,13 +73,13 @@ class SodaPage extends FormPage {
 
 		UI.label(outer, tk, M.DataStock);
 		var inner = UI.composite(outer, tk);
-		UI.fillHorizontal(inner);
+		UI.stretchX(inner);
 		var grid = UI.gridLayout(inner, 2);
 		grid.marginWidth = 0;
 		grid.marginTop = 0;
 
 		var combo = new Combo(inner, SWT.READ_ONLY);
-		UI.fillHorizontal(combo);
+		UI.stretchX(combo);
 		var items = new String[con.stocks().size() + 1];
 		items[0] = M.UndefinedDefault;
 		int i = 1;

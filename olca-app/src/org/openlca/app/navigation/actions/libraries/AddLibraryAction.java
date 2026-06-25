@@ -92,7 +92,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			UI.gridLayout(body, 1);
 
 			var comp = tk.createComposite(body);
-			UI.fillHorizontal(comp);
+			UI.stretchX(comp);
 			UI.gridLayout(comp, 2);
 
 			var dbLibraries = db.getLibraries();

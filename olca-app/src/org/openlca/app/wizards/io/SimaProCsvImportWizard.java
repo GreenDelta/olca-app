@@ -134,7 +134,7 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			// config panel
 			var mappingComp = UI.composite(body);
 			UI.gridLayout(mappingComp, 3, 10, 5).marginBottom = 0;
-			UI.fillHorizontal(mappingComp);
+			UI.stretchX(mappingComp);
 			// flow mapping
 			MappingSelector.on(fm -> this.flowMap = fm)
 					.withSelectionPattern("(?i).*simapro*.import.*")
@@ -143,10 +143,10 @@ public class SimaProCsvImportWizard extends Wizard implements IImportWizard {
 			// options
 			var optComp = UI.composite(body);
 			UI.gridLayout(optComp, 1, 10, 5).marginTop = 0;
-			UI.fillHorizontal(optComp);
+			UI.stretchX(optComp);
 			var group = UI.group(optComp);
 			UI.gridLayout(group, 1, 5, 10);
-			UI.fillHorizontal(group);
+			UI.stretchX(group);
 			group.setText(M.Generate);
 			option(group, M.ProductSystemForLc,
 					createProductSystems);

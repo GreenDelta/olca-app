@@ -104,7 +104,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 
 			// file selector
 			var fileComp = UI.composite(body);
-			UI.fillHorizontal(fileComp);
+			UI.stretchX(fileComp);
 			UI.gridLayout(fileComp, 3).marginBottom = 0;
 			WizFileSelector.on(file -> {
 						json = file;
@@ -118,7 +118,7 @@ public class GeoJsonImportWizard extends Wizard implements IImportWizard {
 			// import modes
 			var groupComp = UI.composite(body);
 			UI.gridLayout(groupComp, 1).marginTop = 0;
-			UI.fillHorizontal(groupComp);
+			UI.stretchX(groupComp);
 			var group = UI.group(groupComp);
 			group.setText(M.ImportMode);
 			UI.gridData(group, true, false);

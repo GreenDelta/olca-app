@@ -255,7 +255,7 @@ public class ExportDialog extends FormDialog {
 				UI.filler(comp, tk);
 			} else {
 				var text = tk.createText(comp, "", SWT.BORDER);
-				UI.fillHorizontal(text);
+				UI.stretchX(text);
 				update(text);
 				text.addModifyListener($ -> update(text));
 				UI.label(comp, tk, "kg");

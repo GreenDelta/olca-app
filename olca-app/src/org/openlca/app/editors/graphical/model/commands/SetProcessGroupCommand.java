@@ -215,7 +215,7 @@ public class SetProcessGroupCommand extends Command {
 			UI.gridLayout(body, 1);
 
 			var groupComp = tk.createComposite(body);
-			UI.fillHorizontal(groupComp);
+			UI.stretchX(groupComp);
 			UI.gridLayout(groupComp, 2, 10, 0);
 
 			new GroupPanel(this, null).render(groupComp, tk);
@@ -289,7 +289,7 @@ public class SetProcessGroupCommand extends Command {
 				});
 
 				var comp = tk.createComposite(parent);
-				UI.fillHorizontal(comp);
+				UI.stretchX(comp);
 				UI.gridLayout(comp, group == null ? 1 : 3, 10, 1);
 
 				if (group == null) {
@@ -298,7 +298,7 @@ public class SetProcessGroupCommand extends Command {
 				}
 
 				var text = UI.text(comp, tk);
-				UI.fillHorizontal(text);
+				UI.stretchX(text);
 				if (group.name != null) {
 					text.setText(group.name);
 				}

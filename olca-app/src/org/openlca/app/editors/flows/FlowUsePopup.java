@@ -88,7 +88,7 @@ class FlowUsePopup extends FormDialog {
 
 		var searchText = UI.text(body, SWT.SEARCH);
 		searchText.setMessage(M.Filter);
-		UI.fillHorizontal(searchText);
+		UI.stretchX(searchText);
 
 		table = Tables.createViewer(body,
 				M.Process,

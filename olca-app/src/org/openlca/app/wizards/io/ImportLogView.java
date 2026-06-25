@@ -198,7 +198,7 @@ public class ImportLogView extends SimpleFormEditor {
 
 			var comp = UI.composite(body, tk);
 			UI.gridLayout(comp, 2);
-			UI.fillHorizontal(comp);
+			UI.stretchX(comp);
 
 			var icon = UI.imageHyperlink(comp, tk, SWT.BORDER);
 			icon.setToolTipText(M.ClickToSearchOrPressEnter);
@@ -207,10 +207,10 @@ public class ImportLogView extends SimpleFormEditor {
 
 			// search text
 			var searchComp = UI.composite(comp, tk);
-			UI.fillHorizontal(searchComp);
+			UI.stretchX(searchComp);
 			UI.gridLayout(searchComp, 2, 10, 0);
 			var searchText = UI.text(searchComp, tk, SWT.SEARCH);
-			UI.fillHorizontal(searchText);
+			UI.stretchX(searchText);
 			searchText.addModifyListener($ -> text = searchText.getText());
 			Controls.onReturn(searchText, $ -> update());
 

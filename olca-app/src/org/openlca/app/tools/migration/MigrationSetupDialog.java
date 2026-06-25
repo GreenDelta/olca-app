@@ -82,11 +82,8 @@ public class MigrationSetupDialog extends FormDialog {
 		UI.gridLayout(body, 1);
 
 		var dataGroup = UI.group(body, tk);
-		var gd = UI.gridData(dataGroup, true, true);
-		gd.heightHint = 1;
-		gd.widthHint = 1;
-
 		dataGroup.setText("Data for migration");
+		UI.stretchXY(dataGroup);
 		UI.gridLayout(dataGroup, 1);
 
 		var allProcessesBtn = UI.checkbox(dataGroup, tk,
@@ -107,7 +104,7 @@ public class MigrationSetupDialog extends FormDialog {
 		});
 
 		var targetGroup = UI.group(body, tk);
-		UI.fillHorizontal(targetGroup);
+		UI.stretchX(targetGroup);
 		targetGroup.setText("Target database");
 		UI.gridLayout(targetGroup, 1);
 

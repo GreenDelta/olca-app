@@ -57,7 +57,7 @@ class LoginDialog extends FormDialog {
 		var tk = form.getToolkit();
 		var body = UI.dialogBody(form.getForm(), tk);
 		var comp = tk.createComposite(body);
-		UI.fillHorizontal(comp);
+		UI.stretchX(comp);
 		UI.gridLayout(comp, 2);
 
 		var nodeCombo = SodaNodeCombo.create(comp, tk);

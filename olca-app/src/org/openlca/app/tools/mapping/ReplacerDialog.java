@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
@@ -49,6 +50,11 @@ class ReplacerDialog extends FormDialog {
 		setBlockOnOpen(true);
 		setBlockOnOpen(true);
 		this.conf = conf;
+	}
+
+	@Override
+	protected Point getInitialSize() {
+		return new Point(650, 500);
 	}
 
 	@Override

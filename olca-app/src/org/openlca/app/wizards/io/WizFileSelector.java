@@ -65,7 +65,7 @@ public class WizFileSelector {
 		if (selection != null) {
 			text.setText(selection.getName());
 		}
-		UI.fillHorizontal(text);
+		UI.stretchX(text);
 		var browse = new Button(comp, SWT.NONE);
 		browse.setText(M.Browse);
 		browse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));

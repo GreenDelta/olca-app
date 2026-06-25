@@ -138,7 +138,7 @@ public class ModelSelector extends FormDialog {
 
 		// filter label & instant search check
 		var labelComp = UI.composite(body, tk);
-		UI.fillHorizontal(labelComp);
+		UI.stretchX(labelComp);
 		UI.gridLayout(labelComp, 2, 10, 0);
 		var filterLabel = UI.label(labelComp, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());

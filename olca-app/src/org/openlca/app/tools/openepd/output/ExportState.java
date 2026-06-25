@@ -119,12 +119,12 @@ public record ExportState(State state, String id) {
 			var tk = mForm.getToolkit();
 			var body = UI.dialogBody(mForm.getForm(), tk);
 			var comp = tk.createComposite(body);
-			UI.fillHorizontal(comp);
+			UI.stretchX(comp);
 			UI.gridLayout(comp, 2);
 			tk.createLabel(comp, "").setImage(Icon.EC3_WIZARD.get());
 
 			var text = tk.createFormText(comp, false);
-			UI.fillHorizontal(text).widthHint = 400;
+			UI.stretchX(text).widthHint = 400;
 			var prefix = state.isCreated()
 				? M.UploadedNewEpdDraft
 				: M.UploadedAnExistingEpd;

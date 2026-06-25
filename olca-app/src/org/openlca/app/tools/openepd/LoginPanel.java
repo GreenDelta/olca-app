@@ -188,18 +188,18 @@ public class LoginPanel {
 			var tk = mForm.getToolkit();
 			var body = UI.dialogBody(mForm.getForm(), tk);
 			var outer = UI.composite(body, tk);
-			UI.fillHorizontal(outer);
+			UI.stretchX(outer);
 			UI.gridLayout(outer, 2);
 			UI.label(outer, tk, "").setImage(Icon.EC3_WIZARD.get());
 			var right = UI.composite(outer, tk);
-			UI.fillHorizontal(right);
+			UI.stretchX(right);
 			UI.gridLayout(right, 2, 10, 0);
 
 			var userTxt = UI.labeledText(right, tk, M.User);
-			UI.fillHorizontal(userTxt);
+			UI.stretchX(userTxt);
 			Controls.set(userTxt, credentials.user(), credentials::user);
 			var pwTxt = UI.labeledText(right, tk, M.Password, SWT.PASSWORD | SWT.BORDER);
-			UI.fillHorizontal(pwTxt);
+			UI.stretchX(pwTxt);
 			pwTxt.addModifyListener($ -> credentials.password(pwTxt.getText()));
 		}
 	}

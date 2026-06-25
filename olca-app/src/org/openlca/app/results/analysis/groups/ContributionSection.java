@@ -53,7 +53,7 @@ class ContributionSection {
 				.create(top, tk);
 
 		var sub = tk.createComposite(parent);
-		UI.fillHorizontal(sub);
+		UI.stretchX(sub);
 		UI.gridLayout(sub, 1);
 		table = Tables.createViewer(sub, "Group", "Result", "Unit");
 		Tables.bindColumnWidths2(table, 0.4, 0.4, 0.2);

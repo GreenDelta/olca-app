@@ -33,14 +33,14 @@ class SearchBar {
 		this.client = con.client();
 
 		var comp = tk.createComposite(parent);
-		UI.fillHorizontal(comp);
+		UI.stretchX(comp);
 		var grid = UI.gridLayout(comp, 8);
 		grid.marginWidth = 0;
 		grid.marginHeight = 0;
 
 		typeCombo = TypeCombo.create(comp, tk, con.hasEpds());
 		searchText = tk.createText(comp, "", SWT.BORDER);
-		UI.fillHorizontal(searchText);
+		UI.stretchX(searchText);
 		searchText.setMessage(M.SearchADataSetDots);
 
 		UI.label(comp, tk, M.Page + ": ");

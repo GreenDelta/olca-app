@@ -172,7 +172,7 @@ public class ConfigPage extends PreferencePage implements
 		gd.verticalIndent = 2;
 
 		memoryText = new Text(comp, SWT.BORDER);
-		UI.fillHorizontal(memoryText);
+		UI.stretchX(memoryText);
 		memoryText.setText(Integer.toString(iniFile.maxMemory()));
 		memoryText.addModifyListener(e -> setDirty());
 	}

@@ -78,7 +78,7 @@ public class ParameterAnalysisDialog extends FormDialog {
 		var body = UI.dialogBody(form.getForm(), tk);
 
 		var top = tk.createComposite(body);
-		UI.fillHorizontal(top);
+		UI.stretchX(top);
 		UI.gridLayout(top, 2);
 
 		UI.label(top, tk, M.ProductSystem);

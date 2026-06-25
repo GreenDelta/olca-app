@@ -118,7 +118,7 @@ public class ModelSelectionPage extends WizardPage {
 		var layout = UI.gridLayout(composite, 3);
 		layout.marginHeight = 0;
 		layout.marginWidth = 5;
-		UI.fillHorizontal(composite);
+		UI.stretchX(composite);
 		String label = targetIsDir ? M.ToDirectory : M.ToFile;
 		new Label(composite, SWT.NONE).setText(label);
 		Text text = createTargetText(composite);

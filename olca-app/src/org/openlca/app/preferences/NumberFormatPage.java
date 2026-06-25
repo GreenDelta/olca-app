@@ -79,7 +79,7 @@ public class NumberFormatPage extends PreferencePage implements
 		gd.verticalIndent = 2;
 
 		numberText = new Text(parent, SWT.BORDER);
-		UI.fillHorizontal(numberText);
+		UI.stretchX(numberText);
 		UI.gridData(numberText, false, false).widthHint = 80;
 		new DataBinding().onInt(() -> this, "accuracy", numberText);
 		numberText.addModifyListener((e) -> setSampleLabel());

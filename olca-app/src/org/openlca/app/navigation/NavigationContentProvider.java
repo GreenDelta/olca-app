@@ -18,7 +18,7 @@ public class NavigationContentProvider implements ICommonContentProvider {
 	public Object[] getChildren(Object parent) {
 		if (parent instanceof Collection)
 			return ((Collection<?>) parent).toArray();
-		if (!(parent instanceof INavigationElement e))
+		if (!(parent instanceof INavigationElement<?> e))
 			return new Object[0];
 		var childs = e.getChildren();
 		return childs == null
@@ -33,14 +33,14 @@ public class NavigationContentProvider implements ICommonContentProvider {
 
 	@Override
 	public Object getParent(Object element) {
-		if (element instanceof INavigationElement e)
+		if (element instanceof INavigationElement<?> e)
 			return e.getParent();
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren(Object element) {
-		if (!(element instanceof INavigationElement e))
+		if (!(element instanceof INavigationElement<?> e))
 			return false;
 		return e.hasChildren();
 	}

@@ -28,7 +28,7 @@ class DescriptorCombo {
 			Composite comp, FormToolkit tk, List<? extends Descriptor> descriptors
 	) {
 		var combo = UI.tableCombo(comp, tk, SWT.BORDER | SWT.READ_ONLY);
-		UI.fillHorizontal(combo);
+		UI.stretchX(combo);
 		var viewer = new TableComboViewer(combo);
 		viewer.setLabelProvider(new ComboLabel());
 		viewer.setContentProvider(ArrayContentProvider.getInstance());

@@ -98,7 +98,7 @@ class SdResultPage extends FormPage {
 
 		UI.label(comboComp, tk, "Variable");
 		var combo = new Combo(comboComp, SWT.READ_ONLY);
-		UI.fillHorizontal(combo);
+		UI.stretchX(combo);
 
 		var items = vars.stream()
 			.map(v -> v.name().label())
@@ -130,7 +130,7 @@ class SdResultPage extends FormPage {
 
 		UI.label(comboComp, tk, "Impact category");
 		var combo = new Combo(comboComp, SWT.READ_ONLY);
-		UI.fillHorizontal(combo);
+		UI.stretchX(combo);
 
 		var items = impacts.stream()
 			.map(i -> i.name)

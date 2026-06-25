@@ -141,13 +141,13 @@ public class HestiaTool extends SimpleFormEditor {
 			var comp = UI.sectionClient(section, tk, 1);
 
 			var searchComp = tk.createComposite(comp);
-			UI.fillHorizontal(searchComp);
+			UI.stretchX(searchComp);
 			var grid = UI.gridLayout(searchComp, 2);
 			grid.marginWidth = 0;
 			grid.marginHeight = 0;
 
 			searchText = tk.createText(searchComp, "", SWT.BORDER);
-			UI.fillHorizontal(searchText);
+			UI.stretchX(searchText);
 			searchText.setMessage("Search for datasets...");
 
 			var searchButton = tk.createButton(searchComp, M.Search, SWT.NONE);

@@ -49,8 +49,8 @@ public class MappingSelector {
 
 		// initialize the combo box
 		var combo = new Combo(comp, SWT.READ_ONLY);
-		UI.fillHorizontal(combo);
-		UI.fillHorizontal(comp);
+		UI.stretchX(combo);
+		UI.stretchX(comp);
 		var dbFiles = new MappingFileDao(db)
 				.getNames()
 				.stream()

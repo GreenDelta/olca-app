@@ -37,7 +37,7 @@ class ExportConfigPage extends WizardPage {
 		var g = new Group(body, SWT.NONE);
 		g.setText(M.GeneralExportSettings);
 		UI.gridLayout(g, 1);
-		UI.fillHorizontal(g);
+		UI.stretchX(g);
 
 		var defaultCheck = UI.checkbox(g,
 			"Autofill missing schema-required fields with default values");
@@ -66,7 +66,7 @@ class ExportConfigPage extends WizardPage {
 	private void productNameConfig(Composite body) {
 		var g = new Group(body, SWT.NONE);
 		g.setText(M.ExportedProductNames);
-		UI.fillHorizontal(g);
+		UI.stretchX(g);
 		UI.gridLayout(g, 1);
 
 		var example = UI.label(g, "Example: product {GLO} | process | U");

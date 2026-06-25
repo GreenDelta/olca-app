@@ -49,7 +49,7 @@ public class MemoryError {
 			UI.gridLayout(comp, 1);
 			var label = tk.createLabel(
 					comp, M.CouldNotAllocateMemoryError, SWT.WRAP);
-			UI.fillHorizontal(label);
+			UI.stretchX(label);
 			var link = UI.hyperLink(comp, tk, M.OpenPreferenceDialog);
 			Controls.onClick(link, $ -> openPreferences());
 		}

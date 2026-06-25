@@ -120,7 +120,7 @@ public class ExcelImportWizard extends Wizard implements IImportWizard {
 
 			var group = UI.group(body);
 			group.setText(M.WhenProcessWithId);
-			UI.fillHorizontal(group);
+			UI.stretchX(group);
 			UI.gridLayout(group, 1);
 			for (int i = 0; i < _updateMode.length; i++) {
 				int id = i;

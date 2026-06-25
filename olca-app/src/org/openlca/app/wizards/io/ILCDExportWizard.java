@@ -47,7 +47,7 @@ public class ILCDExportWizard extends Wizard implements IExportWizard {
 		page = ModelSelectionPage.forFile("zip", types)
 				.withExtension(parent -> {
 					var comp = UI.composite(parent);
-					UI.fillHorizontal(comp);
+					UI.stretchX(comp);
 					UI.gridLayout(comp, 3);
 					WizFileSelector.on((file) -> template = file)
 							.withExtensions("*.zip")
