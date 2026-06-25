@@ -17,7 +17,7 @@ import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
-import org.openlca.app.navigation.filters.FlowTypeFilter;
+import org.openlca.app.navigation.filters.ExcludeFlowsFilter;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
@@ -74,9 +74,9 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		private Composite labelStack;
 		private Composite contentStack;
 
-		private final FlowTypeFilter wasteFilter = new FlowTypeFilter(
+		private final ExcludeFlowsFilter wasteFilter = new ExcludeFlowsFilter(
 				FlowType.ELEMENTARY_FLOW, FlowType.PRODUCT_FLOW);
-		private final FlowTypeFilter productFilter = new FlowTypeFilter(
+		private final ExcludeFlowsFilter productFilter = new ExcludeFlowsFilter(
 				FlowType.ELEMENTARY_FLOW, FlowType.WASTE_FLOW);
 
 		protected Page() {

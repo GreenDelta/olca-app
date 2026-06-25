@@ -2,9 +2,9 @@ package org.openlca.app.navigation.filters;
 
 import org.openlca.core.model.FlowType;
 
-public final class ProductFlowFilter extends FlowTypeFilter {
+public final class NoProductFlowsFilter extends ExcludeFlowsFilter {
 
-	public ProductFlowFilter() {
+	public NoProductFlowsFilter() {
 		super(FlowType.PRODUCT_FLOW);
 	}
 

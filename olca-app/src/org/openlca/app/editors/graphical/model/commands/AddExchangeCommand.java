@@ -19,7 +19,7 @@ import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.navigation.elements.ModelElement;
-import org.openlca.app.navigation.filters.FlowTypeFilter;
+import org.openlca.app.navigation.filters.ExcludeFlowsFilter;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MsgBox;
@@ -120,11 +120,11 @@ public class AddExchangeCommand extends Command {
 		FlowType type = FlowType.PRODUCT_FLOW;
 		FlowProperty quantity;
 
-		private final FlowTypeFilter wasteFilter = new FlowTypeFilter(
+		private final ExcludeFlowsFilter wasteFilter = new ExcludeFlowsFilter(
 				FlowType.ELEMENTARY_FLOW, FlowType.PRODUCT_FLOW);
-		private final FlowTypeFilter productFilter = new FlowTypeFilter(
+		private final ExcludeFlowsFilter productFilter = new ExcludeFlowsFilter(
 				FlowType.ELEMENTARY_FLOW, FlowType.WASTE_FLOW);
-		private final FlowTypeFilter elemFilter = new FlowTypeFilter(
+		private final ExcludeFlowsFilter elemFilter = new ExcludeFlowsFilter(
 				FlowType.PRODUCT_FLOW, FlowType.WASTE_FLOW);
 
 		Dialog() {

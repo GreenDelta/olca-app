@@ -11,7 +11,7 @@ import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
-import org.openlca.app.navigation.filters.FlowTypeFilter;
+import org.openlca.app.navigation.filters.ExcludeFlowsFilter;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.Flow;
@@ -60,7 +60,7 @@ public class ResultWizard extends AbstractWizard<Result> {
 			this.flowTree = NavigationTree.forSingleSelection(
 				treeComp, ModelType.FLOW);
 			UI.gridData(flowTree.getTree(), true, true).heightHint = 200;
-			flowTree.addFilter(new FlowTypeFilter(FlowType.ELEMENTARY_FLOW));
+			flowTree.addFilter(new ExcludeFlowsFilter(FlowType.ELEMENTARY_FLOW));
 			flowTree.addFilter(new EmptyCategoryFilter());
 			flowTree.addFilter(new ModelTextFilter(flowText, flowTree));
 		}

@@ -94,10 +94,9 @@ public class MigrationSetupDialog extends FormDialog {
 		});
 
 		var entityTree = new ModelCheckBoxTree(
-			ModelType.PROJECT,
-			ModelType.PRODUCT_SYSTEM,
-			ModelType.IMPACT_METHOD);
-		entityTree.drawOn(dataGroup, tk);
+			ModelType.PROJECT, ModelType.PRODUCT_SYSTEM, ModelType.IMPACT_METHOD)
+			.withoutLibraries()
+			.drawOn(dataGroup, tk);
 		entityTree.onSelectionChanged(() -> {
 			config.setEntities(entityTree.getSelection());
 			updateOk();

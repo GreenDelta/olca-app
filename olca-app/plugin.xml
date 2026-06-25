@@ -710,19 +710,19 @@
 		</commonFilter>
 		<commonFilter
 				activeByDefault="false"
-				class="org.openlca.app.navigation.filters.ProductFlowFilter"
+				class="org.openlca.app.navigation.filters.NoProductFlowsFilter"
 				id="viewer.filter.productflow"
 				name="%ProductFlows">
 		</commonFilter>
 		<commonFilter
 				activeByDefault="false"
-				class="org.openlca.app.navigation.filters.ElementaryFlowFilter"
+				class="org.openlca.app.navigation.filters.NoElementaryFlowsFilter"
 				id="viewer.filter.elementaryflow"
 				name="%ElementaryFlows">
 		</commonFilter>
 		<commonFilter
 				activeByDefault="false"
-				class="org.openlca.app.navigation.filters.WasteFlowFilter"
+				class="org.openlca.app.navigation.filters.NoWasteFlowsFilter"
 				id="viewer.filter.wasteflow"
 				name="%WasteFlows">
 		</commonFilter>

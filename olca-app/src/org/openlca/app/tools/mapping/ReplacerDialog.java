@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -28,7 +27,7 @@ class ReplacerDialog extends FormDialog {
 	 * settings result in no possible replacements.
 	 */
 	static Optional<ReplacerConfig> open(
-			FlowMap mapping, FlowProvider target) {
+		FlowMap mapping, FlowProvider target) {
 		if (mapping == null || target == null)
 			return Optional.empty();
 		ReplacerConfig conf = new ReplacerConfig(mapping, target);
@@ -54,7 +53,7 @@ class ReplacerDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(650, 500);
+		return new Point(680, 500);
 	}
 
 	@Override
@@ -69,13 +68,12 @@ class ReplacerDialog extends FormDialog {
 		var tk = form.getToolkit();
 		var comp = UI.dialogBody(form.getForm(), tk);
 		UI.gridLayout(comp, 1, 10, 10);
-		UI.label(comp, tk, M.ThisWillReplaceFlowsInTheDb);
-		tree = new ModelCheckBoxTree(
-				ModelType.PROCESS,
-				ModelType.IMPACT_METHOD);
-		tree.drawOn(comp, tk);
-		Button delete = tk.createButton(
-				comp, M.DeleteReplacedAndUnusedFlows, SWT.CHECK);
+		UI.stretchX(UI.label(comp, tk, M.ThisWillReplaceFlowsInTheDb));
+		tree = new ModelCheckBoxTree(ModelType.PROCESS, ModelType.IMPACT_METHOD)
+			.withoutLibraries()
+			.drawOn(comp, tk);
+		var delete = tk.createButton(
+			comp, M.DeleteReplacedAndUnusedFlows, SWT.CHECK);
 		Controls.onSelect(delete,
 			_e -> conf.deleteMapped = delete.getSelection());
 	}
