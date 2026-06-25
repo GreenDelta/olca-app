@@ -40,6 +40,7 @@ final class MigrationPlanPage extends FormPage {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		createInfoSection(body, tk);
+		EntitySection.create(plan, body, tk);
 		createCopiesSection(body, tk);
 		MatchesSection.create(plan, body, tk);
 	}
@@ -53,7 +54,7 @@ final class MigrationPlanPage extends FormPage {
 		UI.label(comp, tk, config.target().getName());
 
 		UI.filler(comp, tk);
-		var button = UI.button(comp, tk, "Transfer");
+		var button = UI.button(comp, tk, "Run migration");
 		button.setImage(Icon.RUN.get());
 		Controls.onSelect(button, $ -> {
 			var b = Question.ask("Execute migration?",
