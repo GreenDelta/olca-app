@@ -78,9 +78,8 @@ class ContributionSection extends LabelProvider implements TableSection,
 		UI.filler(configComp, tk);
 
 		// add the search text and count selector
-		var searchText = UI.emptyText(configComp, tk);
+		var searchText = UI.searchText(configComp, tk);
 		searchText.setMessage(M.SearchAProcessDots);
-		UI.gridData(searchText, true, false);
 		searchText.addModifyListener($ -> {
 			query = searchText.getText();
 			updateRows();

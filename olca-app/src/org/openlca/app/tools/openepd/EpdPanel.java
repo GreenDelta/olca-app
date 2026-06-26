@@ -85,7 +85,7 @@ public class EpdPanel extends SimpleFormEditor {
 			var searchComp = UI.composite(comp, tk);
 			UI.stretchX(searchComp);
 			UI.gridLayout(searchComp, 4);
-			var searchText = UI.emptyText(searchComp, tk, SWT.BORDER);
+			var searchText = UI.text(searchComp, tk);
 			UI.stretchX(searchText);
 			var searchButton = UI.button(searchComp, tk, M.Search);
 			searchButton.setImage(Icon.SEARCH.get());

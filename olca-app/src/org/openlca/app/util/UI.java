@@ -578,20 +578,6 @@ public class UI {
 		return tk.createFormText(comp, trackFocus);
 	}
 
-	public static Text emptyText(Composite comp, FormToolkit tk) {
-		return emptyText(comp, tk, SWT.BORDER);
-	}
-
-	public static Text emptyText(Composite comp, FormToolkit tk, int style) {
-		return tk == null
-				? new Text(comp, style)
-				: tk.createText(comp, "", style);
-	}
-
-	public static Text emptyText(Composite comp, int style) {
-		return new Text(comp, style);
-	}
-
 	/**
 	 * Creates a multi text as one component.
 	 */
@@ -811,8 +797,7 @@ public class UI {
 		var inner = UI.composite(comp, tk);
 		UI.gridData(inner, true, false);
 		UI.gridLayout(inner, 2, 10, 0);
-		var fileText = UI.emptyText(inner, tk);
-		UI.gridData(fileText, true, false);
+		var fileText = UI.text(inner, tk);
 		fileText.setEditable(false);
 		var browse = UI.button(inner, tk, M.Browse);
 		Controls.onSelect(browse, _e -> {

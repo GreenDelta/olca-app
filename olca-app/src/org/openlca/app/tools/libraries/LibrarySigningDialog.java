@@ -21,6 +21,7 @@ import org.openlca.app.M;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LibraryCombo;
 import org.openlca.commons.Strings;
@@ -65,7 +66,7 @@ public class LibrarySigningDialog extends FormDialog {
 		UI.gridLayout(body, 2);
 		UI.gridData(body, true, false);
 		UI.label(body, tk, M.Library);
-		new LibraryCombo(body, tk, lib -> !License.of(lib.folder()).isPresent(), lib -> {
+		new LibraryCombo(body, tk, lib -> License.of(lib.folder()).isEmpty(), lib -> {
 			config.library = lib;
 			updateOkButton();
 		});
@@ -75,6 +76,11 @@ public class LibrarySigningDialog extends FormDialog {
 		});
 		UI.folderSelect(body, tk, M.CertificateDirectory, dir -> {
 			config.certificateDir = dir;
+			if (dir != null && !isValidCertificateDir(dir)) {
+				MsgBox.warning("Invalid certificate directory. The directory "
+						+ "must contain a '" + dir.getName() + ".crt' certificate file "
+						+ "and a 'private/" + dir.getName() + ".key' private key file.");
+			}
 			updateOkButton();
 		});
 		Controls.set(UI.labeledText(body, tk, M.Email), "", s -> {
@@ -101,9 +107,7 @@ public class LibrarySigningDialog extends FormDialog {
 		getButton(OK).setEnabled(false);
 		if (config.output == null)
 			return;
-		if (config.certificateDir == null
-				|| !config.certificateDir.exists()
-				|| !config.certificateDir.isDirectory())
+		if (!isValidCertificateDir(config.certificateDir))
 			return;
 		if (config.library == null)
 			return;
@@ -158,6 +162,17 @@ public class LibrarySigningDialog extends FormDialog {
 
 	}
 
+	private static boolean isValidCertificateDir(File dir) {
+		if (dir == null || !dir.exists() || !dir.isDirectory())
+			return false;
+		var crtFile = new File(dir, dir.getName() + ".crt");
+		if (!crtFile.exists() || !crtFile.isFile())
+			return false;
+		var privateDir = new File(dir, "private");
+		var keyFile = new File(privateDir, dir.getName() + ".key");
+		return keyFile.exists() && keyFile.isFile();
+	}
+
 	private static class Config {
 
 		private File output;
@@ -170,13 +185,13 @@ public class LibrarySigningDialog extends FormDialog {
 
 		private Person subject() {
 			return new Person(
-				name(), 
-				name(), 
-				country(), 
-				email, 
+				name(),
+				name(),
+				country(),
+				email,
 				"");
 		}
-		
+
 		private String name() {
 			if (Strings.isBlank(email))
 				return "";
@@ -187,14 +202,11 @@ public class LibrarySigningDialog extends FormDialog {
 
 		private String country() {
 			var locale = Locale.getDefault();
-			if (locale == null)
-				return "";
-			var country = locale.getCountry();
-			if (country == null)
-				return "";
-			return country;
+			return locale == null
+				? ""
+				: locale.getCountry();
 		}
-		
+
 		private String getDefaultName() {
 			return library != null ? library.name() + "-signed.zip" : null;
 
@@ -219,7 +231,5 @@ public class LibrarySigningDialog extends FormDialog {
 			cal.set(Calendar.MILLISECOND, 999);
 			return cal.getTime();
 		}
-
 	}
-
 }

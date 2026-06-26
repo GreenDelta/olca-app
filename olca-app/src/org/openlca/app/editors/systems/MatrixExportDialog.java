@@ -121,8 +121,7 @@ public class MatrixExportDialog extends FormDialog {
 		var inner = UI.composite(body, tk);
 		UI.gridData(inner, true, false);
 		UI.gridLayout(inner, 2, 5, 0);
-		var fileText = UI.emptyText(inner, tk);
-		UI.gridData(fileText, true, false);
+		var fileText = UI.text(inner, tk);
 		fileText.setEditable(false);
 		var browseBtn = UI.button(inner, tk, M.Browse);
 		Controls.onSelect(browseBtn, _e -> {

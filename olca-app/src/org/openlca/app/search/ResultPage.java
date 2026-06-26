@@ -76,7 +76,7 @@ class ResultPage extends FormPage {
 		filterLabel = UI.label(filterComposite, tk, "");
 		setFilterLabelText();
 		filterLabel.setFont(UI.boldFont());
-		Text text = UI.emptyText(filterComposite, tk);
+		Text text = UI.text(filterComposite, tk);
 		UI.gridData(text, false, false).widthHint = 350;
 		text.addModifyListener(e -> filterResults(text.getText()));
 	}

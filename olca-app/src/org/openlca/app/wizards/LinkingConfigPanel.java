@@ -1,6 +1,5 @@
 package org.openlca.app.wizards;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -62,7 +61,7 @@ class LinkingConfigPanel {
 		UI.stretchX(inner);
 		UI.gridLayout(inner, 2, 5, 0);
 		cutoffCheck = UI.checkbox(inner, M.Cutoff);
-		cutoffText = UI.emptyText(inner, SWT.BORDER);
+		cutoffText = UI.text(inner);
 		UI.gridData(cutoffText, false, false).widthHint = 100;
 	}
 

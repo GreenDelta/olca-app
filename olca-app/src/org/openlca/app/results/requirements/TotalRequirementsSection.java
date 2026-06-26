@@ -52,8 +52,7 @@ public class TotalRequirementsSection {
 		UI.gridData(searchComp, true, false);
 		UI.gridLayout(searchComp, 2, 10, 0);
 		UI.label(searchComp, tk, M.Search);
-		var searchText = UI.emptyText(searchComp, tk);
-		UI.gridData(searchText, true, false);
+		var searchText = UI.searchText(searchComp, tk);
 
 		var label = new LabelProvider(dqResult, costs);
 		tree = Trees.createViewer(comp, columnLabels(), label);
