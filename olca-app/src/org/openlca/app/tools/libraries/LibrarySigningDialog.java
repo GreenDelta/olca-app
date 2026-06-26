@@ -22,7 +22,6 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LibraryCombo;
-import org.openlca.commons.Strings;
 import org.openlca.core.library.LibraryPackage;
 import org.openlca.license.License;
 import org.openlca.license.Licensor;
@@ -69,34 +68,34 @@ public class LibrarySigningDialog extends FormDialog {
 
 		// output file selector
 		FileSelector.create(body, tk, M.TargetFile)
-				.onSelect(() -> {
-					var file = FileChooser.forSavingFile(
-						"Select the file where the signed library should be saved",
-						config.getDefaultName());
-					if (file == null)
-						return Optional.ofNullable(config.output);
-					config.output = file;
-					checkOk();
-					return Optional.of(file);
-				});
+			.onSelect(() -> {
+				var file = FileChooser.forSavingFile(
+					"Select the file where the signed library should be saved",
+					config.getDefaultName());
+				if (file == null)
+					return Optional.ofNullable(config.output);
+				config.output = file;
+				checkOk();
+				return Optional.of(file);
+			});
 
 		// selector for the certificate folder
 		FileSelector.create(body, tk, M.CertificateDirectory)
-				.onSelect(() -> {
-					var dir = FileChooser.selectFolder();
-					if (dir == null)
-						return Optional.ofNullable(config.certificateDir);
-					var res = SigningConfig.validateCertificateFolder(dir);
-					if (res.isError()) {
-						MsgBox.error("Invalid certificate directory",
-							"The folder you selected is not a valid certificate directors: "
-								+ res.error());
-						return Optional.ofNullable(config.certificateDir);
-					}
-					config.certificateDir = dir;
-					checkOk();
-					return Optional.of(dir);
-				});
+			.onSelect(() -> {
+				var dir = FileChooser.selectFolder();
+				if (dir == null)
+					return Optional.ofNullable(config.certificateDir);
+				var res = SigningConfig.validateCertificateFolder(dir);
+				if (res.isError()) {
+					MsgBox.error("Invalid certificate directory",
+						"The folder you selected is not a valid certificate directors: "
+							+ res.error());
+					return Optional.ofNullable(config.certificateDir);
+				}
+				config.certificateDir = dir;
+				checkOk();
+				return Optional.of(dir);
+			});
 
 		Controls.set(UI.labeledText(body, tk, M.Email), "", s -> {
 			config.email = s;
@@ -116,30 +115,10 @@ public class LibrarySigningDialog extends FormDialog {
 		});
 	}
 
-
-
 	private void checkOk() {
-		if (getButton(OK) == null)
-			return;
-		getButton(OK).setEnabled(false);
-		if (config.output == null)
-			return;
-
-		var res = SigningConfig.validateCertificateFolder(config.certificateDir);
-		if (res.isError())
-			return;
-
-		if (config.library == null)
-			return;
-		if (config.password == null || config.password.length < 6)
-			return;
-		if (Strings.isBlank(config.email))
-			return;
-		if (config.validFrom == null)
-			return;
-		if (config.validUntil == null || config.validUntil.before(config.validFrom))
-			return;
-		getButton(OK).setEnabled(true);
+		var btn = getButton(OK);
+		if (btn == null) return;
+		getButton(OK).setEnabled(config.isComplete());
 	}
 
 	@Override
@@ -172,7 +151,7 @@ public class LibrarySigningDialog extends FormDialog {
 				var tmp = Files.createTempFile("olca-lib", ".zip").toFile();
 				LibraryPackage.zip(config.library, tmp);
 				try (var input = new ZipInputStream(new FileInputStream(tmp));
-						var output = new ZipOutputStream(new FileOutputStream(config.output))) {
+				     var output = new ZipOutputStream(new FileOutputStream(config.output))) {
 					licensor.license(input, output, config.password, info);
 				}
 			} catch (Exception e) {

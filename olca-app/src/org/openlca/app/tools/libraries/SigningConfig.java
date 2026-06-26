@@ -20,6 +20,22 @@ class SigningConfig {
 	Date validFrom = Calendar.getInstance().getTime();
 	Date validUntil = Calendar.getInstance().getTime();
 
+	boolean isComplete() {
+		if (output == null)
+			return false;
+		if (validateCertificateFolder(certificateDir).isError())
+			return false;
+		if (library == null)
+			return false;
+		if (password == null || password.length < 6)
+			return false;
+		if (Strings.isBlank(email))
+			return false;
+		if (validFrom == null)
+			return false;
+		return validUntil != null && !validUntil.before(validFrom);
+	}
+
 	Person subject() {
 		return new Person(
 			name(),
