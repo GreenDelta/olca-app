@@ -3,7 +3,6 @@ package org.openlca.app.tools.libraries;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -14,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.components.FileChooser;
@@ -52,23 +52,27 @@ public class LibrarySigningDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(600, 450);
+		return new Point(800, 600);
 	}
 
 	@Override
 	protected void createFormContent(IManagedForm form) {
 		var tk = form.getToolkit();
 		var body = UI.dialogBody(form.getForm(), tk);
-		UI.gridLayout(body, 2);
-		UI.gridData(body, true, false);
-		UI.label(body, tk, M.Library);
-		new LibraryCombo(body, tk, lib -> License.of(lib.folder()).isEmpty(), lib -> {
+		UI.gridLayout(body, 1);
+		createLibrarySection(body, tk);
+		createOwnerSection(body, tk);
+	}
+
+	private void createLibrarySection(Composite body, FormToolkit tk) {
+		var comp = UI.formSection(body, tk, "Licensed library");
+		UI.label(comp, tk, M.Library);
+		new LibraryCombo(comp, tk, lib -> License.of(lib.folder()).isEmpty(), lib -> {
 			config.library = lib;
 			checkOk();
 		});
 
-		// output file selector
-		FileSelector.create(body, tk, M.TargetFile)
+		FileSelector.create(comp, tk, "Output file")
 			.onSelect(() -> {
 				var file = FileChooser.forSavingFile(
 					"Select the file where the signed library should be saved",
@@ -80,8 +84,7 @@ public class LibrarySigningDialog extends FormDialog {
 				return Optional.of(file);
 			});
 
-		// selector for the certificate folder
-		FileSelector.create(body, tk, M.CertificateDirectory)
+		FileSelector.create(comp, tk, "Vendor certificate")
 			.onSelect(() -> {
 				var dir = FileChooser.selectFolder();
 				if (dir == null)
@@ -98,43 +101,47 @@ public class LibrarySigningDialog extends FormDialog {
 				return Optional.of(dir);
 			});
 
-		Controls.set(UI.labeledText(body, tk, M.Email), "", s -> {
-			config.email = s;
-			checkOk();
-		});
-
-		Controls.set(UI.labeledText(body, tk, "Full name"), "", s -> {
-			config.fullName = s;
-			checkOk();
-		});
-
-		Controls.set(UI.labeledText(body, tk, "Country code"),
-			Locale.getDefault().getCountry(), s -> {
-				config.country = s;
-				checkOk();
-			});
-
-		Controls.set(UI.labeledText(body, tk, "Organisation"), "", s -> {
-			config.organisation = s;
-			checkOk();
-		});
-
-		Controls.set(UI.labeledText(body, tk, M.Password, SWT.PASSWORD), "", s -> {
+		Controls.set(UI.labeledText(comp, tk, M.Password, SWT.PASSWORD), "", s -> {
 			config.password = s;
 			checkOk();
 		});
-
-		Controls.set(UI.labeledText(body, tk, "Confirm password", SWT.PASSWORD), "", s -> {
+		Controls.set(UI.labeledText(comp, tk, "Confirm password", SWT.PASSWORD), "", s -> {
 			config.passwordConfirm = s;
 			checkOk();
 		});
 
-		UI.date(body, tk, M.StartDate, config.validFrom, date -> {
+		UI.filler(comp, tk);
+		var timeComp = UI.composite(comp, tk);
+		UI.stretchX(timeComp);
+		UI.gridLayout(timeComp, 4, 10, 0);
+		UI.date(timeComp, tk, "Valid from", config.validFrom, date -> {
 			config.validFrom = date;
 			checkOk();
 		});
-		UI.date(body, tk, M.EndDate, config.validUntil, date -> {
+		UI.date(timeComp, tk, "Valid until", config.validUntil, date -> {
 			config.validUntil = date;
+			checkOk();
+		});
+	}
+
+	private void createOwnerSection(Composite body, FormToolkit tk) {
+		var comp = UI.formSection(body, tk, "License owner");
+		Controls.set(UI.labeledText(comp, tk, "Full name"), "", s -> {
+			config.fullName = s;
+			checkOk();
+		});
+		Controls.set(UI.labeledText(comp, tk, M.Email), "", s -> {
+			config.email = s;
+			checkOk();
+		});
+
+		config.country = System.getProperty("user.country");
+		Controls.set(UI.labeledText(comp, tk, "Country code"), config.country, s -> {
+			config.country = s;
+			checkOk();
+		});
+		Controls.set(UI.labeledText(comp, tk, "Organisation"), "", s -> {
+			config.organisation = s;
 			checkOk();
 		});
 	}
