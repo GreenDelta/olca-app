@@ -62,7 +62,7 @@ public class LibraryDialog extends FormDialog {
 		});
 		fileCheck = createCheckboxSection(parent, tk, M.FromFile, Mode.FILE, (composite, check) -> {
 			UI.gridLayout(composite, 2);
-			var text = UI.text(composite, tk, SWT.READ_ONLY | SWT.BORDER);
+			var text = UI.text(composite, tk, SWT.READ_ONLY);
 			text.addFocusListener(FocusListener.focusGainedAdapter(e -> select(check, text)));
 			UI.gridData(text, true, false);
 			var browseButton = UI.button(composite, tk);

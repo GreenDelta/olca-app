@@ -4,7 +4,6 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -141,7 +140,7 @@ public class AddExchangeCommand extends Command {
 			// create new text
 			var nameLabel = UI.label(body, tk, M.CreateANewFlow);
 			nameLabel.setFont(UI.boldFont());
-			text = UI.text(body, SWT.NONE);
+			text = UI.text(body);
 			text.addModifyListener(e -> {
 				var name = text.getText().trim();
 				getButton(_CREATE).setEnabled(Strings.isNotBlank(name));

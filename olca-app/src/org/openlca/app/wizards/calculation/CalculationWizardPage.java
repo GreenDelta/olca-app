@@ -229,7 +229,7 @@ class CalculationWizardPage extends WizardPage {
 		UI.gridLayout(inner, 2, 10, 0);
 		var label = UI.label(inner, M.NumberOfIterations);
 		UI.gridData(label, false, false);
-		var countText = UI.text(inner, SWT.BORDER);
+		var countText = UI.text(inner);
 		UI.gridData(countText, false, false).widthHint = 80;
 
 		countText.setText(Integer.toString(setup.simulationRuns));

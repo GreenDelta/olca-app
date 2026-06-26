@@ -209,7 +209,7 @@ public class ImportLogView extends SimpleFormEditor {
 			var searchComp = UI.composite(comp, tk);
 			UI.stretchX(searchComp);
 			UI.gridLayout(searchComp, 2, 10, 0);
-			var searchText = UI.text(searchComp, tk, SWT.SEARCH);
+			var searchText = UI.searchText(searchComp, tk);
 			UI.stretchX(searchText);
 			searchText.addModifyListener($ -> text = searchText.getText());
 			Controls.onReturn(searchText, $ -> update());

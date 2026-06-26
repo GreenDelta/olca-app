@@ -13,7 +13,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -171,7 +170,7 @@ public class ParameterRedefDialog extends FormDialog {
 		UI.gridLayout(body, 1);
 		var filterLabel = UI.label(body, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
-		filterText = UI.text(body, SWT.SEARCH);
+		filterText = UI.searchText(body, tk);
 		filterText.addModifyListener(e -> viewer.refresh());
 
 		Section section = UI.section(body, tk, M.Parameters);

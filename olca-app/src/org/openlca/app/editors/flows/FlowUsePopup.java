@@ -8,7 +8,6 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -86,7 +85,7 @@ class FlowUsePopup extends FormDialog {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
 
-		var searchText = UI.text(body, SWT.SEARCH);
+		var searchText = UI.searchText(body, tk);
 		searchText.setMessage(M.Filter);
 		UI.stretchX(searchText);
 

@@ -9,7 +9,6 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
@@ -91,7 +90,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 			// create new text
 			var nameLabel = UI.label(body, tk, M.CreateWithName);
 			nameLabel.setFont(UI.boldFont());
-			text = UI.text(body, SWT.NONE);
+			text = UI.text(body);
 			text.addModifyListener(e -> {
 				var name = text.getText().trim();
 				getButton(_CREATE).setEnabled(Strings.isNotBlank(name));

@@ -520,46 +520,23 @@ public class UI {
 		return button;
 	}
 
-	/**
-	 * Creates a text as one component.
-	 */
-	public static Text text(Composite comp, int style) {
-		return text(comp, null, null, style | SWT.BORDER);
+	public static Text searchText(Composite comp, FormToolkit tk) {
+		return text(comp, tk, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 	}
 
-	/**
-	 * Creates a text as one component.
-	 */
 	public static Text text(Composite comp) {
-		return text(comp, null, null, SWT.BORDER);
-	}
-
-	/**
-	 * Creates a text as one component.
-	 */
-	public static Text text(Composite comp, String label) {
-		return text(comp, null, label, SWT.BORDER);
+		return text(comp, null, SWT.NONE);
 	}
 
 	public static Text text(Composite comp, FormToolkit tk) {
-		return text(comp, tk, null, SWT.BORDER);
+		return text(comp, tk, SWT.NONE);
 	}
 
 	public static Text text(Composite comp, FormToolkit tk, int style) {
-		return text(comp, tk, null, style | SWT.BORDER);
-	}
-
-	/**
-	 * Creates a text as one component.
-	 */
-	public static Text text(Composite comp, FormToolkit tk, String label,
-			int style) {
+		int withBorder = style | SWT.BORDER;
 		var text = tk != null
-				? tk.createText(comp, null, style)
-				: new Text(comp, style);
-		if (label != null) {
-			text.setText(label);
-		}
+				? tk.createText(comp, null, withBorder)
+				: new Text(comp, withBorder);
 		stretchX(text);
 		return text;
 	}
@@ -593,7 +570,7 @@ public class UI {
 			int style) {
 		var lab = label(comp, tk, label);
 		gridData(lab, false, false);
-		return text(comp, tk, null, style);
+		return text(comp, tk, style);
 	}
 
 	public static FormText formText(Composite comp, FormToolkit tk,

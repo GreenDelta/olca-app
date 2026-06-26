@@ -1,5 +1,8 @@
 package org.openlca.app.editors.sd.editor.graph.actions.sysdialog;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -14,9 +17,6 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.Id;
 import org.openlca.sd.model.SdModel;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 class VarPanel {
 
@@ -55,7 +55,7 @@ class VarPanel {
 	}
 
 	private void createSearchText(Composite comp, FormToolkit tk) {
-		var text = UI.text(comp, tk, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		var text = UI.searchText(comp, tk);
 		UI.gridData(text, true, false);
 		text.setMessage("Search");
 		text.addModifyListener(e -> doSearch(text.getText()));

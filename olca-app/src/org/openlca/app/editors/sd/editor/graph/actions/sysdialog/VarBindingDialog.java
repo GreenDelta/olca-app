@@ -1,5 +1,11 @@
 package org.openlca.app.editors.sd.editor.graph.actions.sysdialog;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -28,12 +34,6 @@ import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.SystemBinding;
 import org.openlca.sd.model.VarBinding;
 import org.openlca.util.ParameterRedefSets;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class VarBindingDialog extends FormDialog {
 
@@ -149,8 +149,7 @@ public class VarBindingDialog extends FormDialog {
 
 		UI.label(comp, tk, "System parameter");
 
-		var paramsFilter = UI.text(
-			comp, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		var paramsFilter = UI.searchText(comp, tk);
 		UI.gridData(paramsFilter, true, false);
 		paramsFilter.setMessage("Search");
 		paramsFilter.addModifyListener(

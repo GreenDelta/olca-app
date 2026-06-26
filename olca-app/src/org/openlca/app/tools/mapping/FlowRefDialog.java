@@ -79,7 +79,7 @@ class FlowRefDialog extends FormDialog {
 		UI.gridData(filterComp, true, false);
 		var filterLabel = UI.label(filterComp, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
-		var filterText = UI.text(filterComp, SWT.SEARCH);
+		var filterText = UI.searchText(filterComp, tk);
 		UI.gridData(filterText, true, false);
 
 		var viewer = new TreeViewer(body,

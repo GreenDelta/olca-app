@@ -92,14 +92,14 @@ public class ModelSelector extends FormDialog {
 	/// Returns the first element from the selection if available, otherwise, it
 	/// returns `null`.
 	public RootDescriptor first() {
-		return selection != null || !selection.isEmpty()
+		return selection != null && !selection.isEmpty()
 			? selection.getFirst()
 			: null;
 	}
 
 	/// Returns all selected elements as list.
 	public List<RootDescriptor> all() {
-		return selection != null || !selection.isEmpty()
+		return selection != null && !selection.isEmpty()
 			? new ArrayList<>(selection)
 			: List.of();
 	}
@@ -145,7 +145,7 @@ public class ModelSelector extends FormDialog {
 		var instantCheck = UI.checkbox(labelComp, tk, "Instant search");
 		instantCheck.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
-		var text = UI.text(body, SWT.SEARCH);
+		var text = UI.searchText(body, tk);
 
 		// tree section
 		var section = UI.section(body, tk, M.Content);

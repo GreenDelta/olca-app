@@ -1,5 +1,11 @@
 package org.openlca.app.editors.sd.editor.graph.actions.vardialog;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
@@ -22,12 +28,6 @@ import org.openlca.sd.model.Id;
 import org.openlca.sd.model.Rate;
 import org.openlca.sd.model.SdModel;
 import org.openlca.sd.model.Stock;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 class StockFlowPanel {
 
@@ -157,8 +157,7 @@ class StockFlowPanel {
 			var body = UI.dialogBody(mForm.getForm(), tk);
 			UI.gridLayout(body, 1);
 
-			var filter = UI.text(
-				body, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+			var filter = UI.searchText(body, tk);
 			UI.gridData(filter, true, false);
 			filter.setMessage(M.Filter);
 			filter.addModifyListener(e -> {

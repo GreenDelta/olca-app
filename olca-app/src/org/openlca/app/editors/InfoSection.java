@@ -106,8 +106,8 @@ public class InfoSection {
 		if (entity.refId != null) {
 			UI.label(versionComp, tk, " ");
 			UI.label(versionComp, tk, "UUID");
-			var uuidText = UI.text(versionComp, null, entity.refId,
-					SWT.READ_ONLY);
+			var uuidText = UI.text(versionComp, tk, SWT.READ_ONLY);
+			uuidText.setText(entity.refId);
 			uuidText.setBackground(versionComp.getBackground());
 			var gridData = new GridData(GridData.FILL_HORIZONTAL);
 			uuidText.setLayoutData(gridData);
@@ -344,7 +344,7 @@ public class InfoSection {
 			UI.gridData(textComp, true, false);
 			var label = UI.label(textComp, tk, M.NewTag);
 			label.setFont(UI.boldFont());
-			text = UI.text(textComp, SWT.SEARCH);
+			text = UI.searchText(textComp, tk);
 			UI.gridData(text, true, false);
 
 			// list with existing tags

@@ -88,7 +88,7 @@ public class ParameterWizard extends AbstractWizard<Parameter> {
 			UI.gridData(formulaLabels, true, false);
 			formulaLabels.initControls(UI.label(formulaLabels, M.Amount),
 					UI.label(formulaLabels, M.Formula));
-			formulaText = UI.text(container, SWT.NONE);
+			formulaText = UI.text(container);
 			formulaText.addModifyListener((e) -> checkInput());
 		}
 
