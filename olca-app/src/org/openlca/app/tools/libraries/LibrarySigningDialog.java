@@ -1,12 +1,8 @@
 package org.openlca.app.tools.libraries;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -27,19 +23,17 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.LibraryCombo;
 import org.openlca.commons.Strings;
-import org.openlca.core.library.Library;
 import org.openlca.core.library.LibraryPackage;
 import org.openlca.license.License;
 import org.openlca.license.Licensor;
-import org.openlca.license.certificate.Person;
 
 public class LibrarySigningDialog extends FormDialog {
 
-	private final Config config;
+	private final SigningConfig config;
 
 	private LibrarySigningDialog() {
 		super(UI.shell());
-		this.config = new Config();
+		this.config = new SigningConfig();
 	}
 
 	public static void show() {
@@ -70,7 +64,7 @@ public class LibrarySigningDialog extends FormDialog {
 		UI.label(body, tk, M.Library);
 		new LibraryCombo(body, tk, lib -> License.of(lib.folder()).isEmpty(), lib -> {
 			config.library = lib;
-			updateOkButton();
+			checkOk();
 		});
 
 		// output file selector
@@ -79,59 +73,71 @@ public class LibrarySigningDialog extends FormDialog {
 					var file = FileChooser.forSavingFile(
 						"Select the file where the signed library should be saved",
 						config.getDefaultName());
+					if (file == null)
+						return Optional.ofNullable(config.output);
 					config.output = file;
-					updateOkButton();
-					return Optional.ofNullable(file);
+					checkOk();
+					return Optional.of(file);
 				});
 
 		// selector for the certificate folder
+		FileSelector.create(body, tk, M.CertificateDirectory)
+				.onSelect(() -> {
+					var dir = FileChooser.selectFolder();
+					if (dir == null)
+						return Optional.ofNullable(config.certificateDir);
+					var res = SigningConfig.validateCertificateFolder(dir);
+					if (res.isError()) {
+						MsgBox.error("Invalid certificate directory",
+							"The folder you selected is not a valid certificate directors: "
+								+ res.error());
+						return Optional.ofNullable(config.certificateDir);
+					}
+					config.certificateDir = dir;
+					checkOk();
+					return Optional.of(dir);
+				});
 
-		UI.folderSelect(body, tk, M.CertificateDirectory, dir -> {
-			config.certificateDir = dir;
-			if (dir != null && !isValidCertificateDir(dir)) {
-				MsgBox.warning("Invalid certificate directory. The directory "
-						+ "must contain a '" + dir.getName() + ".crt' certificate file "
-						+ "and a 'private/" + dir.getName() + ".key' private key file.");
-			}
-			updateOkButton();
-		});
 		Controls.set(UI.labeledText(body, tk, M.Email), "", s -> {
 			config.email = s;
-			updateOkButton();
+			checkOk();
 		});
 		Controls.set(UI.labeledText(body, tk, M.Password, SWT.PASSWORD | SWT.BORDER), "", s -> {
 			config.password = s.toCharArray();
-			updateOkButton();
+			checkOk();
 		});
-		UI.date(body, tk, M.StartDate, config.notBefore, date -> {
-			config.notBefore = date;
-			updateOkButton();
+		UI.date(body, tk, M.StartDate, config.validFrom, date -> {
+			config.validFrom = date;
+			checkOk();
 		});
-		UI.date(body, tk, M.EndDate, config.notAfter, date -> {
-			config.notAfter = date;
-			updateOkButton();
+		UI.date(body, tk, M.EndDate, config.validUntil, date -> {
+			config.validUntil = date;
+			checkOk();
 		});
 	}
 
 
 
-	private void updateOkButton() {
+	private void checkOk() {
 		if (getButton(OK) == null)
 			return;
 		getButton(OK).setEnabled(false);
 		if (config.output == null)
 			return;
-		if (!isValidCertificateDir(config.certificateDir))
+
+		var res = SigningConfig.validateCertificateFolder(config.certificateDir);
+		if (res.isError())
 			return;
+
 		if (config.library == null)
 			return;
 		if (config.password == null || config.password.length < 6)
 			return;
 		if (Strings.isBlank(config.email))
 			return;
-		if (config.notBefore == null)
+		if (config.validFrom == null)
 			return;
-		if (config.notAfter == null || config.notAfter.before(config.notBefore))
+		if (config.validUntil == null || config.validUntil.before(config.validFrom))
 			return;
 		getButton(OK).setEnabled(true);
 	}
@@ -174,76 +180,5 @@ public class LibrarySigningDialog extends FormDialog {
 			}
 		}
 
-	}
-
-	private static boolean isValidCertificateDir(File dir) {
-		if (dir == null || !dir.exists() || !dir.isDirectory())
-			return false;
-		var crtFile = new File(dir, dir.getName() + ".crt");
-		if (!crtFile.exists() || !crtFile.isFile())
-			return false;
-		var privateDir = new File(dir, "private");
-		var keyFile = new File(privateDir, dir.getName() + ".key");
-		return keyFile.exists() && keyFile.isFile();
-	}
-
-	private static class Config {
-
-		private File output;
-		private File certificateDir;
-		private Library library;
-		private String email;
-		private char[] password;
-		private Date notBefore = Calendar.getInstance().getTime();
-		private Date notAfter = Calendar.getInstance().getTime();
-
-		private Person subject() {
-			return new Person(
-				name(),
-				name(),
-				country(),
-				email,
-				"");
-		}
-
-		private String name() {
-			if (Strings.isBlank(email))
-				return "";
-			if (!email.contains("@"))
-				return email;
-			return email.substring(0, email.indexOf("@"));
-		}
-
-		private String country() {
-			var locale = Locale.getDefault();
-			return locale == null
-				? ""
-				: locale.getCountry();
-		}
-
-		private String getDefaultName() {
-			return library != null ? library.name() + "-signed.zip" : null;
-
-		}
-
-		private Date notBefore() {
-			var cal = Calendar.getInstance();
-			cal.setTime(notBefore);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 0);
-			cal.set(Calendar.MILLISECOND, 0);
-			return cal.getTime();
-		}
-
-		private Date notAfter() {
-			var cal = Calendar.getInstance();
-			cal.setTime(notAfter);
-			cal.set(Calendar.HOUR_OF_DAY, 23);
-			cal.set(Calendar.MINUTE, 59);
-			cal.set(Calendar.SECOND, 59);
-			cal.set(Calendar.MILLISECOND, 999);
-			return cal.getTime();
-		}
 	}
 }

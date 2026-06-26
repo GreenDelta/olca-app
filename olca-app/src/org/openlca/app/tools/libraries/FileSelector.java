@@ -14,7 +14,6 @@ import org.openlca.app.util.UI;
 class FileSelector {
 
 	private final Text text;
-	private File file;
 	private Supplier<Optional<File>> handler;
 
 	private FileSelector(Text text) {
@@ -43,13 +42,9 @@ class FileSelector {
 		this.handler = handler;
 	}
 
-	Optional<File> getSelection() {
-		return Optional.ofNullable(file);
-	}
-
 	private void handleClick() {
 		if (handler == null) return;
-		file = handler.get().orElse(null);
+		var file = handler.get().orElse(null);
 		if (file == null) {
 			text.setText("");
 		} else {
