@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -18,6 +19,7 @@ import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
+import org.openlca.app.components.FileChooser;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
@@ -70,10 +72,20 @@ public class LibrarySigningDialog extends FormDialog {
 			config.library = lib;
 			updateOkButton();
 		});
-		UI.fileSelectSave(body, tk, M.TargetFile, ".zip", config::getDefaultName, file -> {
-			config.output = file;
-			updateOkButton();
-		});
+
+		// output file selector
+		FileSelector.create(body, tk, M.TargetFile)
+				.onSelect(() -> {
+					var file = FileChooser.forSavingFile(
+						"Select the file where the signed library should be saved",
+						config.getDefaultName());
+					config.output = file;
+					updateOkButton();
+					return Optional.ofNullable(file);
+				});
+
+		// selector for the certificate folder
+
 		UI.folderSelect(body, tk, M.CertificateDirectory, dir -> {
 			config.certificateDir = dir;
 			if (dir != null && !isValidCertificateDir(dir)) {
@@ -100,6 +112,8 @@ public class LibrarySigningDialog extends FormDialog {
 			updateOkButton();
 		});
 	}
+
+
 
 	private void updateOkButton() {
 		if (getButton(OK) == null)

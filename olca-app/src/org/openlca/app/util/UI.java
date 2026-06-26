@@ -2,13 +2,11 @@ package org.openlca.app.util;
 
 import static org.openlca.util.OS.*;
 
-import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.IShellProvider;
@@ -54,8 +52,6 @@ import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.openlca.app.M;
-import org.openlca.app.components.FileChooser;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelPage;
 import org.openlca.app.editors.comments.CommentAction;
@@ -777,38 +773,6 @@ public class UI {
 		return text;
 	}
 
-	public static void folderSelect(Composite comp, FormToolkit tk, String label, Consumer<File> onSelect) {
-		fileSelect(comp, tk, label, FileChooser::selectFolder, onSelect);
-	}
-
-	public static void fileSelectOpen(Composite comp, FormToolkit tk, String label, String fileExtension,
-			Consumer<File> onSelect) {
-		fileSelect(comp, tk, label, () -> FileChooser.open(fileExtension), onSelect);
-	}
-
-	public static void fileSelectSave(Composite comp, FormToolkit tk, String label, String fileExtension,
-			Supplier<String> defaultName, Consumer<File> onSelect) {
-		fileSelect(comp, tk, label, () -> FileChooser.forSavingFile(null, defaultName.get()), onSelect);
-	}
-
-	private static void fileSelect(Composite comp, FormToolkit tk, String label, Supplier<File> selectFile,
-			Consumer<File> onSelect) {
-		UI.label(comp, tk, label);
-		var inner = UI.composite(comp, tk);
-		UI.gridData(inner, true, false);
-		UI.gridLayout(inner, 2, 10, 0);
-		var fileText = UI.text(inner, tk);
-		fileText.setEditable(false);
-		var browse = UI.button(inner, tk, M.Browse);
-		Controls.onSelect(browse, _e -> {
-			var file = selectFile.get();
-			var text = file != null
-					? file.getAbsolutePath()
-					: "";
-			fileText.setText(text);
-			onSelect.accept(file);
-		});
-	}
 
 	public static DateTime date(Composite comp, FormToolkit tk, String label, Date value, Consumer<Date> onSelect) {
 		UI.label(comp, tk, label);
