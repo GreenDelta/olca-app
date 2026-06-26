@@ -3,6 +3,7 @@ package org.openlca.app.tools.libraries;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -101,10 +102,33 @@ public class LibrarySigningDialog extends FormDialog {
 			config.email = s;
 			checkOk();
 		});
-		Controls.set(UI.labeledText(body, tk, M.Password, SWT.PASSWORD | SWT.BORDER), "", s -> {
-			config.password = s.toCharArray();
+
+		Controls.set(UI.labeledText(body, tk, "Full name"), "", s -> {
+			config.fullName = s;
 			checkOk();
 		});
+
+		Controls.set(UI.labeledText(body, tk, "Country code"),
+			Locale.getDefault().getCountry(), s -> {
+				config.country = s;
+				checkOk();
+			});
+
+		Controls.set(UI.labeledText(body, tk, "Organisation"), "", s -> {
+			config.organisation = s;
+			checkOk();
+		});
+
+		Controls.set(UI.labeledText(body, tk, M.Password, SWT.PASSWORD), "", s -> {
+			config.password = s;
+			checkOk();
+		});
+
+		Controls.set(UI.labeledText(body, tk, "Confirm password", SWT.PASSWORD), "", s -> {
+			config.passwordConfirm = s;
+			checkOk();
+		});
+
 		UI.date(body, tk, M.StartDate, config.validFrom, date -> {
 			config.validFrom = date;
 			checkOk();
@@ -152,7 +176,7 @@ public class LibrarySigningDialog extends FormDialog {
 				LibraryPackage.zip(config.library, tmp);
 				try (var input = new ZipInputStream(new FileInputStream(tmp));
 				     var output = new ZipOutputStream(new FileOutputStream(config.output))) {
-					licensor.license(input, output, config.password, info);
+					licensor.license(input, output, config.password.toCharArray(), info);
 				}
 			} catch (Exception e) {
 				this.e = e;

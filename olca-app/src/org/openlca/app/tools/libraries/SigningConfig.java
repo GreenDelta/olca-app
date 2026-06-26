@@ -16,7 +16,11 @@ class SigningConfig {
 	File certificateDir;
 	Library library;
 	String email;
-	char[] password;
+	String fullName;
+	String organisation;
+	String country;
+	String password;
+	String passwordConfirm;
 	Date validFrom = Calendar.getInstance().getTime();
 	Date validUntil = Calendar.getInstance().getTime();
 
@@ -27,9 +31,15 @@ class SigningConfig {
 			return false;
 		if (library == null)
 			return false;
-		if (password == null || password.length < 6)
+		if (password == null || password.length() < 6)
+			return false;
+		if (!password.equals(passwordConfirm))
 			return false;
 		if (Strings.isBlank(email))
+			return false;
+		if (Strings.isBlank(fullName))
+			return false;
+		if (Strings.isBlank(country))
 			return false;
 		if (validFrom == null)
 			return false;
@@ -38,26 +48,19 @@ class SigningConfig {
 
 	Person subject() {
 		return new Person(
-			name(),
-			name(),
-			country(),
+			userName(),
+			fullName,
+			country,
 			email,
-			"");
+			organisation != null ? organisation : "");
 	}
 
-	String name() {
-		if (Strings.isBlank(email))
-			return "";
-		if (!email.contains("@"))
-			return email;
-		return email.substring(0, email.indexOf("@"));
-	}
-
-	String country() {
-		var locale = Locale.getDefault();
-		return locale == null
-			? ""
-			: locale.getCountry();
+	private String userName() {
+		if (fullName == null) return "";
+		return fullName
+			.trim()
+			.toLowerCase(Locale.ROOT)
+			.replaceAll("\\s+", ".");
 	}
 
 	String getDefaultName() {
@@ -93,7 +96,7 @@ class SigningConfig {
 			return Res.error("The certificate file does not exist: " + crtFile);
 		var privateDir = new File(dir, "private");
 		var keyFile = new File(privateDir, dir.getName() + ".key");
-		return keyFile.exists() && keyFile.isFile()
+		return !keyFile.exists() || !keyFile.isFile()
 			? Res.error("The private key does not exist: " + keyFile)
 			: Res.ok();
 	}
