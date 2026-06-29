@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.db.Libraries;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Controls;
@@ -106,10 +107,11 @@ public class IpcDialog extends FormDialog {
 	private void onStart() {
 		try {
 			int port = Integer.parseInt(portText.getText());
-			var config = ServerConfig.defaultOf(Database.get())
+			var builder = ServerConfig.defaultOf(Database.get())
 					.withDataDir(Workspace.dataDir())
-					.withPort(port)
-					.get();
+					.withPort(port);
+			Libraries.readersForCalculation().ifPresent(builder::withLibraries);
+			var config = builder.get();
 			var grpc = grpcCheck.getSelection();
 			App.run(
 					M.StartServerDots,

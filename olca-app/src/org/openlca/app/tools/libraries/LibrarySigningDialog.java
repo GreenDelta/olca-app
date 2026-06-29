@@ -52,7 +52,7 @@ public class LibrarySigningDialog extends FormDialog {
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(800, 600);
+		return new Point(850, 600);
 	}
 
 	@Override
@@ -101,14 +101,17 @@ public class LibrarySigningDialog extends FormDialog {
 				return Optional.of(dir);
 			});
 
-		Controls.set(UI.labeledText(comp, tk, M.Password, SWT.PASSWORD), "", s -> {
-			config.password = s;
-			checkOk();
-		});
-		Controls.set(UI.labeledText(comp, tk, "Confirm password", SWT.PASSWORD), "", s -> {
-			config.passwordConfirm = s;
-			checkOk();
-		});
+		Controls.set(
+			UI.labeledText(comp, tk, "Password (at least 6 characters)", SWT.PASSWORD),
+			"", s -> {
+				config.password = s;
+				checkOk();
+			});
+		Controls.set(UI.labeledText(comp, tk, "Confirm password", SWT.PASSWORD),
+			"", s -> {
+				config.passwordConfirm = s;
+				checkOk();
+			});
 
 		UI.filler(comp, tk);
 		var timeComp = UI.composite(comp, tk);

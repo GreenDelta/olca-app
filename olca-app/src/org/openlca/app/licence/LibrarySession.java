@@ -1,8 +1,6 @@
 package org.openlca.app.licence;
 
-import static org.openlca.license.access.LicenseStatus.VALID;
-import static org.openlca.license.access.LicenseStatus.WRONG_PASSWORD;
-import static org.openlca.license.access.LicenseStatus.WRONG_USER;
+import static org.openlca.license.access.LicenseStatus.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,7 +35,7 @@ public class LibrarySession {
 				Files.createDirectories(dir.toPath());
 			} catch (IOException e) {
 				var log = LoggerFactory.getLogger(LibrarySession.class);
-				log.error("failed to create sessions directory: " + dir, e);
+				log.error("failed to create sessions directory: {}", dir, e);
 				return null;
 			}
 		}
@@ -90,7 +88,7 @@ public class LibrarySession {
 		try (var fos = new FileOutputStream(file)) {
 			fos.write(json.getBytes());
 		} catch (IOException e) {
-			log.error("Error while creating the session file: " + file, e);
+			log.error("Error while creating the session file: {}", file, e);
 			return false;
 		}
 		return true;
@@ -131,8 +129,10 @@ public class LibrarySession {
 		try (var reader = new JsonReader(new FileReader(json))) {
 			return Optional.of(Session.fromJson(reader));
 		} catch (IOException e) {
-			log.error("Failed to retrieve the session of the following library: "
-					+ library, e);
+			log.error(
+				"Failed to retrieve the session of the following library: {}",
+				library,
+				e);
 			return Optional.empty();
 		}
 	}

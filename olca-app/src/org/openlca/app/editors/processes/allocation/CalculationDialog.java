@@ -108,7 +108,7 @@ class CalculationDialog extends FormDialog {
 					? t1 ? -1 : 1
 					: Strings.compareIgnoreCase(p1.name, p2.name);
 			});
-			var initial = AllocationRef.of(method, props.get(0));
+			var initial = AllocationRef.of(method, props.getFirst());
 			return new Selector(method, props, new AtomicReference<>(initial));
 		}
 
