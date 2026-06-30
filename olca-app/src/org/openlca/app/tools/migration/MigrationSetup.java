@@ -10,6 +10,7 @@ import org.openlca.commons.Res;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.database.config.DatabaseConfig;
+import org.openlca.core.database.upgrades.VersionState;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.openlca.io.olca.migration.MatchingStrategy;
 import org.openlca.io.olca.migration.MigrationConfig;
@@ -110,10 +111,31 @@ class MigrationSetup {
 		if (!isComplete())
 			return Res.error("The selection is not complete");
 		try {
-			var target = this.target.connect(Workspace.dbDir());
+			var targetDb = this.target.connect(Workspace.dbDir());
+
+			var version = VersionState.get(targetDb);
+			if (version == VersionState.HIGHER_VERSION) {
+				targetDb.close();
+				return Res.error("The target database '" + target.name()
+					+ "' was created with a newer version of openLCA "
+					+ "and cannot be used as a migration target.");
+			}
+			if (version == VersionState.NEEDS_UPGRADE) {
+				targetDb.close();
+				return Res.error("The target database '" + target.name()
+					+ "' is not up-to-date. Please open it once in "
+					+ "openLCA to run the required upgrades before "
+					+ "using it as a migration target.");
+			}
+			if (version == VersionState.ERROR) {
+				targetDb.close();
+				return Res.error("Failed to check the version "
+					+ "of the target database '" + target.name() + "'.");
+			}
+
 			var config = new MigrationConfig(
 				source,
-				target,
+				targetDb,
 				entities,
 				allProcesses,
 				strategies.toArray(MatchingStrategy[]::new));
