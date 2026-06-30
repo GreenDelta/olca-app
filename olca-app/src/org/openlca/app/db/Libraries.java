@@ -83,12 +83,15 @@ public final class Libraries {
 
 		var license = License.of(lib.folder());
 		if (license.isPresent()) {
-			var credentials = retrieveSession(lib.name()).orElse(null);
-			if (credentials == null) {
-				log.error("Error while retrieving the library credentials of {}", lib.name());
+			if (!LibrarySession.isValid(lib.name())) {
 				return Optional.empty();
 			}
-			builder.withDecryption(() -> license.get().getDecryptCipher(credentials));
+			var session = retrieveSession(lib.name()).orElse(null);
+			if (session == null) {
+				log.error("Error while retrieving the library session of {}", lib.name());
+				return Optional.empty();
+			}
+			builder.withDecryption(() -> license.get().getDecryptCipher(session));
 		}
 
 		return Optional.of(builder.create());
