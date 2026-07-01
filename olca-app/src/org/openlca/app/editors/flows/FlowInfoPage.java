@@ -18,6 +18,7 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.rcp.images.Overlay;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.wizards.ProcessWizard;
 import org.openlca.core.model.Flow;
@@ -63,8 +64,11 @@ class FlowInfoPage extends ModelPage<Flow> {
 			var pub = App.exec(
 				"Call PubChem API ...",
 				() -> PubChemInfo.getFor(getModel())).orElse(null);
-			if (pub == null)
+			if (pub == null) {
+				MsgBox.info("No information found on PubChem",
+					"No chemical information could be found for this flow on PubChem.");
 				return;
+			}
 			var update = pub.applyCasNumber(casText::setText)
 				| pub.applyMolecularFormula(formulaText::setText)
 				| pub.applySynonyms(synText::setText)

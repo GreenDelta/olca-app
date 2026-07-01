@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.openlca.app.util.ErrorReporter;
-import org.openlca.app.util.MsgBox;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.Flow;
 import org.openlca.io.pubchem.PubChemClient;
@@ -115,33 +114,53 @@ record PubChemInfo(
 	}
 
 	static Optional<PubChemInfo> getFor(Flow flow) {
+		var names = namesOf(flow);
+		if (names.isEmpty())
+			return Optional.empty();
+
 		try (var client = new PubChemClient()) {
-
-			var res = client.getCompoundsByName(flow.name);
-			if (res.isError())
-				return err(flow, res.error());
-			var compounds = res.value();
-			if (compounds.isEmpty())
-				return err(flow, "No results for '" + flow.name + "' available.");
-
-			var compound = compounds.getFirst();
-			var viewRes = client.getCompoundView(compound.id());
-			if (viewRes.isError())
-				return err(flow, viewRes.error());
-			var view = viewRes.value();
-			var info = new PubChemInfo(flow, compound, view);
-			return Optional.of(info);
+			for (var name : names) {
+				var res = client.getCompoundsByName(name);
+				if (res.isError())
+					continue;
+				var compounds = res.value();
+				if (compounds.isEmpty())
+					continue;
+				for (var compound : compounds) {
+					var view = client.getCompoundView(compound.id());
+					if (view.isError())
+						continue;
+					var info = new PubChemInfo(flow, compound, view.value());
+					return Optional.of(info);
+				}
+			}
+			return Optional.empty();
 		} catch (Exception e) {
 			ErrorReporter.on("PubChem request failed", e);
 			return Optional.empty();
 		}
 	}
 
-	private static Optional<PubChemInfo> err(Flow flow, String details) {
-		MsgBox.info("No compound found", "A compound with the name '"
-			+ flow.name + "' could not be found via the PubChem PUG API.\n\n"
-			+	"API response details:\n\n" + details);
-		return Optional.empty();
+	private static List<String> namesOf(Flow flow) {
+		if (flow == null)
+			return List.of();
+		var names = new ArrayList<String>();
+		if (Strings.isNotBlank(flow.name)) {
+			names.add(flow.name.trim());
+		}
+		if (Strings.isNotBlank(flow.casNumber)) {
+			names.add(flow.casNumber.trim());
+		}
+		if (Strings.isNotBlank(flow.formula)) {
+			names.add(flow.formula.trim());
+		}
+		if (Strings.isNotBlank(flow.synonyms)) {
+			for (var s : flow.synonyms.split(";")) {
+				if (Strings.isNotBlank(s)) {
+					names.add(s.trim());
+				}
+			}
+		}
+		return names;
 	}
-
 }
