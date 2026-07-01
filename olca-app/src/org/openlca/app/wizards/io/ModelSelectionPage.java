@@ -148,16 +148,17 @@ public class ModelSelectionPage extends WizardPage {
 	}
 
 	private void selectTarget(Text text) {
-		exportDestination = targetIsDir
+		var dest = targetIsDir
 				? FileChooser.selectFolder()
 				: FileChooser.forSavingFile(M.Export, defaultName());
-		if (exportDestination == null)
+		if (dest == null)
 			return;
-		String path = exportDestination.getAbsolutePath();
-		text.setText(path);
-		if (!targetIsDir)
-			path = exportDestination.getParentFile().getAbsolutePath();
-		Preferences.set(Preferences.LAST_EXPORT_FOLDER, path);
+		exportDestination = dest;
+		text.setText(dest.getAbsolutePath());
+		var lastDir = targetIsDir
+			? dest.getAbsolutePath()
+			: dest.getParentFile().getAbsolutePath();
+		Preferences.set(Preferences.LAST_EXPORT_FOLDER, lastDir);
 		checkCompletion();
 	}
 
