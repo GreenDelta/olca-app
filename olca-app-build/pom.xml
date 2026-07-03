@@ -12,8 +12,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho.version>4.0.7</tycho.version>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
+		<maven.compiler.source>25</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>
 		<java.home>${env.JAVA_HOME}</java.home>
 		<!-- Default qualifier for SNAPSHOT builds -->
 		<forceContextQualifier>SNAPSHOT</forceContextQualifier>
@@ -55,7 +55,7 @@
 						<target>
 							<file>${project.basedir}/../olca-app/platform.target</file>
 						</target>
-						<executionEnvironment>JavaSE-21</executionEnvironment>
+						<executionEnvironment>JavaSE-25</executionEnvironment>
 						<environments>
 							<environment>
 								<os>linux</os>

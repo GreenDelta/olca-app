@@ -167,7 +167,7 @@
 					<target>
 						<file>${project.basedir}/../../olca-app/platform.target</file>
 					</target>
-					<executionEnvironment>JavaSE-21</executionEnvironment>
+					<executionEnvironment>JavaSE-25</executionEnvironment>
 					<environments>
 						<environment>
 							<os>linux</os>

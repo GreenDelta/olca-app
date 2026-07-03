@@ -33,6 +33,7 @@ class RefData {
 					"unit_groups.csv",
 					"units.csv",
 
+					"mappings/EcoSpold1_Export_BAFU.csv",
 					"mappings/EcoSpold1_Import_BAFU.csv",
 					"mappings/EcoSpold1_Import_Default.csv",
 					"mappings/ILCD_Import.csv",
