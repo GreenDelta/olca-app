@@ -111,6 +111,7 @@ public enum Icon {
 	MINIMAP("graphical/minimap.png"),
 	MINIMIZE("graphical/minimize.png"),
 	MINUS("graphical/minus.gif"),
+	MOVE_UP_BLUE("move_up_blue.png"),
 
 	NEXT_CHANGE("collaboration/next_change.png"),
 	NEW_WIZARD("wizard/new.png"),

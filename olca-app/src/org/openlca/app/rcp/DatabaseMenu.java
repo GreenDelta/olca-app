@@ -52,7 +52,7 @@ class DatabaseMenu implements IMenuListener {
 		var checkLinksAction = Actions.create(
 			M.CheckLinkingProperties, null, LinkingPropertiesPage::show);
 		var migrationAction = Actions.create(
-			"Migrate content", Icon.LINK.descriptor(), MigrationSetupDialog::show);
+			"Migrate content", Icon.MOVE_UP_BLUE.descriptor(), MigrationSetupDialog::show);
 
 		var actions = new IAction[]{
 			new DbExportAction(),
