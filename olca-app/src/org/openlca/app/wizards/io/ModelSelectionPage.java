@@ -71,7 +71,7 @@ public class ModelSelectionPage extends WizardPage {
 		createTexts();
 	}
 
-	ModelSelectionPage withExtension(Consumer<Composite> extension) {
+	public ModelSelectionPage withExtension(Consumer<Composite> extension) {
 		this.extension = extension;
 		return this;
 	}

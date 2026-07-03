@@ -10,6 +10,8 @@ import org.eclipse.ui.IWorkbench;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.UI;
+import org.openlca.app.wizards.io.MappingSelector;
 import org.openlca.app.wizards.io.ModelSelectionPage;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ModelType;
@@ -32,7 +34,13 @@ abstract class AbstractExportWizard extends Wizard implements IExportWizard {
 
 	@Override
 	public void addPages() {
-		modelPage = ModelSelectionPage.forDirectory(type);
+		modelPage = ModelSelectionPage.forDirectory(type)
+				.withExtension(parent -> {
+					var comp = UI.composite(parent);
+					UI.stretchX(comp);
+					UI.gridLayout(comp, 3);
+					MappingSelector.on(config::withFlowMap).render(comp);
+				});
 		addPage(modelPage);
 		if (type == ModelType.PROCESS) {
 			addPage(new ExportConfigPage(config));
