@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: olca-app
 Automatic-Module-Name: olca-app
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-25
 Bundle-SymbolicName: olca-app;singleton:=true
 Bundle-Version: 2.7.0.qualifier
 Bundle-Activator: org.openlca.app.rcp.RcpActivator
