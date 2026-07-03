@@ -1,3 +1,13 @@
+"""
+This module handles fetching and extracting the JRE needed for the application.
+
+You can get the URLs of the latest JRE releases from the Adoptium GitHub
+repository:
+
+  curl -s https://api.github.com/repos/adoptium/temurin25-binaries/releases/latest
+    | jq -r '.assets[].browser_download_url'
+"""
+
 import os
 import urllib.request
 
@@ -27,7 +37,7 @@ class JRE:
             name = "x64_windows"
         else:
             raise ValueError(f"Warning: Unsupported OS + arch: {osa}.")
-        return f"OpenJDK21U-jre_{name}_hotspot_21.0.4_7.{suffix}"
+        return f"OpenJDK25U-jre_{name}_hotspot_25.0.3_9.{suffix}"
 
     @staticmethod
     def cache_dir() -> Path:
@@ -44,8 +54,8 @@ class JRE:
         if os.path.exists(zf):
             return zf
         url = (
-            "https://github.com/adoptium/temurin21-binaries/releases/"
-            f"download/jdk-21.0.4%2B7/{zip_name}"
+            "https://github.com/adoptium/temurin25-binaries/releases/"
+            f"download/jdk-25.0.3%2B9/{zip_name}"
         )
         print(f"  Fetching JRE from {url} ...")
         urllib.request.urlretrieve(url, zf)
