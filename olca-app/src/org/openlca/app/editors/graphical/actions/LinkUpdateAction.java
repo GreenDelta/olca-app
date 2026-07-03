@@ -129,7 +129,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 			combo.setItems(items);
 			combo.select(selected);
 			config.withProviderLinking(options[selected]);
-			Controls.onSelect(combo, $ -> {
+			Controls.onSelect(combo, _ -> {
 				var option = options[combo.getSelectionIndex()];
 				config.withProviderLinking(option);
 				for (var c : onLinkingChanged) {
@@ -146,7 +146,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 			combo.setItems(items);
 			combo.select(1);
 			config.withPreferredType(ProcessType.LCI_RESULT);
-			Controls.onSelect(combo, $ -> config.withPreferredType(combo.getSelectionIndex() == 0
+			Controls.onSelect(combo, _ -> config.withPreferredType(combo.getSelectionIndex() == 0
 					? ProcessType.UNIT_PROCESS
 					: ProcessType.LCI_RESULT));
 			onLinkingChanged.add(linking -> combo.setEnabled(linking != ProviderLinking.ONLY_DEFAULTS));
@@ -158,7 +158,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 			config.keepExistingLinks(true);
 			check.setSelection(true);
 			Controls.onSelect(
-					check, $ -> config.keepExistingLinks(check.getSelection()));
+					check, _ -> config.keepExistingLinks(check.getSelection()));
 		}
 
 		private void createLocationCheck(FormToolkit tk, Composite body) {
@@ -168,7 +168,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 			config.preferLinksInSameLocation(false);
 			check.setSelection(false);
 			Controls.onSelect(
-					check, $ -> config.preferLinksInSameLocation(check.getSelection()));
+					check, _ -> config.preferLinksInSameLocation(check.getSelection()));
 			onLinkingChanged.add(linking -> check.setEnabled(linking != ProviderLinking.ONLY_DEFAULTS));
 		}
 	}

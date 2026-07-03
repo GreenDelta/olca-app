@@ -131,7 +131,7 @@ class ComplianceSection {
 				details.setText(_dec.comment);
 			}
 			details.setEditable(editor.isEditable());
-			details.addModifyListener($ -> {
+			details.addModifyListener(_ -> {
 				sync().comment = details.getText();
 				editor.setDirty();
 			});

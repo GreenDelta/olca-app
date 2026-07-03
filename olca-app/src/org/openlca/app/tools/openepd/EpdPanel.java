@@ -71,7 +71,7 @@ public class EpdPanel extends SimpleFormEditor {
 			var urlText = UI.labeledText(downloadComp, "", SWT.BORDER);
 			UI.stretchX(urlText);
 			var downloadBtn = UI.button(downloadComp, tk, M.Download);
-			Controls.onSelect(downloadBtn, $ -> {
+			Controls.onSelect(downloadBtn, _ -> {
 				var client = loginPanel.login().orElse(null);
 				if (client == null)
 					return;
@@ -114,8 +114,8 @@ public class EpdPanel extends SimpleFormEditor {
 					epds.addAll(response.descriptors());
 				}, () -> table.setInput(epds));
 			};
-			Controls.onSelect(searchButton, $ -> onSearch.run());
-			Controls.onReturn(searchText, $ -> onSearch.run());
+			Controls.onSelect(searchButton, _ -> onSearch.run());
+			Controls.onReturn(searchText, _ -> onSearch.run());
 
 			form.reflow(true);
 		}

@@ -149,7 +149,7 @@ public class ParameterSection {
 		CommentAction.bindTo(section, "parameters",
 				editor.getComments(), add, remove);
 		Actions.bind(table, add, remove, copy, paste, usage, toGlobal);
-		Tables.onDeletePressed(table, (e) -> onRemove());
+		Tables.onDeletePressed(table, _ -> onRemove());
 	}
 
 	private void createCellModifiers() {
@@ -159,7 +159,7 @@ public class ParameterSection {
 		var ms = new ModifySupport<Parameter>(table)
 				.bind(M.Name, new NameModifier())
 				.bind(M.Description, new StringModifier<>(editor, "description"))
-				.bind(M.Value, new DoubleModifier<>(editor, "value", $ -> support.evaluate()))
+				.bind(M.Value, new DoubleModifier<>(editor, "value", _ -> support.evaluate()))
 				.bind(M.Uncertainty, new UncertaintyCellEditor(table.getTable(), editor))
 				.bind("", new CommentDialogModifier<>(editor.getComments(), CommentPaths::get));
 		var formulaEditor = new FormulaCellEditor(table, () -> entity().parameters);

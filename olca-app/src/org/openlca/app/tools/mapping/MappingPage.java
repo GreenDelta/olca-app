@@ -74,7 +74,7 @@ class MappingPage extends FormPage {
 			}
 		};
 		updateCheckState.run();
-		Controls.onSelect(checkButton, _e -> {
+		Controls.onSelect(checkButton, _ -> {
 			if (tool.sourceSystem == null || tool.targetSystem == null) {
 				MsgBox.warning(M.NoSourceOrTargetSystem,
 						M.NoSourceOrTargetSystemMappingInfo);
@@ -131,7 +131,7 @@ class MappingPage extends FormPage {
 				tool.setDirty();
 			}
 		});
-		Tables.onDoubleClick(table, _e -> edit.run());
+		Tables.onDoubleClick(table, _ -> edit.run());
 
 		Action delete = Actions.onRemove(() -> {
 			List<FlowMapEntry> entries = Viewers.getAllSelected(table);
@@ -141,7 +141,7 @@ class MappingPage extends FormPage {
 			table.refresh();
 			tool.setDirty();
 		});
-		Tables.onDeletePressed(table, $ -> delete.run());
+		Tables.onDeletePressed(table, _ -> delete.run());
 
 		Action copy = TableClipboard.onCopySelected(table);
 

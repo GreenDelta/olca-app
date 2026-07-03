@@ -56,7 +56,7 @@ final class MigrationPlanPage extends FormPage {
 		UI.filler(comp, tk);
 		var button = UI.button(comp, tk, "Run migration");
 		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, $ -> {
+		Controls.onSelect(button, _ -> {
 			var b = Question.ask("Execute migration?",
 				"Do you want to execute the migration now?");
 			if (!b) return;

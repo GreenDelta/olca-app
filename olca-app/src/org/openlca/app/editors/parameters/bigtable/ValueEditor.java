@@ -191,7 +191,7 @@ class ValueEditor {
 					comp, Uncertainty.string(p.uncertainty), SWT.NONE);
 				UI.gridData(link, true, false);
 
-				Controls.onClick(link, $ -> {
+				Controls.onClick(link, _ -> {
 					var u = UncertaintyDialog.open(uncertainty).orElse(null);
 					if (u == null)
 						return;
@@ -213,7 +213,7 @@ class ValueEditor {
 			};
 
 			// handle text editing
-			text.addModifyListener($ -> {
+			text.addModifyListener(_ -> {
 				var textVal = text.getText();
 
 				if (p.isInputParameter) {

@@ -35,7 +35,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		return selection.get(0) instanceof DatabaseElement e
+		return selection.getFirst() instanceof DatabaseElement e
 				&& Database.isActive(e.getContent());
 	}
 
@@ -104,7 +104,7 @@ public class AddLibraryAction extends Action implements INavigationAction {
 			UI.filler(comp, tk);
 			var importButton = tk.createButton(
 					comp, M.ImportFromFileDots, SWT.NONE);
-			Controls.onSelect(importButton, $ -> {
+			Controls.onSelect(importButton, _ -> {
 				var file = FileChooser.openFile()
 						.withTitle(M.SelectLibraryPackage)
 						.withExtensions("*.zip")

@@ -51,7 +51,7 @@ public class LoginPanel {
 		if (Strings.isNotBlank(credentials.ec3Url())) {
 			ec3UrlText.setText(credentials.ec3Url());
 		}
-		ec3UrlText.addModifyListener($ -> {
+		ec3UrlText.addModifyListener(_ -> {
 			credentialsChanged = true;
 			credentials.ec3Url(ec3UrlText.getText());
 		});
@@ -61,7 +61,7 @@ public class LoginPanel {
 		if (Strings.isNotBlank(credentials.epdUrl())) {
 			epdUrlText.setText(credentials.epdUrl());
 		}
-		epdUrlText.addModifyListener($ -> {
+		epdUrlText.addModifyListener(_ -> {
 			credentialsChanged = true;
 			credentials.epdUrl(epdUrlText.getText());
 		});
@@ -71,7 +71,7 @@ public class LoginPanel {
 		if (Strings.isNotBlank(credentials.user())) {
 			userText.setText(credentials.user());
 		}
-		userText.addModifyListener($ -> {
+		userText.addModifyListener(_ -> {
 			credentialsChanged = true;
 			credentials.user(userText.getText());
 		});
@@ -81,7 +81,7 @@ public class LoginPanel {
 		button = UI.button(comp, tk, "");
 		updateButton();
 		button.setImage(Icon.CONNECT.get());
-		Controls.onSelect(button, $ -> {
+		Controls.onSelect(button, _ -> {
 			if (Strings.isNotBlank(credentials.token())) {
 				logout();
 			} else {
@@ -138,7 +138,6 @@ public class LoginPanel {
 			Ec3.save(credentials);
 			if (client != null) {
 				client.logout();
-				client = null;
 			}
 		} catch (Exception e) {
 			ErrorReporter.on("EC3 logout failed", e);
@@ -200,7 +199,7 @@ public class LoginPanel {
 			Controls.set(userTxt, credentials.user(), credentials::user);
 			var pwTxt = UI.labeledText(right, tk, M.Password, SWT.PASSWORD | SWT.BORDER);
 			UI.stretchX(pwTxt);
-			pwTxt.addModifyListener($ -> credentials.password(pwTxt.getText()));
+			pwTxt.addModifyListener(_ -> credentials.password(pwTxt.getText()));
 		}
 	}
 }

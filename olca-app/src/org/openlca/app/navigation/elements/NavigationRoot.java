@@ -72,7 +72,7 @@ public class NavigationRoot extends PlatformObject implements
 				continue;
 			}
 			var key = path[0].toLowerCase(Locale.US);
-			dirs.computeIfAbsent(key, $ -> new DatabaseDirElement(this, path[0]));
+			dirs.computeIfAbsent(key, _ -> new DatabaseDirElement(this, path[0]));
 		}
 		elems.addAll(dirs.values());
 		return elems;

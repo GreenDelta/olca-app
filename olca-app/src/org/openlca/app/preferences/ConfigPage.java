@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConfigPage extends PreferencePage implements
-		IWorkbenchPreferencePage {
+	IWorkbenchPreferencePage {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -80,7 +80,7 @@ public class ConfigPage extends PreferencePage implements
 
 		UI.filler(comp);
 		createNoteComposite(comp.getFont(), comp, M.Note,
-				M.SelectLanguageNoteMessage);
+			M.SelectLanguageNoteMessage);
 
 		return body;
 	}
@@ -88,9 +88,7 @@ public class ConfigPage extends PreferencePage implements
 	private void createNativeLib(Composite comp) {
 		var libButton = new Button(comp, SWT.NONE);
 		libButton.setText(M.DownloadAdditionalLibs);
-		Controls.onSelect(
-				libButton,
-				_e -> LibraryDownload.open());
+		Controls.onSelect(libButton, _ -> LibraryDownload.open());
 		UI.gridData(libButton, true, false);
 	}
 
@@ -98,7 +96,7 @@ public class ConfigPage extends PreferencePage implements
 		// reset window layout
 		Button b = new Button(comp, SWT.NONE);
 		b.setText(M.ResetLayout);
-		Controls.onSelect(b, _e -> {
+		Controls.onSelect(b, _ -> {
 			WindowLayout.reset();
 			b.setEnabled(false);
 		});
@@ -116,9 +114,9 @@ public class ConfigPage extends PreferencePage implements
 		var hideStart = new Button(comp, SWT.CHECK);
 		hideStart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		hideStart.setSelection(
-				Preferences.getBool("hide.welcome.page"));
-		Controls.onSelect(hideStart, e -> Preferences.set(
-				"hide.welcome.page", hideStart.getSelection()));
+			Preferences.getBool("hide.welcome.page"));
+		Controls.onSelect(hideStart, _ -> Preferences.set(
+			"hide.welcome.page", hideStart.getSelection()));
 	}
 
 	private void createGraphThemeCombo(Composite composite) {
@@ -134,7 +132,7 @@ public class ConfigPage extends PreferencePage implements
 		graphThemeCombo.setItems(themes.toArray(new String[0]));
 		var theme = Preferences.get(Preferences.GRAPHICAL_EDITOR_THEME);
 		selectGraphTheme(theme);
-		Controls.onSelect(graphThemeCombo, (e) -> {
+		Controls.onSelect(graphThemeCombo, _ -> {
 			int idx = graphThemeCombo.getSelectionIndex();
 			if (idx < 0)
 				return;
@@ -159,10 +157,10 @@ public class ConfigPage extends PreferencePage implements
 		useEdge.setToolTipText(M.WebView2NeedsToBeInstalledForThis);
 		useEdge.setSelection(iniFile.useEdgeBrowser());
 		Controls.onSelect(
-				useEdge, $ -> {
-					iniFile.useEdgeBrowser(useEdge.getSelection());
-					setDirty();
-				});
+			useEdge, _ -> {
+				iniFile.useEdgeBrowser(useEdge.getSelection());
+				setDirty();
+			});
 	}
 
 	private void createMemoryText(Composite comp) {
@@ -174,7 +172,7 @@ public class ConfigPage extends PreferencePage implements
 		memoryText = new Text(comp, SWT.BORDER);
 		UI.stretchX(memoryText);
 		memoryText.setText(Integer.toString(iniFile.maxMemory()));
-		memoryText.addModifyListener(e -> setDirty());
+		memoryText.addModifyListener(_ -> setDirty());
 	}
 
 	private void createLanguageCombo(Composite composite) {
@@ -193,7 +191,7 @@ public class ConfigPage extends PreferencePage implements
 		}
 		languageCombo.setItems(items);
 		selectLanguage(iniFile.language());
-		Controls.onSelect(languageCombo, (e) -> {
+		Controls.onSelect(languageCombo, _ -> {
 			int idx = languageCombo.getSelectionIndex();
 			if (idx < 0)
 				return;
@@ -223,7 +221,7 @@ public class ConfigPage extends PreferencePage implements
 		}
 		themeCombo.setItems(items);
 		selectTheme(iniFile.theme());
-		Controls.onSelect(themeCombo, (e) -> {
+		Controls.onSelect(themeCombo, _ -> {
 			int idx = themeCombo.getSelectionIndex();
 			if (idx < 0)
 				return;
@@ -261,9 +259,9 @@ public class ConfigPage extends PreferencePage implements
 		iniFile.language(defaultLang);
 		iniFile.maxMemory(maxMem);
 		var graphTheme = Preferences.getStore().getDefaultString(
-				Preferences.GRAPHICAL_EDITOR_THEME);
+			Preferences.GRAPHICAL_EDITOR_THEME);
 		Preferences.getStore().setValue(
-				Preferences.GRAPHICAL_EDITOR_THEME, graphTheme);
+			Preferences.GRAPHICAL_EDITOR_THEME, graphTheme);
 		selectGraphTheme(graphTheme);
 		super.performDefaults();
 		performApply();

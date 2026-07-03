@@ -1,6 +1,6 @@
 package org.openlca.app.editors.graphical.edit;
 
-import static org.openlca.app.components.graphics.model.Component.*;
+import static org.openlca.app.components.graphics.model.Component.CHILDREN_PROP;
 import static org.openlca.app.editors.graphical.figures.ExchangeFigure.*;
 import static org.openlca.app.editors.graphical.requests.GraphRequests.*;
 
@@ -87,7 +87,7 @@ public class IOPaneEditPart extends ComponentEditPart<IOPane> {
 	}
 
 	protected void addButtonActionListener(IOPaneFigure figure) {
-		figure.addExchangeButton.addActionListener($ -> {
+		figure.addExchangeButton.addActionListener(_ -> {
 			var request = getModel().isForInputs()
 				? new Request(REQ_ADD_INPUT)
 				: new Request(REQ_ADD_OUTPUT);

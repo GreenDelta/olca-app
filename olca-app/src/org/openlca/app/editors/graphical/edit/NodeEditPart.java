@@ -111,13 +111,13 @@ public abstract class NodeEditPart extends VertexEditPart<Node> {
 	}
 
 	protected void addButtonActionListener(NodeFigure figure) {
-		figure.inputExpandButton.addActionListener($ -> {
+		figure.inputExpandButton.addActionListener(_ -> {
 			var command = getCommand(
 					new ExpandCollapseRequest(getModel(), Side.INPUT, false));
 			if (command.canExecute())
 				getViewer().getEditDomain().getCommandStack().execute(command);
 		});
-		figure.outputExpandButton.addActionListener($ -> {
+		figure.outputExpandButton.addActionListener(_ -> {
 			var command = getCommand(
 					new ExpandCollapseRequest(getModel(), Side.OUTPUT, false));
 			if (command.canExecute())

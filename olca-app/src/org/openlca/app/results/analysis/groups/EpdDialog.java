@@ -102,7 +102,7 @@ class EpdDialog extends FormDialog {
 		// category
 		var categoryText = UI.labeledText(top, tk, M.Category);
 		var categoryBtn = tk.createButton(top, M.Browse, SWT.NONE);
-		Controls.onSelect(categoryBtn, $ -> {
+		Controls.onSelect(categoryBtn, _ -> {
 			var selection = CategoryDialog.selectFor(ModelType.EPD);
 			if (selection.isCancelled())
 				return;
@@ -114,7 +114,7 @@ class EpdDialog extends FormDialog {
 					: "";
 			categoryText.setText(this.category);
 		});
-		categoryText.addModifyListener($ -> category = categoryText.getText());
+		categoryText.addModifyListener(_ -> category = categoryText.getText());
 
 		// list with results
 		var resultLabel = UI.label(top, tk, M.Results);
@@ -122,7 +122,7 @@ class EpdDialog extends FormDialog {
 		var resultList = new org.eclipse.swt.widgets.List(top, SWT.BORDER);
 		UI.gridData(resultList, true, true);
 
-		nameText.addModifyListener($ -> {
+		nameText.addModifyListener(_ -> {
 			name = nameText.getText();
 			updateResultNames(resultList);
 		});

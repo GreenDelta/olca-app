@@ -127,7 +127,7 @@ class CalculationDialog extends FormDialog {
 				.toArray(String[]::new);
 			combo.setItems(items);
 			combo.select(0);
-			Controls.onSelect(combo, $ -> {
+			Controls.onSelect(combo, _ -> {
 				var idx = combo.getSelectionIndex();
 				var prop = props.get(idx);
 				selection.set(AllocationRef.of(method, prop));
@@ -137,7 +137,7 @@ class CalculationDialog extends FormDialog {
 				UI.filler(comp);
 				var check = tk.createButton(
 					comp, M.CalculateFromCostsRevenues, SWT.CHECK);
-				Controls.onSelect(check, $ -> {
+				Controls.onSelect(check, _ -> {
 					if (check.getSelection()) {
 						combo.setEnabled(false);
 						selection.set(AllocationRef.ofCosts(method));

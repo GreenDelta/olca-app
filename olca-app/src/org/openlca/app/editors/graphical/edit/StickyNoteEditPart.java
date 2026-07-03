@@ -56,7 +56,7 @@ public abstract class StickyNoteEditPart extends
 	}
 
 	protected void addButtonActionListener(StickyNoteFigure figure) {
-		figure.closeButton.addActionListener($ -> {
+		figure.closeButton.addActionListener(_ -> {
 			var command = getCommand(new GroupRequest(REQ_DELETE));
 			if (command.canExecute())
 				getViewer().getEditDomain().getCommandStack().execute(command);
