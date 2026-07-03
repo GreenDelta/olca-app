@@ -24,7 +24,7 @@ public class CredentialStore {
 		if (Strings.isBlank(username))
 			return;
 		usernames.put(url, username);
-		passwords.computeIfAbsent(url, u -> new HashMap<>()).put(username, password);
+		passwords.computeIfAbsent(url, _ -> new HashMap<>()).put(username, password);
 		ServerConfigurations.update(new ServerConfig(url, username));
 	}
 

@@ -49,7 +49,7 @@ public class RepositorySelect extends Composite {
 				.map(ServerConfig::url)
 				.toArray(size -> new String[size]));
 		var repositoryCombo = UI.labeledCombo(container, toolkit, M.Repository);
-		serverCombo.addModifyListener(e -> {
+		serverCombo.addModifyListener(_ -> {
 			server = servers.get(serverCombo.getSelectionIndex());
 			var repositories = WebRequests.execute(
 					server.createClient()::listRepositories,
@@ -66,7 +66,7 @@ public class RepositorySelect extends Composite {
 			}
 			getShell().pack(true);
 		});
-		repositoryCombo.addModifyListener(e -> {
+		repositoryCombo.addModifyListener(_ -> {
 			var selected = repositoryCombo.getSelectionIndex();
 			repositoryId = selected != -1
 					? repositoryCombo.getItem(selected)

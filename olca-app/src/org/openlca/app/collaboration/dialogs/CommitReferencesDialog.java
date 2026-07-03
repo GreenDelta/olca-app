@@ -61,7 +61,7 @@ public class CommitReferencesDialog extends FormDialog {
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
 		var selectAll = createButton(parent, IDialogConstants.CLIENT_ID + 1, M.SelectAll, false);
-		Controls.onSelect(selectAll, (e) -> {
+		Controls.onSelect(selectAll, _ -> {
 			viewer.selectAll();
 		});
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);

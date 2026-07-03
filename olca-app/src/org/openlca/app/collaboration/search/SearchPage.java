@@ -137,9 +137,9 @@ class SearchPage extends FormPage {
 		UI.gridLayout(comp, 2, 10, 0);
 		var text = UI.text(comp, tk);
 		Controls.set(text, query.query);
-		text.addModifyListener(e -> query.query = text.getText());
+		text.addModifyListener(_ -> query.query = text.getText());
 		var button = tk.createButton(comp, M.Search, SWT.FLAT);
-		Controls.onSelect(button, e -> runSearch(1));
+		Controls.onSelect(button, _ -> runSearch(1));
 	}
 
 	private void renderPager(SearchResult<Dataset> result) {
@@ -166,7 +166,7 @@ class SearchPage extends FormPage {
 			}
 			var link = tk.createHyperlink(pager, label, SWT.NONE);
 			var page = i;
-			Controls.onClick(link, e -> runSearch(page));
+			Controls.onClick(link, _ -> runSearch(page));
 		}
 	}
 

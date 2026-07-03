@@ -32,7 +32,7 @@ public class SelectCommitDialog extends FormDialog {
 		viewer = new HistoryViewer(body);
 		UI.gridData(viewer.getViewer().getTable(), true, true);
 		Tables.bindColumnWidths(viewer.getViewer(), 0.1, 0.7, 0.1, 0.1);
-		viewer.addSelectionChangedListener((e) -> {
+		viewer.addSelectionChangedListener(_ -> {
 			selection = Viewers.getFirstSelected(viewer.getViewer());
 			updateButtons();
 		});

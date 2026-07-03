@@ -60,7 +60,7 @@ class LocationGroup extends Composite {
 			UI.label(group);
 			var storeCheck = UI.checkbox(group, toolkit, "Store connection");
 			storeCheck.setSelection(storeConnection);
-			Controls.onSelect(storeCheck, e -> {
+			Controls.onSelect(storeCheck, _ -> {
 				storeConnection = storeCheck.getSelection();
 			});
 		}
@@ -78,7 +78,7 @@ class LocationGroup extends Composite {
 			pText.setEnabled(false);
 		}
 		var pathText = pText;
-		urlText.addModifyListener(e -> {
+		urlText.addModifyListener(_ -> {
 			var text = urlText.getText();
 			url = new UrlParts(text);
 			protocolText.setText(url.protocol);

@@ -70,7 +70,7 @@ public class CommitDialog extends FormDialog {
 				| SWT.V_SCROLL | SWT.WRAP | SWT.MULTI);
 		var gd = UI.gridData(commitText, true, false);
 		gd.heightHint = 150;
-		commitText.addModifyListener((event) -> {
+		commitText.addModifyListener(_ -> {
 			message = commitText.getText();
 			updateButtons();
 		});
