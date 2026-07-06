@@ -32,26 +32,26 @@ final class StrategyList {
 		list = new org.eclipse.swt.widgets.List(parent, SWT.BORDER | SWT.V_SCROLL);
 		UI.gridData(list, true, true);
 		refresh();
-		Controls.onSelect(list, $ -> notifyChange());
+		Controls.onSelect(list, _ -> notifyChange());
 
 		var menu = new Menu(list);
 		list.setMenu(menu);
 
 		var moveUp = new MenuItem(menu, SWT.NONE);
 		moveUp.setText("Move up");
-		Controls.onSelect(moveUp, $ -> moveSelected(-1));
+		Controls.onSelect(moveUp, _ -> moveSelected(-1));
 
 		var moveDown = new MenuItem(menu, SWT.NONE);
 		moveDown.setText("Move down");
-		Controls.onSelect(moveDown, $ -> moveSelected(1));
+		Controls.onSelect(moveDown, _ -> moveSelected(1));
 
 		new MenuItem(menu, SWT.SEPARATOR);
 
 		var remove = new MenuItem(menu, SWT.NONE);
 		remove.setText("Remove");
-		Controls.onSelect(remove, $ -> removeSelected());
+		Controls.onSelect(remove, _ -> removeSelected());
 
-		menu.addListener(SWT.Show, $ -> {
+		menu.addListener(SWT.Show, _ -> {
 			var strategy = selected();
 			moveUp.setEnabled(config.canMoveUp(strategy));
 			moveDown.setEnabled(config.canMoveDown(strategy));

@@ -63,7 +63,7 @@ record DatabaseProperties(
 			+ "default_provider_type = " + ProviderType.RESULT
 			+ " and f_default_provider <> 0";
 		var found = new AtomicBoolean(false);
-		NativeSql.on(db).query(sql, r -> {
+		NativeSql.on(db).query(sql, _ -> {
 			found.set(true);
 			return false;
 		});

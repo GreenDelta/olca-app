@@ -74,10 +74,9 @@ final class EntitySection {
 
 		@Override
 		public Image getColumnImage(Object o, int col) {
-			if (!(o instanceof EntityItem(RootDescriptor entity, String ignored))
-				|| col != 0)
-				return null;
-			return Images.get(entity);
+			return col == 0 && o instanceof EntityItem(RootDescriptor entity, _)
+				? Images.get(entity)
+				: null;
 		}
 
 		@Override

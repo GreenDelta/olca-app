@@ -88,7 +88,7 @@ public class MigrationSetupDialog extends FormDialog {
 
 		var allProcessesBtn = UI.checkbox(dataGroup, tk,
 			"Copy all foreground processes");
-		Controls.onSelect(allProcessesBtn, $ -> {
+		Controls.onSelect(allProcessesBtn, _ -> {
 			config.setAllProcesses(allProcessesBtn.getSelection());
 			updateOk();
 		});
@@ -122,7 +122,7 @@ public class MigrationSetupDialog extends FormDialog {
 		combo.setItems(items);
 		combo.select(0);
 		config.setTarget(targets.getFirst());
-		Controls.onSelect(combo, $ -> {
+		Controls.onSelect(combo, _ -> {
 			int idx = combo.getSelectionIndex();
 			config.setTarget(targets.get(idx));
 			updateOk();

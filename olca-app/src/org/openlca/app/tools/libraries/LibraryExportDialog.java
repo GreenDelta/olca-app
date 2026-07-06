@@ -95,7 +95,7 @@ public class LibraryExportDialog extends FormDialog {
 
 		var name = UI.labeledText(body, tk, M.Name);
 		name.setText(config.name);
-		name.addModifyListener(_e ->
+		name.addModifyListener(_ ->
 			config.name = name.getText().trim());
 
 		// allocation method
@@ -114,7 +114,7 @@ public class LibraryExportDialog extends FormDialog {
 				var button = UI.checkbox(body, tk);
 				button.setText(label);
 				Controls.onSelect(button,
-					_e -> onClick.accept(button.getSelection()));
+					_ -> onClick.accept(button.getSelection()));
 				return button;
 			};
 

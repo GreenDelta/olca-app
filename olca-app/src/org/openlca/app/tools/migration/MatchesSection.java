@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
@@ -12,9 +13,9 @@ import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.commons.Strings;
+import org.openlca.io.olca.migration.MigrationPlan;
 import org.openlca.io.olca.migration.ProviderInfo;
 import org.openlca.io.olca.migration.ProviderMatch;
-import org.openlca.io.olca.migration.MigrationPlan;
 
 final class MatchesSection {
 
@@ -32,6 +33,17 @@ final class MatchesSection {
 		var section = UI.section(parent, tk, "Provider matches");
 		UI.gridData(section, true, true);
 		var comp = UI.sectionClient(section, tk, 1);
+
+		var filterComp = UI.composite(comp, tk);
+		UI.gridLayout(filterComp, 3);
+		UI.stretchX(filterComp);
+		UI.label(filterComp, tk, M.Filter);
+		var searchText = UI.searchText(filterComp, tk);
+		var strategyCombo = UI.combo(filterComp, tk);
+		UI.gridData(strategyCombo, false, false);
+		strategyCombo.setItems(MatchFilter.comboItems());
+		strategyCombo.select(0);
+
 		var table = Tables.createViewer(comp,
 			"Source provider",
 			"Target provider",
@@ -45,6 +57,8 @@ final class MatchesSection {
 
 		new ModifySupport<ProviderMatch>(table)
 			.bind("Target provider", new TargetProviderModifier());
+
+		MatchFilter.on(table, searchText, strategyCombo);
 	}
 
 	/// We cannot use `Labels.name` for the target provider, as `Labels.name`

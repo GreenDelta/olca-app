@@ -34,7 +34,7 @@ class FileSelector {
 		var button = UI.button(comp, tk, M.Browse);
 
 		var selector = new FileSelector(text);
-		Controls.onSelect(button, _e -> selector.handleClick());
+		Controls.onSelect(button, _ -> selector.handleClick());
 		return selector;
 	}
 
