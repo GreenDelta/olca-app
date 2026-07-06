@@ -4,11 +4,14 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
@@ -55,6 +58,15 @@ final class MatchesSection {
 		new ModifySupport<ProviderMatch>(table)
 			.bind("Target provider", new TargetProviderModifier());
 		MatchFilter.on(table, searchText, strategyCombo);
+
+		var edit = Actions.onEdit(() -> {
+			ProviderMatch match = Viewers.getFirstSelected(table);
+			if (match != null
+				&& MatchSelectionDialog.open(match) == FormDialog.OK) {
+				table.refresh();
+			}
+		});
+		Actions.bind(table, edit);
 	}
 
 	private static final class TargetProviderModifier

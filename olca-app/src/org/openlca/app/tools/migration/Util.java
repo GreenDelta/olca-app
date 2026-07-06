@@ -49,7 +49,7 @@ class Util {
 	}
 
 	/// We cannot use `Labels.name` for matched providers in the target database,
-	/// as `Labels.name` may look into the current database for location suffices
+	/// as `Labels.name` may look into the current database for location suffixes
 	/// etc.
 	static String labelOf(ProviderInfo info) {
 		if (info == null)
