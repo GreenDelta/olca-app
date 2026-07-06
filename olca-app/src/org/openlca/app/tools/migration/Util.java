@@ -2,7 +2,6 @@ package org.openlca.app.tools.migration;
 
 import java.util.List;
 
-import org.openlca.app.util.Labels;
 import org.openlca.commons.Strings;
 import org.openlca.io.olca.migration.ProviderInfo;
 import org.openlca.io.olca.migration.ProviderMatch;
@@ -44,8 +43,24 @@ class Util {
 		if (a == b) return 0;
 		if (a == null) return -1;
 		if (b == null) return 1;
-		var sa = Labels.name(a.provider());
-		var sb = Labels.name(b.provider());
+		var sa = labelOf(a);
+		var sb = labelOf(b);
 		return Strings.compareIgnoreCase(sa, sb);
+	}
+
+	/// We cannot use `Labels.name` for matched providers in the target database,
+	/// as `Labels.name` may look into the current database for location suffices
+	/// etc.
+	static String labelOf(ProviderInfo info) {
+		if (info == null)
+			return null;
+		var label = info.provider() != null
+			? info.provider().name
+			: null;
+		if (label == null)
+			return "-";
+		return info.location() != null && Strings.isNotBlank(info.location().code)
+			? label + " - " + info.location().code
+			: label;
 	}
 }

@@ -12,7 +12,6 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.commons.Strings;
 import org.openlca.io.olca.migration.MigrationPlan;
 import org.openlca.io.olca.migration.ProviderInfo;
 import org.openlca.io.olca.migration.ProviderMatch;
@@ -58,21 +57,6 @@ final class MatchesSection {
 		MatchFilter.on(table, searchText, strategyCombo);
 	}
 
-	/// We cannot use `Labels.name` for the target provider, as `Labels.name`
-	/// may look into the current database for location suffices etc.
-	private static String labelOf(ProviderInfo info) {
-		if (info == null)
-			return null;
-		var label = info.provider() != null
-			? info.provider().name
-			: null;
-		if (label == null)
-			return "-";
-		return info.location() != null && Strings.isNotBlank(info.location().code)
-			? label + " - " + info.location().code
-			: label;
-	}
-
 	private static final class TargetProviderModifier
 		extends ComboBoxCellModifier<ProviderMatch, ProviderInfo> {
 
@@ -90,7 +74,7 @@ final class MatchesSection {
 
 		@Override
 		protected String getText(ProviderInfo info) {
-			return labelOf(info);
+			return Util.labelOf(info);
 		}
 
 		@Override
@@ -123,7 +107,7 @@ final class MatchesSection {
 				case 0 -> match.source() != null
 					? Labels.name(match.source().provider())
 					: null;
-				case 1 -> labelOf(match.selected());
+				case 1 -> Util.labelOf(match.selected());
 				case 2 -> statusOf(match);
 				default -> null;
 			};
