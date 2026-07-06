@@ -73,7 +73,7 @@ final class MigrationPlanPage extends FormPage {
 		var comp = UI.sectionClient(section, tk, 1);
 		var table = Tables.createViewer(comp, "Provider", "Flow", "Location");
 		table.setLabelProvider(new ProviderInfoLabel());
-		table.setInput(plan.providerCopies());
+		table.setInput(Util.sortedInfos(plan.providerCopies()));
 		Tables.bindColumnWidths2(table, 0.5, 0.3, 0.2);
 		var gd = UI.gridData(table.getTable(), true, true);
 		gd.heightHint = 1;

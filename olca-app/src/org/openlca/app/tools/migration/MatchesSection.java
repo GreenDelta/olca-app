@@ -49,15 +49,12 @@ final class MatchesSection {
 			"Target provider",
 			"Status");
 		table.setLabelProvider(new MatchLabel());
-		table.setInput(plan.providerMatches());
+		table.setInput(Util.sortedMatches(plan.providerMatches()));
 		Tables.bindColumnWidths2(table, 0.4, 0.4, 0.2);
-		var gd = UI.gridData(table.getTable(), true, true);
-		gd.heightHint = 1;
-		gd.widthHint = 1;
+		UI.stretchXY(table.getTable());
 
 		new ModifySupport<ProviderMatch>(table)
 			.bind("Target provider", new TargetProviderModifier());
-
 		MatchFilter.on(table, searchText, strategyCombo);
 	}
 
