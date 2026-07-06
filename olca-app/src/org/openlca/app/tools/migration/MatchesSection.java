@@ -67,6 +67,7 @@ final class MatchesSection {
 			}
 		});
 		Actions.bind(table, edit);
+		Tables.onDoubleClick(table, _ -> edit.run());
 	}
 
 	private static final class TargetProviderModifier
