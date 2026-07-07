@@ -7,12 +7,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.M;
-import org.openlca.app.components.FileChooser;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
-import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
@@ -75,32 +73,12 @@ final class MatchesSection {
 		var store = Actions.create(
 			"Store provider matches",
 			Icon.SAVE.descriptor(),
-			() -> {
-				var file = FileChooser.forSavingFile(
-					"Store provider matches", "provider-matches.json");
-				if (file == null)
-					return;
-				var res = MatchDumpWriter.write(plan, file);
-				if (res.isError()) {
-					MsgBox.error("Failed to store matches", res.error());
-				}
-			});
+			() -> MatchDumpUtil.doSave(plan));
 
 		var load = Actions.create(
 			"Apply provider matches",
 			Icon.IMPORT.descriptor(),
-			() -> {
-				var file = FileChooser.open("json");
-				if (file == null)
-					return;
-				var res = MatchDumpLoader.apply(plan, file);
-				if (res.isError()) {
-					MsgBox.error("Failed to apply matches", res.error());
-				} else {
-					res.value().showDialog();
-					table.refresh();
-				}
-			});
+			() -> MatchDumpUtil.doApply(plan, table::refresh));
 
 		Actions.bind(section, store, load);
 	}

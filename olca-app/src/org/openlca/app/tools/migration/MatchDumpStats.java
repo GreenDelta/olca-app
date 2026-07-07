@@ -37,6 +37,11 @@ record MatchDumpStats(
 		}
 
 		@Override
+		protected Point getInitialSize() {
+			return UI.initialSizeOf(this, 400, 400);
+		}
+
+		@Override
 		protected void createFormContent(IManagedForm mform) {
 			var tk = mform.getToolkit();
 			var body = UI.dialogBody(mform.getForm(), tk);
@@ -65,9 +70,5 @@ record MatchDumpStats(
 				IDialogConstants.OK_LABEL, true);
 		}
 
-		@Override
-		protected Point getInitialSize() {
-			return UI.initialSizeOf(this, 400, 200);
-		}
 	}
 }

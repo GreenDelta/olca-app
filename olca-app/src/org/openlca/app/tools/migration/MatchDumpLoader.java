@@ -3,11 +3,13 @@ package org.openlca.app.tools.migration;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 import org.openlca.commons.Res;
 import org.openlca.io.olca.migration.MatchingStrategy;
 import org.openlca.io.olca.migration.MigrationPlan;
+import org.openlca.io.olca.migration.ProviderInfo;
 import org.openlca.io.olca.migration.ProviderMatch;
 import org.openlca.jsonld.Json;
 
@@ -117,9 +119,31 @@ class MatchDumpLoader {
 			);
 		}
 
+		/// Returns `true`, if the provided match was updated with the information
+		/// from this entry. This is the case, when the given match is complete but
+		/// has a different selected target provider than described by this entry.
+		/// In this case, it searches for the corresponding target provider
+		/// described by this entry. If it finds such a provider, it updates the
+		/// match and returns `true`. In all other cases, it returns `false`.
 		boolean checkUpdate(ProviderMatch match) {
-			// TODO
-			return false;
+			if (match == null
+				|| !match.isComplete()
+				|| Objects.equals(this.selected, match.selected().provider().refId))
+				return false;
+
+			ProviderInfo alternative = null;
+			for (var alt : match.alternatives()) {
+				if (alt.provider() != null
+					&& Objects.equals(selected, alt.provider().refId)) {
+					alternative = alt;
+					break;
+				}
+			}
+			if (alternative == null)
+				return false;
+
+			match.select(alternative, strategy);
+			return true;
 		}
 	}
 }
