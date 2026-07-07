@@ -1,7 +1,6 @@
 package org.openlca.app.tools.migration;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -34,11 +33,6 @@ record MatchDumpStats(
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
 			shell.setText("Updated the migration plan");
-		}
-
-		@Override
-		protected Point getInitialSize() {
-			return UI.initialSizeOf(this, 400, 400);
 		}
 
 		@Override
