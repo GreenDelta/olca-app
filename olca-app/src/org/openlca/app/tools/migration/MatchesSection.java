@@ -93,7 +93,7 @@ final class MatchesSection {
 				var file = FileChooser.open("json");
 				if (file == null)
 					return;
-				var res = MatchDump.apply(plan, file);
+				var res = MatchDumpLoader.apply(plan, file);
 				if (res.isError()) {
 					MsgBox.error("Failed to apply matches", res.error());
 				} else {
