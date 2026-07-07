@@ -80,7 +80,7 @@ final class MatchesSection {
 					"Store provider matches", "provider-matches.json");
 				if (file == null)
 					return;
-				var res = MatchDump.store(plan, file);
+				var res = MatchDumpWriter.write(plan, file);
 				if (res.isError()) {
 					MsgBox.error("Failed to store matches", res.error());
 				}

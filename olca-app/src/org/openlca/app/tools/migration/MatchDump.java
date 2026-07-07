@@ -15,64 +15,10 @@ import org.openlca.app.util.UI;
 import org.openlca.commons.Res;
 import org.openlca.io.olca.migration.MatchingStrategy;
 import org.openlca.io.olca.migration.MigrationPlan;
-import org.openlca.io.olca.migration.ProviderInfo;
-import org.openlca.io.olca.migration.ProviderMatch;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 class MatchDump {
 
 	private MatchDump() {
-	}
-
-	static Res<Void> store(MigrationPlan plan, File file) {
-		if (plan == null || file == null)
-			return Res.error("Plan or file is null");
-		try {
-			var root = new JsonObject();
-			var matchesArray = new JsonArray();
-			for (var match : plan.providerMatches()) {
-				matchesArray.add(matchJson(match));
-			}
-			put(root, "matches", matchesArray);
-			write(root, file);
-			return Res.ok();
-		} catch (Exception e) {
-			return Res.error("Failed to store matches", e);
-		}
-	}
-
-	private static JsonObject matchJson(ProviderMatch match) {
-		var obj = new JsonObject();
-		put(obj, "source", infoJson(match.source()));
-		put(obj, "strategy", match.strategy());
-		if (match.selected() != null
-			&& match.selected().provider() != null) {
-			put(obj, "selected", match.selected().provider().refId);
-		}
-		var altArray = new JsonArray();
-		for (var alt : match.alternatives()) {
-			altArray.add(infoJson(alt));
-		}
-		put(obj, "alternatives", altArray);
-		return obj;
-	}
-
-	private static JsonObject infoJson(ProviderInfo info) {
-		if (info == null)
-			return null;
-		var obj = new JsonObject();
-		if (info.provider() != null) {
-			put(obj, "provider", asRef(info.provider()));
-		}
-		if (info.flow() != null) {
-			put(obj, "flow", asRef(info.flow()));
-		}
-		if (info.location() != null) {
-			put(obj, "location", asRef(info.location()));
-		}
-		return obj;
 	}
 
 	static Res<Stats> apply(MigrationPlan plan, File file) {
