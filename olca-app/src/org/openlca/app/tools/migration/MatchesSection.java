@@ -97,7 +97,7 @@ final class MatchesSection {
 				if (res.isError()) {
 					MsgBox.error("Failed to apply matches", res.error());
 				} else {
-					res.value().show();
+					res.value().showDialog();
 					table.refresh();
 				}
 			});
