@@ -9,8 +9,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.navigation.ModelTypeOrder;
 import org.openlca.app.rcp.images.Images;
+import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.descriptors.Descriptor;
@@ -39,6 +41,7 @@ final class EntitySection {
 		var items = collectEntities();
 		table.setInput(items);
 		Tables.bindColumnWidths2(table, 0.6, 0.4);
+		Actions.bind(table, TableClipboard.onCopySelected(table));
 		var gd = UI.gridData(table.getTable(), true, true);
 		gd.heightHint = 1;
 		gd.widthHint = 1;

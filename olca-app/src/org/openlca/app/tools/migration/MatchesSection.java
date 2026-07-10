@@ -13,6 +13,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
@@ -67,7 +68,8 @@ final class MatchesSection {
 				table.refresh();
 			}
 		});
-		Actions.bind(table, edit);
+		var copy = TableClipboard.onCopySelected(table);
+		Actions.bind(table, edit, copy);
 		Tables.onDoubleClick(table, _ -> edit.run());
 
 		var store = Actions.create(
