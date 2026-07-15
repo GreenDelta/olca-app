@@ -5,11 +5,11 @@ import java.util.function.Consumer;
 
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.Bean;
-import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.CheckModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BooleanModifier<T> extends CheckBoxCellModifier<T> {
+public class BooleanModifier<T> extends CheckModifier<T> {
 
 	private static final Logger log = LoggerFactory.getLogger(BooleanModifier.class);
 	private final String field;

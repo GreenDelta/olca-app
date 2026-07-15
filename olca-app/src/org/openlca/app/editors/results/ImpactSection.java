@@ -21,7 +21,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.ImpactResult;
@@ -135,7 +135,7 @@ record ImpactSection(ResultEditor editor) {
 		}
 	}
 
-	private static class AmountModifier extends DoubleCellModifier<ImpactResult> {
+	private static class AmountModifier extends DoubleModifier<ImpactResult> {
 
 		private final ResultEditor editor;
 

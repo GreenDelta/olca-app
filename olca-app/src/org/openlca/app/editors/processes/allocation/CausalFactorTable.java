@@ -33,7 +33,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
@@ -252,7 +252,7 @@ class CausalFactorTable {
 
 	}
 
-	private class Column extends TextCellModifier<Exchange> {
+	private class Column extends TextModifier<Exchange> {
 
 		private final Exchange product;
 		private final String key;
@@ -355,7 +355,7 @@ class CausalFactorTable {
 		static SumColumn addTo(TableViewer viewer) {
 			var table = viewer.getTable();
 			var col = new TableColumn(table, SWT.VIRTUAL);
-			col.setText("\u03a3");
+			col.setText("Σ");
 			col.setToolTipText(M.SumOfAllocationFactors);
 			col.setWidth(80);
 			col.setAlignment(SWT.CENTER);

@@ -35,7 +35,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.field.StringModifier;
 import org.openlca.commons.Strings;
@@ -294,7 +294,7 @@ public class ParameterSection {
 		}
 	}
 
-	private class NameModifier extends TextCellModifier<Parameter> {
+	private class NameModifier extends TextModifier<Parameter> {
 		@Override
 		protected String getText(Parameter param) {
 			return param.name;

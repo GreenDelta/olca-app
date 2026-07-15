@@ -27,9 +27,9 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.ComboModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.openlca.core.database.ProcessDao;
 import org.openlca.core.database.config.DatabaseConfig;
 import org.openlca.core.model.Process;
@@ -186,7 +186,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 			}
 		}
 
-		private static class SystemModelCell extends TextCellModifier<Entry> {
+		private static class SystemModelCell extends TextModifier<Entry> {
 
 			@Override
 			protected String getText(Entry element) {
@@ -200,7 +200,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 		}
 
 		private static class DatabaseCell extends
-				ComboBoxCellModifier<Entry, DatabaseConfig> {
+                ComboModifier<Entry, DatabaseConfig> {
 
 			@Override
 			protected DatabaseConfig[] getItems(Entry element) {

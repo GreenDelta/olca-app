@@ -29,7 +29,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.math.SystemCalculator;
@@ -241,7 +241,7 @@ public class ParameterAnalysisDialog extends FormDialog {
 		}
 	}
 
-	private static class ValueModifier extends DoubleCellModifier<Param> {
+	private static class ValueModifier extends DoubleModifier<Param> {
 
 		private final boolean forStart;
 

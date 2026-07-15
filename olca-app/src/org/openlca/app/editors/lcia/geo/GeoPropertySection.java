@@ -19,9 +19,9 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.ComboModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
@@ -130,7 +130,7 @@ class GeoPropertySection {
 	private void bindModifiers() {
 		ModifySupport<GeoProperty> ms = new ModifySupport<>(table);
 		ms.bind(M.AggregationType, new AggTypeCell());
-		ms.bind(M.DefaultValue, new TextCellModifier<>() {
+		ms.bind(M.DefaultValue, new TextModifier<>() {
 			@Override
 			protected String getText(GeoProperty param) {
 				return param == null ? ""
@@ -158,7 +158,7 @@ class GeoPropertySection {
 	}
 
 	private static class AggTypeCell
-			extends ComboBoxCellModifier<GeoProperty, GeoAggregation> {
+			extends ComboModifier<GeoProperty, GeoAggregation> {
 
 		@Override
 		protected GeoAggregation[] getItems(GeoProperty param) {

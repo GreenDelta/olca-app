@@ -15,7 +15,7 @@ import org.openlca.app.editors.processes.ProcessEditor;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.CheckModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.doc.AspectMap;
@@ -60,7 +60,7 @@ class ReviewQualityTable {
 	private void bindModifiers(TableViewer table, Quality[] qs) {
 		var modifier = new ModifySupport<Item>(table);
 		for (var v : qs) {
-			modifier.bind(v.value(), new CheckBoxCellModifier<>() {
+			modifier.bind(v.value(), new CheckModifier<>() {
 				@Override
 				protected boolean isChecked(Item item) {
 					return item.value == v;

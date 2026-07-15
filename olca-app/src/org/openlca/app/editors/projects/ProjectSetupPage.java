@@ -35,10 +35,10 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.CheckModifier;
+import org.openlca.app.viewers.tables.modify.ComboModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
@@ -210,7 +210,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		editor.setDirty(true);
 	}
 
-	private class VariantNameEditor extends TextCellModifier<ProjectVariant> {
+	private class VariantNameEditor extends TextModifier<ProjectVariant> {
 		@Override
 		protected String getText(ProjectVariant variant) {
 			return variant.name;
@@ -227,7 +227,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private class VariantDescriptionEditor extends
-		TextCellModifier<ProjectVariant> {
+		TextModifier<ProjectVariant> {
 
 		@Override
 		protected String getText(ProjectVariant variant) {
@@ -244,7 +244,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private class VariantAllocationEditor extends
-		ComboBoxCellModifier<ProjectVariant, AllocationMethod> {
+		ComboModifier<ProjectVariant, AllocationMethod> {
 
 		@Override
 		protected AllocationMethod getItem(ProjectVariant var) {
@@ -271,7 +271,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 	}
 
 	private class VariantUnitEditor extends
-		ComboBoxCellModifier<ProjectVariant, Unit> {
+		ComboModifier<ProjectVariant, Unit> {
 		@Override
 		protected Unit getItem(ProjectVariant var) {
 			return var.unit;
@@ -307,7 +307,7 @@ class ProjectSetupPage extends ModelPage<Project> {
 		}
 	}
 
-	private class DisplayModifier extends CheckBoxCellModifier<ProjectVariant> {
+	private class DisplayModifier extends CheckModifier<ProjectVariant> {
 		@Override
 		protected boolean isChecked(ProjectVariant v) {
 			return !v.isDisabled;

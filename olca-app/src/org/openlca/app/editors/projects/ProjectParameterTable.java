@@ -34,7 +34,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.Daos;
 import org.openlca.core.model.ImpactCategory;
@@ -343,7 +343,7 @@ class ProjectParameterTable {
 		}
 	}
 
-	private class ValueModifier extends TextCellModifier<ParameterRedef> {
+	private class ValueModifier extends TextModifier<ParameterRedef> {
 
 		private final String key;
 
@@ -381,7 +381,7 @@ class ProjectParameterTable {
 		}
 	}
 
-	private class DescriptionModifier extends TextCellModifier<ParameterRedef> {
+	private class DescriptionModifier extends TextModifier<ParameterRedef> {
 		@Override
 		protected String getText(ParameterRedef redef) {
 			return redef == null ? null : redef.description;

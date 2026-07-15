@@ -1,5 +1,9 @@
 package org.openlca.app.editors.sd.editor.graph.actions.vardialog;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -15,17 +19,13 @@ import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.commons.Strings;
 import org.openlca.sd.model.LookupFunc;
 import org.openlca.sd.model.cells.Cell;
 import org.openlca.sd.model.cells.LookupCell;
 import org.openlca.sd.model.cells.LookupEqnCell;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 final class LookupPanel extends Panel {
 
@@ -162,8 +162,8 @@ final class LookupPanel extends Panel {
 			}
 		}
 
-		static DoubleCellModifier<Row> modifierOfX() {
-			return new DoubleCellModifier<>() {
+		static DoubleModifier<Row> modifierOfX() {
+			return new DoubleModifier<>() {
 				@Override
 				public Double getDouble(Row row) {
 					return row != null ? row.x : 0;
@@ -177,8 +177,8 @@ final class LookupPanel extends Panel {
 			};
 		}
 
-		static DoubleCellModifier<Row> modifierOfY() {
-			return new DoubleCellModifier<>() {
+		static DoubleModifier<Row> modifierOfY() {
+			return new DoubleModifier<>() {
 				@Override
 				public Double getDouble(Row row) {
 					return row != null ? row.y : 0;

@@ -11,8 +11,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.M;
 import org.openlca.app.util.Labels;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
-import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.ComboModifier;
+import org.openlca.app.viewers.tables.modify.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.ImpactCategory;
@@ -94,7 +94,7 @@ public record MappingTable(
 		return widths;
 	}
 
-	private static class FactorColumn extends DoubleCellModifier<IndicatorMapping> {
+	private static class FactorColumn extends DoubleModifier<IndicatorMapping> {
 
 		@Override
 		public Double getDouble(IndicatorMapping row) {
@@ -107,7 +107,7 @@ public record MappingTable(
 		}
 	}
 
-	private static class ScopeColumn extends DoubleCellModifier<IndicatorMapping> {
+	private static class ScopeColumn extends DoubleModifier<IndicatorMapping> {
 
 		private final String scope;
 
@@ -127,7 +127,7 @@ public record MappingTable(
 	}
 
 	private class IndicatorColumn extends
-		ComboBoxCellModifier<IndicatorMapping, ImpactCategory> {
+		ComboModifier<IndicatorMapping, ImpactCategory> {
 
 		@Override
 		protected ImpactCategory[] getItems(IndicatorMapping row) {
@@ -178,7 +178,7 @@ public record MappingTable(
 	}
 
 	private static class EpdIndicatorColumn
-		extends ComboBoxCellModifier<IndicatorMapping, Vocab.Indicator> {
+		extends ComboModifier<IndicatorMapping, Vocab.Indicator> {
 
 		@Override
 		protected Vocab.Indicator[] getItems(IndicatorMapping row) {

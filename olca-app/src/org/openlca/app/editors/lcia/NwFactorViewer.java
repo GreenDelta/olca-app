@@ -12,7 +12,7 @@ import org.openlca.app.editors.comments.CommentPaths;
 import org.openlca.app.editors.lcia.NwFactorViewer.Item;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.openlca.core.model.ImpactCategory;
 import org.openlca.core.model.NwFactor;
 import org.openlca.core.model.NwSet;
@@ -112,7 +112,7 @@ class NwFactorViewer extends AbstractTableViewer<Item> {
 		}
 	}
 
-	private class NormalizationModifier extends TextCellModifier<Item> {
+	private class NormalizationModifier extends TextModifier<Item> {
 
 		@Override
 		protected String getText(Item element) {
@@ -154,7 +154,7 @@ class NwFactorViewer extends AbstractTableViewer<Item> {
 		}
 	}
 
-	private class WeightingModifier extends TextCellModifier<Item> {
+	private class WeightingModifier extends TextModifier<Item> {
 
 		@Override
 		protected String getText(Item element) {

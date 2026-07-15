@@ -38,7 +38,7 @@ import org.openlca.app.viewers.combo.AllocationCombo;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.AllocationFactor;
 import org.openlca.core.model.AllocationMethod;
@@ -265,7 +265,7 @@ public class AllocationPage extends ModelPage<Process> {
 
 		String label() {
 			if (isSum())
-				return "\u03a3"; // Sigma
+				return "Σ";
 			var name = Labels.name(product.flow);
 			return product.unit != null
 				? String.format("%s [%.2f %s]",
@@ -384,7 +384,7 @@ public class AllocationPage extends ModelPage<Process> {
 		}
 	}
 
-	private class ValueModifier extends TextCellModifier<Row> {
+	private class ValueModifier extends TextModifier<Row> {
 
 		private final AllocationMethod method;
 

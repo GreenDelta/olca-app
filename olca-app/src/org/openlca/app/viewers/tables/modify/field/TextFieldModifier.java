@@ -5,11 +5,11 @@ import java.util.function.Consumer;
 
 import org.openlca.app.editors.ModelEditor;
 import org.openlca.app.util.Bean;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class TextFieldModifier<T, V> extends TextCellModifier<T> {
+public abstract class TextFieldModifier<T, V> extends TextModifier<T> {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final String field;

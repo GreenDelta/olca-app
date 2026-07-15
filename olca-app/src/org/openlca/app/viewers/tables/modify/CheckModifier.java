@@ -1,6 +1,6 @@
 package org.openlca.app.viewers.tables.modify;
 
-public abstract class CheckBoxCellModifier<T> implements ICellModifier<T> {
+public abstract class CheckModifier<T> implements ICellModifier<T> {
 
 	@Override
 	public final ICellModifier.CellEditingType getCellEditingType() {

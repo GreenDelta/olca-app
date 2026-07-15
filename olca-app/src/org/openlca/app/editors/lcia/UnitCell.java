@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.openlca.app.editors.lcia.UnitCell.UnitItem;
-import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.ComboModifier;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowProperty;
@@ -18,7 +18,7 @@ import org.openlca.core.model.UnitGroup;
 /**
  * A cell editor for setting units and flow properties of an LCIA factor.
  */
-class UnitCell extends ComboBoxCellModifier<ImpactFactor, UnitItem> {
+class UnitCell extends ComboModifier<ImpactFactor, UnitItem> {
 
 	private final ImpactCategoryEditor editor;
 

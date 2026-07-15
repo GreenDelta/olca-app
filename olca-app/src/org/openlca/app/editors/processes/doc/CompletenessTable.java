@@ -16,7 +16,7 @@ import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.CheckModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.FlowType;
@@ -55,7 +55,7 @@ class CompletenessTable {
 	private void bindModifiers(TableViewer table) {
 		var modifier = new ModifySupport<Item>(table);
 		for (var v : FlowCompleteness.values()) {
-			modifier.bind(labelOf(v), new CheckBoxCellModifier<>() {
+			modifier.bind(labelOf(v), new CheckModifier<>() {
 				@Override
 				protected boolean isChecked(Item item) {
 					return item.value == v;

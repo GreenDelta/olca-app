@@ -1,6 +1,6 @@
 package org.openlca.app.viewers.tables.modify;
 
-public abstract class TextCellModifier<T> implements ICellModifier<T> {
+public abstract class TextModifier<T> implements ICellModifier<T> {
 
 	@Override
 	public final ICellModifier.CellEditingType getCellEditingType() {

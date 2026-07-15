@@ -26,7 +26,7 @@ import org.openlca.app.viewers.Selections;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
+import org.openlca.app.viewers.tables.modify.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.core.model.FlowResult;
 import org.openlca.core.model.ModelType;
@@ -217,7 +217,7 @@ record FlowSection(ResultEditor editor, boolean forInputs) {
 		}
 	}
 
-	private static class AmountModifier extends DoubleCellModifier<FlowResult> {
+	private static class AmountModifier extends DoubleModifier<FlowResult> {
 
 		private final ResultEditor editor;
 

@@ -61,7 +61,7 @@ public class ModifySupport<T> {
 	 * for the getter are allowed. The setter is only called if text was changed.
 	 */
 	public ModifySupport<T> bind(String property, Getter<T> getter, Setter<T> setter) {
-		var modifier = new TextCellModifier<T>() {
+		var modifier = new TextModifier<T>() {
 			@Override
 			protected String getText(T element) {
 				if (getter == null)

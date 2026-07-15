@@ -23,7 +23,7 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.CheckModifier;
 import org.openlca.app.viewers.tables.modify.field.DoubleModifier;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.database.usage.FlowPropertyFactorUseSearch;
@@ -242,7 +242,7 @@ class FlowPropertyFactorViewer extends AbstractTableViewer<FlowPropertyFactor> {
 	}
 
 	private class ReferenceModifier extends
-			CheckBoxCellModifier<FlowPropertyFactor> {
+            CheckModifier<FlowPropertyFactor> {
 
 		@Override
 		protected boolean isChecked(FlowPropertyFactor element) {

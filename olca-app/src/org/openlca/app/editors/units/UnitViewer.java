@@ -22,9 +22,9 @@ import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.tables.AbstractTableViewer;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
-import org.openlca.app.viewers.tables.modify.DoubleCellModifier;
-import org.openlca.app.viewers.tables.modify.TextCellModifier;
+import org.openlca.app.viewers.tables.modify.CheckModifier;
+import org.openlca.app.viewers.tables.modify.DoubleModifier;
+import org.openlca.app.viewers.tables.modify.TextModifier;
 import org.openlca.app.viewers.tables.modify.field.StringModifier;
 import org.openlca.core.database.UnitDao;
 import org.openlca.core.database.usage.UnitUsageSearch;
@@ -184,7 +184,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	}
 
-	private class NameModifier extends TextCellModifier<Unit> {
+	private class NameModifier extends TextModifier<Unit> {
 
 		@Override
 		protected String getText(Unit unit) {
@@ -206,7 +206,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 
 	}
 
-	private static class FactorModifier extends DoubleCellModifier<Unit> {
+	private static class FactorModifier extends DoubleModifier<Unit> {
 
 		private final UnitGroupEditor editor;
 
@@ -237,7 +237,7 @@ class UnitViewer extends AbstractTableViewer<Unit> {
 		}
 	}
 
-	private class ReferenceModifier extends CheckBoxCellModifier<Unit> {
+	private class ReferenceModifier extends CheckModifier<Unit> {
 
 		@Override
 		protected boolean isChecked(Unit element) {

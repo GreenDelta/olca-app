@@ -15,7 +15,7 @@ import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
-import org.openlca.app.viewers.tables.modify.ComboBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.ComboModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
 import org.openlca.io.olca.migration.MigrationPlan;
 import org.openlca.io.olca.migration.ProviderInfo;
@@ -86,7 +86,7 @@ final class MatchesSection {
 	}
 
 	private static final class TargetProviderModifier
-		extends ComboBoxCellModifier<ProviderMatch, ProviderInfo> {
+		extends ComboModifier<ProviderMatch, ProviderInfo> {
 
 		@Override
 		protected ProviderInfo[] getItems(ProviderMatch row) {

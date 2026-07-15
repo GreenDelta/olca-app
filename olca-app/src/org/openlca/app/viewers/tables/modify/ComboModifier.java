@@ -10,7 +10,7 @@ package org.openlca.app.viewers.tables.modify;
  * @param <C>
  *            the type of items in the combo-box
  */
-public abstract class ComboBoxCellModifier<R, C> implements ICellModifier<R> {
+public abstract class ComboModifier<R, C> implements ICellModifier<R> {
 
 	@Override
 	public final ICellModifier.CellEditingType getCellEditingType() {

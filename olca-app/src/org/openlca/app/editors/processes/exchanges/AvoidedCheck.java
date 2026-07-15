@@ -3,12 +3,12 @@ package org.openlca.app.editors.processes.exchanges;
 import java.util.Objects;
 
 import org.openlca.app.editors.processes.ProcessEditor;
-import org.openlca.app.viewers.tables.modify.CheckBoxCellModifier;
+import org.openlca.app.viewers.tables.modify.CheckModifier;
 import org.openlca.core.model.Exchange;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.Process;
 
-class AvoidedCheck extends CheckBoxCellModifier<Exchange> {
+class AvoidedCheck extends CheckModifier<Exchange> {
 
 	private final ProcessEditor editor;
 
