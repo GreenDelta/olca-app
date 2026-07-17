@@ -1,35 +1,14 @@
 ## Building the distribution packages
 
-### PDE Export
+If you have all tools installed and the `olca-modules` are located next to your
+`olca-app-project` , just run:
 
-To build the distribution packages, we currently use the standard PDE Export
-wizard. Click on the `olca-app` project and then on `Export...` from the context
-menu. Select `Plug-in Development > Eclipse Product` from the export wizard and
-select the following options in the export dialog:
+```bash
+uv run prepare-release.py full-build
+```
 
-* Configuration: `/olca-app/openLCA.product` (should be the default)
-* Root directory: `openLCA`
-* Synchronize before exporting: yes [x]
-* Destination directory: choose the `olca-app-build/build` folder of this project
-* Generate p2 repository: no [ ] (would be just overhead)
-* Export for multiple platforms: yes [x]
-* (take the defaults for the others)
-
-In the next page, select the platforms for which you want to build the product.
-After the export, you need to run the package module `package` to copy
-resources like the Java runtime, the native math libraries, etc. to the
-application folder and to create the installers.
-
-The packager script can build distribution packages for the following platforms
-(but you do not need to build them all, if a platform product is missing it is
-simply ignored in the package script):
-
-* Linux gtk x86_64
-* macOS cocoa x86_64
-* Windows win32 x86_64
-
-The packager script may download build tools (7zip, NSIS on Windows), the JRE,
-and native libraries if these are missing.
+This will execute the full build pipeline and create the distribution packages
+for _all_ supported platforms.
 
 -------------
 
@@ -61,7 +40,7 @@ The Tycho build outputs to the same directory structure as the PDE Export, so th
 
 The Tycho build uses three Maven POMs:
 - `olca-app-build/pom.xml` - Parent aggregator with shared configuration
-- `olca-app/pom.xml` - Builds the OSGi plugin bundle  
+- `olca-app/pom.xml` - Builds the OSGi plugin bundle
 - `olca-app-build/product/pom.xml` - Creates distributable products
 
 **Note**: You can use either the PDE Export wizard or `mvn clean verify` to create the distribution packages.
@@ -224,12 +203,12 @@ convert 16_8bit.bmp 16_32bit.bmp 32_8bit.bmp 32_32bit.bmp 48_8bit.bmp 48_32bit.b
 
 ### Update the translations
 
-openLCA users can update the translation of the application by using the 
-[translate.openlca.org](https://translate.openlca.org/) website. For each 
+openLCA users can update the translation of the application by using the
+[translate.openlca.org](https://translate.openlca.org/) website. For each
 release, the translations are updated with the following steps:
 
 1. Download the latest translations from the `translate.openlca.org` website.
-   One can check wether the result of the _Edited_ filter is populated and 
+   One can check wether the result of the _Edited_ filter is populated and
    download the file accordingly.
 
 2. Copy the translations into the `olca-app/OSGI-INF/l10n` and `olca-app/src/
@@ -241,3 +220,24 @@ release, the translations are updated with the following steps:
 4. Update `translate.openlca.org` server by replacing the property files in
    `/opt/translator/data/original/` with the new ones and removing the change
    files in `/opt/translator/data/olca-app` and `/opt/translator/data/olca-app-osgi`. Before doing it, best practice is to make a backup of the `/opt/translator/data` named `/opt/translator/data.backup`.
+
+-----
+
+### Legacy PDE Export
+
+Building the application based on the PDE Export is not recommended anymore but
+could still work. To run it in Eclipse, click on the `olca-app` project and then
+on `Export...` from the context menu. Select `Plug-in Development > Eclipse
+Product` from the export wizard and select the following options in the export
+dialog:
+
+* Configuration: `/olca-app/openLCA.product` (should be the default)
+* Root directory: `openLCA`
+* Synchronize before exporting: yes [x]
+* Destination directory: choose the `olca-app-build/build` folder of this project
+* Generate p2 repository: no [ ] (would be just overhead)
+* Export for multiple platforms: yes [x]
+* (take the defaults for the others)
+
+In the next page, select the platforms for which you want to build the product.
+After the export, you need to run the package module `package` (see above).

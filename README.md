@@ -1,11 +1,10 @@
-# openLCA
-This repository contains the source code of [openLCA](http://openlca.org).
-openLCA is a Java application that runs on the Eclipse Rich Client Platform
-([Eclipse RCP](http://wiki.eclipse.org/index.php/Rich_Client_Platform)). This
-project depends on the [olca-modules](https://github.com/GreenDelta/olca-modules)
-project which is a plain [Maven](http://maven.apache.org/) project that contains
-the core functionalities of openLCA (e.g. the model, database access,
-calculations, data exchange, and database updates).
+# openLCA This repository contains the source code of
+[openLCA](http://openlca.org). openLCA is a Java application that runs on the
+Eclipse Rich Client Platform (Eclipse RCP). This project depends on the
+[olca-modules](https://github.com/GreenDelta/olca-modules) project which is a
+plain [Maven](http://maven.apache.org/) project that contains the core
+functionalities of openLCA (e.g. the model, database access, calculations, data
+exchange, and database updates).
 
 This repository has the following sub-projects:
 
@@ -22,11 +21,11 @@ See also the README files that are contained in these sub-projects.
 
 ## Building from source
 openLCA is an Eclipse RCP application with parts of the user interface written
-in HTML5 and JavaScript. To compile it from source you need to have the
+in HTML and JavaScript. To compile it from source you need to have the
 following tools installed:
 
 * [Git](https://git-scm.com/) (optional)
-* a [Java Development Kit >= v21](https://adoptium.net)
+* a [Java Development Kit >= v25](https://adoptium.net)
 * [Maven](http://maven.apache.org/)
 * the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/packages/)
 * [Node.js](https://nodejs.org/)

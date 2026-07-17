@@ -86,6 +86,7 @@ def full_build():
     prepare_release()
     build_dir = _root_dir / "olca-app-build"
     check_call([cmd("mvn"), "clean", "verify"], cwd=build_dir)
+    check_call(["uv", "sync"], cwd=build_dir)
     check_call(
         ["uv", "run", "python", "-m", "package", "--mkl", "--winstaller"],
         cwd=build_dir,

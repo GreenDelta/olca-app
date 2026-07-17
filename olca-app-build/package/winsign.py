@@ -41,8 +41,3 @@ def remove_signature(exe: Path):
 
     except Exception as e:
         print(f"  Error removing digital signature from {exe}: {e}")
-
-
-if __name__ == "__main__":
-    exec = Path.home() / "Desktop/openLCA.exe"
-    remove_signature(exec)
