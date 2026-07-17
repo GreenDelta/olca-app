@@ -1,123 +1,78 @@
-# openLCA This repository contains the source code of
-[openLCA](http://openlca.org). openLCA is a Java application that runs on the
-Eclipse Rich Client Platform (Eclipse RCP). This project depends on the
-[olca-modules](https://github.com/GreenDelta/olca-modules) project which is a
-plain [Maven](http://maven.apache.org/) project that contains the core
-functionalities of openLCA (e.g. the model, database access, calculations, data
-exchange, and database updates).
+# openLCA
 
-This repository has the following sub-projects:
+This repository contains the source code of [openLCA](http://openlca.org).
+openLCA is a Java application that runs on the Eclipse Rich Client Platform
+(Eclipse RCP). The source code is structured in the following sub-projects:
 
 * [olca-app](./olca-app): contains the source code of the openLCA RCP
   application.
-* [olca-app-build](./olca-app-build): contains the build scripts for compiling
-  openLCA and creating the installers for Windows, Linux, and macOS.
+* [olca-app-build](./olca-app-build): contains the build scripts creating the
+  distribution packages for Windows, Linux, and macOS.
 * [olca-app-html](./olca-app-html): contains the source code for the HTML views
   in openLCA (like the start page or the report views).
-* [olca-refdata](./olca-refdata): contains the current reference data (units,
-  quantities, and flows) that are packaged with openLCA.
+* [olca-refdata](./olca-refdata): contains the build scripts fro the reference
+  databases (with units, flows, locatios, etc.) that are packaged with openLCA.
 
-See also the README files that are contained in these sub-projects.
+See also the README files of these sub-projects for more information.
 
-## Building from source
-openLCA is an Eclipse RCP application with parts of the user interface written
-in HTML and JavaScript. To compile it from source you need to have the
-following tools installed:
 
-* [Git](https://git-scm.com/) (optional)
+## Running from source
+
+In order to compile and run openLCA from source, you need to have the following
+tools installed:
+
 * a [Java Development Kit >= v25](https://adoptium.net)
 * [Maven](http://maven.apache.org/)
-* the [Eclipse package for RCP developers](https://www.eclipse.org/downloads/packages/)
+* the [Eclipse package for RCP
+  developers](https://www.eclipse.org/downloads/packages/)
 * [Node.js](https://nodejs.org/)
+* (Python and [uv](https://github.com/astral-sh/uv) in case you want to build
+  the distribution packages )
 
-When you have these tools installed you can build the application from source
-via the following steps:
+When you have these tools installed, you can build and run the application with
+the following steps:
 
 #### Install the openLCA core modules
+
 The core modules contain the application logic that is independent from the user
 interface and can be also used in other applications. These modules are plain
 Maven projects and can be installed via `mvn install`. See the
 [olca-modules](https://github.com/GreenDelta/olca-modules) repository for more
-information.
-
-#### Get the source code of the application
-We recommend to use Git to manage the source code but you can also download
-the source code as a [zip file](https://github.com/GreenDelta/olca-app/archive/master.zip).
-Create a development directory (the path should not contain whitespaces):
-
-```bash
-mkdir olca
-cd olca
-```
-
-and get the source code:
+information. Note that we also distribute the latest stable version of the
+modules on the Maven Central repository. However, if you want to test the
+current openLCA development branch, you probably need to install them first.
+There is also a script for installing them when you put them next to the
+`olca-app` folder:
 
 ```bash
-git clone https://github.com/GreenDelta/olca-app.git
-```
-
-Your development directory should now look like this:
-
-```
-olca-app
-  .git
-  olca-app
-  olca-app-build
-  olca-app-html
-  olca-refdata
-  ...
+./update_modules.sh
+# or on Windows
+./update_modules.bat
 ```
 
 #### Building the HTML pages
-To build the HTML pages of the user interface navigate to the
-[olca-app-html](./olca-app-html) folder:
+
+To build the HTML pages of the user interface, navigate to the
+[olca-app-html](./olca-app-html) and run the following commands:
 
 ```bash
 cd olca-app/olca-app-html
-```
-
-Then install the Node.js modules via [npm](https://www.npmjs.com/) (npm is a
-package manager that comes with your Node.js installation):
-
-```
+# install the dependencies
 npm install
-```
-
-This also installs a local version of `webpack` which is used to create the
-distribution package. The build of this package can be invoked via:
-
-```bash
+# build and package the HTML pages for the app
 npm run build
 ```
 
-The output is generated in the `dist` folder of this directory and packaged
-into a zip file that is copied to the `../olca-app/html` folder.
-
 #### Prepare the Eclipse workspace
-Download the current Eclipse package for RCP and RAP developers (to have
-everything together you can extract it into your development directory). Create
-a workspace directory in your development directory (e.g. under the eclipse
-folder to have a clean structure):
 
-```
-eclipse
-  ...
-  workspace
-olca-app
-  .git
-  olca-app
-  olca-app-build
-  olca-app-html
-  olca-app-refdata
-  ...
-```
-
-After this, open Eclipse and select the created workspace directory. Import the
-projects into Eclipse via `Import > General > Existing Projects into Workspace`
-(select the `olca/olca-app` directory). You should now see the `olca-app`,
-`olca-app-build`, projects in your Eclipse workspace.
+Download the current Eclipse package for RCP and RAP developers, start it and
+create a workspace directory. Import the projects into Eclipse via `Import >
+General > Existing Projects into Workspace` (select the `olca-app` directory).
+You should now see the `olca-app`, `olca-app-build`, projects in your Eclipse
+workspace.
 
 #### Loading the target platform
+
 The file `platform.target` in the `olca-app` project contains the definition of
 the [target platform](https://help.eclipse.org/oxygen/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Fconcepts%2Ftarget.htm)
 of the openLCA RCP application. Just open the file with the `Target Editor`
