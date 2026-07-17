@@ -8,7 +8,6 @@
 import argparse
 import os
 import re
-import sys
 from pathlib import Path
 from subprocess import check_call
 
@@ -88,7 +87,8 @@ def full_build():
     build_dir = _root_dir / "olca-app-build"
     check_call([cmd("mvn"), "clean", "verify"], cwd=build_dir)
     check_call(
-        [python_cmd(), "-m", "package", "--mkl", "--winstaller"], cwd=build_dir
+        ["uv", "run", "python", "-m", "package", "--mkl", "--winstaller"],
+        cwd=build_dir,
     )
 
 
@@ -109,12 +109,6 @@ def cmd(cm: str) -> str:
     if cm == "mvn" or cm == "npm":
         return cm + ".cmd"
     return cm
-
-
-def python_cmd() -> str:
-    if os.name == "nt":
-        return "py"
-    return sys.executable
 
 
 if __name__ == "__main__":

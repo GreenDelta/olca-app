@@ -12,6 +12,49 @@ from package.template import Template
 from package.zipio import Zip
 
 
+def _remove_exe_signature(filepath):
+    if not filepath.exists():
+        print(f"  Warning: {filepath} not found; cannot remove signature.")
+        return
+    import pefile
+
+    try:
+        with open(filepath, "rb") as f:
+            data = f.read()
+
+        pe = pefile.PE(data=data)
+        sec_dir_idx = pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_SECURITY"]
+        if sec_dir_idx < len(pe.OPTIONAL_HEADER.DATA_DIRECTORY):
+            security_dir = pe.OPTIONAL_HEADER.DATA_DIRECTORY[sec_dir_idx]
+            if security_dir.VirtualAddress != 0 and security_dir.Size != 0:
+                print(f"  Removing digital signature from {filepath.name}...")
+                address = security_dir.VirtualAddress
+                
+                # Clear the security directory
+                security_dir.VirtualAddress = 0
+                security_dir.Size = 0
+                
+                new_data = pe.write()
+                pe.close()
+
+                # Truncate the signature bytes (slice up to address)
+                if address < len(new_data):
+                    new_data = new_data[:address]
+
+                with open(filepath, "wb") as f:
+                    f.write(new_data)
+                print("  Signature removed successfully.")
+            else:
+                pe.close()
+                print(
+                    f"  {filepath.name} is already unsigned or has no security directory."
+                )
+        else:
+            pe.close()
+    except Exception as e:
+        print(f"  Error removing digital signature from {filepath}: {e}")
+
+
 def package(
     osa: OsArch,
     version: Version,
@@ -57,6 +100,7 @@ def package(
             lang="en",
         )
         bins = ["ipc-server.cmd", "grpc-server.cmd"]
+        _remove_exe_signature(build_dir.app / "openLCA.exe")
     if osa.is_linux():
         shutil.copy2(
             PROJECT_DIR / "templates/openLCA_linux.ini",
@@ -74,7 +118,7 @@ def package(
             shutil.copy2(bin_source, bin_target)
 
     # build the package
-    app_prefix = f"openLCA" if lib == Lib.BLAS else f"openLCA_{lib.value}"
+    app_prefix = "openLCA" if lib == Lib.BLAS else f"openLCA_{lib.value}"
     pack_name = f"{app_prefix}_{osa.value}_{version.app_suffix}"
 
     print(f"  Creating package {pack_name}...")
