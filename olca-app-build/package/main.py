@@ -1,6 +1,7 @@
 import argparse
 import shutil
 
+import package.winsign as winsign
 from package import PROJECT_DIR
 from package.dir import BuildDir, DistDir, delete
 from package.dist import Lib, OsArch, Version
@@ -10,49 +11,6 @@ from package.native import NativeLib
 from package.nsis import Nsis
 from package.template import Template
 from package.zipio import Zip
-
-
-def _remove_exe_signature(filepath):
-    if not filepath.exists():
-        print(f"  Warning: {filepath} not found; cannot remove signature.")
-        return
-    import pefile
-
-    try:
-        with open(filepath, "rb") as f:
-            data = f.read()
-
-        pe = pefile.PE(data=data)
-        sec_dir_idx = pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_SECURITY"]
-        if sec_dir_idx < len(pe.OPTIONAL_HEADER.DATA_DIRECTORY):
-            security_dir = pe.OPTIONAL_HEADER.DATA_DIRECTORY[sec_dir_idx]
-            if security_dir.VirtualAddress != 0 and security_dir.Size != 0:
-                print(f"  Removing digital signature from {filepath.name}...")
-                address = security_dir.VirtualAddress
-                
-                # Clear the security directory
-                security_dir.VirtualAddress = 0
-                security_dir.Size = 0
-                
-                new_data = pe.write()
-                pe.close()
-
-                # Truncate the signature bytes (slice up to address)
-                if address < len(new_data):
-                    new_data = new_data[:address]
-
-                with open(filepath, "wb") as f:
-                    f.write(new_data)
-                print("  Signature removed successfully.")
-            else:
-                pe.close()
-                print(
-                    f"  {filepath.name} is already unsigned or has no security directory."
-                )
-        else:
-            pe.close()
-    except Exception as e:
-        print(f"  Error removing digital signature from {filepath}: {e}")
 
 
 def package(
@@ -100,13 +58,15 @@ def package(
             lang="en",
         )
         bins = ["ipc-server.cmd", "grpc-server.cmd"]
-        _remove_exe_signature(build_dir.app / "openLCA.exe")
+        winsign.remove_signature(build_dir.app / "openLCA.exe")
+
     if osa.is_linux():
         shutil.copy2(
             PROJECT_DIR / "templates/openLCA_linux.ini",
             build_dir.app / "openLCA.ini",
         )
         bins = ["ipc-server.sh", "grpc-server.sh"]
+
     if len(bins) > 0:
         bin_dir = build_dir.app / "bin"
         bin_dir.mkdir(exist_ok=True, parents=True)
