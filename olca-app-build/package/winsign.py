@@ -3,16 +3,13 @@ from pathlib import Path
 import pefile
 
 
-def remove_signature(exec: Path):
-    if not exec.exists():
-        print(f"  Warning: {exec} not found; cannot remove signature.")
+def remove_signature(exe: Path):
+    if not exe.exists():
+        print(f"  Warning: {exe} not found; cannot remove signature.")
         return
 
     try:
-        with open(exec, "rb") as f:
-            data = f.read()
-
-        pe = pefile.PE(data=data)
+        pe = pefile.PE(exe)
         sec_dir_idx = pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_SECURITY"]
         if sec_dir_idx >= len(pe.OPTIONAL_HEADER.DATA_DIRECTORY):
             pe.close()
@@ -23,23 +20,29 @@ def remove_signature(exec: Path):
             pe.close()
             return
 
-        print(f"  Removing digital signature from {exec.name}...")
-        address = security_dir.VirtualAddress
-
+        print(f"  Removing digital signature from {exe.name}...")
         # clear the security directory
+        sig_address = security_dir.VirtualAddress
+        sig_size = security_dir.Size
         security_dir.VirtualAddress = 0
         security_dir.Size = 0
-
         new_data = pe.write()
         pe.close()
 
-        # truncate the signature bytes (slice up to address)
-        if address < len(new_data):
-            new_data = new_data[:address]
+        # remove the signature bytes
+        if sig_address < len(new_data):
+            new_data = (
+                new_data[:sig_address] + new_data[sig_address + sig_size :]
+            )
 
-        with open(exec, "wb") as f:
+        with open(exe, "wb") as f:
             f.write(new_data)
             print("  Signature removed successfully.")
 
     except Exception as e:
-        print(f"  Error removing digital signature from {exec}: {e}")
+        print(f"  Error removing digital signature from {exe}: {e}")
+
+
+if __name__ == "__main__":
+    exec = Path.home() / "Desktop/openLCA.exe"
+    remove_signature(exec)
