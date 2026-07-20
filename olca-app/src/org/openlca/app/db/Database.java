@@ -207,9 +207,10 @@ public class Database {
 	public static String validateNewName(String name) {
 		if (name == null || name.isBlank())
 			return M.EmptyNameNotAllowed;
-		if (!name.strip().equals(name)) {
+		if (!name.strip().equals(name))
 			return M.EmptyNameNotAllowedDatabaseInfo;
-		}
+		if (name.matches(".*[<>:\"/\\\\|?*].*"))
+			return M.NewDatabase_InvalidName;
 		try {
 			var dir = new File(Workspace.dbDir(), name);
 			if (dir.exists())
