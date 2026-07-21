@@ -40,7 +40,7 @@ class RefCurrencyUpdate implements Runnable {
 		if (!b)
 			return;
 		closeEditors();
-		App.run(M.UpdateReferenceCurrency,
+		App.exec(M.UpdateReferenceCurrency,
 				new RefCurrencyUpdate(c),
 				() -> App.open(Descriptor.of(c)));
 	}

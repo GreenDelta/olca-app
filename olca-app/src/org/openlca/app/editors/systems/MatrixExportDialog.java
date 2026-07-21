@@ -108,7 +108,7 @@ public class MatrixExportDialog extends FormDialog {
 			UI.filler(body, tk);
 			var button = UI.checkbox(body, tk);
 			button.setText(label);
-			Controls.onSelect(button, _e -> fn.accept(button.getSelection()));
+			Controls.onSelect(button, _ -> fn.accept(button.getSelection()));
 		};
 		check.accept(M.Regionalized, b -> config.regionalized = b);
 		check.accept(M.WithCosts, b -> config.withCosts = b);
@@ -124,7 +124,7 @@ public class MatrixExportDialog extends FormDialog {
 		var fileText = UI.text(inner, tk);
 		fileText.setEditable(false);
 		var browseBtn = UI.button(inner, tk, M.Browse);
-		Controls.onSelect(browseBtn, _e -> {
+		Controls.onSelect(browseBtn, _ -> {
 			var folder = FileChooser.selectFolder();
 			if (folder == null)
 				return;
@@ -149,7 +149,7 @@ public class MatrixExportDialog extends FormDialog {
 			if (format == config.format) {
 				radio.setSelection(true);
 			}
-			Controls.onSelect(radio, _e -> {
+			Controls.onSelect(radio, _ -> {
 				if (radio.getSelection()) {
 					config.format = format;
 				}
@@ -185,7 +185,7 @@ public class MatrixExportDialog extends FormDialog {
 
 		combo.select(0);
 		config.parameters = paramSets.getFirst();
-		Controls.onSelect(combo, e -> {
+		Controls.onSelect(combo, _ -> {
 			int i = combo.getSelectionIndex();
 			config.parameters = paramSets.get(i);
 		});
@@ -206,7 +206,7 @@ public class MatrixExportDialog extends FormDialog {
 		var combo = new ImpactMethodViewer(comp);
 		combo.setNullable(true);
 		combo.setInput(db);
-		combo.addSelectionChangedListener(_e -> {
+		combo.addSelectionChangedListener(_ -> {
 			var d = combo.getSelected();
 			if (d != null) {
 				config.impactMethod = db.get(ImpactMethod.class, d.id);
@@ -231,7 +231,7 @@ public class MatrixExportDialog extends FormDialog {
 		}
 
 		super.okPressed();
-		App.runWithProgress(M.ExportMatrices, () -> {
+		App.exec(M.ExportMatrices, () -> {
 			try {
 				config.exec();
 			} catch (Exception e) {

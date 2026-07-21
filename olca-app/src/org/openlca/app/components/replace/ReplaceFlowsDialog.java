@@ -90,7 +90,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 
 		UI.label(top, tk, M.With);
 		targetCombo = new FlowViewer(top);
-		targetCombo.addSelectionChangedListener($ -> updateButtons());
+		targetCombo.addSelectionChangedListener(_ -> updateButtons());
 		targetCombo.setEnabled(false);
 
 		App.runInUI("Render flows", () -> sourceCombo.setInput(usedFlows));
@@ -175,7 +175,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 		}
 
 		super.okPressed();
-		App.runWithProgress("Replace flow", () -> replacer.replace(oldFlow, newFlow));
+		App.exec("Replace flow", () -> replacer.replace(oldFlow, newFlow));
 	}
 
 }

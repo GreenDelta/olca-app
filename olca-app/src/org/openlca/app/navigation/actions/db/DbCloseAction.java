@@ -30,18 +30,15 @@ public class DbCloseAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
-			return false;
-		var e = (DatabaseElement) first;
-		return Database.isActive(e.getContent());
+		return selection.getFirst() instanceof DatabaseElement e
+			&& Database.isActive(e.getContent());
 	}
 
 	@Override
 	public void run() {
 		if (!Editors.closeAll())
 			return;
-		App.run(M.CloseDatabase, () -> {
+		App.exec(M.CloseDatabase, () -> {
 			try {
 				Database.close();
 			} catch (Exception e) {

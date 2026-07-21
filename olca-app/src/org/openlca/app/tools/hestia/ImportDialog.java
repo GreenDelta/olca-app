@@ -140,7 +140,7 @@ public class ImportDialog extends FormDialog {
 		Controls.onSelect(uRadio, onSelect);
 		Controls.onSelect(sRadio, onSelect);
 		Controls.onSelect(
-			providerCheck, e -> linkProviders = providerCheck.getSelection());
+			providerCheck, _ -> linkProviders = providerCheck.getSelection());
 	}
 
 	@Override
@@ -164,7 +164,7 @@ public class ImportDialog extends FormDialog {
 			.withDataVersion(dataVersion);
 		var log = imp.log();
 
-		App.runWithProgress(
+		App.exec(
 			"Importing " + cycles.size() + " cycle(s)...",
 			() -> {
 				try {

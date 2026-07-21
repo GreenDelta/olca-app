@@ -62,7 +62,7 @@ class EditorPage extends FormPage {
 				table.setInput(filtered);
 			}
 		};
-		filter.addModifyListener(e -> doFilter.run());
+		filter.addModifyListener(_ -> doFilter.run());
 		filterCombo.onChange = doFilter;
 
 		table = Tables.createViewer(body,
@@ -81,7 +81,7 @@ class EditorPage extends FormPage {
 
 		bindActions();
 		mform.reflow(true);
-		App.runWithProgress(
+		App.exec(
 			M.LoadingParametersDots,
 			() -> Param.fetchAll(Database.get(), params),
 			() -> table.setInput(params));
@@ -109,7 +109,7 @@ class EditorPage extends FormPage {
 			});
 
 		var onEvaluate = Actions.create(
-			M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> App.runWithProgress(
+			M.EvaluateAllFormulas, Icon.RUN.descriptor(), () -> App.exec(
 				M.EvaluateAllFormulasDots, this::evaluateFormulas, () -> {
 					table.setInput(params);
 					filter.setText("");

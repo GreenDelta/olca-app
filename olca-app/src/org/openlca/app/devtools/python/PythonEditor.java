@@ -44,7 +44,7 @@ public class PythonEditor extends ScriptingEditor {
 	public void eval() {
 		var script = page.getScript();
 		Console.show();
-		App.run(M.EvalScript, () -> Jython.exec(script));
+		App.exec(M.EvalScript, () -> Jython.exec(script));
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class PythonEditor extends ScriptingEditor {
 
 						String script = (String) args[0];
 						Console.show();
-						App.run(M.EvalScript, () -> Jython.exec(script));
+						App.exec(M.EvalScript, () -> Jython.exec(script));
 						return null;
 					});
 				});

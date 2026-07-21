@@ -136,10 +136,10 @@ class ParameterRedefTable {
 		CommentAction.bindTo(section, "parameterRedefs",
 				editor.getComments(), add, remove);
 		Actions.bind(table, add, remove, copy, paste, usage, toggleProtection);
-		Tables.onDeletePressed(table, _e -> remove());
+		Tables.onDeletePressed(table, _ -> remove());
 
 		// open the original parameter in double click
-		Tables.onDoubleClick(table, e -> {
+		Tables.onDoubleClick(table, _ -> {
 			ParameterRedef redef = Viewers.getFirstSelected(table);
 			if (redef == null)
 				return;
@@ -182,7 +182,7 @@ class ParameterRedefTable {
 
 	private void onPaste(String text) {
 		List<ParameterRedef> newList = new ArrayList<>();
-		App.runWithProgress(M.PasteParametersDots,
+		App.exec(M.PasteParametersDots,
 				() -> newList.addAll(ParameterClipboard.read(text)));
 		if (newList.isEmpty())
 			return;

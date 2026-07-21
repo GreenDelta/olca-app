@@ -95,7 +95,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 
 		UI.label(body, tk, M.With);
 		targetCombo = new ProcessCombo(body);
-		targetCombo.addSelectionChangedListener($ -> updateButtons());
+		targetCombo.addSelectionChangedListener(_ -> updateButtons());
 		targetCombo.setEnabled(false);
 
 		App.runInUI("Render providers", () -> sourceCombo.setInput(usedProviders));
@@ -148,7 +148,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 		var target = targetCombo.getSelected();
 
 		super.okPressed();
-		App.runWithProgress(
+		App.exec(
 				"Replace providers...",
 				() -> replacer.replace(origin, target, flow));
 	}

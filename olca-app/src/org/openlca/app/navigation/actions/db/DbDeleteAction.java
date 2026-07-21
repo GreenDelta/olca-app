@@ -71,7 +71,7 @@ public class DbDeleteAction extends Action implements INavigationAction {
 			return;
 		if (!checkCloseEditors())
 			return;
-		App.run(M.DeleteDatabase, this::doDelete, () -> {
+		App.exec(M.DeleteDatabase, this::doDelete, () -> {
 			Navigator.refresh();
 			HistoryView.refresh();
 			CompareView.clear();

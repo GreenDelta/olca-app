@@ -47,7 +47,7 @@ public class MountLibraryDialog extends FormDialog {
 		for (var libState : checkResult.getStates()) {
 			var lib = libState.first();
 			var state = libState.second();
-			stateMap.computeIfAbsent(state, s -> new ArrayList<>()).add(lib);
+			stateMap.computeIfAbsent(state, _ -> new ArrayList<>()).add(lib);
 		}
 		var stateOrder = new PreMountState[]{
 				PreMountState.NEW,
@@ -106,7 +106,7 @@ public class MountLibraryDialog extends FormDialog {
 			return;
 		}
 		var actions = dialog.collectActions();
-		App.runWithProgress(M.AddLibraryDots,
+		App.exec(M.AddLibraryDots,
 				() -> Mounter.of(Database.get(), library)
 						.apply(actions)
 						.run(),
@@ -193,7 +193,7 @@ public class MountLibraryDialog extends FormDialog {
 			if (selectedIdx >= 0) {
 				combo.select(selectedIdx);
 			}
-			Controls.onSelect(combo, $ -> {
+			Controls.onSelect(combo, _ -> {
 				var idx = combo.getSelectionIndex();
 				selectedAction = actions.get(idx);
 			});

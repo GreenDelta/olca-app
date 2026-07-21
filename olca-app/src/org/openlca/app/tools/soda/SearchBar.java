@@ -52,7 +52,7 @@ class SearchBar {
 
 		var button = tk.createButton(comp, M.Search, SWT.NONE);
 		button.setImage(Icon.SEARCH.get());
-		Controls.onSelect(button,	e -> runSearch());
+		Controls.onSelect(button,	_ -> runSearch());
 		searchText.addTraverseListener(e -> {
 			if (e.detail == SWT.TRAVERSE_RETURN) {
 				runSearch();
@@ -86,7 +86,7 @@ class SearchBar {
 
 		var err = new String[1];
 		var result = new ArrayList<Descriptor<?>>();
-		App.runWithProgress(M.SearchDataSetsDots, () -> {
+		App.exec(M.SearchDataSetsDots, () -> {
 			try {
 				var list = client.query(clazz, q);
 				result.addAll(list.getDescriptors());

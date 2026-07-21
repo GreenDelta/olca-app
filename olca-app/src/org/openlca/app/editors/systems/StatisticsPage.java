@@ -88,7 +88,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 		ImageHyperlink link = UI.imageHyperlink(comp, tk, SWT.TOP);
 		link.setForeground(Colors.linkBlue());
 		link.setImage(Images.get(ModelType.PROCESS));
-		Controls.onClick(link, e -> {
+		Controls.onClick(link, _ -> {
 			if (stats != null) {
 				App.open(stats.refProcess);
 			}
@@ -97,7 +97,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 
 		UI.label(comp, tk, "");
 		Button btn = UI.button(comp, tk, M.Update);
-		Controls.onSelect(btn, e -> calculate());
+		Controls.onSelect(btn, _ -> calculate());
 	}
 
 	private void providerSection(FormToolkit tk, Composite body) {
@@ -140,7 +140,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 				App.open(link.process());
 			}
 		});
-		Tables.onDoubleClick(table, e -> onOpen.run());
+		Tables.onDoubleClick(table, _ -> onOpen.run());
 		Actions.bind(table, onOpen);
 
 		if (inDegree) {
@@ -151,7 +151,7 @@ class StatisticsPage extends ModelPage<ProductSystem> {
 	}
 
 	private void calculate() {
-		App.runWithProgress(M.UpdatingStatisticsDots,
+		App.exec (M.UpdatingStatisticsDots,
 			() -> stats = Statistics.calculate(getModel(), AppContext.getEntityCache()),
 			() -> {
 				if (stats != null) {

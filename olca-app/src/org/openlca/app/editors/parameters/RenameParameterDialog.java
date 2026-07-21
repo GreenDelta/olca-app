@@ -53,7 +53,7 @@ public class RenameParameterDialog extends FormDialog {
 			return;
 		var db = Database.get();
 		var tree = new AtomicReference<ParameterUsageTree>();
-		App.run(
+		App.exec(
 				M.CollectDependencies,
 				() -> tree.set(ParameterUsageTree.of(param, db)),
 				() -> {
@@ -93,7 +93,7 @@ public class RenameParameterDialog extends FormDialog {
 			text.setText(param.name);
 		}
 
-		text.addModifyListener(e -> {
+		text.addModifyListener(_ -> {
 			var name = text.getText().trim();
 			var err = check(name);
 			if (err != null) {
@@ -146,7 +146,7 @@ public class RenameParameterDialog extends FormDialog {
 		super.okPressed();
 		if (Strings.equalsIgnoreCase(name, param.name))
 			return;
-		App.runWithProgress(
+		App.exec(
 				M.RenameParameterDots,
 				() -> Parameters.rename(Database.get(), param, name),
 				Navigator::refresh);

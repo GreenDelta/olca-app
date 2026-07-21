@@ -63,7 +63,7 @@ public class SaveImageAction extends WorkbenchPartAction {
 		var file = FileChooser.forSavingFile(M.Export, fileName);
 		if (file == null)
 			return;
-		App.run(M.SaveAsImage, new Runner(file));
+		App.exec(M.SaveAsImage, new Runner(file));
 	}
 
 	private class Runner implements Runnable {

@@ -219,7 +219,7 @@ class GeoFlowSection {
 		var calc = GeoFactorCalculator.of(
 				Database.get(), page.setup, locations);
 		var factors = new AtomicReference<List<ImpactFactor>>();
-		App.runWithProgress(M.CalculateRegionalizedFactorsDots,
+		App.exec(M.CalculateRegionalizedFactorsDots,
 				() -> factors.set(calc.calculate()),
 				() -> GeoFactorDialog.open(page, factors.get()));
 	}

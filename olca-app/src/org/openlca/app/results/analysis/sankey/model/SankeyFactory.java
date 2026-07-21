@@ -22,7 +22,7 @@ public class SankeyFactory {
 			return new Diagram(editor, config.orientation());
 
 		var diagram = new Diagram(editor, config.orientation());
-		App.runWithProgress(M.CalculateSankeyResultsDots,
+		App.exec(M.CalculateSankeyResultsDots,
 				() -> editor.setSankey(Sankey.of(
 						config.selection(), editor.result.provider())
 						.withMinimumShare(config.cutoff())

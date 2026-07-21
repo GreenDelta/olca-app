@@ -207,7 +207,7 @@ class ExchangeTable {
 
 		CommentAction.bindTo(section, "exchanges",
 				editor.getComments(), add, remove, formulaSwitch);
-		Tables.onDeletePressed(viewer, e -> onRemove());
+		Tables.onDeletePressed(viewer, _ -> onRemove());
 		Actions.bind(viewer, add, remove, qRef,
 				copy, paste, openFlow, openProvider);
 	}
@@ -280,7 +280,7 @@ class ExchangeTable {
 
 	private void onPaste(String text) {
 		List<Exchange> exchanges = new ArrayList<>();
-		App.runWithProgress(M.PasteExchangesDots,
+		App.exec(M.PasteExchangesDots,
 				() -> exchanges.addAll(Clipboard.read(text, forInputs)));
 		if (exchanges.isEmpty())
 			return;

@@ -64,7 +64,7 @@ public class XNexusEcoinventIndexExportAction extends Action implements INavigat
 				M.Export, "ecoinvent_nexus_index.json");
 		if (file == null)
 			return;
-		App.runWithProgress(M.CreatingEcoinventNexusIndex, () -> {
+		App.exec(M.CreatingEcoinventNexusIndex, () -> {
 			try {
 				var index = new HashMap<String, IndexEntry>();
 				for (var e : dialog.entries) {

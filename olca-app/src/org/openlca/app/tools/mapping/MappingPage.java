@@ -80,7 +80,7 @@ class MappingPage extends FormPage {
 						M.NoSourceOrTargetSystemMappingInfo);
 				return;
 			}
-			App.runWithProgress(M.CheckMappingsDots, this::syncMappings, () -> {
+			App.exec(M.CheckMappingsDots, this::syncMappings, () -> {
 				tool.checked.set(true);
 				table.setInput(tool.mapping.entries);
 				updateCheckState.run();

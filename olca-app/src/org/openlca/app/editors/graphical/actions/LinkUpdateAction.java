@@ -68,7 +68,7 @@ public class LinkUpdateAction extends WorkbenchPartAction {
 
 		App.close(system);
 		GraphFile.clear(editor);
-		App.runWithProgress(M.UpdateLinks, () -> {
+		App.exec(M.UpdateLinks, () -> {
 			try {
 				var productSystem = dialog.config.execute();
 				App.open(productSystem);

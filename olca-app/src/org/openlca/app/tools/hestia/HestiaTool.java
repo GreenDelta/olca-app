@@ -100,7 +100,7 @@ public class HestiaTool extends SimpleFormEditor {
 			userSection(tk, body);
 			createConfigSection(body, tk);
 			createTableSection(body, tk);
-			form.addDisposeListener(e -> client.close());
+			form.addDisposeListener(_ -> client.close());
 		}
 
 		private void userSection(FormToolkit tk, Composite body) {
@@ -152,7 +152,7 @@ public class HestiaTool extends SimpleFormEditor {
 
 			var searchButton = tk.createButton(searchComp, M.Search, SWT.NONE);
 			searchButton.setImage(Icon.SEARCH.get());
-			Controls.onSelect(searchButton, e -> runSearch());
+			Controls.onSelect(searchButton, _ -> runSearch());
 			searchText.addTraverseListener(e -> {
 				if (e.detail == SWT.TRAVERSE_RETURN) {
 					runSearch();
@@ -194,7 +194,7 @@ public class HestiaTool extends SimpleFormEditor {
 			var dataVersion = settings.dataVersion();
 
 			var ref = new AtomicReference<Res<List<SearchResult>>>();
-			App.runWithProgress("Searching HESTIA...", () -> {
+			App.exec("Searching HESTIA...", () -> {
 				var res = client.search(
 					new SearchQuery(count, query, agg, dataVersion));
 				ref.set(res);

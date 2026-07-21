@@ -103,7 +103,7 @@ public class DbRestoreAction extends Action implements INavigationAction {
 	private static void realImport(
 			File dbFolder, String dbName, File zip, String naviFolder) {
 		var err = new AtomicBoolean(false);
-		App.run(M.ImportDatabase, () -> {
+		App.exec(M.ImportDatabase, () -> {
 			try {
 				var folder = new File(dbFolder, dbName);
 				Files.createDirectories(folder.toPath());

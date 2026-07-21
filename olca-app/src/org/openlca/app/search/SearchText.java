@@ -82,7 +82,7 @@ public class SearchText extends WorkbenchWindowControlContribution {
 		}
 		var search = new Search(Database.get(), text.getText())
 				.withTypeFilter(typeFilter);
-		App.run(M.Searching, search,
+		App.exec(M.Searching, search,
 				() -> SearchPage.show(term, search.getResult()));
 	}
 

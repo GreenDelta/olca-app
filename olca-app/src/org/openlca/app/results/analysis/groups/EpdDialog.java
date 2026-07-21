@@ -162,7 +162,7 @@ class EpdDialog extends FormDialog {
 		}
 
 		var ref = new AtomicReference<Epd>();
-		App.runWithProgress(
+		App.exec(
 				"Create EPD...",
 				() -> EpdBuilder.build(editor.setup(), results, name, path)
 						.ifPresent(ref::set),

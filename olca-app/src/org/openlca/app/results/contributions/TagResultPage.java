@@ -65,7 +65,7 @@ public class TagResultPage extends FormPage {
 
 		form.reflow(true);
 
-		App.runWithProgress(M.CalculateTagsResultsDots, () -> {
+		App.exec(M.CalculateTagsResultsDots, () -> {
 			tagResults.clear();
 			tagResults.addAll(TagResult.allOf(editor.result()));
 		}, selector::initWithEvent);

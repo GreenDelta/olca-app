@@ -39,7 +39,7 @@ public class SearchPage extends SimpleFormEditor {
 			return;
 		String title = M.FindUsages + " - " + Labels.name(d);
 		AtomicReference<List<Descriptor>> ref = new AtomicReference<>();
-		App.run(title, () -> {
+		App.exec(title, () -> {
 			var list = UsageSearch.of(d.type, Database.get()).find(d.id);
 			ref.set(new ArrayList<>(list));
 		}, () -> {

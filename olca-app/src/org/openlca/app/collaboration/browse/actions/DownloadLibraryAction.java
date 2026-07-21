@@ -34,7 +34,7 @@ class DownloadLibraryAction extends Action implements IServerNavigationAction {
 				() -> elem.getClient().downloadLibrary(lib));
 		if (stream == null)
 			return;
-		App.runWithProgress(M.DownloadingAndExtractingLibrary + " - " + lib,
+		App.exec(M.DownloadingAndExtractingLibrary + " - " + lib,
 				() -> Libraries.importFromStream(stream),
 				Navigator::refresh);
 	}

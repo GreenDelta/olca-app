@@ -23,16 +23,12 @@ class XEI3MarketProcessCleanUp extends Action implements
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
-		if (!(first instanceof DatabaseElement))
-			return false;
-		var e = (DatabaseElement) first;
-		return Database.isActive(e.getContent());
+		return selection.getFirst() instanceof DatabaseElement e
+			&& Database.isActive(e.getContent());
 	}
 
 	@Override
 	public void run() {
-		App.run(M.MergeMarketProcesses,
-				new MarketProcessCleanUp(Database.get()));
+		App.exec(M.MergeMarketProcesses, new MarketProcessCleanUp(Database.get()));
 	}
 }

@@ -113,7 +113,7 @@ public class IpcDialog extends FormDialog {
 			Libraries.readersForCalculation().ifPresent(builder::withLibraries);
 			var config = builder.get();
 			var grpc = grpcCheck.getSelection();
-			App.run(
+			App.exec(
 					M.StartServerDots,
 					() -> {
 						if (grpc) {
@@ -150,7 +150,7 @@ public class IpcDialog extends FormDialog {
 
 	private void onStop() {
 		try {
-			App.run(
+			App.exec(
 					M.StopServerDots,
 					() -> {
 						if (server != null) {

@@ -119,7 +119,7 @@ public class DbCompressAction extends Action implements INavigationAction {
 					db = (Derby) Database.activate(config);
 				}
 				final Derby _db = db;
-				App.runWithProgress(M.CompressingDatabase, () -> compressTables(_db));
+				App.exec(M.CompressingDatabase, () -> compressTables(_db));
 				db.close();
 				if (isActive)
 					Database.activate(config);

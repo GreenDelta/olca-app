@@ -37,9 +37,9 @@ class XRefDataImport extends Action implements INavigationAction {
 	public void run() {
 		File dir = FileChooser.selectFolder();
 		if (dir == null)
-			return;		
+			return;
 		RefDataImport refImport = new RefDataImport(dir, Database.get());
-		App.run(M.ImportReferenceData, refImport, () -> {
+		App.exec(M.ImportReferenceData, refImport, () -> {
 			AppContext.evictAll();
 			Navigator.refresh();
 		});

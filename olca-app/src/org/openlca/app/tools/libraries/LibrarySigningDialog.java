@@ -165,7 +165,7 @@ public class LibrarySigningDialog extends FormDialog {
 	protected void okPressed() {
 		super.okPressed();
 		var signing = new Signing();
-		App.runWithProgress(M.CreatingLibraryDots, signing, () -> {
+		App.exec(M.CreatingLibraryDots, signing, () -> {
 			Navigator.refresh();
 			if (signing.e != null) {
 				ErrorReporter.on("Failed to sign library", signing.e);

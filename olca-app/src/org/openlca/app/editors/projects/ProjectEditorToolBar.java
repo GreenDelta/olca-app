@@ -63,7 +63,7 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 			}
 		};
 
-		App.runWithProgress(M.CalculateDots, calculation, () -> {
+		App.exec(M.CalculateDots, calculation, () -> {
 			if (ref.result == null)
 				return;
 			var data = ProjectResultData.of(db, project, ref.result, editor.report);

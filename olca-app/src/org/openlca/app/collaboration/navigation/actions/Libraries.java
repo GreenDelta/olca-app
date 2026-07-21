@@ -28,7 +28,7 @@ class Libraries {
 		if (libraries.isEmpty())
 			return;
 		var serverLibraries = new HashSet<String>();
-		App.runWithProgress(M.CheckingLibraries, () -> {
+		App.exec(M.CheckingLibraries, () -> {
 			WebRequests.execute(repo.client::listLibraries).stream()
 					.map(LibraryInfo::name)
 					.forEach(serverLibraries::add);
@@ -42,7 +42,7 @@ class Libraries {
 			return;
 		if (!Question.ask(M.UploadLibrariesTitle, M.UploadLibrariesMessage + "\n\n" + String.join("\n", toUpload)))
 			return;
-		App.runWithProgress(M.UploadingLibraries, () -> {
+		App.exec(M.UploadingLibraries, () -> {
 			toUpload.forEach(id -> {
 				try {
 					var tmpFile = Files.createTempFile("olca-library", ".zip");

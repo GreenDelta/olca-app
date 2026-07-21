@@ -44,7 +44,7 @@ public class ExportLibraryAction extends Action implements INavigationAction {
 		if (target == null)
 			return;
 		try {
-			App.runWithProgress(
+			App.exec(
 				M.ExportLibraryDots,
 				() -> LibraryPackage.zip(library, target),
 				() -> Popup.info(M.LibraryExported + " - " + target.getName()));

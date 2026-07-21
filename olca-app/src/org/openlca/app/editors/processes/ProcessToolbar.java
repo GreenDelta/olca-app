@@ -78,7 +78,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 		if (file == null)
 			return;
 		var export = XlsProcessWriter.of(Database.get());
-		App.run(M.ExportProcess,
+		App.exec(M.ExportProcess,
 				() -> export.write(p, file),
 				() -> Popup.info(M.ExportDone));
 	}
@@ -134,7 +134,7 @@ public class ProcessToolbar extends EditorActionBarContributor {
 
 		static void checkLinking(Process process) {
 			var ref = new AtomicReference<LinkingProperties>();
-			App.runWithProgress(M.CheckDatabaseLinks, () -> {
+			App.exec(M.CheckDatabaseLinks, () -> {
 				var props = LinkingProperties.check(Database.get());
 				ref.set(props);
 			});

@@ -45,7 +45,7 @@ public class AnalysisGroupsPage extends FormPage {
 		contibutions.render(body, tk);
 
 		var ref = new AtomicReference<List<ImpactGroupResult>>();
-		App.runWithProgress("Calculate group results...",
+		App.exec("Calculate group results...",
 				() -> {
 					result = AnalysisGroupResult.of(system, editor.result());
 					var indicators = editor.items().impacts();

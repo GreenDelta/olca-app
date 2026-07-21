@@ -37,7 +37,7 @@ class XRefDataExport extends Action implements INavigationAction {
 		if (dir == null)
 			return;
 		RefDataExport export = new RefDataExport(dir, Database.get());
-		App.run(M.ExportReferenceData, export);
+		App.exec(M.ExportReferenceData, export);
 	}
 
 }

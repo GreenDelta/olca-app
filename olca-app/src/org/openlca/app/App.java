@@ -1,7 +1,6 @@
 package org.openlca.app;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -198,64 +197,10 @@ public class App {
 	}
 
 	public static Job runInUI(String name, Runnable runnable) {
-		WrappedUIJob job = new WrappedUIJob(name, runnable);
+		var job = new WrappedUIJob(name, runnable);
 		job.setUser(true);
 		job.schedule();
 		return job;
-	}
-
-	/**
-	 * Wraps a runnable in a job and executes it using the Eclipse jobs
-	 * framework. No UI access is allowed for the runnable.
-	 */
-	public static Job run(String name, Runnable runnable) {
-		return run(name, runnable, null);
-	}
-
-	/**
-	 * See {@link App#run(String, Runnable)}. Additionally, this method allows
-	 * to give a callback which is executed in the UI thread when the runnable
-	 * is finished.
-	 */
-	public static Job run(String name, Runnable runnable, Runnable callback) {
-		WrappedJob job = new WrappedJob(name, runnable);
-		if (callback != null)
-			job.setCallback(callback);
-		job.setUser(true);
-		job.schedule();
-		return job;
-	}
-
-	public static void runWithProgress(String name, Runnable runnable) {
-		var progress = PlatformUI.getWorkbench()
-				.getProgressService();
-		try {
-			progress.run(true, false, (monitor) -> {
-				monitor.beginTask(name, IProgressMonitor.UNKNOWN);
-				runnable.run();
-				monitor.done();
-			});
-		} catch (InvocationTargetException | InterruptedException e) {
-			ErrorReporter.on("Error while running progress: " + name, e);
-		}
-	}
-
-	public static void runWithProgress(
-			String name, Runnable fn, Runnable callback) {
-		var service = PlatformUI.getWorkbench().getProgressService();
-		try {
-			service.run(true, false, m -> {
-				m.beginTask(name, IProgressMonitor.UNKNOWN);
-				fn.run();
-				m.done();
-				if (callback != null) {
-					WrappedUIJob uiJob = new WrappedUIJob(name, callback);
-					uiJob.schedule();
-				}
-			});
-		} catch (InvocationTargetException | InterruptedException e) {
-			ErrorReporter.on("Error while running progress: " + name, e);
-		}
 	}
 
 	/**
@@ -293,6 +238,14 @@ public class App {
 					});
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to execute task: " + task, e);
+		}
+	}
+
+	public static void exec(
+		String name, Runnable fn, Runnable callback) {
+		exec(name, fn);
+		if (callback != null) {
+			runInUI(name, callback);
 		}
 	}
 

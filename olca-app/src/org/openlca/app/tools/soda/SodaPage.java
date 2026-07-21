@@ -52,7 +52,7 @@ class SodaPage extends FormPage {
 		var body = UI.body(form, tk);
 		createConnectionSection(body, tk);
 		createDataSection(body, tk);
-		body.addDisposeListener($ -> {
+		body.addDisposeListener(_ -> {
 			if (client != null) {
 				client.close();
 			}
@@ -95,7 +95,7 @@ class SodaPage extends FormPage {
 		downloadBtn.setImage(Images.get(FileType.ZIP));
 		downloadBtn.setEnabled(false);
 
-		Controls.onSelect(combo, $ -> {
+		Controls.onSelect(combo, _ -> {
 			int k = combo.getSelectionIndex();
 			if (k == 0) {
 				client.useDataStock(null);
@@ -110,7 +110,7 @@ class SodaPage extends FormPage {
 			downloadBtn.setEnabled(stockId != null);
 		});
 
-		Controls.onSelect(downloadBtn, $ -> {
+		Controls.onSelect(downloadBtn, _ -> {
 			int k = combo.getSelectionIndex();
 			if (k == 0)
 				return;
@@ -145,7 +145,7 @@ class SodaPage extends FormPage {
 
 		var imp = Import.of(client, db)
 				.withPreferredLanguage(IoPreference.getIlcdLanguage());
-		App.runWithProgress(M.ImportDataSetsDots, () -> {
+		App.exec(M.ImportDataSetsDots, () -> {
 			for (var d : selection) {
 				imp.write(d.toRef().getType(), d.getUUID());
 			}

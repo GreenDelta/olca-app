@@ -27,7 +27,7 @@ class LibraryActions {
 	static void unmount(Library lib, Runnable callback) {
 		var license = License.of(lib.folder());
 		Runnable action = () -> Unmounter.keepNone(Database.get(), lib.name());
-		if (!license.isPresent()) {
+		if (license.isEmpty()) {
 			var reader = Libraries.readerOf(lib);
 			if (reader.isEmpty())
 				return;
@@ -41,7 +41,7 @@ class LibraryActions {
 				action = () -> Unmounter.keepUsed(Database.get(), reader.get());
 			}
 		}
-		App.runWithProgress(M.RemovingLibraryDots, action, callback);
+		App.exec(M.RemovingLibraryDots, action, callback);
 	}
 
 }

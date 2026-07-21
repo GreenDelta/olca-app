@@ -89,7 +89,7 @@ public class DbExportAction extends Action implements INavigationAction {
 				return false;
 		log.trace("run database export to file {}", zip);
 		var runner = new ExportRunner(config, zip, active);
-		App.runWithProgress(M.ExportDatabase, runner);
+		App.exec(M.ExportDatabase, runner);
 		updateUI(zip, active);
 		return !runner.failed;
 	}

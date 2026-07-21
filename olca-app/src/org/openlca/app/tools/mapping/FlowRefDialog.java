@@ -42,7 +42,7 @@ class FlowRefDialog extends FormDialog {
 		if (provider == null || fn == null)
 			return;
 		AtomicReference<Tree> treeRef = new AtomicReference<>();
-		App.runWithProgress(M.CollectFlowAndBuildTreeDots, () -> {
+		App.exec(M.CollectFlowAndBuildTreeDots, () -> {
 			Tree tree = Tree.build(provider.getFlowRefs());
 			treeRef.set(tree);
 		}, () -> {
@@ -100,7 +100,7 @@ class FlowRefDialog extends FormDialog {
 		});
 
 		// handle double clicks
-		viewer.addDoubleClickListener(e -> {
+		viewer.addDoubleClickListener(_ -> {
 			IStructuredSelection s = viewer.getStructuredSelection();
 			if (s == null || s.isEmpty())
 				return;
@@ -265,7 +265,7 @@ class FlowRefDialog extends FormDialog {
 		private String term = null;
 
 		public Filter(Text text, TreeViewer viewer) {
-			text.addModifyListener(e -> {
+			text.addModifyListener(_ -> {
 				term = text.getText().trim().toLowerCase();
 				viewer.refresh();
 				expand(viewer);

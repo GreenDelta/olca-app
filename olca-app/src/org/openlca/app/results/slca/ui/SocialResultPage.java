@@ -114,7 +114,7 @@ public class SocialResultPage extends FormPage {
 						if (file == null)
 							return;
 						var export = new SocialTreeExport(file, mTree);
-						App.runWithProgress(M.ExportingSocialAssessmentTreeDots, export);
+						App.exec(M.ExportingSocialAssessmentTreeDots, export);
 					}
 				});
 

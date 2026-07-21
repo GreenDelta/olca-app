@@ -169,7 +169,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 			// thus we pass an atomic reference around
 			var nextDb = new AtomicReference<>(db);
 			db = null;
-			App.runWithProgress(M.UpdateDatabaseDots, () -> {
+			App.exec(M.UpdateDatabaseDots, () -> {
 				try {
 					var udb = nextDb.get();
 					nextDb.set(null);
@@ -247,7 +247,7 @@ public class DbActivateAction extends Action implements INavigationAction {
 			var backupCheck = UI.checkbox(comp, M.CreateBackupOfTheDbFirst);
 			backupCheck.setSelection(backupDatabase);
 			Controls.onSelect(
-					backupCheck, e -> backupDatabase = backupCheck.getSelection());
+					backupCheck, _ -> backupDatabase = backupCheck.getSelection());
 			return comp;
 		}
 

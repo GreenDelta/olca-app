@@ -36,7 +36,7 @@ class StockDownload {
 			return;
 
 		var err = new AtomicBoolean(false);
-		App.run(M.DownloadingDataStock, () -> {
+		App.exec(M.DownloadingDataStock, () -> {
 			try (var stream = client.exportDataStock(stock.getUUID())) {
 				Files.copy(stream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (Exception e) {

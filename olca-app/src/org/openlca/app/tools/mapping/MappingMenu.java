@@ -46,7 +46,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		var file = FileChooser.forSavingFile(M.Export, name);
 		if (file == null)
 			return;
-		App.runWithProgress(M.SaveFlowMappingDots, () -> {
+		App.exec(M.SaveFlowMappingDots, () -> {
 			try {
 				FlowMap.toCsv(map, file);
 			} catch (Exception e) {
@@ -72,7 +72,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		if (!b)
 			return;
 		Generator gen = new Generator(source, target, tool.mapping);
-		App.runWithProgress(M.GenerateMappingsDots, gen, () -> {
+		App.exec(M.GenerateMappingsDots, gen, () -> {
 			tool.refresh();
 		});
 	}
@@ -103,7 +103,7 @@ public class MappingMenu extends EditorActionBarContributor {
 		if (opt.isEmpty())
 			return;
 		var replacer = new Replacer(opt.get());
-		App.runWithProgress(M.ReplaceFlowDots, replacer, () -> {
+		App.exec(M.ReplaceFlowDots, replacer, () -> {
 			tool.refresh();
 			Navigator.refresh();
 		});

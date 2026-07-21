@@ -240,7 +240,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 			return;
 
 		try {
-			App.runWithProgress(M.RunImport, imp);
+			App.exec(M.RunImport, imp);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(getClass());
 			log.error("EcoSpold 2 import failed", e);

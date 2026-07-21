@@ -108,12 +108,12 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 			UI.filler(comp, tk);
 			var excelBtn = UI.button(comp, tk, M.ExportToExcel);
 			excelBtn.setImage(Images.get(FileType.EXCEL));
-			Controls.onSelect(excelBtn, $ -> {
+			Controls.onSelect(excelBtn, _ -> {
 				var file = FileChooser.forSavingFile("Export results", "parameter analysis.xlsx");
 				if (file == null)
 					return;
 				var export = new ParamResultExport(result, file);
-				App.runWithProgress("Export results", export, () -> {
+				App.exec("Export results", export, () -> {
 					if (export.error() != null) {
 						ErrorReporter.on("Export failed", export.error());
 					} else {
@@ -130,7 +130,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 			var link = UI.imageHyperlink(comp, tk, SWT.TOP);
 			link.setText(Labels.name(e));
 			link.setImage(Images.get(e));
-			Controls.onClick(link, $ -> App.open(e));
+			Controls.onClick(link, _ -> App.open(e));
 		}
 
 		private void tableSection(Composite body, FormToolkit tk) {
@@ -165,7 +165,7 @@ public class ParameterAnalysisResultPage extends SimpleFormEditor {
 			UI.label(top, tk, M.ImpactCategory);
 			var impacts = result.impacts();
 			impactCombo = DescriptorCombo.of(top, tk, impacts);
-			impactCombo.addSelectionChangedListener(e -> setChartData());
+			impactCombo.addSelectionChangedListener(_ -> setChartData());
 
 			chart = new Chart(comp, SWT.NONE);
 			UI.stretchX(chart).heightHint = 400;

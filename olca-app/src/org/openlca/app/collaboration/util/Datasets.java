@@ -20,7 +20,7 @@ public class Datasets {
 	private static final Logger log = LoggerFactory.getLogger(Datasets.class);
 
 	public static void download(CSClient client, String repositoryId, String type, String refId) {
-		App.runWithProgress(M.DownloadingData, () -> {
+		App.exec(M.DownloadingData, () -> {
 			File tmp = null;
 			ZipStore store = null;
 			try {

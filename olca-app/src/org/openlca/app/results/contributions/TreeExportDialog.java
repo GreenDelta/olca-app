@@ -63,7 +63,7 @@ class TreeExportDialog extends FormDialog {
 		fileText.setBackground(Colors.white());
 		var fileBtn = UI.button(comp, tk, M.Browse);
 		UI.gridData(fileBtn, false, false).horizontalAlignment = SWT.FILL;
-		Controls.onSelect(fileBtn, e -> {
+		Controls.onSelect(fileBtn, _ -> {
 			var f = FileChooser.forSavingFile(
 					M.Export, "contribution_tree.xlsx");
 			if (f != null) {
@@ -86,7 +86,7 @@ class TreeExportDialog extends FormDialog {
 		minContrText = UI.labeledText(comp, tk, M.MinContribPerc);
 		minContrText.setText("1e-5");
 		var contrBtn = tk.createButton(comp, M.Unlimited, SWT.CHECK);
-		Controls.onSelect(contrBtn, _e -> {
+		Controls.onSelect(contrBtn, _ -> {
 			minContrText.setEnabled(!minContrText.isEnabled());
 		});
 
@@ -96,7 +96,7 @@ class TreeExportDialog extends FormDialog {
 		maxRecurText.setEnabled(false);
 		UI.label(comp, tk, M.Repetitions);
 
-		Controls.onSelect(maxDepthBtn, _e -> {
+		Controls.onSelect(maxDepthBtn, _ -> {
 			boolean b = !maxDepthText.isEnabled();
 			maxDepthText.setEnabled(b);
 			maxRecurText.setEnabled(!b);
@@ -182,7 +182,7 @@ class TreeExportDialog extends FormDialog {
 
 		// close the dialog and start the export
 		super.okPressed();
-		App.runWithProgress(M.ExportingContributionTreeDots, export);
+		App.exec(M.ExportingContributionTreeDots, export);
 	}
 
 }
