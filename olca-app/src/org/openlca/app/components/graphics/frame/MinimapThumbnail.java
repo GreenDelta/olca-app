@@ -150,7 +150,7 @@ public class MinimapThumbnail extends Thumbnail {
 		}
 	}
 
-	private final FigureListener figureListener = source -> reconfigureSelectorBounds();
+	private final FigureListener figureListener = _ -> reconfigureSelectorBounds();
 	private final KeyListener keyListener = new KeyListener.Stub() {
 		public void keyPressed(KeyEvent ke) {
 			int moveX = viewport.getClientArea().width / 4;
@@ -175,7 +175,7 @@ public class MinimapThumbnail extends Thumbnail {
 		}
 	};
 
-	private final PropertyChangeListener propListener = evt -> reconfigureSelectorBounds();
+	private final PropertyChangeListener propListener = _ -> reconfigureSelectorBounds();
 
 	private ScrollSynchronizer syncher;
 	private IFigure selector;

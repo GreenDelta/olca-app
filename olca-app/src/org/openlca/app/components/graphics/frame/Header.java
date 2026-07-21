@@ -50,7 +50,7 @@ public abstract class Header extends Composite implements
 
 		var viewer = getRootEditPart().getViewer();
 		if (viewer != null) {
-			disposeListener = e -> deactivate();
+			disposeListener = _ -> deactivate();
 			viewer.getControl().addDisposeListener(disposeListener);
 		}
 	}

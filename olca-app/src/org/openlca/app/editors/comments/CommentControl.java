@@ -28,7 +28,7 @@ public class CommentControl {
 		}
 		var control = tk.createImageHyperlink(parent, SWT.NONE);
 		UI.gridData(control, false, false).verticalAlignment = SWT.TOP;
-		Controls.onClick(control, (e) -> {
+		Controls.onClick(control, _ -> {
 			new CommentDialog(path, comments).open();
 		});
 		control.setImage(Icon.COMMENT.get());

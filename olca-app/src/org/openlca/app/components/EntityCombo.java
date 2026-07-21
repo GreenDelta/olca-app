@@ -48,7 +48,7 @@ public record EntityCombo<T>(Combo combo, List<T> entities,
 	public EntityCombo<T> onSelected(Consumer<T> fn) {
 		if (combo == null || fn == null)
 			return this;
-		Controls.onSelect(combo, $ -> {
+		Controls.onSelect(combo, _ -> {
 			var i = combo.getSelectionIndex();
 			if (i < 0 || i > entities.size())
 				return;

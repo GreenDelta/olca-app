@@ -72,7 +72,7 @@ public class DatabasePropertiesDialog extends FormDialog {
 		var link = UI.hyperlink(parent, tk);
 		link.setText(Strings.cutEnd(path, 75));
 		link.setToolTipText(path);
-		Controls.onClick(link, e -> {
+		Controls.onClick(link, _ -> {
 			try {
 				Desktop.browse(path);
 			} catch (Exception ex) {

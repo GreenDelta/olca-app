@@ -92,7 +92,6 @@ abstract public class BasicGraphicalEditor extends GraphicalEditor {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void createActions() {
 		super.createActions();
 		var registry = getActionRegistry();

@@ -22,7 +22,7 @@ record UploadButton(EpdEditor editor) {
 		var btn = UI.button(parent, tk, "");
 		update(btn);
 		btn.setImage(Icon.BUILDING.get());
-		Controls.onSelect(btn, $ -> {
+		Controls.onSelect(btn, _ -> {
 			var check = EpdConverter.validate(epd());
 			if (check.hasError()) {
 				MsgBox.error(M.ValidationError,

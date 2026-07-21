@@ -66,7 +66,7 @@ public class BuildChainMenuAction extends SelectionAction
 				label += "/" + NLS.bind(M.Prefer, Labels.of(type));
 			}
 			item.setText(label);
-			Controls.onSelect(item, (e) -> {
+			Controls.onSelect(item, _ -> {
 				action.setMapExchangeToProcess(exchanges);
 				action.setProviderMethod(linking);
 				action.setPreferredType(type);

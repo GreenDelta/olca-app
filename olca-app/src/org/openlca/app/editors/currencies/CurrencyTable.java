@@ -37,7 +37,7 @@ class CurrencyTable {
 		Tables.bindColumnWidths(table, 0.4, 0.2, 0.4);
 		table.setLabelProvider(new Label());
 		table.setInput(getOthers());
-		Tables.onDoubleClick(table, e -> {
+		Tables.onDoubleClick(table, _ -> {
 			Currency c = Viewers.getFirstSelected(table);
 			if (c != null)
 				App.open(c);

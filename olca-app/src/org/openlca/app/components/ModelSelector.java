@@ -155,7 +155,7 @@ public class ModelSelector extends FormDialog {
 		createViewer(composite, text);
 
 		instantCheck.setSelection(textFilter.isWithInstantSearch());
-		Controls.onSelect(instantCheck, $ -> {
+		Controls.onSelect(instantCheck, _ -> {
 			boolean b = instantCheck.getSelection();
 			textFilter.withInstantSearch(b);
 			Preferences.set(Preferences.NO_INSTANT_SEARCH, !b);

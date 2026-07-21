@@ -60,12 +60,12 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 		private void createAdditionalInfo(Composite body, FormToolkit tk) {
 			Composite comp = UI.formSection(body, tk, M.AdditionalInformation, 3);
 			Text codeText = text(comp, M.CurrencyCode, "code");
-			codeText.addModifyListener(e -> {
+			codeText.addModifyListener(_ -> {
 				table.refresh();
 				editor.setDirty(true);
 			});
 			Text factorText = doubleText(comp, M.ConversionFactor, "conversionFactor");
-			factorText.addModifyListener(e -> {
+			factorText.addModifyListener(_ -> {
 				table.refresh();
 				editor.setDirty(true);
 			});
@@ -78,7 +78,7 @@ public class CurrencyEditor extends ModelEditor<Currency> {
 			Button b = UI.button(comp, tk, M.SetAsReferenceCurrency);
 			b.setImage(Images.get(ModelType.CURRENCY));
 			b.setEnabled(isEditable());
-			Controls.onSelect(b, e -> RefCurrencyUpdate.run(getModel()));
+			Controls.onSelect(b, _ -> RefCurrencyUpdate.run(getModel()));
 			UI.filler(comp, tk);
 		}
 	}

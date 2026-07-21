@@ -40,7 +40,7 @@ class DatabaseWizardPage extends WizardPage {
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		UI.gridLayout(body, 2);
 		nameText = createText(body, M.DatabaseName);
-		nameText.addModifyListener(e -> validateInput());
+		nameText.addModifyListener(_ -> validateInput());
 		folderText = createText(body, M.Folder);
 		if (Strings.isNotBlank(folder)) {
 			folderText.setText(folder);

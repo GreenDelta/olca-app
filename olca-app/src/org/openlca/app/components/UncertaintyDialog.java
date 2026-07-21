@@ -154,7 +154,7 @@ public class UncertaintyDialog extends Dialog {
 		}
 		combo.setItems(items);
 		combo.select(idx);
-		Controls.onSelect(combo, (e) -> initComposite());
+		Controls.onSelect(combo, _ -> initComposite());
 	}
 
 	private void initComposite() {

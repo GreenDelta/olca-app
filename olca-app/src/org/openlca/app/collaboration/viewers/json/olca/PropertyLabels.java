@@ -41,7 +41,7 @@ class PropertyLabels {
 	}
 
 	static int getOrdinal(JsonNode node) {
-		return get(ordinals, node, path -> 0);
+		return get(ordinals, node, _ -> 0);
 	}
 
 	static ModelType getImageType(JsonNode node) {

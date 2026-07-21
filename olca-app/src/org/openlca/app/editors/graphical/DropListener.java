@@ -76,9 +76,7 @@ class DropListener extends DropTargetAdapter {
 				}
 			})
 			.filter(d -> graph.getNode(d.id) != null)
-			.forEach(d -> {
-				added.set(true);
-			});
+			.forEach(_ -> added.set(true));
 
 		// update the editor
 		if (!added.get())

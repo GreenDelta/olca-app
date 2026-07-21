@@ -77,10 +77,10 @@ class GeoFactorDialog extends FormDialog {
 		UI.label(radioComp, tk, M.MergeFactors);
 		var keep = UI.radio(radioComp, tk, M.KeepExisting);
 		keep.setSelection(keepExisting);
-		Controls.onSelect(keep, $ -> keepExisting = keep.getSelection());
+		Controls.onSelect(keep, _ -> keepExisting = keep.getSelection());
 		var repl = UI.radio(radioComp, tk, M.ReplaceExisting);
 		repl.setSelection(!keepExisting);
-		Controls.onSelect(repl, $ -> keepExisting = !repl.getSelection());
+		Controls.onSelect(repl, _ -> keepExisting = !repl.getSelection());
 
 		// factor table
 		var table = Tables.createViewer(body,

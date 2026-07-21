@@ -71,7 +71,7 @@ public class Minimap extends Composite {
 
 		var zoomManager = rootEditPart.getZoomManager();
 		Controls.onSelect(scale,
-				(e) -> zoomManager.setZoom(values[scale.getSelection()], false));
+				_ -> zoomManager.setZoom(values[scale.getSelection()], false));
 		scale.setSelection(getIndex(values, zoomManager.getZoom()));
 
 		int percentage = (int) (100 * zoomManager.getZoom());
@@ -88,14 +88,14 @@ public class Minimap extends Composite {
 		lws.setContents(thumbnail);
 
 		var viewer = rootEditPart.getViewer();
-		disposeListener = e -> deactivate();
+		disposeListener = _ -> deactivate();
 		viewer.getControl().addDisposeListener(disposeListener);
 	}
 
 	public void activate() {
 		var viewer = getRootEditPart().getViewer();
 		if (viewer != null) {
-			disposeListener = e -> deactivate();
+			disposeListener = _ -> deactivate();
 			viewer.getControl().addDisposeListener(disposeListener);
 		}
 

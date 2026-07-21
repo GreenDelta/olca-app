@@ -20,7 +20,7 @@ class TextFilter extends ViewerFilter {
 	private TextFilter(TableViewer table, Text text) {
 		this.table = Objects.requireNonNull(table);
 		this.columns = table.getTable().getColumnCount();
-		text.addModifyListener($ -> {
+		text.addModifyListener(_ -> {
 			filter = text.getText().trim().toLowerCase();
 			table.refresh();
 		});

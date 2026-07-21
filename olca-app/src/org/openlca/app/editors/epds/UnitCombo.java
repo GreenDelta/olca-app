@@ -20,7 +20,7 @@ class UnitCombo {
 
 	private UnitCombo(Combo combo) {
 		this.combo = combo;
-		Controls.onSelect(combo, $ -> {
+		Controls.onSelect(combo, _ -> {
 			int idx = combo.getSelectionIndex();
 			if (idx < 0 || idx >= items.size())
 				return;

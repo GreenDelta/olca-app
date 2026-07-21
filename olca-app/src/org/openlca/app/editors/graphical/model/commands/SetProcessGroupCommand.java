@@ -239,7 +239,7 @@ public class SetProcessGroupCommand extends Command {
 			var menu = addBtn.getMenu();
 			var systemItem = new MenuItem(menu, SWT.NONE);
 			systemItem.setText("Copy groups from product system");
-			Controls.onSelect(systemItem, $ -> {
+			Controls.onSelect(systemItem, _ -> {
 				var d = ModelSelector.select(ModelType.PRODUCT_SYSTEM);
 				if (d == null)
 					return;
@@ -253,10 +253,10 @@ public class SetProcessGroupCommand extends Command {
 			var enItem = new MenuItem(menu, SWT.NONE);
 			enItem.setText("Add EN 15804 modules");
 			Controls.onSelect(enItem,
-					$ -> onSync.accept(GroupSync.syncEn15804(this)));
+					_ -> onSync.accept(GroupSync.syncEn15804(this)));
 
 			// add a new group
-			Controls.onSelect(addBtn, $ -> {
+			Controls.onSelect(addBtn, _ -> {
 				var group = new AnalysisGroup();
 				group.name = "New analysis group";
 				groups.add(group);
@@ -282,7 +282,7 @@ public class SetProcessGroupCommand extends Command {
 
 				var radio = tk.createButton(parent, "", SWT.RADIO);
 				radio.setSelection(Objects.equals(group, dialog.selected));
-				Controls.onSelect(radio, $ -> {
+				Controls.onSelect(radio, _ -> {
 					if (radio.getSelection()) {
 						dialog.selected = group;
 					}
@@ -302,7 +302,7 @@ public class SetProcessGroupCommand extends Command {
 				if (group.name != null) {
 					text.setText(group.name);
 				}
-				text.addModifyListener($ -> {
+				text.addModifyListener(_ -> {
 					group.name = text.getText();
 					dialog.groupsChanged = true;
 				});
@@ -313,7 +313,7 @@ public class SetProcessGroupCommand extends Command {
 				colorBtn.setForeground(color);
 				colorBtn.setBackground(color);
 				colorBtn.setToolTipText("Select a group color");
-				Controls.onSelect(colorBtn, $ -> {
+				Controls.onSelect(colorBtn, _ -> {
 					var cd = new ColorDialog(dialog.getShell());
 					cd.setRGB(color.getRGB());
 					var next = cd.open();
@@ -332,7 +332,7 @@ public class SetProcessGroupCommand extends Command {
 				delete.setHoverImage(Icon.DELETE.get());
 				delete.setToolTipText("Delete analysis group");
 
-				Controls.onClick(delete, $ -> {
+				Controls.onClick(delete, _ -> {
 					dialog.groups.remove(group);
 					dialog.groupsChanged = true;
 					radio.dispose();

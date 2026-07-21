@@ -104,7 +104,7 @@ class EpdModulesSection {
 
 		Actions.bind(section, onAdd, onDelete);
 		Actions.bind(table, onAdd, onEdit, onOpenResult, onDelete);
-		Tables.onDoubleClick(table, $ -> onEdit.run());
+		Tables.onDoubleClick(table, _ -> onEdit.run());
 	}
 
 	private List<EpdModule> modules() {

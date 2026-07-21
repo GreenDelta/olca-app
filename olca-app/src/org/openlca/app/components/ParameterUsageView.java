@@ -42,7 +42,7 @@ public class ParameterUsageView {
 		if (!this.tree.nodes.isEmpty()) {
 			tree.setExpandedElements(this.tree.nodes.get(0));
 		}
-		Trees.onDoubleClick(tree, e -> onOpen(tree));
+		Trees.onDoubleClick(tree, _ -> onOpen(tree));
 		var open = Actions.create(M.Open,
 				Icon.FOLDER_OPEN.descriptor(),
 				() -> onOpen(tree));

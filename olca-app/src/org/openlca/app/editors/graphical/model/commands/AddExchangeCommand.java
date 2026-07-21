@@ -141,7 +141,7 @@ public class AddExchangeCommand extends Command {
 			var nameLabel = UI.label(body, tk, M.CreateANewFlow);
 			nameLabel.setFont(UI.boldFont());
 			text = UI.text(body);
-			text.addModifyListener(e -> {
+			text.addModifyListener(_ -> {
 				var name = text.getText().trim();
 				getButton(_CREATE).setEnabled(Strings.isNotBlank(name));
 			});
@@ -160,7 +160,7 @@ public class AddExchangeCommand extends Command {
 				if (type == FlowType.PRODUCT_FLOW) {
 					btn.setSelection(true);
 				}
-				Controls.onSelect(btn, e -> {
+				Controls.onSelect(btn, _ -> {
 					this.type = type;
 					tree.removeFilter(productFilter);
 					tree.removeFilter(wasteFilter);

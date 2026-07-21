@@ -67,12 +67,12 @@ class MenuBar extends Composite {
 
 	void initActions(JsonViewer left, JsonViewer right, IDependencyResolver dependencyResolver) {
 		var actions = new MenuBarActions(root, left, right, dependencyResolver);
-		Controls.onSelect(copySelectionButton, (e) -> actions.copySelection());
-		Controls.onSelect(copyAllButton, (e) -> actions.copyAll());
-		Controls.onSelect(resetSelectionButton, (e) -> actions.resetSelection());
-		Controls.onSelect(resetAllButton, (e) -> actions.resetAll());
-		Controls.onSelect(nextChangeButton, (e) -> actions.selectNext());
-		Controls.onSelect(previousChangeButton, (e) -> actions.selectPrevious());
+		Controls.onSelect(copySelectionButton, _ -> actions.copySelection());
+		Controls.onSelect(copyAllButton, _ -> actions.copyAll());
+		Controls.onSelect(resetSelectionButton, _ -> actions.resetSelection());
+		Controls.onSelect(resetAllButton, _ -> actions.resetAll());
+		Controls.onSelect(nextChangeButton, _ -> actions.selectNext());
+		Controls.onSelect(previousChangeButton, _ -> actions.selectPrevious());
 	}
 
 	void updateButtons(SelectionChangedEvent e) {

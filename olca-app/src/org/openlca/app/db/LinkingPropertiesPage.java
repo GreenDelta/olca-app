@@ -156,7 +156,7 @@ public class LinkingPropertiesPage extends SimpleFormEditor {
 					Labels.name(d1),
 					Labels.name(d2)));
 			table.setInput(list);
-			Tables.onDoubleClick(table, e -> {
+			Tables.onDoubleClick(table, _ -> {
 				RootDescriptor d = Viewers.getFirstSelected(table);
 				App.open(d);
 			});

@@ -171,7 +171,7 @@ public class ParameterRedefDialog extends FormDialog {
 		var filterLabel = UI.label(body, tk, M.Filter);
 		filterLabel.setFont(UI.boldFont());
 		filterText = UI.searchText(body, tk);
-		filterText.addModifyListener(e -> viewer.refresh());
+		filterText.addModifyListener(_ -> viewer.refresh());
 
 		Section section = UI.section(body, tk, M.Parameters);
 		UI.gridData(section, true, true);

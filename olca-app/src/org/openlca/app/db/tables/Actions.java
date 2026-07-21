@@ -45,7 +45,7 @@ class Actions {
 				App.open(e);
 			}
 		});
-		Tables.onDoubleClick(table, $ -> open.run());
+		Tables.onDoubleClick(table, _ -> open.run());
 
 		var usage = org.openlca.app.util.Actions.create(
 			M.Usage, Icon.LINK.descriptor(), () -> {

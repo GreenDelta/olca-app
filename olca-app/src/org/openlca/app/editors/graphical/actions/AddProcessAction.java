@@ -91,7 +91,7 @@ public class AddProcessAction extends WorkbenchPartAction {
 			var nameLabel = UI.label(body, tk, M.CreateWithName);
 			nameLabel.setFont(UI.boldFont());
 			text = UI.text(body);
-			text.addModifyListener(e -> {
+			text.addModifyListener(_ -> {
 				var name = text.getText().trim();
 				getButton(_CREATE).setEnabled(Strings.isNotBlank(name));
 			});

@@ -96,7 +96,7 @@ class FlowUsePopup extends FormDialog {
 		table.setInput(processes);
 		Tables.bindColumnWidths(table, 0.7, 0.3);
 
-		searchText.addModifyListener(e -> {
+		searchText.addModifyListener(_ -> {
 			var filtered = filter(searchText.getText());
 			table.setInput(filtered);
 		});
@@ -109,7 +109,7 @@ class FlowUsePopup extends FormDialog {
 			}
 		});
 		Actions.bind(table, onOpen);
-		Tables.onDoubleClick(table, e -> onOpen.run());
+		Tables.onDoubleClick(table, _ -> onOpen.run());
 
 		searchText.setFocus();
 	}

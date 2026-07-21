@@ -79,7 +79,7 @@ class DocPage extends ModelPage<Epd> {
 		typeCombo.select(selected);
 		typeCombo.setEnabled(isEditable());
 
-		Controls.onSelect(typeCombo, $ -> {
+		Controls.onSelect(typeCombo, _ -> {
 			int i = typeCombo.getSelectionIndex();
 			getModel().epdType = i > 0 ? types[i - 1] : null;
 			editor.setDirty();

@@ -79,7 +79,7 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 			UI.gridData(container, true, false);
 			var groupCombo = UI.labeledCombo(container, toolkit, M.Group);
 			groupCombo.setItems(groups.toArray(new String[groups.size()]));
-			groupCombo.addModifyListener(e -> {
+			groupCombo.addModifyListener(_ -> {
 				group = groups.get(groupCombo.getSelectionIndex());
 				updateButtons();
 			});
@@ -88,7 +88,7 @@ class CreateRepositoryAction extends Action implements IServerNavigationAction {
 				groupCombo.select(initialGroup);
 			}
 			var nameText = UI.labeledText(container, toolkit, M.Name, SWT.NONE);
-			nameText.addModifyListener(e -> {
+			nameText.addModifyListener(_ -> {
 				name = nameText.getText();
 				updateButtons();
 			});

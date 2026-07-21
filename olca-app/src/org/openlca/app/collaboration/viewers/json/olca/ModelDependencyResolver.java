@@ -37,14 +37,14 @@ public class ModelDependencyResolver implements IDependencyResolver {
 	}
 
 	private static void put(ModelType type, String path, String from, String to) {
-		var map = dependencies.computeIfAbsent(type, k -> new HashMap<>());
+		var map = dependencies.computeIfAbsent(type, _ -> new HashMap<>());
 		var prefix = path != null ? path + "." : "";
 		put(map, prefix + from, to);
 		put(map, prefix + to, from);
 	}
 
 	private static void put(Map<String, Set<String>> map, String from, String to) {
-		var values = map.computeIfAbsent(from, k -> new HashSet<>());
+		var values = map.computeIfAbsent(from, _ -> new HashSet<>());
 		values.add(to);
 	}
 

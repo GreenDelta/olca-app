@@ -15,7 +15,6 @@ import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.FreeformLayer;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.swt.widgets.Canvas;
 import org.openlca.app.editors.graphical.layouts.Layout;
 import org.openlca.app.editors.graphical.layouts.TreeConnectionRouter;
 import org.openlca.app.editors.graphical.model.Graph;
@@ -79,7 +78,7 @@ public class GraphEditPart extends ComponentEditPart<Graph> {
 		// to the default background color.
 		var control = getViewer().getControl();
 		control.setBackground(theme.backgroundColor());
-		control.addPaintListener(e -> {
+		control.addPaintListener(_ -> {
 			if (!control.isDisposed()) {
 				var current = getModel().getEditor().getTheme();
 				control.setBackground(current.backgroundColor());

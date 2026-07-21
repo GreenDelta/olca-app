@@ -90,7 +90,7 @@ public class SqlEditor extends ScriptingEditor {
 			queryText.setText(script == null ? "" : script);
 			var styler = new SyntaxStyler(queryText);
 			styler.styleIt();
-			queryText.addModifyListener($ -> {
+			queryText.addModifyListener(_ -> {
 				styler.styleIt();
 				script = queryText.getText();
 				setDirty();

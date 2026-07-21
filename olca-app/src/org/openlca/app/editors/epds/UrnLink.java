@@ -26,7 +26,7 @@ record UrnLink(EpdEditor editor) {
 		// link text
 		var link = UI.imageHyperlink(comp, tk);
 		update(link);
-		Controls.onClick(link, $ -> {
+		Controls.onClick(link, _ -> {
 			var urn = epd().urn;
 			if (Strings.isBlank(urn))
 				return;
@@ -43,7 +43,7 @@ record UrnLink(EpdEditor editor) {
 		deleteBtn.setHoverImage(Icon.DELETE.get());
 		deleteBtn.setImage(Icon.DELETE_DISABLED.get());
 		deleteBtn.setEnabled(editor().isEditable());
-		Controls.onClick(deleteBtn, $ -> {
+		Controls.onClick(deleteBtn, _ -> {
 			epd().urn = "";
 			editor.emitEvent("urn.change");
 			editor.setDirty();

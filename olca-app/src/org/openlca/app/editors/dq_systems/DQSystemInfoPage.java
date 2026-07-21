@@ -129,7 +129,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			return;
 		widget.setBackground(background);
 		widget.setForeground(foreground);
-		widget.addPaintListener(e -> {
+		widget.addPaintListener(_ -> {
 			if (!Objects.equals(widget.getBackground(), background)) {
 				widget.setBackground(background);
 			}
@@ -148,7 +148,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			label.setToolTipText(name);
 			setGridData(label, 1, 15);
 			Text indicatorText = indicatorTexts.get(indicator.position);
-			indicatorText.addModifyListener((e) -> {
+			indicatorText.addModifyListener((_) -> {
 				label.setText(indicatorText.getText());
 				label.setToolTipText(indicatorText.getText());
 			});
@@ -176,7 +176,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 				Text labelText = createTextCell(composite, 1, 8);
 				labelText.setText(scoreLabel);
 				int pos = i;
-				labelText.addModifyListener((e) -> {
+				labelText.addModifyListener((_) -> {
 					getModel().setScoreLabel(pos, labelText.getText());
 					getEditor().setDirty(true);
 				});
@@ -188,7 +188,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 				setGridData(label, 1, 8);
 				((GridData) label.getLayoutData()).horizontalAlignment = SWT.CENTER;
 				Text scoreText = scoreTexts.get(i);
-				scoreText.addModifyListener((e) -> {
+				scoreText.addModifyListener((_) -> {
 					label.setText(scoreText.getText());
 					label.setToolTipText(scoreText.getText());
 				});
@@ -228,7 +228,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 			button.setEnabled(false);
 			return;
 		}
-		Controls.onSelect(button, (e) -> {
+		Controls.onSelect(button, (_) -> {
 			int newScore = getModel().getScoreCount() + 1;
 			for (var indicator : getModel().indicators) {
 				var score = new DQScore();
@@ -244,7 +244,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	private void createRemoveScoreButton(Composite parent, int position) {
 		Button button = tk.createButton(parent, M.RemoveScore, SWT.NONE);
-		Controls.onSelect(button, (e) -> {
+		Controls.onSelect(button, (_) -> {
 			for (DQIndicator indicator : getModel().indicators) {
 				for (DQScore score : new ArrayList<>(indicator.scores)) {
 					if (score.position < position)
@@ -263,7 +263,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	private void createAddIndicatorButton(Composite parent) {
 		var button = tk.createButton(parent, M.AddIndicator, SWT.NONE);
-		Controls.onSelect(button, (e) -> {
+		Controls.onSelect(button, (_) -> {
 			DQIndicator indicator = new DQIndicator();
 			indicator.name = "Indicator " + (getModel().indicators.size() + 1);
 			indicator.position = getModel().indicators.size() + 1;
@@ -282,7 +282,7 @@ class DQSystemInfoPage extends ModelPage<DQSystem> {
 
 	private void createRemoveIndicatorButton(Composite parent, int position) {
 		var button = tk.createButton(parent, M.RemoveIndicator, SWT.NONE);
-		Controls.onSelect(button, (e) -> {
+		Controls.onSelect(button, (_) -> {
 			for (DQIndicator indicator : new ArrayList<>(getModel().indicators)) {
 				if (indicator.position < position)
 					continue;

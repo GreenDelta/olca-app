@@ -141,7 +141,6 @@ public class GraphEditor extends GraphicalEditorWithFrame {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void createActions() {
 		super.createActions();
 		var registry = getActionRegistry();

@@ -1,5 +1,8 @@
 package org.openlca.app.components;
 
+import java.util.Objects;
+import java.util.function.Consumer;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -17,9 +20,6 @@ import org.openlca.core.database.IDatabase;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.Descriptor;
-
-import java.util.Objects;
-import java.util.function.Consumer;
 
 public class ModelLink<T extends RootEntity> {
 
@@ -71,7 +71,7 @@ public class ModelLink<T extends RootEntity> {
 			var btn = UI.imageHyperlink(comp, tk, SWT.BORDER);
 			btn.setToolTipText(M.SelectADataset);
 			btn.setImage(Images.get(modelType));
-			Controls.onClick(btn, $ -> doSelect.run());
+			Controls.onClick(btn, _ -> doSelect.run());
 		}
 
 		// the link
@@ -79,7 +79,7 @@ public class ModelLink<T extends RootEntity> {
 		if (!editable) {
 			link.setImage(Images.get(modelType));
 		}
-		Controls.onClick(link, $ -> {
+		Controls.onClick(link, _ -> {
 			if (model != null) {
 				App.open(model);
 			} else if (editable) {
@@ -100,7 +100,7 @@ public class ModelLink<T extends RootEntity> {
 			deleteBtn.setToolTipText(M.Remove);
 			deleteBtn.setHoverImage(Icon.DELETE.get());
 			deleteBtn.setImage(Icon.DELETE_DISABLED.get());
-			Controls.onClick(deleteBtn, $ -> {
+			Controls.onClick(deleteBtn, _ -> {
 				model = null;
 				updateLinkText();
 				if (onChange != null) {

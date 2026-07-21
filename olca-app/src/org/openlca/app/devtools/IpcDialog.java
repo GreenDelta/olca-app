@@ -85,7 +85,7 @@ public class IpcDialog extends FormDialog {
 		// start-stop button
 		button = UI.button(comp, tk, "");
 		button.setImage(Icon.RUN.get());
-		Controls.onSelect(button, e -> {
+		Controls.onSelect(button, _ -> {
 			if (server == null && grpcServer == null) {
 				onStart();
 			} else {
@@ -196,7 +196,7 @@ public class IpcDialog extends FormDialog {
 	protected void createButtonsForButtonBar(Composite parent) {
 		var btn = createButton(parent, IDialogConstants.CLOSE_ID,
 				IDialogConstants.CLOSE_LABEL, false);
-		Controls.onSelect(btn, e -> this.close());
+		Controls.onSelect(btn, _ -> this.close());
 	}
 
 }

@@ -123,7 +123,7 @@ public class AuthenticationGroup extends Composite {
 		if (initialValue != null) {
 			text.setText(initialValue);
 		}
-		text.addModifyListener(e -> {
+		text.addModifyListener(_ -> {
 			process.accept(text.getText());
 			if (onChange != null) {
 				onChange.run();

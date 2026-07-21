@@ -62,10 +62,10 @@ public record RemovalTree(Set<Long> providers, List<ProcessLink> links) {
 			// index the provider links
 			for (var link : links) {
 				procProvs
-					.computeIfAbsent(link.processId, k -> new HashSet<>())
+					.computeIfAbsent(link.processId, _ -> new HashSet<>())
 					.add(link.providerId);
 				provProcs
-					.computeIfAbsent(link.providerId, k -> new HashSet<>())
+					.computeIfAbsent(link.providerId, _ -> new HashSet<>())
 					.add(link.processId);
 			}
 		}

@@ -97,7 +97,7 @@ class FlowUseSection {
 		link.setText(Labels.name(d));
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
-		Controls.onClick(link, e -> {
+		Controls.onClick(link, _ -> {
 			ProcessDao dao = new ProcessDao(db);
 			Process p = dao.getForId(d.id);
 			App.open(p);
@@ -118,6 +118,6 @@ class FlowUseSection {
 		link.setImage(image);
 		link.setForeground(Colors.linkBlue());
 		Controls.onClick(link,
-				e -> FlowUsePopup.show(flow, processIds, usageType));
+				_ -> FlowUsePopup.show(flow, processIds, usageType));
 	}
 }

@@ -94,7 +94,7 @@ class FlowInfoPage extends ModelPage<Flow> {
 		UI.label(comp, toolkit, "");
 		var button = UI.button(comp, toolkit, M.CreateProcess);
 		button.setImage(Images.get(ModelType.PROCESS, Overlay.NEW));
-		Controls.onSelect(button, e -> openProcessWizard());
+		Controls.onSelect(button, _ -> openProcessWizard());
 	}
 
 	private void openProcessWizard() {

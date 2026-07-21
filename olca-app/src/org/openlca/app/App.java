@@ -87,7 +87,7 @@ public class App {
 						NativeLib.loadFrom(dir);
 						if (NativeLib.isLoaded()) {
 							log.info("loaded native libraries; with UMFPACK={}",
-									NativeLib.isLoaded(Module.UMFPACK));
+								NativeLib.isLoaded(Module.UMFPACK));
 							solver = new NativeSolver();
 							return solver;
 						}
@@ -143,7 +143,7 @@ public class App {
 
 		log.trace("open editor for {} ", d);
 		String editorId = "editors." + d.type.getModelClass()
-				.getSimpleName().toLowerCase();
+			.getSimpleName().toLowerCase();
 		var input = new ModelEditorInput(d);
 		Editors.open(input, editorId);
 	}
@@ -199,7 +199,7 @@ public class App {
 
 	/// Executes the given task in the UI thread of the application. Thus, it can
 	/// access UI elements while running. Internally, it schedules a job which is
-	/// then executed by the platform.
+	/// then executed by the platform UI thread.
 	public static Job execInUI(String name, Runnable runnable) {
 		var job = new WrappedUIJob(name, runnable);
 		job.setUser(true);
@@ -207,46 +207,51 @@ public class App {
 		return job;
 	}
 
-	/// Executes the given task in a non-ui thread (!) and returns it's result.
-	/// Thus, the task cannot access any UI elements while running. A progress
-	/// indicator is shown while the task is running. The calling thread is
-	/// blocked while the given task is executed. It returns the result of the
-	/// given function or `null` when calling that function failed.
+	/// Executes the given function in a separate non-UI thread and returns its
+	/// result. Thus, the task cannot access any UI elements while running. A
+	/// progress indicator (busy cursor) is shown while the task is running. The
+	/// calling thread is blocked while the given task is executed. Returns the
+	/// result of the given function or `null` when calling that function failed.
 	@Nullable
 	public static <T> T exec(String task, Supplier<T> fn) {
 		var ref = new AtomicReference<T>();
 		try {
 			PlatformUI.getWorkbench().getProgressService()
-					.busyCursorWhile((monitor) -> {
-						monitor.beginTask(task, IProgressMonitor.UNKNOWN);
-						ref.set(fn.get());
-						monitor.done();
-					});
+				.busyCursorWhile((monitor) -> {
+					monitor.beginTask(task, IProgressMonitor.UNKNOWN);
+					ref.set(fn.get());
+					monitor.done();
+				});
 		} catch (Exception e) {
 			ErrorReporter.on("Execution of " + task + " failed", e);
 		}
 		return ref.get();
 	}
 
-	/**
-	 * Blocks the current thread while running the given function in a separate
-	 * non-UI thread.
-	 */
+	/// Executes the given function in a separate non-UI thread. Thus, the task
+	/// cannot access any UI elements while running. A progress indicator (busy
+	/// cursor) is shown while the task is running. The calling thread is blocked
+	/// while the given function is executed.
 	public static void exec(String task, Runnable fn) {
 		try {
 			PlatformUI.getWorkbench().getProgressService()
-					.busyCursorWhile(monitor -> {
-						monitor.beginTask(task, IProgressMonitor.UNKNOWN);
-						fn.run();
-						monitor.done();
-					});
+				.busyCursorWhile(monitor -> {
+					monitor.beginTask(task, IProgressMonitor.UNKNOWN);
+					fn.run();
+					monitor.done();
+				});
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to execute task: " + task, e);
 		}
 	}
 
+	/// Executes the given function in a separate non-UI thread while displaying a
+	/// progress indicator (busy cursor) and blocking the calling thread. Once the
+	/// function completes, the provided callback is executed in the UI thread if
+	/// it is non-null.
 	public static void exec(
-		String name, Runnable fn, Runnable callback) {
+		String name, Runnable fn, Runnable callback
+	) {
 		exec(name, fn);
 		if (callback != null) {
 			execInUI(name, callback);

@@ -95,7 +95,7 @@ public class PythonEditor extends ScriptingEditor {
 					});
 
 					// add the _onSave listener, called when Ctrl+s is pressed
-					UI.bindFunction(browser, "_onSave", (args) -> {
+					UI.bindFunction(browser, "_onSave", _ -> {
 						var editor = PythonEditor.this;
 						if (!editor.isDirty()) {
 							if (editor.file == null) {

@@ -58,7 +58,7 @@ class ImpactPage extends ModelPage<Flow> {
 			}
 		});
 		Actions.bind(table, onOpen);
-		Tables.onDoubleClick(table, e -> onOpen.run());
+		Tables.onDoubleClick(table, _ -> onOpen.run());
 		form.reflow(true);
 	}
 

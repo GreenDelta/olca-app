@@ -145,7 +145,7 @@ public class ResultItemSelector {
 		boolean enabled = getType(initialSelection) == ModelType.FLOW;
 		flowCheck = UI.button(comp, tk, M.Flow, SWT.RADIO);
 		flowCheck.setSelection(enabled);
-		Controls.onSelect(flowCheck, _e -> {
+		Controls.onSelect(flowCheck, _ -> {
 			if (flowCheck.getSelection()) {
 				flowCombo.setEnabled(true);
 				selectedType = ModelType.FLOW;
@@ -159,7 +159,7 @@ public class ResultItemSelector {
 		flowCombo.setEnabled(enabled);
 		flowCombo.setInput(flows);
 		flowCombo.selectFirst();
-		flowCombo.addSelectionChangedListener(_e -> fireSelection());
+		flowCombo.addSelectionChangedListener(_ -> fireSelection());
 		if (enabled) {
 			flowCombo.select((EnviFlow) initialSelection);
 		}
@@ -169,7 +169,7 @@ public class ResultItemSelector {
 		boolean enabled = getType(initialSelection) == ModelType.IMPACT_CATEGORY;
 		impactCheck = UI.button(comp, tk, M.ImpactCategory, SWT.RADIO);
 		impactCheck.setSelection(enabled);
-		Controls.onSelect(impactCheck, _e -> {
+		Controls.onSelect(impactCheck, _ -> {
 			if (impactCheck.getSelection()) {
 				impactCombo.setEnabled(true);
 				selectedType = ModelType.IMPACT_CATEGORY;
@@ -183,7 +183,7 @@ public class ResultItemSelector {
 		impactCombo.setEnabled(enabled);
 		impactCombo.setInput(impacts);
 		impactCombo.selectFirst();
-		impactCombo.addSelectionChangedListener((val) -> fireSelection());
+		impactCombo.addSelectionChangedListener((_) -> fireSelection());
 		if (enabled) {
 			impactCombo.select((ImpactDescriptor) initialSelection);
 		}
@@ -193,7 +193,7 @@ public class ResultItemSelector {
 		boolean enabled = getType(initialSelection) == ModelType.CURRENCY;
 		costCheck = tk.createButton(comp, M.CostCategory, SWT.RADIO);
 		costCheck.setSelection(enabled);
-		Controls.onSelect(costCheck, _e -> {
+		Controls.onSelect(costCheck, _ -> {
 			if (costCheck.getSelection()) {
 				costCombo.setEnabled(true);
 				selectedType = ModelType.CURRENCY;
@@ -207,7 +207,7 @@ public class ResultItemSelector {
 		costCombo.setEnabled(enabled);
 		costCombo.setInput(costs);
 		costCombo.selectFirst();
-		costCombo.addSelectionChangedListener((val) -> fireSelection());
+		costCombo.addSelectionChangedListener((_) -> fireSelection());
 		if (enabled) {
 			costCombo.select((CostResultDescriptor) initialSelection);
 		}

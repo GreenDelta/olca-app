@@ -23,7 +23,7 @@ public class GraphEditPartFactory implements EditPartFactory {
 
 	private EditPart editPartOf(Object model) {
 		return switch (model) {
-			case Graph ignore -> new GraphEditPart();
+			case Graph _ -> new GraphEditPart();
 
 			case Node node -> node.isMinimized()
 				? new NodeEditPart.Minimized()
@@ -33,9 +33,9 @@ public class GraphEditPartFactory implements EditPartFactory {
 				? new StickyNoteEditPart.Minimized()
 				: new StickyNoteEditPart.Maximized();
 
-			case IOPane ignore -> new IOPaneEditPart();
-			case ExchangeItem ignore -> new ExchangeEditPart();
-			case GraphLink ignore -> new LinkEditPart();
+			case IOPane _ -> new IOPaneEditPart();
+			case ExchangeItem _ -> new ExchangeEditPart();
+			case GraphLink _ -> new LinkEditPart();
 			case null, default ->  null;
 		};
 	}

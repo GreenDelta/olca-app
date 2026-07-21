@@ -86,7 +86,7 @@ public class SaveScriptDialog extends FormDialog {
 		UI.gridLayout(body, 2);
 		var text = UI.labeledText(body, tk, M.FileName);
 		text.setText(name);
-		text.addModifyListener(e -> name = text.getText());
+		text.addModifyListener(_ -> name = text.getText());
 
 		// add a `save as local` script option when
 		// a database is open
@@ -98,7 +98,7 @@ public class SaveScriptDialog extends FormDialog {
 		var global = tk.createButton(body, M.AsGlobalScript, SWT.RADIO);
 		global.setSelection(true);
 		Controls.onSelect(
-				global, e -> asGlobal = global.getSelection());
+				global, _ -> asGlobal = global.getSelection());
 
 		UI.filler(body, tk);
 		var local = tk.createButton(
@@ -106,7 +106,7 @@ public class SaveScriptDialog extends FormDialog {
 				SWT.RADIO);
 		local.setSelection(false);
 		Controls.onSelect(
-				local, e -> this.asGlobal = !local.getSelection());
+				local, _ -> this.asGlobal = !local.getSelection());
 	}
 
 	@Override

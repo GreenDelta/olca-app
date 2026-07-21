@@ -96,7 +96,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 				body, M.ShowElementaryFlows, SWT.CHECK);
 			elems.setSelection(config.showElementaryFlows());
 			Controls.onSelect(elems,
-					e -> config.setShowElementaryFlows(elems.getSelection()));
+					_ -> config.setShowElementaryFlows(elems.getSelection()));
 
 			// edit mode
 			UI.filler(body, tk);
@@ -104,7 +104,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 				body, M.EnableProcessEditing, SWT.CHECK);
 			isNodeEditingEnabled.setSelection(config.isNodeEditingEnabled());
 			Controls.onSelect(isNodeEditingEnabled,
-				e -> config.setNodeEditingEnabled(
+				_ -> config.setNodeEditingEnabled(
 					isNodeEditingEnabled.getSelection()));
 		}
 
@@ -121,7 +121,7 @@ public class EditGraphConfigAction extends WorkbenchPartAction {
 			}
 			combo.select(
 					ArrayUtils.indexOf(connectionRouters, config.connectionRouter()));
-			Controls.onSelect(combo, e -> {
+			Controls.onSelect(combo, _ -> {
 				var router = connectionRouters[combo.getSelectionIndex()];
 				config.setConnectionRouter(router);
 			});
