@@ -133,7 +133,7 @@ class ImpactPage extends ModelPage<Process> {
 
 		if (result == null) {
 			var regionalized = regioCheck.getSelection();
-			App.runInUI(M.ComputeLciaResultsDots, () -> {
+			App.execInUI(M.ComputeLciaResultsDots, () -> {
 				var res = DirectProcessResult.calculate(getModel(), regionalized);
 				if (res.isError()) {
 					MsgBox.error("Calculation failed", res.error());

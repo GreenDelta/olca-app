@@ -102,7 +102,7 @@ public class SmartEpdTool extends SimpleFormEditor {
 			TreeMenu.mountOn(client, tree);
 
 			// fetch and fill the tree model
-			App.runInUI("Fetching data ...", () -> {
+			App.execInUI("Fetching data ...", () -> {
 				var res = TreeModel.fetch(client);
 				if (res.isError()) {
 					ErrorReporter.on(

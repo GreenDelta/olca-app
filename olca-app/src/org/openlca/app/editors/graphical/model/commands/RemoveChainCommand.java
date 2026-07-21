@@ -62,7 +62,7 @@ public class RemoveChainCommand extends Command {
 	public void redo() {
 		var system = graph.getProductSystem();
 
-		App.runInUI("Removing process chain", () -> {
+		App.execInUI("Removing process chain", () -> {
 			var tree = RemovalTree.of(system.processLinks, root.descriptor.id);
 			system.processes.removeAll(tree.providers());
 			system.processLinks.removeAll(tree.links());

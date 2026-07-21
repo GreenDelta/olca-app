@@ -12,7 +12,7 @@ import org.openlca.app.M;
 public class MemoryError {
 
 	public static void show() {
-		App.runInUI(M.MemoryErrorInCalculationDots, () -> new Dialog().open());
+		App.execInUI(M.MemoryErrorInCalculationDots, () -> new Dialog().open());
 	}
 
 	private static class Dialog extends FormDialog {

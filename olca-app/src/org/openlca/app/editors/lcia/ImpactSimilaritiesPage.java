@@ -61,7 +61,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 
 		// set input
 		form.reflow(true);
-		App.runInUI(M.CalculateSimilarities, () -> {
+		App.execInUI(M.CalculateSimilarities, () -> {
 			var items = Item.listOf(getModel());
 			table.setInput(items);
 		});

@@ -189,7 +189,7 @@ class SetupPage extends FormPage {
 				});
 				monitor.done();
 
-				App.runInUI("Open simulation result", () -> {
+				App.execInUI("Open simulation result", () -> {
 					var res = sim.getResult();
 					if (res.isError()) {
 						MsgBox.error("Simulation failed", res.error());

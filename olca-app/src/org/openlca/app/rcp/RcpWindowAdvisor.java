@@ -21,7 +21,7 @@ public class RcpWindowAdvisor extends WorkbenchWindowAdvisor {
 	}
 
 	public static void updateWindowTitle() {
-		App.runInUI(M.UpdateTitle, () -> {
+		App.execInUI(M.UpdateTitle, () -> {
 			try {
 				var wb = PlatformUI.getWorkbench();
 				if (wb == null)

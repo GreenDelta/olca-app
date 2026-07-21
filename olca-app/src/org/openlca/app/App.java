@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
+import org.jspecify.annotations.Nullable;
 import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.preferences.CollaborationPreference;
 import org.openlca.app.db.Libraries;
@@ -196,19 +197,22 @@ public class App {
 		return null;
 	}
 
-	public static Job runInUI(String name, Runnable runnable) {
+	/// Executes the given task in the UI thread of the application. Thus, it can
+	/// access UI elements while running. Internally, it schedules a job which is
+	/// then executed by the platform.
+	public static Job execInUI(String name, Runnable runnable) {
 		var job = new WrappedUIJob(name, runnable);
 		job.setUser(true);
 		job.schedule();
 		return job;
 	}
 
-	/**
-	 * Shows a progress indicator while running the given function in a separate
-	 * thread. The calling thread is blocked while the given function is
-	 * executed. It returns the result of the given function or `null` when
-	 * calling that function failed.
-	 */
+	/// Executes the given task in a non-ui thread (!) and returns it's result.
+	/// Thus, the task cannot access any UI elements while running. A progress
+	/// indicator is shown while the task is running. The calling thread is
+	/// blocked while the given task is executed. It returns the result of the
+	/// given function or `null` when calling that function failed.
+	@Nullable
 	public static <T> T exec(String task, Supplier<T> fn) {
 		var ref = new AtomicReference<T>();
 		try {
@@ -245,7 +249,7 @@ public class App {
 		String name, Runnable fn, Runnable callback) {
 		exec(name, fn);
 		if (callback != null) {
-			runInUI(name, callback);
+			execInUI(name, callback);
 		}
 	}
 

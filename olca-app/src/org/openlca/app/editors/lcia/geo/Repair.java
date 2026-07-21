@@ -53,7 +53,7 @@ class Repair {
 	private static void showInfo(FeatureRepair repair) {
 		if (repair.wasCanceled())
 			return;
-		App.runInUI(M.FeatureRepairDone, () -> {
+		App.execInUI(M.FeatureRepairDone, () -> {
 			MsgBox.info(M.FeatureRepairDone, M.CheckFeatures + " - " + repair.count());
 		});
 	}

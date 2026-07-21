@@ -93,7 +93,7 @@ public class ReplaceFlowsDialog extends FormDialog {
 		targetCombo.addSelectionChangedListener(_ -> updateButtons());
 		targetCombo.setEnabled(false);
 
-		App.runInUI("Render flows", () -> sourceCombo.setInput(usedFlows));
+		App.execInUI("Render flows", () -> sourceCombo.setInput(usedFlows));
 		tk.paintBordersFor(top);
 	}
 

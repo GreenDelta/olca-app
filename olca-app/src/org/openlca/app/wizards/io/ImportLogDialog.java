@@ -24,7 +24,7 @@ public class ImportLogDialog extends FormDialog {
 		var title = imp.isCanceled()
 				? M.ImportCanceled
 				: M.ImportFinished;
-		App.runInUI(title,
+		App.execInUI(title,
 				() -> new ImportLogDialog(imp.log(), title).open());
 	}
 
@@ -34,7 +34,7 @@ public class ImportLogDialog extends FormDialog {
 		var t = Strings.isBlank(title)
 				? M.ImportFinished
 				: title;
-		App.runInUI(title, () -> new ImportLogDialog(log, t).open());
+		App.execInUI(title, () -> new ImportLogDialog(log, t).open());
 	}
 
 	private ImportLogDialog(ImportLog log, String title) {

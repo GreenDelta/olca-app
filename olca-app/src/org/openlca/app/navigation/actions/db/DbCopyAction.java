@@ -70,7 +70,7 @@ public class DbCopyAction extends Action implements INavigationAction {
 			MsgBox.error(M.InvalidDatabaseName, err);
 			return;
 		}
-		App.runInUI(M.CopyDatabase, () -> doCopy(newName));
+		App.execInUI(M.CopyDatabase, () -> doCopy(newName));
 	}
 
 	private void doCopy(String newName) {

@@ -98,7 +98,7 @@ public class ReplaceProvidersDialog extends FormDialog {
 		targetCombo.addSelectionChangedListener(_ -> updateButtons());
 		targetCombo.setEnabled(false);
 
-		App.runInUI("Render providers", () -> sourceCombo.setInput(usedProviders));
+		App.execInUI("Render providers", () -> sourceCombo.setInput(usedProviders));
 	}
 
 	private void updateProducts(ProcessDescriptor source) {

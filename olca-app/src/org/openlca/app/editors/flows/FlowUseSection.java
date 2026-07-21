@@ -52,7 +52,7 @@ class FlowUseSection {
 		section.setExpanded(false);
 		parent = UI.sectionClient(section, tk);
 		this.tk = tk;
-		App.runInUI(M.RenderUsageLinks, () -> {
+		App.execInUI(M.RenderUsageLinks, () -> {
 			renderLinks(M.ConsumedBy, recipients, Icon.INPUT.get());
 			renderLinks(M.ProducedBy, providers, Icon.OUTPUT.get());
 		});
