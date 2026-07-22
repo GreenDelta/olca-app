@@ -191,14 +191,14 @@ public class DataQualityShell extends Shell {
 		toolkit.createLabel(composite, M.BaseUncertainty + ": ");
 		baseUncertaintyText = toolkit.createText(composite, "1.0");
 		UI.gridData(baseUncertaintyText, false, false).widthHint = 80;
-		baseUncertaintyText.addModifyListener((e) -> updateSigmaG());
+		baseUncertaintyText.addModifyListener(_ -> updateSigmaG());
 		toolkit.createLabel(composite, "\u03c3g: ");
 		valueText = toolkit.createText(composite, "", SWT.NONE);
 		valueText.setEditable(false);
 		UI.gridData(valueText, true, false);
 		Button button = UI.button(composite, toolkit);
 		button.setText(M.UseAsUncertainty);
-		Controls.onSelect(button, (e) -> onUseUncertainties.accept(this));
+		Controls.onSelect(button, _ -> onUseUncertainties.accept(this));
 	}
 
 	private void createButtons(Composite parent) {

@@ -153,7 +153,7 @@ class ReviewSection {
 				details.setText(_rev.details);
 			}
 			details.setEditable(editor.isEditable());
-			details.addModifyListener($ -> {
+			details.addModifyListener(_ -> {
 				sync().details = details.getText();
 				editor.setDirty();
 			});
@@ -184,7 +184,7 @@ class ReviewSection {
 				return;
 			}
 
-			Controls.onSelect(combo, $ -> {
+			Controls.onSelect(combo, _ -> {
 				var rev = sync();
 				int i = combo.getSelectionIndex();
 				rev.type = items.get(i);

@@ -199,7 +199,7 @@ class ReviewScopeSection {
 			scopeCombo.setItems(scopeItems);
 			scopeCombo.select(0);
 			this.scope = scopeItems[0];
-			Controls.onSelect(scopeCombo, $ -> {
+			Controls.onSelect(scopeCombo, _ -> {
 				int i = scopeCombo.getSelectionIndex();
 				this.scope = scopeItems[i];
 			});
@@ -214,7 +214,7 @@ class ReviewScopeSection {
 			methodCombo.setItems(methodItems);
 			methodCombo.select(0);
 			this.method = methodItems[0];
-			Controls.onSelect(methodCombo, $ -> {
+			Controls.onSelect(methodCombo, _ -> {
 				int i = methodCombo.getSelectionIndex();
 				this.method = methodItems[i];
 			});

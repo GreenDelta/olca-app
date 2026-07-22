@@ -56,7 +56,7 @@ class DataQualityCellEditor extends DialogCellEditor {
 		shell.onOk = this::onOk;
 		shell.onDelete = this::onDelete;
 		shell.onUseUncertainties = this::onUseUncertainties;
-		shell.addDisposeListener(e -> {
+		shell.addDisposeListener(_ -> {
 			if (valuesChanged()) {
 				updateContents(exchange.dqEntry);
 				viewer.refresh();

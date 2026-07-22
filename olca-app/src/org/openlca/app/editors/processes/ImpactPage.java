@@ -72,12 +72,12 @@ class ImpactPage extends ModelPage<Process> {
 
 		zeroCheck = UI.labeledCheckbox(comp, tk, M.ExcludeZeroValues);
 		zeroCheck.setSelection(true);
-		Controls.onSelect(zeroCheck, e -> setTreeInput(combo.getSelected()));
+		Controls.onSelect(zeroCheck, _ -> setTreeInput(combo.getSelected()));
 		UI.label(comp, tk, "|");
 
 		regioCheck = UI.labeledCheckbox(comp, tk, M.RegionalizedCalculation);
 		regioCheck.setSelection(false);
-		Controls.onSelect(regioCheck, e -> {
+		Controls.onSelect(regioCheck, _ -> {
 			result = null;
 			setTreeInput(combo.getSelected());
 		});
@@ -85,7 +85,7 @@ class ImpactPage extends ModelPage<Process> {
 		var reload = UI.button(comp, tk, M.Reload);
 		var image = Icon.REFRESH.get();
 		reload.setImage(image);
-		Controls.onSelect(reload, _e -> {
+		Controls.onSelect(reload, _ -> {
 			result = null;
 			setTreeInput(combo.getSelected());
 		});
@@ -112,7 +112,7 @@ class ImpactPage extends ModelPage<Process> {
 			}
 		});
 		Actions.bind(tree, onOpen, TreeClipboard.onCopy(tree));
-		Trees.onDoubleClick(tree, e -> onOpen.run());
+		Trees.onDoubleClick(tree, _ -> onOpen.run());
 
 		if (!methods.isEmpty()) {
 			var m = methods.getFirst();

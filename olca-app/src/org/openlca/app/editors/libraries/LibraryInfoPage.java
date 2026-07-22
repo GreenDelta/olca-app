@@ -70,7 +70,7 @@ public class LibraryInfoPage extends FormPage {
 			}
 		});
 		Actions.bind(table, onOpen);
-		Tables.onDoubleClick(table, $ -> onOpen.run());
+		Tables.onDoubleClick(table, _ -> onOpen.run());
 	}
 
 	private static class DepLabel extends BaseLabelProvider

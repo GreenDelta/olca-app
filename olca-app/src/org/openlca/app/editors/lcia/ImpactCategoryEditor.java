@@ -123,7 +123,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 				? dir == Direction.INPUT ? 1 : 2
 				: 0);
 			combo.setEnabled(isEditable());
-			Controls.onSelect(combo, $ -> {
+			Controls.onSelect(combo, _ -> {
 				var idx = combo.getSelectionIndex();
 				getModel().direction = switch (idx) {
 					case 1 -> Direction.INPUT;
@@ -157,7 +157,7 @@ public class ImpactCategoryEditor extends ModelEditor<ImpactCategory> {
 				}
 			});
 			Actions.bind(table, onCopy, onOpen);
-			Tables.onDoubleClick(table, _e -> onOpen.run());
+			Tables.onDoubleClick(table, _ -> onOpen.run());
 
 			// set input
 			var methods = UsageSearch.find(Database.get(), getModel())

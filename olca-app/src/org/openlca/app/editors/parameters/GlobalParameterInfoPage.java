@@ -91,7 +91,7 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		UI.label(comp, toolkit, M.Uncertainty);
 		var link = UI.hyperLink(
 				comp, toolkit, Uncertainty.string(getModel().uncertainty));
-		Controls.onClick(link, e -> {
+		Controls.onClick(link, _ -> {
 			var param = getModel();
 			var u = UncertaintyDialog.open(param.uncertainty)
 					.orElse(null);
@@ -111,7 +111,7 @@ class GlobalParameterInfoPage extends ModelPage<Parameter> {
 		Text text = text(comp, M.Formula, "formula");
 		UI.label(comp, toolkit, M.Value);
 		Label label = UI.label(comp, toolkit, Double.toString(getModel().value));
-		text.addModifyListener(e -> {
+		text.addModifyListener(_ -> {
 			support.evaluate();
 			label.setText(Double.toString(getModel().value));
 			getEditor().setDirty(true);

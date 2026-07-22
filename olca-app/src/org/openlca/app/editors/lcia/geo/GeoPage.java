@@ -70,19 +70,19 @@ public class GeoPage extends ModelPage<ImpactCategory> {
 		var openBtn = UI.button(btnComp, tk, M.Open);
 		openBtn.setImage(Icon.FOLDER_OPEN.get());
 		UI.gridData(openBtn, false, false).widthHint = 80;
-		Controls.onSelect(openBtn, _e -> onOpenFile());
+		Controls.onSelect(openBtn, _ -> onOpenFile());
 
 		saveBtn = UI.button(btnComp, tk, M.Save);
 		saveBtn.setImage(Icon.SAVE.get());
 		UI.gridData(saveBtn, false, false).widthHint = 80;
 		saveBtn.setEnabled(false);
-		Controls.onSelect(saveBtn, _e -> onSaveFile());
+		Controls.onSelect(saveBtn, _ -> onSaveFile());
 
 		validationBtn = UI.button(btnComp, tk, M.Validate);
 		validationBtn.setImage(Icon.CHECK_TRUE.get());
 		UI.gridData(validationBtn, false, false).widthHint = 80;
 		validationBtn.setEnabled(false);
-		Controls.onSelect(validationBtn, _e -> Validation.run(setup));
+		Controls.onSelect(validationBtn, _ -> Validation.run(setup));
 	}
 
 	private void onOpenFile() {

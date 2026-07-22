@@ -76,7 +76,7 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		if (isEditable()) {
 			bindActions(indicatorTable, section);
 		} else {
-			Tables.onDoubleClick(indicatorTable, $ -> {
+			Tables.onDoubleClick(indicatorTable, _ -> {
 				if (Viewers.getFirstSelected(indicatorTable) instanceof ImpactCategory i) {
 					App.open(i);
 				}
@@ -98,8 +98,8 @@ class ImpactMethodInfoPage extends ModelPage<ImpactMethod> {
 		Actions.bind(table, add, remove, open, copy);
 		CommentAction.bindTo(section, "impactCategories",
 			editor.getComments(), add, remove);
-		Tables.onDeletePressed(table, $ -> onRemove());
-		Tables.onDoubleClick(table, $ -> {
+		Tables.onDeletePressed(table, _ -> onRemove());
+		Tables.onDoubleClick(table, _ -> {
 			if (Viewers.getFirstSelected(table) instanceof ImpactCategory i) {
 				App.open(i);
 			} else {

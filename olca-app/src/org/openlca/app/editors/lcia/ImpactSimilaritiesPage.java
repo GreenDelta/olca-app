@@ -57,7 +57,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 			}
 		});
 		Actions.bind(table, onCopy, onOpen);
-		Tables.onDoubleClick(table, _e -> onOpen.run());
+		Tables.onDoubleClick(table, _ -> onOpen.run());
 
 		// set input
 		form.reflow(true);
@@ -80,7 +80,7 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 			NativeSql.on(db).query(sql, r -> {
 				var flowID = r.getLong(1);
 				flowIndex.computeIfAbsent(
-						flowID, _key -> flowIndex.size());
+						flowID, _ -> flowIndex.size());
 				return true;
 			});
 
@@ -97,18 +97,9 @@ class ImpactSimilaritiesPage extends ModelPage<ImpactCategory> {
 				if (flowIdx == null)
 					return true;
 				var values = factors.computeIfAbsent(
-						impactID, _key -> new double[flowIndex.size()]);
-
-				var factor = r.getDouble(3);
-				var unitF = conversions.getUnitFactor(r.getLong(4));
-				factor = unitF == 0
-						? factor
-						: factor / unitF;
-				var propF = conversions.getPropertyFactor(r.getLong(5));
-				factor = propF == 0
-						? factor
-						: factor * propF;
-				values[flowIdx] = factor;
+						impactID, _ -> new double[flowIndex.size()]);
+				var f = conversions.forCharacterization(r.getLong(4), r.getLong(5));
+				values[flowIdx] = f * r.getDouble(3);
 				return true;
 			});
 

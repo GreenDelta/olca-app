@@ -39,7 +39,7 @@ class FilterCombo {
 		for (int type : types) {
 			MenuItem item = new MenuItem(menu, SWT.NONE);
 			item.setText(label(type));
-			Controls.onSelect(item, e -> {
+			Controls.onSelect(item, _ -> {
 				combo.type = type;
 				button.setText(label(type));
 				button.setToolTipText(label(type));
@@ -51,7 +51,7 @@ class FilterCombo {
 			});
 		}
 		button.setMenu(menu);
-		Controls.onSelect(button, e -> menu.setVisible(true));
+		Controls.onSelect(button, _ -> menu.setVisible(true));
 		return combo;
 	}
 

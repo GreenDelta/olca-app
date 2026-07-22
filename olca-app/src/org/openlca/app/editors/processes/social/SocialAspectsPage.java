@@ -62,7 +62,7 @@ public class SocialAspectsPage extends ModelPage<Process> {
 		createTree(comp);
 		if (!isEditable())
 			return;
-		Trees.onDoubleClick(tree, (e) -> editAspect());
+		Trees.onDoubleClick(tree, _ -> editAspect());
 		var add = Actions.onAdd(() -> addIndicators(
 			ModelSelector.multiSelect(ModelType.SOCIAL_INDICATOR)));
 		var edit = Actions.create(M.Edit, Icon.EDIT.descriptor(), this::editAspect);
@@ -162,12 +162,12 @@ public class SocialAspectsPage extends ModelPage<Process> {
 				case CategoryNode ca -> switch (objB) {
 					case CategoryNode cb -> Strings.compareIgnoreCase(
 						ca.name(), cb.name());
-					case SocialAspect ignore -> 0;
+					case SocialAspect _ -> 0;
 					case null, default -> super.compare(viewer, objA, objB);
 				};
 
 				case SocialAspect aa -> switch (objB) {
-					case CategoryNode cb -> 1;
+					case CategoryNode _ -> 1;
 					case SocialAspect ab -> Strings.compareIgnoreCase(
 						Labels.name(aa.indicator), Labels.name(ab.indicator));
 					case null, default -> super.compare(viewer, objA, objB);

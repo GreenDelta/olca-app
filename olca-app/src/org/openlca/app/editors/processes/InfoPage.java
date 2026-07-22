@@ -66,20 +66,20 @@ class InfoPage extends ModelPage<Process> {
 		// create a product system
 		var b = UI.button(inner, tk, M.CreateProductSystem);
 		b.setImage(Images.get(ModelType.PRODUCT_SYSTEM, Overlay.NEW));
-		Controls.onSelect(b, e -> ProcessToolbar.createSystem(getModel()));
+		Controls.onSelect(b, _ -> ProcessToolbar.createSystem(getModel()));
 
 		// direct calculation
 		if (withDirect) {
 			b = UI.button(inner, tk, M.DirectCalculation);
 			b.setImage(Icon.RUN.get());
 			Controls.onSelect(
-					b, e -> ProcessToolbar.directCalculation(getModel()));
+					b, _ -> ProcessToolbar.directCalculation(getModel()));
 		}
 
 		// export to Excel
 		b = UI.button(inner, tk, M.ExportToExcel);
 		b.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(b, e -> ProcessToolbar.exportToExcel(getModel()));
+		Controls.onSelect(b, _ -> ProcessToolbar.exportToExcel(getModel()));
 	}
 
 	private void createTechnologySection(Composite body, FormToolkit tk) {
@@ -133,7 +133,7 @@ class InfoPage extends ModelPage<Process> {
 					: p.dqSystem.applyScoreLabels(p.dqEntry);
 		};
 		Hyperlink link = UI.hyperLink(parent, tk, dqLabel.get());
-		Controls.onClick(link, e -> {
+		Controls.onClick(link, _ -> {
 			if (getModel().dqSystem == null) {
 				MsgBox.info(M.NoDataQualitySystemSelected);
 				return;
@@ -144,8 +144,8 @@ class InfoPage extends ModelPage<Process> {
 			DataQualityShell shell = DataQualityShell.withoutUncertainty(
 					parent.getShell(), system, entry);
 			shell.onOk = s -> getModel().dqEntry = s.getSelection();
-			shell.onDelete = s -> getModel().dqEntry = null;
-			shell.addDisposeListener($ -> {
+			shell.onDelete = _ -> getModel().dqEntry = null;
+			shell.addDisposeListener(_ -> {
 				if (Objects.equals(oldVal, getModel().dqEntry))
 					return;
 				link.setText(dqLabel.get());

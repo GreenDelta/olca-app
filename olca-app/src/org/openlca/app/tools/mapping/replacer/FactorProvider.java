@@ -56,15 +56,14 @@ class FactorProvider {
 			// calculate an additional factor y that converts the exchange
 			// property pi and unit ui to the property pj and unit uj of the
 			// conversion entry:
-			double pi = conversions.getPropertyFactor(propFactor.id);
-			double ui = conversions.getUnitFactor(unit.id);
+			double pi = conversions.forPropertyFactor(propFactor.id);
+			double ui = conversions.forUnit(unit.id);
 			FlowPropertyFactor entryPropFactor = propFactor(
 					flow, entry.sourceFlow());
 			if (entryPropFactor == null)
 				return 0;
-			double pj = conversions.getPropertyFactor(entryPropFactor.id);
-			double uj = conversions.getUnitFactor(
-					entry.sourceFlow().unit.id);
+			double pj = conversions.forPropertyFactor(entryPropFactor.id);
+			double uj = conversions.forUnit(entry.sourceFlow().unit.id);
 			double y = forExchange
 					? (ui * pj) / (pi * uj)
 					: (pi * uj) / (ui * pj);

@@ -174,7 +174,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 	}
 
 	void bindActions(TableViewer viewer, Section section) {
-		Tables.onDoubleClick(viewer, (event) -> {
+		Tables.onDoubleClick(viewer, _ -> {
 			ImpactFactor factor = Viewers.getFirstSelected(viewer);
 			if (factor != null && factor.flow != null) {
 				App.open(factor.flow);
@@ -194,7 +194,7 @@ class ImpactFactorPage extends ModelPage<ImpactCategory> {
 		var formulaSwitch = new FormulaSwitchAction();
 
 		Actions.bind(viewer, add, remove, copy, paste);
-		Tables.onDeletePressed(viewer, _e -> onRemove());
+		Tables.onDeletePressed(viewer, _ -> onRemove());
 		ModelTransfer.onDrop(viewer.getTable(), this::createFactors);
 		Actions.bind(section, add, remove, formulaSwitch);
 	}

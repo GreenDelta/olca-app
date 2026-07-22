@@ -33,17 +33,18 @@ import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.Demand;
 import org.openlca.core.matrix.MatrixData;
+import org.openlca.core.matrix.ResultVectorBuilder;
+import org.openlca.core.matrix.cache.MatrixBuildContext;
 import org.openlca.core.matrix.index.ImpactIndex;
 import org.openlca.core.matrix.index.TechFlow;
 import org.openlca.core.matrix.index.TechIndex;
 import org.openlca.core.matrix.io.MatrixExport;
 import org.openlca.core.model.AllocationMethod;
+import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ImpactMethod;
 import org.openlca.core.model.ParameterRedefSet;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.Result;
 import org.openlca.core.results.LcaResult;
-import org.openlca.core.results.providers.ResultModelProvider;
 import org.openlca.io.xls.MatrixExcelExport;
 
 public class MatrixExportDialog extends FormDialog {
@@ -113,7 +114,7 @@ public class MatrixExportDialog extends FormDialog {
 		check.accept(M.Regionalized, b -> config.regionalized = b);
 		check.accept(M.WithCosts, b -> config.withCosts = b);
 		check.accept(M.WithUncertaintyDistributions,
-				b -> config.withUncertainties = b);
+			b -> config.withUncertainties = b);
 	}
 
 	private void fileSelection(Composite body, FormToolkit tk) {
@@ -145,7 +146,7 @@ public class MatrixExportDialog extends FormDialog {
 		UI.gridLayout(inner, formats.length, 10, 0);
 		for (var format : formats) {
 			var radio = UI.button(
-					inner, tk, format.toString(), SWT.RADIO);
+				inner, tk, format.toString(), SWT.RADIO);
 			if (format == config.format) {
 				radio.setSelection(true);
 			}
@@ -174,12 +175,12 @@ public class MatrixExportDialog extends FormDialog {
 
 		UI.label(comp, tk, M.ParameterSet);
 		var combo = UI.tableCombo(comp, tk,
-				SWT.READ_ONLY | SWT.BORDER);
+			SWT.READ_ONLY | SWT.BORDER);
 		UI.gridData(combo, true, false);
 
 		for (var paramSet : paramSets) {
 			var item = new TableItem(
-					combo.getTable(), SWT.NONE);
+				combo.getTable(), SWT.NONE);
 			item.setText(paramSet.name);
 		}
 
@@ -194,11 +195,11 @@ public class MatrixExportDialog extends FormDialog {
 	private void allocationCombo(Composite comp, FormToolkit tk) {
 		UI.label(comp, tk, M.AllocationMethod);
 		var combo = new AllocationCombo(
-				comp, AllocationMethod.values());
+			comp, AllocationMethod.values());
 		combo.setNullable(false);
 		combo.select(config.allocation);
 		combo.addSelectionChangedListener(
-				method -> config.allocation = method);
+			method -> config.allocation = method);
 	}
 
 	private void methodCombo(Composite comp, FormToolkit tk) {
@@ -225,7 +226,7 @@ public class MatrixExportDialog extends FormDialog {
 		var hasContent = content != null && content.length > 0;
 		if (hasContent) {
 			var b = Question.ask(M.ExportFolderNotEmpty,
-					M.ExportFolderNotEmptyQuestion);
+				M.ExportFolderNotEmptyQuestion);
 			if (!b)
 				return;
 		}
@@ -236,7 +237,7 @@ public class MatrixExportDialog extends FormDialog {
 				config.exec();
 			} catch (Exception e) {
 				ErrorReporter.on(
-						"Failed to export product system matrices", e);
+					"Failed to export product system matrices", e);
 			}
 		});
 	}
@@ -254,14 +255,14 @@ public class MatrixExportDialog extends FormDialog {
 
 		void exec() {
 			var techIndex = system == null
-					? TechIndex.of(db)
-					: TechIndex.of(db, system);
+				? TechIndex.of(db)
+				: TechIndex.of(db, system);
 			var config = MatrixData.of(db, techIndex)
-					.withAllocation(allocation)
-					.withCosts(withCosts)
-					.withRegionalization(regionalized)
-					.withUncertainties(withUncertainties)
-					.withSubResults(subResultsOf(techIndex));
+				.withAllocation(allocation)
+				.withCosts(withCosts)
+				.withRegionalization(regionalized)
+				.withUncertainties(withUncertainties)
+				.withSubResults(subResultsOf(techIndex));
 
 			if (system != null) {
 				config.withDemand(Demand.of(system));
@@ -314,18 +315,18 @@ public class MatrixExportDialog extends FormDialog {
 			// linked results or sub-systems can only exist in product systems
 			if (system == null)
 				return Collections.emptyMap();
+
+			// there could be sub-systems, and we would need to calculate
+			// them, but we do not do this here; but we can handle linked
+			// results
+			var setup = CalculationSetup.of(system)
+				.withImpactMethod(config.impactMethod)
+				.withRegionalization(config.regionalized);
+			var ctx = MatrixBuildContext.of(db);
 			var m = new HashMap<TechFlow, LcaResult>();
-			for (var techFlow : idx) {
-				// there could be sub-systems, and we would need to calculate
-				// them, but we do not do this here; but we can handle linked
-				// results
-				if (!techFlow.isResult())
-					continue;
-				var result = db.get(Result.class, techFlow.providerId());
-				if (result == null)
-					continue;
-				m.put(techFlow, new LcaResult(ResultModelProvider.of(result)));
-			}
+			ResultVectorBuilder.of(setup, idx, ctx)
+				.ifPresent(b -> b.each(
+					(techFlow, vec) -> m.put(techFlow, new LcaResult(vec))));
 			return m;
 		}
 	}

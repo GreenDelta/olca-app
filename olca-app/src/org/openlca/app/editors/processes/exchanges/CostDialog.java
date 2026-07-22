@@ -113,7 +113,7 @@ class CostDialog extends FormDialog {
 			priceText.setText(exchange.costFormula);
 		else if (exchange.costs != null)
 			priceText.setText(Double.toString(exchange.costs));
-		priceText.addModifyListener(e -> {
+		priceText.addModifyListener(_ -> {
 			try {
 				String s = priceText.getText();
 				if (Strings.isBlank(s))

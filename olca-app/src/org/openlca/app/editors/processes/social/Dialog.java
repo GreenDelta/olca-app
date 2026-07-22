@@ -63,7 +63,7 @@ class Dialog extends FormDialog {
 		Text t = UI.labeledText(body, tk, M.RawValue);
 		if (aspect.rawAmount != null)
 			t.setText(aspect.rawAmount);
-		t.addModifyListener(e -> aspect.rawAmount = t.getText());
+		t.addModifyListener(_ -> aspect.rawAmount = t.getText());
 		String unit = aspect.indicator.unitOfMeasurement;
 		if (unit == null)
 			unit = "";
@@ -76,7 +76,7 @@ class Dialog extends FormDialog {
 				: M.ActivityVariable + " (" + aspect.indicator.activityVariable + ")";
 		Text t = UI.labeledText(body, tk, label);
 		t.setText(Double.toString(aspect.activityValue));
-		t.addModifyListener(e -> {
+		t.addModifyListener(_ -> {
 			try {
 				aspect.activityValue = Double.parseDouble(t.getText());
 			} catch (Exception ignored) {
@@ -100,7 +100,7 @@ class Dialog extends FormDialog {
 		Text t = UI.multiText(body, tk, M.Comment);
 		if (aspect.comment != null)
 			t.setText(aspect.comment);
-		t.addModifyListener(e -> aspect.comment = t.getText());
+		t.addModifyListener(_ -> aspect.comment = t.getText());
 		UI.filler(body, tk);
 	}
 

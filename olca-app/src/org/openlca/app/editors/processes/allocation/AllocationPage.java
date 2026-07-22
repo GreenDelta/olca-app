@@ -161,7 +161,7 @@ public class AllocationPage extends ModelPage<Process> {
 		UI.filler(comp, tk);
 		var btn = UI.button(comp, tk, M.CalculateFactors);
 		btn.setImage(Icon.RUN.get());
-		Controls.onSelect(btn, e -> {
+		Controls.onSelect(btn, _ -> {
 			var refs = CalculationDialog.of(process());
 			if (refs.isEmpty())
 				return;

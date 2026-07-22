@@ -90,7 +90,7 @@ class ImageSection {
 		Image img = new Image(comp.getDisplay(), f.getAbsolutePath());
 		Label lab = tk.createLabel(comp, "");
 		lab.setImage(img);
-		lab.addDisposeListener(e -> {
+		lab.addDisposeListener(_ -> {
 			if (!img.isDisposed()) {
 				img.dispose();
 			}

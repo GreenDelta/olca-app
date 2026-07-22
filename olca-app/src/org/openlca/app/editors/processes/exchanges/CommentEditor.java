@@ -78,7 +78,7 @@ class CommentEditor extends DialogCellEditor {
 			if (value != null) {
 				t.setText(value);
 			}
-			t.addModifyListener(e -> {
+			t.addModifyListener(_ -> {
 				value = t.getText();
 			});
 			return c;

@@ -33,7 +33,7 @@ class RiskCombo {
 		combo.setItems(labels);
 		if (selected >= 0)
 			combo.select(selected);
-		Controls.onSelect(combo, (e) -> selectionChanged());
+		Controls.onSelect(combo, _ -> selectionChanged());
 		UI.filler(body, tk);
 	}
 
