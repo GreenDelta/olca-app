@@ -207,6 +207,13 @@ public class App {
 		return job;
 	}
 
+	/// @deprecated `execInUI` should be used instead, this is just kept for
+	/// backwards compatibility of some scripts for now.
+	@Deprecated
+	public static Job runInUI(String name, Runnable fn) {
+		return execInUI(name, fn);
+	}
+
 	/// Executes the given function in a separate non-UI thread and returns its
 	/// result. Thus, the task cannot access any UI elements while running. A
 	/// progress indicator (busy cursor) is shown while the task is running. The
