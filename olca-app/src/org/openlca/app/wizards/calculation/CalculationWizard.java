@@ -15,7 +15,6 @@ import org.openlca.app.db.Database;
 import org.openlca.app.db.Libraries;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.ModelEditorInput;
-import org.openlca.app.preferences.FeatureFlag;
 import org.openlca.app.results.ResultBundle;
 import org.openlca.app.results.ResultEditor;
 import org.openlca.app.results.simulation.SimulationEditor;
@@ -149,10 +148,9 @@ public class CalculationWizard extends Wizard {
 			bundle.with(dqResult);
 		}
 
-		if (FeatureFlag.DIRECT_SLCA.isEnabled()) {
-			SocialResult.calculate(Database.get(), result.provider())
-					.ifPresent(bundle::with);
-		}
+		SocialResult
+			.calculate(Database.get(), result.provider())
+			.ifPresent(bundle::with);
 
 		// sort and open the editor
 		log.trace("calculation done; open editor");
