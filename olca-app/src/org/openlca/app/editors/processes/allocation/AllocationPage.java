@@ -15,6 +15,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -129,7 +130,7 @@ public class AllocationPage extends ModelPage<Process> {
 		var tk = mForm.getToolkit();
 		var body = UI.body(form, tk);
 		var comp = UI.composite(body, tk);
-		UI.gridLayout(comp, 5);
+		UI.gridLayout(comp, 2);
 
 		createDefaultCombo(comp, tk);
 		createCalcButton(comp, tk);
@@ -145,6 +146,8 @@ public class AllocationPage extends ModelPage<Process> {
 			AllocationMethod.CAUSAL,
 			AllocationMethod.ECONOMIC,
 			AllocationMethod.PHYSICAL);
+		var gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
+		combo.getControl().setLayoutData(gd);
 		var selected = process().defaultAllocationMethod;
 		if (selected == null) {
 			selected = AllocationMethod.NONE;
