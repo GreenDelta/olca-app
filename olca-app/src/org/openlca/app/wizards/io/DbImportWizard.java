@@ -12,6 +12,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.openlca.app.App;
 import org.openlca.app.AppContext;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
@@ -99,9 +100,7 @@ public class DbImportWizard extends Wizard implements IImportWizard {
 			if (container != null) {
 				container.run(true, true, dbImport);
 			} else {
-				PlatformUI.getWorkbench()
-					.getProgressService()
-					.run(true, true, dbImport);
+				App.exec(dbImport, true);
 			}
 			return true;
 

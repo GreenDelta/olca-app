@@ -1,8 +1,8 @@
 package org.openlca.app.editors.sd.editor;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -55,7 +55,7 @@ class SetupPage extends FormPage {
 		var nameText = UI.labeledText(comp, tk, M.Name);
 		Controls.set(nameText, model.name());
 		UI.filler(comp, tk);
-		nameText.addModifyListener(e -> {
+		nameText.addModifyListener(_ -> {
 			var name = nameText.getText().strip();
 			if (!name.isEmpty()) {
 				model.setName(name);
@@ -71,7 +71,7 @@ class SetupPage extends FormPage {
 		var startText = UI.labeledText(comp, tk, "Start time");
 		startText.setText(Double.toString(specs.start()));
 		UI.label(comp, tk, unit);
-		startText.addModifyListener(e -> {
+		startText.addModifyListener(_ -> {
 			try {
 				specs().setStart(Double.parseDouble(startText.getText()));
 				editor.setDirty();
@@ -82,7 +82,7 @@ class SetupPage extends FormPage {
 		var endText = UI.labeledText(comp, tk, "Stop time");
 		endText.setText(Double.toString(specs.end()));
 		UI.label(comp, tk, unit);
-		endText.addModifyListener(e -> {
+		endText.addModifyListener(_ -> {
 			try {
 				specs().setEnd(Double.parseDouble(endText.getText()));
 				editor.setDirty();
@@ -93,7 +93,7 @@ class SetupPage extends FormPage {
 		var dtText = UI.labeledText(comp, tk, "Δt");
 		dtText.setText(Double.toString(specs.dt()));
 		UI.label(comp, tk, unit);
-		dtText.addModifyListener(e -> {
+		dtText.addModifyListener(_ -> {
 			try {
 				specs().setDt(Double.parseDouble(dtText.getText()));
 				editor.setDirty();
@@ -104,7 +104,7 @@ class SetupPage extends FormPage {
 		var unitText = UI.labeledText(comp, tk, "Time unit");
 		unitText.setText(unit);
 		UI.filler(comp, tk);
-		unitText.addModifyListener(e -> {
+		unitText.addModifyListener(_ -> {
 			specs().setUnit(unitText.getText().strip());
 			editor.setDirty();
 		});
@@ -115,7 +115,7 @@ class SetupPage extends FormPage {
 		UI.filler(comp, tk);
 		var btn = UI.button(comp, tk, "Run simulation");
 		btn.setImage(Icon.RUN.get());
-		Controls.onSelect(btn, e -> runSimulation());
+		Controls.onSelect(btn, _ -> runSimulation());
 	}
 
 	private SimSpecs specs() {
@@ -168,12 +168,12 @@ class SetupPage extends FormPage {
 		var sim = simRes.value();
 
 		try {
-			var service = PlatformUI.getWorkbench().getProgressService();
+
 			int totalWork = model.simSpecs() != null
 				? model.simSpecs().iterationCount()
 				: IProgressMonitor.UNKNOWN;
 
-			service.run(true, true, monitor -> {
+			IRunnableWithProgress runner = monitor -> {
 				monitor.beginTask("Running simulation", totalWork);
 
 				sim.run(new Progress() {
@@ -197,7 +197,9 @@ class SetupPage extends FormPage {
 						SdResultEditor.open(model.name(), res.value());
 					}
 				});
-			});
+			};
+
+			App.exec(runner, true);
 
 		} catch (Exception e) {
 			ErrorReporter.on("Failed to run simulation", e);

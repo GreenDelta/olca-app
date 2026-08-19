@@ -1,7 +1,7 @@
 ## Building the distribution packages
 
 If you have all tools installed and the `olca-modules` are located next to your
-`olca-app-project` , just run:
+`olca-app` project, just run:
 
 ```bash
 uv run prepare-release.py full-build

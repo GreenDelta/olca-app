@@ -8,7 +8,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.ProgressMonitor;
-import org.eclipse.ui.PlatformUI;
+import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.collaboration.dialogs.AuthenticationDialog.GitCredentialsProvider;
 import org.openlca.app.collaboration.util.CredentialStore;
@@ -57,9 +57,8 @@ class Actions {
 	static <T> T run(GitCredentialsProvider credentials, GitRemoteAction<T> runnable)
 			throws InvocationTargetException, InterruptedException, GitAPIException {
 		runnable.authorizeWith(credentials);
-		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitRemoteRunner<>(runnable);
-		service.run(true, false, runner::run);
+		App.exec(runner, false);
 		var repo = org.openlca.app.collaboration.Repository.CURRENT;
 		if (runner.exception == null)
 			return runner.result;
@@ -82,7 +81,7 @@ class Actions {
 			throw runner.exception;
 		if (notPermitted) {
 			MsgBox.warning(M.NoSufficientRights);
-			credentials = repo.promptCredentials();			
+			credentials = repo.promptCredentials();
 		} else if (notAuthorized) {
 			credentials = repo.promptCredentials();
 		} else if (tokenRequired) {
@@ -105,9 +104,8 @@ class Actions {
 
 	static <T> T run(GitProgressAction<T> runnable, boolean cancelable)
 			throws InvocationTargetException, InterruptedException, GitAPIException, IOException {
-		var service = PlatformUI.getWorkbench().getProgressService();
 		var runner = new GitProgressRunner<>(runnable);
-		service.run(true, cancelable, runner::run);
+		App.exec(runner, cancelable);
 		if (runner.exception != null)
 			if (runner.exception instanceof GitAPIException e)
 				throw e;
@@ -151,7 +149,7 @@ class Actions {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) {
 			try {
 				runnable.withProgress(wrapped(monitor));
 				result = runnable.run();
@@ -213,7 +211,7 @@ class Actions {
 		}
 
 		@Override
-		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+		public void run(IProgressMonitor monitor) {
 			try {
 				runnable.withProgress(wrapped(monitor));
 				result = runnable.run();
