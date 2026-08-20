@@ -120,7 +120,6 @@ public class M extends NLS {
 	public static String BuildFlowSupplyChain;
 	public static String BuildNextTier;
 	public static String BuildSupplyChain;
-	public static String Bulgarian;
 	public static String Bulkreplace;
 	public static String BulkreplaceFlows;
 	public static String BulkreplaceProviders;
@@ -166,12 +165,10 @@ public class M extends NLS {
 	public static String CannotRemoveExchanges;
 	public static String CannotSelectFlow;
 	public static String CarbonStorageModeling;
-	public static String Catalan;
 	public static String Categories;
 	public static String CategoriesContainASlash;
 	public static String Category;
 	public static String CategoryNotEmpty;
-	public static String CertificateDirectory;
 	public static String Causal;
 	public static String CausalAllocation;
 	public static String Change;
@@ -195,7 +192,6 @@ public class M extends NLS {
 	public static String CheckUsageOfExchangesDots;
 	public static String ChemicalFormula;
 	public static String ChineseSimplified;
-	public static String ChineseTraditional;
 	public static String City;
 	public static String ClickTheLinkForExamples;
 	public static String ClickToCheckTheMappings;
@@ -253,7 +249,6 @@ public class M extends NLS {
 	public static String ConnectionWithAnonymousAccess;
 	public static String ConnectionWorks;
 	public static String Connections;
-	public static String ConnectionsCannotBeRemoved;
 	public static String ConsequentialLongTerm;
 	public static String Console;
 	public static String ConsumedBy;
@@ -314,7 +309,6 @@ public class M extends NLS {
 	public static String CreateBackupOfTheDbFirst;
 	public static String CreateDatabase;
 	public static String CreateDefaultLciaMethodsQ;
-	public static String CreateDefaultValuesForMissingFields;
 	public static String CreateFlowBindingForAllFlows;
 	public static String CreateForUsedFlows;
 	public static String CreateNew;
@@ -402,9 +396,6 @@ public class M extends NLS {
 	public static String DeleteFlow;
 	public static String DeleteLibraryQ;
 	public static String DeleteLibraryQuestion;
-	public static String DeleteLinkDelete;
-	public static String DeleteLinkHide;
-	public static String DeleteLinkKeep;
 	public static String DeleteLocalDataSet;
 	public static String DeleteMappingFileQ;
 	public static String DeleteMappingFileQuestion;
@@ -413,10 +404,6 @@ public class M extends NLS {
 	public static String DeleteReplacedAndUnusedFlows;
 	public static String DeleteReportSectionQuestion;
 	public static String DeleteSection;
-	public static String DeleteWontDeleteProviders;
-	public static String DeletingDots;
-	public static String DeletingTheLinkDots;
-	public static String DeletingTheSupplyChainDots;
 	public static String Dependencies;
 	public static String DependentParameter;
 	public static String DependentParameters;
@@ -531,7 +518,6 @@ public class M extends NLS {
 	public static String ExchangeRate;
 	public static String ExchangesAreUsed;
 	public static String ExchangesAreUsedOrNotDisconnected;
-	public static String ExcludeExchangesWithDefaultProviders;
 	public static String ExcludeZeroEntries;
 	public static String ExcludeZeroValues;
 	public static String ExecuteUpdateQ;
@@ -725,19 +711,16 @@ public class M extends NLS {
 	public static String Home;
 	public static String Host;
 	public static String HoursAgo;
-	public static String Hungarian;
 
 	// I
 	public static String ILCDConnectionFailedErr;
 	public static String ILCDNetworkExport;
 	public static String ILCDNetworkExportDescription;
-	public static String ILCDNetworkSearchFailed;
 	public static String ILCDNetworkSettings;
 	public static String ILCDOtherSettings;
 	public static String Id;
 	public static String Identifier;
 	public static String IgnoreDefaultProviders;
-	public static String ImageExport;
 	public static String ImpactAnalysis;
 	public static String ImpactAssessmentMethod;
 	public static String ImpactAssessmentMethods;
@@ -774,7 +757,6 @@ public class M extends NLS {
 	public static String ImportFileAsDatabase;
 	public static String ImportFinished;
 	public static String ImportFromFileDots;
-	public static String ImportFromGitDots;
 	public static String ImportGeoJson;
 	public static String ImportGeographiesFromGeoJson;
 	public static String ImportGeometriesFromGeoJsonDots;
@@ -1007,8 +989,6 @@ public class M extends NLS {
 	public static String Names;
 	public static String NeedOpenDatabase;
 	public static String NetCosts;
-	public static String Netcosts;
-	public static String NetworkImport;
 	public static String NeverUpdateExists;
 	public static String New;
 	public static String NewActor;
@@ -1140,7 +1120,6 @@ public class M extends NLS {
 	public static String NotValidParameterName;
 	public static String NotYetImplemented;
 	public static String Note;
-	public static String NoteDefaultProviders;
 	public static String NothingToCalculate;
 	public static String NothingToSave;
 	public static String NumberOfDecimalPlaces;
@@ -1246,7 +1225,6 @@ public class M extends NLS {
 	public static String PleaseSelectADataQualitySystemFirst;
 	public static String PleaseSelectProperties;
 	public static String Port;
-	public static String Portuguese;
 	public static String PrecalculateMatrices;
 	public static String Prefer;
 	public static String PreferDefaultProviders;
@@ -1331,7 +1309,6 @@ public class M extends NLS {
 	public static String ReferenceUnit;
 	public static String ReferenceUnitCannotBeDeleted;
 	public static String ReferenceUnitIsEmptyOrInvalid;
-	public static String References;
 	public static String Refresh;
 	public static String Regionalized;
 	public static String RegionalizedCalculation;
@@ -1347,10 +1324,8 @@ public class M extends NLS {
 	public static String RemoteDatabase;
 	public static String Remove;
 	public static String RemoveCollaborationServer;
-	public static String RemoveConnections;
 	public static String RemoveExchangeQ;
 	public static String RemoveExchangeQuestion;
-	public static String RemoveFlowSupplyChain;
 	public static String RemoveIndicator;
 	public static String RemoveLibrary;
 	public static String RemoveLibraryExperimental;
@@ -1359,9 +1334,6 @@ public class M extends NLS {
 	public static String RemoveSupplyChain;
 	public static String RemoveSystemModel;
 	public static String RemovingLibraryDots;
-	public static String RemovingLibraryExplanations;
-	public static String RemovingLibraryWarning;
-	public static String RemovingTheSupplyChain;
 	public static String Rename;
 	public static String RenameParameter;
 	public static String RenameParameterDots;
@@ -1452,13 +1424,10 @@ public class M extends NLS {
 	public static String SearchADataSetDots;
 	public static String SearchAProcessDots;
 	public static String SearchAllTypes;
-	public static String SearchAndSelectProcessesForTheImport;
 	public static String SearchCollaborationServer;
-	public static String SearchDataSetDots;
 	public static String SearchDataSetsDots;
 	public static String SearchFlowMappingsDots;
 	public static String SearchForParameterUsage;
-	public static String SearchForUsage;
 	public static String SearchForUsageDots;
 	public static String SearchInActors;
 	public static String SearchInCollaborationServer;
@@ -1560,7 +1529,6 @@ public class M extends NLS {
 	public static String SocialIndicator;
 	public static String SocialIndicators;
 	public static String SocialSchema;
-	public static String Soda4LcaClient;
 	public static String SomeElementsAreNotSaved;
 	public static String SomeParametersWereNotAdded;
 	public static String Source;
@@ -1615,7 +1583,6 @@ public class M extends NLS {
 	public static String Tags;
 	public static String TargetAmount;
 	public static String TargetCategory;
-	public static String TargetFile;
 	public static String TargetFlow;
 	public static String TargetSystem;
 	public static String Technology;
@@ -1655,15 +1622,12 @@ public class M extends NLS {
 	public static String TotalNetcosts;
 	public static String TotalRequirements;
 	public static String TotalResult;
-	public static String Tree;
 	public static String TriangleDistribution;
 	public static String TryToFix;
-	public static String Turkish;
 	public static String Type;
 
 	// U
 	public static String URL;
-	public static String Uncategorized;
 	public static String Uncertainties;
 	public static String Uncertainty;
 	public static String UncertaintyDistribution;
@@ -1744,7 +1708,6 @@ public class M extends NLS {
 	public static String UrlShouldStartWithHttp;
 	public static String Urn;
 	public static String Usage;
-	public static String UsageOf;
 	public static String UsageType;
 	public static String UseAZipFileTemplate;
 	public static String UseAdvice;
