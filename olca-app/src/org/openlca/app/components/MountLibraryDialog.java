@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -17,28 +17,30 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.jspecify.annotations.NullMarked;
 import org.openlca.app.App;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.Navigator;
 import org.openlca.app.util.Controls;
-import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Res;
 import org.openlca.core.library.Library;
 import org.openlca.core.library.MountAction;
 import org.openlca.core.library.Mounter;
 import org.openlca.core.library.PreMountCheck;
 import org.openlca.core.library.PreMountState;
 
+@NullMarked
 public class MountLibraryDialog extends FormDialog {
 
 	private final Library library;
 	private final List<Section> sections = new ArrayList<>();
 
 	private MountLibraryDialog(Library library,
-			PreMountCheck.Result checkResult) {
+		PreMountCheck.Result checkResult) {
 		super(UI.shell());
 		this.library = library;
 
@@ -50,10 +52,10 @@ public class MountLibraryDialog extends FormDialog {
 			stateMap.computeIfAbsent(state, _ -> new ArrayList<>()).add(lib);
 		}
 		var stateOrder = new PreMountState[]{
-				PreMountState.NEW,
-				PreMountState.PRESENT,
-				PreMountState.TAG_CONFLICT,
-				PreMountState.CONFLICT,
+			PreMountState.NEW,
+			PreMountState.PRESENT,
+			PreMountState.TAG_CONFLICT,
+			PreMountState.CONFLICT,
 		};
 		for (var state : stateOrder) {
 			var libs = stateMap.get(state);
@@ -63,59 +65,54 @@ public class MountLibraryDialog extends FormDialog {
 		}
 	}
 
-	public static void show(Library library, PreMountCheck.Result checkResult) {
-		show(library, checkResult, null);
-	}
+	public static Res<Set<Library>> show(
+		Library library, PreMountCheck.Result checkResult
+	) {
 
-	public static void show(Library library, PreMountCheck.Result checkResult,
-			Consumer<Set<Library>> callback) {
-		if (checkResult.isError()) {
-			ErrorReporter.on(
-				"Failed to check library: " + library, checkResult.error());
-			if (callback != null) {
-				callback.accept(Collections.emptySet());
-			}
-			return;
-		}
+		if (checkResult.isError())
+			return Res.error(checkResult.error());
+
+		// no library state means nothing to add (?)
 		var state = checkResult.getState(library).orElse(null);
 		if (state == null) {
 			MsgBox.info(
-					M.NoLibrariesToAdd,
-					M.NoLibrariesToAddInfo);
-			if (callback != null) {
-				callback.accept(Collections.emptySet());
-			}
-			return;
+				M.NoLibrariesToAdd,
+				M.NoLibrariesToAddInfo);
+			return Res.ok(Collections.emptySet());
 		}
+
 		if (state == PreMountState.PRESENT) {
 			var b = Question.ask(M.LibraryAlreadyPresent,
-					M.LibraryAlreadyPresentQuestion);
-			if (!b) {
-				if (callback != null) {
-					callback.accept(Collections.emptySet());
-				}
-				return;
-			}
+				M.LibraryAlreadyPresentQuestion);
+			// !b means do not overwrite (?)
+			if (!b)
+				return Res.ok(Collections.emptySet());
 		}
 
 		var dialog = new MountLibraryDialog(library, checkResult);
 		if (dialog.open() != Window.OK) {
-			if (callback != null) {
-				callback.accept(Collections.emptySet());
-			}
-			return;
+			// user canceled the dialog
+			return Res.ok(Collections.emptySet());
 		}
+
 		var actions = dialog.collectActions();
+		var ref = new AtomicReference<>(Res.ok());
 		App.exec(M.AddLibraryDots,
-				() -> Mounter.of(Database.get(), library)
+			() -> {
+				try {
+					Mounter.of(Database.get(), library)
 						.apply(actions)
-						.run(),
-				() -> {
-					Navigator.refresh();
-					if (callback != null) {
-						callback.accept(actions.keySet());
-					}
-				});
+						.run();
+				} catch (Exception e) {
+					ref.set(Res.error("Failed to mount library", e));
+				}
+			},
+			Navigator::refresh);
+
+		var res = ref.get();
+		return res.isError()
+			? res.castError()
+			: Res.ok(actions.keySet());
 	}
 
 	private Map<Library, MountAction> collectActions() {
@@ -167,9 +164,9 @@ public class MountLibraryDialog extends FormDialog {
 			UI.gridData(group, true, false);
 			UI.gridLayout(group, 1);
 			tk.createFormText(group, false)
-					.setText(info(), false, false);
+				.setText(info(), false, false);
 			tk.createFormText(group, false)
-					.setText(libraryList(), true, false);
+				.setText(libraryList(), true, false);
 			createCombo(tk, group);
 		}
 
@@ -221,8 +218,8 @@ public class MountLibraryDialog extends FormDialog {
 			var text = new StringBuilder("<ul>");
 			for (var lib : libraries) {
 				text.append("<li>")
-						.append(lib.name())
-						.append("</li>");
+					.append(lib.name())
+					.append("</li>");
 			}
 			return text + "</ul>";
 		}

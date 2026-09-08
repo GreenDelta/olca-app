@@ -19,7 +19,7 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 	public boolean accept(List<INavigationElement<?>> selection) {
 		if (selection.size() != 1)
 			return false;
-		var first = selection.get(0);
+		var first = selection.getFirst();
 		if (first instanceof LibraryElement) {
 			this.element = (LibraryElement) first;
 			if (this.element.getContent() == null)

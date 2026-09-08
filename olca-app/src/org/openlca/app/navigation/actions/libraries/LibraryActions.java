@@ -15,13 +15,22 @@ import org.openlca.license.License;
 class LibraryActions {
 
 	static void mount(Library lib) {
-		var checkResult = App.exec(M.CheckLibraryDots,
+		var res = App.exec(M.CheckLibraryDots,
 				() -> PreMountCheck.check(Database.get(), lib));
-		if (checkResult.isError()) {
-			ErrorReporter.on("Failed to check library", checkResult.error());
+		if (res == null) {
+			ErrorReporter.on(
+				"Mounting check returned no result for library"
+				, "Library: " + lib);
 			return;
 		}
-		MountLibraryDialog.show(lib, checkResult);
+		if (res.isError()) {
+			ErrorReporter.on("Failed to check library", res.error());
+			return;
+		}
+		var mountRes = MountLibraryDialog.show(lib, res);
+		if (mountRes.isError()) {
+			ErrorReporter.on("Failed to mount library", mountRes.error());
+		}
 	}
 
 	static void unmount(Library lib, Runnable callback) {

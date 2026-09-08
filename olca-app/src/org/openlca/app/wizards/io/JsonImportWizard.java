@@ -35,7 +35,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 		setNeedsProgressMonitor(true);
 		setWindowTitle(M.OpenLcaJsonLdImport);
 		setDefaultPageImageDescriptor(
-				Icon.IMPORT_ZIP_WIZARD.descriptor());
+			Icon.IMPORT_ZIP_WIZARD.descriptor());
 	}
 
 	public static void of(File file) {
@@ -44,8 +44,8 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			return;
 		}
 		Wizards.forImport(
-				"wizard.import.json",
-				(JsonImportWizard w) -> w.initialFile = file);
+			"wizard.import.json",
+			(JsonImportWizard w) -> w.initialFile = file);
 	}
 
 	@Override
@@ -82,26 +82,32 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	private void doRun(File zip) throws Exception {
 		var mode = page.updateMode;
 		LoggerFactory.getLogger(getClass())
-				.info("Import JSON LD package {} with update mode = {}", zip, mode);
+			.info("Import JSON LD package {} with update mode = {}", zip, mode);
 		try (var store = ZipStore.open(zip)) {
-			LibraryResolver.resolve(store.getLibraryLinks(), success -> {
-				if (!success)
-					return;
-				try {
-					getContainer().run(true, true, (monitor) -> {
-						monitor.beginTask(M.ImportDots, IProgressMonitor.UNKNOWN);
-						try {
-							var importer = new JsonImport(store, Database.get());
-							importer.setUpdateMode(mode);
-							importer.run();
-						} catch (Exception e) {
-							throw new InvocationTargetException(e);
-						}
-					});
-				} catch (InvocationTargetException | InterruptedException e) {
-					ErrorReporter.on("JSON import failed", e);
-				}
-			});
+
+			// resolve the required libraries on the UI thread first (this may
+			// show dialogs for downloading and mounting the libraries)
+			var res = LibraryResolver.resolve(store.getLibraryLinks());
+			if (res.isError()) {
+				MsgBox.error("Failed to resolve required libraries", res.error());
+				return;
+			}
+
+			// run the actual import in a separate thread
+			try {
+				getContainer().run(true, true, monitor -> {
+					monitor.beginTask(M.ImportDots, IProgressMonitor.UNKNOWN);
+					try {
+						var importer = new JsonImport(store, Database.get());
+						importer.setUpdateMode(mode);
+						importer.run();
+					} catch (Exception e) {
+						throw new InvocationTargetException(e);
+					}
+				});
+			} catch (InvocationTargetException | InterruptedException e) {
+				ErrorReporter.on("JSON import failed", e);
+			}
 		}
 	}
 
@@ -111,9 +117,9 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 	private static class Page extends WizardPage {
 
 		private final UpdateMode[] mods = {
-				UpdateMode.NEVER,
-				UpdateMode.IF_NEWER,
-				UpdateMode.ALWAYS
+			UpdateMode.NEVER,
+			UpdateMode.IF_NEWER,
+			UpdateMode.ALWAYS
 		};
 		UpdateMode updateMode = UpdateMode.NEVER;
 		File zip;
@@ -135,13 +141,13 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 			UI.stretchX(fileComp);
 			UI.gridLayout(fileComp, 3).marginBottom = 0;
 			WizFileSelector.on(file -> {
-						zip = file;
-						setPageComplete(true);
-					})
-					.withDialogTitle(M.SelectAZipFileWithOpenLcaDataDots)
-					.withExtensions("*.zip")
-					.withSelection(zip)
-					.render(fileComp);
+					zip = file;
+					setPageComplete(true);
+				})
+				.withDialogTitle(M.SelectAZipFileWithOpenLcaDataDots)
+				.withExtensions("*.zip")
+				.withSelection(zip)
+				.render(fileComp);
 
 			// update mode
 			var groupComp = UI.composite(body);
@@ -155,7 +161,7 @@ public class JsonImportWizard extends Wizard implements IImportWizard {
 				var option = new Button(group, SWT.RADIO);
 				option.setText(getText(mode));
 				option.setSelection(mode == updateMode);
-				Controls.onSelect(option, (e) -> updateMode = mode);
+				Controls.onSelect(option, _ -> updateMode = mode);
 			}
 			setControl(body);
 		}
