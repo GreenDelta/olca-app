@@ -1,5 +1,7 @@
 package org.openlca.app.editors.sd.editor.graph.actions.vardialog;
 
+import java.util.List;
+
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -12,8 +14,6 @@ import org.openlca.sd.model.cells.LookupEqnCell;
 import org.openlca.sd.model.cells.NonNegativeCell;
 import org.openlca.sd.model.cells.TensorCell;
 import org.openlca.sd.model.cells.TensorEqnCell;
-
-import java.util.List;
 
 class PanelStack {
 
@@ -34,9 +34,12 @@ class PanelStack {
 		combo = UI.labeledCombo(comp, tk, "Type");
 		combo.setItems(PanelType.items());
 		combo.select(0);
-		Controls.onSelect(combo, $ -> {
+		Controls.onSelect(combo, _ -> {
 			var type = PanelType.values()[combo.getSelectionIndex()];
 			updatePanel(type);
+			if (onChange != null) {
+				onChange.reactOn(isValid());
+			}
 		});
 
 		UI.filler(comp, tk);
@@ -67,6 +70,10 @@ class PanelStack {
 
 	void onChange(ChangeObserver onChange) {
 		this.onChange = onChange;
+	}
+
+	boolean isValid() {
+		return top != null && top.isValid();
 	}
 
 	Cell getCell() {

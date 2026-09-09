@@ -47,7 +47,7 @@ final class LookupPanel extends Panel {
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
 		gd.widthHint = 1;
 
-		text.addModifyListener($ -> checkValid());
+		text.addModifyListener(_ -> checkValid());
 
 		typeCombo = new TypeCombo(comp, this::checkValid);
 		table = createTable(comp);
@@ -87,8 +87,12 @@ final class LookupPanel extends Panel {
 	}
 
 	private void checkValid() {
-		if (text == null) return;
-		fireValid(!rows.isEmpty() && Strings.isNotBlank(text.getText()));
+		fireValid(isValid());
+	}
+
+	@Override
+	public boolean isValid() {
+		return text != null && !rows.isEmpty() && Strings.isNotBlank(text.getText());
 	}
 
 	@Override
@@ -215,7 +219,7 @@ final class LookupPanel extends Panel {
 			combo.setItems(items);
 			combo.select(0);
 			select(LookupFunc.Type.CONTINUOUS);
-			Controls.onSelect(combo, $ -> onChange.run());
+			Controls.onSelect(combo, _ -> onChange.run());
 		}
 
 		void select(LookupFunc.Type type) {

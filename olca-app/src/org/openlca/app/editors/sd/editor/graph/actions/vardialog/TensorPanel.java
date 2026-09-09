@@ -1,5 +1,8 @@
 package org.openlca.app.editors.sd.editor.graph.actions.vardialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -16,9 +19,6 @@ import org.openlca.sd.model.Tensor;
 import org.openlca.sd.model.cells.Cell;
 import org.openlca.sd.model.cells.TensorCell;
 import org.openlca.sd.model.cells.TensorEqnCell;
-
-import java.util.ArrayList;
-import java.util.List;
 
 final class TensorPanel extends Panel {
 
@@ -54,6 +54,11 @@ final class TensorPanel extends Panel {
 		var tabGd = UI.gridData(table.getControl(), true, true);
 		tabGd.widthHint = 1;
 		tabGd.heightHint = 1;
+	}
+
+	@Override
+	public boolean isValid() {
+		return true;
 	}
 
 	@Override

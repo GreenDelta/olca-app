@@ -88,7 +88,7 @@ class StockFlowPanel {
 			var addItem = new MenuItem(menu, SWT.NONE);
 			addItem.setText(M.Add);
 			addItem.setImage(Icon.ADD.get());
-			Controls.onSelect(addItem, $ -> {
+			Controls.onSelect(addItem, _ -> {
 				var candidates = getNewFlowCandidates();
 				FlowSelector.open(candidates, selected -> {
 					flows.addAll(selected);
@@ -100,7 +100,7 @@ class StockFlowPanel {
 			var delItem = new MenuItem(menu, SWT.NONE);
 			delItem.setText(M.Remove);
 			delItem.setImage(Icon.DELETE.get());
-			Controls.onSelect(delItem, $ -> {
+			Controls.onSelect(delItem, _ -> {
 				var idx = widget.getSelectionIndex();
 				if (idx < 0) return;
 				var item = widget.getItem(idx);
@@ -160,7 +160,7 @@ class StockFlowPanel {
 			var filter = UI.searchText(body, tk);
 			UI.gridData(filter, true, false);
 			filter.setMessage(M.Filter);
-			filter.addModifyListener(e -> {
+			filter.addModifyListener(_ -> {
 				var ids = applyFilter(filter.getText());
 				list.setInput(ids);
 			});

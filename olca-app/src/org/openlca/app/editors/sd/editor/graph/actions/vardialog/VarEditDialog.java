@@ -4,6 +4,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
@@ -17,7 +18,9 @@ import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.Question;
 import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;
+import org.openlca.sd.model.Auxil;
 import org.openlca.sd.model.Id;
+import org.openlca.sd.model.Rate;
 import org.openlca.sd.model.Stock;
 import org.openlca.sd.model.Var;
 import org.openlca.sd.model.cells.NonNegativeCell;
@@ -33,7 +36,6 @@ public class VarEditDialog extends FormDialog {
 	private Text unitText;
 	private Button nonNegativeCheck;
 	private PanelStack panels;
-	private boolean panelFinished;
 
 	public static void edit(SdGraphEditor editor, Var origin) {
 		if (editor == null || origin == null) return;
@@ -54,7 +56,6 @@ public class VarEditDialog extends FormDialog {
 		this.variable = origin.freshCopy();
 		this.origin = origin;
 		this.location = null;
-		this.panelFinished = true;
 	}
 
 	private VarEditDialog(SdGraphEditor editor, Var variable, Point location) {
@@ -63,6 +64,17 @@ public class VarEditDialog extends FormDialog {
 		this.variable = variable;
 		this.origin = null;
 		this.location = location;
+	}
+
+	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+		var title = switch (variable) {
+			case Stock _ -> "Stock";
+			case Rate _ -> "Flow (Rate)";
+			case Auxil _ -> "Auxiliary";
+		};
+		newShell.setText(title);
 	}
 
 	@Override
@@ -83,13 +95,16 @@ public class VarEditDialog extends FormDialog {
 		if (variable.name() != null) {
 			nameText.setText(variable.name().label());
 		}
-		nameText.addModifyListener(e -> checkOk());
+		nameText.addModifyListener(_ -> checkOk());
 
 		unitText = UI.labeledText(comp, tk, M.Unit);
 		Controls.set(unitText, variable.unit());
+		unitText.addModifyListener(_ -> checkOk());
+
 		nonNegativeCheck = UI.labeledCheckbox(comp, tk, "Non-negative");
 		nonNegativeCheck.setSelection(
 			variable.def() instanceof NonNegativeCell);
+		Controls.onSelect(nonNegativeCheck, _ -> checkOk());
 
 		boolean isStockVar = false;
 		if (variable instanceof Stock stock) {
@@ -100,10 +115,7 @@ public class VarEditDialog extends FormDialog {
 
 		panels = new PanelStack(comp, tk, isStockVar);
 		panels.setInput(variable.def());
-		panels.onChange(b -> {
-			panelFinished = b;
-			checkOk();
-		});
+		panels.onChange(_ -> checkOk());
 		mForm.getForm().reflow(true);
 	}
 
@@ -111,14 +123,15 @@ public class VarEditDialog extends FormDialog {
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, OK, M.OK, true).setEnabled(false);
 		createButton(parent, CANCEL, M.Cancel, false);
+		checkOk();
 	}
 
 	private void checkOk() {
 		var btn = getButton(OK);
-		if (btn == null || nameText == null) {
+		if (btn == null || nameText == null || panels == null) {
 			return;
 		}
-		btn.setEnabled(panelFinished &&
+		btn.setEnabled(panels.isValid() &&
 			Strings.isNotBlank(nameText.getText()));
 	}
 

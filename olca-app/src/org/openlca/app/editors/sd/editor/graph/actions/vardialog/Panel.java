@@ -38,6 +38,8 @@ sealed abstract class Panel permits EquationPanel, LookupPanel, TensorPanel {
 		}
 	}
 
+	abstract boolean isValid();
+
 	abstract void setInput(Cell cell);
 
 	abstract Cell getCell();

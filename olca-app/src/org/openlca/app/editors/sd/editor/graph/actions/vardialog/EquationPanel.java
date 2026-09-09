@@ -25,7 +25,12 @@ final class EquationPanel extends Panel {
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
 		gd.widthHint = 1;
 		text.addModifyListener(
-			e -> fireValid(Strings.isNotBlank(text.getText())));
+			_ -> fireValid(Strings.isNotBlank(text.getText())));
+	}
+
+	@Override
+	public boolean isValid() {
+		return text != null && Strings.isNotBlank(text.getText());
 	}
 
 	@Override
