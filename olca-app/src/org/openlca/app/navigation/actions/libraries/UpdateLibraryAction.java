@@ -55,7 +55,7 @@ public class UpdateLibraryAction extends Action implements INavigationAction {
 		if (replaceWith == null)
 			return;
 		var toReplace = element.getContent();
-		LibraryActions.unmount(toReplace,
+		LibraryActions.replace(toReplace,
 				() -> LibraryActions.mount(replaceWith));
 	}
 

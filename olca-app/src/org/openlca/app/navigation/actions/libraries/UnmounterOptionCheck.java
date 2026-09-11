@@ -64,7 +64,6 @@ class UnmounterOptionCheck {
 				Unmounter.Retention.KEEP_ALL)
 			: EnumSet.of(
 				Unmounter.Retention.KEEP_NONE,
-				Unmounter.Retention.KEEP_USED,
 				Unmounter.Retention.KEEP_ALL));
 	}
 
