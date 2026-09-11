@@ -2,7 +2,10 @@ package org.openlca.app.editors.lcia;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import org.openlca.app.M;
@@ -14,6 +17,7 @@ import org.openlca.core.database.LocationDao;
 import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowPropertyFactor;
 import org.openlca.core.model.ImpactFactor;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.Uncertainty;
 import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.FlowDescriptor;
@@ -23,6 +27,7 @@ class FactorClipboard {
 
 	private final IDatabase db;
 	private final List<FlowDescriptor> flows;
+	private Map<String, Long> locationIds;
 
 	private FactorClipboard() {
 		db = Database.get();
@@ -63,14 +68,14 @@ class FactorClipboard {
 		// filter the flows by matching names and categories
 		List<Flow> candidates = flows.stream()
 			.filter(d -> Objects.equals(d.name, name))
-				.map(d -> new FlowDao(db).getForId(d.id))
-				.filter(flow -> {
-					if (flow.category == null)
+			.map(d -> new FlowDao(db).getForId(d.id))
+			.filter(flow -> {
+				if (flow.category == null)
 					return Strings.isBlank(category);
-					String path = CategoryPath.getFull(flow.category);
+				String path = CategoryPath.getFull(flow.category);
 				return Objects.equals(path, category);
-				})
-				.toList();
+			})
+			.toList();
 		if (candidates.isEmpty())
 			return null;
 
@@ -88,7 +93,7 @@ class FactorClipboard {
 		for (Flow flow : candidates) {
 			for (FlowPropertyFactor p : flow.flowPropertyFactors) {
 				if (p.flowProperty == null
-						|| p.flowProperty.unitGroup == null)
+					|| p.flowProperty.unitGroup == null)
 					continue;
 				Unit u = p.flowProperty.unitGroup.getUnit(unit);
 				if (u == null)
@@ -97,7 +102,7 @@ class FactorClipboard {
 				factor.flowPropertyFactor = p;
 				factor.unit = u;
 				if (Objects.equals(p.flowProperty,
-						flow.referenceFlowProperty))
+					flow.referenceFlowProperty))
 					break;
 			}
 			if (factor.flow != null)
@@ -120,19 +125,38 @@ class FactorClipboard {
 
 		// location
 		if (row.length > 5) {
-			String code = row[5];
-			if (Strings.isNotBlank(code)) {
-				LocationDao dao = new LocationDao(db);
-				factor.location = dao.getDescriptors()
-					.stream()
-					.filter(d -> Objects.equals(code, d.code))
-					.map(d -> dao.getForId(d.id))
-					.findFirst()
-					.orElse(null);
-			}
+			factor.location = getLocation(row[5]);
 		}
 
 		return factor;
 	}
 
+	private Location getLocation(String entry) {
+		if (Strings.isBlank(entry))
+			return null;
+
+		if (locationIds == null) {
+			locationIds = new HashMap<>();
+			var dao = new LocationDao(db);
+			for (var d : dao.getDescriptors()) {
+				if (Strings.isNotBlank(d.code)) {
+					locationIds.putIfAbsent(keyOf(d.code), d.id);
+				}
+				if (Strings.isNotBlank(d.name)) {
+					locationIds.putIfAbsent(keyOf(d.name), d.id);
+				}
+			}
+		}
+
+		var id = locationIds.get(keyOf(entry));
+		return id != null
+			? db.get(Location.class, id)
+			: null;
+	}
+
+	private String keyOf(String s) {
+		return s != null
+			? s.trim().toLowerCase(Locale.ROOT)
+			: "";
+	}
 }

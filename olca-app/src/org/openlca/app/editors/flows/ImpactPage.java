@@ -40,7 +40,7 @@ class ImpactPage extends ModelPage<Flow> {
 			M.Unit);
 		table.setLabelProvider(new Label());
 
-		var factors = App.exec(M.ImpactFactors,
+		var factors = App.exec("Search characterization factors ...",
 			() -> UsedImpactFactor.allOf(getModel(), Database.get()));
 		table.setInput(factors != null ? factors : Collections.emptyList());
 		Tables.bindColumnWidths(table, 0.2, 0.2, 0.2, 0.2, 0.2);

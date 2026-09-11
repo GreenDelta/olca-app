@@ -325,7 +325,8 @@ class Clipboard {
 			LocationDao dao = new LocationDao(Database.get());
 			e.location = dao.getDescriptors()
 					.stream()
-					.filter(d -> Objects.equals(code, d.code))
+					.filter(d -> Objects.equals(code, d.code)
+							|| Objects.equals(code, d.name))
 					.map(d -> dao.getForId(d.id))
 					.findFirst()
 					.orElse(null);
