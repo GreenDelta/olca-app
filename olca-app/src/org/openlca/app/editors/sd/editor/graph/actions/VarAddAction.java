@@ -1,5 +1,8 @@
 package org.openlca.app.editors.sd.editor.graph.actions;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.swt.graphics.Point;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
@@ -8,9 +11,6 @@ import org.openlca.app.editors.sd.editor.graph.model.VarType;
 import org.openlca.sd.model.Auxil;
 import org.openlca.sd.model.Rate;
 import org.openlca.sd.model.Stock;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class VarAddAction extends WorkbenchPartAction {
 
@@ -25,7 +25,7 @@ public class VarAddAction extends WorkbenchPartAction {
 		setId(idOf(type));
 		var label = switch (type) {
 			case AUX -> "Add auxiliary";
-			case RATE -> "Add rate";
+			case RATE -> "Add flow";
 			case STOCK -> "Add stock";
 		};
 		setText(label);

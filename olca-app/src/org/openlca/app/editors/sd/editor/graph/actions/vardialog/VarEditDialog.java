@@ -72,7 +72,7 @@ public class VarEditDialog extends FormDialog {
 		super.configureShell(newShell);
 		var title = switch (variable) {
 			case Stock _ -> "Stock";
-			case Rate _ -> "Flow (Rate)";
+			case Rate _ -> "Flow";
 			case Auxil _ -> "Auxiliary";
 		};
 		newShell.setText(title);

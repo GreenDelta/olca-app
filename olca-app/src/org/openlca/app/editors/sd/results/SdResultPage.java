@@ -74,14 +74,12 @@ class SdResultPage extends FormPage {
 		UI.filler(comp, tk);
 		var exportBtn = UI.button(comp, tk, "Export results...");
 		exportBtn.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(exportBtn, e -> {
+		Controls.onSelect(exportBtn, _ -> {
 			var file = FileChooser.forSavingFile("Export simulation results",
 				editor.modelName() + "_results.xlsx");
 			if (file == null)
 				return;
-			var res = App.exec("Export results...", () -> {
-				return XlsExport.run(result, file);
-			});
+			var res = App.exec("Export results...", () -> XlsExport.run(result, file));
 			if (res.isError()) {
 				ErrorReporter.on("Failed to export simulation results", res.error());
 			}
@@ -111,7 +109,7 @@ class SdResultPage extends FormPage {
 			chart.show(vars.getFirst());
 		}
 
-		Controls.onSelect(combo, e -> {
+		Controls.onSelect(combo, _ -> {
 			int i = combo.getSelectionIndex();
 			if (i >= 0 && i < vars.size()) {
 				chart.show(vars.get(i));
@@ -143,7 +141,7 @@ class SdResultPage extends FormPage {
 			chart.show(impacts.getFirst());
 		}
 
-		Controls.onSelect(combo, e -> {
+		Controls.onSelect(combo, _ -> {
 			int idx = combo.getSelectionIndex();
 			if (idx >= 0 && idx < impacts.size()) {
 				chart.show(impacts.get(idx));
@@ -173,7 +171,7 @@ class SdResultPage extends FormPage {
 
 		@Override
 		public String toString() {
-			return "Stocks: " + stocks + ", Rates: " + rates + ", Aux: " + auxs;
+			return "Stocks: " + stocks + ", Flows: " + rates + ", Aux: " + auxs;
 		}
 	}
 }
