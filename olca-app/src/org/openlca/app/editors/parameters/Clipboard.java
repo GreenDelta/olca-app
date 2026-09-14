@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.openlca.app.util.Numbers;
 import org.openlca.core.model.Parameter;
 import org.openlca.core.model.ParameterScope;
 import org.openlca.core.model.Uncertainty;
@@ -91,12 +92,7 @@ class Clipboard {
 	static double readDouble(String field) {
 		if (field == null)
 			return 0.0;
-		try {
-			String f = field.replace(',', '.');
-			return Double.parseDouble(f);
-		} catch (Exception e) {
-			return 0.0;
-		}
+		return Numbers.tryParseAnyFormat(field).orElse(0.0);
 	}
 
 }

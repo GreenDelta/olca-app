@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Numbers;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ParameterRedef;
@@ -51,9 +52,10 @@ class ParameterClipboard {
 			if (redef == null)
 				return null;
 			if (row.length > 2) {
-				try {
-					redef.value = Double.parseDouble(row[2]);
-				} catch (Exception e) {
+				var value = Numbers.tryParseAnyFormat(row[2]);
+				if (value.isPresent()) {
+					redef.value = value.getAsDouble();
+				} else {
 					log.warn("Parameter redef. value is not numeric");
 				}
 			}

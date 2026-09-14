@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Numbers;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.CurrencyDao;
 import org.openlca.core.database.FlowDao;
@@ -33,7 +34,7 @@ class Clipboard {
 	static List<Exchange> read(String text, boolean forInputs) {
 		if (text == null)
 			return Collections.emptyList();
-		String[] lines = text.toString().split("\n");
+		String[] lines = text.split("\n");
 		List<Exchange> list = new ArrayList<>();
 		Mapper mapper = new Mapper();
 		for (String line : lines) {
@@ -113,11 +114,10 @@ class Clipboard {
 			String fullName = row[0];
 			if (fullName == null)
 				return null;
-			List<Flow> candidates = new ArrayList<>();
-			candidates.addAll(flowDao.getForName(fullName));
+			var candidates = new ArrayList<>(flowDao.getForName(fullName));
 
 			// the full name may contains a location code
-			String name = null;
+			String name;
 			String locationCode = null;
 			if (fullName.contains(" - ")) {
 				int splitIdx = fullName.lastIndexOf(" - ");
@@ -144,7 +144,6 @@ class Clipboard {
 				if (matchLocation(candidate, locationCode)
 						&& !matchLocation(selected, locationCode)) {
 					selected = candidate;
-					continue;
 				}
 			}
 			return selected;
@@ -182,9 +181,10 @@ class Clipboard {
 				e.amount = 1.0;
 				return;
 			}
-			try {
-				e.amount = Double.parseDouble(row[2]);
-			} catch (Exception ex) {
+			var value = Numbers.tryParseAnyFormat(row[2]);
+			if (value.isPresent()) {
+				e.amount = value.getAsDouble();
+			} else {
 				e.formula = row[2];
 			}
 		}
@@ -252,7 +252,7 @@ class Clipboard {
 					e.isAvoided = true;
 					e.isInput = !e.isInput;
 				}
-			} catch (Exception ex) {
+			} catch (Exception _) {
 			}
 		}
 
@@ -282,9 +282,10 @@ class Clipboard {
 				return;
 			}
 			e.currency = currency;
-			try {
-				e.costs = Double.parseDouble(amount);
-			} catch (Exception ex) {
+			var value = Numbers.tryParseAnyFormat(amount);
+			if (value.isPresent()) {
+				e.costs = value.getAsDouble();
+			} else {
 				e.costFormula = amount;
 			}
 		}

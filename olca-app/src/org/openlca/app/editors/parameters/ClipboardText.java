@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.openlca.app.M;
+import org.openlca.app.util.Numbers;
 
 class ClipboardText {
 
@@ -25,7 +26,7 @@ class ClipboardText {
 	static ClipboardText split(String text) {
 		if (text == null)
 			return new ClipboardText(true, Collections.emptyList());
-		String[] lines = text.toString().split("\n");
+		String[] lines = text.split("\n");
 		List<String[]> rows = new ArrayList<>();
 		boolean forInputParameters = true;
 		for (int i = 0; i < lines.length; i++) {
@@ -57,15 +58,15 @@ class ClipboardText {
 	 */
 	private static boolean[] isHeader(String[] fields) {
 		if (fields == null || fields.length < 3)
-			return new boolean[] { false, false };
+			return new boolean[]{false, false};
 		// checking the first two words should be enough
 		if (Objects.equals(fields[0], M.Name)
 			&& Objects.equals(fields[1], M.Value))
-			return new boolean[] { true, true };
+			return new boolean[]{true, true};
 		if (Objects.equals(fields[0], M.Name)
 			&& Objects.equals(fields[1], M.Formula))
-			return new boolean[] { true, false };
-		return new boolean[] { false, false };
+			return new boolean[]{true, false};
+		return new boolean[]{false, false};
 	}
 
 	/**
@@ -76,22 +77,12 @@ class ClipboardText {
 	private static boolean isInputParameter(String[] row) {
 		if (row == null || row.length < 2)
 			return true; // the default value
-		if (!isDecimal(row[1]))
-			return false;
-		if (row.length > 2 && isDecimal(row[2]))
-			return false;
-		return true;
+		if (isDecimal(row[1]))
+			return true;
+		return !(row.length > 2 && isDecimal(row[2]));
 	}
 
-	private static boolean isDecimal(String text) {
-		if (text == null)
-			return false;
-		String s = text.replace(',', '.');
-		try {
-			Double.parseDouble(s);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+	private static boolean isDecimal(String s) {
+		return Numbers.tryParseAnyFormat(s).isPresent();
 	}
 }

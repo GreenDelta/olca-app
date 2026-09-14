@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
+import org.openlca.app.util.Numbers;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.FlowDao;
 import org.openlca.core.database.IDatabase;
@@ -112,9 +113,10 @@ class FactorClipboard {
 			return null;
 
 		// set the amount value / formula
-		try {
-			factor.value = Double.parseDouble(amount);
-		} catch (Exception e) {
+		var value = Numbers.tryParseAnyFormat(amount);
+		if (value.isPresent()) {
+			factor.value = value.getAsDouble();
+		} else {
 			factor.formula = amount;
 		}
 
