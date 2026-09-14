@@ -36,6 +36,7 @@ public class VarEditDialog extends FormDialog {
 	private Text unitText;
 	private Button nonNegativeCheck;
 	private PanelStack panels;
+	private boolean dirty;
 
 	public static void edit(SdGraphEditor editor, Var origin) {
 		if (editor == null || origin == null) return;
@@ -91,31 +92,35 @@ public class VarEditDialog extends FormDialog {
 		UI.gridLayout(comp, 2);
 		UI.gridData(comp, true, true);
 
+		// note that we register the change listeners only after the
+		// widgets are populated with the initial values, so that setting
+		// those values does not mark the dialog as dirty.
+
 		nameText = UI.labeledText(comp, tk, M.Name);
 		if (variable.name() != null) {
 			nameText.setText(variable.name().label());
 		}
-		nameText.addModifyListener(_ -> checkOk());
+		nameText.addModifyListener(_ -> setDirty());
 
 		unitText = UI.labeledText(comp, tk, M.Unit);
 		Controls.set(unitText, variable.unit());
-		unitText.addModifyListener(_ -> checkOk());
+		unitText.addModifyListener(_ -> setDirty());
 
 		nonNegativeCheck = UI.labeledCheckbox(comp, tk, "Non-negative");
 		nonNegativeCheck.setSelection(
 			variable.def() instanceof NonNegativeCell);
-		Controls.onSelect(nonNegativeCheck, _ -> checkOk());
+		Controls.onSelect(nonNegativeCheck, _ -> setDirty());
 
 		boolean isStockVar = false;
 		if (variable instanceof Stock stock) {
 			isStockVar = true;
 			new StockFlowPanel(editor.graph().model(), stock)
-				.render(comp, tk, this::checkOk);
+				.render(comp, tk, this::setDirty);
 		}
 
 		panels = new PanelStack(comp, tk, isStockVar);
 		panels.setInput(variable.def());
-		panels.onChange(_ -> checkOk());
+		panels.onChange(_ -> setDirty());
 		mForm.getForm().reflow(true);
 	}
 
@@ -126,13 +131,19 @@ public class VarEditDialog extends FormDialog {
 		checkOk();
 	}
 
+	private void setDirty() {
+		dirty = true;
+		checkOk();
+	}
+
 	private void checkOk() {
 		var btn = getButton(OK);
 		if (btn == null || nameText == null || panels == null) {
 			return;
 		}
-		btn.setEnabled(panels.isValid() &&
-			Strings.isNotBlank(nameText.getText()));
+		btn.setEnabled(dirty
+			&& panels.isValid()
+			&& Strings.isNotBlank(nameText.getText()));
 	}
 
 	@Override
