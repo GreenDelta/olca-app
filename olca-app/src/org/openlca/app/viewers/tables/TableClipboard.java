@@ -45,14 +45,6 @@ public final class TableClipboard {
 	}
 
 	/**
-	 * Same as {@link #onCopyAll(TableViewer)} but with an additional converter for
-	 * transforming a table item into a string representation.
-	 */
-	public static Action onCopyAll(TableViewer viewer, Converter converter) {
-		return new CopyAction(viewer.getTable(), converter, false);
-	}
-
-	/**
 	 * Registers Ctr+v for pasting table content from clipboard and returns an
 	 * action which also calls this function.
 	 */
@@ -74,10 +66,10 @@ public final class TableClipboard {
 	private static void paste(Table table, Consumer<String> fn) {
 		if (table == null || fn == null)
 			return;
-		Clipboard clipboard = new Clipboard(UI.shell().getDisplay());
+		var clipboard = new Clipboard(UI.shell().getDisplay());
 		try {
-			TextTransfer transfer = TextTransfer.getInstance();
-			Object content = clipboard.getContents(transfer);
+			var transfer = TextTransfer.getInstance();
+			var content = clipboard.getContents(transfer);
 			if (!(content instanceof String))
 				return;
 			fn.accept((String) content);

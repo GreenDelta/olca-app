@@ -18,6 +18,7 @@ import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
+import org.openlca.app.viewers.tables.TableClipboard;
 import org.openlca.app.viewers.tables.Tables;
 import org.openlca.app.viewers.tables.modify.DoubleModifier;
 import org.openlca.app.viewers.tables.modify.ModifySupport;
@@ -62,8 +63,8 @@ final class LookupPanel extends Panel {
 		table.getTable().getColumn(1).setWidth(150);
 		table.setLabelProvider(new RowLabel());
 		new ModifySupport<Row>(table)
-			.bind("x", Row.modifierOfX())
-			.bind("y", Row.modifierOfY());
+			.bind("x", Row.modifierOfX(this::fireChanged))
+			.bind("y", Row.modifierOfY(this::fireChanged));
 
 		var onAdd = Actions.create(
 			"Add row", Icon.ADD.descriptor(), () -> {
@@ -81,9 +82,45 @@ final class LookupPanel extends Panel {
 				table.setInput(rows);
 				fireChanged();
 			});
-		Actions.bind(table, onAdd, onDelete);
-
+		Actions.bind(table,
+			onAdd,
+			onDelete,
+			TableClipboard.onCopySelected(table),
+			TableClipboard.onPaste(table, this::onPaste));
 		return table;
+	}
+
+	private void onPaste(String text) {
+		if (Strings.isBlank(text))
+			return;
+		var pasted = new ArrayList<Row>();
+		for (var line : text.split("\r?\n")) {
+			var cells = line.split("[;\t]");
+			if (cells.length < 2)
+				continue;
+			var x = pastedNumOf(cells[0]);
+			var y = pastedNumOf(cells[1]);
+			if (x == null || y == null)
+				continue;
+			pasted.add(new Row(x, y));
+		}
+
+		if (pasted.isEmpty())
+			return;
+		rows.addAll(pasted);
+		table.setInput(rows);
+		fireChanged();
+	}
+
+	private Double pastedNumOf(String cell) {
+		if (Strings.isBlank(cell))
+			return null;
+		var s = cell.trim().replace(',', '.');
+		try {
+			return Double.parseDouble(s);
+		} catch (Exception _) {
+			return null;
+		}
 	}
 
 	@Override
@@ -162,7 +199,7 @@ final class LookupPanel extends Panel {
 			}
 		}
 
-		static DoubleModifier<Row> modifierOfX() {
+		static DoubleModifier<Row> modifierOfX(Runnable onChange) {
 			return new DoubleModifier<>() {
 				@Override
 				public Double getDouble(Row row) {
@@ -171,13 +208,18 @@ final class LookupPanel extends Panel {
 
 				@Override
 				public void setDouble(Row row, Double x) {
-					if (row == null) return;
-					row.x = x != null ? x : 0;
+					if (row == null)
+						return;
+					double value = x != null ? x : 0;
+					if (value == row.x)
+						return;
+					row.x = value;
+					onChange.run();
 				}
 			};
 		}
 
-		static DoubleModifier<Row> modifierOfY() {
+		static DoubleModifier<Row> modifierOfY(Runnable onChange) {
 			return new DoubleModifier<>() {
 				@Override
 				public Double getDouble(Row row) {
@@ -186,8 +228,13 @@ final class LookupPanel extends Panel {
 
 				@Override
 				public void setDouble(Row row, Double y) {
-					if (row == null) return;
-					row.y = y != null ? y : 0;
+					if (row == null)
+						return;
+					double value = y != null ? y : 0;
+					if (value == row.y)
+						return;
+					row.y = value;
+					onChange.run();
 				}
 			};
 		}
