@@ -47,9 +47,9 @@ final class LookupPanel extends Panel {
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
 		gd.widthHint = 1;
 
-		text.addModifyListener(_ -> checkValid());
+		text.addModifyListener(_ -> fireChanged());
 
-		typeCombo = new TypeCombo(comp, this::checkValid);
+		typeCombo = new TypeCombo(comp, this::fireChanged);
 		table = createTable(comp);
 		var tabGd = UI.gridData(table.getControl(), true, true);
 		tabGd.widthHint = 1;
@@ -69,7 +69,7 @@ final class LookupPanel extends Panel {
 			"Add row", Icon.ADD.descriptor(), () -> {
 				rows.add(new Row(0, 0));
 				table.setInput(rows);
-				checkValid();
+				fireChanged();
 			});
 		var onDelete = Actions.create(
 			"Remove row(s)", Icon.DELETE.descriptor(), () -> {
@@ -79,15 +79,11 @@ final class LookupPanel extends Panel {
 					}
 				}
 				table.setInput(rows);
-				checkValid();
+				fireChanged();
 			});
 		Actions.bind(table, onAdd, onDelete);
 
 		return table;
-	}
-
-	private void checkValid() {
-		fireValid(isValid());
 	}
 
 	@Override

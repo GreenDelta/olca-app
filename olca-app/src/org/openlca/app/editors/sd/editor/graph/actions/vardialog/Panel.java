@@ -18,7 +18,7 @@ import org.openlca.sd.model.cells.TensorEqnCell;
 sealed abstract class Panel permits EquationPanel, LookupPanel, TensorPanel {
 
 	private final Composite composite;
-	private ChangeObserver onChange;
+	private Runnable onChange;
 
 	Panel(Composite composite) {
 		this.composite = composite;
@@ -28,13 +28,13 @@ sealed abstract class Panel permits EquationPanel, LookupPanel, TensorPanel {
 		return composite;
 	}
 
-	void onChange(ChangeObserver onChange) {
+	void onChange(Runnable onChange) {
 		this.onChange = onChange;
 	}
 
-	void fireValid(boolean b) {
+	void fireChanged() {
 		if (onChange != null) {
-			onChange.reactOn(b);
+			onChange.run();
 		}
 	}
 

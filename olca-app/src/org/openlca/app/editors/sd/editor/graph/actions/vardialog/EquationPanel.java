@@ -24,8 +24,7 @@ final class EquationPanel extends Panel {
 		// avoid horizontal growing
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=215997
 		gd.widthHint = 1;
-		text.addModifyListener(
-			_ -> fireValid(Strings.isNotBlank(text.getText())));
+		text.addModifyListener(_ -> fireChanged());
 	}
 
 	@Override

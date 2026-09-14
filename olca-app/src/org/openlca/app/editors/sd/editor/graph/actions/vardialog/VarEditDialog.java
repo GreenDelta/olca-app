@@ -120,7 +120,7 @@ public class VarEditDialog extends FormDialog {
 
 		panels = new PanelStack(comp, tk, isStockVar);
 		panels.setInput(variable.def());
-		panels.onChange(_ -> setDirty());
+		panels.onChange(this::setDirty);
 		mForm.getForm().reflow(true);
 	}
 
@@ -141,9 +141,9 @@ public class VarEditDialog extends FormDialog {
 		if (btn == null || nameText == null || panels == null) {
 			return;
 		}
-		btn.setEnabled(dirty
-			&& panels.isValid()
-			&& Strings.isNotBlank(nameText.getText()));
+		boolean valid = panels.isValid()
+			&& Strings.isNotBlank(nameText.getText());
+		btn.setEnabled(dirty && valid);
 	}
 
 	@Override

@@ -27,7 +27,7 @@ class PanelStack {
 
 	private Panel top;
 	private Cell input;
-	private ChangeObserver onChange;
+	private Runnable onChange;
 
 	PanelStack(Composite comp, FormToolkit tk, boolean stockVar) {
 
@@ -37,9 +37,7 @@ class PanelStack {
 		Controls.onSelect(combo, _ -> {
 			var type = PanelType.values()[combo.getSelectionIndex()];
 			updatePanel(type);
-			if (onChange != null) {
-				onChange.reactOn(isValid());
-			}
+			fireChanged();
 		});
 
 		UI.filler(comp, tk);
@@ -52,11 +50,7 @@ class PanelStack {
 		lookupPanel = new LookupPanel(stack, tk, stockVar);
 		tensorPanel = new TensorPanel(stack, tk, stockVar);
 		List.of(equationPanel, lookupPanel, tensorPanel)
-			.forEach(p -> p.onChange(b -> {
-				if (onChange != null) {
-					onChange.reactOn(b);
-				}
-			}));
+			.forEach(p -> p.onChange(this::fireChanged));
 
 		top = equationPanel;
 	}
@@ -68,8 +62,14 @@ class PanelStack {
 		updatePanel(type);
 	}
 
-	void onChange(ChangeObserver onChange) {
+	void onChange(Runnable onChange) {
 		this.onChange = onChange;
+	}
+
+	private void fireChanged() {
+		if (onChange != null) {
+			onChange.run();
+		}
 	}
 
 	boolean isValid() {
