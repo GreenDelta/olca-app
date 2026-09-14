@@ -16,6 +16,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.Viewers;
 import org.openlca.app.viewers.tables.TableClipboard;
@@ -98,11 +99,11 @@ final class LookupPanel extends Panel {
 			var cells = line.split("[;\t]");
 			if (cells.length < 2)
 				continue;
-			var x = pastedNumOf(cells[0]);
-			var y = pastedNumOf(cells[1]);
-			if (x == null || y == null)
+			var x = Numbers.tryParseAnyFormat(cells[0]);
+			var y = Numbers.tryParseAnyFormat(cells[1]);
+			if (x.isEmpty() || y.isEmpty())
 				continue;
-			pasted.add(new Row(x, y));
+			pasted.add(new Row(x.getAsDouble(), y.getAsDouble()));
 		}
 
 		if (pasted.isEmpty())
@@ -110,17 +111,6 @@ final class LookupPanel extends Panel {
 		rows.addAll(pasted);
 		table.setInput(rows);
 		fireChanged();
-	}
-
-	private Double pastedNumOf(String cell) {
-		if (Strings.isBlank(cell))
-			return null;
-		var s = cell.trim().replace(',', '.');
-		try {
-			return Double.parseDouble(s);
-		} catch (Exception _) {
-			return null;
-		}
 	}
 
 	@Override

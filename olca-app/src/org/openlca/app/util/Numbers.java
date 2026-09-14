@@ -3,11 +3,15 @@ package org.openlca.app.util;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.OptionalDouble;
 
 import org.openlca.app.preferences.Preferences;
+import org.openlca.commons.Strings;
 
 /**
  * Provides methods for number formatting.
@@ -63,9 +67,8 @@ public class Numbers {
 	}
 
 	private static DecimalFormat getFormat(String pattern) {
-		NumberFormat f = NumberFormat.getNumberInstance(Locale.ENGLISH);
-		if (f instanceof DecimalFormat) {
-			DecimalFormat format = (DecimalFormat) f;
+		var f = NumberFormat.getNumberInstance(Locale.ENGLISH);
+		if (f instanceof DecimalFormat format) {
 			format.applyPattern(pattern);
 			return format;
 		}
@@ -82,21 +85,78 @@ public class Numbers {
 	private static String apply(DecimalFormat format, double number) {
 		if (format == null)
 			return NumberFormat.getNumberInstance(Locale.ENGLISH)
-					.format(number);
+				.format(number);
 		return format.format(number);
 	}
 
-	private static boolean applySimpleFormat(double number, double lower,
-			double upper) {
+	private static boolean applySimpleFormat(
+		double number, double lower, double upper
+	) {
 		return number == 0
-				|| (number >= -upper && number <= -lower)
-				|| (number >= lower && number <= upper);
+			|| (number >= -upper && number <= -lower)
+			|| (number >= lower && number <= upper);
 	}
 
 	public static String asTimestamp(long time) {
 		return time <= 0
 			? "---"
 			: timestampFormat.format(new Date(time));
+	}
+
+	/// Tries to parse the given input with different number formats.
+	public static OptionalDouble tryParseAnyFormat(String input) {
+		var num = NumberParser.parseAny(input);
+		if (num == null)
+			return OptionalDouble.empty();
+		return num.isNaN() || num.isInfinite()
+			? OptionalDouble.empty()
+			: OptionalDouble.of(num);
+	}
+
+	private static class NumberParser {
+
+		// major distinct global format families
+		private static final List<Locale> LOCALES = List.of(
+			Locale.US,                // 1,234,567.89 (Dot decimal)
+			Locale.GERMANY,           // 1.234.567,89 (Comma decimal, dot grouping)
+			Locale.FRANCE,            // 1 234 567,89 (Comma decimal, space grouping)
+			Locale.of("de", "CH"),    // 1'234'567.89 (Apostrophe grouping)
+			Locale.of("en", "IN")     // 12,34,567.89 (Indian grouping)
+		);
+
+		private static Double parseAny(String input) {
+			if (Strings.isBlank(input))
+				return null;
+
+			var s = input.trim();
+
+			// try to parse the default format
+			try {
+				return Double.parseDouble(s);
+			} catch (Exception _) {
+			}
+
+			// try to parse with comma as decimal separator
+			if (s.contains(",") && !s.contains(".")) {
+				try {
+					return Double.parseDouble(s.replace(',', '.'));
+				} catch (Exception _) {
+				}
+			}
+
+			// try with common number formats
+			for (var locale : LOCALES) {
+				var nf = NumberFormat.getInstance(locale);
+				nf.setStrict(true);
+				var pos = new ParsePosition(0);
+				var num = nf.parse(s, pos);
+				// CRITICAL: verify the parser consumed the entire string!
+				if (num != null && pos.getIndex() == s.length()) {
+					return num.doubleValue();
+				}
+			}
+			return null;
+		}
 	}
 
 }
