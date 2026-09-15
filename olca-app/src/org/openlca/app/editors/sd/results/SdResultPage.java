@@ -15,7 +15,9 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.FileType;
+import org.openlca.app.util.Labels;
 import org.openlca.app.util.UI;
+import org.openlca.commons.Strings;
 import org.openlca.sd.interop.CoupledResult;
 import org.openlca.sd.model.Auxil;
 import org.openlca.sd.model.Rate;
@@ -80,6 +82,8 @@ class SdResultPage extends FormPage {
 			if (file == null)
 				return;
 			var res = App.exec("Export results...", () -> XlsExport.run(result, file));
+			if (res == null)
+				return;
 			if (res.isError()) {
 				ErrorReporter.on("Failed to export simulation results", res.error());
 			}
@@ -122,10 +126,12 @@ class SdResultPage extends FormPage {
 		UI.gridLayout(comp, 1);
 
 		var impacts = result.getImpactCategories();
+		impacts.sort(
+			(i, j) -> Strings.compareIgnoreCase(Labels.name(i), Labels.name(j)));
+
 		var comboComp = UI.composite(comp, tk);
 		UI.gridLayout(comboComp, 2);
 		UI.gridData(comboComp, true, false);
-
 		UI.label(comboComp, tk, "Impact category");
 		var combo = new Combo(comboComp, SWT.READ_ONLY);
 		UI.stretchX(combo);
