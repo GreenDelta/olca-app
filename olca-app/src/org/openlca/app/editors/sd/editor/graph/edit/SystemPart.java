@@ -3,6 +3,8 @@ package org.openlca.app.editors.sd.editor.graph.edit;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
+import org.openlca.app.editors.sd.editor.graph.actions.sysdialog.SystemEditDialog;
 import org.openlca.app.editors.sd.editor.graph.model.SystemNode;
 import org.openlca.app.editors.sd.editor.graph.view.SystemFigure;
 
@@ -32,5 +34,12 @@ public final class SystemPart extends NodePart<SystemNode> {
 		if (figure instanceof SystemFigure f) {
 			f.setBinding(node.binding());
 		}
+	}
+
+	@Override
+	protected void openDialog(SdGraphEditor editor) {
+		var node = getModel();
+		if (node == null) return;
+		SystemEditDialog.edit(editor, node);
 	}
 }

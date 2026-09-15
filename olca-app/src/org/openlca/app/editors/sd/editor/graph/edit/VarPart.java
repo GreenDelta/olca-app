@@ -3,6 +3,8 @@ package org.openlca.app.editors.sd.editor.graph.edit;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.commands.Command;
 import org.openlca.app.components.graphics.themes.Theme;
+import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
+import org.openlca.app.editors.sd.editor.graph.actions.vardialog.VarEditDialog;
 import org.openlca.app.editors.sd.editor.graph.model.VarNode;
 import org.openlca.app.editors.sd.editor.graph.view.AuxFigure;
 import org.openlca.app.editors.sd.editor.graph.view.FlowFigure;
@@ -46,6 +48,13 @@ public final class VarPart extends NodePart<VarNode> {
 		} else if (figure instanceof FlowFigure f) {
 			f.setVar(node.variable());
 		}
+	}
+
+	@Override
+	protected void openDialog(SdGraphEditor editor) {
+		var node = getModel();
+		if (node == null || node.variable() == null) return;
+		VarEditDialog.edit(editor, node.variable());
 	}
 
 }

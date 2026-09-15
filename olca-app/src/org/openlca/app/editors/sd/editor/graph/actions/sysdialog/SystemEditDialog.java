@@ -7,10 +7,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.openlca.app.M;
 import org.openlca.app.components.ModelLink;
 import org.openlca.app.db.Database;
 import org.openlca.app.editors.sd.editor.graph.SdGraphEditor;
@@ -85,6 +87,12 @@ public class SystemEditDialog extends FormDialog {
 	}
 
 	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+		newShell.setText(M.ProductSystem);
+	}
+
+	@Override
 	protected void createFormContent(IManagedForm mForm) {
 		var tk = mForm.getToolkit();
 		var body = UI.dialogBody(mForm.getForm(), tk);
@@ -140,7 +148,7 @@ public class SystemEditDialog extends FormDialog {
 		UI.filler(comp, tk);
 		var varBtn = UI.button(comp, tk, "Select a variable");
 		varBtn.setImage(Icon.FORMULA.get());
-		varBtn.addListener(SWT.Selection, e ->
+		varBtn.addListener(SWT.Selection, _ ->
 			VarSelectDialog.selectFrom(model)
 				.ifPresent(id -> amountText.setText(id.label())));
 	}
