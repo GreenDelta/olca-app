@@ -549,6 +549,8 @@ public class M extends NLS {
 	public static String ExportILCD;
 	public static String ExportLciaMethodsToASCsvFile;
 	public static String ExportLibraryDots;
+	public static String ExportLibraryLinks;
+	public static String ExportLibraryLinksInfo;
 	public static String ExportMatrices;
 	public static String ExportNexusCsvIndex;
 	public static String ExportNexusJsonIndex;

@@ -34,6 +34,7 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 
 	private ModelSelectionPage page;
 	private boolean withProviders = false;
+	private boolean withLibraryLinks = true;
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -49,7 +50,13 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 					providerCheck.setToolTipText(M.ExportDefaultProvidersInfo);
 					providerCheck.setSelection(withProviders);
 					Controls.onSelect(providerCheck,
-							$ -> withProviders = providerCheck.getSelection());
+							_ -> withProviders = providerCheck.getSelection());
+
+					var libraryCheck = UI.checkbox(parent, M.ExportLibraryLinks);
+					libraryCheck.setToolTipText(M.ExportLibraryLinksInfo);
+					libraryCheck.setSelection(withLibraryLinks);
+					Controls.onSelect(libraryCheck,
+							_ -> withLibraryLinks = libraryCheck.getSelection());
 				});
 		addPage(page);
 	}
@@ -115,6 +122,8 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 				monitor.worked(1);
 			}
 
+			if (!withLibraryLinks)
+				return;
 			var libraries = export.getReferencedLibraries()
 					.stream()
 					.map(id -> Workspace.getLibraryDir().getLibrary(id))
