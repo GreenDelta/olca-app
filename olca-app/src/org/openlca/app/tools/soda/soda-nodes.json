@@ -60,18 +60,8 @@
     "hasEPDs": true
   },
   {
-    "name": "Construction Products EPD Databases",
-    "url": "https://data.lcadatabase.com/",
-    "hasEPDs": true
-  },
-  {
     "name": "ecosystem LCI Database",
     "url": "https://weee-lci.ecosystem.eco/",
-    "hasEPDs": false
-  },
-  {
-    "name": "Cycleco",
-    "url": "https://node.cycleco.eu/node/",
     "hasEPDs": false
   },
   {
@@ -82,11 +72,6 @@
   {
     "name": "Plastics Europe Public LCI Database",
     "url": "https://plasticseurope.lca-data.com/",
-    "hasEPDs": false
-  },
-  {
-    "name": "ILCD-EL Small Data Providers Database",
-    "url": "https://eplca.jrc.ec.europa.eu/SDPDB/",
     "hasEPDs": false
   },
   {
@@ -101,17 +86,7 @@
   },
   {
     "name": "TianGong Life Cycle Inventory",
-    "url": "https://lcadata.tiangong.world/",
-    "hasEPDs": false
-  },
-  {
-    "name": "EF Representative Products",
-    "url": "https://eplca.jrc.ec.europa.eu/EF-node/",
-    "hasEPDs": false
-  },
-  {
-    "name": "EF Small Data Provider",
-    "url": "https://eplca.jrc.ec.europa.eu/EF-SDP/",
+    "url": "https://lcdn.tiangong.earth/",
     "hasEPDs": false
   },
   {
