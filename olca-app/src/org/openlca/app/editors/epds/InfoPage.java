@@ -24,7 +24,10 @@ class InfoPage extends ModelPage<Epd> {
 
 		var info = new InfoSection(editor).render(body, tk);
 		UI.filler(info.composite());
-		new UploadButton(editor).render(info.composite(), tk);
+		var comp = tk.createComposite(info.composite());
+		UI.gridLayout(comp, 2, 10, 0);
+		new UploadButton(editor).render(comp, tk);
+		new ExportButton(editor).render(comp, tk);
 
 		new EpdProductSection(editor).render(body, tk);
 		new EpdModulesSection(editor).render(body, tk);
