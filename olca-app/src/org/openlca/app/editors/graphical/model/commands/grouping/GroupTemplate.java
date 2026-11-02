@@ -9,13 +9,13 @@ import org.openlca.core.model.AnalysisGroup;
 enum GroupTemplate {
 
 	LCA("Life Cycle Stages", List.of(
-		g("0 Total", "#C3D61A"),
-		g("1 Raw Materials", "#673AB7"),
-		g("2 Manufacturing", "#512DA8"),
-		g("3 Distribution", "#26C6DA"),
-		g("4 Use", "#004D40"),
-		g("5 Disposal", "#3E2723"),
-		g("6 Recycling", "#455A64"))),
+		g("0 Total", "#D6B82F"),
+		g("1 Raw Materials", "#A67C52"),
+		g("2 Manufacturing", "#D98E36"),
+		g("3 Distribution", "#3996A8"),
+		g("4 Use", "#287C70"),
+		g("5 Disposal", "#737B83"),
+		g("6 Recycling", "#55A66E"))),
 
 	EN_15804("EN 15804 Modules", List.of(
 		g("A1-A3", "#311B92"),
@@ -45,9 +45,9 @@ enum GroupTemplate {
 		g("D", "#455A64"))),
 
 	KBOB("KBOB Groups", List.of(
-		g("0 Total", "#C3D61A"),
-		g("1 Production", "#311B92"),
-		g("2 Disposal", "#3E2723")));
+		g("0 Total", "#D6B82F"),
+		g("1 Production", "#3996A8"),
+		g("2 Disposal", "#737B83")));
 
 	final String label;
 	final List<Entry> entries;
