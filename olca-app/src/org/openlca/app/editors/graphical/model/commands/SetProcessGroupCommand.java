@@ -49,10 +49,10 @@ public class SetProcessGroupCommand extends Command {
 	public SetProcessGroupCommand(List<NodeEditPart> nodes) {
 		this.nodes = nodes;
 		this.processes = nodes.stream()
-				.map(n -> n.getModel() != null ? n.getModel().descriptor : null)
-				.filter(Objects::nonNull)
-				.map(d -> d.id)
-				.toList();
+			.map(n -> n.getModel() != null ? n.getModel().descriptor : null)
+			.filter(Objects::nonNull)
+			.map(d -> d.id)
+			.toList();
 	}
 
 	@Override
@@ -111,15 +111,15 @@ public class SetProcessGroupCommand extends Command {
 		if (nodes.isEmpty())
 			return null;
 		return nodes.getFirst().getParent() instanceof GraphEditPart gep
-				? gep.getModel().editor
-				: null;
+			? gep.getModel().editor
+			: null;
 	}
 
 	private AnalysisGroup getCurrent(List<AnalysisGroup> groups) {
 		return groups.stream()
-				.filter(g -> g.processes.containsAll(processes))
-				.findAny()
-				.orElse(null);
+			.filter(g -> g.processes.containsAll(processes))
+			.findAny()
+			.orElse(null);
 	}
 
 	private boolean isCurrent(AnalysisGroup g, List<AnalysisGroup> groups) {
@@ -145,13 +145,13 @@ public class SetProcessGroupCommand extends Command {
 		}
 		for (var node : nodes) {
 			node.propertyChange(new PropertyChangeEvent(
-					this, Node.GROUP_PROP, null, selected));
+				this, Node.GROUP_PROP, null, selected));
 		}
 	}
 
-	 /// Handle changes, like name or color, of groups. This has an effect not
-	 /// only on the currently selected processes but all processes of the
-	 /// respective groups, their figures may need an update.
+	/// Handle changes, like name or color, of groups. This has an effect not
+	/// only on the currently selected processes but all processes of the
+	/// respective groups, their figures may need an update.
 	private void applyGroupChange(List<AnalysisGroup> groups) {
 		if (nodes.isEmpty())
 			return;
@@ -188,9 +188,9 @@ public class SetProcessGroupCommand extends Command {
 		private boolean groupsChanged;
 
 		Dialog(
-				GraphEditor editor,
-				List<AnalysisGroup> groups,
-				AnalysisGroup current) {
+			GraphEditor editor,
+			List<AnalysisGroup> groups,
+			AnalysisGroup current) {
 			super(UI.shell());
 			this.editor = editor;
 			this.groups = groups;
@@ -249,11 +249,13 @@ public class SetProcessGroupCommand extends Command {
 				}
 			});
 
-			// add EN 15804 modules
-			var enItem = new MenuItem(menu, SWT.NONE);
-			enItem.setText("Add EN 15804 modules");
-			Controls.onSelect(enItem,
-					_ -> onSync.accept(GroupSync.syncEn15804(this)));
+			// add groups from templates
+			for (var t : GroupTemplate.values()) {
+				var item = new MenuItem(menu, SWT.NONE);
+				item.setText(t.label);
+				Controls.onSelect(item,
+					_ -> onSync.accept(GroupSync.syncTemplate(this, t)));
+			}
 
 			// add a new group
 			Controls.onSelect(addBtn, _ -> {
@@ -272,8 +274,8 @@ public class SetProcessGroupCommand extends Command {
 			if (Strings.isNotBlank(c))
 				return Colors.fromHex(c);
 			return editor.getTheme() != null && editor.getTheme().isDark()
-					? Colors.fromHex("#FFFDE7")
-					: Colors.fromHex("#212121");
+				? Colors.fromHex("#FFFDE7")
+				: Colors.fromHex("#212121");
 		}
 
 		private record GroupPanel(Dialog dialog, AnalysisGroup group) {
@@ -322,7 +324,7 @@ public class SetProcessGroupCommand extends Command {
 						colorBtn.setForeground(nextColor);
 						colorBtn.setBackground(nextColor);
 						group.color = String.format(
-								"#%02x%02x%02x", next.red, next.green, next.blue);
+							"#%02x%02x%02x", next.red, next.green, next.blue);
 						dialog.groupsChanged = true;
 					}
 				});
@@ -362,38 +364,10 @@ public class SetProcessGroupCommand extends Command {
 			return sync;
 		}
 
-		static GroupSync syncEn15804(Dialog dialog) {
-			var groups = List.of(
-
-					groupOf("A1-A3", "#311B92"),
-					groupOf("A1", "#673AB7"),
-					groupOf("A2", "#5E35B1"),
-					groupOf("A3", "#512DA8"),
-
-					groupOf("A4-A5", "#1A237E"),
-					groupOf("A4", "#3F51B5"),
-					groupOf("A5", "#3949AB"),
-
-					groupOf("B1-B7", "#004D40"),
-					groupOf("B1", "#80CBC4"),
-					groupOf("B2", "#4DB6AC"),
-					groupOf("B3", "#26C6DA"),
-					groupOf("B4", "#009688"),
-					groupOf("B5", "#00897B"),
-					groupOf("B6", "#00796B"),
-					groupOf("B7", "#00695C"),
-
-					groupOf("C1-C4", "#3E2723"),
-					groupOf("C1", "#795548"),
-					groupOf("C2", "#6D4C41"),
-					groupOf("C3", "#5D4037"),
-					groupOf("C4", "#4E342E"),
-
-					groupOf("D", "#455A64"));
-
+		static GroupSync syncTemplate(Dialog dialog, GroupTemplate template) {
 			var sync = new GroupSync(dialog);
-			for (var g : groups) {
-				sync.sync(g);
+			for (var e : template.entries) {
+				sync.sync(groupOf(e.name(), e.color()));
 			}
 			return sync;
 		}
@@ -435,10 +409,69 @@ public class SetProcessGroupCommand extends Command {
 			}
 			for (var p : source.processes) {
 				if (target.processes.contains(p)
-						|| !owner.processes.contains(p))
+					|| !owner.processes.contains(p))
 					continue;
 				target.processes.add(p);
 			}
+		}
+	}
+
+	private enum GroupTemplate {
+
+		LCA("Life Cycle Stages", List.of(
+			g("0 Total", "#C3D61A"),
+			g("1 Raw Materials", "#673AB7"),
+			g("2 Manufacturing", "#512DA8"),
+			g("3 Distribution", "#26C6DA"),
+			g("4 Use", "#004D40"),
+			g("5 Disposal", "#3E2723"),
+			g("6 Recycling", "#455A64"))),
+
+		EN_15804("EN 15804 Modules", List.of(
+			g("A1-A3", "#311B92"),
+			g("A1", "#673AB7"),
+			g("A2", "#5E35B1"),
+			g("A3", "#512DA8"),
+
+			g("A4-A5", "#1A237E"),
+			g("A4", "#3F51B5"),
+			g("A5", "#3949AB"),
+
+			g("B1-B7", "#004D40"),
+			g("B1", "#80CBC4"),
+			g("B2", "#4DB6AC"),
+			g("B3", "#26C6DA"),
+			g("B4", "#009688"),
+			g("B5", "#00897B"),
+			g("B6", "#00796B"),
+			g("B7", "#00695C"),
+
+			g("C1-C4", "#3E2723"),
+			g("C1", "#795548"),
+			g("C2", "#6D4C41"),
+			g("C3", "#5D4037"),
+			g("C4", "#4E342E"),
+
+			g("D", "#455A64"))),
+
+		KBOB("KBOB Groups", List.of(
+			g("0 Total", "#C3D61A"),
+			g("1 Production", "#311B92"),
+			g("2 Disposal", "#3E2723")));
+
+		private final String label;
+		private final List<Entry> entries;
+
+		GroupTemplate(String label, List<Entry> entries) {
+			this.label = label;
+			this.entries = entries;
+		}
+
+		private record Entry(String name, String color) {
+		}
+
+		private static Entry g(String name, String color) {
+			return new Entry(name, color);
 		}
 	}
 }
