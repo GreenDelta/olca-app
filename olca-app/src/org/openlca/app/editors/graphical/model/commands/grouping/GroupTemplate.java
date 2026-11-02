@@ -1,0 +1,62 @@
+package org.openlca.app.editors.graphical.model.commands.grouping;
+
+import java.util.List;
+
+enum GroupTemplate {
+
+	LCA("Life Cycle Stages", List.of(
+		g("0 Total", "#C3D61A"),
+		g("1 Raw Materials", "#673AB7"),
+		g("2 Manufacturing", "#512DA8"),
+		g("3 Distribution", "#26C6DA"),
+		g("4 Use", "#004D40"),
+		g("5 Disposal", "#3E2723"),
+		g("6 Recycling", "#455A64"))),
+
+	EN_15804("EN 15804 Modules", List.of(
+		g("A1-A3", "#311B92"),
+		g("A1", "#673AB7"),
+		g("A2", "#5E35B1"),
+		g("A3", "#512DA8"),
+
+		g("A4-A5", "#1A237E"),
+		g("A4", "#3F51B5"),
+		g("A5", "#3949AB"),
+
+		g("B1-B7", "#004D40"),
+		g("B1", "#80CBC4"),
+		g("B2", "#4DB6AC"),
+		g("B3", "#26C6DA"),
+		g("B4", "#009688"),
+		g("B5", "#00897B"),
+		g("B6", "#00796B"),
+		g("B7", "#00695C"),
+
+		g("C1-C4", "#3E2723"),
+		g("C1", "#795548"),
+		g("C2", "#6D4C41"),
+		g("C3", "#5D4037"),
+		g("C4", "#4E342E"),
+
+		g("D", "#455A64"))),
+
+	KBOB("KBOB Groups", List.of(
+		g("0 Total", "#C3D61A"),
+		g("1 Production", "#311B92"),
+		g("2 Disposal", "#3E2723")));
+
+	final String label;
+	final List<Entry> entries;
+
+	GroupTemplate(String label, List<Entry> entries) {
+		this.label = label;
+		this.entries = entries;
+	}
+
+	record Entry(String name, String color) {
+	}
+
+	private static Entry g(String name, String color) {
+		return new Entry(name, color);
+	}
+}

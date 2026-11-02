@@ -12,7 +12,7 @@ import org.openlca.app.components.graphics.model.Side;
 import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.app.editors.graphical.model.commands.CollapseCommand;
 import org.openlca.app.editors.graphical.model.commands.ExpandCommand;
-import org.openlca.app.editors.graphical.model.commands.SetProcessGroupCommand;
+import org.openlca.app.editors.graphical.model.commands.grouping.SetProcessGroupCommand;
 import org.openlca.app.editors.graphical.requests.ExpandCollapseRequest;
 
 public class NodeEditPolicy extends MinMaxEditPolicy {
