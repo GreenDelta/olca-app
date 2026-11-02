@@ -3,8 +3,10 @@ package org.openlca.app.editors.graphical.model.commands.grouping;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.window.Window;
@@ -15,6 +17,10 @@ import org.openlca.app.editors.graphical.model.Node;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
 
+/// Assigns the selected process nodes of a product system graph to an
+/// analysis group. The groups are edited on a copy in a [GroupDialog]; only
+/// when the dialog is confirmed, the changes are written back to the product
+/// system and the figures of the affected nodes are updated.
 public class SetProcessGroupCommand extends Command {
 
 	private final List<NodeEditPart> nodes;
@@ -68,19 +74,22 @@ public class SetProcessGroupCommand extends Command {
 		var dialog = new GroupDialog(editor, copy, getCurrent(copy));
 		if (dialog.open() != Window.OK)
 			return;
-		boolean isCurrent = isCurrent(dialog.selected, copy);
-		if (isCurrent && !dialog.groupsChanged)
+		boolean isCurrent = isCurrent(dialog.selected(), copy);
+		if (isCurrent && !dialog.groupsChanged())
 			return;
 
 		// sync changes
+		// remember which processes were grouped before, so that we can also
+		// update the nodes of processes whose group was deleted.
+		var previouslyGrouped = groupedProcesses(origin);
 		origin.clear();
 		origin.addAll(copy);
 
 		if (!isCurrent) {
-			applySelection(dialog.selected, copy);
+			applySelection(dialog.selected(), copy);
 		}
-		if (dialog.groupsChanged) {
-			applyGroupChange(origin);
+		if (dialog.groupsChanged()) {
+			applyGroupChange(origin, previouslyGrouped);
 		}
 		editor.setDirty();
 	}
@@ -130,7 +139,8 @@ public class SetProcessGroupCommand extends Command {
 	/// Handle changes, like name or color, of groups. This has an effect not
 	/// only on the currently selected processes but all processes of the
 	/// respective groups, their figures may need an update.
-	private void applyGroupChange(List<AnalysisGroup> groups) {
+	private void applyGroupChange(
+		List<AnalysisGroup> groups, Set<Long> previouslyGrouped) {
 		if (nodes.isEmpty())
 			return;
 		var parent = nodes.getFirst().getParent();
@@ -150,11 +160,20 @@ public class SetProcessGroupCommand extends Command {
 			var model = n.getModel();
 			if (model == null || model.descriptor == null)
 				continue;
-			var group = map.get(model.descriptor.id);
-			if (group != null) {
+			var pid = model.descriptor.id;
+			var group = map.get(pid);
+			if (group != null || previouslyGrouped.contains(pid)) {
 				var evt = new PropertyChangeEvent(this, Node.GROUP_PROP, null, group);
 				n.propertyChange(evt);
 			}
 		}
+	}
+
+	private Set<Long> groupedProcesses(List<AnalysisGroup> groups) {
+		var ids = new HashSet<Long>();
+		for (var g : groups) {
+			ids.addAll(g.processes);
+		}
+		return ids;
 	}
 }

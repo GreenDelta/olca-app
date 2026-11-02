@@ -1,68 +1,70 @@
 package org.openlca.app.editors.graphical.model.commands.grouping;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
+import org.jspecify.annotations.NullMarked;
 import org.openlca.commons.Strings;
 import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.ProductSystem;
 
+/// Merges analysis groups from a source, another product system or a
+/// [GroupTemplate], into the groups of a [GroupDialog]. Groups are matched by
+/// name: a matching group gets the processes of the source group that are also
+/// part of the edited product system, and its color if it has none. Groups
+/// without a match are added and collected in `newGroups`, so that the dialog
+/// can render them.
+@NullMarked
 class GroupSync {
 
 	private final ProductSystem owner;
 	private final List<AnalysisGroup> groups;
-	final List<AnalysisGroup> newGroups;
+	private final List<AnalysisGroup> newGroups = new ArrayList<>();
 
-	private GroupSync(GroupDialog dialog) {
-		this.owner = dialog.editor.getProductSystem();
-		this.groups = dialog.groups;
-		this.newGroups = new ArrayList<>();
+	GroupSync(ProductSystem owner, List<AnalysisGroup> groups) {
+		this.owner = owner;
+		this.groups = groups;
 	}
 
-	static GroupSync sync(GroupDialog dialog, ProductSystem system) {
-		var sync = new GroupSync(dialog);
-		sync.sync(system);
-		return sync;
+	List<AnalysisGroup> newGroups() {
+		return Collections.unmodifiableList(newGroups);
 	}
 
-	static GroupSync syncTemplate(GroupDialog dialog, GroupTemplate template) {
-		var sync = new GroupSync(dialog);
-		for (var e : template.entries) {
-			sync.sync(groupOf(e.name(), e.color()));
-		}
-		return sync;
-	}
-
-	private static AnalysisGroup groupOf(String name, String color) {
-		var g = new AnalysisGroup();
-		g.name = name;
-		g.color = color;
-		return g;
-	}
-
-	private void sync(ProductSystem system) {
-		if (system == null || system.analysisGroups.isEmpty())
-			return;
+	GroupSync sync(ProductSystem system) {
 		for (var g : system.analysisGroups) {
 			sync(g);
 		}
+		return this;
+	}
+
+	GroupSync sync(GroupTemplate template) {
+		for (var e : template.entries) {
+			sync(e.toGroup());
+		}
+		return this;
 	}
 
 	private void sync(AnalysisGroup next) {
-		if (next == null || Strings.isBlank(next.name))
+		if (Strings.isBlank(next.name))
 			return;
 		for (var g : groups) {
-			if (Objects.equals(g.name, next.name)) {
+			if (sameName(g, next)) {
 				copyAttributes(next, g);
 				return;
 			}
 		}
 		var g = new AnalysisGroup();
-		g.name = next.name;
+		g.name = next.name.strip();
 		copyAttributes(next, g);
 		groups.add(g);
 		newGroups.add(g);
+	}
+
+	private boolean sameName(AnalysisGroup a, AnalysisGroup b) {
+		return a.name != null
+			&& b.name != null
+			&& a.name.strip().equalsIgnoreCase(b.name.strip());
 	}
 
 	private void copyAttributes(AnalysisGroup source, AnalysisGroup target) {
@@ -70,10 +72,17 @@ class GroupSync {
 			target.color = source.color;
 		}
 		for (var p : source.processes) {
-			if (target.processes.contains(p)
-				|| !owner.processes.contains(p))
+			if (!owner.processes.contains(p) || isGrouped(p))
 				continue;
 			target.processes.add(p);
 		}
+	}
+
+	private boolean isGrouped(long processId) {
+		for (var g : groups) {
+			if (g.processes.contains(processId))
+				return true;
+		}
+		return false;
 	}
 }

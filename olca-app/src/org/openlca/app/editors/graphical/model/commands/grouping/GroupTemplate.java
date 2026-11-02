@@ -2,6 +2,10 @@ package org.openlca.app.editors.graphical.model.commands.grouping;
 
 import java.util.List;
 
+import org.openlca.core.model.AnalysisGroup;
+
+/// Predefined sets of analysis groups, with names and colors, that can be
+/// added to a product system in the [GroupDialog].
 enum GroupTemplate {
 
 	LCA("Life Cycle Stages", List.of(
@@ -54,6 +58,12 @@ enum GroupTemplate {
 	}
 
 	record Entry(String name, String color) {
+		AnalysisGroup toGroup() {
+			var g = new AnalysisGroup();
+			g.name = name;
+			g.color = color;
+			return g;
+		}
 	}
 
 	private static Entry g(String name, String color) {

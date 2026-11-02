@@ -8,6 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.FormDialog;
@@ -23,12 +24,18 @@ import org.openlca.core.model.AnalysisGroup;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.ProductSystem;
 
+/// Dialog for selecting the analysis group of the processes and for editing
+/// the groups of the product system: adding, renaming, re-coloring, deleting,
+/// and adding groups from another product system or a [GroupTemplate]. It
+/// works on a copy of the groups; `selected()` and `groupsChanged()` hold the
+/// result that is applied by the [SetProcessGroupCommand].
 class GroupDialog extends FormDialog {
 
-	final GraphEditor editor;
-	final List<AnalysisGroup> groups;
-	AnalysisGroup selected;
-	boolean groupsChanged;
+	private final GraphEditor editor;
+	private final List<AnalysisGroup> groups;
+	private AnalysisGroup selected;
+	private boolean groupsChanged;
+	private Button noneRadio;
 
 	GroupDialog(
 		GraphEditor editor,
@@ -38,6 +45,35 @@ class GroupDialog extends FormDialog {
 		this.editor = editor;
 		this.groups = groups;
 		this.selected = current;
+	}
+
+	/// The selected group or `null` if "None" is selected.
+	AnalysisGroup selected() {
+		return selected;
+	}
+
+	/// Returns `true` if groups were added, edited, or deleted.
+	boolean groupsChanged() {
+		return groupsChanged;
+	}
+
+	void select(AnalysisGroup group) {
+		selected = group;
+	}
+
+	void markChanged() {
+		groupsChanged = true;
+	}
+
+	void delete(AnalysisGroup group) {
+		groups.remove(group);
+		groupsChanged = true;
+		if (selected == group) {
+			selected = null;
+			if (noneRadio != null && !noneRadio.isDisposed()) {
+				noneRadio.setSelection(true);
+			}
+		}
 	}
 
 	@Override
@@ -61,7 +97,7 @@ class GroupDialog extends FormDialog {
 		UI.stretchX(groupComp);
 		UI.gridLayout(groupComp, 2, 10, 0);
 
-		new GroupPanel(this, null).render(groupComp, tk);
+		noneRadio = new GroupPanel(this, null).render(groupComp, tk);
 		for (var group : groups) {
 			new GroupPanel(this, group).render(groupComp, tk);
 		}
@@ -70,7 +106,7 @@ class GroupDialog extends FormDialog {
 		addBtn.setText("Add analysis group");
 		addBtn.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 		Consumer<GroupSync> onSync = sync -> {
-			for (var g : sync.newGroups) {
+			for (var g : sync.newGroups()) {
 				new GroupPanel(this, g).render(groupComp, tk);
 			}
 			body.layout();
@@ -88,7 +124,7 @@ class GroupDialog extends FormDialog {
 				return;
 			var system = Database.get().get(ProductSystem.class, d.id);
 			if (system != null) {
-				onSync.accept(GroupSync.sync(this, system));
+				onSync.accept(newSync().sync(system));
 			}
 		});
 
@@ -96,8 +132,7 @@ class GroupDialog extends FormDialog {
 		for (var t : GroupTemplate.values()) {
 			var item = new MenuItem(menu, SWT.NONE);
 			item.setText(t.label);
-			Controls.onSelect(item,
-				_ -> onSync.accept(GroupSync.syncTemplate(this, t)));
+			Controls.onSelect(item, _ -> onSync.accept(newSync().sync(t)));
 		}
 
 		// add a new group
@@ -110,6 +145,10 @@ class GroupDialog extends FormDialog {
 			form.reflow(true);
 			groupsChanged = true;
 		});
+	}
+
+	private GroupSync newSync() {
+		return new GroupSync(editor.getProductSystem(), groups);
 	}
 
 	Color colorOf(AnalysisGroup group) {
