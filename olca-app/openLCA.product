@@ -25,6 +25,7 @@ project and other open source software.
       <vmArgs>-Xmx3584M
 -Dpython.console.encoding=UTF-8
 --add-modules=ALL-SYSTEM
+--enable-native-access=ALL-UNNAMED
 -Dorg.eclipse.swt.browser.DefaultType=edge
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
