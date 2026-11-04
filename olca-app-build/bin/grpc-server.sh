@@ -31,10 +31,15 @@ fi
 # The library folder is our classpath
 cp=$(realpath $script_dir/../plugins/olca-app*/libs)
 
-# Set the Java classpath to the library folder and start the gRPC server. You
-# can adjust the RAM allocation via the MaxRAMPercentage parameter etc. It will use the default openLCA
-# workspace in ~/openLCA-data-1.4 and connect to the database provided by the
-# first parameter. You can change all of this of course; see the IPC
-# documentation.
-java -XX:+UseZGC -Xms256m -XX:SoftMaxHeapSize=4g -XX:MaxRAMPercentage=75 -XX:ZUncommitDelay=60 -cp "$cp/*" org.openlca.proto.io.server.Server -timeout 30 -db $1
+# The JVM arguments; you can adjust the RAM allocation via the
+# MaxRAMPercentage parameter etc. or set your own arguments via the JVM_ARGS
+# environment variable before calling this script.
+JVM_ARGS="${JVM_ARGS:--XX:+UseZGC -Xms256m -XX:SoftMaxHeapSize=4g -XX:MaxRAMPercentage=75 -XX:ZUncommitDelay=60 --enable-native-access=ALL-UNNAMED}"
+
+# Set the Java classpath to the library folder and start the gRPC server. It
+# will use the default openLCA workspace in ~/openLCA-data-1.4 and connect to
+# the database provided by the first parameter. You can change all of this of
+# course; see the IPC documentation.
+# shellcheck disable=SC2086 # JVM_ARGS must be split into separate arguments
+"$java_exec" $JVM_ARGS -cp "$cp/*" org.openlca.proto.io.server.Server -timeout 30 -db "$1"
 
