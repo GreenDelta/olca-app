@@ -283,7 +283,6 @@ public class M extends NLS {
 	public static String CostValue;
 	public static String CostsPerUnit;
 	public static String CostsRevenues;
-	public static String CouldNotAllocateMemoryError;
 	public static String CouldNotConnect;
 	public static String CouldNotConnectCollaborationServerInfo;
 	public static String CouldNotDeleteOldFile;
@@ -1117,6 +1116,7 @@ public class M extends NLS {
 	public static String NotAnIntegerNumber;
 	public static String NotAllowedToCreateRepositories;
 	public static String NotApplicable;
+	public static String NotEnoughMemoryError;
 	public static String NotRelevant;
 	public static String NotValidNumber;
 	public static String NotValidParameterName;
@@ -1159,7 +1159,6 @@ public class M extends NLS {
 	public static String OpenMapDef;
 	public static String OpenMessageBox;
 	public static String OpenPopup;
-	public static String OpenPreferenceDialog;
 	public static String OpenProvider;
 	public static String OpenResult;
 	public static String OrSelectExisting;

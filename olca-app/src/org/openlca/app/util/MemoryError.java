@@ -1,9 +1,9 @@
 package org.openlca.app.util;
 
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.openlca.app.App;
@@ -47,18 +47,15 @@ public class MemoryError {
 			var comp = UI.dialogBody(form.getForm(), tk);
 			form.getForm().setText(M.OutOfMemory);
 			UI.gridLayout(comp, 1);
-			var label = tk.createLabel(
-					comp, M.CouldNotAllocateMemoryError, SWT.WRAP);
+			var label = tk.createLabel(comp, message(), SWT.WRAP);
 			UI.stretchX(label);
-			var link = UI.hyperLink(comp, tk, M.OpenPreferenceDialog);
-			Controls.onClick(link, $ -> openPreferences());
 		}
+	}
 
-		private void openPreferences() {
-			close();
-			var dialog = PreferencesUtil.createPreferenceDialogOn(
-					null, "preferencepages.config", null, null);
-			dialog.open();
-		}
+	public static String message() {
+		double gb = Runtime.getRuntime().maxMemory() /
+			(1024.0 * 1024.0 * 1024.0);
+		var mem = String.format("%.1f GB", gb);
+		return NLS.bind(M.NotEnoughMemoryError, mem);
 	}
 }

@@ -11,6 +11,7 @@ import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.projects.results.ProjectResultEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MemoryError;
 import org.openlca.app.util.MsgBox;
 import org.openlca.core.results.ProjectResult;
 
@@ -55,7 +56,7 @@ public class ProjectEditorToolBar extends EditorActionBarContributor {
 						.ifPresent(result::withLibraries);
 				ref.result = result.calculate();
 			} catch (OutOfMemoryError e) {
-				MsgBox.error(M.OutOfMemory, M.CouldNotAllocateMemoryError);
+				MemoryError.show();
 			} catch (MathIllegalArgumentException e) {
 				MsgBox.error(M.MatrixError, e);
 			} catch (Exception e) {
