@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.openlca.app.M;
@@ -34,7 +33,6 @@ public class ConfigPage extends PreferencePage implements
 	private Combo languageCombo;
 	private Combo graphThemeCombo;
 	private Combo themeCombo;
-	private Text memoryText;
 	private ConfigIniFile iniFile;
 
 	@Override
@@ -66,7 +64,6 @@ public class ConfigPage extends PreferencePage implements
 		if (OS.get() == OS.WINDOWS) {
 			createEdgeCheck(comp);
 		}
-		createMemoryText(comp);
 		createShowHidePage(comp);
 		createGraphThemeCombo(comp);
 
@@ -163,18 +160,6 @@ public class ConfigPage extends PreferencePage implements
 			});
 	}
 
-	private void createMemoryText(Composite comp) {
-		var memoryLabel = UI.label(comp, M.MaximumMemoryUsage);
-		var gd = UI.gridData(memoryLabel, false, false);
-		gd.verticalAlignment = SWT.TOP;
-		gd.verticalIndent = 2;
-
-		memoryText = new Text(comp, SWT.BORDER);
-		UI.stretchX(memoryText);
-		memoryText.setText(Integer.toString(iniFile.maxMemory()));
-		memoryText.addModifyListener(_ -> setDirty());
-	}
-
 	private void createLanguageCombo(Composite composite) {
 		var label = new Label(composite, SWT.NONE);
 		var gd = UI.gridData(label, false, false);
@@ -240,11 +225,6 @@ public class ConfigPage extends PreferencePage implements
 
 	@Override
 	protected void performApply() {
-		int memVal = ConfigMemCheck.parseAndCheck(memoryText.getText());
-		if (memVal < 256) {
-			memVal = 256;
-		}
-		iniFile.maxMemory(memVal);
 		iniFile.write();
 		getApplyButton().setEnabled(false);
 		isDirty = false;
@@ -253,11 +233,8 @@ public class ConfigPage extends PreferencePage implements
 	@Override
 	protected void performDefaults() {
 		Language defaultLang = Language.ENGLISH;
-		int maxMem = ConfigMemCheck.getDefault();
 		selectLanguage(defaultLang);
-		memoryText.setText(Integer.toString(maxMem));
 		iniFile.language(defaultLang);
-		iniFile.maxMemory(maxMem);
 		var graphTheme = Preferences.getStore().getDefaultString(
 			Preferences.GRAPHICAL_EDITOR_THEME);
 		Preferences.getStore().setValue(

@@ -32,9 +32,9 @@ fi
 cp=$(realpath $script_dir/../plugins/olca-app*/libs)
 
 # Set the Java classpath to the library folder and start the gRPC server. You
-# can give more RAM via the Xmx parameter etc. It will use the default openLCA
+# can adjust the RAM allocation via the MaxRAMPercentage parameter etc. It will use the default openLCA
 # workspace in ~/openLCA-data-1.4 and connect to the database provided by the
 # first parameter. You can change all of this of course; see the IPC
 # documentation.
-java -Xmx3584M -cp "$cp/*" org.openlca.proto.io.server.Server -timeout 30 -db $1
+java -XX:+UseZGC -Xms256m -XX:SoftMaxHeapSize=4g -XX:MaxRAMPercentage=75 -XX:ZUncommitDelay=60 -cp "$cp/*" org.openlca.proto.io.server.Server -timeout 30 -db $1
 

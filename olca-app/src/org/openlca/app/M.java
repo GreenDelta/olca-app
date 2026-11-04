@@ -814,7 +814,6 @@ public class M extends NLS {
 	public static String InvalidFormula;
 	public static String InvalidGeometricStandardDeviation;
 	public static String InvalidLoginData;
-	public static String InvalidMemoryValue;
 	public static String InvalidNumber;
 	public static String InvalidParameterName;
 	public static String InvalidSetup;
@@ -941,7 +940,6 @@ public class M extends NLS {
 	public static String MaximizeAll;
 	public static String Maximum;
 	public static String MaximumFormula;
-	public static String MaximumMemoryUsage;
 	public static String MaximumMessageCount;
 	public static String Mean;
 	public static String MeanFormula;
@@ -949,8 +947,6 @@ public class M extends NLS {
 	public static String MediumOpportunity;
 	public static String MediumRisk;
 	public static String MemoryErrorInCalculationDots;
-	public static String MemoryToHighMessage;
-	public static String MemoryToLowMessage;
 	public static String Merge;
 	public static String MergeDots;
 	public static String MergeEi3MarketProcesses;

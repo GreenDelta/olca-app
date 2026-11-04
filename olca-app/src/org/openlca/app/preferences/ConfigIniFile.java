@@ -4,8 +4,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.openlca.app.App;
 import org.openlca.app.M;
@@ -22,9 +20,19 @@ class ConfigIniFile {
 
 	private static final String EDGE_PROP = "-Dorg.eclipse.swt.browser.DefaultType=edge";
 
+	/// The memory settings of the JVM. These are not configurable by the user
+	/// anymore. The heap starts with 256 MB, tries to stay below 4 GB, but can
+	/// grow up to 75% of the physical memory if required. Unused memory is
+	/// returned to the operating system after 60 seconds.
+	private static final List<String> MEMORY_ARGS = List.of(
+			"-XX:+UseZGC",
+			"-Xms256m",
+			"-XX:SoftMaxHeapSize=4g",
+			"-XX:MaxRAMPercentage=75",
+			"-XX:ZUncommitDelay=60");
+
 	private Language language = Language.ENGLISH;
 	private Theme theme = Theme.DEFAULT;
-	private int maxMemory = 3584;
 	private boolean useEdgeBrowser = false;
 
 	static ConfigIniFile read() {
@@ -59,14 +67,6 @@ class ConfigIniFile {
 		return theme == null
 				? Theme.DEFAULT
 				: theme;
-	}
-
-	int maxMemory() {
-		return maxMemory;
-	}
-
-	void maxMemory(int maxMemory) {
-		this.maxMemory = maxMemory;
 	}
 
 	void useEdgeBrowser(boolean useEdge) {
@@ -108,9 +108,9 @@ class ConfigIniFile {
 					continue;
 				}
 
-				// memory
-				if (line.trim().startsWith("-Xmx")) {
-					newLines.add("-Xmx" + maxMemory + "M");
+				// memory settings; we remove old settings (e.g. -Xmx from
+				// previous versions) and add the current ones after -vmargs
+				if (isMemoryArg(line)) {
 					continue;
 				}
 
@@ -120,6 +120,14 @@ class ConfigIniFile {
 				}
 
 				newLines.add(line);
+				if (line.equals("-vmargs")) {
+					newLines.addAll(MEMORY_ARGS);
+				}
+			}
+
+			if (!newLines.contains("-vmargs")) {
+				newLines.add("-vmargs");
+				newLines.addAll(MEMORY_ARGS);
 			}
 
 			if (useEdgeBrowser) {
@@ -171,12 +179,6 @@ class ConfigIniFile {
 				continue;
 			}
 
-			// memory
-			if (line.startsWith("-Xmx")) {
-				readMemory(line, ini);
-				continue;
-			}
-
 			// edge browser
 			if (line.equals(EDGE_PROP)) {
 				ini.useEdgeBrowser = true;
@@ -185,25 +187,19 @@ class ConfigIniFile {
 		return ini;
 	}
 
-	private static void readMemory(String line, ConfigIniFile ini) {
-		if (line == null || ini == null)
-			return;
-		String memStr = line.trim().toLowerCase();
-		Pattern pattern = Pattern.compile("-xmx([0-9]+)m");
-		Matcher matcher = pattern.matcher(memStr);
-		if (!matcher.find()) {
-			Logger log = LoggerFactory.getLogger(ConfigIniFile.class);
-			log.warn("could not extract memory value from "
-					+ "{} with -xmx([0-9]+)m", memStr);
-			return;
-		}
-		try {
-			int val = Integer.parseInt(matcher.group(1));
-			ini.maxMemory(val);
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(ConfigIniFile.class);
-			log.error("failed to parse memory value from ini: " + memStr, e);
-		}
+	/// Returns `true` if the given line is a JVM argument that is related to the
+	/// heap size or garbage collector. These lines are replaced by the fixed
+	/// memory settings when the ini file is written.
+	private static boolean isMemoryArg(String line) {
+		if (line == null)
+			return false;
+		var arg = line.strip();
+		return arg.startsWith("-Xmx")
+				|| arg.startsWith("-Xms")
+				|| arg.startsWith("-XX:SoftMaxHeapSize=")
+				|| arg.startsWith("-XX:MaxRAMPercentage=")
+				|| arg.startsWith("-XX:ZUncommitDelay=")
+				|| arg.equals("-XX:+UseZGC");
 	}
 
 

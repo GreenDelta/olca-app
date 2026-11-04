@@ -133,7 +133,6 @@ org.eclipse.osgi.util.NLS.bind
 org.openlca.app.util.UI.labeledCombo
 org.eclipse.swt.widgets.Combo.add
 org.eclipse.jface.viewers.ColumnViewer.setColumnProperties
-org.openlca.app.preferences.ConfigMemCheck.showError
 org.openlca.app.util.MsgBox.error
 org.openlca.app.util.UI.labeledCheckbox
 org.openlca.app.components.FileChooser.forSavingFile
