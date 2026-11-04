@@ -812,11 +812,15 @@ public class M extends NLS {
 	public static String InvalidDatabaseName;
 	public static String InvalidFeatures;
 	public static String InvalidFormula;
+	public static String InvalidGeometricStandardDeviation;
 	public static String InvalidLoginData;
 	public static String InvalidMemoryValue;
 	public static String InvalidNumber;
 	public static String InvalidParameterName;
 	public static String InvalidSetup;
+	public static String InvalidStandardDeviation;
+	public static String InvalidTriangleRange;
+	public static String InvalidUniformRange;
 	public static String InvalidUrl;
 	public static String InvalidValue;
 	public static String InvalidValueForMaxDepth;
