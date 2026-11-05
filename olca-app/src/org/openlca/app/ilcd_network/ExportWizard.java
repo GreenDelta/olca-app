@@ -22,8 +22,8 @@ public class ExportWizard extends Wizard implements IExportWizard {
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		setWindowTitle(M.ILCDNetworkExport);
-		setDefaultPageImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
-				RcpActivator.PLUGIN_ID, "/icons/network_wiz.png"));
+		setDefaultPageImageDescriptor(
+			RcpActivator.getImageDescriptor("/icons/network_wiz.png"));
 		setNeedsProgressMonitor(true);
 		selectionPage = new ExportWizardPage();
 	}

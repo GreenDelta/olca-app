@@ -1,12 +1,11 @@
 package org.openlca.app.preferences;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import org.openlca.app.M;
 
-/**
- * Enumeration of supported languages.
- */
+/// Enumeration of supported languages.
 public enum Language {
 
 	ARABIC(M.Arabic, "ar"),
@@ -59,8 +58,23 @@ public enum Language {
 		return displayName;
 	}
 
+	/// Returns the language of the user interface. This is the language from
+	/// the [AppConfig], if configured, or otherwise the language of the
+	/// default locale (which is set from the `-nl` flag of the `openLCA.ini`
+	/// file). If no supported language matches, English is returned.
 	public static Language getApplicationLanguage() {
-		return ConfigIniFile.read().language();
+		var code = AppConfig.read().languageCode();
+		if (code != null) {
+			var lang = getForCode(code.toLowerCase(Locale.ROOT));
+			if (lang != null)
+				return lang;
+		}
+		var locale = Locale.getDefault();
+		var lang = getForCode(locale.toString().toLowerCase(Locale.ROOT));
+		if (lang != null)
+			return lang;
+		lang = getForCode(locale.getLanguage());
+		return lang != null ? lang : ENGLISH;
 	}
 
 }

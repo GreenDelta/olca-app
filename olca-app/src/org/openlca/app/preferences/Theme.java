@@ -4,12 +4,10 @@ import java.util.Objects;
 
 import org.eclipse.swt.widgets.Display;
 
-/**
- * Enumeration of supported themes.
- * TODO: Theme cannot be modified within the config. This class is thus not
- *  necessary. It is kept anyway as we might implement it later on.
- *  (see org.openlca.app.preferences.ConfigPage)
- */
+/// Enumeration of supported themes.
+///
+/// TODO: Theme cannot be modified within the config. This class is thus not
+/// necessary. It is kept anyway as we might implement it later on.
 public enum Theme {
 
 	DEFAULT("Default", "default"),
@@ -45,10 +43,6 @@ public enum Theme {
 
 	public String getCode() {
 		return code;
-	}
-
-	public static Theme getApplicationTheme() {
-		return ConfigIniFile.read().theme();
 	}
 
 	public static boolean isDark() {

@@ -12,6 +12,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.openlca.app.App;
 import org.openlca.app.AppArg;
 import org.openlca.app.M;
+import org.openlca.app.preferences.Language;
 import org.openlca.app.preferences.LibraryDownload;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
@@ -64,7 +65,7 @@ public class StartPage extends SimpleFormEditor {
 			});
 
 			// handles click on the "native library hint"
-			UI.bindFunction(browser, "onLibHintClick", (args) -> {
+			UI.bindFunction(browser, "onLibHintClick", _ -> {
 				LibraryDownload.open();
 				return null;
 			});
@@ -73,8 +74,7 @@ public class StartPage extends SimpleFormEditor {
 			UI.onLoaded(browser, HtmlFolder.getUrl("home.html"), () -> {
 				var config = new HashMap<String, Object>();
 				config.put("version", getVersion());
-				var lang = AppArg.get("nl");
-				config.put("lang", Strings.isBlank(lang) ? "en" : lang);
+				config.put("lang", Language.getApplicationLanguage().getCode());
 				config.put("showLibHint",
 						!NativeLib.isLoaded(Module.UMFPACK) && !MKL.isLoaded());
 				var json = new Gson().toJson(config);

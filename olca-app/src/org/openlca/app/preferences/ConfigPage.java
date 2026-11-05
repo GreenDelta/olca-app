@@ -16,24 +16,21 @@ import org.openlca.app.M;
 import org.openlca.app.components.graphics.themes.Themes;
 import org.openlca.app.rcp.WindowLayout;
 import org.openlca.app.util.Controls;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.matrix.solvers.mkl.MKL;
 import org.openlca.nativelib.Module;
 import org.openlca.nativelib.NativeLib;
 import org.openlca.util.OS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ConfigPage extends PreferencePage implements
 	IWorkbenchPreferencePage {
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
-
 	private boolean isDirty = false;
 	private Combo languageCombo;
 	private Combo graphThemeCombo;
-	private Combo themeCombo;
-	private ConfigIniFile iniFile;
+	private AppConfig config;
+	private Language language;
 
 	@Override
 	public String getTitle() {
@@ -42,12 +39,8 @@ public class ConfigPage extends PreferencePage implements
 
 	@Override
 	public void init(IWorkbench workbench) {
-		try {
-			iniFile = ConfigIniFile.read();
-		} catch (Exception e) {
-			log.error("failed to read openLCA.ini", e);
-			iniFile = new ConfigIniFile();
-		}
+		config = AppConfig.read();
+		language = Language.getApplicationLanguage();
 	}
 
 	@Override
@@ -152,10 +145,13 @@ public class ConfigPage extends PreferencePage implements
 		var useEdge = new Button(comp, SWT.CHECK);
 		useEdge.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		useEdge.setToolTipText(M.WebView2NeedsToBeInstalledForThis);
-		useEdge.setSelection(iniFile.useEdgeBrowser());
+		var edgeConfig = config.useEdgeBrowser();
+		useEdge.setSelection(edgeConfig != null
+			? edgeConfig
+			: AppConfig.isEdgeBrowserActive());
 		Controls.onSelect(
 			useEdge, _ -> {
-				iniFile.useEdgeBrowser(useEdge.getSelection());
+				config.useEdgeBrowser(useEdge.getSelection());
 				setDirty();
 			});
 	}
@@ -175,44 +171,16 @@ public class ConfigPage extends PreferencePage implements
 			items[i] = languages[i].getDisplayName();
 		}
 		languageCombo.setItems(items);
-		selectLanguage(iniFile.language());
+		selectLanguage(language);
+
 		Controls.onSelect(languageCombo, _ -> {
 			int idx = languageCombo.getSelectionIndex();
 			if (idx < 0)
 				return;
-			Language language = Language.values()[idx];
-			if (!Objects.equals(language, iniFile.language())) {
-				iniFile.language(language);
-				setDirty();
-			}
-		});
-	}
-
-	// TODO: we may do not need that; and all the theming related hacks?
-	//  (see org.openlca.app.preferences.Theme).
-	private void createThemeCombo(Composite composite) {
-		var label = new Label(composite, SWT.NONE);
-		var gd = UI.gridData(label, false, false);
-		gd.verticalAlignment = SWT.TOP;
-		gd.verticalIndent = 2;
-		label.setText(M.Theme + " ( experimental)");
-
-		themeCombo = new Combo(composite, SWT.READ_ONLY);
-		UI.gridData(themeCombo, true, false);
-		Theme[] themes = Theme.values();
-		String[] items = new String[themes.length];
-		for (int i = 0; i < themes.length; i++) {
-			items[i] = themes[i].getName();
-		}
-		themeCombo.setItems(items);
-		selectTheme(iniFile.theme());
-		Controls.onSelect(themeCombo, _ -> {
-			int idx = themeCombo.getSelectionIndex();
-			if (idx < 0)
-				return;
-			Theme theme = Theme.values()[idx];
-			if (!Objects.equals(theme, iniFile.theme())) {
-				iniFile.theme(theme);
+			var selected = Language.values()[idx];
+			if (!Objects.equals(selected, language)) {
+				language = selected;
+				config.languageCode(selected.getCode());
 				setDirty();
 			}
 		});
@@ -225,7 +193,11 @@ public class ConfigPage extends PreferencePage implements
 
 	@Override
 	protected void performApply() {
-		iniFile.write();
+		if (!config.write()) {
+			MsgBox.error(M.Configuration,
+				"Failed to write the configuration file " + AppConfig.file());
+			return;
+		}
 		getApplyButton().setEnabled(false);
 		isDirty = false;
 	}
@@ -234,7 +206,8 @@ public class ConfigPage extends PreferencePage implements
 	protected void performDefaults() {
 		Language defaultLang = Language.ENGLISH;
 		selectLanguage(defaultLang);
-		iniFile.language(defaultLang);
+		language = defaultLang;
+		config.languageCode(defaultLang.getCode());
 		var graphTheme = Preferences.getStore().getDefaultString(
 			Preferences.GRAPHICAL_EDITOR_THEME);
 		Preferences.getStore().setValue(
@@ -259,22 +232,6 @@ public class ConfigPage extends PreferencePage implements
 			languageCombo.select(item);
 		}
 	}
-
-	private void selectTheme(Theme theme) {
-		if (theme == null)
-			return;
-		String[] items = themeCombo.getItems();
-		int item = -1;
-		for (int i = 0; i < items.length; i++) {
-			if (Objects.equals(theme.getName(), items[i])) {
-				item = i;
-				break;
-			}
-		}
-		if (item != -1)
-			themeCombo.select(item);
-	}
-
 
 	private void selectGraphTheme(String theme) {
 		if (theme == null)

@@ -5,44 +5,48 @@ import java.io.InputStream;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.jface.resource.ResourceLocator;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.openlca.app.App;
 import org.openlca.app.db.Database;
 import org.openlca.app.logging.Console;
 import org.openlca.app.logging.LoggerConfig;
+import org.openlca.app.preferences.AppConfig;
 import org.openlca.app.preferences.Preferences;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The activator class controls the plug-in life cycle
- */
-public class RcpActivator extends AbstractUIPlugin {
+/// The activator class controls the plug-in life cycle.
+///
+/// This is intentionally a plain [BundleActivator] and not an
+/// `AbstractUIPlugin`: loading a sub-class of `AbstractUIPlugin` would activate
+/// the workbench bundle before our `start` method is called, which initializes
+/// the workbench messages and the text orientation with the language of the
+/// `openLCA.ini` file. Thus, the user's language from the [AppConfig] must be
+/// applied before any workbench class is loaded.
+public class RcpActivator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "olca-app";
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private static RcpActivator plugin;
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
+	private Bundle bundle;
+	private ScopedPreferenceStore preferenceStore;
+
+	/// Returns the shared instance.
 	public static RcpActivator getDefault() {
 		return plugin;
 	}
 
-	/**
-	 * Returns the file found at the specified path as an input stream
-	 *
-	 * @param path
-	 *            The path to the file to load an input stream for (relative to
-	 *            the plugin)
-	 * @return The file found at the specified path as an input stream
-	 */
+	/// Returns the file found at the specified path, relative to the plugin, as
+	/// an input stream, or `null` if it could not be opened.
 	public static InputStream getStream(String path) {
 		try {
 			return FileLocator.openStream(
@@ -54,19 +58,25 @@ public class RcpActivator extends AbstractUIPlugin {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-		super.start(context);
+		// This must be the first call: it sets the user's language before any
+		// message class (NLS) is initialized. The plugin.xml labels are
+		// translated lazily as the extension registry runs in multi-language
+		// mode (-Declipse.registry.MultiLanguage=true in openLCA.ini).
+		AppConfig.read().applyOnStartup();
+
+		bundle = context.getBundle();
 		plugin = this;
-		// initialize the openLCA workspace; releases the default location
-		// on initialization, thus, it is good to call this once at early
-		// as possible
+
+		// initialize the openLCA workspace; releases the default location on
+		// initialization, thus, it is good to call this once as early as possible
 		var workspace = Workspace.root();
+
 		LoggerConfig.setUp();
 		log.info("start openLCA {}, install location={}, workspace={}",
 				App.getVersion(), App.getInstallLocation(), workspace);
 		WindowLayout.initialize();
 		log.trace("initialize HTML folder");
-		HtmlFolder.initialize(RcpActivator.getDefault().getBundle(),
-				"html/base_html.zip");
+		HtmlFolder.initialize(bundle, "html/base_html.zip");
 		SslCertificates.load();
 		Preferences.init();
 		App.getSolver();
@@ -82,11 +92,36 @@ public class RcpActivator extends AbstractUIPlugin {
 		} catch (Exception e) {
 			log.error("Failed to close database", e);
 		}
+		savePreferenceStore();
 		plugin = null;
-		super.stop(context);
+	}
+
+	public Bundle getBundle() {
+		return bundle;
+	}
+
+	/// Returns the preference store of this plugin; the same as provided by
+	/// `AbstractUIPlugin` before.
+	public synchronized IPreferenceStore getPreferenceStore() {
+		if (preferenceStore == null) {
+			preferenceStore = new ScopedPreferenceStore(
+					InstanceScope.INSTANCE, PLUGIN_ID);
+		}
+		return preferenceStore;
+	}
+
+	private synchronized void savePreferenceStore() {
+		if (preferenceStore == null || !preferenceStore.needsSaving())
+			return;
+		try {
+			preferenceStore.save();
+		} catch (IOException e) {
+			log.error("failed to save preferences", e);
+		}
 	}
 
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+		return ResourceLocator.imageDescriptorFromBundle(PLUGIN_ID, path)
+				.orElse(null);
 	}
 }

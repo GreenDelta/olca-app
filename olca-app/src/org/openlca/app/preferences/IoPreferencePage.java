@@ -98,8 +98,7 @@ public class IoPreferencePage extends PreferencePage implements
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 		getApplyButton().setText(M.Test);
-		setImageDescriptor(RcpActivator.imageDescriptorFromPlugin(
-				RcpActivator.PLUGIN_ID, "icons/network16.png"));
+		setImageDescriptor(RcpActivator.getImageDescriptor("icons/network16.png"));
 	}
 
 	@Override

@@ -28,6 +28,7 @@ project and other open source software.
 -XX:MaxRAMPercentage=75
 -XX:ZUncommitDelay=60
 -Dpython.console.encoding=UTF-8
+-Declipse.registry.MultiLanguage=true
 --add-modules=ALL-SYSTEM
 --enable-native-access=ALL-UNNAMED
 -Dorg.eclipse.swt.browser.DefaultType=edge
