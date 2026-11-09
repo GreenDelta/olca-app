@@ -68,7 +68,7 @@ public class Main {
 				"ecoinvent_dqs.json", 
 				"ilcd_dqs.json", 
 				"ciroth_muller_weidema_lesage_dqs.json", 
-				"pcr_dqs.json", 
+				"pefcr_dqs.json", 
 				"psilca_dqs.json", 
 				"un_global_dqs.json", 
 				"us_epa_flow_dqs.json", 
