@@ -90,7 +90,7 @@
         {
           "position": 2,
           "label": "2",
-          "description": "Verified data based on a calculation \r\n\r\nOR non-verified data based on measurements",
+          "description": "Verified data based on a calculation OR non-verified data based on measurements",
           "uncertainty": 0
         },
         {
@@ -120,7 +120,7 @@
         {
           "position": 3,
           "label": "3",
-          "description": "Within two levels of resolution \r\n\r\nAND a realted area of study",
+          "description": "Within two levels of resolution AND a realted area of study",
           "uncertainty": 0
         },
         {
@@ -132,19 +132,19 @@
         {
           "position": 2,
           "label": "2",
-          "description": "Within one level of resolution \r\n\r\nAND a related area of study",
+          "description": "Within one level of resolution AND a related area of study",
           "uncertainty": 0
         },
         {
           "position": 4,
           "label": "4",
-          "description": "Outside of two levels of resolution \r\n\r\nBUT a related area of study",
+          "description": "Outside of two levels of resolution BUT a related area of study",
           "uncertainty": 0
         },
         {
           "position": 1,
           "label": "1",
-          "description": "Data from same resolution \r\n\r\nAND same area of study",
+          "description": "Data from same resolution AND same area of study",
           "uncertainty": 0
         }
       ]
@@ -162,7 +162,7 @@
         {
           "position": 3,
           "label": "3",
-          "description": "Representative data from 40-59% of the relevant market, over an adequate period\r\n\r\nOR representative data from 60-79% of the relevant market, over a shorter period of time",
+          "description": "Representative data from 40-59% of the relevant market, over an adequate period OR representative data from 60-79% of the relevant market, over a shorter period of time",
           "uncertainty": 0
         },
         {
@@ -174,13 +174,13 @@
         {
           "position": 4,
           "label": "4",
-          "description": "Representative data from <40% of the relevant market, over an adequate period of time\r\n\r\nOR representative data from 40-59% of the relevant market, over a shorter period of time",
+          "description": "Representative data from <40% of the relevant market, over an adequate period of time OR representative data from 40-59% of the relevant market, over a shorter period of time",
           "uncertainty": 0
         },
         {
           "position": 2,
           "label": "2",
-          "description": "Representative data from 60-79% of the relevant market, over an adequate period\r\n\r\nOR representative data from > 80% of the relevant market, over a shorter period of time",
+          "description": "Representative data from 60-79% of the relevant market, over an adequate period OR representative data from > 80% of the relevant market, over a shorter period of time",
           "uncertainty": 0
         }
       ]

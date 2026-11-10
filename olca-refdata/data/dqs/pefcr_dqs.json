@@ -1,8 +1,8 @@
 {
   "@type": "DQSystem",
   "@id": "3de9698a-f5d5-43cb-9179-4cf150da37ee",
-  "name": "PCR Data Quality System",
-  "description": "Data quality level and criteria of the UN Environment Global Guidance on LCA database development. Table E.1 in EN 15804:2012 + A2:2019.",
+  "name": "PEFCR Data Quality System",
+  "description": "Data quality level and criteria from the Product Environmental Footprint Category Rules. Table E.2 in EN 15804:2012 + A2:2019.",
   "hasUncertainties": false,
   "indicators": [
     {
