@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.wizard.WizardPage;
@@ -53,10 +54,8 @@ public class ModelSelectionPage extends WizardPage {
 		return page;
 	}
 
-	/**
-	 * For the file extension please use only the extension, e.g. zip instead of
-	 * *.zip
-	 */
+	/// For the file extension please use only the extension, e.g. `zip`
+	/// instead of `*.zip`.
 	public static ModelSelectionPage forFile(String extension, ModelType... types) {
 		var page = new ModelSelectionPage(types);
 		page.targetIsDir = false;
@@ -126,7 +125,7 @@ public class ModelSelectionPage extends WizardPage {
 		text.setBackground(Colors.white());
 		var button = new Button(composite, SWT.NONE);
 		button.setText(M.Browse);
-		Controls.onSelect(button, (e) -> selectTarget(text));
+		Controls.onSelect(button, _ -> selectTarget(text));
 	}
 
 	private Text createTargetText(Composite composite) {
@@ -135,12 +134,30 @@ public class ModelSelectionPage extends WizardPage {
 		String lastDir = Preferences.get(Preferences.LAST_EXPORT_FOLDER);
 		if (lastDir == null || !new File(lastDir).exists())
 			return text;
-		String path = lastDir;
-		if (!targetIsDir)
-			path += File.separator + defaultName();
-		text.setText(path);
-		exportDestination = new File(path);
+		var target = targetIsDir
+				? new File(lastDir)
+				: nextFreeFile(new File(lastDir, defaultName()));
+		text.setText(target.getAbsolutePath());
+		exportDestination = target;
 		return text;
+	}
+
+	/// Returns the given file if it does not exist yet. Otherwise, returns the
+	/// first non-existing variant of the form `name_(n).ext`, starting with
+	/// `n = 2`. This avoids that a pre-filled default target silently
+	/// overwrites an existing file.
+	private static File nextFreeFile(File file) {
+		if (!file.exists())
+			return file;
+		var dir = file.getParentFile();
+		var base = FilenameUtils.getBaseName(file.getName());
+		var ext = FilenameUtils.getExtension(file.getName());
+		var suffix = ext.isEmpty() ? "" : "." + ext;
+		for (int i = 2; ; i++) {
+			var next = new File(dir, base + "_(" + i + ")" + suffix);
+			if (!next.exists())
+				return next;
+		}
 	}
 
 	private String defaultName() {

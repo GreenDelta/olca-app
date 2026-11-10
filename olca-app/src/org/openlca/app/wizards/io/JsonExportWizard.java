@@ -1,7 +1,9 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -98,6 +100,16 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException {
 			monitor.beginTask(M.Export, models.size());
+
+			// the user confirmed to overwrite an existing file; ZipStore
+			// would otherwise open it and add the data sets to it (or
+			// fail when it is not a valid zip file)
+			try {
+				Files.deleteIfExists(zipFile.toPath());
+			} catch (IOException e) {
+				throw new InvocationTargetException(e);
+			}
+
 			try (ZipStore store = ZipStore.open(zipFile)) {
 				doExport(monitor, store);
 				monitor.done();
