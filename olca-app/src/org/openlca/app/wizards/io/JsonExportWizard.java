@@ -1,7 +1,6 @@
 package org.openlca.app.wizards.io;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.LinkedHashSet;
@@ -19,6 +18,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.rcp.Workspace;
 import org.openlca.app.util.Controls;
 import org.openlca.app.util.ErrorReporter;
+import org.openlca.app.util.MsgBox;
 import org.openlca.app.util.UI;
 import org.openlca.core.database.Daos;
 import org.openlca.core.database.IDatabase;
@@ -74,6 +74,19 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		File target = page.getExportDestination();
 		if (target == null)
 			return false;
+
+		// the user confirmed to overwrite an existing file; ZipStore would
+		// otherwise open it and add the data sets to it (or fail when it is
+		// not a valid zip file)
+		if (target.exists()) {
+			try {
+				Files.delete(target.toPath());
+			} catch (Exception e) {
+				MsgBox.error(M.CouldNotDeleteOldFile, M.CouldNotDeleteOldFileErr);
+				return false;
+			}
+		}
+
 		try {
 			Export export = new Export(target, models, db);
 			getContainer().run(true, true, export);
@@ -100,16 +113,6 @@ public class JsonExportWizard extends Wizard implements IExportWizard {
 		public void run(IProgressMonitor monitor)
 				throws InvocationTargetException {
 			monitor.beginTask(M.Export, models.size());
-
-			// the user confirmed to overwrite an existing file; ZipStore
-			// would otherwise open it and add the data sets to it (or
-			// fail when it is not a valid zip file)
-			try {
-				Files.deleteIfExists(zipFile.toPath());
-			} catch (IOException e) {
-				throw new InvocationTargetException(e);
-			}
-
 			try (ZipStore store = ZipStore.open(zipFile)) {
 				doExport(monitor, store);
 				monitor.done();
