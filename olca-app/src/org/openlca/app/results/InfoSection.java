@@ -1,5 +1,9 @@
 package org.openlca.app.results;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -18,36 +22,79 @@ import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.RootEntity;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-class InfoSection {
+public class InfoSection {
 
 	static void create(Composite body, FormToolkit tk, CalculationSetup setup) {
 		if (setup == null)
 			return;
 		var comp = UI.formSection(body, tk, M.GeneralInformation);
+		setupRows(comp, tk, setup, true);
+		buttons(comp, tk);
+	}
+
+	/// Renders the rows with the general information of the given calculation
+	/// setup in the given composite, which needs to have a grid layout with
+	/// two columns. This is used for the result and simulation editors, so that
+	/// they show this information in the same way.
+	///
+	/// @param withNwSet whether the normalization and weighting set should be
+	///                  shown when it is defined in the setup
+	public static void setupRows(
+		Composite comp, FormToolkit tk, CalculationSetup setup, boolean withNwSet
+	) {
+		if (setup == null)
+			return;
 		if (setup.hasProductSystem()) {
 			link(comp, tk, M.ProductSystem, setup.productSystem());
 		} else {
 			link(comp, tk, M.ReferenceProcess, setup.process());
 		}
-
-		text(comp, tk, M.AllocationMethod, Labels.getEnumText(setup.allocation()));
-		text(comp, tk, M.TargetAmount, targetAmountText(setup));
 		if (setup.impactMethod() != null) {
 			link(comp, tk, M.ImpactAssessmentMethod, setup.impactMethod());
+			if (withNwSet && setup.nwSet() != null) {
+				text(comp, tk, M.NormalizationAndWeightingSet, setup.nwSet().name);
+			}
 		}
-		if (setup.nwSet() != null) {
-			text(comp, tk, M.NormalizationAndWeightingSet, setup.nwSet().name);
+		text(comp, tk, M.TargetAmount, targetAmountText(setup));
+		text(comp, tk, M.AllocationMethod, Labels.getEnumText(setup.allocation()));
+		var paramSet = parameterSetNameOf(setup);
+		if (paramSet != null) {
+			text(comp, tk, M.ParameterSet, paramSet);
 		}
-		if (Strings.isNotBlank(setup.parameterSetName())) {
-			text(comp, tk, M.ParameterSet, setup.parameterSetName());
-		}
-		buttons(comp, tk);
+	}
+
+	/// Returns the name of the parameter set of the given setup, but only if
+	/// the product system has more than one parameter set. Otherwise, there
+	/// was no choice: the calculation wizard then automatically uses the only
+	/// (baseline) parameter set and showing its name would be just noise.
+	/// Returns `null` if no parameter set name should be shown.
+	static String parameterSetNameOf(CalculationSetup setup) {
+		if (setup == null
+			|| !setup.hasProductSystem()
+			|| Strings.isBlank(setup.parameterSetName()))
+			return null;
+		var system = setup.productSystem();
+		return system != null && system.parameterSets.size() > 1
+			? setup.parameterSetName()
+			: null;
 	}
 
 	private static String targetAmountText(CalculationSetup setup) {
-		return Math.abs(setup.amount())
-				+ " " + Labels.name(setup.unit())
-				+ " " + Labels.name(setup.flow());
+		return amountText(setup.amount())
+			+ " " + Labels.name(setup.unit())
+			+ " " + Labels.name(setup.flow());
+	}
+
+	/// Formats the absolute value of the target amount without unnecessary
+	/// decimal places, e.g. `1`, `100`, or `0.25`. Very small amounts are
+	/// shown in scientific notation.
+	private static String amountText(double amount) {
+		var abs = Math.abs(amount);
+		if (abs != 0 && abs < 1e-4)
+			return Double.toString(abs);
+		var format = new DecimalFormat(
+			"0.######", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+		return format.format(abs);
 	}
 
 	static void text(Composite comp, FormToolkit tk, String label, String val) {
@@ -64,11 +111,11 @@ class InfoSection {
 		if (entity instanceof RootDescriptor d) {
 			link.setText(Labels.name(d));
 			link.setImage(Images.get(d));
-			Controls.onClick(link, e -> App.open(d));
+			Controls.onClick(link, _ -> App.open(d));
 		} else if (entity instanceof RootEntity ce) {
 			link.setText(Labels.name(ce));
 			link.setImage(Images.get(ce));
-			Controls.onClick(link, e -> App.open(ce));
+			Controls.onClick(link, _ -> App.open(ce));
 		}
 	}
 
@@ -78,10 +125,10 @@ class InfoSection {
 		UI.gridLayout(inner, 2, 5, 0);
 		var excelBtn = UI.button(inner, tk, M.ExportToExcel);
 		excelBtn.setImage(Images.get(FileType.EXCEL));
-		Controls.onSelect(excelBtn, e -> ExcelExportWizard.open());
+		Controls.onSelect(excelBtn, _ -> ExcelExportWizard.open());
 		var resultBtn = UI.button(inner, tk, M.SaveResultAsDots, SWT.NONE);
 		resultBtn.setImage(Icon.SAVE_AS.get());
-		Controls.onSelect(resultBtn, e -> {
+		Controls.onSelect(resultBtn, _ -> {
 			ResultEditor editor = Editors.getActive();
 			if (editor == null)
 				return;

@@ -7,7 +7,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ProgressBar;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -15,17 +14,14 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultFlowCombo;
+import org.openlca.app.results.InfoSection;
 import org.openlca.app.results.Sort;
 import org.openlca.app.util.Actions;
-import org.openlca.app.util.Labels;
-import org.openlca.app.util.Numbers;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
 import org.openlca.app.viewers.combo.ImpactCategoryViewer;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.matrix.index.TechFlow;
-import org.openlca.core.model.Flow;
-import org.openlca.core.model.Unit;
 import org.openlca.core.model.descriptors.ImpactDescriptor;
 import org.openlca.core.results.ResultItemOrder;
 import org.openlca.core.results.SimulationResult;
@@ -48,9 +44,7 @@ class SimulationPage extends FormPage {
 	private ScrolledForm form;
 	private ImpactCategoryViewer impactViewer;
 
-	/**
-	 * A pinned product which results should be displayed.
-	 */
+	/// A pinned product which results should be displayed.
 	private TechFlow resultPin;
 
 	public SimulationPage(SimulationEditor editor) {
@@ -83,34 +77,16 @@ class SimulationPage extends FormPage {
 		form.reflow(true);
 	}
 
-	private void createSettingsSection(FormToolkit toolkit, Composite body) {
-		Composite settings = UI.formSection(body, toolkit, M.Settings);
-		Text systemText = UI.labeledText(settings, toolkit, M.ProductSystem);
-		Text processText = UI.labeledText(settings, toolkit, M.Process);
-		Text qRefText = UI.labeledText(settings, toolkit, M.QuantitativeReference);
-		Text simCountText = UI.labeledText(settings, toolkit, M.NumberOfSimulations);
-		if (editor.setup != null) {
-			var setup = editor.setup;
-			systemText.setText(Labels.name(setup.target()));
-			processText.setText(Labels.name(setup.process()));
-			qRefText.setText(getQRefText());
-			simCountText.setText(Integer.toString(setup.simulationRuns().orElse(0)));
-		}
-		systemText.setEditable(false);
-		processText.setEditable(false);
-		qRefText.setEditable(false);
-		simCountText.setEditable(false);
-	}
-
-	private String getQRefText() {
+	private void createSettingsSection(FormToolkit tk, Composite body) {
+		var comp = UI.formSection(body, tk, M.Settings);
 		var setup = editor.setup;
-		double amount = setup.amount();
-		Flow flow = setup.flow();
-		Unit unit = setup.unit();
-		return String.format("%s %s %s",
-			Numbers.format(amount, 2),
-			Labels.name(unit),
-			Labels.name(flow));
+		if (setup == null)
+			return;
+		// normalization and weighting is not part of the simulation results
+		InfoSection.setupRows(comp, tk, setup, false);
+		var simCountText = UI.labeledText(comp, tk, M.NumberOfSimulations);
+		simCountText.setText(Integer.toString(setup.simulationRuns().orElse(0)));
+		simCountText.setEditable(false);
 	}
 
 	private void createProgressSection(FormToolkit toolkit, Composite body) {
@@ -149,7 +125,7 @@ class SimulationPage extends FormPage {
 		impactViewer = new ImpactCategoryViewer(section);
 		impactViewer.setEnabled(false);
 		impactViewer.setInput(items.impacts());
-		impactViewer.addSelectionChangedListener((e) -> updateSelection());
+		impactViewer.addSelectionChangedListener(_ -> updateSelection());
 		impactViewer.selectFirst();
 		new ResultTypeCheck<>(impactViewer, impactCheck, IMPACT);
 	}
@@ -160,7 +136,7 @@ class SimulationPage extends FormPage {
 		flowViewer = new ResultFlowCombo(section);
 		flowViewer.setInput(items.enviFlows());
 		flowViewer.selectFirst();
-		flowViewer.addSelectionChangedListener((e) -> updateSelection());
+		flowViewer.addSelectionChangedListener(_ -> updateSelection());
 		new ResultTypeCheck<>(flowViewer, flowsCheck, FLOW);
 	}
 

@@ -1,6 +1,6 @@
 package org.openlca.app.results;
 
-import static org.openlca.app.components.graphics.EditorActionBarContributor.refreshActionBar;
+import static org.openlca.app.components.graphics.EditorActionBarContributor.*;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,16 +30,13 @@ import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Labels;
 import org.openlca.app.util.MemoryError;
 import org.openlca.app.util.Numbers;
-import org.openlca.commons.Strings;
 import org.openlca.core.math.data_quality.DQResult;
 import org.openlca.core.model.CalculationSetup;
 import org.openlca.core.model.ProductSystem;
 import org.openlca.core.results.LcaResult;
 import org.openlca.core.results.ResultItemOrder;
 
-/**
- * View for the analysis results of a product system.
- */
+/// View for the analysis results of a product system.
 public class ResultEditor extends FormEditor {
 
 	public static final String ID = "editors.analyze";
@@ -71,8 +68,9 @@ public class ResultEditor extends FormEditor {
 				default -> "";
 			};
 		}
-		if (Strings.isNotBlank(setup.parameterSetName())) {
-			name += "; " + setup.parameterSetName();
+		var paramSet = InfoSection.parameterSetNameOf(setup);
+		if (paramSet != null) {
+			name += "; " + paramSet;
 		}
 		return name;
 	}
