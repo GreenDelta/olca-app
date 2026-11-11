@@ -2,9 +2,6 @@ package org.openlca.app.logging;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
@@ -19,7 +16,6 @@ import org.openlca.app.M;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.preferences.Theme;
-import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.MsgBox;
@@ -28,7 +24,7 @@ import org.openlca.app.util.UI;
 public class LogFileEditor extends FormEditor {
 
 	public static void open() {
-		var files = logFiles();
+		var files = HtmlLog.files();
 		if (files.isEmpty()) {
 			MsgBox.info(M.NoLogFileAvailable, M.NoLogFileAvailableInfo);
 			return;
@@ -44,22 +40,12 @@ public class LogFileEditor extends FormEditor {
 		setTitleImage(Icon.FILE.get());
 	}
 
-	private static List<File> logFiles() {
-		var logDir = new File(Workspace.root(), "log");
-		if (!logDir.exists())
-			return Collections.emptyList();
-		var files = logDir.listFiles();
-		return files == null
-			? Collections.emptyList()
-			: Arrays.asList(files);
-	}
-
+	/// Adds a page for each log file, the newest file first.
 	@Override
 	protected void addPages() {
 		try {
-			int count = 1;
-			for (File file : logFiles()) {
-				addPage(new LogFilePage(file, count++));
+			for (File file : HtmlLog.files()) {
+				addPage(new LogFilePage(file));
 			}
 		} catch (PartInitException e) {
 			ErrorReporter.on("Failed to add log file editor page", e);
@@ -83,10 +69,10 @@ public class LogFileEditor extends FormEditor {
 
 		private final File file;
 
-		public LogFilePage(File file, int count) {
+		public LogFilePage(File file) {
 			super(LogFileEditor.this,
-				"org.openlca.app.editors.LogFileEditor",
-				M.LogFile + " " + count);
+				"org.openlca.app.editors.LogFileEditor." + file.getName(),
+				HtmlLog.dateOf(file));
 			this.file = file;
 		}
 
