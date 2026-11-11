@@ -20,7 +20,7 @@ public class ResultBundle {
 		this.setup = Objects.requireNonNull(setup);
 		this.result = Objects.requireNonNull(result);
 		this.items = ResultItemOrder.of(result);
-		Sort.sort(items);
+		ResultUtil.sort(items);
 	}
 
 	public static ResultBundle of(CalculationSetup setup, LcaResult result) {

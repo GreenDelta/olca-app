@@ -15,7 +15,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.components.ResultFlowCombo;
 import org.openlca.app.results.InfoSection;
-import org.openlca.app.results.Sort;
+import org.openlca.app.results.ResultUtil;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.UI;
 import org.openlca.app.viewers.combo.AbstractComboViewer;
@@ -53,7 +53,7 @@ class SimulationPage extends FormPage {
 		this.simulator = editor.simulator;
 		this.result = editor.simulator.getResult();
 		this.items = ResultItemOrder.of(result);
-		Sort.sort(this.items);
+		ResultUtil.sort(this.items);
 	}
 
 	@Override
@@ -78,7 +78,7 @@ class SimulationPage extends FormPage {
 	}
 
 	private void createSettingsSection(FormToolkit tk, Composite body) {
-		var comp = UI.formSection(body, tk, M.Settings);
+		var comp = UI.formSection(body, tk, M.CalculationSetup);
 		var setup = editor.setup;
 		if (setup == null)
 			return;

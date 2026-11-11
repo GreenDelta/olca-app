@@ -1,7 +1,7 @@
 package org.openlca.app.editors.projects;
 
 import org.openlca.app.editors.projects.reports.model.Report;
-import org.openlca.app.results.Sort;
+import org.openlca.app.results.ResultUtil;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
 import org.openlca.core.matrix.NwSetTable;
@@ -28,7 +28,7 @@ public record ProjectResultData(
 				.sorted((v1, v2) -> Strings.compareIgnoreCase(v1.name, v2.name))
 				.toArray(ProjectVariant[]::new);
 		var items = ResultItemOrder.of(result);
-		Sort.sort(items);
+		ResultUtil.sort(items);
 		var nwFactors = project.nwSet != null
 				? NwSetTable.of(db, project.nwSet)
 				: null;

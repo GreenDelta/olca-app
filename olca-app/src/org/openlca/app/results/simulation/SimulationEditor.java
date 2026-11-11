@@ -13,8 +13,7 @@ import org.openlca.app.db.Database;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleFormEditor;
 import org.openlca.app.rcp.images.Icon;
-import org.openlca.app.util.Labels;
-import org.openlca.commons.Strings;
+import org.openlca.app.results.ResultUtil;
 import org.openlca.core.math.Simulator;
 import org.openlca.core.model.CalculationSetup;
 import org.slf4j.Logger;
@@ -27,17 +26,16 @@ public class SimulationEditor extends SimpleFormEditor {
 	CalculationSetup setup;
 	Simulator simulator;
 
-	/**
-	 * Initializes the Monte Carlo simulation of a product system and opens the
-	 * editor.
-	 */
+	/// Initializes the Monte Carlo simulation of a product system and opens the
+	/// editor.
 	public static void open(CalculationSetup setup) {
 		try {
 			var sim = Simulator.create(setup, Database.get())
 					.withSolver(App.getSolver());
 			var setupKey = AppContext.put(setup);
 			var simKey = AppContext.put(sim);
-			var input = new SimulationInput(setupKey, simKey);
+			var name = M.MonteCarloSimulation + " - " + ResultUtil.nameOf(setup);
+			var input = new SimulationInput(setupKey, simKey, name);
 			Editors.open(input, ID);
 		} catch (Exception e) {
 			Logger log = LoggerFactory.getLogger(SimulationEditor.class);
@@ -52,7 +50,7 @@ public class SimulationEditor extends SimpleFormEditor {
 		setTitleImage(Icon.SIMULATE.get());
 		var input = (SimulationInput) editorInput;
 		setup = AppContext.remove(input.setupKey, CalculationSetup.class);
-		setPartName(Strings.cutEnd(Labels.name(setup.target()), 75));
+		setPartName(input.getName());
 		simulator = AppContext.remove(input.solverKey, Simulator.class);
 	}
 
@@ -61,7 +59,9 @@ public class SimulationEditor extends SimpleFormEditor {
 		return new SimulationPage(this);
 	}
 
-	private record SimulationInput(String setupKey, String solverKey)
+	/// The editor input of a simulation. The name is shown as title and, via
+	/// `getToolTipText`, as tooltip of the editor tab.
+	private record SimulationInput(String setupKey, String solverKey, String name)
 			implements IEditorInput {
 
 		@Override
@@ -82,7 +82,7 @@ public class SimulationEditor extends SimpleFormEditor {
 
 		@Override
 		public String getName() {
-			return M.MonteCarloSimulation;
+			return name != null ? name : M.MonteCarloSimulation;
 		}
 
 		@Override
