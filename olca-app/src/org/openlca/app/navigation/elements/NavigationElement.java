@@ -8,10 +8,11 @@ import org.openlca.commons.Strings;
 import org.openlca.core.library.Library;
 import org.openlca.core.model.descriptors.RootDescriptor;
 
-/**
- * Basic implementation of a navigation element which manages an internal cache
- * for its child elements.
- */
+/// Basic implementation of a navigation element which manages an internal
+/// cache for its child elements.
+///
+/// Note that the navigation viewer uses hash lookup. Thus, the hash code of
+/// an element must not change while the element is shown in the viewer.
 public abstract class NavigationElement<T> implements INavigationElement<T> {
 
 	private List<INavigationElement<?>> cache;
@@ -58,9 +59,7 @@ public abstract class NavigationElement<T> implements INavigationElement<T> {
 		return parent;
 	}
 
-	/**
-	 * Queries the child elements
-	 */
+	/// Queries the child elements.
 	protected abstract List<INavigationElement<?>> queryChilds();
 
 	@Override
@@ -87,13 +86,16 @@ public abstract class NavigationElement<T> implements INavigationElement<T> {
 		if (o == null || getClass() != o.getClass())
 			return false;
 
-		// two navigation elements are equal when their content
-		// along their path are equal because the same content
-		// can be shown in different elements of the navigation
-		// tree (e.g. model type elements in the database and
-		// libraries)
-
+		// Two navigation elements are equal when their content along their path is
+		// equal. The same content can be shown in different elements of the
+		// navigation tree (e.g. model type elements in the database and libraries).
+		// Elements without content are only equal to themselves, as their hash code
+		// is the identity hash code (see above); otherwise the contract of equals
+		// and hashCode would be violated, which breaks the element map of the JFace
+		// viewers.
 		var other = (NavigationElement<?>) o;
+		if (this.content == null || other.content == null)
+			return false;
 		return Objects.equals(this.content, other.content)
 			&& Objects.equals(this.parent, other.parent);
 	}

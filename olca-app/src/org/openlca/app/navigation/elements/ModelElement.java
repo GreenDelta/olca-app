@@ -25,9 +25,17 @@ public class ModelElement extends NavigationElement<RootDescriptor> {
 	@Override
 	public void update() {
 		var content = getContent();
-		var newContent = AppContext.getEntityCache().get(
-			content.getClass(), content.id);
-		setContent(newContent);
+		var cache = AppContext.getEntityCache();
+		if (content != null && cache != null) {
+			var newContent = cache.get(content.getClass(), content.id);
+			// if the model does not exist anymore (e.g. it was deleted), we keep
+			// the old content; setting it to null would change the hash code of
+			// this element while it is still shown in the navigation tree; the
+			// element is removed when its parent is refreshed
+			if (newContent != null) {
+				setContent(newContent);
+			}
+		}
 		super.update();
 	}
 }

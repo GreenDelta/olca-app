@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
@@ -49,6 +50,7 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
@@ -67,7 +69,7 @@ public class Navigator extends CommonNavigator {
 	protected CommonViewer createCommonViewer(Composite aParent) {
 		var viewer = super.createCommonViewer(aParent);
 		viewer.getTree().setBackground(
-				Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
+			Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		viewer.getTree().addKeyListener(new RefreshListener());
 		return viewer;
 	}
@@ -111,59 +113,70 @@ public class Navigator extends CommonNavigator {
 		viewer.getTree().addKeyListener(new KeyBinding(viewer));
 	}
 
-	/**
-	 * Get the root of the navigation tree.
-	 */
+	/// Get the root of the navigation tree.
 	public NavigationRoot getRoot() {
 		return root;
 	}
 
-	/**
-	 * Refresh the navigation view if it is available.
-	 */
+	/// Refresh the navigation view if it is available.
 	public static void refresh() {
-		var viewer = getNavigationViewer();
-		var root = getNavigationRoot();
-		if (viewer == null || root == null)
-			return;
-		NavCache.refresh();
-		if (viewer.getTree().isDisposed())
-			return;
-		var oldExpansion = viewer.getExpandedElements();
-		root.update();
-		viewer.refresh();
-		setRefreshedExpansion(viewer, oldExpansion);
-	}
-
-	/**
-	 * Refreshes the content *under* the given element.
-	 */
-	public static void refresh(INavigationElement<?> element) {
-		if (element instanceof ModelTypeElement e) {
-			NavCache.refresh(e.getContent());
-		} else {
+		try {
+			var viewer = getNavigationViewer();
+			var root = getNavigationRoot();
+			if (viewer == null || root == null)
+				return;
 			NavCache.refresh();
+			if (viewer.getTree().isDisposed())
+				return;
+			var oldExpansion = viewer.getExpandedElements();
+			root.update();
+			refreshSafely(viewer, viewer::refresh);
+			setRefreshedExpansion(viewer, oldExpansion);
+		} catch (Exception e) {
+			logRefreshError(e);
 		}
-		doRefresh(element);
 	}
 
-	/**
-	 * Refreshes the content *under* the given elements.
-	 */
-	public static void refresh(Collection<INavigationElement<?>> elements) {
-		NavCache.refresh();
-		for (var element : elements) {
+	/// Refreshes the content *under* the given element.
+	public static void refresh(INavigationElement<?> element) {
+		try {
+			if (element instanceof ModelTypeElement e) {
+				NavCache.refresh(e.getContent());
+			} else {
+				NavCache.refresh();
+			}
 			doRefresh(element);
+		} catch (Exception e) {
+			logRefreshError(e);
 		}
+	}
+
+	/// Refreshes the content *under* the given elements.
+	public static void refresh(Collection<INavigationElement<?>> elements) {
+		try {
+			NavCache.refresh();
+			for (var element : elements) {
+				doRefresh(element);
+			}
+		} catch (Exception e) {
+			logRefreshError(e);
+		}
+	}
+
+	private static void logRefreshError(Exception e) {
+		var log = LoggerFactory.getLogger(Navigator.class);
+		log.error("failed to refresh the navigation", e);
 	}
 
 	private static void doRefresh(INavigationElement<?> element) {
 		var viewer = getNavigationViewer();
 		if (viewer == null || element == null)
 			return;
+		if (viewer.getTree().isDisposed())
+			return;
 		element.update();
 		Object[] oldExpansion = viewer.getExpandedElements();
-		viewer.refresh(element);
+		refreshSafely(viewer, () -> viewer.refresh(element));
 		updateLabels(viewer, element);
 		setRefreshedExpansion(viewer, oldExpansion);
 
@@ -177,6 +190,25 @@ public class Navigator extends CommonNavigator {
 		var contentTest = dbElem.categoryContentTest();
 		if (contentTest != null) {
 			contentTest.clearCacheOf(modelType);
+		}
+	}
+
+	/// Runs the given refresh of the viewer. With hash lookup enabled, JFace
+	/// maintains an internal map from elements to tree items. If this map
+	/// contains an entry that points to a disposed tree item, a refresh fails
+	/// with a "Widget is disposed" error, e.g. when the viewer restores the
+	/// selection after the refresh. In this case, we set the input again, which
+	/// clears this map and rebuilds the tree from scratch.
+	private static void refreshSafely(CommonViewer viewer, Runnable refresh) {
+		try {
+			refresh.run();
+		} catch (SWTException e) {
+			if (e.code != SWT.ERROR_WIDGET_DISPOSED
+				|| viewer.getTree().isDisposed())
+				throw e;
+			var log = LoggerFactory.getLogger(Navigator.class);
+			log.warn("failed to refresh navigation; rebuild the tree", e);
+			viewer.setInput(viewer.getInput());
 		}
 	}
 
@@ -201,7 +233,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static void updateLabels(CommonViewer viewer,
-			INavigationElement<?> element) {
+																	 INavigationElement<?> element) {
 		TreeItem item = findItem(viewer, element);
 		if (item == null)
 			return;
@@ -212,7 +244,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static TreeItem findItem(CommonViewer viewer,
-			INavigationElement<?> element) {
+																	 INavigationElement<?> element) {
 		Stack<TreeItem> items = new Stack<>();
 		items.addAll(Arrays.asList(viewer.getTree().getItems()));
 		while (!items.empty()) {
@@ -224,20 +256,20 @@ public class Navigator extends CommonNavigator {
 		return null;
 	}
 
-	private static boolean itemEqualsElement(TreeItem item,
-			INavigationElement<?> element) {
+	private static boolean itemEqualsElement(
+		TreeItem item, INavigationElement<?> element
+	) {
 		INavigationElement<?> data = (INavigationElement<?>) item.getData();
 		if (data == null)
 			return false;
 		return Objects.equal(data.getContent(), element.getContent());
 	}
 
-	/**
-	 * Expands the elements in the viewer that have the same content as in the
-	 * elements of the <code>oldExpansion</code> array.
-	 */
+	/// Expands the elements in the viewer that have the same content as in the
+	/// elements of the `oldExpansion` array.
 	private static void setRefreshedExpansion(
-			CommonViewer viewer, Object[] oldExpansion) {
+		CommonViewer viewer, Object[] oldExpansion
+	) {
 		if (viewer == null || oldExpansion == null)
 			return;
 		var newExpanded = new ArrayList<INavigationElement<?>>();
@@ -252,9 +284,7 @@ public class Navigator extends CommonNavigator {
 		viewer.setExpandedElements(newExpanded.toArray());
 	}
 
-	/**
-	 * Selects the navigation element with the given *content* in the tree.
-	 */
+	/// Selects the navigation element with the given *content* in the tree.
 	public static void select(Object element) {
 		if (element == null)
 			return;
@@ -270,14 +300,12 @@ public class Navigator extends CommonNavigator {
 	private static CommonViewer getNavigationViewer() {
 		var instance = getInstance();
 		return instance != null
-				? instance.getCommonViewer()
-				: null;
+			? instance.getCommonViewer()
+			: null;
 	}
 
-	/**
-	 * Returns the instance of the navigation view or NULL if there is# no such
-	 * instance available.
-	 */
+	/// Returns the instance of the navigation view or NULL if there is no such
+	/// instance available.
 	public static Navigator getInstance() {
 		var workbench = PlatformUI.getWorkbench();
 		if (workbench == null)
@@ -290,24 +318,20 @@ public class Navigator extends CommonNavigator {
 			return null;
 		var part = page.findView(ID);
 		return part instanceof Navigator navi
-				? navi
-				: null;
+			? navi
+			: null;
 	}
 
-	/**
-	 * Returns the root of the navigation tree or NULL if there is no such root
-	 * available.
-	 */
+	/// Returns the root of the navigation tree or NULL if there is no such root
+	/// available.
 	public static NavigationRoot getNavigationRoot() {
 		var navigator = getInstance();
 		return navigator != null
-				? navigator.getRoot()
-				: null;
+			? navigator.getRoot()
+			: null;
 	}
 
-	/**
-	 * Returns the navigation element with the given content if it exists.
-	 */
+	/// Returns the navigation element with the given content if it exists.
 	public static INavigationElement<?> findElement(Object content) {
 		var root = getNavigationRoot();
 		if (content == null || root == null)
@@ -339,21 +363,21 @@ public class Navigator extends CommonNavigator {
 	public INavigationElement<?> getFirstSelected() {
 		var all = getAllSelected();
 		return all.isEmpty()
-				? null
-				: all.getFirst();
+			? null
+			: all.getFirst();
 	}
 
 	public List<INavigationElement<?>> getAllSelected() {
 		return Viewers.getAllSelected(getNavigationViewer());
 	}
 
-	/**
-	 * Collects content from the navigation elements, to skip an element return
-	 * null in the unwrap function
-	 */
-	public static <T> Set<T> collect(Collection<INavigationElement<?>> elements,
-			Predicate<INavigationElement<?>> filter,
-			Function<INavigationElement<?>, T> unwrap) {
+	/// Collects content from the navigation elements, to skip an element return
+	/// null in the unwrap function
+	public static <T> Set<T> collect(
+		Collection<INavigationElement<?>> elements,
+		Predicate<INavigationElement<?>> filter,
+		Function<INavigationElement<?>, T> unwrap
+	) {
 		Set<T> set = new HashSet<>();
 		for (INavigationElement<?> element : elements) {
 			if (filter != null && !filter.test(element))
@@ -367,13 +391,11 @@ public class Navigator extends CommonNavigator {
 		return set;
 	}
 
-	/**
-	 * Search for the navigation element with the given content in the given
-	 * tree. This assumes that the viewer has the `NavigationContentProvider`
-	 * assigned. You should use this function instead of the search function of
-	 * the full navigation tree if your viewer contains custom navigation trees
-	 * and you want to select elements etc.
-	 */
+	/// Search for the navigation element with the given content in the given
+	/// tree. This assumes that the viewer has the `NavigationContentProvider`
+	/// assigned. You should use this function instead of the search function of
+	/// the full navigation tree if your viewer contains custom navigation trees,
+	/// and you want to select elements etc.
 	@SuppressWarnings("unchecked")
 	public static <T> INavigationElement<T> find(TreeViewer viewer, T content) {
 		if (viewer == null || content == null)

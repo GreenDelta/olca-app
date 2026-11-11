@@ -102,9 +102,7 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 		eventHandlers.add(new EventHandler(eventId, action));
 	}
 
-	/**
-	 * A short form for `onEvent(ON_SAVED, ...)`.
-	 */
+	/// A short form for `onEvent(ON_SAVED, ...)`.
 	public void onSaved(Runnable action) {
 		if (action == null)
 			return;
@@ -176,11 +174,11 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 
 	protected void doAfterUpdate() {
 		setDirty(false);
-		var descriptor = getEditorInput().getDescriptor();
+		var d = getEditorInput().getDescriptor();
 		this.setPartName(Labels.name(model));
-		AppContext.evict(descriptor);
+		AppContext.evict(d);
 		emitEvent(ON_SAVED);
-		Navigator.refresh(Navigator.findElement(descriptor));
+		Navigator.refresh(Navigator.findElement(d));
 	}
 
 	@Override
@@ -188,9 +186,7 @@ public abstract class ModelEditor<T extends RootEntity> extends FormEditor {
 		return (ModelEditorInput) super.getEditorInput();
 	}
 
-	/**
-	 * A shortcut for {@code setDirty(true)}.
-	 */
+	/// A shortcut for `setDirty(true)`.
 	public void setDirty() {
 		setDirty(true);
 	}
