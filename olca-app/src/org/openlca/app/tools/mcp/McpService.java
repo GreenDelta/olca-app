@@ -1,5 +1,8 @@
 package org.openlca.app.tools.mcp;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -13,6 +16,10 @@ import org.eclipse.jetty.ee11.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.openlca.app.tools.mcp.tools.DataSync;
+import org.openlca.app.tools.mcp.tools.McpTools;
+import org.openlca.app.tools.mcp.tools.ToolArgs;
+import org.openlca.app.tools.mcp.tools.ToolResults;
 import org.openlca.core.database.IDatabase;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -76,7 +83,7 @@ public final class McpService {
 		var specs = McpTools.of(db, sync, jsonMapper).stream()
 			.map(this::specOf)
 			.toList();
-		var instructions = McpTools.instructions();
+		var instructions = instructions();
 
 		var security = DefaultServerTransportSecurityValidator.builder()
 			.allowedOrigins(List.of(
@@ -144,18 +151,34 @@ public final class McpService {
 		return server;
 	}
 
-	private SyncToolSpecification specOf(McpTool tool) {
+	/// Returns the general instructions that are sent to the agent when it
+	/// connects to the server. They describe the data model and the typical
+	/// workflow and are stored in the resource file `instructions.md`.
+	private static String instructions() {
+		try (var stream = McpService.class.getResourceAsStream("instructions.md")) {
+			if (stream == null)
+				throw new IllegalStateException(
+					"MCP resource not found: instructions.md");
+			return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new UncheckedIOException(
+				"failed to read MCP resource: instructions.md", e);
+		}
+	}
+
+	private SyncToolSpecification specOf(McpTools.Spec spec) {
 		return SyncToolSpecification.builder()
-			.tool(tool.definition())
-			.callHandler((_, req) -> call(tool, req))
+			.tool(spec.definition())
+			.callHandler((_, req) -> call(spec, req))
 			.build();
 	}
 
-	private CallToolResult call(McpTool tool, CallToolRequest req) {
+	private CallToolResult call(McpTools.Spec spec, CallToolRequest req) {
+		var tool = spec.tool();
 		long start = System.currentTimeMillis();
 		CallToolResult result;
 		try {
-			result = tool.handler().call(new ToolArgs(req.arguments()));
+			result = tool.call(new ToolArgs(req.arguments()));
 		} catch (Exception e) {
 			log.error("MCP tool call {} failed", tool.name(), e);
 			result = ToolResults.error(

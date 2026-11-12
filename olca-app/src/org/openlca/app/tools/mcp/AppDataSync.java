@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Display;
 import org.openlca.app.App;
 import org.openlca.app.AppContext;
 import org.openlca.app.navigation.Navigator;
+import org.openlca.app.tools.mcp.tools.DataSync;
 import org.openlca.core.model.descriptors.RootDescriptor;
 import org.slf4j.LoggerFactory;
 
