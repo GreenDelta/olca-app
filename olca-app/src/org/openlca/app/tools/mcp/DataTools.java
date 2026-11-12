@@ -3,9 +3,10 @@ package org.openlca.app.tools.mcp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.openlca.commons.Strings;
 import org.openlca.core.database.IDatabase;
@@ -22,10 +23,12 @@ import com.google.gson.JsonObject;
 
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
-/// Tools for searching, reading, creating, updating, and deleting data sets
-/// of the database. They are based on the same JSON-LD services as the IPC
-/// server, so the data format is the openLCA schema (olca-schema).
-public final class DataTools {
+/// Handlers of the tools for searching, reading, creating, updating, and
+/// deleting data sets of the database. They are based on the same JSON-LD
+/// services as the IPC server, so the data format is the openLCA schema
+/// (olca-schema). The tool definitions are stored in the JSON files of the
+/// `tools` resource folder.
+final class DataTools {
 
 	private static final int DEFAULT_LIMIT = 50;
 	private static final int MAX_LIMIT = 500;
@@ -40,74 +43,23 @@ public final class DataTools {
 		this.sync = sync != null ? sync : DataSync.NONE;
 	}
 
-	public static List<McpTool> of(IDatabase db, DataSync sync) {
+	/// Returns the tool handlers by tool name. The definitions of these tools
+	/// are stored in the respective JSON files, see [McpTools].
+	static Map<String, McpTool.Handler> handlersOf(IDatabase db, DataSync sync) {
 		var tools = new DataTools(db, sync);
-		return List.of(
-				tools.searchData(),
-				tools.getData(),
-				tools.saveData(),
-				tools.deleteData(),
-				tools.getProviders(),
-				tools.getUsages(),
-				tools.getParameters(),
-				tools.createProductSystem());
-	}
-
-	/// The JSON schema snippet of the `type` property, with all model types as
-	/// enumeration values.
-	private static String typeProperty(String description) {
-		var names = Arrays.stream(ModelType.values())
-				.map(t -> "\"" + ToolArgs.typeNameOf(t) + "\"")
-				.collect(Collectors.joining(", "));
-		return """
-				"type": {
-					"type": "string",
-					"enum": [%s],
-					"description": "%s"
-				}""".formatted(names, description);
+		var handlers = new LinkedHashMap<String, McpTool.Handler>();
+		handlers.put("search_data", tools::onSearch);
+		handlers.put("get_data", tools::onGet);
+		handlers.put("save_data", tools::onSave);
+		handlers.put("delete_data", tools::onDelete);
+		handlers.put("get_providers", tools::onGetProviders);
+		handlers.put("get_usages", tools::onGetUsages);
+		handlers.put("get_parameters", tools::onGetParameters);
+		handlers.put("create_product_system", tools::onCreateProductSystem);
+		return handlers;
 	}
 
 	// region: search
-
-	private McpTool searchData() {
-		return McpTool.of("search_data")
-				.title("Search data sets")
-				.description("""
-						Searches data sets in the openLCA database by name and \
-						returns compact references (@type, @id, name, category, and \
-						type specific fields like flowType, refUnit, or location). \
-						Use this to find existing flows, processes, units, locations \
-						etc. before creating new data sets; new data sets should \
-						reference existing ones wherever possible. All words of the \
-						query must occur in the name (case-insensitive). Results are \
-						ranked: exact matches first, then names starting with the \
-						query, then shorter names.""")
-				.inputSchema("""
-						{
-							"type": "object",
-							"properties": {
-								%s,
-								"query": {
-									"type": "string",
-									"description": "Words that must occur in the name; if empty, all data sets of the type are listed. An exact @id is matched too."
-								},
-								"category": {
-									"type": "string",
-									"description": "Optional category path prefix, e.g. 'Elementary flows/Emission to air'."
-								},
-								"limit": {
-									"type": "integer",
-									"description": "Maximum number of results (default 50, max 500)."
-								},
-								"offset": {
-									"type": "integer",
-									"description": "Number of results to skip, for paging (default 0)."
-								}
-							}
-						}""".formatted(typeProperty(
-						"The data set type to search; if omitted, all types are searched.")))
-				.handler(this::onSearch);
-	}
 
 	private CallToolResult onSearch(ToolArgs args) {
 		var typeArg = args.string("type");
@@ -190,33 +142,6 @@ public final class DataTools {
 
 	// region: get, save, delete
 
-	private McpTool getData() {
-		return McpTool.of("get_data")
-				.title("Get a data set")
-				.description("""
-						Returns the complete data set with the given type and @id \
-						(or name, if no @id is given) in the openLCA JSON-LD format. \
-						Use this to inspect a data set in detail or as a template \
-						for creating similar data sets.""")
-				.inputSchema("""
-						{
-							"type": "object",
-							"properties": {
-								%s,
-								"id": {
-									"type": "string",
-									"description": "The @id of the data set."
-								},
-								"name": {
-									"type": "string",
-									"description": "The name of the data set; used when no @id is given."
-								}
-							},
-							"required": ["type"]
-						}""".formatted(typeProperty("The type of the data set.")))
-				.handler(this::onGet);
-	}
-
 	private CallToolResult onGet(ToolArgs args) {
 		var type = args.modelType("type").orElse(null);
 		if (type == null)
@@ -232,37 +157,6 @@ public final class DataTools {
 			return ToolResults.of(r, "no " + ToolArgs.typeNameOf(type) + " with name=" + name.get());
 		}
 		return ToolResults.error("an @id or name is required");
-	}
-
-	private McpTool saveData() {
-		return McpTool.of("save_data")
-				.title("Create or update a data set")
-				.description("""
-						Creates a new data set or updates an existing one. The data \
-						set is given in the openLCA JSON-LD format (olca-schema) and \
-						must contain the @type attribute. If no @id is given, a new \
-						one is generated. If a data set with the given @id exists, \
-						it is replaced completely by the given data: to update a \
-						data set, get it first, modify it, and save the complete \
-						data set. References to other data sets are given as \
-						objects with @type and @id, e.g. \
-						{"@type": "Flow", "@id": "..."}; these data sets must exist \
-						in the database. Categories are given as paths, e.g. \
-						"category": "Materials/Metals", and are created if they do \
-						not exist. Returns a reference to the saved data set.""")
-				.inputSchema("""
-						{
-							"type": "object",
-							"properties": {
-								"data": {
-									"type": "object",
-									"description": "The data set in openLCA JSON-LD format, including @type."
-								}
-							},
-							"required": ["data"]
-						}""")
-				.writes()
-				.handler(this::onSave);
 	}
 
 	private CallToolResult onSave(ToolArgs args) {
@@ -296,30 +190,6 @@ public final class DataTools {
 		return ToolResults.json(r.value());
 	}
 
-	private McpTool deleteData() {
-		return McpTool.of("delete_data")
-				.title("Delete a data set")
-				.description("""
-						Deletes the data set with the given type and @id from the \
-						database. Use get_usages first to check that the data set \
-						is not used by other data sets. Data sets from libraries \
-						cannot be deleted.""")
-				.inputSchema("""
-						{
-							"type": "object",
-							"properties": {
-								%s,
-								"id": {
-									"type": "string",
-									"description": "The @id of the data set."
-								}
-							},
-							"required": ["type", "id"]
-						}""".formatted(typeProperty("The type of the data set.")))
-				.destructive()
-				.handler(this::onDelete);
-	}
-
 	private CallToolResult onDelete(ToolArgs args) {
 		var type = args.modelType("type").orElse(null);
 		var id = args.string("id").orElse(null);
@@ -342,56 +212,12 @@ public final class DataTools {
 
 	// region: related data
 
-	private McpTool getProviders() {
-		return McpTool.of("get_providers")
-				.title("Get providers of a flow")
-				.description("""
-						Returns the processes (and product systems or results) that \
-						produce the given product or treat the given waste flow. Use \
-						this to find providers for the product inputs and waste \
-						outputs of a process, e.g. to set default providers.""")
-				.inputSchema("""
-						{
-							"type": "object",
-							"properties": {
-								"flowId": {
-									"type": "string",
-									"description": "The @id of the product or waste flow."
-								}
-							},
-							"required": ["flowId"]
-						}""")
-				.handler(this::onGetProviders);
-	}
-
 	private CallToolResult onGetProviders(ToolArgs args) {
 		var flowId = args.string("flowId").orElse(null);
 		if (flowId == null)
 			return ToolResults.error("the @id of a flow is required");
 		var r = service.getProvidersOfFlow(flowId);
 		return ToolResults.of(r, "no flow with @id=" + flowId);
-	}
-
-	private McpTool getUsages() {
-		return McpTool.of("get_usages")
-				.title("Get usages of a data set")
-				.description("""
-						Returns references to the data sets that use the data set \
-						with the given type and @id, e.g. the processes in which a \
-						flow is used.""")
-				.inputSchema("""
-						{
-							"type": "object",
-							"properties": {
-								%s,
-								"id": {
-									"type": "string",
-									"description": "The @id of the data set."
-								}
-							},
-							"required": ["type", "id"]
-						}""".formatted(typeProperty("The type of the data set.")))
-				.handler(this::onGetUsages);
 	}
 
 	private CallToolResult onGetUsages(ToolArgs args) {
@@ -401,32 +227,6 @@ public final class DataTools {
 			return ToolResults.error("a valid data set type and @id are required");
 		var r = service.getUsageOf(type.getModelClass(), id);
 		return ToolResults.of(r, "no " + ToolArgs.typeNameOf(type) + " with @id=" + id);
-	}
-
-	private McpTool getParameters() {
-		return McpTool.of("get_parameters")
-				.title("Get parameters of a data set")
-				.description("""
-						Returns the parameters of a process, impact category, or \
-						product system (including the parameter redefinitions of the \
-						product system).""")
-				.inputSchema("""
-						{
-							"type": "object",
-							"properties": {
-								"type": {
-									"type": "string",
-									"enum": ["Process", "ImpactCategory", "ProductSystem"],
-									"description": "The type of the data set."
-								},
-								"id": {
-									"type": "string",
-									"description": "The @id of the data set."
-								}
-							},
-							"required": ["type", "id"]
-						}""")
-				.handler(this::onGetParameters);
 	}
 
 	private CallToolResult onGetParameters(ToolArgs args) {
@@ -441,45 +241,6 @@ public final class DataTools {
 	// endregion
 
 	// region: product systems
-
-	private McpTool createProductSystem() {
-		return McpTool.of("create_product_system")
-				.title("Create a product system")
-				.description("""
-						Creates a new product system for the given process. The \
-						quantitative reference of the process becomes the reference \
-						flow of the product system, and the product inputs and waste \
-						outputs of the processes are linked automatically to \
-						providers in the database. The process must have a \
-						quantitative reference. Returns a reference to the new \
-						product system.""")
-				.inputSchema("""
-						{
-							"type": "object",
-							"properties": {
-								"processId": {
-									"type": "string",
-									"description": "The @id of the reference process."
-								},
-								"providerLinking": {
-									"type": "string",
-									"enum": ["IGNORE_DEFAULTS", "PREFER_DEFAULTS", "ONLY_DEFAULTS"],
-									"description": "How default providers of the processes are considered in the linking (default: PREFER_DEFAULTS)."
-								},
-								"preferUnitProcesses": {
-									"type": "boolean",
-									"description": "If true, unit processes are preferred over system processes when multiple providers exist (default: false)."
-								},
-								"cutoff": {
-									"type": "number",
-									"description": "Optional cutoff value for the linking."
-								}
-							},
-							"required": ["processId"]
-						}""")
-				.writes()
-				.handler(this::onCreateProductSystem);
-	}
 
 	private CallToolResult onCreateProductSystem(ToolArgs args) {
 		var processId = args.string("processId").orElse(null);

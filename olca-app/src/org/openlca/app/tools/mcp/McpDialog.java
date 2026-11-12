@@ -77,7 +77,7 @@ public class McpDialog extends FormDialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText(M.StartMcpServer);
+		newShell.setText(M.McpServer);
 	}
 
 	@Override

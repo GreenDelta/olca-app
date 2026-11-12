@@ -29,7 +29,6 @@ import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTrans
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
-import io.modelcontextprotocol.spec.McpSchema.ToolAnnotations;
 import tools.jackson.databind.json.JsonMapper;
 
 /// The openLCA MCP server. It runs an embedded Jetty server with the
@@ -59,7 +58,7 @@ public final class McpService {
 	/// Information about a tool call, e.g. for displaying the activity of
 	/// agents in the UI.
 	public record ToolCall(
-			Instant time, String tool, boolean isError, long millis) {
+		Instant time, String tool, boolean isError, long millis) {
 	}
 
 	private McpService(IDatabase db, int port, DataSync sync) {
@@ -72,35 +71,43 @@ public final class McpService {
 		var jackson = JsonMapper.builder().build();
 		McpJsonMapper jsonMapper = new JacksonMcpJsonMapper(jackson);
 
+		// load the tools first, as this fails on invalid tool definitions, and
+		// the transport starts background threads when it is created
+		var specs = McpTools.of(db, sync, jsonMapper).stream()
+			.map(this::specOf)
+			.toList();
+		var instructions = McpTools.instructions();
+
 		var security = DefaultServerTransportSecurityValidator.builder()
-				.allowedOrigins(List.of(
-						"http://localhost:*",
-						"http://127.0.0.1:*"))
-				.allowedHosts(List.of(
-						"localhost:*",
-						"127.0.0.1:*"))
-				.build();
+			.allowedOrigins(List.of(
+				"http://localhost:*",
+				"http://127.0.0.1:*"))
+			.allowedHosts(List.of(
+				"localhost:*",
+				"127.0.0.1:*"))
+			.build();
 
 		var transport = HttpServletStreamableServerTransportProvider.builder()
-				.jsonMapper(jsonMapper)
-				.mcpEndpoint(ENDPOINT)
-				.httpHeaderValidator(security)
-				.build();
-
-		var specs = McpTools.of(db, sync).stream()
-				.map(tool -> specOf(tool, jsonMapper))
-				.toList();
+			.jsonMapper(jsonMapper)
+			.mcpEndpoint(ENDPOINT)
+			.httpHeaderValidator(security)
+			// the session sweeper of the SDK (2.1.0) runs on a non-daemon
+			// thread that is not stopped when the transport is closed; for a
+			// local server, we do not need it: all sessions are closed when
+			// the server is stopped
+			.sessionSweepInterval(null)
+			.build();
 
 		mcp = McpServer.sync(transport)
-				.serverInfo("openLCA", versionOf())
-				.instructions(McpTools.INSTRUCTIONS)
-				.jsonMapper(jsonMapper)
-				.jsonSchemaValidator(new DefaultJsonSchemaValidator(jackson))
-				.capabilities(McpSchema.ServerCapabilities.builder()
-						.tools(true)
-						.build())
-				.tools(specs)
-				.build();
+			.serverInfo("openLCA", versionOf())
+			.instructions(instructions)
+			.jsonMapper(jsonMapper)
+			.jsonSchemaValidator(new DefaultJsonSchemaValidator(jackson))
+			.capabilities(McpSchema.ServerCapabilities.builder()
+				.tools(true)
+				.build())
+			.tools(specs)
+			.build();
 
 		jetty = jettyOf(transport, port);
 	}
@@ -108,12 +115,12 @@ public final class McpService {
 	private static String versionOf() {
 		var bundle = FrameworkUtil.getBundle(McpService.class);
 		return bundle != null
-				? bundle.getVersion().toString()
-				: "dev";
+			? bundle.getVersion().toString()
+			: "dev";
 	}
 
 	private static Server jettyOf(
-			HttpServletStreamableServerTransportProvider transport, int port) {
+		HttpServletStreamableServerTransportProvider transport, int port) {
 
 		// daemon threads, so that a running server never blocks the shutdown
 		// of the application
@@ -137,40 +144,27 @@ public final class McpService {
 		return server;
 	}
 
-	private SyncToolSpecification specOf(McpTool tool, McpJsonMapper jsonMapper) {
-		var annotations = ToolAnnotations.builder()
-				.title(tool.title())
-				.readOnlyHint(tool.readOnly())
-				.destructiveHint(tool.destructive())
-				.openWorldHint(false)
-				.build();
-		var def = McpSchema.Tool.builder()
-				.name(tool.name())
-				.title(tool.title())
-				.description(tool.description())
-				.inputSchema(jsonMapper, tool.inputSchema())
-				.annotations(annotations)
-				.build();
+	private SyncToolSpecification specOf(McpTool tool) {
 		return SyncToolSpecification.builder()
-				.tool(def)
-				.callHandler((_, req) -> call(tool, req))
-				.build();
+			.tool(tool.definition())
+			.callHandler((_, req) -> call(tool, req))
+			.build();
 	}
 
 	private CallToolResult call(McpTool tool, CallToolRequest req) {
 		long start = System.currentTimeMillis();
 		CallToolResult result;
 		try {
-			result = tool.handler().apply(new ToolArgs(req.arguments()));
+			result = tool.handler().call(new ToolArgs(req.arguments()));
 		} catch (Exception e) {
 			log.error("MCP tool call {} failed", tool.name(), e);
 			result = ToolResults.error(
-					"tool call failed: " + e.getClass().getSimpleName()
-							+ ": " + e.getMessage());
+				"tool call failed: " + e.getClass().getSimpleName()
+					+ ": " + e.getMessage());
 		}
 		var isError = result.isError() != null && result.isError();
 		var call = new ToolCall(Instant.ofEpochMilli(start), tool.name(),
-				isError, System.currentTimeMillis() - start);
+			isError, System.currentTimeMillis() - start);
 		log.trace("MCP tool call {}", call);
 		synchronized (history) {
 			history.addLast(call);
@@ -188,10 +182,11 @@ public final class McpService {
 	/// exception if a server is already running or the server could not be
 	/// started.
 	public static synchronized McpService start(
-			IDatabase db, int port, DataSync sync) throws Exception {
+		IDatabase db, int port, DataSync sync
+	) throws Exception {
 		if (current != null)
 			throw new IllegalStateException(
-					"an MCP server is already running on port " + current.port);
+				"an MCP server is already running on port " + current.port);
 		var service = new McpService(db, port, sync);
 		try {
 			service.jetty.start();

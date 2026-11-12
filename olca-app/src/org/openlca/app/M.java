@@ -1561,7 +1561,6 @@ public class M extends NLS {
 	public static String StartIPCInfo;
 	public static String StartIPCServer;
 	public static String StartMcpInfo;
-	public static String StartMcpServer;
 	public static String StartServerDots;
 	public static String Stash;
 	public static String StashChanges;
