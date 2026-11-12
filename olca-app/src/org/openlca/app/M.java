@@ -10,8 +10,6 @@ import org.eclipse.osgi.util.NLS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 public class M extends NLS {
 
 	// A
@@ -196,7 +194,6 @@ public class M extends NLS {
 	public static String ClickTheLinkForExamples;
 	public static String ClickToCheckTheMappings;
 	public static String ClickToSearchOrPressEnter;
-	public static String ClientConfiguration;
 	public static String Clone;
 	public static String Close;
 	public static String CloseAll;
@@ -1816,17 +1813,6 @@ public class M extends NLS {
 			log.error("failed to get messages as map", e);
 		}
 		return map;
-	}
-
-	public static String asJson() {
-		try {
-			Gson gson = new Gson();
-			return gson.toJson(getMap());
-		} catch (Exception e) {
-			Logger log = LoggerFactory.getLogger(M.class);
-			log.error("failed to get messages as JSON string", e);
-			return "{}";
-		}
 	}
 
 }

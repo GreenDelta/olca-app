@@ -48,7 +48,6 @@ public class McpDialog extends FormDialog {
 	private Button button;
 	private Text urlText;
 	private Label statusLabel;
-	private Text configText;
 	private TableViewer callTable;
 
 	private final List<ToolCall> calls = new ArrayList<>();
@@ -116,16 +115,13 @@ public class McpDialog extends FormDialog {
 		statusLabel = UI.label(body, tk, "", SWT.WRAP);
 		UI.gridData(statusLabel, true, false).widthHint = 500;
 
-		// client configuration
-		UI.label(body, tk, M.ClientConfiguration);
-		configText = UI.multiText(body, tk, 110);
-		configText.setEditable(false);
-
-		// tool calls
+		// tool calls; the table fills the remaining space of the dialog and
+		// scrolls itself, instead of growing the form
 		UI.label(body, tk, M.ToolCalls);
 		callTable = Tables.createViewer(body,
 				new String[]{M.Time, M.Name, M.Status},
 				new CallLabel());
+		UI.stretchXY(callTable.getTable());
 		Tables.bindColumnWidths(callTable, 0.2, 0.5, 0.3);
 		callTable.setInput(calls);
 
@@ -211,30 +207,8 @@ public class McpDialog extends FormDialog {
 				.getImage(ISharedImages.IMG_ELCL_STOP)
 				: Icon.RUN.get());
 		statusLabel.setText(running ? M.StopMcpInfo : M.StartMcpInfo);
-		if (running) {
-			urlText.setText(service.url());
-			configText.setText(configSnippetsOf(service.url()));
-		} else {
-			urlText.setText("");
-			configText.setText("");
-		}
+		urlText.setText(running ? service.url() : "");
 		statusLabel.getParent().layout(true, true);
-	}
-
-	private static String configSnippetsOf(String url) {
-		return """
-				# Claude Code
-				claude mcp add --transport http openlca %s
-
-				# JSON configuration (e.g. VS Code, Cursor)
-				{
-				  "servers": {
-				    "openlca": {
-				      "type": "http",
-				      "url": "%s"
-				    }
-				  }
-				}""".formatted(url, url);
 	}
 
 	@Override
