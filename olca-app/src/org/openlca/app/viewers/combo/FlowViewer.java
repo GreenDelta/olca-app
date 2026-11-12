@@ -1,6 +1,7 @@
 package org.openlca.app.viewers.combo;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
@@ -12,9 +13,9 @@ import org.openlca.app.rcp.images.Images;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.EntityCache;
 import org.openlca.core.model.Category;
-import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.FlowDescriptor;
+import org.openlca.core.model.descriptors.LocationDescriptor;
 import org.openlca.io.CategoryPath;
 
 public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
@@ -35,16 +36,16 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
 	@Override
 	protected String[] getColumnHeaders() {
-		return new String[] { M.Name, M.Category, M.Location, " " };
+		return new String[]{M.Name, M.Category, M.Location, " "};
 	}
 
 	@Override
 	protected int[] getColumnBoundsPercentages() {
-		return new int[] { 30, 60, 10, 0 };
+		return new int[]{30, 60, 10, 0};
 	}
 
 	@Override
-	protected LabelProvider getLabelProvider() {
+	protected IBaseLabelProvider getLabelProvider() {
 		if (_label == null) {
 			_label = new LabelProvider();
 		}
@@ -57,7 +58,7 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 		return new ViewerComparator() {
 			@Override
 			public int compare(Viewer viewer, Object e1, Object e2) {
-				LabelProvider label = getLabelProvider();
+				var label = (LabelProvider) getLabelProvider();
 				for (int col = 0; col < 3; col++) {
 					String s1 = label.getColumnText(e1, col);
 					String s2 = label.getColumnText(e2, col);
@@ -76,13 +77,12 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 	}
 
 	private class LabelProvider extends BaseLabelProvider
-			implements ITableLabelProvider {
+		implements ITableLabelProvider {
 
 		@Override
 		public Image getColumnImage(Object obj, int col) {
-			if (!(obj instanceof FlowDescriptor))
+			if (!(obj instanceof FlowDescriptor d))
 				return null;
-			var d = (FlowDescriptor) obj;
 			if (col == 0)
 				return Images.get(d);
 			if (col == 2 && d.location != null)
@@ -92,26 +92,25 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 
 		@Override
 		public String getColumnText(Object obj, int col) {
-			if (!(obj instanceof FlowDescriptor))
+			if (!(obj instanceof FlowDescriptor flow))
 				return null;
-			var flow = (FlowDescriptor) obj;
 			switch (col) {
-			case 0:
-				return flow.name;
-			case 1:
-				if (flow.category == null)
+				case 0:
+					return flow.name;
+				case 1:
+					if (flow.category == null)
+						return null;
+					var category = cache.get(Category.class, flow.category);
+					return CategoryPath.getFull(category);
+				case 2:
+					if (flow.location == null)
+						return null;
+					var loc = cache.get(LocationDescriptor.class, flow.location);
+					return loc != null ? loc.code : null;
+				case 3:
+					return fullName(flow);
+				default:
 					return null;
-				var category = cache.get(Category.class, flow.category);
-				return CategoryPath.getFull(category);
-			case 2:
-				if (flow.location == null)
-					return null;
-				Location loc = cache.get(Location.class, flow.location);
-				return loc != null ? loc.code : null;
-			case 3:
-				return fullName(flow);
-			default:
-				return null;
 			}
 		}
 
@@ -120,11 +119,13 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 				return null;
 			String t = flow.name;
 			Category category = getCategory(flow);
-			if (category != null)
+			if (category != null) {
 				t += " - " + CategoryPath.getShort(category);
-			Location location = getLocation(flow);
-			if (location != null && location.code != null)
+			}
+			var location = getLocation(flow);
+			if (location != null && location.code != null) {
 				t += " - " + location.code;
+			}
 			return t;
 		}
 
@@ -134,10 +135,10 @@ public class FlowViewer extends AbstractComboViewer<FlowDescriptor> {
 			return cache.get(Category.class, flow.category);
 		}
 
-		private Location getLocation(FlowDescriptor flow) {
+		private LocationDescriptor getLocation(FlowDescriptor flow) {
 			if (flow == null || flow.location == null)
 				return null;
-			return cache.get(Location.class, flow.location);
+			return cache.get(LocationDescriptor.class, flow.location);
 		}
 	}
 }
