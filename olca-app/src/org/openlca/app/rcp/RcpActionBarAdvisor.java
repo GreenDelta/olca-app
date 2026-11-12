@@ -43,6 +43,7 @@ import org.openlca.app.tools.hestia.HestiaTool;
 import org.openlca.app.tools.libraries.LibraryExportDialog;
 import org.openlca.app.tools.libraries.LibrarySigningDialog;
 import org.openlca.app.tools.mapping.MappingTool;
+import org.openlca.app.tools.mcp.McpDialog;
 import org.openlca.app.tools.openepd.EpdPanel;
 import org.openlca.app.tools.params.ParameterAnalysisDialog;
 import org.openlca.app.tools.smartepd.SmartEpdTool;
@@ -257,6 +258,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		devMenu.add(Actions.create(M.Console, Icon.CONSOLE.descriptor(), Console::show));
 		devMenu.add(Actions.create(M.Python, Icon.PYTHON.descriptor(), PythonEditor::open));
 		devMenu.add(Actions.create(M.IpcServer, Icon.IPC.descriptor(), IpcDialog::show));
+		devMenu.add(Actions.create(M.McpServer, Icon.IPC.descriptor(), McpDialog::show));
 	}
 
 	@Override

@@ -104,6 +104,46 @@
 			<artifactId>ph-css</artifactId>
 			<version>8.4.0</version>
 		</dependency>
+
+		<!-- MCP server: SDK, Jackson 3 JSON binding, and Jetty as servlet container -->
+		<dependency>
+			<groupId>io.modelcontextprotocol.sdk</groupId>
+			<artifactId>mcp-core</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.modelcontextprotocol.sdk</groupId>
+			<artifactId>mcp-json-jackson3</artifactId>
+			<version>2.1.0</version>
+			<exclusions>
+				<!-- YAML schemas are not used; loaded lazily by the schema validator -->
+				<exclusion>
+					<groupId>tools.jackson.dataformat</groupId>
+					<artifactId>jackson-dataformat-yaml</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.snakeyaml</groupId>
+					<artifactId>snakeyaml-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<!-- align with jackson-core from olca-git -->
+			<groupId>tools.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>3.2.4</version>
+		</dependency>
+		<dependency>
+			<!-- the version required by jackson-databind 3.2.x (see jackson-bom) -->
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.22</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.ee11</groupId>
+			<artifactId>jetty-ee11-servlet</artifactId>
+			<version>12.1.15</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -11,6 +11,7 @@ import org.openlca.app.collaboration.Repository;
 import org.openlca.app.navigation.clipboard.NaviClipboard;
 import org.openlca.app.rcp.RcpWindowAdvisor;
 import org.openlca.app.rcp.Workspace;
+import org.openlca.app.tools.mcp.McpService;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
@@ -20,9 +21,7 @@ import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.config.MySqlConfig;
 import org.slf4j.LoggerFactory;
 
-/**
- * Database management of the application.
- */
+/// Database management of the application.
 public class Database {
 
 	private static IDatabase database;
@@ -87,11 +86,10 @@ public class Database {
 		return Objects.equals(config, Database.config);
 	}
 
-	/**
-	 * Closes the active database.
-	 */
+	/// Closes the active database.
 	public static void close() throws Exception {
 		try {
+			McpService.stopIfConnectedTo(database);
 			AppContext.clear();
 			NaviClipboard.get().clear();
 			if (Repository.CURRENT != null) {
@@ -195,15 +193,13 @@ public class Database {
 		saveConfig();
 	}
 
-	/**
-	 * Checks if the given string is a valid name for a new (local, file-based)
-	 * database. Such a name is valid if a folder with that name can be created
-	 * in the workspace and when no database with the same name already exists.
-	 *
-	 * @param name the name of the new database
-	 * @return the validation error for display or {@code null} when the name is
-	 * valid
-	 */
+	/// Checks if the given string is a valid name for a new (local, file-based)
+	/// database. Such a name is valid if a folder with that name can be created
+	/// in the workspace and when no database with the same name already exists.
+	///
+	/// @param name the name of the new database
+	/// @return the validation error for display or `null` when the name is
+	/// valid
 	public static String validateNewName(String name) {
 		if (name == null || name.isBlank())
 			return M.EmptyNameNotAllowed;

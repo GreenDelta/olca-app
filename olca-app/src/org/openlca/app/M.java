@@ -196,6 +196,7 @@ public class M extends NLS {
 	public static String ClickTheLinkForExamples;
 	public static String ClickToCheckTheMappings;
 	public static String ClickToSearchOrPressEnter;
+	public static String ClientConfiguration;
 	public static String Clone;
 	public static String Close;
 	public static String CloseAll;
@@ -593,7 +594,9 @@ public class M extends NLS {
 	public static String FailedToParseJson;
 	public static String FailedToParseJsonErr;
 	public static String FailedToStartIpcServer;
+	public static String FailedToStartMcpServer;
 	public static String FailedToStopIpcServer;
+	public static String FailedToStopMcpServer;
 	public static String FailedToUpdateEpd;
 	public static String FailedToUpdateEpdToEc3;
 	public static String FeatureRepairDone;
@@ -940,6 +943,7 @@ public class M extends NLS {
 	public static String Maximum;
 	public static String MaximumFormula;
 	public static String MaximumMessageCount;
+	public static String McpServer;
 	public static String Mean;
 	public static String MeanFormula;
 	public static String Median;
@@ -1559,6 +1563,8 @@ public class M extends NLS {
 	public static String StartDate;
 	public static String StartIPCInfo;
 	public static String StartIPCServer;
+	public static String StartMcpInfo;
+	public static String StartMcpServer;
 	public static String StartServerDots;
 	public static String Stash;
 	public static String StashChanges;
@@ -1568,6 +1574,7 @@ public class M extends NLS {
 	public static String Status;
 	public static String StickyNoteCannotBeAddedToTheGraph;
 	public static String StopIPCInfo;
+	public static String StopMcpInfo;
 	public static String StopServerDots;
 	public static String StraightLine;
 	public static String SubgroupBy;
@@ -1617,6 +1624,7 @@ public class M extends NLS {
 	public static String ToggleProtection;
 	public static String ToggleShowElementaryFlows;
 	public static String Token;
+	public static String ToolCalls;
 	public static String Tools;
 	public static String Total;
 	public static String TotalAddedValue;

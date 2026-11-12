@@ -47,11 +47,9 @@ public class App {
 	private App() {
 	}
 
-	/**
-	 * Get the folder where openLCA is installed. This is where our native math
-	 * libraries and the openLCA.ini file are located. On macOS this is the
-	 * folder `openLCA.app/Contents/Eclipse`.
-	 */
+	/// Get the folder where openLCA is installed. This is where our native math
+	/// libraries and the openLCA.ini file are located. On macOS this is the
+	/// folder `openLCA.app/Contents/Eclipse`.
 	public static File getInstallLocation() {
 		URL url = Platform.getInstallLocation().getURL();
 		try {
@@ -107,9 +105,7 @@ public class App {
 		}
 	}
 
-	/**
-	 * Returns the version of the openLCA application.
-	 */
+	/// Returns the version of the openLCA application.
 	public static String getVersion() {
 		return RcpActivator.getDefault().getBundle().getVersion().toString();
 	}
@@ -118,10 +114,8 @@ public class App {
 		return Repository.isConnected() && CollaborationPreference.commentsEnabled();
 	}
 
-	/**
-	 * Indicates if the application runs in developer mode (for activation of
-	 * experimental features and development tools).
-	 */
+	/// Indicates if the application runs in developer mode (for activation of
+	/// experimental features and development tools).
 	public static boolean runsInDevMode() {
 		String val = AppArg.DEV_MODE.getValue();
 		if (val == null)
@@ -162,20 +156,21 @@ public class App {
 		Editors.close(ref);
 	}
 
-	/**
-	 * Returns true if the given data set is currently opened in an editor that
-	 * has a dirty (= unsaved) state.
-	 */
+	/// Returns true if the given data set is currently opened in an editor.
+	public static boolean isOpen(Descriptor d) {
+		return findEditor(d) != null;
+	}
+
+	/// Returns true if the given data set is currently opened in an editor that
+	/// has a dirty (= unsaved) state.
 	public static boolean hasDirtyEditor(RootEntity e) {
 		if (e == null)
 			return false;
 		return hasDirtyEditor(Descriptor.of(e));
 	}
 
-	/**
-	 * Returns true if the given data set is currently opened in an editor that
-	 * has a dirty (= unsaved) state.
-	 */
+	/// Returns true if the given data set is currently opened in an editor that
+	/// has a dirty (= unsaved) state.
 	public static boolean hasDirtyEditor(Descriptor d) {
 		IEditorReference ref = findEditor(d);
 		if (ref == null)
