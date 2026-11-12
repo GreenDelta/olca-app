@@ -78,6 +78,7 @@ public class McpDialog extends FormDialog {
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText(M.McpServer);
+		newShell.setImage(Icon.MCP.get());
 	}
 
 	@Override

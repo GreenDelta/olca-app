@@ -107,6 +107,7 @@ public enum Icon {
 	MANAGE_PLUGINS("manage_plugins.png"),
 	MAP("map.png"),
 	MAXIMIZE("graphical/maximize.png"),
+	MCP("mcp.png"),
 	MERGE("collaboration/merge.png"),
 	MINIMAP("graphical/minimap.png"),
 	MINIMIZE("graphical/minimize.png"),

@@ -258,7 +258,7 @@ public class RcpActionBarAdvisor extends ActionBarAdvisor {
 		devMenu.add(Actions.create(M.Console, Icon.CONSOLE.descriptor(), Console::show));
 		devMenu.add(Actions.create(M.Python, Icon.PYTHON.descriptor(), PythonEditor::open));
 		devMenu.add(Actions.create(M.IpcServer, Icon.IPC.descriptor(), IpcDialog::show));
-		devMenu.add(Actions.create(M.McpServer, Icon.IPC.descriptor(), McpDialog::show));
+		devMenu.add(Actions.create(M.McpServer, Icon.MCP.descriptor(), McpDialog::show));
 	}
 
 	@Override
