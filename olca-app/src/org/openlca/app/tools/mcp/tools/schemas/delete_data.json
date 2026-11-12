@@ -1,0 +1,47 @@
+{
+  "name": "delete_data",
+  "title": "Delete a data set",
+  "description": "Deletes the data set with the given type and @id from the database. Use get_usages first to check that the data set is not used by other data sets. Data sets from libraries cannot be deleted.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "Project",
+          "ImpactMethod",
+          "ImpactCategory",
+          "ProductSystem",
+          "Process",
+          "Flow",
+          "FlowProperty",
+          "UnitGroup",
+          "Actor",
+          "Source",
+          "Category",
+          "Location",
+          "SocialIndicator",
+          "Currency",
+          "Parameter",
+          "DQSystem",
+          "Result",
+          "Epd"
+        ],
+        "description": "The type of the data set."
+      },
+      "id": {
+        "type": "string",
+        "description": "The @id of the data set."
+      }
+    },
+    "required": [
+      "type",
+      "id"
+    ]
+  },
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": true,
+    "openWorldHint": false
+  }
+}
