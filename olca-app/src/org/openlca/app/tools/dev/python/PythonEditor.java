@@ -1,4 +1,4 @@
-package org.openlca.app.devtools.python;
+package org.openlca.app.tools.dev.python;
 
 import java.io.File;
 import java.util.UUID;
@@ -11,13 +11,13 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.openlca.app.App;
 import org.openlca.app.M;
-import org.openlca.app.devtools.ScriptingEditor;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.logging.Console;
 import org.openlca.app.preferences.Theme;
 import org.openlca.app.rcp.HtmlFolder;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.dev.ScriptingEditor;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;

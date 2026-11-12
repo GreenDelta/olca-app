@@ -27,19 +27,19 @@
 
 		<!-- developer tools -->
 		<editor
-				class="org.openlca.app.devtools.sql.SqlEditor"
-				contributorClass="org.openlca.app.devtools.Toolbar"
+				class="org.openlca.app.tools.dev.sql.SqlEditor"
+				contributorClass="org.openlca.app.tools.dev.Toolbar"
 				default="false"
 				id="SqlEditor"
 				name="SQL">
 		</editor>
 
 		<editor
-				class="org.openlca.app.devtools.python.PythonEditor"
+				class="org.openlca.app.tools.dev.python.PythonEditor"
 				default="false"
 				id="PythonEditor"
 				name="Python"
-				contributorClass="org.openlca.app.devtools.Toolbar">
+				contributorClass="org.openlca.app.tools.dev.Toolbar">
 		</editor>
 
 		<editor

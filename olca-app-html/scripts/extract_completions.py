@@ -2,8 +2,8 @@ import json
 import re
 from pathlib import Path
 
-mod_path = Path("../olca-app/src/org/openlca/app/devtools/python/mod_bindings.py")
-app_path = Path("../olca-app/src/org/openlca/app/devtools/python/app_bindings.py")
+mod_path = Path("../olca-app/src/org/openlca/app/tools/dev/python/mod_bindings.py")
+app_path = Path("../olca-app/src/org/openlca/app/tools/dev/python/app_bindings.py")
 
 miscellaneous = [
     {"label": "db", "type": "variable", "detail": "org.openlca.core.database"}

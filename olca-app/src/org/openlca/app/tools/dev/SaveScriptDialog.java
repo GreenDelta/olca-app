@@ -1,4 +1,4 @@
-package org.openlca.app.devtools;
+package org.openlca.app.tools.dev;
 
 import java.io.File;
 import java.nio.charset.Charset;

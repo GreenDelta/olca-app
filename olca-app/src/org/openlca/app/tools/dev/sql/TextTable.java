@@ -1,4 +1,4 @@
-package org.openlca.app.devtools.sql;
+package org.openlca.app.tools.dev.sql;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

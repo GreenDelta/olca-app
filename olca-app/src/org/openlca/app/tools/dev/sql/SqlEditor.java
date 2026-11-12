@@ -1,4 +1,4 @@
-package org.openlca.app.devtools.sql;
+package org.openlca.app.tools.dev.sql;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,10 +20,10 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
-import org.openlca.app.devtools.ScriptingEditor;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.rcp.images.Icon;
+import org.openlca.app.tools.dev.ScriptingEditor;
 import org.openlca.app.util.Actions;
 import org.openlca.app.util.Colors;
 import org.openlca.app.util.MsgBox;

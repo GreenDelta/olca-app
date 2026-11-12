@@ -1,4 +1,4 @@
-package org.openlca.app.devtools;
+package org.openlca.app.tools.dev;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -8,9 +8,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.openlca.app.devtools.sql.SqlEditor;
 import org.openlca.app.editors.SimpleEditorInput;
 import org.openlca.app.editors.SimpleFormEditor;
+import org.openlca.app.tools.dev.sql.SqlEditor;
 import org.openlca.app.util.ErrorReporter;
 
 public abstract class ScriptingEditor extends SimpleFormEditor {

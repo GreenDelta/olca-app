@@ -5,7 +5,7 @@ platform
 target
 
 # generated mod-bindings; see ../gen-jython-bindings.js
-src/org/openlca/app/devtools/python/mod_bindings.py
+src/org/openlca/app/tools/dev/python/mod_bindings.py
 
 # IDE settings
 /.idea

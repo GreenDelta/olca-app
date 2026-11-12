@@ -1,4 +1,4 @@
-package org.openlca.app.devtools.python;
+package org.openlca.app.tools.dev.python;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;

@@ -74,7 +74,7 @@ let generate = (folders, target) => {
     .sort()
     .map(clazz => `import ${bindings[clazz]} as ${clazz}\n`)
     .reduce((t, s) => t.concat(s))
-  let out = `olca-app/src/org/openlca/app/devtools/python/${target}`
+  let out = `olca-app/src/org/openlca/app/tools/dev/python/${target}`
   let header = '# auto-generated bindings; do not edit them\n'
   fs.writeFileSync(out, header + text)
 }

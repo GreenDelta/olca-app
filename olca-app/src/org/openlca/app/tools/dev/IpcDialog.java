@@ -1,4 +1,4 @@
-package org.openlca.app.devtools;
+package org.openlca.app.tools.dev;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
