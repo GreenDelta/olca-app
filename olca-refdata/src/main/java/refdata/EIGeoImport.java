@@ -15,16 +15,16 @@ import org.openlca.geo.GeoJsonImport;
  * if they are not yet available in the "target" directory of this project and
  * imports the using the standard openLCA GeoJSON import.
  */
-class GeoImport {
+class EIGeoImport {
 
 	private final IDatabase db;
 
-	private GeoImport(IDatabase db) {
+	private EIGeoImport(IDatabase db) {
 		this.db = db;
 	}
 
 	static void on(IDatabase db) {
-		new GeoImport(db).run();
+		new EIGeoImport(db).run();
 	}
 
 	private void run() {

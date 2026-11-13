@@ -8,9 +8,11 @@ import java.nio.charset.StandardCharsets;
 
 import org.openlca.core.database.Derby;
 import org.openlca.core.database.IDatabase;
+import org.openlca.core.model.Location;
 import org.openlca.core.model.ModelType;
 import org.openlca.io.refdata.RefDataImport;
 import org.openlca.jsonld.MemStore;
+import org.openlca.jsonld.ZipStore;
 import org.openlca.jsonld.input.JsonImport;
 import org.openlca.util.Dirs;
 
@@ -21,7 +23,7 @@ import refdata.RefData.Set;
 
 public class Main {
 
-	public static void main(String[] args) {
+	static void main() {
 		try {
 			System.out.println("  Create database from CSV files");
 			Util.clean();
@@ -49,7 +51,7 @@ public class Main {
 			new RefDataImport(tempDir, db).run();
 			if (refSet == Set.FLOWS) {
 				importDQS(db);
-				GeoImport.on(db);
+				importLocations(db);
 			}
 		}
 
@@ -57,7 +59,7 @@ public class Main {
 			Dirs.delete(tempDir);
 		} catch (Exception e) {
 			System.out.println(
-					"WARNING: failed to delete temporary folder: " + e);
+				"WARNING: failed to delete temporary folder: " + e);
 		}
 		System.out.println("  done");
 	}
@@ -65,26 +67,40 @@ public class Main {
 	private static void importDQS(IDatabase db) throws Exception {
 		var store = new MemStore();
 		String[] dqs = {
-				"ecoinvent_dqs.json", 
-				"ilcd_dqs.json", 
-				"ciroth_muller_weidema_lesage_dqs.json", 
-				"pefcr_dqs.json", 
-				"psilca_dqs.json", 
-				"un_global_dqs.json", 
-				"us_epa_flow_dqs.json", 
-				"us_epa_process_dqs.json"
+			"ecoinvent_dqs.json",
+			"ilcd_dqs.json",
+			"ciroth_muller_weidema_lesage_dqs.json",
+			"pefcr_dqs.json",
+			"psilca_dqs.json",
+			"un_global_dqs.json",
+			"us_epa_flow_dqs.json",
+			"us_epa_process_dqs.json"
 		};
 		for (String dq : dqs) {
 			System.out.println("  ... import DQS " + dq);
 			File f = F("data/dqs/" + dq);
 			try (var stream = new FileInputStream(f);
-				 var reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
-				 var buffer = new BufferedReader(reader)) {
+			     var reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+			     var buffer = new BufferedReader(reader)) {
 				var obj = new Gson().fromJson(buffer, JsonObject.class);
 				store.put(ModelType.DQ_SYSTEM, obj);
 			}
 		}
 		new JsonImport(store, db).run();
+	}
+
+	/// Imports the locations with their geometries from the openLCA JSON
+	/// package in the GreenDelta/data repository.
+	private static void importLocations(IDatabase db) throws Exception {
+		System.out.println("  ... import locations with geometries");
+		var zip = RefData.fetchRefDataFile("geometries/geometries.zip")
+			.orElseThrow(() -> new IllegalStateException(
+				"failed to fetch geometries/geometries.zip"));
+		try (var store = ZipStore.open(zip)) {
+			new JsonImport(store, db).run();
+		}
+		long count = db.getAll(Location.class).size();
+		System.out.println("  ... imported " + count + " locations");
 	}
 
 	private static File F(String path) {

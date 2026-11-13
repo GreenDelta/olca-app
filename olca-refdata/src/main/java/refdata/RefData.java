@@ -1,6 +1,7 @@
 package refdata;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -10,6 +11,8 @@ import java.util.Optional;
 import org.openlca.util.Dirs;
 
 class RefData {
+
+	private static final int MAX_DOWNLOAD_ATTEMPTS = 4;
 
 	enum Set {
 		UNITS,
@@ -29,15 +32,13 @@ class RefData {
 					"currencies.csv",
 					"flow_properties.csv",
 					"flows.csv",
-					"locations.csv",
 					"unit_groups.csv",
 					"units.csv",
 
 					"mappings/EcoSpold1_Export_BAFU.csv",
 					"mappings/EcoSpold1_Import_BAFU.csv",
 					"mappings/EcoSpold1_Import_Default.csv",
-					"mappings/ILCD_Import.csv",
-					"mappings/SimaPro_Import.csv"
+					"mappings/ILCD_Import.csv"
 				);
 			};
 		}
@@ -48,6 +49,7 @@ class RefData {
 	 * reference data set.
 	 */
 	static Optional<File> createTempImportDir(Set refSet) {
+
 		File tempDir;
 		try {
 			tempDir = Files.createTempDirectory(
@@ -86,7 +88,8 @@ class RefData {
 	 * @param name the name of the file in the `refdata` folder.
 	 * @return the file or an empty option if it failed to fetch the file.
 	 */
-	private static Optional<File> fetchRefDataFile(String name) {
+	static Optional<File> fetchRefDataFile(String name) {
+
 		var target = new File("target/" + name);
 		if (target.exists())
 			return Optional.of(target);
@@ -101,18 +104,41 @@ class RefData {
 
 		var path = "https://raw.githubusercontent.com/GreenDelta/data" +
 			"/master/refdata/" + name;
-		System.out.println("download: " + path);
-		try {
-			var url = new URI(path).toURL();
-			try (var input = url.openStream()) {
-				Files.copy(input, target.toPath());
+		var temp = new File(target.getParentFile(), target.getName() + ".part");
+		for (int attempt = 1; attempt <= MAX_DOWNLOAD_ATTEMPTS; attempt++) {
+			System.out.println("download: " + path
+				+ " (attempt " + attempt + "/" + MAX_DOWNLOAD_ATTEMPTS + ")");
+			try {
+				var url = new URI(path).toURL();
+				try (var input = url.openStream()) {
+					Files.copy(input, temp.toPath(),
+						StandardCopyOption.REPLACE_EXISTING);
+				}
+				// only move complete downloads into the cache
+				Files.move(temp.toPath(), target.toPath(),
+					StandardCopyOption.REPLACE_EXISTING);
+				return Optional.of(target);
+			} catch (FileNotFoundException e) {
+				// HTTP 404; retrying will not help
+				System.out.println("ERROR: file not found: " + path);
+				break;
+			} catch (Exception e) {
+				System.out.println("WARNING: failed to download: "
+					+ path + ": " + e.getMessage());
+				if (attempt < MAX_DOWNLOAD_ATTEMPTS) {
+					try {
+						Thread.sleep(2000L * attempt);
+					} catch (InterruptedException ie) {
+						Thread.currentThread().interrupt();
+						break;
+					}
+				}
 			}
-			return Optional.of(target);
-		} catch (Exception e) {
-			System.out.println(
-				"ERROR: failed to download: " + path + e.getMessage());
-			return Optional.empty();
 		}
+
+		temp.delete();
+		System.out.println("ERROR: failed to download: " + path);
+		return Optional.empty();
 	}
 
 }
