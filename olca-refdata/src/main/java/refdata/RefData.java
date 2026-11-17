@@ -38,7 +38,8 @@ class RefData {
 					"mappings/EcoSpold1_Export_BAFU.csv",
 					"mappings/EcoSpold1_Import_BAFU.csv",
 					"mappings/EcoSpold1_Import_Default.csv",
-					"mappings/ILCD_Import.csv"
+					"mappings/ILCD_Import.csv",
+					"mappings/SimaPro_Import.csv"
 				);
 			};
 		}
