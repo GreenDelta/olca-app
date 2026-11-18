@@ -67,8 +67,8 @@ public class Navigator extends CommonNavigator {
 	}
 
 	@Override
-	protected CommonViewer createCommonViewer(Composite aParent) {
-		var viewer = super.createCommonViewer(aParent);
+	protected CommonViewer createCommonViewer(Composite parent) {
+		var viewer = super.createCommonViewer(parent);
 		viewer.getTree().setBackground(
 			Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		viewer.getTree().addKeyListener(new RefreshListener());
@@ -139,18 +139,6 @@ public class Navigator extends CommonNavigator {
 				NavCache.refresh();
 			}
 			doRefresh(element);
-		} catch (Exception e) {
-			logRefreshError(e);
-		}
-	}
-
-	/// Refreshes the content *under* the given elements.
-	public static void refresh(Collection<INavigationElement<?>> elements) {
-		try {
-			NavCache.refresh();
-			for (var element : elements) {
-				doRefresh(element);
-			}
 		} catch (Exception e) {
 			logRefreshError(e);
 		}
@@ -472,7 +460,6 @@ public class Navigator extends CommonNavigator {
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-
 		}
 
 		@Override
