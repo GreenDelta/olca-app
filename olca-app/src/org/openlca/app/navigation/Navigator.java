@@ -14,7 +14,6 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
@@ -128,10 +127,10 @@ public class Navigator extends CommonNavigator {
 
 	/// Refresh the navigation view if it is available.
 	public static void refresh() {
+		NavCache.refresh();
 		withViewer("refresh", (navigator, viewer) -> {
-			NavCache.refresh();
 			navigator.root.update();
-			refreshSafely(viewer, viewer::refresh);
+			refreshSafely(viewer, null);
 		});
 	}
 
@@ -139,9 +138,6 @@ public class Navigator extends CommonNavigator {
 	public static void refresh(INavigationElement<?> element) {
 		if (element == null)
 			return;
-
-		// the repository state cache is also used when the navigation view
-		// is closed, so we refresh it in any case
 		if (element instanceof ModelTypeElement e) {
 			NavCache.refresh(e.getContent());
 		} else {
@@ -153,24 +149,43 @@ public class Navigator extends CommonNavigator {
 			// elements, labels, filters), so we need to clear it before
 			clearCategoryContentCache(element);
 			element.update();
-			refreshSafely(viewer, () -> viewer.refresh(element));
+			refreshSafely(viewer, element);
 			updateParentLabels(viewer, element);
 		});
 	}
 
 	/// Clears the cached library content of the categories of the model type
 	/// of the given element.
-	private static void clearCategoryContentCache(INavigationElement<?> element) {
-		var modelType = modelTypeOf(element);
+	private static void clearCategoryContentCache(INavigationElement<?> elem) {
+		if (elem == null)
+			return;
+
+		var modelType = switch (elem.getContent()) {
+			case ModelType t -> t;
+			case Descriptor d -> d.type;
+			case Category c -> c.modelType;
+			case null, default -> null;
+		};
 		if (modelType == null)
 			return;
-		var dbElem = databaseElementOf(element);
+
+		var dbElem = databaseElementOf(elem);
 		if (dbElem == null)
 			return;
 		var contentTest = dbElem.categoryContentTest();
 		if (contentTest != null) {
 			contentTest.clearCacheOf(modelType);
 		}
+	}
+
+	private static DatabaseElement databaseElementOf(INavigationElement<?> elem) {
+		var e = elem;
+		while (e != null) {
+			if (e instanceof DatabaseElement dbe)
+				return dbe;
+			e = e.getParent();
+		}
+		return null;
 	}
 
 	private static void updateParentLabels(
@@ -187,48 +202,35 @@ public class Navigator extends CommonNavigator {
 		}
 	}
 
-	/// Runs the given refresh of the viewer. With hash lookup enabled, JFace
-	/// maintains an internal map from elements to tree items. If this map
-	/// contains an entry that points to a disposed tree item, a refresh fails
-	/// with a "Widget is disposed" error, e.g. when the viewer restores the
-	/// selection after the refresh. In this case, we set the input again, which
-	/// clears this map and rebuilds the tree from scratch.
-	///
-	/// Note that the refresh itself keeps the expansion state: JFace expands the
-	/// new child elements that are equal to expanded old ones, and navigation
-	/// elements are equal when their content along their path is equal. Only
-	/// for the rebuild, we need to take the expanded elements before the
-	/// refresh, as the tree is in an undefined state when the refresh failed.
-	private static void refreshSafely(CommonViewer viewer, Runnable refresh) {
-		var expanded = viewer.getExpandedElements();
-		try {
-			refresh.run();
-		} catch (SWTException e) {
-			if (e.code != SWT.ERROR_WIDGET_DISPOSED
-				|| viewer.getTree().isDisposed())
-				throw e;
-			rebuildTree(viewer, expanded);
+	/// Refreshes the given element in the viewer, or the full viewer if the
+	/// element is `null`. With hash lookup, JFace takes the tree items of the
+	/// refreshed element and of the selection, which it restores after the
+	/// refresh, from its element map. If this map contains disposed items for
+	/// them, the refresh fails ("Widget is disposed" or "Argument not valid").
+	/// Thus, we check these items before and rebuild the tree if necessary.
+	private static void refreshSafely(
+		CommonViewer viewer, INavigationElement<?> element
+	) {
+		var elements = new ArrayList<INavigationElement<?>>();
+		if (element != null) {
+			elements.add(element);
 		}
-	}
-
-	private static ModelType modelTypeOf(INavigationElement<?> elem) {
-		var content = elem.getContent();
-		return switch (content) {
-			case ModelType t -> t;
-			case Descriptor d -> d.type;
-			case Category c -> c.modelType;
-			case null, default -> null;
-		};
-	}
-
-	private static DatabaseElement databaseElementOf(INavigationElement<?> elem) {
-		var e = elem;
-		while (e != null) {
-			if (e instanceof DatabaseElement dbe)
-				return dbe;
-			e = e.getParent();
+		for (var selected : viewer.getStructuredSelection().toList()) {
+			if (selected instanceof INavigationElement<?> e) {
+				elements.add(e);
+			}
 		}
-		return null;
+		for (var e : elements) {
+			if (hasDisposedItems(viewer, e)) {
+				rebuildTree(viewer, viewer.getExpandedElements());
+				break;
+			}
+		}
+		if (element == null) {
+			viewer.refresh();
+		} else {
+			viewer.refresh(element);
+		}
 	}
 
 	/// Selects the navigation element with the given *content* in the tree.
