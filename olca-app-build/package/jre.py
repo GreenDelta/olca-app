@@ -37,7 +37,7 @@ class JRE:
             name = "x64_windows"
         else:
             raise ValueError(f"Warning: Unsupported OS + arch: {osa}.")
-        return f"OpenJDK25U-jre_{name}_hotspot_25.0.3_9.{suffix}"
+        return f"OpenJDK25U-jre_{name}_hotspot_25.0.5_8.{suffix}"
 
     @staticmethod
     def cache_dir() -> Path:
@@ -55,7 +55,7 @@ class JRE:
             return zf
         url = (
             "https://github.com/adoptium/temurin25-binaries/releases/"
-            f"download/jdk-25.0.3%2B9/{zip_name}"
+            f"download/jdk-25.0.5%2B8/{zip_name}"
         )
         print(f"  Fetching JRE from {url} ...")
         urllib.request.urlretrieve(url, zf)
