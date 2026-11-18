@@ -1,25 +1,20 @@
 package org.openlca.app.wizards;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.jspecify.annotations.Nullable;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
-import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.util.Controls;
@@ -33,7 +28,6 @@ import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
 import org.openlca.core.model.ProductSystem;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.slf4j.LoggerFactory;
 
 class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
@@ -66,10 +60,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		createOptions(comp);
 		if (refProcess != null) {
 			nameText.setText(Strings.notNull(Labels.name(refProcess)));
-			var elem = elementOf(refProcess);
-			if (elem != null) {
-				processTree.setSelection(new StructuredSelection(elem), true);
-			}
+			NavigationTree.select(processTree, refProcess);
 			checkInput();
 		}
 	}
@@ -82,40 +73,6 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		gd.heightHint = 200;
 		processTree.getTree().setLayoutData(gd);
 		processTree.addSelectionChangedListener(this::onProcessSelected);
-	}
-
-	/// Tries to find the navigation element of the given process in the tree.
-	@Nullable
-	private INavigationElement<?> elementOf(Process process) {
-
-		// build the path, from the root category to the process
-		var path = new ArrayList<>();
-		for (var c = process.category; c != null; c = c.category) {
-			path.addFirst(c);
-		}
-		path.add(Descriptor.of(process));
-
-		// find the element top down level by level
-		List<?> level = processTree.getInput() instanceof List<?> roots
-			? roots
-			: List.of();
-		INavigationElement<?> elem = null;
-		for (var content : path) {
-			// find the next content element in the current level
-			elem = null;
-			for (var e : level) {
-				if (e instanceof INavigationElement<?> next
-					&& Objects.equals(next.getContent(), content)) {
-					elem = next;
-					break;
-				}
-			}
-			if (elem == null)
-				return null;
-			// go to the next level
-			level = elem.getChildren();
-		}
-		return elem;
 	}
 
 	private void onProcessSelected(SelectionChangedEvent e) {

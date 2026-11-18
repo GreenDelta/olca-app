@@ -1,6 +1,5 @@
 package org.openlca.app.wizards;
 
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -28,7 +27,6 @@ import org.openlca.core.model.Flow;
 import org.openlca.core.model.FlowType;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.Process;
-import org.openlca.core.model.descriptors.Descriptor;
 import org.openlca.core.model.descriptors.FlowDescriptor;
 
 public class ProcessWizard extends AbstractWizard<Process> {
@@ -119,11 +117,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			labelStack.layout();
 			contentStack.layout();
 			if (refFlow != null) {
-				var d = Descriptor.of(refFlow);
-				var elem = Navigator.findElement(d);
-				if (elem != null) {
-					flowTree.setSelection(new StructuredSelection(elem), true);
-				}
+				NavigationTree.select(flowTree, refFlow);
 				String name = refFlow.name != null ? refFlow.name : "";
 				nameText.setText(name);
 			}
