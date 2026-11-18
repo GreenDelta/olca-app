@@ -22,9 +22,18 @@ public class CategoryElement extends NavigationElement<Category> {
 	@Override
 	public void update() {
 		super.update();
-		Category category = getContent();
-		// refId might have changed
-		setContent(new CategoryDao(Database.get()).getForId(category.id));
+		var category = getContent();
+		var db = Database.get();
+		if (category == null || db == null)
+			return;
+		// refId might have changed; if the category does not exist anymore, we
+		// keep the old content, as setting it to null would change the hash code
+		// of this element and of all its child elements while they are shown in
+		// the navigation tree
+		var newContent = new CategoryDao(db).getForId(category.id);
+		if (newContent != null) {
+			setContent(newContent);
+		}
 	}
 
 	@Override

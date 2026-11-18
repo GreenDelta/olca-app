@@ -81,31 +81,26 @@ public class Navigator extends CommonNavigator {
 		ColumnViewerToolTipSupport.enableFor(viewer);
 
 		viewer.addDoubleClickListener(evt -> {
-			var elem = Selections.firstOf(evt);
-			if (elem instanceof ModelElement e) {
-				var model = e.getContent();
-				App.open(model);
-			} else if (elem instanceof DatabaseElement e) {
-				var config = e.getContent();
-				if (config != null && !Database.isActive(config)) {
-					new DbActivateAction(config).run();
+			switch (Selections.firstOf(evt)) {
+				case ModelElement e -> App.open(e.getContent());
+				case LibraryElement e -> LibraryEditor.open(e.getContent());
+				case MappingFileElement e -> OpenMappingAction.run(e.getContent());
+				case EntryElement e when e.isDataset() -> Desktop.browse(e.getUrl());
+				case SdModelElement e -> SdModelEditor.open(e.getContent());
+				case DatabaseElement e -> {
+					var config = e.getContent();
+					if (config != null && !Database.isActive(config)) {
+						new DbActivateAction(config).run();
+					}
 				}
-			} else if (elem instanceof ScriptElement e) {
-				var file = e.getContent();
-				if (file.isDirectory())
-					return;
-				OpenScriptAction.run(file);
-			} else if (elem instanceof LibraryElement e) {
-				var library = e.getContent();
-				LibraryEditor.open(library);
-			} else if (elem instanceof MappingFileElement e) {
-				var mapping = e.getContent();
-				OpenMappingAction.run(mapping);
-			} else if (elem instanceof EntryElement e && e.isDataset()) {
-				var url = e.getUrl();
-				Desktop.browse(url);
-			} else if (elem instanceof SdModelElement sdm) {
-				SdModelEditor.open(sdm.getContent());
+				case ScriptElement e -> {
+					var file = e.getContent();
+					if (file != null && !file.isDirectory()) {
+						OpenScriptAction.run(file);
+					}
+				}
+				case null, default -> {
+				}
 			}
 		});
 
@@ -207,8 +202,8 @@ public class Navigator extends CommonNavigator {
 				|| viewer.getTree().isDisposed())
 				throw e;
 			var log = LoggerFactory.getLogger(Navigator.class);
-			log.warn("failed to refresh navigation; rebuild the tree", e);
-			viewer.setInput(viewer.getInput());
+			log.warn("failed to refresh navigation", e);
+			rebuildTree(viewer);
 		}
 	}
 
@@ -233,7 +228,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static void updateLabels(CommonViewer viewer,
-																	 INavigationElement<?> element) {
+		INavigationElement<?> element) {
 		TreeItem item = findItem(viewer, element);
 		if (item == null)
 			return;
@@ -244,7 +239,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	private static TreeItem findItem(CommonViewer viewer,
-																	 INavigationElement<?> element) {
+		INavigationElement<?> element) {
 		Stack<TreeItem> items = new Stack<>();
 		items.addAll(Arrays.asList(viewer.getTree().getItems()));
 		while (!items.empty()) {
@@ -281,6 +276,11 @@ public class Navigator extends CommonNavigator {
 				newExpanded.add(newElem);
 			}
 		}
+		// `setExpandedElements` creates the items of the elements via the
+		// element map, like `reveal`, and would fail on disposed items
+		if (hasDisposedItems(viewer, newExpanded)) {
+			rebuildTree(viewer);
+		}
 		viewer.setExpandedElements(newExpanded.toArray());
 	}
 
@@ -294,6 +294,14 @@ public class Navigator extends CommonNavigator {
 		INavigationElement<?> navElement = findElement(element);
 		if (navElement == null)
 			return;
+		var viewer = instance.getCommonViewer();
+		if (viewer == null || viewer.getTree().isDisposed())
+			return;
+		if (hasDisposedItems(viewer, List.of(navElement))) {
+			var expanded = viewer.getExpandedElements();
+			rebuildTree(viewer);
+			viewer.setExpandedElements(expanded);
+		}
 		instance.selectReveal(new StructuredSelection(navElement));
 	}
 
@@ -351,13 +359,49 @@ public class Navigator extends CommonNavigator {
 		if (navElem == null || navElem.getChildren().isEmpty())
 			return;
 		var first = navElem.getChildren().getFirst();
-		var navigator = Navigator.getInstance();
-		if (navigator == null)
+		var viewer = getNavigationViewer();
+		if (viewer == null || viewer.getTree().isDisposed())
 			return;
-		var viewer = navigator.getCommonViewer();
-		if (viewer == null)
-			return;
+		if (hasDisposedItems(viewer, List.of(first))) {
+			var expanded = viewer.getExpandedElements();
+			rebuildTree(viewer);
+			viewer.setExpandedElements(expanded);
+		}
 		viewer.reveal(first);
+	}
+
+	/// Returns `true` if the element map of the viewer contains a disposed tree
+	/// item for one of the given elements or their parents. With hash lookup,
+	/// JFace takes the items for `reveal`, `expand`, `setSelection` etc. from
+	/// this map (and not from the tree), starting at the element and walking up
+	/// its parents until it finds a mapped item. A disposed item in this chain
+	/// then results in a "Widget is disposed" error, also when the preceding
+	/// refresh of the tree went fine (a refresh walks the existing tree items,
+	/// it does not look up the map entries of elements that are not shown).
+	private static boolean hasDisposedItems(
+		CommonViewer viewer, Collection<?> elements
+	) {
+		if (elements == null)
+			return false;
+		for (var element : elements) {
+			Object e = element;
+			while (e instanceof INavigationElement<?> elem) {
+				for (var item : viewer.testFindItems(elem)) {
+					if (item != null && item.isDisposed())
+						return true;
+				}
+				e = elem.getParent();
+			}
+		}
+		return false;
+	}
+
+	/// Sets the input of the viewer again, which clears its element map and
+	/// rebuilds the tree from scratch. Note that this collapses the tree.
+	private static void rebuildTree(CommonViewer viewer) {
+		var log = LoggerFactory.getLogger(Navigator.class);
+		log.warn("navigation tree contains disposed items; rebuild the tree");
+		viewer.setInput(viewer.getInput());
 	}
 
 	public INavigationElement<?> getFirstSelected() {

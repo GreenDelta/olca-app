@@ -3,14 +3,14 @@ package org.openlca.app.util;
 import java.awt.Desktop.Action;
 import java.net.URI;
 
-import org.slf4j.Logger;
+import org.openlca.commons.Strings;
 import org.slf4j.LoggerFactory;
 
 public class Desktop {
 
-	private static Logger log = LoggerFactory.getLogger(Desktop.class);
-
 	public static void browse(String uri) {
+		if (Strings.isBlank(uri))
+			return;
 		try {
 			if (java.awt.Desktop.isDesktopSupported()) {
 				java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
@@ -19,8 +19,9 @@ public class Desktop {
 				}
 			}
 		} catch (Exception e) {
-			log.error("Browse URI failed", e);
+			LoggerFactory.getLogger(Desktop.class)
+				.error("Browse URI failed", e);
 		}
 	}
-	
+
 }
