@@ -9,6 +9,9 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.openlca.app.App;
+import org.openlca.app.M;
+import org.openlca.app.collaboration.Repository;
 import org.openlca.app.navigation.actions.DeleteMappingAction;
 import org.openlca.app.navigation.actions.DeleteModelAction;
 import org.openlca.app.navigation.actions.INavigationAction;
@@ -34,6 +37,10 @@ class KeyBinding extends KeyAdapter {
 			handleDelete();
 			return;
 		}
+		if (e.keyCode == SWT.F5) {
+			handleRefresh();
+			return;
+		}
 
 		// copy, cut & paste
 		if ((e.stateMask & SWT.CTRL) != 0) {
@@ -43,6 +50,13 @@ class KeyBinding extends KeyAdapter {
 				case 'v' -> handlePaste();
 			}
 		}
+	}
+
+	private void handleRefresh() {
+		if (Repository.isConnected()) {
+			App.exec(M.UpdatingLocalIndex, Repository.CURRENT.index::reload);
+		}
+		Navigator.refresh();
 	}
 
 	private void handleCopy() {

@@ -15,16 +15,12 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.openlca.app.App;
-import org.openlca.app.M;
-import org.openlca.app.collaboration.Repository;
 import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.navigation.NavCache;
 import org.openlca.app.db.Database;
@@ -68,17 +64,18 @@ public class Navigator extends CommonNavigator {
 	@Override
 	protected CommonViewer createCommonViewer(Composite parent) {
 		var viewer = super.createCommonViewer(parent);
+		// hash lookup can only be enabled before the input is set, which
+		// `createPartControl` does after this method returns
+		viewer.setUseHashlookup(true);
+		ColumnViewerToolTipSupport.enableFor(viewer);
 		viewer.getTree().setBackground(
 			Colors.systemColor(SWT.COLOR_WIDGET_BACKGROUND));
-		viewer.getTree().addKeyListener(new RefreshListener());
 		return viewer;
 	}
 
 	@Override
 	protected void initListeners(TreeViewer viewer) {
 		super.initListeners(viewer);
-		viewer.setUseHashlookup(true);
-		ColumnViewerToolTipSupport.enableFor(viewer);
 
 		viewer.addDoubleClickListener(evt -> {
 			switch (Selections.firstOf(evt)) {
@@ -428,24 +425,6 @@ public class Navigator extends CommonNavigator {
 			}
 		}
 		return null;
-	}
-
-	private static class RefreshListener implements KeyListener {
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-		}
-
-		@Override
-		public void keyPressed(KeyEvent e) {
-			if (e.keyCode == SWT.F5) {
-				if (Repository.isConnected()) {
-					App.exec(M.UpdatingLocalIndex, Repository.CURRENT.index::reload);
-				}
-				Navigator.refresh();
-			}
-		}
-
 	}
 
 }
