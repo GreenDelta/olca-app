@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.preferences.FeatureFlag;
@@ -19,22 +20,33 @@ import org.openlca.util.Dirs;
  */
 public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 
-	private CategoryContentTest _categoryContentTest;
+	private CategoryContentTest contentTest;
+	private boolean contentChecked;
 
 	public DatabaseElement(INavigationElement<?> parent,
 		DatabaseConfig config) {
 		super(parent, config);
 	}
 
+	/// Returns the test for library content in the categories of this database.
+	/// It returns `null` when the database is not active or when it has no
+	/// libraries, as there cannot be library content in the categories then. The
+	/// callers should handle `null` as "no library content". This avoids loading
+	/// the category trees just to find out that there is no library content.
+	/// Mounting or removing a library refreshes the full navigation, which
+	/// creates new database elements, so we can cache this decision here.
+	@Nullable
 	public CategoryContentTest categoryContentTest() {
-		if (_categoryContentTest != null)
-			return _categoryContentTest;
-		var config = getContent();
-		if (Database.isActive(config)) {
-			_categoryContentTest = new CategoryContentTest(Database.get());
-			return _categoryContentTest;
-		}
-		return null;
+		if (contentChecked)
+			return contentTest;
+		var db = Database.get();
+		if (db == null || !Database.isActive(getContent()))
+			return null;
+		contentChecked = true;
+		contentTest = db.getLibraries().isEmpty()
+			? null
+			: new CategoryContentTest(db);
+		return contentTest;
 	}
 
 	static CategoryContentTest categoryTesterOf(INavigationElement<?> elem) {
@@ -48,14 +60,9 @@ public class DatabaseElement extends NavigationElement<DatabaseConfig> {
 	@Override
 	public void update() {
 		super.update();
-		if (_categoryContentTest == null)
-			return;
-		var config = getContent();
-		if (Database.isActive(config)) {
-			_categoryContentTest.clearCache();
-		} else {
-			_categoryContentTest = null;
-		}
+		// the test is created again (with an empty cache) on the next access
+		contentTest = null;
+		contentChecked = false;
 	}
 
 	@Override
