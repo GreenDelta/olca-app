@@ -1,6 +1,5 @@
 package org.openlca.app.navigation;
 
-import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.List;
 
@@ -8,6 +7,8 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.openlca.app.db.Database;
+import org.openlca.app.navigation.elements.DatabaseElement;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
 import org.openlca.app.navigation.elements.NavigationRoot;
@@ -49,25 +50,13 @@ public class NavigationTree {
 		return viewer;
 	}
 
+	/// Returns the content of the model type folder of the active database:
+	/// the root categories and the models without category of that type.
 	private static List<INavigationElement<?>> contentOf(ModelType type) {
-		if (type == null)
+		var config = Database.getActiveConfiguration();
+		if (type == null || config == null)
 			return Collections.emptyList();
-		var queue = new ArrayDeque<INavigationElement<?>>();
-		queue.add(new NavigationRoot());
-		ModelTypeElement elem = null;
-		while (!queue.isEmpty()) {
-			var next = queue.poll();
-			if (next instanceof ModelTypeElement e) {
-				if (e.getContent() == type) {
-					elem = e;
-					break;
-				}
-				continue;
-			}
-			queue.addAll(next.getChildren());
-		}
-		return elem == null
-			? Collections.emptyList()
-			: elem.getChildren();
+		var dbElem = new DatabaseElement(new NavigationRoot(), config);
+		return new ModelTypeElement(dbElem, type).getChildren();
 	}
 }
