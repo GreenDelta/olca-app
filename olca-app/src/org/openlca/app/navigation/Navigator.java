@@ -357,46 +357,4 @@ public class Navigator extends CommonNavigator {
 		return set;
 	}
 
-	/// Search for the navigation element with the given content in the given
-	/// tree. This assumes that the viewer has the `NavigationContentProvider`
-	/// assigned. You should use this function instead of the search function of
-	/// the full navigation tree if your viewer contains custom navigation trees,
-	/// and you want to select elements etc.
-	@SuppressWarnings("unchecked")
-	public static <T> INavigationElement<T> find(TreeViewer viewer, T content) {
-		if (viewer == null || content == null)
-			return null;
-		var cp = viewer.getContentProvider();
-		if (!(cp instanceof NavigationContentProvider provider))
-			return null;
-		var roots = provider.getElements(viewer.getInput());
-		if (roots == null)
-			return null;
-		var queue = new ArrayDeque<>();
-		for (var root : roots) {
-			if (root != null) {
-				queue.add(root);
-			}
-		}
-		while (!queue.isEmpty()) {
-			var obj = queue.poll();
-			if (obj instanceof INavigationElement<?> elem) {
-				if (Objects.equal(content, elem.getContent()))
-					return (INavigationElement<T>) elem;
-			}
-
-			if (!provider.hasChildren(obj))
-				continue;
-			var childs = provider.getChildren(obj);
-			if (childs == null)
-				continue;
-			for (var child : childs) {
-				if (child != null) {
-					queue.add(child);
-				}
-			}
-		}
-		return null;
-	}
-
 }

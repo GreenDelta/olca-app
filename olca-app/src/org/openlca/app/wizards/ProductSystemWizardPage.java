@@ -1,5 +1,7 @@
 package org.openlca.app.wizards;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -12,11 +14,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.jspecify.annotations.Nullable;
 import org.openlca.app.M;
 import org.openlca.app.db.Database;
 import org.openlca.app.navigation.ModelTextFilter;
 import org.openlca.app.navigation.NavigationTree;
-import org.openlca.app.navigation.Navigator;
+import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelElement;
 import org.openlca.app.navigation.filters.EmptyCategoryFilter;
 import org.openlca.app.util.Controls;
@@ -63,10 +66,9 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		createOptions(comp);
 		if (refProcess != null) {
 			nameText.setText(Strings.notNull(Labels.name(refProcess)));
-			var d = Descriptor.of(refProcess);
-			var elem = Navigator.find(processTree, d);
+			var elem = elementOf(refProcess);
 			if (elem != null) {
-				processTree.setSelection(new StructuredSelection(elem));
+				processTree.setSelection(new StructuredSelection(elem), true);
 			}
 			checkInput();
 		}
@@ -80,6 +82,40 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		gd.heightHint = 200;
 		processTree.getTree().setLayoutData(gd);
 		processTree.addSelectionChangedListener(this::onProcessSelected);
+	}
+
+	/// Tries to find the navigation element of the given process in the tree.
+	@Nullable
+	private INavigationElement<?> elementOf(Process process) {
+
+		// build the path, from the root category to the process
+		var path = new ArrayList<>();
+		for (var c = process.category; c != null; c = c.category) {
+			path.addFirst(c);
+		}
+		path.add(Descriptor.of(process));
+
+		// find the element top down level by level
+		List<?> level = processTree.getInput() instanceof List<?> roots
+			? roots
+			: List.of();
+		INavigationElement<?> elem = null;
+		for (var content : path) {
+			// find the next content element in the current level
+			elem = null;
+			for (var e : level) {
+				if (e instanceof INavigationElement<?> next
+					&& Objects.equals(next.getContent(), content)) {
+					elem = next;
+					break;
+				}
+			}
+			if (elem == null)
+				return null;
+			// go to the next level
+			level = elem.getChildren();
+		}
+		return elem;
 	}
 
 	private void onProcessSelected(SelectionChangedEvent e) {
@@ -120,7 +156,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 		UI.filler(comp);
 		checkLinksCheck = UI.checkbox(comp, M.CheckMultiProviderLinksExperimental);
 		linkingPanel = new LinkingConfigPanel(comp);
-		Controls.onSelect(autoLinkCheck, e -> {
+		Controls.onSelect(autoLinkCheck, _ -> {
 			boolean enabled = autoLinkCheck.getSelection();
 			linkingPanel.setEnabled(enabled);
 			checkLinksCheck.setEnabled(enabled);
@@ -128,7 +164,7 @@ class ProductSystemWizardPage extends AbstractWizardPage<ProductSystem> {
 				linkingPanel.setTypeChecksEnabled(false);
 			}
 		});
-		Controls.onSelect(checkLinksCheck, e -> {
+		Controls.onSelect(checkLinksCheck, _ -> {
 			boolean b = !checkLinksCheck.getSelection();
 			linkingPanel.setTypeChecksEnabled(b);
 		});
