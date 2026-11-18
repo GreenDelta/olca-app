@@ -10,6 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.openlca.app.navigation.elements.ModelTypeElement;
+import org.openlca.app.navigation.elements.NavigationRoot;
 import org.openlca.core.model.ModelType;
 
 /**
@@ -51,11 +52,8 @@ public class NavigationTree {
 	private static List<INavigationElement<?>> contentOf(ModelType type) {
 		if (type == null)
 			return Collections.emptyList();
-		var root = Navigator.getNavigationRoot();
-		if (root == null)
-			return Collections.emptyList();
 		var queue = new ArrayDeque<INavigationElement<?>>();
-		queue.add(root);
+		queue.add(new NavigationRoot());
 		ModelTypeElement elem = null;
 		while (!queue.isEmpty()) {
 			var next = queue.poll();

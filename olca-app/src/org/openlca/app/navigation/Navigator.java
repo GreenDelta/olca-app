@@ -56,12 +56,13 @@ import com.google.common.base.Objects;
 
 public class Navigator extends CommonNavigator {
 
-	public static String ID = "views.navigation";
-	private NavigationRoot root;
+	public static final String ID = "views.navigation";
+
+	/// The root of the navigation tree; this is the input of the viewer.
+	private final NavigationRoot root = new NavigationRoot();
 
 	@Override
 	protected Object getInitialInput() {
-		root = new NavigationRoot();
 		return root;
 	}
 
@@ -108,23 +109,20 @@ public class Navigator extends CommonNavigator {
 		viewer.getTree().addKeyListener(new KeyBinding(viewer));
 	}
 
-	/// Get the root of the navigation tree.
-	public NavigationRoot getRoot() {
-		return root;
-	}
-
 	/// Refresh the navigation view if it is available.
 	public static void refresh() {
 		try {
-			var viewer = getNavigationViewer();
-			var root = getNavigationRoot();
-			if (viewer == null || root == null)
+			var navigator = getInstance();
+			if (navigator == null)
+				return;
+			var viewer = navigator.getCommonViewer();
+			if (viewer == null)
 				return;
 			NavCache.refresh();
 			if (viewer.getTree().isDisposed())
 				return;
 			var oldExpansion = viewer.getExpandedElements();
-			root.update();
+			navigator.root.update();
 			refreshSafely(viewer, viewer::refresh);
 			setRefreshedExpansion(viewer, oldExpansion);
 		} catch (Exception e) {
@@ -330,22 +328,15 @@ public class Navigator extends CommonNavigator {
 			: null;
 	}
 
-	/// Returns the root of the navigation tree or NULL if there is no such root
-	/// available.
-	public static NavigationRoot getNavigationRoot() {
-		var navigator = getInstance();
-		return navigator != null
-			? navigator.getRoot()
-			: null;
-	}
-
 	/// Returns the navigation element with the given content if it exists.
 	public static INavigationElement<?> findElement(Object content) {
-		var root = getNavigationRoot();
-		if (content == null || root == null)
+		if (content == null)
+			return null;
+		var navigator = getInstance();
+		if (navigator == null)
 			return null;
 		var queue = new ArrayDeque<INavigationElement<?>>();
-		queue.add(root);
+		queue.add(navigator.root);
 		while (!queue.isEmpty()) {
 			var next = queue.poll();
 			if (Objects.equal(next.getContent(), content))
