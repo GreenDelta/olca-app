@@ -55,7 +55,7 @@ abstract class AbstractWizard<T extends RootEntity> extends
 			App.open(model);
 			return true;
 		} catch (Exception e) {
-			log.error("failed to create save " + model, e);
+			log.error("failed to create save {}", model, e);
 			return false;
 		}
 	}

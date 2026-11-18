@@ -133,7 +133,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			UI.filler(comp);
 			wasteCheck = UI.checkbox(comp, M.CreateAWasteTreatmentProcess);
 			wasteCheck.setText(M.CreateAWasteTreatmentProcess);
-			Controls.onSelect(wasteCheck, e -> {
+			Controls.onSelect(wasteCheck, _ -> {
 				if (wasteCheck.getSelection()) {
 					flowTree.removeFilter(productFilter);
 					flowTree.addFilter(wasteFilter);
@@ -148,7 +148,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 		private void createRefFlowCheck(Composite comp) {
 			UI.filler(comp);
 			createRefFlowCheck = UI.checkbox(comp, M.CreateANewFlowForTheProcess);
-			Controls.onSelect(createRefFlowCheck, e -> {
+			Controls.onSelect(createRefFlowCheck, _ -> {
 				boolean createFlow = createRefFlowCheck.getSelection();
 				StackLayout labelLayout = (StackLayout) labelStack.getLayout();
 				StackLayout contentLayout = (StackLayout) contentStack
@@ -198,7 +198,7 @@ public class ProcessWizard extends AbstractWizard<Process> {
 			flowTree.addFilter(productFilter);
 			flowTree.addFilter(new EmptyCategoryFilter());
 			flowTree.addFilter(new ModelTextFilter(flowText, flowTree));
-			flowTree.addSelectionChangedListener(s -> checkInput());
+			flowTree.addSelectionChangedListener(_ -> checkInput());
 		}
 
 		private void createPropertyViewer() {
@@ -227,9 +227,8 @@ public class ProcessWizard extends AbstractWizard<Process> {
 
 		private Flow getSelectedFlow() {
 			INavigationElement<?> e = Viewers.getFirstSelected(flowTree);
-			if (e == null || !(e.getContent() instanceof FlowDescriptor))
+			if (e == null || !(e.getContent() instanceof FlowDescriptor flow))
 				return null;
-			FlowDescriptor flow = (FlowDescriptor) e.getContent();
 			IDatabase db = Database.get();
 			return new FlowDao(db).getForId(flow.id);
 		}

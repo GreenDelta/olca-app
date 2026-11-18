@@ -1,12 +1,11 @@
 package org.openlca.app.navigation;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -16,7 +15,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -64,8 +62,6 @@ public class Navigator extends CommonNavigator {
 	@Override
 	protected CommonViewer createCommonViewer(Composite parent) {
 		var viewer = super.createCommonViewer(parent);
-		// hash lookup can only be enabled before the input is set, which
-		// `createPartControl` does after this method returns
 		viewer.setUseHashlookup(true);
 		ColumnViewerToolTipSupport.enableFor(viewer);
 		viewer.getTree().setBackground(
@@ -103,6 +99,10 @@ public class Navigator extends CommonNavigator {
 
 		// bind delete key
 		viewer.getTree().addKeyListener(new KeyBinding(viewer));
+	}
+
+	public List<INavigationElement<?>> getAllSelected() {
+		return Viewers.getAllSelected(getNavigationViewer());
 	}
 
 	/// Refresh the navigation view if it is available.
@@ -151,7 +151,7 @@ public class Navigator extends CommonNavigator {
 			return;
 		element.update();
 		refreshSafely(viewer, () -> viewer.refresh(element));
-		updateLabels(viewer, element);
+		updateParentLabels(viewer, element);
 
 		// clear the category content cache for the respective model type
 		var modelType = modelTypeOf(element);
@@ -165,6 +165,21 @@ public class Navigator extends CommonNavigator {
 			contentTest.clearCacheOf(modelType);
 		}
 	}
+
+	private static void updateParentLabels(
+		CommonViewer viewer, INavigationElement<?> element
+	) {
+		var parents = new ArrayList<>();
+		var p = element.getParent();
+		while (p != null && !(p instanceof NavigationRoot)) {
+			parents.add(p);
+			p = p.getParent();
+		}
+		if (!parents.isEmpty()) {
+			viewer.update(parents.toArray(), null);
+		}
+	}
+
 
 	/// Runs the given refresh of the viewer. With hash lookup enabled, JFace
 	/// maintains an internal map from elements to tree items. If this map
@@ -212,38 +227,6 @@ public class Navigator extends CommonNavigator {
 		return null;
 	}
 
-	private static void updateLabels(CommonViewer viewer,
-		INavigationElement<?> element) {
-		TreeItem item = findItem(viewer, element);
-		if (item == null)
-			return;
-		do {
-			viewer.doUpdateItem(item);
-			item = item.getParentItem();
-		} while (item != null);
-	}
-
-	private static TreeItem findItem(CommonViewer viewer,
-		INavigationElement<?> element) {
-		Stack<TreeItem> items = new Stack<>();
-		items.addAll(Arrays.asList(viewer.getTree().getItems()));
-		while (!items.empty()) {
-			TreeItem next = items.pop();
-			if (itemEqualsElement(next, element))
-				return next;
-			items.addAll(Arrays.asList(next.getItems()));
-		}
-		return null;
-	}
-
-	private static boolean itemEqualsElement(
-		TreeItem item, INavigationElement<?> element
-	) {
-		INavigationElement<?> data = (INavigationElement<?>) item.getData();
-		if (data == null)
-			return false;
-		return Objects.equal(data.getContent(), element.getContent());
-	}
 
 	/// Selects the navigation element with the given *content* in the tree.
 	public static void select(Object element) {
@@ -352,17 +335,6 @@ public class Navigator extends CommonNavigator {
 		if (expanded != null && expanded.length > 0) {
 			viewer.setExpandedElements(expanded);
 		}
-	}
-
-	public INavigationElement<?> getFirstSelected() {
-		var all = getAllSelected();
-		return all.isEmpty()
-			? null
-			: all.getFirst();
-	}
-
-	public List<INavigationElement<?>> getAllSelected() {
-		return Viewers.getAllSelected(getNavigationViewer());
 	}
 
 	/// Collects content from the navigation elements, to skip an element return
