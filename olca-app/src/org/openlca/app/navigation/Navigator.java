@@ -1,7 +1,6 @@
 package org.openlca.app.navigation;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -121,10 +120,8 @@ public class Navigator extends CommonNavigator {
 			NavCache.refresh();
 			if (viewer.getTree().isDisposed())
 				return;
-			var oldExpansion = viewer.getExpandedElements();
 			navigator.root.update();
 			refreshSafely(viewer, viewer::refresh);
-			setRefreshedExpansion(viewer, oldExpansion);
 		} catch (Exception e) {
 			logRefreshError(e);
 		}
@@ -156,10 +153,8 @@ public class Navigator extends CommonNavigator {
 		if (viewer.getTree().isDisposed())
 			return;
 		element.update();
-		Object[] oldExpansion = viewer.getExpandedElements();
 		refreshSafely(viewer, () -> viewer.refresh(element));
 		updateLabels(viewer, element);
-		setRefreshedExpansion(viewer, oldExpansion);
 
 		// clear the category content cache for the respective model type
 		var modelType = modelTypeOf(element);
@@ -180,7 +175,14 @@ public class Navigator extends CommonNavigator {
 	/// with a "Widget is disposed" error, e.g. when the viewer restores the
 	/// selection after the refresh. In this case, we set the input again, which
 	/// clears this map and rebuilds the tree from scratch.
+	///
+	/// Note that the refresh itself keeps the expansion state: JFace expands the
+	/// new child elements that are equal to expanded old ones, and navigation
+	/// elements are equal when their content along their path is equal. Only
+	/// for the rebuild, we need to take the expanded elements before the
+	/// refresh, as the tree is in an undefined state when the refresh failed.
 	private static void refreshSafely(CommonViewer viewer, Runnable refresh) {
+		var expanded = viewer.getExpandedElements();
 		try {
 			refresh.run();
 		} catch (SWTException e) {
@@ -189,7 +191,7 @@ public class Navigator extends CommonNavigator {
 				throw e;
 			var log = LoggerFactory.getLogger(Navigator.class);
 			log.warn("failed to refresh navigation", e);
-			rebuildTree(viewer);
+			rebuildTree(viewer, expanded);
 		}
 	}
 
@@ -246,30 +248,6 @@ public class Navigator extends CommonNavigator {
 		return Objects.equal(data.getContent(), element.getContent());
 	}
 
-	/// Expands the elements in the viewer that have the same content as in the
-	/// elements of the `oldExpansion` array.
-	private static void setRefreshedExpansion(
-		CommonViewer viewer, Object[] oldExpansion
-	) {
-		if (viewer == null || oldExpansion == null)
-			return;
-		var newExpanded = new ArrayList<INavigationElement<?>>();
-		for (var e : oldExpansion) {
-			if (!(e instanceof INavigationElement<?> oldElem))
-				continue;
-			var newElem = findElement(oldElem.getContent());
-			if (newElem != null) {
-				newExpanded.add(newElem);
-			}
-		}
-		// `setExpandedElements` creates the items of the elements via the
-		// element map, like `reveal`, and would fail on disposed items
-		if (hasDisposedItems(viewer, newExpanded)) {
-			rebuildTree(viewer);
-		}
-		viewer.setExpandedElements(newExpanded.toArray());
-	}
-
 	/// Selects the navigation element with the given *content* in the tree.
 	public static void select(Object element) {
 		if (element == null)
@@ -283,10 +261,8 @@ public class Navigator extends CommonNavigator {
 		var viewer = instance.getCommonViewer();
 		if (viewer == null || viewer.getTree().isDisposed())
 			return;
-		if (hasDisposedItems(viewer, List.of(navElement))) {
-			var expanded = viewer.getExpandedElements();
-			rebuildTree(viewer);
-			viewer.setExpandedElements(expanded);
+		if (hasDisposedItems(viewer, navElement)) {
+			rebuildTree(viewer, viewer.getExpandedElements());
 		}
 		instance.selectReveal(new StructuredSelection(navElement));
 	}
@@ -341,16 +317,14 @@ public class Navigator extends CommonNavigator {
 		var viewer = getNavigationViewer();
 		if (viewer == null || viewer.getTree().isDisposed())
 			return;
-		if (hasDisposedItems(viewer, List.of(first))) {
-			var expanded = viewer.getExpandedElements();
-			rebuildTree(viewer);
-			viewer.setExpandedElements(expanded);
+		if (hasDisposedItems(viewer, first)) {
+			rebuildTree(viewer, viewer.getExpandedElements());
 		}
 		viewer.reveal(first);
 	}
 
 	/// Returns `true` if the element map of the viewer contains a disposed tree
-	/// item for one of the given elements or their parents. With hash lookup,
+	/// item for the given element or one of its parents. With hash lookup,
 	/// JFace takes the items for `reveal`, `expand`, `setSelection` etc. from
 	/// this map (and not from the tree), starting at the element and walking up
 	/// its parents until it finds a mapped item. A disposed item in this chain
@@ -358,29 +332,29 @@ public class Navigator extends CommonNavigator {
 	/// refresh of the tree went fine (a refresh walks the existing tree items,
 	/// it does not look up the map entries of elements that are not shown).
 	private static boolean hasDisposedItems(
-		CommonViewer viewer, Collection<?> elements
+		CommonViewer viewer, INavigationElement<?> element
 	) {
-		if (elements == null)
-			return false;
-		for (var element : elements) {
-			Object e = element;
-			while (e instanceof INavigationElement<?> elem) {
-				for (var item : viewer.testFindItems(elem)) {
-					if (item != null && item.isDisposed())
-						return true;
-				}
-				e = elem.getParent();
+		var e = element;
+		while (e != null) {
+			for (var item : viewer.testFindItems(e)) {
+				if (item != null && item.isDisposed())
+					return true;
 			}
+			e = e.getParent();
 		}
 		return false;
 	}
 
 	/// Sets the input of the viewer again, which clears its element map and
-	/// rebuilds the tree from scratch. Note that this collapses the tree.
-	private static void rebuildTree(CommonViewer viewer) {
+	/// rebuilds the tree from scratch. As this collapses the tree, the given
+	/// elements are expanded again (those that are still in the tree).
+	private static void rebuildTree(CommonViewer viewer, Object[] expanded) {
 		var log = LoggerFactory.getLogger(Navigator.class);
 		log.warn("navigation tree contains disposed items; rebuild the tree");
 		viewer.setInput(viewer.getInput());
+		if (expanded != null && expanded.length > 0) {
+			viewer.setExpandedElements(expanded);
+		}
 	}
 
 	public INavigationElement<?> getFirstSelected() {
