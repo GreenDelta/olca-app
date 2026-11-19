@@ -133,7 +133,11 @@ public class Database {
 		if (dbDirs != null) {
 			for (var dbDir : dbDirs) {
 				var name = dbDir.getName();
-				if (!found.contains(name) && Derby.isDerbyFolder(dbDir)) {
+				// a trash folder can still look like a database when its
+				// deletion failed, but it must not come back as a database
+				if (!found.contains(name)
+						&& !DatabaseDir.isTrash(dbDir)
+						&& Derby.isDerbyFolder(dbDir)) {
 					var config = new DerbyConfig().name(name);
 					configs.getDerbyConfigs().add(config);
 					updated = true;

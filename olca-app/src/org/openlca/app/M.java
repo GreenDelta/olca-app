@@ -368,6 +368,7 @@ public class M extends NLS {
 	public static String DatabaseContent;
 	public static String DatabaseExportAndReconnectionFailed;
 	public static String DatabaseExportFailed;
+	public static String DatabaseFolderInUse;
 	public static String DatabaseImport;
 	public static String DatabaseImportDescription;
 	public static String DatabaseName;
@@ -582,6 +583,7 @@ public class M extends NLS {
 	public static String FailedToCopyTemplateFile;
 	public static String FailedToCopyTemplateFileErr;
 	public static String FailedToCreateDatabase;
+	public static String FailedToDeleteDatabase;
 	public static String FailedToDeleteFile;
 	public static String FailedToDownloadEpd;
 	public static String FailedToImportLibrary;
