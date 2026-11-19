@@ -79,7 +79,7 @@ public class InfoSection {
 		} else {
 			var category = String.join("/", path);
 			var link = UI.formCategoryLink(container, tk, category, Images.get(entity.category));
-			Controls.onClick(link, $ -> Navigator.select(entity.category));
+			Controls.onClick(link, _ -> Navigator.select(entity.category));
 		}
 		if (editor.hasComment("category")) {
 			new CommentControl(container, tk, "category", editor.getComments());

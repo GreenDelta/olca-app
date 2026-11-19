@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
+import org.jspecify.annotations.Nullable;
 import org.openlca.app.App;
 import org.openlca.app.collaboration.browse.elements.EntryElement;
 import org.openlca.app.collaboration.navigation.NavCache;
@@ -44,7 +45,6 @@ import org.openlca.app.viewers.Viewers;
 import org.openlca.core.model.Category;
 import org.openlca.core.model.ModelType;
 import org.openlca.core.model.descriptors.Descriptor;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Objects;
 
@@ -98,7 +98,7 @@ public class Navigator extends CommonNavigator {
 			}
 		});
 
-		// bind delete key
+		// bind key handlers
 		viewer.getTree().addKeyListener(new KeyBinding(viewer));
 	}
 
@@ -106,9 +106,6 @@ public class Navigator extends CommonNavigator {
 		return Viewers.getAllSelected(getCommonViewer());
 	}
 
-	/// Runs the given function with the navigator and its viewer if the
-	/// navigation view is available. Errors are reported with the given action in
-	/// the title of the error dialog.
 	private static void withViewer(
 		String action, BiConsumer<Navigator, CommonViewer> fn
 	) {
@@ -125,16 +122,20 @@ public class Navigator extends CommonNavigator {
 		}
 	}
 
-	/// Refresh the navigation view if it is available.
+	/// Tries to refresh the entire navigation view.
 	public static void refresh() {
 		NavCache.refresh();
 		withViewer("refresh", (navigator, viewer) -> {
 			navigator.root.update();
-			refreshSafely(viewer, null);
+			DisposalCheck.beforeRefresh(viewer);
+			viewer.refresh();
 		});
 	}
 
-	/// Refreshes the content *under* the given element.
+
+	/// Refreshes the given element: the element reloads its content and children,
+	/// and the labels of the element, its descendants, and its parents are
+	/// updated.
 	public static void refresh(INavigationElement<?> element) {
 		if (element == null)
 			return;
@@ -145,17 +146,17 @@ public class Navigator extends CommonNavigator {
 		}
 
 		withViewer("refresh element", (_, viewer) -> {
-			// the library content of the categories is used in the refresh (child
-			// elements, labels, filters), so we need to clear it before
 			clearCategoryContentCache(element);
 			element.update();
-			refreshSafely(viewer, element);
+			DisposalCheck.beforeRefresh(viewer, element);
+			viewer.refresh(element);
 			updateParentLabels(viewer, element);
 		});
 	}
 
-	/// Clears the cached library content of the categories of the model type
-	/// of the given element.
+	/// The category content cache basically contains whether a category contains
+	/// library data. This needs to be updated when a single element is refreshed.
+	/// When the complete tree is refreshed, this cache is anyhow newly created.
 	private static void clearCategoryContentCache(INavigationElement<?> elem) {
 		if (elem == null)
 			return;
@@ -202,37 +203,6 @@ public class Navigator extends CommonNavigator {
 		}
 	}
 
-	/// Refreshes the given element in the viewer, or the full viewer if the
-	/// element is `null`. With hash lookup, JFace takes the tree items of the
-	/// refreshed element and of the selection, which it restores after the
-	/// refresh, from its element map. If this map contains disposed items for
-	/// them, the refresh fails ("Widget is disposed" or "Argument not valid").
-	/// Thus, we check these items before and rebuild the tree if necessary.
-	private static void refreshSafely(
-		CommonViewer viewer, INavigationElement<?> element
-	) {
-		var elements = new ArrayList<INavigationElement<?>>();
-		if (element != null) {
-			elements.add(element);
-		}
-		for (var selected : viewer.getStructuredSelection().toList()) {
-			if (selected instanceof INavigationElement<?> e) {
-				elements.add(e);
-			}
-		}
-		for (var e : elements) {
-			if (hasDisposedItems(viewer, e)) {
-				rebuildTree(viewer, viewer.getExpandedElements());
-				break;
-			}
-		}
-		if (element == null) {
-			viewer.refresh();
-		} else {
-			viewer.refresh(element);
-		}
-	}
-
 	/// Selects the navigation element with the given *content* in the tree.
 	public static void select(Object content) {
 		if (content == null)
@@ -241,15 +211,14 @@ public class Navigator extends CommonNavigator {
 			var elem = findElement(content);
 			if (elem == null)
 				return;
-			if (hasDisposedItems(viewer, elem)) {
-				rebuildTree(viewer, viewer.getExpandedElements());
-			}
+			DisposalCheck.beforeReveal(viewer, elem);
 			navigator.selectReveal(new StructuredSelection(elem));
 		});
 	}
 
-	/// Returns the instance of the navigation view or NULL if there is no such
+	/// Returns the instance of the navigation view or `null` when there is no such
 	/// instance available.
+	@Nullable
 	public static Navigator getInstance() {
 		var workbench = PlatformUI.getWorkbench();
 		if (workbench == null)
@@ -267,6 +236,7 @@ public class Navigator extends CommonNavigator {
 	}
 
 	/// Returns the navigation element with the given content if it exists.
+	@Nullable
 	public static INavigationElement<?> findElement(Object content) {
 		if (content == null)
 			return null;
@@ -284,52 +254,15 @@ public class Navigator extends CommonNavigator {
 		return null;
 	}
 
-	public static void revealFirstChild(INavigationElement<?> navElem) {
+	public static void expand(INavigationElement<?> navElem) {
 		if (navElem == null || navElem.getChildren().isEmpty())
 			return;
+		// we can expand the given element by revealing its first child node
 		var first = navElem.getChildren().getFirst();
-		withViewer("reveal", (_, viewer) -> {
-			if (hasDisposedItems(viewer, first)) {
-				rebuildTree(viewer, viewer.getExpandedElements());
-			}
+		withViewer("expand", (_, viewer) -> {
+			DisposalCheck.beforeReveal(viewer, first);
 			viewer.reveal(first);
 		});
-	}
-
-	/// Returns `true` if the element map of the viewer contains a disposed tree
-	/// item for the given element or one of its parents. With hash lookup,
-	/// JFace takes the items for `reveal`, `expand`, `setSelection` etc. from
-	/// this map (and not from the tree), starting at the element and walking up
-	/// its parents until it finds a mapped item. A disposed item in this chain
-	/// then results in a "Widget is disposed" error, also when the preceding
-	/// refresh of the tree went fine (a refresh walks the existing tree items,
-	/// it does not look up the map entries of elements that are not shown).
-	private static boolean hasDisposedItems(
-		CommonViewer viewer, INavigationElement<?> element
-	) {
-		var e = element;
-		while (e != null) {
-			for (var item : viewer.testFindItems(e)) {
-				if (item != null && item.isDisposed())
-					return true;
-			}
-			e = e.getParent();
-		}
-		return false;
-	}
-
-	/// Sets the input of the viewer again, which clears its element map and
-	/// rebuilds the tree from scratch. As this collapses the tree, the given
-	/// elements are expanded again (those that are still in the tree).
-	private static void rebuildTree(CommonViewer viewer, Object[] expanded) {
-		// this is not an error as we recover from it, but we log it to
-		// see when this happens
-		var log = LoggerFactory.getLogger(Navigator.class);
-		log.warn("navigation tree contains disposed items; rebuild the tree");
-		viewer.setInput(viewer.getInput());
-		if (expanded != null && expanded.length > 0) {
-			viewer.setExpandedElements(expanded);
-		}
 	}
 
 	/// Collects content from the navigation elements, to skip an element return
