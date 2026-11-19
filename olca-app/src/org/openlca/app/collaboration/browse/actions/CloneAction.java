@@ -26,7 +26,7 @@ class CloneAction extends Action implements IServerNavigationAction {
 		var credentials = AuthenticationDialog.promptCredentials(serverUrl);
 		if (credentials == null)
 			return;
-		Clone.of(url, credentials.user, credentials.password);
+		Clone.of(url, credentials.user);
 	}
 
 	@Override

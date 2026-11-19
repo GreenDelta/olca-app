@@ -1093,6 +1093,7 @@ public class M extends NLS {
 	public static String NoUrlProvided;
 	public static String NoUserNameProvided;
 	public static String NoValidUrlOrEpdIdProvided;
+	public static String NoWriteAccessToFolder;
 	public static String Nomenclature;
 	public static String None;
 	public static String NoneHyphen;

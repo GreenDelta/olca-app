@@ -1,7 +1,11 @@
 package org.openlca.app.db;
 
+import java.io.File;
+import java.nio.file.Files;
+
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
@@ -11,6 +15,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.openlca.app.M;
 import org.openlca.app.navigation.elements.DatabaseDirElement;
+import org.openlca.app.rcp.Workspace;
 import org.openlca.app.rcp.images.Icon;
 import org.openlca.app.util.UI;
 import org.openlca.commons.Strings;
@@ -92,12 +97,37 @@ class DatabaseWizardPage extends WizardPage {
 	private void validateInput() {
 		if (nameText == null)
 			return;
-		var err = Database.validateNewName(nameText.getText());
+		// check the write access first: the name validation reports an invalid
+		// name when the databases folder cannot be created
+		var err = checkWriteAccess();
+		if (err == null) {
+			err = Database.validateNewName(nameText.getText());
+		}
 		if (err != null) {
 			error(err);
 		} else {
 			setMessage(null);
 			setPageComplete(true);
+		}
+	}
+
+	/// Checks that we can create a database folder in the databases folder of
+	/// the workspace. Returns an error message if this is not the case. Note
+	/// that the operating system can still deny the access, e.g. because of
+	/// privacy settings, so errors of the database creation are still handled.
+	private String checkWriteAccess() {
+		File dir = null;
+		try {
+			dir = Workspace.dbDir();
+			return Files.isWritable(dir.toPath())
+				? null
+				: NLS.bind(M.NoWriteAccessToFolder, dir.getPath());
+		} catch (Exception e) {
+			// `dbDir` tries to create the folder if it does not exist
+			var path = dir != null
+				? dir.getPath()
+				: new File(Workspace.root(), "databases").getPath();
+			return NLS.bind(M.NoWriteAccessToFolder, path);
 		}
 	}
 

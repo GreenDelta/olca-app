@@ -25,7 +25,7 @@ public class CloneFromGitAction extends Action implements INavigationAction {
 		var dialog = new ConnectDialog();
 		if (dialog.open() == ConnectDialog.CANCEL)
 			return;
-		Clone.of(dialog.url(), dialog.user(), dialog.password());
+		Clone.of(dialog.url(), dialog.user());
 	}
 
 	@Override

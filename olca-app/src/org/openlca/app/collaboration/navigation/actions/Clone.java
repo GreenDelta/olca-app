@@ -15,6 +15,7 @@ import org.openlca.app.db.DbTemplate;
 import org.openlca.app.editors.Editors;
 import org.openlca.app.util.ErrorReporter;
 import org.openlca.app.util.Input;
+import org.openlca.app.util.MsgBox;
 import org.openlca.commons.Strings;
 import org.openlca.core.database.config.DerbyConfig;
 import org.openlca.core.database.upgrades.Upgrades;
@@ -27,7 +28,7 @@ public class Clone {
 
 	private static final Logger log = LoggerFactory.getLogger(Clone.class);
 
-	public static void of(String url, String user, String password) {
+	public static void of(String url, String user) {
 
 		// first, close a possibly open database
 		if (!Editors.closeAll())
@@ -44,7 +45,7 @@ public class Clone {
 		if (config == null)
 			return;
 		try {
-			if (!initRepository(config.name(), url, user, password)) {
+			if (!initRepository(config.name(), url, user)) {
 				onError(config);
 				return;
 			}
@@ -66,7 +67,11 @@ public class Clone {
 		return App.exec(M.OpenDatabase, () -> {
 			var config = new DerbyConfig();
 			config.name(dbDir.getName());
-			DbTemplate.EMPTY.extract(dbDir);
+			var res = DbTemplate.EMPTY.extract(dbDir);
+			if (res.isError()) {
+				MsgBox.error(M.FailedToCreateDatabase, res.error());
+				return null;
+			}
 			var db = Database.activate(config);
 			if (db == null)
 				return null;
@@ -76,7 +81,7 @@ public class Clone {
 		});
 	}
 
-	private static boolean initRepository(String dbName, String url, String user, String password)
+	private static boolean initRepository(String dbName, String url, String user)
 			throws GitAPIException, URISyntaxException {
 		var gitDir = Repository.gitDir(dbName);
 		GitInit.in(gitDir).remoteUrl(url).run();
