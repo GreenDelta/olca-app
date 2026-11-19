@@ -68,13 +68,17 @@ public class EcoSpold1ImportWizard extends Wizard implements IImportWizard {
 		mappingPage = new UnitMappingPage() {
 			@Override
 			protected String[] checkFiles(File[] files) {
-				try {
-					return new ES1UnitFetch().getUnits(files);
-				} catch (Exception e) {
-					var m = "Failed to get the units from files.";
-					ErrorReporter.on(m, e);
+				var res = ES1UnitFetch.collectFrom(files);
+				if (res.isError()) {
+					MsgBox.error(M.CouldNotReadFiles, res.error());
 					return new String[0];
 				}
+				var result = res.value();
+				if (result.hasParserErrors()) {
+					MsgBox.warning(
+						M.CouldNotReadFiles, messageOf(result.parserErrors()));
+				}
+				return result.units().toArray(String[]::new);
 			}
 
 			@Override
@@ -85,6 +89,21 @@ public class EcoSpold1ImportWizard extends Wizard implements IImportWizard {
 			}
 		};
 		addPage(mappingPage);
+	}
+
+	/// Creates the message for files that could not be read; only the first
+	/// errors are listed so that the message box does not get too large.
+	private static String messageOf(List<String> errors) {
+		int max = 10;
+		var text = new StringBuilder(M.CouldNotReadFilesInfo);
+		text.append("\n");
+		for (int i = 0; i < Math.min(max, errors.size()); i++) {
+			text.append("\n- ").append(errors.get(i));
+		}
+		if (errors.size() > max) {
+			text.append("\n- ... (+").append(errors.size() - max).append(")");
+		}
+		return text.toString();
 	}
 
 	@Override

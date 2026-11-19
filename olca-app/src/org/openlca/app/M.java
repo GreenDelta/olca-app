@@ -294,6 +294,8 @@ public class M extends NLS {
 	public static String CouldNotOpenFile;
 	public static String CouldNotOverwriteFile;
 	public static String CouldNotReadEpdFromServer;
+	public static String CouldNotReadFiles;
+	public static String CouldNotReadFilesInfo;
 	public static String Country;
 	public static String Coverage;
 	public static String Create;

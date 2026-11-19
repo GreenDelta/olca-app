@@ -7,15 +7,13 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.openlca.app.navigation.elements.INavigationElement;
 import org.slf4j.LoggerFactory;
 
-/// Repairs the element map of a tree viewer with hash lookup when it contains
-/// disposed tree items.
-///
-/// ## Background
+/// Checks if the navigator contains disposed elements and rebuilds it when this
+/// is the case.
 ///
 /// With hash lookup (`setUseHashlookup(true)`), JFace takes the tree item of an
-/// element from an internal element map instead of searching the tree. If the
-/// item of an element that JFace looks up is disposed, the operation fails with
-/// "Widget is disposed" or "Argument not valid".
+/// element from an internal hash map instead of searching the tree. If the item
+/// of an element that JFace looks up is disposed, a possible method called on
+/// that item could fail with "Widget is disposed" or "Argument not valid".
 ///
 /// Normally, this cannot happen, as JFace removes the map entry of an item
 /// before it disposes the item. An entry is only left behind when the hash code
@@ -23,8 +21,6 @@ import org.slf4j.LoggerFactory;
 /// found and removed anymore (see the hash code notes in `NavigationElement`).
 /// So this is a defensive check against "Widget is disposed" errors that
 /// occurred in the navigation.
-///
-/// ## Limitations
 ///
 /// The check cannot cover the whole map: the map is private, and disposed items
 /// are no longer part of the tree. The only way to find them is to look up
@@ -34,14 +30,9 @@ import org.slf4j.LoggerFactory;
 /// these elements are always checked too: when JFace does not find an element
 /// in the map, it walks up its parents to find an item it can expand.
 ///
-/// `update` needs no check, as JFace removes the map entry of a disposed item
-/// there and skips it.
-///
-/// ## Recovery
-///
 /// When a disposed item is found, the input of the viewer is set again. This
 /// clears the element map and rebuilds the tree. The expanded elements are
-/// restored afterwards, as far as they are still in the tree.
+/// restored afterward, as far as they are still in the tree.
 final class DisposalCheck {
 
 	private DisposalCheck() {
@@ -58,7 +49,7 @@ final class DisposalCheck {
 
 	/// Call this before a `refresh(element)` of the viewer. The refresh looks
 	/// up the element in the element map and, like a full refresh, restores the
-	/// selection afterwards (see `beforeRefresh(TreeViewer)`). Thus, the element
+	/// selection afterward (see `beforeRefresh(TreeViewer)`). Thus, the element
 	/// and the current selection are checked.
 	static void beforeRefresh(TreeViewer viewer, INavigationElement<?> element) {
 		var elements = selectionOf(viewer);
