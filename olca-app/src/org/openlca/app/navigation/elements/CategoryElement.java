@@ -99,13 +99,22 @@ public class CategoryElement extends NavigationElement<Category> {
 		return test != null && test.hasOnlyLibraryContent(getContent(), library);
 	}
 
-	/**
-	 * Returns {@code true} if the category of this element or a child category
-	 * of it contain model elements that do not belong to a library.
-	 */
+	/// Returns `true` when the category of this element or any child category
+	/// of it contain model elements that do not belong to a library.
 	public boolean hasNonLibraryContent() {
 		var test = DatabaseElement.categoryTesterOf(this);
-		return test != null && test.hasNonLibraryContent(getContent());
+		if (test != null)
+			return test.hasNonLibraryContent(getContent());
+		// there is no content test when the database has no libraries; then all
+		// models are non-library models, and we just check if there is a model in
+		// this category or one of its sub-categories
+		for (var child : getChildren()) {
+			if (child instanceof ModelElement)
+				return true;
+			if (child instanceof CategoryElement c && c.hasNonLibraryContent())
+				return true;
+		}
+		return false;
 	}
 
 }
